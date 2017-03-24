@@ -386,14 +386,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 }
             }
             // 存在外部容器并且有对应内部容器
-            if(null != operationLine.getFromOuterContainerId() && null != operationLine.getFromInsideContainerId()){
-                // 外部容器对应所有内部容器
-                if(null != operationLine.getFromOuterContainerId() && null != operationLine.getSkuId() && null != outerToInside.get(operationLine.getFromOuterContainerId())){
-                    outerToInside.get(operationLine.getFromOuterContainerId()).add(operationLine.getFromInsideContainerId());
-                }else if(null != operationLine.getFromOuterContainerId() && null != operationLine.getSkuId() && null == outerToInside.get(operationLine.getFromOuterContainerId())){
-                    Set<Long> fromInsideContainerIdSet = new HashSet<Long>();
-                    fromInsideContainerIdSet.add(operationLine.getFromInsideContainerId());
-                    outerToInside.put(operationLine.getFromOuterContainerId(), fromInsideContainerIdSet);
+            if(null != operationLine.getFromInsideContainerId()){
+                if(null != operationLine.getFromOuterContainerId()){
+                    // 外部容器对应所有内部容器
+                    if(null != operationLine.getFromOuterContainerId() && null != operationLine.getSkuId() && null != outerToInside.get(operationLine.getFromOuterContainerId())){
+                        outerToInside.get(operationLine.getFromOuterContainerId()).add(operationLine.getFromInsideContainerId());
+                    }else if(null != operationLine.getFromOuterContainerId() && null != operationLine.getSkuId() && null == outerToInside.get(operationLine.getFromOuterContainerId())){
+                        Set<Long> fromInsideContainerIdSet = new HashSet<Long>();
+                        fromInsideContainerIdSet.add(operationLine.getFromInsideContainerId());
+                        outerToInside.put(operationLine.getFromOuterContainerId(), fromInsideContainerIdSet);
+                    }
                 }
                 //内部容器对应所有sku
                 if(null != operationLine.getFromInsideContainerId() && null != operationLine.getSkuId() && null != insideSkuIds.get(operationLine.getFromInsideContainerId())){
