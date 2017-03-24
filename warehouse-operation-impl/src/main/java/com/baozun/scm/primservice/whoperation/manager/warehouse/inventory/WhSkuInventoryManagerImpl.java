@@ -4872,6 +4872,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                               Long invSkuId =   this.addContianerInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId, outBoundBox, null, null, null,null);  //出库箱模式,添加容器库存
                               invSkuIds.add(invSkuId);
                         }
+                         if(sumQty >= skuInvCmd.getOnHandQty()){
+                             break;
+                         }
                }
                if(null != turnoverBoxId){   //周转箱
                    insideIdList.add(turnoverBoxId);  //周转箱
@@ -4889,6 +4892,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            Long invSkuId =  this.addContianerInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId, null, null, null, turnoverBoxId,null);  //出库箱模式,添加容器库存
                            invSkuIds.add(invSkuId);
                       }
+                       if(sumQty >= skuInvCmd.getOnHandQty()){
+                           break;
+                       }
                }
                 if(null != outerContainerId){ //使用小车(小车加出库箱,整托)
                      Integer useContainerLatticeNo = opLineExec.getUseContainerLatticeNo();   //使用的货格号
@@ -4935,6 +4941,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                           Long  invSkuId =  this.addContianerInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId, null, outerContainerId, null, null,insideContainerId);  //整托整箱模式
                           invSkuIds.add(invSkuId);
                       }
+                  }
+                  if(sumQty >= skuInvCmd.getOnHandQty()){
+                      break;
                   }
            }
         }
