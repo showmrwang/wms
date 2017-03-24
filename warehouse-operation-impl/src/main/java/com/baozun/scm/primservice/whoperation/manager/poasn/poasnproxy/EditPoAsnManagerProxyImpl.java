@@ -757,10 +757,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         try {
             packageUpdatePoData(command, shardPo);
             poManager.saveOrUpdateByVersionToShard(shardPo);
-            // #TODO
+            // 同步到集团下
             WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), command.getOuId());
             packageUpdatePoData(command, infoPo);
-            poManager.saveOrUpdateByVersionToShard(infoPo);
+            poManager.snycPoToInfo(infoPo, "EDIT_HEAD");
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");
@@ -782,7 +782,6 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
      */
     private WhPo packageUpdatePoData(WhPoCommand command, WhPo savePo) {
         log.info(this.getClass().getSimpleName() + ".save.updatePo.packageUpdatePoData method ");
-        // 物理仓
         savePo.setModifiedId(command.getUserId());
         // 计划到货时间
         try {
@@ -792,13 +791,18 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             e.printStackTrace();
         }
         // 运输商
-        if (command.getLogisticsProviderId() != null) {
-            savePo.setLogisticsProviderId(command.getLogisticsProviderId());
-        }
+        savePo.setLogisticsProvider(command.getLogisticsProvider());
         // 超收比例
         savePo.setOverChageRate(command.getOverChageRate());
         // 整单质检
         savePo.setIsIqc(command.getIsIqc());
+        // 设置是否自动关单
+        if (savePo.getIsAutoClose() != null && savePo.getIsAutoClose()) {
+            if (savePo.getOverChageRate() != null && savePo.getOverChageRate().doubleValue() != 0) {
+                savePo.setIsAutoClose(false);
+            }
+        }
+
         if (log.isDebugEnabled()) {
             log.debug(this.getClass().getSimpleName() + ".save.updatePo.packageUpdatePoData method returns {}", savePo);
         }

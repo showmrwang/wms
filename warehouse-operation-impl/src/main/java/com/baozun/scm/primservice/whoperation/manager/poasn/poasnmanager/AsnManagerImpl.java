@@ -56,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCatego
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
+import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -527,6 +528,19 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             Long ouId = asn.getOuId();
             WhAsn whAsn = new WhAsn();
             BeanUtils.copyProperties(whpo, whAsn);
+            // WMS单据号 调用HUB编码生成器获得
+            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+            if (StringUtil.isEmpty(asnCode)) {
+                log.warn("CreateAsnBatch warn asnCode generateCode is null");
+                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+            }
+            asn.setAsnCode(asnCode);
+            if (StringUtils.isEmpty(asn.getAsnExtCode())) {
+                // 相关单据号 调用HUB编码生成器获得
+                String asnExtCode = this.getAsnExtCode(whpo.getStoreId(), whpo.getOuId());
+                asn.setAsnExtCode(asnExtCode);
+            }
+
             // 创建whasn表头信息
             whAsn.setId(null);
             whAsn.setOuId(ouId);
@@ -540,6 +554,18 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             whAsn.setCreatedId(userId);
             whAsn.setLastModifyTime(new Date());
             whAsn.setModifiedId(userId);
+            // @mender yimin.lu 2017/3/24 兼容页面创建ASN单
+            if (StringUtils.hasText(asn.getLogisticsProvider())) {
+                whAsn.setLogisticsProvider(asn.getLogisticsProvider());
+            }
+            if (StringUtils.hasText(asn.getEtaStr())) {
+                whAsn.setEta(DateUtil.getDateFormat(asn.getEtaStr(), Constants.DATE_PATTERN_YMD));
+            }
+            if (asn.getIsIqc() != null) {
+                whAsn.setIsIqc(asn.getIsIqc());
+            }
+            asn.setUrgentStatus(whAsn.getUrgentStatus());
+            asn.setOverChageRate(whAsn.getOverChageRate());
             whAsnDao.insert(whAsn);
             // 插入日志
             this.insertGlobalLog(GLOBAL_LOG_INSERT, whAsn, ouId, userId, null, null);
@@ -560,45 +586,47 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             Container2ndCategory c2c = null;
             // 存放已生成的箱信息
             Map<String, Long> containerMap = null;
-            for (WhPoLine pl : whPoLines) {
-                if (pl.getQtyPlanned() >= pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid()) && pl.getAvailableQty() > 0) {
-                    // 计划数量比如大于可用数量并且UUID为空才能创建
-                    WhAsnLine al = new WhAsnLine();
-                    BeanUtils.copyProperties(pl, al);
-                    qty = qty + pl.getAvailableQty();// 计算计划数量
-                    al.setId(null);
-                    al.setAsnId(whAsn.getId());
-                    al.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
-                    al.setPoLinenum(pl.getLinenum());
-                    al.setPoLineId(pl.getId());
-                    al.setQtyPlanned(pl.getAvailableQty());// 一键创建asnline的计划数量=poline的可用数量
-                    al.setCreatedId(asn.getUserId());
-                    al.setCreateTime(new Date());
-                    al.setModifiedId(userId);
-                    al.setLastModifyTime(new Date());
-                    whAsnLineDao.insert(al);
-                    // 插入日志
-                    this.insertGlobalLog(GLOBAL_LOG_INSERT, al, ouId, userId, whAsn.getAsnCode(), null);
-                    // 修改poline的可用数量
-                    pl.setAvailableQty(0.0);// 一键创建asnline poline的可用数量0
-                    pl.setModifiedId(asn.getModifiedId());
-                    if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
-                        // 如果明细状态为新建的话 改成已创建ASN状态
-                        pl.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+            if (whPoLines != null && whPoLines.size() > 0) {
+                for (WhPoLine pl : whPoLines) {
+                    if (pl.getQtyPlanned() >= pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid()) && pl.getAvailableQty() > 0) {
+                        // 计划数量比如大于可用数量并且UUID为空才能创建
+                        WhAsnLine al = new WhAsnLine();
+                        BeanUtils.copyProperties(pl, al);
+                        qty = qty + pl.getAvailableQty();// 计算计划数量
+                        al.setId(null);
+                        al.setAsnId(whAsn.getId());
+                        al.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
+                        al.setPoLinenum(pl.getLinenum());
+                        al.setPoLineId(pl.getId());
+                        al.setQtyPlanned(pl.getAvailableQty());// 一键创建asnline的计划数量=poline的可用数量
+                        al.setCreatedId(asn.getUserId());
+                        al.setCreateTime(new Date());
+                        al.setModifiedId(userId);
+                        al.setLastModifyTime(new Date());
+                        whAsnLineDao.insert(al);
+                        // 插入日志
+                        this.insertGlobalLog(GLOBAL_LOG_INSERT, al, ouId, userId, whAsn.getAsnCode(), null);
+                        // 修改poline的可用数量
+                        pl.setAvailableQty(0.0);// 一键创建asnline poline的可用数量0
+                        pl.setModifiedId(asn.getModifiedId());
+                        if (pl.getStatus() == PoAsnStatus.POLINE_NEW) {
+                            // 如果明细状态为新建的话 改成已创建ASN状态
+                            pl.setStatus(PoAsnStatus.POLINE_CREATE_ASN);
+                        }
+                        int result = whPoLineDao.saveOrUpdateByVersion(pl);
+                        if (result <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                        this.insertGlobalLog(GLOBAL_LOG_UPDATE, pl, ouId, userId, whpo.getPoCode(), null);
+                        // 生成箱信息
+                        if (StringUtils.hasText(pl.getCartonNo())) {
+                            if (null == c2c && null == containerMap) {
+                                c2c = container2ndCategoryDao.findByCodeAndOuId(Constants.CONTAINER_TYPE_2ND_BOX, ouId);
+                                containerMap = new HashMap<String, Long>();
+                            }
+                            this.createCartonInfo(whAsn.getId(), pl.getCartonNo(), al, c2c, containerMap, userId, ouId);
+                        }
                     }
-                    int result = whPoLineDao.saveOrUpdateByVersion(pl);
-                    if (result <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                    this.insertGlobalLog(GLOBAL_LOG_UPDATE, pl, ouId, userId, whpo.getPoCode(), null);
-                    // 生成箱信息
-                    if (StringUtils.hasText(pl.getCartonNo())) {
-                    	if (null == c2c && null == containerMap) {
-							c2c = container2ndCategoryDao.findByCodeAndOuId(Constants.CONTAINER_TYPE_2ND_BOX, ouId);
-							containerMap = new HashMap<String, Long>();
-						}
-                    	this.createCartonInfo(whAsn.getId(), pl.getCartonNo(), al, c2c, containerMap, userId, ouId);
-    				}
                 }
             }
             // 最后修改ASN的计划数量
@@ -615,6 +643,47 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
+
+    /**
+     * 生成AsnExtCode
+     * 
+     * @param ouId
+     * @param storeId
+     * @return
+     */
+    private String getAsnExtCode(Long storeId, Long ouId) {
+        String asnExtCode = null;
+        boolean isSuccess = false;
+        // 验证asnextcode是否存在 最多调用接口5次
+        for (int i = 0; i <= 5; i++) {
+            if (true == isSuccess) {
+                break;
+            }
+            asnExtCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
+            if (StringUtil.isEmpty(asnExtCode)) {
+                log.warn("CreateAsnBatch warn asnExtCode generateCode is null");
+                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+            }
+
+            WhAsnCommand search = new WhAsnCommand();
+            search.setAsnExtCode(asnExtCode);
+            search.setOuId(ouId);
+            search.setStoreId(storeId);
+            List<WhAsnCommand> searchList = this.findListByParamsExt(search);
+            // 如果没有 直接结束
+            if (searchList == null || searchList.size() == 0) {
+                isSuccess = true;
+            }
+        }
+        if (!isSuccess) {
+            // 如果5次获取都失败了 直接返回失败
+            log.warn("CreateAsnBatch warn asnExtCode generateCode CheckAsnCode is not null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+        }
+        return asnExtCode;
+    }
+
+
 
 	private void createCartonInfo(Long whAsnId, String cartonNo, WhAsnLine al, Container2ndCategory c2c, Map<String, Long> containerMap, Long userId, Long ouId) {
 		Long containerId = containerMap.get(cartonNo);

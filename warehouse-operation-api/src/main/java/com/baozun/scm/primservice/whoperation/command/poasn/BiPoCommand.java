@@ -78,7 +78,8 @@ public class BiPoCommand extends BaseCommand {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long modifiedId;
-
+    /** 是否自动关单 */
+    private Boolean isAutoClose;
     /** 采购时间Str */
     private String poDateStr;
     /** 计划到货时间Str */
@@ -150,6 +151,14 @@ public class BiPoCommand extends BaseCommand {
      */
     private String logisticsProviderCode;
 
+
+    public Boolean getIsAutoClose() {
+        return isAutoClose;
+    }
+
+    public void setIsAutoClose(Boolean isAutoClose) {
+        this.isAutoClose = isAutoClose;
+    }
 
     public String getCustomerCode() {
         return customerCode;

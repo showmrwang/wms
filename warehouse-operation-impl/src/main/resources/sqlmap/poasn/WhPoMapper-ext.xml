@@ -21,7 +21,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	supplier_id as supplierId,
 	        	from_location as fromLocation,
 	        	to_location as toLocation,
-	        	logistics_provider_id as logisticsProviderId,
 	        	logistics_provider as logisticsProvider,
 	        	po_type as poType,
 	        	ext_po_type as extPoType,
@@ -50,6 +49,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
 	        	uuid as uuid,
+	        	is_auto_close as isAutoClose,
 	        	overchage_rate as overChageRate
 	    ]]>
 	</sql>
@@ -76,9 +76,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<if test="supplierId!=null">
 					and po.supplier_id = #{supplierId}
-				</if>
-				<if test="logisticsProviderId!=null">
-					and po.logistics_provider_id = #{logisticsProviderId}
 				</if>
 				<if test="logisticsProvider!=null and logisticsProvider!=''">
 					and po.logistics_provider like #{logisticsProvider}
@@ -144,12 +141,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="supplierId!=null">
 				and  po.supplier_id in 
 				<foreach collection="supplierId" item="s" open="(" separator="," close=")">
-					#{s}
-				</foreach>
-			</if>
-			<if test="logisticsProviderId!=null">
-				and  po.logistics_provider_id in 
-				<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
@@ -373,7 +364,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        from_location = #{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	to_location = #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        ext_po_type = #{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -397,6 +387,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = now(),
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+			        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 		    ]]>
 		    <where>
@@ -417,7 +408,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.customer_id as customerId,
 				po.store_id as storeId,
 				po.supplier_id as supplierId,
-				po.logistics_provider_id as logisticsProviderId,
 				po.logistics_provider as logisticsProvider,
 				po.po_type as poType,
 				po.status as status,
@@ -445,10 +435,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				po.modified_id as modifiedId,
 				po.uuid as uuid,
 				po.overchage_rate as overChageRate,
+				po.is_auto_close as isAutoClose,
 				c.customer_name as customerName,
 				s.store_name as storeName,
 				sys.dic_label as statusName,
-				provider.name as logisticsProviderName,
 				supplier.name as supplierName,
 				potypedic.dic_label as poTypeName
 	    ]]>
@@ -466,7 +456,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			po.customer_id as customerId,
 			po.store_id as storeId,
 			po.supplier_id as supplierId,
-			po.logistics_provider_id as logisticsProviderId,
 			po.logistics_provider as logisticsProvider,
 			po.po_type as poType,
 			po.status as status,
@@ -494,11 +483,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			po.modified_id as modifiedId,
 			po.uuid as uuid,
 			po.overchage_rate as overChageRate,
-			provider.name as logisticsProviderName,
+			po.is_auto_close as isAutoClose,
 			supplier.name as supplierName
 	    from 
 	    t_wh_po po 
-		left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
 		left join t_wh_supplier supplier on supplier.id=po.supplier_id
 		<include refid="whPoSearchWhereExt"/>
     </select>
@@ -507,7 +495,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
         t_wh_po po 
-		left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
 		left join t_wh_supplier supplier on supplier.id=po.supplier_id
 		<include refid="whPoSearchWhereExt"/>
     </select>
@@ -531,7 +518,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    left join t_bi_customer c on po.customer_id = c.id
 			left join t_bi_store s on po.store_id = s.id 
 			left join sys_dictionary sys on sys.dic_value = po.status and sys.group_value = 'POSTATUS'
-			left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=po.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=po.po_type 
 		    <where>
@@ -621,7 +607,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			po.customer_id as customerId,
 			po.store_id as storeId,
 			po.supplier_id as supplierId,
-			po.logistics_provider_id as logisticsProviderId,
 			po.logistics_provider as logisticsProvider,
 			po.po_type as poType,
 			po.status as status,
@@ -644,12 +629,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			po.modified_id as modifiedId,
 			po.uuid as uuid,
 			po.overchage_rate as overChageRate,
-			provider.name as logisticsProviderName,
+			po.is_auto_close as isAutoClose,
 			supplier.name as supplierName,
 			w.name as ouName
 	    from 
 	    t_wh_po po 
-		left join t_ma_transport_provider provider on provider.id=po.logistics_provider_id
 		left join t_wh_supplier supplier on supplier.id=po.supplier_id
 		left join t_bi_warehouse w ON po.ou_id = w.id
 		<where>

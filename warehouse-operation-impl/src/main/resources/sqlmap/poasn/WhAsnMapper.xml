@@ -25,7 +25,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ctn_planned as ctnPlanned,
 	        	ctn_rcvd as ctnRcvd,
 	        	supplier_id as supplierId,
-	        	logistics_provider_id as logisticsProviderId,
 	        	logistics_provider as logisticsProvider,
 	        	asn_type as asnType,
 	        	status as status,
@@ -43,6 +42,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	urgent_status as urgentStatus,
 	        	version as version,
 	        	uuid as uuid,
+	        	is_auto_close,
 	        	overchage_rate as overChageRate
 	    ]]>
 	</sql>
@@ -67,7 +67,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ctn_planned ,
 	        	ctn_rcvd ,
 	        	supplier_id ,
-	        	logistics_provider_id ,
 	        	logistics_provider ,
 	        	asn_type ,
 	        	status ,
@@ -83,6 +82,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ext_code,
 	        	urgent_status,
 	        	uuid,
+	        	is_auto_close,
 	        	overchage_rate
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -100,7 +100,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -116,6 +115,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 	        )
 	    ]]>
@@ -139,7 +139,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        asn_type = #{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -155,6 +154,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+		        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 	        WHERE 
 		        id = #{id} 
@@ -256,9 +256,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and supplier_id = #{supplierId}
 				</if>
 	       
-				<if test="logisticsProviderId!=null">
-					and logistics_provider_id = #{logisticsProviderId}
-				</if>
 	       
 				<if test="logisticsProvider!=null and logisticsProvider!=''">
 					and logistics_provider = #{logisticsProvider}

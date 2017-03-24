@@ -263,7 +263,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * 批量创建ASN&ASNLINE数据 一键批量创建
      */
     @Override
-    public ResponseMsg createAsnBatch(WhAsnCommand asn) {
+    public ResponseMsg createAsnBatch(WhAsnCommand asn, Boolean isCreateAsn) {
         log.info("CreateAsnBatch start =======================");
         ResponseMsg rm = new ResponseMsg();
         Long ouId = asn.getOuId();
@@ -278,23 +278,15 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 throw new BusinessException(ErrorCodes.PO_CREATEASN_STATUS_ERROR);
             }
             this.deleteTempAsnAndLine(poId, ouId, null);
-            // WMS单据号 调用HUB编码生成器获得
-            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
-            if (StringUtil.isEmpty(asnCode)) {
-                log.warn("CreateAsnBatch warn asnCode generateCode is null");
-                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
-            }
-            asn.setAsnCode(asnCode);
-            // 相关单据号 调用HUB编码生成器获得
-            String asnExtCode = this.getAsnExtCode(whpo.getStoreId(), whpo.getOuId());
-            asn.setAsnExtCode(asnExtCode);
 
             // 验证数据完整性
             // checkAsnParameter(asn);
-           
-            List<WhPoLine> poLineList = this.poLineManager.findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(whpo.getId(), ouId);
-            if(null==poLineList||poLineList.size()==Constants.DEFAULT_INTEGER){
-                throw new BusinessException(ErrorCodes.PO_NO_AVAILABLE_ERROR);
+            List<WhPoLine> poLineList = null;
+            if (isCreateAsn) {
+                poLineList = this.poLineManager.findWhPoLineByPoIdOuIdWhereHasAvailableQtyToShard(whpo.getId(), ouId);
+                if (null == poLineList || poLineList.size() == Constants.DEFAULT_INTEGER) {
+                    throw new BusinessException(ErrorCodes.PO_NO_AVAILABLE_ERROR);
+                }
             }
 
             this.asnManager.createAsnBatch(asn, whpo, poLineList);
@@ -316,46 +308,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         rm.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         rm.setMsg("success");
         return rm;
-    }
-
-
-    /**
-     * 生成AsnExtCode
-     * 
-     * @param ouId
-     * @param storeId
-     * @return
-     */
-    private String getAsnExtCode(Long storeId, Long ouId) {
-        String asnExtCode = null;
-        boolean isSuccess = false;
-        // 验证asnextcode是否存在 最多调用接口5次
-        for (int i = 0; i <= 5; i++) {
-            if (true == isSuccess) {
-                break;
-            }
-            asnExtCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
-            if (StringUtil.isEmpty(asnExtCode)) {
-                log.warn("CreateAsnBatch warn asnExtCode generateCode is null");
-                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
-            }
-
-            WhAsnCommand search = new WhAsnCommand();
-            search.setAsnExtCode(asnExtCode);
-            search.setOuId(ouId);
-            search.setStoreId(storeId);
-            List<WhAsnCommand> searchList = this.asnManager.findListByParamsExt(search);
-            // 如果没有 直接结束
-            if (searchList == null || searchList.size() == 0) {
-                isSuccess = true;
-            }
-        }
-        if (!isSuccess) {
-            // 如果5次获取都失败了 直接返回失败
-            log.warn("CreateAsnBatch warn asnExtCode generateCode CheckAsnCode is not null");
-            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
-        }
-        return asnExtCode;
     }
 
 
@@ -484,6 +436,12 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         // ④数据插入到数据库中
         // 4-1:当数据没有仓库的时候，则只需插入到INFO的BIPO中
         // 4-2：当数据有仓库的时候，需要将数据插入到INFO的BIPO中，并同步到INFO的WHPO中来
+
+        // @mender yimin.lu 2017/3/23 设置是否自动关单isAutoClose： 【true】
+        // 1.指定店铺和仓库：两者判断
+        // 2.指定店铺：在拆分到仓库时回写
+
+
         String poCode = null;
         ResponseMsg rm = new ResponseMsg();
         // 验证数据完整性
@@ -496,7 +454,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 log.warn("check extcode returns failure when createPo!");
                 throw new BusinessException(ErrorCodes.PO_CHECK_EXTCODE_ERROR);
             }
-
             // 相关单据号 调用HUB编码生成器获得
             poCode = getUniqueCode();
             if (StringUtil.isEmpty(poCode)) {
@@ -538,6 +495,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     }
     
     private void createPoDefault(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
+        Boolean isAutoClose = this.biPoManager.calIsAutoClose(whPo.getStoreId(), ouId);
+        whPo.setIsAutoClose(isAutoClose);
     	biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
     	if (ouId != null) {
     		whPo.setPoCode(getUniqueCode());
@@ -763,7 +722,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         asn.setEta(po.getEta());
         asn.setDeliveryTime(po.getDeliveryTime());
         asn.setSupplierId(po.getSupplierId());
-        asn.setLogisticsProviderId(po.getLogisticsProviderId());
         asn.setLogisticsProvider(po.getLogisticsProvider());
         asn.setAsnType(po.getPoType());
         asn.setStatus(PoAsnStatus.ASN_NEW);
@@ -1164,7 +1122,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             po.setExtCode(excelPo.getExtCode());
             po.setOuId(ouId);
             po.setSupplierId(supplierId);
-            po.setLogisticsProviderId(tp.getId());
             po.setPoType(excelPo.getPoType());
             po.setStatus(PoAsnStatus.PO_NEW);
             po.setIsIqc(excelPo.getIsIqc());
