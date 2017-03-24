@@ -160,10 +160,10 @@ public interface WhSkuInventoryManager extends BaseManager {
      * 库位补货逻辑
      * 
      * @param msg
-     * @param rule
+     * @param ruleList
      * @param wh
      */
-    void replenishmentToLocation(ReplenishmentMsg msg, ReplenishmentRuleCommand rule, Warehouse wh);
+    void replenishmentToLocation(ReplenishmentMsg msg, List<ReplenishmentRuleCommand> ruleList, Warehouse wh);
     
     /***
      * pda拣货生成容器库存
