@@ -246,5 +246,13 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param outId
      * @return
      */
-    int deleteSkuInventory(Long id, Long ouid);
+    void deleteSkuInventory(Long id, Long ouid);
+    
+    /**
+     * 根据容器查询库存
+     * 
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventory> findSkuInventoryByContainer(WhSkuInventory whSkuInventory);
 }

@@ -31,8 +31,8 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingComman
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -109,19 +109,19 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 try {
                     if(CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])){
                         // 装箱清单
-                        checkingManager.printPackingList(whCheckingResultCommand.getUserId(), ouId);    
+                        checkingManager.printPackingList(idsList, whCheckingResultCommand.getUserId(), ouId);    
                     }
                     if(CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])){
                         // 销售清单      
-                        checkingManager.printSalesList(whCheckingResultCommand.getUserId(), ouId);   
+                        checkingManager.printSalesList(idsList, whCheckingResultCommand.getUserId(), ouId);   
                     }
                     if(CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])){
                         // 面单
-                        checkingManager.printSinglePlane(whCheckingResultCommand.getUserId(), ouId);    
+                        checkingManager.printSinglePlane(idsList, whCheckingResultCommand.getUserId(), ouId);    
                     }
                     if(CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])){
                         // 箱标签
-                        checkingManager.printBoxLabel(whCheckingResultCommand.getUserId(), ouId);    
+                        checkingManager.printBoxLabel(idsList, whCheckingResultCommand.getUserId(), ouId);    
                     }
                 } catch (Exception e) {
                     log.error(e + "");
@@ -168,23 +168,33 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             if(null != whCheckingCommand.getFacilityId() || null != whCheckingCommand.getContainerId() || null != whCheckingCommand.getOuterContainerId() || null != whCheckingCommand.getContainerLatticeNo()){
                 List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
                 for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
-                    // 生成出库箱库存
-                    WhSkuInventoryCommand whSkuInventoryCommand = new WhSkuInventoryCommand();
-                    // TODO--未完待续                    
-                    whSkuInventoryManager.saveOrUpdate(whSkuInventoryCommand);
-                    // 删除原有
+                    // 获取查询条件                    
                     WhSkuInventory skuInventory = new WhSkuInventory();
-                    // TODO--未完待续
+                    skuInventory.setOuterContainerId(whCheckingCommand.getOuterContainerId());
+                    skuInventory.setInsideContainerId(whCheckingCommand.getContainerId());
+                    // 根据播种墙ID获取播种墙信息 
+                    if(null != whCheckingCommand.getFacilityId()){
+                        WhOutboundFacilityCommand whOutboundFacilityCommand = checkingManager.findOutboundFacilityById(whCheckingCommand.getFacilityId(), whCheckingLineCommand.getOuId());
+                        skuInventory.setSeedingWallCode(whOutboundFacilityCommand.getFacilityCode());
+                    }
+                    skuInventory.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
+                    skuInventory.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
                     List<WhSkuInventory> whSkuInventoryLst = whSkuInventoryManager.findWhSkuInventoryByPramas(skuInventory);
+                    // 遍历库存统计信息        
                     for(WhSkuInventory whSkuInventory : whSkuInventoryLst){
-                        int r =  whSkuInventoryManager.deleteSkuInventory( whSkuInventory.getId(), whSkuInventory.getOuId());
+                     // 生成出库箱库存 
+                        checkingManager.createOutboundboxInventory(whCheckingCommand, whCheckingLineCommand, whSkuInventory);    
+                    }
+                    // 删除原有库存
+                    for(WhSkuInventory whSkuInventory : whSkuInventoryLst){
+                        whSkuInventoryManager.deleteSkuInventory( whSkuInventory.getId(), whSkuInventory.getOuId());
                     }
                 }
             }
         }
         return isSuccess;
     }
-    
+
     /**
      * 更新出库单状态
      * 
@@ -218,6 +228,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      */
     @Override
     public Boolean packageWeightCalculation(WhCheckingResultCommand whCheckingResultCommand) {
+        Boolean isSuccess = true;
         Long ouId = whCheckingResultCommand.getOuId();
         // 查询功能是否配置复核打印单据配置        
         WhFunctionOutBound whFunctionOutBound  = wFunctionOutBoundManager.findByFunctionIdExt(whCheckingResultCommand.getFunctionId(), ouId);
@@ -245,8 +256,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             whOdoPackageInfoCommand.setModifiedId(whCheckingResultCommand.getUserId());
             whOdoPackageInfoManager.saveOrUpdate(whOdoPackageInfoCommand);
         }
-        
-        return null;
+        return isSuccess;
     }
 
 }
