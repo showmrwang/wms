@@ -6791,8 +6791,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @return
      */
     @Override
-    public int deleteSkuInventory(Long id, Long ouid) {
+    public void deleteSkuInventory(Long id, Long ouid) {
         int count = whSkuInventoryDao.deleteWhSkuInventoryById(id, ouid);
-        return count;
+    }
+
+    @Override
+    public List<WhSkuInventory> findSkuInventoryByContainer(WhSkuInventory whSkuInventory) {
+        return whSkuInventoryDao.findSkuInventoryByContainer(whSkuInventory);
     }
 }
