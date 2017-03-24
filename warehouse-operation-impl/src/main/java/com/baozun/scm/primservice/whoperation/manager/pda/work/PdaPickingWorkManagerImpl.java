@@ -1396,11 +1396,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             command.setIsNeedTipSku(true);
             command.setSkuId(skuId);
             this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
+            if(!cSRCmd.getIsHaveInsideContainer()){
+                command.setTipOuterContainerCode(null);
+                command.setTipInsideContainerCode(null);
+            }
         }else if(cSRCmd.getIsNeedTipInsideContainer()){  //提示下一个货箱
                 Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
                 Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
                 command.setTipInsideContainerCode(ic.getCode());
                 command.setIsNeedTipInsideContainer(true);
+                if(!cSRCmd.getIsHaveOuterContainer()){
+                    command.setTipOuterContainerCode(null);
+                }
         }else if(cSRCmd.getIsNeedTipOutContainer()) { // 提示下一个外部容器
                 Long outerId = cSRCmd.getTipOuterContainerId();
                 //判断外部容器
@@ -1459,16 +1466,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         List<WhOperationLineCommand> operLineList = pdaPickingWorkCacheManager.cacheOperationLine(operationId, ouId);
         for(WhOperationLineCommand oLCmd:operLineList){
             String opLskuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(oLCmd);
-            if(skuAttrId.equals(opLskuAttrId) && locationId.longValue() == oLCmd.getFromLocationId().longValue() && (oLCmd.getFromOuterContainerId() == null ? true : oLCmd.getFromOuterContainerId().equals(outerContainerId)) && (oLCmd.getFromInsideContainerId() == null ? true : oLCmd.getFromInsideContainerId().equals(insideContainerId))) {
+            if(skuAttrId.equals(opLskuAttrId) && locationId.longValue() == oLCmd.getFromLocationId().longValue() && (outerContainerId == null ? true :outerContainerId.equals(oLCmd.getFromOuterContainerId())) && (insideContainerId == null ? true : insideContainerId.equals(oLCmd.getFromInsideContainerId()))) {
                       Long operationLineId = oLCmd.getId();  // 获取当前作业明细id
                       if(isShortPikcing){ //短拣
                           if(null == shortPikcingOperIds) {
                               shortPikcingOperIds = new HashSet<Long>();
                           }
                           if(shortPikcingOperIds.contains(operationLineId)) {
-                              if(qty > oLCmd.getQty()){
+//                              if(qty > oLCmd.getQty()){s
                                   continue;
-                              }
+//                              }
                           }
                           shortPikcingOperIds.add(operationLineId);
                           operLineCacheCmd.setShortPikcingOperIds(shortPikcingOperIds);
@@ -1477,9 +1484,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                               pickingOperIds = new HashSet<Long>();
                           }
                           if(pickingOperIds.contains(operationLineId)) {
-                              if(qty > oLCmd.getQty()){
+//                              if(qty > oLCmd.getQty()){
                                   continue;
-                              }
+//                              }
                           }
                           pickingOperIds.add(operationLineId);
                           operLineCacheCmd.setPickingOperIds(pickingOperIds);

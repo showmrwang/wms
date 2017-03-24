@@ -59,6 +59,10 @@ public class CheckScanResultCommand extends BaseCommand {
     /**货格号*/
     private Integer useContainerLatticeNo;
     
+    private Boolean isHaveOuterContainer = true;  //货箱是否有外部容器
+    
+    private Boolean isHaveInsideContainer = true; //sku是否有内部容器
+    
     
     public int getPickingWay() {
         return pickingWay;
@@ -162,6 +166,17 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setTipSkuAttrIdSnDefect(String tipSkuAttrIdSnDefect) {
         this.tipSkuAttrIdSnDefect = tipSkuAttrIdSnDefect;
     }
-
+    public Boolean getIsHaveOuterContainer() {
+        return isHaveOuterContainer;
+    }
+    public void setIsHaveOuterContainer(Boolean isHaveOuterContainer) {
+        this.isHaveOuterContainer = isHaveOuterContainer;
+    }
+    public Boolean getIsHaveInsideContainer() {
+        return isHaveInsideContainer;
+    }
+    public void setIsHaveInsideContainer(Boolean isHaveInsideContainer) {
+        this.isHaveInsideContainer = isHaveInsideContainer;
+    }
     
 }
