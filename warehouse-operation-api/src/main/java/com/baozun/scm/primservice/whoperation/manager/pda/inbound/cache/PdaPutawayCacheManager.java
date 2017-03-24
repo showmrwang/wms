@@ -570,6 +570,22 @@ public interface PdaPutawayCacheManager extends BaseManager {
      */
     public InventoryStatisticResultCommand sysSuggestSplitPutawayCacheInventoryStatistic(int putawayPatternType,Long userId,ContainerCommand insideContainerCmd, Long ouId, String logId,String outerContainerCode,int putawayPatternDetailType);
     
+    /**
+     * 系统指导上架取消流程
+     * @author lichuan
+     * @param containerCode
+     * @param insideContainerCode
+     * @param skuCmd
+     * @param locationCode
+     * @param funcId
+     * @param putawayPatternDetailType
+     * @param cancelPattern
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    public void sysGuidePutawayCancel(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, WhSkuCommand skuCmd, Long locationId, Long funcId, Integer putawayPatternDetailType, Integer cancelPattern, Long ouId, Long userId, String logId);
+    
     /***
      * 取消流程(清楚缓存)
      * @param outerContainer
