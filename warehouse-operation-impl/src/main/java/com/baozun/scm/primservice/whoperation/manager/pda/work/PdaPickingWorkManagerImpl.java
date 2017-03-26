@@ -965,6 +965,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if(null == tipOuterInsideContainerIds || tipOuterInsideContainerIds.size() == 0) {
                     tipOuterInsideContainerIds = new HashMap<Long,ArrayDeque<Long>>();
                     ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
+                    tipInsideContainerIds.addFirst(insideId);
                     tipOuterInsideContainerIds.put(outerContainerId, tipInsideContainerIds);
                     tipLocationCmd.setTipOuterInsideContainerIds(tipOuterInsideContainerIds);
                 }else{
@@ -1534,7 +1535,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Map<Long,Set<Long>> insidepickingOperIds = operLineCacheCmd.getInsidePickingOperIds();   //非短拣的作业明细id集合
         Map<Long,Set<Long>> locShortPikcingOperIds = operLineCacheCmd.getLocShortPikcingOperIds();
         Map<Long,Set<Long>> locPickingOperIds = operLineCacheCmd.getLocPickingOperIds();
-        List<Map<Long,Double>> operLineIdToQtyList = operLineCacheCmd.getOperLineIdToQtyList();
+        List<Map<Long,Map<Long,Double>>> operLineIdToQtyList = operLineCacheCmd.getOperLineIdToQtyList();
         List<WhOperationLineCommand> operLineList = pdaPickingWorkCacheManager.cacheOperationLine(operationId, ouId);
         for(WhOperationLineCommand oLCmd:operLineList){
             String opLskuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(oLCmd);
@@ -1636,10 +1637,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                       }else{
                           operLineIdToQty.put(operationLineId,qty);
                       }
-                      if(null == operLineIdToQtyList) {
-                          operLineIdToQtyList = new ArrayList<Map<Long,Double>>();
+                      Map<Long,Map<Long,Double>> inOperLineIdToQty = new HashMap<Long,Map<Long,Double>>();
+                      if(null != insideContainerId) {
+                          inOperLineIdToQty.put(insideContainerId, operLineIdToQty);
+                      }else{
+                          inOperLineIdToQty.put(locationId, operLineIdToQty);
                       }
-                      operLineIdToQtyList.add(operLineIdToQty);
+                      if(null == operLineIdToQtyList) {
+                          operLineIdToQtyList = new ArrayList<Map<Long,Map<Long,Double>>>();
+                      }
+                      operLineIdToQtyList.add(inOperLineIdToQty);
                       operLineCacheCmd.setOperLineIdToQtyList(operLineIdToQtyList);
                       break;
              }
@@ -1690,7 +1697,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Map<Long,Set<Long>> insidePickingOperIds = operLineCacheCmd.getInsidePickingOperIds();   //内部容器非短拣的作业明细id集合
         Map<Long,Set<Long>> locShortPikcingOperIds = operLineCacheCmd.getLocShortPikcingOperIds();  //内部容器短拣的作业明细id集合
         Map<Long,Set<Long>> locPickingOperIds = operLineCacheCmd.getLocPickingOperIds();   //内部容器非短拣的作业明细id集合
-        List<Map<Long,Double>> operLineIdToQtyList =  operLineCacheCmd.getOperLineIdToQtyList();
+        List<Map<Long,Map<Long,Double>>> operLineIdToQtyList =  operLineCacheCmd.getOperLineIdToQtyList();
         Set<Long> insideShortIds = null;  //当前短拣内部容器id
         if(null != insideShortPikcingOperIds){
             insideShortIds = insideShortPikcingOperIds.keySet();  //当前短拣内部容器id
@@ -1703,7 +1710,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             for(Long id:insideShortIds) {
                 Set<Long> shortPickingOperIds = insideShortPikcingOperIds.get(id);   //内部容器短拣对应的作业明细id
                 for(Long shortperationLineId:shortPickingOperIds){
-                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                    for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
+                        Map<Long,Double> operLineIdToQty =  operLineIdToQtyMap.get(id);
+                        if(null == operLineIdToQty) {
+                            continue;
+                        }
                         WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,shortperationLineId, outerContainerId, insideContainerId);
                         Double qty = operLineIdToQty.get(shortperationLineId);
                         if(null == qty){
@@ -1720,7 +1731,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             for(Long id:insideIds){
                 Set<Long> pickingOperIds = insidePickingOperIds.get(id);   //内部容器对应的作业明细id
                 for(Long operationLineId:pickingOperIds){
-                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                    for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
+                        Map<Long,Double> operLineIdToQty =  operLineIdToQtyMap.get(id);
+                        if(null == operLineIdToQty) {
+                            continue;
+                        }
                         WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,operationLineId, outerContainerId, insideContainerId);
                         Double qty = operLineIdToQty.get(operationLineId);
                         if(null == qty){
@@ -1747,7 +1762,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             for(Long id:shortLocIds){
                 Set<Long> shortPickingOperIds = locShortPikcingOperIds.get(id);
                 for(Long shortperationLineId:shortPickingOperIds){
-                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                    for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
+                        Map<Long,Double> operLineIdToQty =  operLineIdToQtyMap.get(id);
+                        if(null == operLineIdToQty) {
+                            continue;
+                        }
                         WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,shortperationLineId, outerContainerId, insideContainerId);
                         Double qty = operLineIdToQty.get(shortperationLineId);
                         if(null == qty){
@@ -1764,7 +1783,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             for(Long id:locIds){
                 Set<Long> pickingOperIds = locPickingOperIds.get(id);   //内部容器对应的作业明细id
                 for(Long operationLineId:pickingOperIds){
-                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                    for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
+                        Map<Long,Double> operLineIdToQty =  operLineIdToQtyMap.get(id);
+                        if(null == operLineIdToQty) {
+                            continue;
+                        }
                         WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,operationLineId, outerContainerId, insideContainerId);
                         Double qty = operLineIdToQty.get(operationLineId);
                         if(null == qty){

@@ -22,7 +22,7 @@ public class OperationLineCacheCommand extends BaseCommand{
     /**库位上散装sku对应非短拣作业明细id集合*/
     private Map<Long,Set<Long>> locPickingOperIds;
     /**作业明细id对应的拣货数量*/
-    private List<Map<Long,Double>> operLineIdToQtyList;
+    private List<Map<Long,Map<Long,Double>>> operLineIdToQtyList;
     /**出库箱列表*/
     private Set<String> outBoundxBoxs;
     /** 周转箱列表*/
@@ -63,15 +63,6 @@ public class OperationLineCacheCommand extends BaseCommand{
     public void setTipOutBonxBoxIds(ArrayDeque<String> tipOutBonxBoxIds) {
         this.tipOutBonxBoxIds = tipOutBonxBoxIds;
     }
-
-    public List<Map<Long, Double>> getOperLineIdToQtyList() {
-        return operLineIdToQtyList;
-    }
-
-    public void setOperLineIdToQtyList(List<Map<Long, Double>> operLineIdToQtyList) {
-        this.operLineIdToQtyList = operLineIdToQtyList;
-    }
-
     public Map<Long, Set<Long>> getInsideShortPikcingOperIds() {
         return insideShortPikcingOperIds;
     }
@@ -102,6 +93,14 @@ public class OperationLineCacheCommand extends BaseCommand{
 
     public void setLocPickingOperIds(Map<Long, Set<Long>> locPickingOperIds) {
         this.locPickingOperIds = locPickingOperIds;
+    }
+
+    public List<Map<Long, Map<Long, Double>>> getOperLineIdToQtyList() {
+        return operLineIdToQtyList;
+    }
+
+    public void setOperLineIdToQtyList(List<Map<Long, Map<Long, Double>>> operLineIdToQtyList) {
+        this.operLineIdToQtyList = operLineIdToQtyList;
     }
 
     
