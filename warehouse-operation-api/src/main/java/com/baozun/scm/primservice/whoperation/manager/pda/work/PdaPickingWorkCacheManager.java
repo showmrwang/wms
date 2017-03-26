@@ -113,7 +113,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param operatorId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long locationId);
+      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long locationId,Long outerContainerId);
       
       /***
        * pda拣货提示sku

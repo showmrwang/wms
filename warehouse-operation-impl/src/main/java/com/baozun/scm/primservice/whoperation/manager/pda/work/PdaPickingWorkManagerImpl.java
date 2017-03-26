@@ -809,7 +809,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 insideContainerIds = outerToInside.get(outerId);
         }
         if(null != insideContainerIds && insideContainerIds.size() != 0) {
-            CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideContainerIds, locationId);
+            CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideContainerIds, locationId,outerId);
             if(cSRCmd.getIsNeedTipInsideContainer()) { //托盘上还有货箱没有扫描
                 Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
                 Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
@@ -834,20 +834,34 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
         if(null == tipLocationCmd) {
             tipLocationCmd = new LocationTipCacheCommand();
+            Map<Long,ArrayDeque<Long>> tipLocOuterContainerIds = new HashMap<Long,ArrayDeque<Long>>();
             ArrayDeque<Long> tipOuterContainerIds = new ArrayDeque<Long>();
             tipOuterContainerIds.addFirst(outerId);
-            tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
+            tipLocOuterContainerIds.put(locationId, tipOuterContainerIds);
+            tipLocationCmd.setTipLocOuterContainerIds(tipLocOuterContainerIds);
         }else{
-            ArrayDeque<Long> tipOuterContainerIds = tipLocationCmd.getTipOuterContainerIds();
-            if(tipOuterContainerIds == null || tipOuterContainerIds.size() == 0){
-                tipOuterContainerIds = new ArrayDeque<Long>();
-                tipOuterContainerIds.addFirst(outerId);
-                tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
+            Map<Long,ArrayDeque<Long>> tipLocOuterContainerIds = tipLocationCmd.getTipLocOuterContainerIds();
+            if(null == tipLocOuterContainerIds || tipLocOuterContainerIds.size() == 0) {
+                    tipLocOuterContainerIds = new HashMap<Long,ArrayDeque<Long>>();
+                    ArrayDeque<Long> tipOuterContainerIds = new ArrayDeque<Long>();
+                    tipOuterContainerIds = new ArrayDeque<Long>();
+                    tipOuterContainerIds.addFirst(outerId);
+                    tipLocOuterContainerIds.put(locationId, tipOuterContainerIds);
+                    tipLocationCmd.setTipLocOuterContainerIds(tipLocOuterContainerIds);
             }else{
-                  if(!tipOuterContainerIds.contains(outerId)){
-                      tipOuterContainerIds.addFirst(outerId);
-                      tipLocationCmd.setTipOuterContainerIds(tipOuterContainerIds);
-                  }
+                ArrayDeque<Long> tipOuterContainerIds = tipLocOuterContainerIds.get(locationId);
+                if(tipOuterContainerIds == null || tipOuterContainerIds.size() == 0){
+                    tipOuterContainerIds = new ArrayDeque<Long>();
+                    tipOuterContainerIds.addFirst(outerId);
+                    tipLocOuterContainerIds.put(locationId, tipOuterContainerIds);
+                    tipLocationCmd.setTipLocOuterContainerIds(tipLocOuterContainerIds);
+                }else{
+                      if(!tipOuterContainerIds.contains(outerId)){
+                          tipOuterContainerIds.addFirst(outerId);
+                          tipLocOuterContainerIds.put(locationId, tipOuterContainerIds);
+                          tipLocationCmd.setTipLocOuterContainerIds(tipLocOuterContainerIds);
+                      }
+                }
             }
         }
         cacheManager.setObject(CacheConstants.CACHE_LOCATION+locationId.toString(),tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
@@ -864,6 +878,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long ouId = command.getOuId();
         Long locationId = command.getLocationId();
         String tipInsideContainerCode = command.getTipInsideContainerCode();   //内部容器
+        String tipOuterContainerCode = command.getTipOuterContainerCode();
         ContainerCommand  insideContainerCmd = null;
         Long insideContainerId = null;
         if(!StringUtil.isEmpty(tipInsideContainerCode)) {
@@ -873,9 +888,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             insideContainerId = insideContainerCmd.getId();
         }
+        Long outerContainerId = null;
+        ContainerCommand  outerContainerCmd = null;
+        if(!StringUtils.isEmpty(tipOuterContainerCode)){
+            outerContainerCmd = containerDao.getContainerByCode(tipOuterContainerCode, ouId);
+            if(outerContainerCmd == null) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = outerContainerCmd.getId();
+        }
         //缓存内部容器
         if(!StringUtil.isEmpty(tipInsideContainerCode)){
-            this.cacheInsideContainerCode(locationId, insideContainerId);
+            this.cacheInsideContainerCode(locationId, insideContainerId,outerContainerId);
         }
         OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         if(null == operatorLine) {
@@ -926,23 +950,67 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param locationId
      * @param insideId
      */
-    private void cacheInsideContainerCode(Long locationId ,Long insideId){
+    private void cacheInsideContainerCode(Long locationId ,Long insideId,Long outerContainerId){
         LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
-        if(null == tipLocationCmd){
-            tipLocationCmd = new LocationTipCacheCommand();
-           ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
-           tipInsideContainerIds.addFirst(insideId);
-           tipLocationCmd.setTipInsideContainerIds(tipInsideContainerIds);
-        }else{
-            ArrayDeque<Long> tipInsideContainerIds = tipLocationCmd.getTipInsideContainerIds();
-            if(null == tipInsideContainerIds || tipInsideContainerIds.size() == 0){
-                tipInsideContainerIds = new ArrayDeque<Long>();
+        if(null != outerContainerId) {  //内部容器存在托盘
+            if(null == tipLocationCmd){
+                tipLocationCmd = new LocationTipCacheCommand();
+                Map<Long,ArrayDeque<Long>> tipOuterInsideContainerIds = new HashMap<Long,ArrayDeque<Long>>();
+                ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
                 tipInsideContainerIds.addFirst(insideId);
-                tipLocationCmd.setTipInsideContainerIds(tipInsideContainerIds);
+                tipOuterInsideContainerIds.put(outerContainerId, tipInsideContainerIds);
+                tipLocationCmd.setTipOuterInsideContainerIds(tipOuterInsideContainerIds);
             }else{
-                if(!tipInsideContainerIds.contains(insideId)){
-                    tipInsideContainerIds.addFirst(insideId);
-                    tipLocationCmd.setTipInsideContainerIds(tipInsideContainerIds);
+                Map<Long,ArrayDeque<Long>> tipOuterInsideContainerIds = tipLocationCmd.getTipOuterInsideContainerIds();
+                if(null == tipOuterInsideContainerIds || tipOuterInsideContainerIds.size() == 0) {
+                    tipOuterInsideContainerIds = new HashMap<Long,ArrayDeque<Long>>();
+                    ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
+                    tipOuterInsideContainerIds.put(outerContainerId, tipInsideContainerIds);
+                    tipLocationCmd.setTipOuterInsideContainerIds(tipOuterInsideContainerIds);
+                }else{
+                    ArrayDeque<Long> tipInsideContainerIds = tipOuterInsideContainerIds.get(outerContainerId);
+                    if(null == tipInsideContainerIds || tipInsideContainerIds.size() == 0){
+                        tipInsideContainerIds = new ArrayDeque<Long>();
+                        tipInsideContainerIds.addFirst(insideId);
+                        tipOuterInsideContainerIds.put(outerContainerId, tipInsideContainerIds);
+                        tipLocationCmd.setTipOuterInsideContainerIds(tipOuterInsideContainerIds);
+                    }else{
+                        if(!tipInsideContainerIds.contains(insideId)){
+                            tipInsideContainerIds.addFirst(insideId);
+                            tipOuterInsideContainerIds.put(outerContainerId, tipInsideContainerIds);
+                            tipLocationCmd.setTipOuterInsideContainerIds(tipOuterInsideContainerIds);
+                        }
+                    }
+                }
+            }
+        }else{//内部容器直接放在库位上
+            if(null == tipLocationCmd){
+                tipLocationCmd = new LocationTipCacheCommand();
+                Map<Long,ArrayDeque<Long>> tipLocInsideContainerIds = new HashMap<Long,ArrayDeque<Long>>();
+                ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
+                tipInsideContainerIds.addFirst(insideId);
+                tipLocationCmd.setTipLocInsideContainerIds(tipLocInsideContainerIds);
+            }else{
+                Map<Long,ArrayDeque<Long>> tipLocInsideContainerIds = tipLocationCmd.getTipLocInsideContainerIds();
+                if(null == tipLocInsideContainerIds || tipLocInsideContainerIds.size() == 0) {
+                     tipLocInsideContainerIds = new HashMap<Long,ArrayDeque<Long>>();
+                     ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
+                     tipInsideContainerIds.addFirst(insideId);
+                     tipLocationCmd.setTipLocInsideContainerIds(tipLocInsideContainerIds);
+                }else{
+                    ArrayDeque<Long> tipInsideContainerIds = tipLocInsideContainerIds.get(locationId);
+                    if(null == tipInsideContainerIds || tipInsideContainerIds.size() == 0) {
+                        tipInsideContainerIds = new ArrayDeque<Long>();
+                        tipInsideContainerIds.addFirst(insideId);
+                        tipLocInsideContainerIds.put(locationId, tipInsideContainerIds);
+                        tipLocationCmd.setTipLocInsideContainerIds(tipLocInsideContainerIds);
+                    }else{
+                        if(!tipInsideContainerIds.contains(insideId)){
+                            tipInsideContainerIds.addFirst(insideId);
+                            tipLocInsideContainerIds.put(locationId, tipInsideContainerIds);
+                            tipLocationCmd.setTipLocInsideContainerIds(tipLocInsideContainerIds);
+                        }
+                    }
                 }
             }
         }
@@ -1462,8 +1530,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if(null == operLineCacheCmd) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         } 
-        Set<Long> shortPikcingOperIds = operLineCacheCmd.getShortPikcingOperIds();  //短拣的作业明细id集合
-        Set<Long> pickingOperIds = operLineCacheCmd.getPickingOperIds();   //非短拣的作业明细id集合
+        Map<Long,Set<Long>> insideShortPikcingOperIds = operLineCacheCmd.getInsideShortPikcingOperIds();
+        Map<Long,Set<Long>> insidepickingOperIds = operLineCacheCmd.getInsidePickingOperIds();   //非短拣的作业明细id集合
+        Map<Long,Set<Long>> locShortPikcingOperIds = operLineCacheCmd.getLocShortPikcingOperIds();
+        Map<Long,Set<Long>> locPickingOperIds = operLineCacheCmd.getLocPickingOperIds();
         List<Map<Long,Double>> operLineIdToQtyList = operLineCacheCmd.getOperLineIdToQtyList();
         List<WhOperationLineCommand> operLineList = pdaPickingWorkCacheManager.cacheOperationLine(operationId, ouId);
         for(WhOperationLineCommand oLCmd:operLineList){
@@ -1471,27 +1541,94 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if(skuAttrId.equals(opLskuAttrId) && locationId.longValue() == oLCmd.getFromLocationId().longValue() && (outerContainerId == null ? true :outerContainerId.equals(oLCmd.getFromOuterContainerId())) && (insideContainerId == null ? true : insideContainerId.equals(oLCmd.getFromInsideContainerId()))) {
                       Long operationLineId = oLCmd.getId();  // 获取当前作业明细id
                       if(isShortPikcing){ //短拣
-                          if(null == shortPikcingOperIds) {
-                              shortPikcingOperIds = new HashSet<Long>();
+                          if(null != insideContainerId) {  //当前sku是内部容器内的sku
+                              if(null == insideShortPikcingOperIds) {
+                                  insideShortPikcingOperIds = new HashMap<Long,Set<Long>>();
+                                  Set<Long> shortPikcingOperIds = new HashSet<Long>();
+                                  shortPikcingOperIds.add(operationLineId);
+                                  insideShortPikcingOperIds.put(insideContainerId, shortPikcingOperIds);
+                              }else{
+                                  Set<Long> shortPikcingOperIds = insideShortPikcingOperIds.get(insideContainerId);
+                                  if(null == shortPikcingOperIds) {
+                                      shortPikcingOperIds = new HashSet<Long>();
+                                      shortPikcingOperIds.add(operationLineId);
+                                  }else{
+                                      if(shortPikcingOperIds.contains(operationLineId)) {
+                                          continue;
+                                      }else{
+                                          shortPikcingOperIds.add(operationLineId);  
+                                      }
+                                  }
+                                  insideShortPikcingOperIds.put(insideContainerId, shortPikcingOperIds);
+                              }
+                              operLineCacheCmd.setInsideShortPikcingOperIds(insideShortPikcingOperIds);
+                          }else{//当前sku是库位上散放的sku
+                              if(null == locShortPikcingOperIds) {
+                                  locShortPikcingOperIds = new HashMap<Long,Set<Long>>();
+                                  Set<Long> shortPikcingOperIds = new HashSet<Long>();
+                                  shortPikcingOperIds.add(operationLineId);
+                                  locShortPikcingOperIds.put(insideContainerId, shortPikcingOperIds);
+                              }else{
+                                  Set<Long> shortPikcingOperIds = locShortPikcingOperIds.get(insideContainerId);
+                                  if(null == shortPikcingOperIds) {
+                                      shortPikcingOperIds = new HashSet<Long>();
+                                      shortPikcingOperIds.add(operationLineId);
+                                  }else{
+                                      if(shortPikcingOperIds.contains(operationLineId)) {
+                                          continue;
+                                      }else{
+                                          shortPikcingOperIds.add(operationLineId);  
+                                      }
+                                  }
+                                  locShortPikcingOperIds.put(insideContainerId, shortPikcingOperIds);
+                              }
+                              operLineCacheCmd.setLocPickingOperIds(locShortPikcingOperIds);
                           }
-                          if(shortPikcingOperIds.contains(operationLineId)) {
-//                              if(qty > oLCmd.getQty()){s
-                                  continue;
-//                              }
-                          }
-                          shortPikcingOperIds.add(operationLineId);
-                          operLineCacheCmd.setShortPikcingOperIds(shortPikcingOperIds);
                       }else{ //非短拣
-                          if(null == pickingOperIds) {
-                              pickingOperIds = new HashSet<Long>();
+                          if(null != insideContainerId){
+                              if(null == insidepickingOperIds) {
+                                  insidepickingOperIds = new HashMap<Long,Set<Long>>();
+                                  Set<Long> pikcingOperIds = new HashSet<Long>();
+                                  pikcingOperIds.add(operationLineId);
+                                  insidepickingOperIds.put(insideContainerId, pikcingOperIds);
+                              }else{
+                                  Set<Long> pikcingOperIds = insidepickingOperIds.get(insideContainerId);
+                                  if(null == pikcingOperIds){
+                                      pikcingOperIds = new HashSet<Long>();
+                                      pikcingOperIds.add(operationLineId);
+                                      insidepickingOperIds.put(insideContainerId, pikcingOperIds);
+                                  }else{
+                                      if(pikcingOperIds.contains(operationLineId)){
+                                          continue;
+                                      }else{
+                                          pikcingOperIds.add(operationLineId);
+                                      }
+                                      insidepickingOperIds.put(insideContainerId, pikcingOperIds);
+                                  }
+                              }
+                              operLineCacheCmd.setInsidePickingOperIds(insidepickingOperIds);
+                          }else{
+                              if(null == locPickingOperIds) {
+                                  locPickingOperIds = new HashMap<Long,Set<Long>>();
+                                  Set<Long> pikcingOperIds = new HashSet<Long>();
+                                  pikcingOperIds.add(operationLineId);
+                                  locPickingOperIds.put(insideContainerId, pikcingOperIds);
+                              }else{
+                                  Set<Long> pikcingOperIds = locPickingOperIds.get(insideContainerId);
+                                  if(null == pikcingOperIds){
+                                      pikcingOperIds = new HashSet<Long>();
+                                      pikcingOperIds.add(operationLineId);
+                                  }else{
+                                      if(pikcingOperIds.contains(operationLineId)){
+                                          continue;
+                                      }else{
+                                          pikcingOperIds.add(operationLineId);
+                                      }
+                                      locPickingOperIds.put(insideContainerId, pikcingOperIds);
+                                  }
+                              }
+                              operLineCacheCmd.setInsidePickingOperIds(locPickingOperIds);
                           }
-                          if(pickingOperIds.contains(operationLineId)) {
-//                              if(qty > oLCmd.getQty()){
-                                  continue;
-//                              }
-                          }
-                          pickingOperIds.add(operationLineId);
-                          operLineCacheCmd.setPickingOperIds(pickingOperIds);
                       }
                       Map<Long,Double>    operLineIdToQty  = new HashMap<Long,Double>();
                       if(qty > oLCmd.getQty()) {
@@ -1549,33 +1686,95 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if(null == operLineCacheCmd) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         } 
-        Set<Long> shortPikcingOperIds = operLineCacheCmd.getShortPikcingOperIds();  //短拣的作业明细id集合
-        Set<Long> pickingOperIds = operLineCacheCmd.getPickingOperIds();   //非短拣的作业明细id集合
+        Map<Long,Set<Long>> insideShortPikcingOperIds = operLineCacheCmd.getInsideShortPikcingOperIds();  //内部容器短拣的作业明细id集合
+        Map<Long,Set<Long>> insidePickingOperIds = operLineCacheCmd.getInsidePickingOperIds();   //内部容器非短拣的作业明细id集合
+        Map<Long,Set<Long>> locShortPikcingOperIds = operLineCacheCmd.getLocShortPikcingOperIds();  //内部容器短拣的作业明细id集合
+        Map<Long,Set<Long>> locPickingOperIds = operLineCacheCmd.getLocPickingOperIds();   //内部容器非短拣的作业明细id集合
         List<Map<Long,Double>> operLineIdToQtyList =  operLineCacheCmd.getOperLineIdToQtyList();
-        if(null != shortPikcingOperIds) {
-            for(Long shortOperId:shortPikcingOperIds) {
-                for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
-                    WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,shortOperId, outerContainerId, insideContainerId);
-                    Double qty = operLineIdToQty.get(shortOperId);
-                    if(null == qty){
-                        continue;
+        Set<Long> insideShortIds = null;  //当前短拣内部容器id
+        if(null != insideShortPikcingOperIds){
+            insideShortIds = insideShortPikcingOperIds.keySet();  //当前短拣内部容器id
+        }
+        Set<Long> insideIds = null;
+        if(null != insidePickingOperIds){
+            insideIds = insidePickingOperIds.keySet();//非短拣内部容器id
+        }
+        if(null != insideShortIds) {
+            for(Long id:insideShortIds) {
+                Set<Long> shortPickingOperIds = insideShortPikcingOperIds.get(id);   //内部容器短拣对应的作业明细id
+                for(Long shortperationLineId:shortPickingOperIds){
+                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                        WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,shortperationLineId, outerContainerId, insideContainerId);
+                        Double qty = operLineIdToQty.get(shortperationLineId);
+                        if(null == qty){
+                            continue;
+                        }
+                        whOperationExecLine.setQty(qty.longValue());
+                        whOperationExecLine.setIsShortPicking(true);
+                        whOperationExecLineDao.insert(whOperationExecLine);
                     }
-                    whOperationExecLine.setQty(qty.longValue());
-                    whOperationExecLine.setIsShortPicking(true);
-                    whOperationExecLineDao.insert(whOperationExecLine);
                 }
             }
         }
-        for(Long operId:pickingOperIds){
-            for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
-                WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,operId, outerContainerId, insideContainerId);
-                Double qty = operLineIdToQty.get(operId);
-                if(null == qty){
-                    continue;
+        if(null != insideIds){
+            for(Long id:insideIds){
+                Set<Long> pickingOperIds = insidePickingOperIds.get(id);   //内部容器对应的作业明细id
+                for(Long operationLineId:pickingOperIds){
+                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                        WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,operationLineId, outerContainerId, insideContainerId);
+                        Double qty = operLineIdToQty.get(operationLineId);
+                        if(null == qty){
+                            continue;
+                        }
+                        whOperationExecLine.setQty(qty.longValue());
+                        whOperationExecLine.setIsShortPicking(false);
+                        whOperationExecLineDao.insert(whOperationExecLine);
+                    }
                 }
-                whOperationExecLine.setQty(qty.longValue());
-                whOperationExecLine.setIsShortPicking(false);
-                whOperationExecLineDao.insert(whOperationExecLine);
+            }
+        }
+        
+        //添加库位上散装对应的作业执行明细
+        Set<Long> shortLocIds = null;
+        if(null != locShortPikcingOperIds) {
+            shortLocIds = locShortPikcingOperIds.keySet();  //短拣库位ids
+        }
+        Set<Long> locIds = null;
+        if(null != locPickingOperIds){
+            locIds = locPickingOperIds.keySet();  //非短拣库位ids
+        }
+        if(null != shortLocIds) {
+            for(Long id:shortLocIds){
+                Set<Long> shortPickingOperIds = locShortPikcingOperIds.get(id);
+                for(Long shortperationLineId:shortPickingOperIds){
+                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                        WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,shortperationLineId, outerContainerId, insideContainerId);
+                        Double qty = operLineIdToQty.get(shortperationLineId);
+                        if(null == qty){
+                            continue;
+                        }
+                        whOperationExecLine.setQty(qty.longValue());
+                        whOperationExecLine.setIsShortPicking(true);
+                        whOperationExecLineDao.insert(whOperationExecLine);
+                    }
+                }
+            }
+        }
+        if(null != locIds){
+            for(Long id:locIds){
+                Set<Long> pickingOperIds = locPickingOperIds.get(id);   //内部容器对应的作业明细id
+                for(Long operationLineId:pickingOperIds){
+                    for(Map<Long,Double> operLineIdToQty:operLineIdToQtyList){
+                        WhOperationExecLine whOperationExecLine =  this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId,operationLineId, outerContainerId, insideContainerId);
+                        Double qty = operLineIdToQty.get(operationLineId);
+                        if(null == qty){
+                            continue;
+                        }
+                        whOperationExecLine.setQty(qty.longValue());
+                        whOperationExecLine.setIsShortPicking(false);
+                        whOperationExecLineDao.insert(whOperationExecLine);
+                    }
+                }
             }
         }
         log.info("PdaPickingWorkManagerImpl addPickingOperationExecLine is end");
@@ -2003,17 +2202,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if(null != operationExeclineList && operationExeclineList.size() != 0) {
             throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
         }
-//        for(WhOperationExecLine operationExecline:operationExeclineList) {
-//            Long workLineId = operationExecline.getWorkLineId();
-//            Long skuId = operationExecline.getSkuId();
-//            Long qty = operationExecline.getQty();
-//            Long fromLocationId = operationExecline.getFromLocationId();
-//            Long fromOuterContainerId = operationExecline.getFromOuterContainerId();
-//            Long fromInsideContainerId = operationExecline.getFromInsideContainerId();
-//            if(!(workLineId == null && skuId == 0 && qty == 0 && fromLocationId == null && fromOuterContainerId == null && fromInsideContainerId == null)) {
-//                throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
-//            }
-//        }
         log.info("PdaPickingWorkManagerImpl checkOperationExecLine is end");
     }
     
@@ -2370,7 +2558,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }else{
                 insideIds = outerToInsideIds.get(outerContainerId);
             }
-            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideIds, locationId);
+            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideIds, locationId,outerContainerId);
             if(cSRCommand.getIsNeedTipInsideContainer()) {
                 Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
                 Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);

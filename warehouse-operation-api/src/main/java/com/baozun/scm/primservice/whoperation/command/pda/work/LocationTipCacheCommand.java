@@ -15,6 +15,8 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -36,10 +38,14 @@ public class LocationTipCacheCommand extends BaseCommand {
     private Long insideContainerId;
     /** 内部容器号 */
     private String insideContainerCode;
+    
+    private Map<Long,ArrayDeque<Long>> tipOuterInsideContainerIds = new HashMap<Long,ArrayDeque<Long>>();   //内部容器存在托盘
+    
+    private Map<Long,ArrayDeque<Long>> tipLocInsideContainerIds = new HashMap<Long,ArrayDeque<Long>>();   //内部容器不存在托盘
     /** 提示 内容器号队列 */
-    private ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
+//    private ArrayDeque<Long> tipInsideContainerIds = new ArrayDeque<Long>();
     /** 提示外容器号队列 */
-    private ArrayDeque<Long> tipOuterContainerIds = new ArrayDeque<Long>();
+    private Map<Long,ArrayDeque<Long>>tipLocOuterContainerIds = new HashMap<Long,ArrayDeque<Long>>();   //库位上对应的托盘
     public int getPickingType() {
         return pickingType;
     }
@@ -80,19 +86,29 @@ public class LocationTipCacheCommand extends BaseCommand {
         this.insideContainerCode = insideContainerCode;
     }
 
-    public ArrayDeque<Long> getTipInsideContainerIds() {
-        return tipInsideContainerIds;
+    public Map<Long, ArrayDeque<Long>> getTipOuterInsideContainerIds() {
+        return tipOuterInsideContainerIds;
     }
 
-    public void setTipInsideContainerIds(ArrayDeque<Long> tipInsideContainerIds) {
-        this.tipInsideContainerIds = tipInsideContainerIds;
+    public void setTipOuterInsideContainerIds(Map<Long, ArrayDeque<Long>> tipOuterInsideContainerIds) {
+        this.tipOuterInsideContainerIds = tipOuterInsideContainerIds;
     }
 
-    public ArrayDeque<Long> getTipOuterContainerIds() {
-        return tipOuterContainerIds;
+    public Map<Long, ArrayDeque<Long>> getTipLocInsideContainerIds() {
+        return tipLocInsideContainerIds;
     }
 
-    public void setTipOuterContainerIds(ArrayDeque<Long> tipOuterContainerIds) {
-        this.tipOuterContainerIds = tipOuterContainerIds;
+    public void setTipLocInsideContainerIds(Map<Long, ArrayDeque<Long>> tipLocInsideContainerIds) {
+        this.tipLocInsideContainerIds = tipLocInsideContainerIds;
     }
+
+    public Map<Long, ArrayDeque<Long>> getTipLocOuterContainerIds() {
+        return tipLocOuterContainerIds;
+    }
+
+    public void setTipLocOuterContainerIds(Map<Long, ArrayDeque<Long>> tipLocOuterContainerIds) {
+        this.tipLocOuterContainerIds = tipLocOuterContainerIds;
+    }
+    
+    
 }
