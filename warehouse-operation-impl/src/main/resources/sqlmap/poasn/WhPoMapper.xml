@@ -21,7 +21,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	supplier_id as supplierId,
 	        	from_location as fromLocation,
 	        	to_location as toLocation,
-	        	logistics_provider_id as logisticsProviderId,
 	        	logistics_provider as logisticsProvider,
 	        	po_type as poType,
 	        	ext_po_type as extPoType,
@@ -45,6 +44,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
 	        	uuid as uuid,
+	        	is_auto_close as isAutoClose,
 	        	overchage_rate as overChageRate
 	    ]]>
 	</sql>
@@ -64,7 +64,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	supplier_id ,
 	        	from_location ,
 	        	to_location ,
-	        	logistics_provider_id ,
 	        	logistics_provider ,
 	        	po_type ,
 	        	ext_po_type ,
@@ -88,6 +87,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	last_modify_time ,
 	        	modified_id ,
 	        	uuid,
+	        	is_auto_close,
 	        	overchage_rate
 	        ) VALUES (
 	            #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -100,7 +100,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -124,6 +123,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 	        )
 	    ]]>
@@ -142,7 +142,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        from_location = #{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        to_location = #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ext_po_type = #{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -166,6 +165,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 		        
 	        WHERE 
@@ -230,10 +230,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 		       <if test="toLocation!=null and toLocation!=''">
 					and to_location = #{toLocation}
-				</if>
-	       
-				<if test="logisticsProviderId!=null">
-					and logistics_provider_id = #{logisticsProviderId}
 				</if>
 	       
 				<if test="logisticsProvider!=null and logisticsProvider!=''">

@@ -20,7 +20,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	supplier_id as supplierId,
 	        	from_location as fromLocation,
 	        	to_location as toLocation,
-	        	logistics_provider_id as logisticsProviderId,
 	        	logistics_provider as logisticsProvider,
 	        	po_type as poType,
 	        	ext_po_type as extPoType,
@@ -48,6 +47,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	created_id as createdId,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId,
+	        	is_auto_close as isAutoClose,
 	        	ou_id as ouId
 	    ]]>
 	</sql>
@@ -61,7 +61,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				bipo.customer_id as customerId,
 				bipo.store_id as storeId,
 				bipo.supplier_id as supplierId,
-				bipo.logistics_provider_id as logisticsProviderId,
 				bipo.logistics_provider as logisticsProvider,
 				bipo.po_type as poType,
 				bipo.status as status,
@@ -87,9 +86,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				bipo.created_id as createdId,
 				bipo.last_modify_time as lastModifyTime,
 				bipo.modified_id as modifiedId,
+				bipo.is_auto_close as isAutoClose,
 				customer.customer_name as customerName,
 				store.store_name as storeName,
-				provider.name as logisticsProviderName,
 				supplier.name as supplierName,
 				potypedic.dic_label as poTypeName,
 				postatusdic.dic_label as statusName
@@ -104,7 +103,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				bipo.customer_id as customerId,
 				bipo.store_id as storeId,
 				bipo.supplier_id as supplierId,
-				bipo.logistics_provider_id as logisticsProviderId,
 				bipo.logistics_provider as logisticsProvider,
 				bipo.po_type as poType,
 				bipo.status as status,
@@ -130,7 +128,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				bipo.created_id as createdId,
 				bipo.last_modify_time as lastModifyTime,
 				bipo.modified_id as modifiedId,
-				provider.name as logisticsProviderName,
+				bipo.is_auto_close as isAutoClose,
 				supplier.name as supplierName
 	    ]]>
 	</sql>
@@ -175,9 +173,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<if test="supplierId!=null">
 						and bipo.supplier_id = #{supplierId}
 					</if>
-					<if test="logisticsProviderId!=null">
-						and bipo.logistics_provider_id = #{logisticsProviderId}
-					</if>
 					<if test="logisticsProvider!=null and logisticsProvider!=''">
 						and bipo.logistics_provider = #{logisticsProvider}
 					</if>
@@ -216,12 +211,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="supplierId!=null">
 				and  bipo.supplier_id in 
 				<foreach collection="supplierId" item="s" open="(" separator="," close=")">
-					#{s}
-				</foreach>
-			</if>
-			<if test="logisticsProviderId!=null">
-				and  bipo.logistics_provider_id in 
-				<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
@@ -451,9 +440,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and to_location = #{toLocation}
 				</if>
 	       
-				<if test="logisticsProviderId!=null">
-					and logistics_provider_id = #{logisticsProviderId}
-				</if>
 				<if test="logisticsProvider!=null and logisticsProvider!=''">
 					and logistics_provider = #{logisticsProvider}
 				</if>
@@ -571,7 +557,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			from t_bi_po bipo
 			left join t_bi_customer customer on customer.ID=bipo.customer_id
 			left join t_bi_store store on store.id=bipo.store_id
-			left join t_ma_transport_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
 			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
@@ -585,7 +570,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			from t_bi_po bipo
 			left join t_bi_customer customer on customer.ID=bipo.customer_id
 			left join t_bi_store store on store.id=bipo.store_id
-			left join t_ma_transport_provider provider on provider.id=bipo.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id
 			left join sys_dictionary potypedic on potypedic.group_value='PO_TYPE' and potypedic.dic_value=bipo.po_type
 			left join sys_dictionary postatusdic on postatusdic.group_value = 'BIPO_STATUS' and  postatusdic.dic_value = bipo.status
@@ -597,7 +581,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<select id="findListByQueryMapWithPageExt" resultMap="BiPoResultExt">
     	select <include refid="biPoSearchRelatedExt" />
 			from t_bi_po bipo 
-			left join t_ma_transport_provider provider on provider.id=bipo.logistics_provider_id 
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id 
 		<include refid="biPoSearchWhereExt"/>
     </select>
@@ -606,7 +589,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) from 
             t_bi_po bipo 
-			left join t_ma_transport_provider provider on provider.id=bipo.logistics_provider_id 
 			left join t_wh_supplier supplier on supplier.id=bipo.supplier_id 
 		<include refid="biPoSearchWhereExt"/>
     </select>
@@ -622,7 +604,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        from_location = #{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        to_location = #{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=BIGINT} ,
 		        po_type = #{poType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ext_po_type = #{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -644,6 +625,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        last_modify_time = now() ,
+		        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		    ]]>
 		    <where>

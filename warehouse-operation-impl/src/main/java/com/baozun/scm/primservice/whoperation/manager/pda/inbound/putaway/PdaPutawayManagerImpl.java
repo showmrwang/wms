@@ -47,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.CancalPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
@@ -5437,6 +5438,238 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             log.info("pdaPutawayManager.findNotCaselevelCartonNumsByOuterContainerCode end, containerCode is:[{}], ouId is:[{}], nums is:[{}], logId is:[{}]", containerCode, ouId, nums, logId);
         }
         return nums;
+    }
+    
+    /**
+     * @author lichuan
+     * @param containerCode
+     * @param insideContainerCode
+     * @param skuCmd
+     * @param locationCode
+     * @param funcId
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @return
+     */
+    @Override
+    public ScanResultCommand sysGuidePutawayCancel(String containerCode, String insideContainerCode, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Integer cancelPattern, Long ouId, Long userId, String logId) {
+        ScanResultCommand srCmd = new ScanResultCommand();
+        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+        if (null == warehouse) {
+            log.error("warehouse is null error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
+        }
+        if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
+            if (StringUtils.isEmpty(containerCode)) {
+                log.error("containerCode is null error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+            }
+            ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+            if (null == containerCmd) {
+                // 容器信息不存在
+                log.error("container is not exists, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+            }
+            // 验证容器状态是否可用
+            if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != containerCmd.getLifecycle()) {
+                log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
+            // 获取容器状态
+            Integer containerStatus = containerCmd.getStatus();
+            if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != containerStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
+                log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
+                throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
+            }
+            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+                srCmd.setTipLocationCode(locationCode);// 提示库位编码
+                srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
+                if (null != warehouse) {
+                    if (true == warehouse.getIsInboundLocationBarcode()) {
+                        srCmd.setValidateLocation(true);
+                    } else {
+                        srCmd.setValidateLocation(false);
+                    }
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
+            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
+        } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            ContainerCommand containerCmd = null;
+            if (!StringUtils.isEmpty(containerCode)) {
+                containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+                if (null == containerCmd) {
+                    // 容器信息不存在
+                    log.error("container is not exists, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+                }
+                // 验证容器状态是否可用
+                if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != containerCmd.getLifecycle()) {
+                    log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+                }
+                // 获取容器状态
+                Integer containerStatus = containerCmd.getStatus();
+                if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != containerStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
+                    log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
+                }
+            }
+            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
+            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+                srCmd.setTipLocationCode(locationCode);// 提示库位编码
+                srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
+                if (null != warehouse) {
+                    if (true == warehouse.getIsInboundLocationBarcode()) {
+                        srCmd.setValidateLocation(true);
+                    } else {
+                        srCmd.setValidateLocation(false);
+                    }
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
+        } else if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            ContainerCommand containerCmd = null;
+            if (!StringUtils.isEmpty(containerCode)) {
+                containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+                if (null == containerCmd) {
+                    // 容器信息不存在
+                    log.error("container is not exists, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+                }
+                // 验证容器状态是否可用
+                if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCmd.getLifecycle()) && ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED != containerCmd.getLifecycle()) {
+                    log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+                }
+                // 获取容器状态
+                Integer containerStatus = containerCmd.getStatus();
+                if (ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY != containerStatus && ContainerStatus.CONTAINER_STATUS_PUTAWAY != containerStatus) {
+                    log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
+                }
+            }
+            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
+            if (CancalPattern.TIP_LOCATION_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
+            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+                srCmd.setTipLocationCode(locationCode);// 提示库位编码
+                srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
+                if (null != warehouse) {
+                    if (true == warehouse.getIsInboundLocationBarcode()) {
+                        srCmd.setValidateLocation(true);
+                    } else {
+                        srCmd.setValidateLocation(false);
+                    }
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
+        } else {
+            log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        return srCmd;
     }
 
 }

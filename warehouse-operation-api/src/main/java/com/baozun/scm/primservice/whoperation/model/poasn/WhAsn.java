@@ -60,8 +60,6 @@ public class WhAsn extends BaseModel {
     /** 供应商ID */
     private Long supplierId;
     /** 运输商ID */
-    private Long logisticsProviderId;
-    /** 运输商ID */
     private String logisticsProvider;
     /** ASN单类型 */
     private Integer asnType;
@@ -94,11 +92,20 @@ public class WhAsn extends BaseModel {
     private Double overChageRate;
     /** IT专用 */
     private String uuid;
-
+    /** 是否自动关单 */
+    private Boolean isAutoClose;
     /** 当前月份 用于归档 */
     private String sysDate;
     /** 归档时间 */
     private Date archivTime;
+
+    public Boolean getIsAutoClose() {
+        return isAutoClose;
+    }
+
+    public void setIsAutoClose(Boolean isAutoClose) {
+        this.isAutoClose = isAutoClose;
+    }
 
     public String getLogisticsProvider() {
         return logisticsProvider;
@@ -226,14 +233,6 @@ public class WhAsn extends BaseModel {
 
     public void setSupplierId(Long value) {
         this.supplierId = value;
-    }
-
-    public Long getLogisticsProviderId() {
-        return this.logisticsProviderId;
-    }
-
-    public void setLogisticsProviderId(Long value) {
-        this.logisticsProviderId = value;
     }
 
     public Integer getAsnType() {

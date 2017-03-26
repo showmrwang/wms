@@ -182,7 +182,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             return;
         }
 
-        Map<Long, ReplenishmentRuleCommand> locationRuleMap = new HashMap<Long, ReplenishmentRuleCommand>();
+        Map<Long, List<ReplenishmentRuleCommand>> locationRuleMap = new HashMap<Long, List<ReplenishmentRuleCommand>>();
         Iterator<Entry<Long, List<ReplenishmentRuleCommand>>> skuRuleMapIt = skuRuleMap.entrySet().iterator();
         while (skuRuleMapIt.hasNext()) {
             Entry<Long, List<ReplenishmentRuleCommand>> entry = skuRuleMapIt.next();
@@ -206,7 +206,12 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                     continue;
                 }
                 for (Long matchLocationId : matchLocationIdList) {
-                    locationRuleMap.put(matchLocationId, c);
+                    List<ReplenishmentRuleCommand> ruleList = new ArrayList<ReplenishmentRuleCommand>();
+                    if (locationRuleMap.containsKey(matchLocationId)) {
+                        ruleList = locationRuleMap.get(matchLocationId);
+                    }
+                    ruleList.add(c);
+                    locationRuleMap.put(matchLocationId, ruleList);
                     // 移除
                     skuLocationList.remove(matchLocationId);
                 }
@@ -225,12 +230,12 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                 continue;
             }
             ReplenishmentMsg msg = entry.getValue();
-            ReplenishmentRuleCommand rule = locationRuleMap.get(locationId);
+            List<ReplenishmentRuleCommand> ruleList = locationRuleMap.get(locationId);
 
             /**
              * 对库位进行补货
              */
-            this.whskuInventoryManager.replenishmentToLocation(msg, rule, wh);
+            this.whskuInventoryManager.replenishmentToLocation(msg, ruleList, wh);
 
 
         }

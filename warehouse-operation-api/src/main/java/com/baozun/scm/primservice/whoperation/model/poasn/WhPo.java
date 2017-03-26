@@ -50,8 +50,6 @@ public class WhPo extends BaseModel {
     private String fromLocation;
     /** 目的地 */
     private String toLocation;
-    /** 运输商ID */
-    private Long logisticsProviderId;
     /** 运输商Code */
     private String logisticsProvider;
     /** PO单类型 */
@@ -100,12 +98,22 @@ public class WhPo extends BaseModel {
     private String uuid;
     /** 超收比例 */
     private Double overChageRate;
+    /** 是否自动关单 */
+    private Boolean isAutoClose;
 
     /** 当前月份 用于归档 */
     private String sysDate;
     /** 归档时间 */
     private Date archivTime;
 
+
+    public Boolean getIsAutoClose() {
+        return isAutoClose;
+    }
+
+    public void setIsAutoClose(Boolean isAutoClose) {
+        this.isAutoClose = isAutoClose;
+    }
 
     public String getUuid() {
         return uuid;
@@ -153,14 +161,6 @@ public class WhPo extends BaseModel {
 
     public void setSupplierId(Long value) {
         this.supplierId = value;
-    }
-
-    public Long getLogisticsProviderId() {
-        return this.logisticsProviderId;
-    }
-
-    public void setLogisticsProviderId(Long value) {
-        this.logisticsProviderId = value;
     }
 
     public Integer getPoType() {

@@ -4420,6 +4420,263 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         return isCmd;
     }
     
+    /**
+     * @author lichuan
+     * @param containerCode
+     * @param insideContainerCode
+     * @param skuCmd
+     * @param locationCode
+     * @param funcId
+     * @param putawayPatternDetailType
+     * @param cancelPattern
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    @Override
+    public void sysGuidePutawayCancel(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, WhSkuCommand skuCmd, Long locationId, Long funcId, Integer putawayPatternDetailType, Integer cancelPattern, Long ouId, Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway cancel start");
+        }
+        Long ocId = null;
+        Long icId = null;
+        if (null != containerCmd) {
+            ocId = containerCmd.getId();
+        }
+        if (null != insideContainerCmd) {
+            icId = insideContainerCmd.getId();
+        }
+        if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
+            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+                if (null != ocId) {
+                    Long containerId = ocId;
+                    TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    if (null != tipContainerCmd) {
+                        ArrayDeque<Long> tipInsideContainerIds = tipContainerCmd.getTipInsideContainerIds();
+                        if (null != tipInsideContainerIds && tipInsideContainerIds.size() > 0) {
+                            Iterator<Long> iter = tipInsideContainerIds.iterator();
+                            while (iter.hasNext()) {
+                                Long value = iter.next();
+                                if (null != value) {
+                                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + value.toString());
+                                    if (null != tipScanSkuCmd) {
+                                        ArrayDeque<Long> oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
+                                        if (null != oneByOneScanSkuIds && oneByOneScanSkuIds.size() > 0) {
+                                            Iterator<Long> iter2 = oneByOneScanSkuIds.iterator();
+                                            while (iter2.hasNext()) {
+                                                Long skuId = iter2.next();
+                                                if (null != skuId) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + skuId.toString());
+                                            }
+                                        }
+                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString());
+                                    }
+                                }
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    }
+                } else {
+
+                }
+            }
+            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+                if (null != icId) {
+                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
+                    if (null != tipScanSkuCmd) {
+                        ArrayDeque<Long> oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
+                        if (null != oneByOneScanSkuIds && oneByOneScanSkuIds.size() > 0) {
+                            Iterator<Long> iter = oneByOneScanSkuIds.iterator();
+                            while (iter.hasNext()) {
+                                Long skuId = iter.next();
+                                if (null != skuId) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
+                    }
+                } else {
+
+                }
+            }
+        } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+                if (null != ocId) {
+                    Long containerId = ocId;
+                    TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    if (null != tipContainerCmd) {
+                        ArrayDeque<Long> tipInsideContainerIds = tipContainerCmd.getTipInsideContainerIds();
+                        if (null != tipInsideContainerIds && tipInsideContainerIds.size() > 0) {
+                            Iterator<Long> iter = tipInsideContainerIds.iterator();
+                            while (iter.hasNext()) {
+                                Long value = iter.next();
+                                if (null != value) {
+                                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + value.toString());
+                                    if (null != tipScanSkuCmd) {
+                                        ArrayDeque<Long> oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
+                                        if (null != oneByOneScanSkuIds && oneByOneScanSkuIds.size() > 0) {
+                                            Iterator<Long> iter2 = oneByOneScanSkuIds.iterator();
+                                            while (iter2.hasNext()) {
+                                                Long skuId = iter2.next();
+                                                if (null != skuId) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + skuId.toString());
+                                            }
+                                        }
+                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString());
+                                    }
+                                }
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    }
+                    ContainerStatisticResultCommand csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
+                    if (null != csrCmd) {
+                        Set<Long> insideContainerIds = csrCmd.getInsideContainerIds();
+                        Iterator<Long> iter = insideContainerIds.iterator();
+                        while (iter.hasNext()) {
+                            Long value = iter.next();
+                            if (null != value) {
+                                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, value.toString());
+                                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, value.toString());
+                            }
+                        }
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
+                    }
+                } else {
+
+                }
+            }
+            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+                if (null != icId) {
+                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
+                    if (null != tipScanSkuCmd) {
+                        ArrayDeque<Long> oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
+                        if (null != oneByOneScanSkuIds && oneByOneScanSkuIds.size() > 0) {
+                            Iterator<Long> iter = oneByOneScanSkuIds.iterator();
+                            while (iter.hasNext()) {
+                                Long skuId = iter.next();
+                                if (null != skuId) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
+                    }
+                } else {
+
+                }
+            }
+        } else if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+                if (null != ocId) {
+                    Long containerId = ocId;
+                    TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    if (null != tipContainerCmd) {
+                        ArrayDeque<Long> tipInsideContainerIds = tipContainerCmd.getTipInsideContainerIds();
+                        if (null != tipInsideContainerIds && tipInsideContainerIds.size() > 0) {
+                            Iterator<Long> iter = tipInsideContainerIds.iterator();
+                            while (iter.hasNext()) {
+                                Long value = iter.next();
+                                if (null != value) {
+                                    TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
+                                    if (null != tipLocCmd) {
+                                        ArrayDeque<Long> tipLocationIds = tipLocCmd.getTipLocationIds();
+                                        if (null != tipLocationIds && tipLocationIds.size() > 0) {
+                                            Iterator<Long> locIter = tipLocationIds.iterator();
+                                            while (locIter.hasNext()) {
+                                                Long locValue = locIter.next();
+                                                if (null != locValue) {
+                                                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locValue.toString());
+                                                    if (null != tipScanSkuCmd) {
+                                                        ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                                                        if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                                                            Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                                                            while (iter2.hasNext()) {
+                                                                String skuAttrId = iter2.next();
+                                                                if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + skuAttrId);
+                                                            }
+                                                        }
+                                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locValue.toString());
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
+                                    }
+                                }
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    }
+                    ContainerStatisticResultCommand csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
+                    if (null != csrCmd) {
+                        Set<Long> insideContainerIds = csrCmd.getInsideContainerIds();
+                        Iterator<Long> iter = insideContainerIds.iterator();
+                        while (iter.hasNext()) {
+                            Long value = iter.next();
+                            if (null != value) {
+                                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, value.toString());
+                                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, value.toString());
+                            }
+                        }
+                        cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
+                    }
+                } else {
+
+                }
+            }
+            if (CancalPattern.TIP_LOCATION_CANCEL == cancelPattern) {
+                if (null != icId) {
+                    Long value = icId;
+                    TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
+                    if (null != tipLocCmd) {
+                        ArrayDeque<Long> tipLocationIds = tipLocCmd.getTipLocationIds();
+                        if (null != tipLocationIds && tipLocationIds.size() > 0) {
+                            Iterator<Long> locIter = tipLocationIds.iterator();
+                            while (locIter.hasNext()) {
+                                Long locValue = locIter.next();
+                                if (null != locValue) {
+                                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locValue.toString());
+                                    if (null != tipScanSkuCmd) {
+                                        ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                                        if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                                            Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                                            while (iter2.hasNext()) {
+                                                String skuAttrId = iter2.next();
+                                                if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + skuAttrId);
+                                            }
+                                        }
+                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locValue.toString());
+                                    }
+                                }
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
+                    }
+                }
+            }
+            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+                if (null != icId) {
+                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                    if (null != tipScanSkuCmd) {
+                        ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                        if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                            Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                            while (iter2.hasNext()) {
+                                String skuAttrId = iter2.next();
+                                if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                    }
+                } else {
+
+                }
+            }
+        } else {
+            log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (log.isInfoEnabled()) {
+            log.info("sys guide putaway cancel end");
+        }
+    }
+    
     /***
      * 取消流程(清楚缓存)
      * @param outerContainer

@@ -160,10 +160,10 @@ public interface WhSkuInventoryManager extends BaseManager {
      * 库位补货逻辑
      * 
      * @param msg
-     * @param rule
+     * @param ruleList
      * @param wh
      */
-    void replenishmentToLocation(ReplenishmentMsg msg, ReplenishmentRuleCommand rule, Warehouse wh);
+    void replenishmentToLocation(ReplenishmentMsg msg, List<ReplenishmentRuleCommand> ruleList, Warehouse wh);
     
     /***
      * pda拣货生成容器库存
@@ -246,5 +246,13 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param outId
      * @return
      */
-    int deleteSkuInventory(Long id, Long ouid);
+    void deleteSkuInventory(Long id, Long ouid);
+    
+    /**
+     * 根据容器查询库存
+     * 
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventory> findSkuInventoryByContainer(WhSkuInventory whSkuInventory);
 }

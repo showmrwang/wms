@@ -1,7 +1,13 @@
 package com.baozun.scm.primservice.whoperation.manager.checking;
 
 
+import java.util.List;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface CheckingManager extends BaseManager {
     
@@ -11,7 +17,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printPackingList(Long userId, Long ouId);
+    void printPackingList(List<Long> facilityIdsList, Long userId, Long ouId);
     
     /**
      * 打印销售清单
@@ -19,7 +25,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printSalesList(Long userId, Long ouId);
+    void printSalesList(List<Long> facilityIdsList, Long userId, Long ouId);
     
     /**
      * 打印面单
@@ -27,7 +33,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printSinglePlane(Long userId, Long ouId);
+    void printSinglePlane(List<Long> facilityIdsList, Long userId, Long ouId);
     
     /**
      * 打印箱标签
@@ -35,7 +41,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printBoxLabel(Long userId, Long ouId);
+    void printBoxLabel(List<Long> facilityIdsList, Long userId, Long ouId);
     
     /**
      * 打印发票（复核）
@@ -43,6 +49,22 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printInvoiceReview(Long userId, Long ouId);
+    void printInvoiceReview(List<Long> facilityIdsList, Long userId, Long ouId);
+    
+    /**
+     * 生成出库箱库存
+     * 
+     * @param userId 用户Id
+     * @param ouId 仓库Id
+     */
+    void createOutboundboxInventory(WhCheckingCommand checkingCommand, WhCheckingLineCommand checkingLineCommand, WhSkuInventory whSkuInventory);
+    
+    /**
+     * 根据id查询播种墙
+     * 
+     * @param id Id
+     * @param ouId 仓库Id
+     */
+    WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId);
     
 }

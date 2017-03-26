@@ -609,5 +609,35 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 		WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, lineList, ouId);
 		whInboundManager.insertWhInboundData(inboundConfirmCommand);
 	}
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void snycPoToInfo(WhPo infoPo, String operateType) {
+        try {
+
+            if (operateType.equals("EIDT_HEAD")) {
+                this.saveOrUpdateByVersionToInfo(infoPo);
+                BiPo bipo = this.biPoDao.findBiPoByExtCodeStoreId(infoPo.getExtCode(), infoPo.getStoreId());
+                if (bipo == null) {
+                    log.error("pomanager.snycPoToInfo  EDIT_HEAD find no bipo by storeId:{} and extCode:{}", infoPo.getStoreId(), infoPo.getExtCode());
+                    throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+                }
+                if (infoPo.getIsAutoClose() != null && !infoPo.getIsAutoClose()) {
+
+                    bipo.setIsAutoClose(false);
+                    int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
+                    if (updateCount <= 0) {
+                        log.error("pomanager.snycPoToInfo  EDIT_HEAD update bipo:{} by version error", bipo);
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("" + e);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
 	
 }

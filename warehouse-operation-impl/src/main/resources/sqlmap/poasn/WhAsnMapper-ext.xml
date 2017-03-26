@@ -29,9 +29,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="supplierId!=null">
 					and asn.supplier_id = #{supplierId}
 				</if>
-				<if test="logisticsProviderId!=null">
-					and asn.logistics_provider_id = #{logisticsProviderId}
-				</if>
 				<if test="logisticsProvider!=null and logisticsProvider!=''">
 					and asn.logistics_provider = #{logisticsProvider}
 				</if>
@@ -128,12 +125,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="supplierId!=null">
 					and asn.supplier_id in 
 					<foreach collection="supplierId" item="s" open="(" separator="," close=")">
-						#{s}
-					</foreach>
-				</if>
-				<if test="logisticsProviderId!=null">
-					and asn.logistics_provider_id in 
-					<foreach collection="logisticsProviderId" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
@@ -354,7 +345,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn.ctn_planned as ctnPlanned,
 	        	asn.ctn_rcvd as ctnRcvd,
 	        	asn.supplier_id as supplierId,
-	        	asn.logistics_provider_id as logisticsProviderId,
 	        	asn.logistics_provider as logisticsProvider,
 	        	asn.asn_type as asnType,
 	        	asn.status as status,
@@ -378,6 +368,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.store_name as storeName,
 	        	asn.version as version,
 	        	asn.uuid as uuid,
+	        	asn.is_auto_close as isAutoClose,
 	        	asn.overchage_rate as overChageRate
 	    ]]>
 	</sql>
@@ -398,7 +389,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        ctn_planned = #{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        supplier_id = #{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        logistics_provider_id = #{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        logistics_provider = #{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        asn_type = #{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -414,6 +404,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       	ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       	urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       	uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+			        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			       	overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 		    ]]>
 		     <where>
@@ -446,7 +437,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.ctn_planned as ctnPlanned,
 				asn.ctn_rcvd as ctnRcvd,
 				asn.supplier_id as supplierId,
-				asn.logistics_provider_id as logisticsProviderId,
 				asn.logistics_provider as logisticsProvider,
 				asn.asn_type as asnType,
 				asn.status as status,
@@ -460,6 +450,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.modified_id as modifiedId,
 				asn.po_ou_id as poOuId,
 				asn.ext_code as extCode,
+				asn.is_auto_close as isAutoClose,
 				asn.urgent_status as urgentStatus,
 				c.customer_name as customerName,
 				s.store_name as storeName,
@@ -486,7 +477,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.ctn_planned as ctnPlanned,
 				asn.ctn_rcvd as ctnRcvd,
 				asn.supplier_id as supplierId,
-				asn.logistics_provider_id as logisticsProviderId,
 				asn.logistics_provider as logisticsProvider,
 				asn.asn_type as asnType,
 				asn.status as status,
@@ -503,7 +493,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.urgent_status as urgentStatus,
 				asn.uuid as uuid,
 				asn.overchage_rate as overChageRate,
-				provider.name as logisticsProviderName,
+				asn.is_auto_close as isAutoClose,
 				supplier.name as supplierName
 	    ]]>
 	</sql>
@@ -512,7 +502,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	select <include refid="whAsnSearchMapExt" />
 		    from 
 		    t_wh_asn asn
-		    left join t_ma_transport_provider provider on provider.id=asn.logistics_provider_id
 			left join t_wh_supplier supplier on supplier.id=asn.supplier_id
 			<include refid="whAsnSearchWhereExt"/>
     </select>
@@ -571,7 +560,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ctn_planned as ctnPlanned,
 	        	ctn_rcvd as ctnRcvd,
 	        	supplier_id as supplierId,
-	        	logistics_provider_id as logisticsProviderId,
 	        	logistics_provider as logisticsProvider,
 	        	asn_type as asnType,
 	        	status as status,
@@ -588,6 +576,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ext_code as extCode,
 	        	urgent_status as urgentStatus,
 	        	uuid as uuid,
+	        	is_auto_close as isAutoClose,
 	        	overchage_rate as overChageRate
 		    from 
 		    t_wh_asn 

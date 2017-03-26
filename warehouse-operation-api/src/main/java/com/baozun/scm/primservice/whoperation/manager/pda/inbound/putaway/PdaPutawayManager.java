@@ -163,5 +163,22 @@ public interface PdaPutawayManager extends BaseManager {
      * @return
      */
     int findNotCaselevelCartonNumsByOuterContainerCode(String containerCode, Long ouId, String logId);
+    
+    /**
+     * 取消流程
+     * 
+     * @author lichuan
+     * @param containerCode
+     * @param insideContainerCode
+     * @param skuCmd
+     * @param locationCode
+     * @param funcId
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @return
+     */
+    ScanResultCommand sysGuidePutawayCancel(String containerCode, String insideContainerCode, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Integer cancelPattern, Long ouId, Long userId, String logId);
 
 }
