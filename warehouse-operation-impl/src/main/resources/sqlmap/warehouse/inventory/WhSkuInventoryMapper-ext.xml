@@ -145,6 +145,86 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
+	<sql id="whSkuInventoryAllocatedCommandMapExt">
+	    <![CDATA[
+			null as id,
+			t.sku_id as sku_id,
+			t.location_id as location_id,
+			t.outer_container_id as outer_container_id,
+			t.inside_container_id as inside_container_id,
+			t.customer_id as customer_id,
+			t.store_id as store_id,
+			t.occupation_code as occupation_code,
+			0.00 as on_hand_qty,
+			t.qty as allocated_qty,
+			0.00 as to_be_filled_qty,
+			0.00 as frozen_qty,
+			t.inv_status as inv_status,
+			t.inv_type as inv_type,
+			t.batch_number as batch_number,
+			t.mfg_date as mfg_date,
+			t.exp_date as exp_date,
+			t.country_of_origin as country_of_origin,
+			t.inv_attr1 as inv_attr1,
+			t.inv_attr2 as inv_attr2,
+			t.inv_attr3 as inv_attr3,
+			t.inv_attr4 as inv_attr4,
+			t.inv_attr5 as inv_attr5,
+			t.uuid as uuid,
+			null as is_locked,
+			t.ou_id as ou_id,
+			null as occupation_code_source,
+			null as inbound_time,
+	        t.last_modify_time as last_modify_time,
+			sku.code as skuCode,
+			sku.name as skuName,
+			l.code as locationCode,
+			cout.code as outerContainerCode,
+			iout.code as insideContainerCode,
+			invstatus.name as invstatusName
+	    ]]>
+	</sql>
+	
+	<sql id="whSkuInventoryTobefilledCommandMapExt">
+	    <![CDATA[
+			null as id,
+			t.sku_id as sku_id,
+			t.location_id as location_id,
+			t.outer_container_id as outer_container_id,
+			t.inside_container_id as inside_container_id,
+			t.customer_id as customer_id,
+			t.store_id as store_id,
+			t.occupation_code as occupation_code,
+			0.00 as on_hand_qty,
+			0.00 as allocated_qty,
+			t.qty as to_be_filled_qty,
+			0.00 as frozen_qty,
+			t.inv_status as inv_status,
+			t.inv_type as inv_type,
+			t.batch_number as batch_number,
+			t.mfg_date as mfg_date,
+			t.exp_date as exp_date,
+			t.country_of_origin as country_of_origin,
+			t.inv_attr1 as inv_attr1,
+			t.inv_attr2 as inv_attr2,
+			t.inv_attr3 as inv_attr3,
+			t.inv_attr4 as inv_attr4,
+			t.inv_attr5 as inv_attr5,
+			t.uuid as uuid,
+			null as is_locked,
+			t.ou_id as ou_id,
+			null as occupation_code_source,
+			null as inbound_time,
+	        t.last_modify_time as last_modify_time,
+			sku.code as skuCode,
+			sku.name as skuName,
+			l.code as locationCode,
+			cout.code as outerContainerCode,
+			iout.code as insideContainerCode,
+			invstatus.name as invstatusName
+	    ]]>
+	</sql>
+	
 	<sql id="whSkuInventoryDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
@@ -3599,5 +3679,65 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     		and location_id is not null 
     		and on_hand_qty > 0.0 
 			and IFNULL(is_locked, 0) != 1
+    </select>
+    
+    <select id="findWhSkuInventoryByIdAndUuidAndOuid" resultMap="WhSkuInventoryCommandResultExt">
+		select <include refid="whSkuInventoryCommandMergeExt" />
+		from (
+		    	select <include refid="whSkuInventoryCommandMapExt" />
+				from 
+					t_wh_sku_inventory t 
+					left join t_wh_sku sku on t.sku_id = sku.id 
+					left join t_wh_location l on t.location_id = l.id 
+					left join t_wh_container cout on t.outer_container_id = cout.id 
+					left join t_wh_container iout on t.inside_container_id = iout.id 
+					left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+				<where>
+		       		t.ou_id = #{ouid} 
+					<if test="uuid!=null and uuid!=''">
+						 and t.uuid = #{uuid}
+					</if>
+					<if test="id!=null and id!=''">
+						 and t.id = #{id}
+					</if>
+				</where> 
+				union all
+				select <include refid="whSkuInventoryAllocatedCommandMapExt" />
+				from 
+					t_wh_sku_inventory_allocated t 
+					left join t_wh_sku sku on t.sku_id = sku.id 
+					left join t_wh_location l on t.location_id = l.id 
+					left join t_wh_container cout on t.outer_container_id = cout.id 
+					left join t_wh_container iout on t.inside_container_id = iout.id 
+					left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+				<where>
+		       		t.ou_id = #{ouid} 
+					<if test="uuid!=null and uuid!=''">
+						 and t.uuid = #{uuid}
+					</if>
+					<if test="id!=null and id!=''">
+						 and t.id = #{id}
+					</if>
+				</where> 
+				union all
+				select <include refid="whSkuInventoryTobefilledCommandMapExt" />
+				from 
+					t_wh_sku_inventory_tobefilled t 
+					left join t_wh_sku sku on t.sku_id = sku.id 
+					left join t_wh_location l on t.location_id = l.id 
+					left join t_wh_container cout on t.outer_container_id = cout.id 
+					left join t_wh_container iout on t.inside_container_id = iout.id 
+					left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+				<where>
+		       		t.ou_id = #{ouid} 
+					<if test="uuid!=null and uuid!=''">
+						 and t.uuid = #{uuid}
+					</if>
+					<if test="id!=null and id!=''">
+						 and t.id = #{id}
+					</if>
+				</where> 
+				) t 
+		 group by t.uuid 
     </select>
 </mapper>

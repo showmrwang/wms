@@ -782,4 +782,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 	List<WhSkuInventoryCommand> findUseableInventoryByInsideContainerId(@Param("insideContainerId") Long insideContainerId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 	
     List<WhSkuInventory> findSkuInventoryByContainer(WhSkuInventory inventory);
+    
+    /**
+     * 查询库存信息
+     * 
+     * @author qiming.liu
+     * @param id
+     * @param uuid
+     * @param ouid
+     * @return
+     */
+    WhSkuInventoryCommand findWhSkuInventoryByIdAndUuidAndOuid(@Param("id") Long id, @Param("uuid") String uuid, @Param("ouid") Long ouid);
 }
