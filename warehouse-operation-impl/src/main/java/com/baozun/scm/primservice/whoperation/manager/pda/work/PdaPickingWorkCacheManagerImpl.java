@@ -32,7 +32,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
-import com.baozun.scm.primservice.whoperation.constant.CancalPattern;
+import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
@@ -2286,7 +2286,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @param ouId
      */
     public void cancelPattern(Long carId,Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId){
-              if(cancelPattern == CancalPattern.TIP_CAR_CANCEL) {
+              if(cancelPattern == CancelPattern.PICKING_TIP_CAR_CANCEL) {
                   cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());  //删除统计缓存
                   cacheManager.remove(CacheConstants.OPERATION_LINE + operationId.toString());   //删除作业明细
                   if(Constants.PICKING_WAY_TWO == pickingWay){
@@ -2348,7 +2348,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   }
                   cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
              }
-             if(CancalPattern.SCAN_LOC_CANCEL == cancelPattern){
+             if(CancelPattern.PICKING_SCAN_LOC_CANCEL == cancelPattern){
                  LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
                  if(null != tipLocCmd){
                      //先删除该库位上剩下的托盘和货箱
@@ -2403,7 +2403,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                  //删除库位上的托盘货箱统计
                  cacheManager.remove(CacheConstants.CACHE_LOCATION + locationId.toString());
              }
-             if(CancalPattern.SCAN_OUTCONTAINER_CANCEL == cancelPattern){
+             if(CancelPattern.PICKING_SCAN_OUTCONTAINER_CANCEL == cancelPattern){
                  //清除库位上的托盘
                  LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
                  if(null != tipLocCmd){
@@ -2418,7 +2418,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                      }
                  }
              }
-             if(CancalPattern.SCAN_INSIDECONTAINER_CANCEL == cancelPattern){ //提示货箱取消流程
+             if(CancelPattern.PICKING_SCAN_INSIDECONTAINER_CANCEL == cancelPattern){ //提示货箱取消流程
                  LocationTipCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
                  if(null != tipLocCmd){
                      ArrayDeque<Long> tipInsideContainerIds = null;
@@ -2442,7 +2442,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                         }
                  }
              }
-             if(CancalPattern.SCAN_SKU_SCANCEL== cancelPattern){ //提示货箱取消流程){
+             if(CancelPattern.PICKING_SCAN_SKU_SCANCEL== cancelPattern){ //提示货箱取消流程){
                  if(null != insideContainerId) {
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString()+tipSkuId.toString());
@@ -2506,7 +2506,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                  }
                  cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(),  operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
              }
-             if(CancalPattern.SCAN_OUT_BOUNX_BOX == cancelPattern){
+             if(CancelPattern.PICKING_SCAN_OUT_BOUNX_BOX == cancelPattern){
                  OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
                  if(null != tipLocationCmd ) {
                      tipLocationCmd.setTipOutBonxBoxIds(null);

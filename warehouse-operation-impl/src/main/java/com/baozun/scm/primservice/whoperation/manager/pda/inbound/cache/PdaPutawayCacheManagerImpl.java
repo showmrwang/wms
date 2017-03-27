@@ -40,7 +40,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
-import com.baozun.scm.primservice.whoperation.constant.CancalPattern;
+import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
@@ -4447,7 +4447,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             icId = insideContainerCmd.getId();
         }
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
-            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 if (null != ocId) {
                     Long containerId = ocId;
                     TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
@@ -4479,7 +4479,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
 
                 }
             }
-            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
                 if (null != icId) {
                     TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
                     if (null != tipScanSkuCmd) {
@@ -4498,7 +4498,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
             }
         } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
-            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 if (null != ocId) {
                     Long containerId = ocId;
                     TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
@@ -4543,7 +4543,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
 
                 }
             }
-            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
                 if (null != icId) {
                     TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
                     if (null != tipScanSkuCmd) {
@@ -4562,7 +4562,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
             }
         } else if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
-            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 if (null != ocId) {
                     Long containerId = ocId;
                     TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
@@ -4620,7 +4620,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
 
                 }
             }
-            if (CancalPattern.TIP_LOCATION_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
                 if (null != icId) {
                     Long value = icId;
                     TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
@@ -4650,7 +4650,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     }
                 }
             }
-            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
                 if (null != icId) {
                     TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                     if (null != tipScanSkuCmd) {
@@ -4688,7 +4688,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         log.info("PdaPutawayCacheManagerImpl cancelPath is start"); 
         //整托上架
         if(WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType){ //整托
-            if(cancelPattern == CancalPattern.SKU_CANCEL || null != isCancel) {  //商品取消流程
+            if(cancelPattern == CancelPattern.PUTAWAY_SKU_CANCEL || null != isCancel) {  //商品取消流程
                 InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, outerContainerId.toString());
                 if (null == isCmd) {
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR); 
@@ -4700,22 +4700,22 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString());
             }
-            if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL){ //内部容器取消
+            if(cancelPattern == CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL){ //内部容器取消
                 cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + outerContainerId.toString());
             }
-            if(cancelPattern == CancalPattern.SCAN_LOCATION_CANCEL){
+            if(cancelPattern == CancelPattern.PUTAWAY_SCAN_LOCATION_CANCEL){
                  if(isRecommendFail == true){ //推荐失败
                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,outerContainerId.toString());
                        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, outerContainerId.toString());
                  }
             }
-            if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //提示库位取消清楚统计缓存
+            if(cancelPattern == CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL){  //提示库位取消清楚统计缓存
                 if(isRecommendFail == false){ //推荐成功
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,outerContainerId.toString());
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, outerContainerId.toString());
                 }
             }
-            if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
+            if(cancelPattern == CancelPattern.PUTAWAY_OUTERCONTAINER_CANCEL){
                 if(null != outerContainerId) { 
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                 }
@@ -4724,7 +4724,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         //整箱上架
         if(WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType){//整箱
-            if(cancelPattern == CancalPattern.SKU_CANCEL) {  //商品取消流程
+            if(cancelPattern == CancelPattern.PUTAWAY_SKU_CANCEL) {  //商品取消流程
                 InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
                 if (null == isCmd) {
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR); 
@@ -4736,32 +4736,32 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString());
             }
-                if(cancelPattern == CancalPattern.SCAN_LOCATION_CANCEL){ //扫描库位取消
+                if(cancelPattern == CancelPattern.PUTAWAY_SCAN_LOCATION_CANCEL){ //扫描库位取消
                     if(isRecommendFail == true){ //推荐失败
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,insideContainerId.toString());
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
                     }
                    
                 }
-                if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //提示库位取消
+                if(cancelPattern == CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL){  //提示库位取消
                     if(isRecommendFail == false){ //推荐成功
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC,insideContainerId.toString());
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
                     }
                 }
             if(null != outerContainerId) { //有托盘
-                if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
+                if(cancelPattern == CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL) {  //内部容器取消
                     cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                 }
-                if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
+                if(cancelPattern == CancelPattern.PUTAWAY_OUTERCONTAINER_CANCEL){
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                 }
             }
         }
         //拆箱上架
         if(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {  //拆箱
-                if(cancelPattern == CancalPattern.SKU_CANCEL) {  //商品取消流程
+                if(cancelPattern == CancelPattern.PUTAWAY_SKU_CANCEL) {  //商品取消流程
                     InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
                     if (null == isCmd) {
                       throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR); 
@@ -4785,7 +4785,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                        locationId = loc.getId();
                       cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString()+locationId.toString());
                  }
-                 if(cancelPattern == CancalPattern.SCAN_LOCATION_CANCEL){  //库位取消流程
+                 if(cancelPattern == CancelPattern.PUTAWAY_SCAN_LOCATION_CANCEL){  //库位取消流程
                      if(isRecommendFail == true){
                          // 1.清除所有库存统计信息
                          cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
@@ -4795,18 +4795,18 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                          cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + insideContainerId.toString());
                      }
                  }
-                 if(cancelPattern == CancalPattern.TIP_LOCATION_CANCEL){  //库位取消流程
+                 if(cancelPattern == CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL){  //库位取消流程
                      // 1.清除所有库存统计信息
                      cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerId.toString());
                      // 2.清除所有库存缓存信息
                      cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerId.toString());
                  }
                 if(null != outerContainerId) {
-                    if(cancelPattern == CancalPattern.INSIDECONTAINER_CANCEL) {  //内部容器取消
+                    if(cancelPattern == CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL) {  //内部容器取消
                        cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+outerContainerId.toString());
                        cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                     }
-                    if(cancelPattern == CancalPattern.OUTERCONTAINER_CANCEL){
+                    if(cancelPattern == CancelPattern.PUTAWAY_OUTERCONTAINER_CANCEL){
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, outerContainerId.toString());
                     }
                 }

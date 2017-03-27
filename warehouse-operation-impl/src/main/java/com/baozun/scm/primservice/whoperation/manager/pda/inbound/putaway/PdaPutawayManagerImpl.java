@@ -47,7 +47,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
-import com.baozun.scm.primservice.whoperation.constant.CancalPattern;
+import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
@@ -5483,7 +5483,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
             }
-            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
                     insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
@@ -5511,7 +5511,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
             }
-            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
                     insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
@@ -5546,7 +5546,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
                 }
             }
-            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
                     insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
@@ -5560,7 +5560,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
             }
-            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
                     insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
@@ -5609,7 +5609,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
                 }
             }
-            if (CancalPattern.INSIDECONTAINER_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
                     insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
@@ -5623,7 +5623,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
             }
-            if (CancalPattern.TIP_LOCATION_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
                     insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
@@ -5637,7 +5637,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
             }
-            if (CancalPattern.SKU_CANCEL == cancelPattern) {
+            if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
                     insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
