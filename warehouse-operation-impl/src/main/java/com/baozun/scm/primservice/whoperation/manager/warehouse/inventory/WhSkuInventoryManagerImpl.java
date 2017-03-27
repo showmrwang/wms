@@ -2811,7 +2811,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         // uuid发生变更,重新插入sn
                         for (WhSkuInventorySnCommand cSnCmd : snList) {
                             WhSkuInventorySn sn = new WhSkuInventorySn();
-                            BeanUtils.copyProperties(cSnCmd, sn, "id");
+                            BeanUtils.copyProperties(cSnCmd, sn);
                             sn.setUuid(inv.getUuid());
                             whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
                             insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
