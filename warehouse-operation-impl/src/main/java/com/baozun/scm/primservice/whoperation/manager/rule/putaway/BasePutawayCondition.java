@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.manager.rule.putaway;
@@ -57,9 +55,11 @@ public abstract class BasePutawayCondition extends BaseManagerImpl implements Pu
                 sql.append(")");
                 return sql.toString();
             case WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS:
-                /*if (null != attrParams.getIsMixStacking()) {
-                    sql.append(" ").append("loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" : "0"));
-                }*/
+                /*
+                 * if (null != attrParams.getIsMixStacking()) { sql.append(" ").append(
+                 * "loc.is_mix_stacking = ").append((true == attrParams.getIsMixStacking() ? "1" :
+                 * "0")); }
+                 */
                 sql.append(" exists (select 1 from t_wh_sku_inventory inv where inv.location_id = loc.id and inv.ou_id = ").append(attrParams.getOuId());
                 sql.append(" ").append("group by inv.location_id,inv.ou_id,inv.sku_id having(inv.sku_id) = 1");
                 sql.append(")");
@@ -71,7 +71,7 @@ public abstract class BasePutawayCondition extends BaseManagerImpl implements Pu
         }
         return sql.toString();
     }
-    
+
     protected void invAttrMgmtAspect(AttrParams attrParams, StringBuilder sql) {
         String invAttrMgmt = attrParams.getInvAttrMgmt();
         if (null != attrParams.getSkuId()) {

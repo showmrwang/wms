@@ -844,7 +844,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             if (count <= 0) {
                                                 // 此静态库位不可用，商品当前静态库位没有绑定
                                                 continue;
-                                            } 
+                                            }
                                         }
                                         // 判断混放库位sku混放数及sku属性混放数
                                         Boolean isMixStacking = al.getIsMixStacking();
