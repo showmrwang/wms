@@ -316,6 +316,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     invAttrMgmt = warehouse.getInvAttrMgmt();
                                 }
                                 attrParams.setInvAttrMgmt(invAttrMgmt);
+                                attrParams.setIsMixStacking(true);// 库位允许混放
+                                attrParams.setSkuCategory(1L);
+                                attrParams.setSkuAttrCategory(1L);
                                 // 解析库存关键属性
                                 invAttrMgmtAspect(attrParams, invCmd);
                                 PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);
@@ -778,6 +781,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         invAttrMgmt = warehouse.getInvAttrMgmt();
                                     }
                                     attrParams.setInvAttrMgmt(invAttrMgmt);
+                                    attrParams.setIsMixStacking(true);// 库位允许混放
+                                    attrParams.setSkuCategory(1L);
+                                    attrParams.setSkuAttrCategory(1L);
                                     // 解析库存关键属性
                                     invAttrMgmtAspect(attrParams, invCmd);
                                     PutawayCondition putawayCondition = putawayConditionFactory.getPutawayCondition(WhPutawayPatternType.SYS_GUIDE_PUTAWAY, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, logId);

@@ -132,28 +132,28 @@ public abstract class BasePutawayCondition extends BaseManagerImpl implements Pu
                             }
                             break;
                         case InvAttrMgmtType.INV_ATTR2:
-                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                            if (StringUtils.isEmpty(attrParams.getInvAttr2())) {
                                 sql.append(" ").append(" and (inv.inv_attr2 is null or inv.inv_attr2 = '')");
                             } else {
                                 sql.append(" ").append(" and inv.inv_attr2 = ").append("'").append(attrParams.getInvAttr2()).append("'");
                             }
                             break;
                         case InvAttrMgmtType.INV_ATTR3:
-                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                            if (StringUtils.isEmpty(attrParams.getInvAttr3())) {
                                 sql.append(" ").append(" and (inv.inv_attr3 is null or inv.inv_attr3 = '')");
                             } else {
                                 sql.append(" ").append(" and inv.inv_attr3 = ").append("'").append(attrParams.getInvAttr3()).append("'");
                             }
                             break;
                         case InvAttrMgmtType.INV_ATTR4:
-                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                            if (StringUtils.isEmpty(attrParams.getInvAttr4())) {
                                 sql.append(" ").append(" and (inv.inv_attr4 is null or inv.inv_attr4 = '')");
                             } else {
                                 sql.append(" ").append(" and inv.inv_attr4 = ").append("'").append(attrParams.getInvAttr4()).append("'");
                             }
                             break;
                         case InvAttrMgmtType.INV_ATTR5:
-                            if (StringUtils.isEmpty(attrParams.getInvAttr1())) {
+                            if (StringUtils.isEmpty(attrParams.getInvAttr5())) {
                                 sql.append(" ").append(" and (inv.inv_attr5 is null or inv.inv_attr5 = '')");
                             } else {
                                 sql.append(" ").append(" and inv.inv_attr5 = ").append("'").append(attrParams.getInvAttr5()).append("'");
