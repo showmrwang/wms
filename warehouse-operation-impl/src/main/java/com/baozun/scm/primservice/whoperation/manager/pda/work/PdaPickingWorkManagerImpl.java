@@ -1554,11 +1554,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                       shortPikcingOperIds = new HashSet<Long>();
                                       shortPikcingOperIds.add(operationLineId);
                                   }else{
-                                      if(shortPikcingOperIds.contains(operationLineId)) {
-                                          continue;
-                                      }else{
+//                                      if(shortPikcingOperIds.contains(operationLineId)) {
+//                                          continue;
+//                                      }else{
                                           shortPikcingOperIds.add(operationLineId);  
-                                      }
+//                                      }
                                   }
                                   insideShortPikcingOperIds.put(insideContainerId, shortPikcingOperIds);
                               }
@@ -1575,11 +1575,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                       shortPikcingOperIds = new HashSet<Long>();
                                       shortPikcingOperIds.add(operationLineId);
                                   }else{
-                                      if(shortPikcingOperIds.contains(operationLineId)) {
-                                          continue;
-                                      }else{
+//                                      if(shortPikcingOperIds.contains(operationLineId)) {
+//                                          continue;
+//                                      }else{
                                           shortPikcingOperIds.add(operationLineId);  
-                                      }
+//                                      }
                                   }
                                   locShortPikcingOperIds.put(insideContainerId, shortPikcingOperIds);
                               }
@@ -1599,11 +1599,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                       pikcingOperIds.add(operationLineId);
                                       insidepickingOperIds.put(insideContainerId, pikcingOperIds);
                                   }else{
-                                      if(pikcingOperIds.contains(operationLineId)){
-                                          continue;
-                                      }else{
+//                                      if(pikcingOperIds.contains(operationLineId)){
+//                                          continue;
+//                                      }else{
                                           pikcingOperIds.add(operationLineId);
-                                      }
+//                                      }
                                       insidepickingOperIds.put(insideContainerId, pikcingOperIds);
                                   }
                               }
@@ -1620,11 +1620,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                       pikcingOperIds = new HashSet<Long>();
                                       pikcingOperIds.add(operationLineId);
                                   }else{
-                                      if(pikcingOperIds.contains(operationLineId)){
-                                          continue;
-                                      }else{
+//                                      if(pikcingOperIds.contains(operationLineId)){
+//                                          continue;
+//                                      }else{
                                           pikcingOperIds.add(operationLineId);
-                                      }
+//                                      }
                                       locPickingOperIds.put(insideContainerId, pikcingOperIds);
                                   }
                               }
