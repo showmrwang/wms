@@ -5483,6 +5483,9 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
             }
+            if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, null, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+            }
             if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
                 if (!StringUtils.isEmpty(insideContainerCode)) {
