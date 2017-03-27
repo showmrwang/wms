@@ -416,7 +416,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   scanResult.setIsNeedTipOutContainer(true); 
                   break;
               }else{
-                  Map<Long,ArrayDeque<Long>>tipLocOuterContainerIds = tipLocationCmd.getTipLocOuterContainerIds();
+                  Map<Long,ArrayDeque<Long>> tipLocOuterContainerIds = tipLocationCmd.getTipLocOuterContainerIds();
                   if(null == tipLocOuterContainerIds || tipLocOuterContainerIds.size() == 0) {
                       tipOuterContainerId = outerId;
                       scanResult.setIsNeedTipOutContainer(true); 
@@ -2466,13 +2466,18 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                      }
                      if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
                          int count = 0;
+                         Boolean result = false;
                          for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
                              Set<Long> ids = operLineIdToQtyMap.keySet();
                              for(Long id:ids) {
                                  if(id.equals(insideContainerId)) {
                                      operLineIdToQtyList.remove(count);
+                                     result = true;
                                      break;
                                  }
+                             }
+                             if(result) {
+                                 break;
                              }
                              count++;
                          }
@@ -2491,13 +2496,18 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                      }
                      if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
                          int count = 0;
+                         Boolean result = false;
                          for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
                              Set<Long> ids = operLineIdToQtyMap.keySet();
                              for(Long id:ids) {
                                  if(id.equals(locationId)) {
                                      operLineIdToQtyList.remove(count);
+                                     result = true;
                                      break;
                                  }
+                             }
+                             if(result) {
+                                 break;
                              }
                              count++;
                          }
