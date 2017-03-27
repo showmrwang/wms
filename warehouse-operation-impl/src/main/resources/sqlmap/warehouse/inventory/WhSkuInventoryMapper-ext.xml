@@ -3600,4 +3600,64 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     		and on_hand_qty > 0.0 
 			and IFNULL(is_locked, 0) != 1
     </select>
+    
+    <select id="findWhSkuInventoryByIdAndUuidAndOuid" resultMap="WhSkuInventoryCommandResultExt">
+		select <include refid="whSkuInventoryCommandMergeExt" />
+		from (
+		    	select <include refid="whSkuInventoryCommandMapExt" />
+				from 
+					t_wh_sku_inventory t 
+					left join t_wh_sku sku on t.sku_id = sku.id 
+					left join t_wh_location l on t.location_id = l.id 
+					left join t_wh_container cout on t.outer_container_id = cout.id 
+					left join t_wh_container iout on t.inside_container_id = iout.id 
+					left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+				<where>
+		       		t.ou_id = #{ouid} 
+					<if test="uuid!=null and uuid!=''">
+						 and t.uuid = #{uuid}
+					</if>
+					<if test="id!=null and id!=''">
+						 and t.id = #{id}
+					</if>
+				</where> 
+				union all
+				select <include refid="whSkuInventoryAllocatedCommandMapExt" />
+				from 
+					t_wh_sku_inventory_allocated t 
+					left join t_wh_sku sku on t.sku_id = sku.id 
+					left join t_wh_location l on t.location_id = l.id 
+					left join t_wh_container cout on t.outer_container_id = cout.id 
+					left join t_wh_container iout on t.inside_container_id = iout.id 
+					left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+				<where>
+		       		t.ou_id = #{ouid} 
+					<if test="uuid!=null and uuid!=''">
+						 and t.uuid = #{uuid}
+					</if>
+					<if test="id!=null and id!=''">
+						 and t.id = #{id}
+					</if>
+				</where> 
+				union all
+				select <include refid="whSkuInventoryTobefilledCommandMapExt" />
+				from 
+					t_wh_sku_inventory_tobefilled t 
+					left join t_wh_sku sku on t.sku_id = sku.id 
+					left join t_wh_location l on t.location_id = l.id 
+					left join t_wh_container cout on t.outer_container_id = cout.id 
+					left join t_wh_container iout on t.inside_container_id = iout.id 
+					left join t_wh_inventory_status invstatus on t.inv_status = invstatus.id
+				<where>
+		       		t.ou_id = #{ouid} 
+					<if test="uuid!=null and uuid!=''">
+						 and t.uuid = #{uuid}
+					</if>
+					<if test="id!=null and id!=''">
+						 and t.id = #{id}
+					</if>
+				</where> 
+				) t 
+		 group by t.uuid 
+    </select>
 </mapper>

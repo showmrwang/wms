@@ -17,7 +17,10 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +30,18 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
@@ -49,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 
@@ -233,30 +241,47 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         // 查询功能是否配置复核打印单据配置        
         WhFunctionOutBound whFunctionOutBound  = wFunctionOutBoundManager.findByFunctionIdExt(whCheckingResultCommand.getFunctionId(), ouId);
         for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
-            List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), ouId);
-            BigDecimal calcWeight = new BigDecimal(0.00);
-            for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
-                WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
-                BigDecimal b1 = new BigDecimal(whSkuCommand.getWeight().toString());
-                BigDecimal b2 = new BigDecimal(whCheckingLineCommand.getCheckingQty().toString());
-                calcWeight = calcWeight.add(b1.multiply(b2));
+            Map<String, List<WhCheckingLineCommand>> checkingLineMap = getCheckingLineForGroup(whCheckingCommand.getId(), ouId, whCheckingCommand.getOutboundboxId());
+            for(String key : checkingLineMap.keySet()){
+                List<WhCheckingLineCommand> whCheckingLineCommandLst = checkingLineMap.get(key);
+                BigDecimal calcWeight = new BigDecimal(0.00);
+                for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
+                    WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
+                    BigDecimal b1 = new BigDecimal(whSkuCommand.getWeight().toString());
+                    BigDecimal b2 = new BigDecimal(whCheckingLineCommand.getCheckingQty().toString());
+                    calcWeight = calcWeight.add(b1.multiply(b2));
+                }
+                WhOdoPackageInfoCommand whOdoPackageInfoCommand = new WhOdoPackageInfoCommand();
+                whOdoPackageInfoCommand.setOdoId(whCheckingLineCommandLst.get(0).getOdoId());
+                whOdoPackageInfoCommand.setOutboundboxId(whCheckingCommand.getOutboundboxId());
+                whOdoPackageInfoCommand.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
+                whOdoPackageInfoCommand.setStatus(1);
+                whOdoPackageInfoCommand.setCalcWeight(calcWeight.doubleValue());
+                whOdoPackageInfoCommand.setFloats(whFunctionOutBound.getWeightFloatPercentage());
+                whOdoPackageInfoCommand.setActualWeight(null);
+                whOdoPackageInfoCommand.setLifecycle(1);
+                whOdoPackageInfoCommand.setCreateId(whCheckingResultCommand.getUserId());
+                whOdoPackageInfoCommand.setCreateTime(new Date());
+                whOdoPackageInfoCommand.setLastModifyTime(new Date());
+                whOdoPackageInfoCommand.setModifiedId(whCheckingResultCommand.getUserId());
+                whOdoPackageInfoManager.saveOrUpdate(whOdoPackageInfoCommand);
             }
-            WhOdoPackageInfoCommand whOdoPackageInfoCommand = new WhOdoPackageInfoCommand();
-            whOdoPackageInfoCommand.setOdoId(whCheckingResultCommand.getOuId());
-            whOdoPackageInfoCommand.setOutboundboxId(whCheckingCommand.getOutboundboxId());
-            whOdoPackageInfoCommand.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
-            whOdoPackageInfoCommand.setStatus(1);
-            whOdoPackageInfoCommand.setCalcWeight(calcWeight.doubleValue());
-            whOdoPackageInfoCommand.setFloats(whFunctionOutBound.getWeightFloatPercentage());
-            whOdoPackageInfoCommand.setActualWeight(null);
-            whOdoPackageInfoCommand.setLifecycle(1);
-            whOdoPackageInfoCommand.setCreateId(whCheckingResultCommand.getUserId());
-            whOdoPackageInfoCommand.setCreateTime(new Date());
-            whOdoPackageInfoCommand.setLastModifyTime(new Date());
-            whOdoPackageInfoCommand.setModifiedId(whCheckingResultCommand.getUserId());
-            whOdoPackageInfoManager.saveOrUpdate(whOdoPackageInfoCommand);
         }
         return isSuccess;
     }
 
+    public Map<String, List<WhCheckingLineCommand>> getCheckingLineForGroup(Long checkingId, Long ouId, Long outboundboxId) {
+        Map<String, List<WhCheckingLineCommand>> checkingLineMap = new HashMap<String, List<WhCheckingLineCommand>>();
+        List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(checkingId, ouId);
+        for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
+            String key = whCheckingLineCommand.getOdoId().toString() + outboundboxId.toString();
+            List<WhCheckingLineCommand> checkingLineCommandLst = new ArrayList<WhCheckingLineCommand>();
+            if(null != checkingLineMap.get(key)){
+                checkingLineCommandLst = checkingLineMap.get(key);
+            }
+            checkingLineCommandLst.add(whCheckingLineCommand);
+            checkingLineMap.put(key, checkingLineCommandLst);
+        }
+        return checkingLineMap;
+    }
 }

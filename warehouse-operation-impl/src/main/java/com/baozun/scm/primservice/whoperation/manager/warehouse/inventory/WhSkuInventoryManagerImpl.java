@@ -108,7 +108,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
@@ -117,7 +116,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
-import com.baozun.utilities.type.StringUtil;
 
 /**
  * @author lichuan
@@ -6767,5 +6765,20 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @Override
     public List<WhSkuInventory> findSkuInventoryByContainer(WhSkuInventory whSkuInventory) {
         return whSkuInventoryDao.findSkuInventoryByContainer(whSkuInventory);
+    }
+    
+    /**
+     * 根据参数查询库存信息
+     * 
+     * @param id
+     * @param uuid
+     * @param ouid
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSkuInventoryCommand findWhSkuInventoryByIdAndUuidAndOuid(Long id, String uuid, Long ouid) {
+        WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryDao.findWhSkuInventoryByIdAndUuidAndOuid(id, uuid, ouid);
+        return whSkuInventoryCommand;
     }
 }

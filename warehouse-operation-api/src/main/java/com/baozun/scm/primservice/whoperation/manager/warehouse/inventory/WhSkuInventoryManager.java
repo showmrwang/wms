@@ -255,4 +255,15 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @return
      */
     List<WhSkuInventory> findSkuInventoryByContainer(WhSkuInventory whSkuInventory);
+    
+    /**
+     * 根据参数查询库存信息
+     * 
+     * @author qiming.liu
+     * @param id
+     * @param uuid
+     * @param ouid
+     * @return
+     */
+    WhSkuInventoryCommand findWhSkuInventoryByIdAndUuidAndOuid(Long id, String uuid, Long ouid);
 }
