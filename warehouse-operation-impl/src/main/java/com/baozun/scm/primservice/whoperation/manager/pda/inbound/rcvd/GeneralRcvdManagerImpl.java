@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
-import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
-import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
@@ -33,7 +28,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
-import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -69,6 +63,8 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.WhInboundManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -98,7 +94,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySnLog;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
-import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("generalRcvdManager")
 @Transactional
@@ -166,254 +161,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
     private WhInboundManager whInboundManager;
+    @Autowired
+    private AsnManager asnManager;
+    @Autowired
+    private PoManager poManager;
 
-    @Override
-    @Deprecated
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commandList) {
-        // 逻辑:
-        // 1.插入库存记录
-        // 2.更新ASN明细
-        // 3.更新ASN头信息
-        // 4.更新PO明细
-        // 5.更新PO头信息
-        if (commandList != null && commandList.size() > 0) {
-            Long asnId = commandList.get(0).getOccupationId();// ASN头ID
-            Long ouId = commandList.get(0).getOuId();// OUID
-            Long userId = commandList.get(0).getCreatedId();// 用户ID
-            // 获取ASN
-            WhAsn asn = this.whAsnDao.findWhAsnById(asnId, ouId);
-            if (null == asn) {
-                throw new BusinessException("1");
-            }
-            // 将数据按照明细ID筛选，统计数目，放到MAP集合中
-            Map<Long, Double> lineMap = new HashMap<Long, Double>();
-            Map<String, WhAsnRcvdLog> rcvdLogMap = new HashMap<String, WhAsnRcvdLog>();
-            Map<String, WhSkuInventory> skuInvMap = new HashMap<String, WhSkuInventory>();
-            // 1.保存库存
-            // 2.筛选ASN明细数据集合
-            for (RcvdCacheCommand cacheInv : commandList) {
-                String occupationCode = cacheInv.getOccupationCode();
-                Long lineId = cacheInv.getLineId();
-                if (lineMap.containsKey(lineId)) {
-                    lineMap.put(cacheInv.getLineId(), lineMap.get(lineId) + cacheInv.getSkuBatchCount());
-                } else {
-                    lineMap.put(cacheInv.getLineId(), cacheInv.getSkuBatchCount().doubleValue());
-                }
-                WhSkuInventory skuInv = new WhSkuInventory();
-                BeanUtils.copyProperties(cacheInv, skuInv);
 
-                skuInv.setCustomerId(asn.getCustomerId());
-                skuInv.setStoreId(asn.getStoreId());
-                skuInv.setOuId(cacheInv.getOuId());
-                String uuid = "";
-
-                // 测试用
-                // skuInv.setId((long) Math.random() * 1000000);
-                try {
-                    uuid = SkuInventoryUuid.invUuid(skuInv);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (skuInvMap.containsKey(uuid)) {
-                    skuInv = skuInvMap.get(uuid);
-                    skuInv.setOnHandQty(skuInv.getOnHandQty() + cacheInv.getSkuBatchCount().longValue());
-                } else {
-                    skuInv.setUuid(uuid);
-                    skuInv.setAllocatedQty(Constants.DEFAULT_DOUBLE);
-                    skuInv.setToBeFilledQty(Constants.DEFAULT_DOUBLE);
-                    skuInv.setFrozenQty(Constants.DEFAULT_DOUBLE);
-                    skuInv.setOnHandQty(cacheInv.getSkuBatchCount().doubleValue());
-                }
-                skuInvMap.put(uuid, skuInv);
-                // 插入日志表
-                String asnRcvdLogMaoKey = lineId + uuid;
-                WhAsnRcvdLog asnRcvdLog = new WhAsnRcvdLog();
-                if (rcvdLogMap.containsKey(asnRcvdLogMaoKey)) {
-                    asnRcvdLog = rcvdLogMap.get(asnRcvdLogMaoKey);
-                    asnRcvdLog.setQuantity(asnRcvdLog.getQuantity() + cacheInv.getSkuBatchCount().longValue());
-                } else {
-                    asnRcvdLog.setAsnId(cacheInv.getOccupationId());
-                    asnRcvdLog.setAsnLineId(cacheInv.getLineId());
-                    asnRcvdLog.setAsnCode(cacheInv.getOccupationCode());
-                    Sku sku = this.skuDao.findByIdShared(cacheInv.getSkuId(), ouId);
-                    asnRcvdLog.setSkuCode(sku.getCode());
-                    asnRcvdLog.setSkuName(sku.getName());
-                    asnRcvdLog.setQuantity(cacheInv.getSkuBatchCount().longValue());
-                    Container container = this.containerDao.findByIdExt(cacheInv.getInsideContainerId(), ouId);
-                    asnRcvdLog.setContainerCode(container.getCode());
-                    asnRcvdLog.setContainerName(container.getName());
-                    asnRcvdLog.setMfgDate(cacheInv.getMfgDate());
-                    asnRcvdLog.setExpDate(cacheInv.getExpDate());
-                    asnRcvdLog.setBatchNo(cacheInv.getBatchNumber());
-                    asnRcvdLog.setCountryOfOrigin(cacheInv.getCountryOfOrigin());
-                    asnRcvdLog.setInvStatus(cacheInv.getInvStatus().toString());
-                    asnRcvdLog.setInvType(cacheInv.getInvType());
-                    asnRcvdLog.setInvAttr1(cacheInv.getInvAttr1());
-                    asnRcvdLog.setInvAttr2(cacheInv.getInvAttr2());
-                    asnRcvdLog.setInvAttr3(cacheInv.getInvAttr3());
-                    asnRcvdLog.setInvAttr4(cacheInv.getInvAttr4());
-                    asnRcvdLog.setInvAttr5(cacheInv.getInvAttr5());
-                    asnRcvdLog.setOuId(ouId);
-                    asnRcvdLog.setCreateTime(new Date());
-                    asnRcvdLog.setLastModifyTime(new Date());
-                    asnRcvdLog.setOperatorId(userId);
-                }
-                rcvdLogMap.put(asnRcvdLogMaoKey, asnRcvdLog);
-                if (null != cacheInv.getSnList()) {
-                    for (RcvdSnCacheCommand RcvdSn : cacheInv.getSnList()) {
-                        WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
-                        skuInvSn.setDefectTypeId(RcvdSn.getDefectTypeId());
-                        skuInvSn.setDefectReasonsId(RcvdSn.getDefectReasonsId());
-                        skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
-                        // #条码 调用条码生成器
-                        String barCode = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null);
-                        skuInvSn.setDefectWareBarcode(barCode);
-                        skuInvSn.setOuId(ouId);
-                        skuInvSn.setUuid(uuid);
-                        skuInvSn.setOccupationCode(occupationCode);
-                        whSkuInventorySnDao.insert(skuInvSn);
-                        // 插入日志表
-                        WhAsnRcvdSnLog whAsnRcvdSnLog = new WhAsnRcvdSnLog();
-                        whAsnRcvdSnLog.setAsnRcvdId(asnId);
-                        whAsnRcvdSnLog.setSn(RcvdSn.getSn());
-                        whAsnRcvdSnLog.setDefectWareBarcode(barCode);
-                        whAsnRcvdSnLog.setOuId(ouId);
-                        // #取得残次类型残次原因的名称。
-                        StoreDefectType storeDefectType = this.storeDefectTypeDao.findById(RcvdSn.getDefectTypeId());
-                        if (null == storeDefectType) {
-                            WarehouseDefectType warehouseDefectType = this.warehouseDefectTypeDao.findByIdExt(RcvdSn.getDefectTypeId(), ouId);
-                            if (warehouseDefectType != null) {
-                                whAsnRcvdSnLog.setDefectType(warehouseDefectType.getName());
-                            } else {
-                                whAsnRcvdSnLog.setDefectType(RcvdSn.getDefectTypeId().toString());
-                            }
-                            WarehouseDefectReasons warehouseDefectReasons = this.warehouseDefectReasonsDao.findByIdExt(RcvdSn.getDefectReasonsId(), ouId);
-                            if (warehouseDefectReasons != null) {
-                                whAsnRcvdSnLog.setDefectReasons(warehouseDefectReasons.getName());
-                            } else {
-                                whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
-                            }
-                        } else {
-                            whAsnRcvdSnLog.setDefectType(storeDefectType.getName());
-                            StoreDefectReasons storeDefectReasons = this.storeDefectReasonsDao.findById(RcvdSn.getDefectReasonsId());
-                            if (storeDefectReasons != null) {
-                                whAsnRcvdSnLog.setDefectReasons(storeDefectReasons.getName());
-                            } else {
-                                whAsnRcvdSnLog.setDefectReasons(RcvdSn.getDefectReasonsId().toString());
-                            }
-                        }
-                        this.whAsnRcvdSnLogDao.insert(whAsnRcvdSnLog);
-                    }
-
-                }
-            }
-            // 更新库存表
-            Iterator<WhSkuInventory> skuInvMapIt = skuInvMap.values().iterator();
-            while (skuInvMapIt.hasNext()) {
-                WhSkuInventory s = skuInvMapIt.next();
-                this.whSkuInventoryDao.insert(s);
-            }
-            // 更新收货日志表
-            Iterator<WhAsnRcvdLog> rcvdLogMapIt = rcvdLogMap.values().iterator();
-            while (rcvdLogMapIt.hasNext()) {
-                WhAsnRcvdLog whAsnRcvdLog = rcvdLogMapIt.next();
-                this.whAsnRcvdLogDao.insert(whAsnRcvdLog);
-            }
-            // 更新ASN明细
-            Iterator<Entry<Long, Double>> it = lineMap.entrySet().iterator();
-            Double asnCount = Constants.DEFAULT_DOUBLE;
-            Map<Long, Double> polineMap = new HashMap<Long, Double>();
-            while (it.hasNext()) {
-                Entry<Long, Double> entry = it.next();
-                WhAsnLine asnLine = this.whAsnLineDao.findWhAsnLineById(entry.getKey(), ouId);
-                if (null == asnLine) {
-                    throw new BusinessException("1");
-                }
-                asnLine.setQtyRcvd(asnLine.getQtyRcvd() + entry.getValue());
-                asnLine.setModifiedId(userId);
-                if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
-                    asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD_FINISH);
-                } else {
-                    asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
-                }
-                int updateAsnLineCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
-                if (updateAsnLineCount <= 0) {
-                    throw new BusinessException("2");
-                }
-                if (polineMap.containsKey(asnLine.getPoLineId())) {
-                    polineMap.put(asnLine.getPoLineId(), lineMap.get(asnLine.getPoLineId()) + entry.getValue());
-                } else {
-                    polineMap.put(asnLine.getPoLineId(), entry.getValue());
-                }
-                asnCount += entry.getKey();
-            }
-            // 1.更新ASN明细
-            // 2.筛选PO明细数据集合
-            asn.setQtyRcvd(asn.getQtyRcvd() + asnCount);
-            WhAsnLineCommand searchAsnLineCommand = new WhAsnLineCommand();
-            searchAsnLineCommand.setAsnId(asn.getId());
-            searchAsnLineCommand.setOuId(ouId);
-            searchAsnLineCommand.setStatus(PoAsnStatus.ASNLINE_RCVD);
-            WhAsnLine searchAsnLine = new WhAsnLine();
-            BeanUtils.copyProperties(searchAsnLineCommand, searchAsnLine);
-            long rcvdlineCount = this.whAsnLineDao.findListCountByParam(searchAsnLine);
-            if (rcvdlineCount > 0) {
-                asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH);
-            } else {
-                asn.setStatus(PoAsnStatus.ASN_RCVD);
-            }
-            asn.setModifiedId(userId);
-            int updateAsnCount = this.whAsnDao.saveOrUpdateByVersion(asn);
-            if (updateAsnCount <= 0) {
-                throw new BusinessException("2");
-            }
-            Iterator<Entry<Long, Double>> poIt = polineMap.entrySet().iterator();
-            Long poId = null;
-            // 更新PO明细数据集合
-            while (poIt.hasNext()) {
-                Entry<Long, Double> entry = poIt.next();
-                WhPoLine poline = this.whPoLineDao.findWhPoLineById(entry.getKey(), ouId);
-                poline.setQtyRcvd(poline.getQtyRcvd() + entry.getValue());
-                if (poline.getQtyRcvd() > poline.getQtyPlanned()) {
-                    poline.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
-                } else {
-                    poline.setStatus(PoAsnStatus.POLINE_RCVD);
-                }
-                poline.setModifiedId(userId);
-                int updatePoCount = this.whPoLineDao.saveOrUpdateByVersion(poline);
-                if (updatePoCount <= 0) {
-                    throw new BusinessException("2");
-                }
-                if (null == poId) {
-                    poId = poline.getPoId();
-                }
-            }
-            // 更新Po数据集合
-            WhPo po = this.whPoDao.findWhPoById(poId, ouId);
-            if (null == po) {
-                throw new BusinessException("1");
-            }
-            po.setModifiedId(userId);
-            po.setQtyRcvd(po.getQtyRcvd() + asnCount);
-            WhPoLineCommand polineCommand = new WhPoLineCommand();
-            polineCommand.setOuId(ouId);
-            polineCommand.setStatus(PoAsnStatus.POLINE_RCVD);
-            polineCommand.setPoId(poId);
-            WhPoLine searchPoLine = new WhPoLine();
-            BeanUtils.copyProperties(polineCommand, searchPoLine);
-            long polinecount = this.whPoLineDao.findListCountByParam(searchPoLine);
-            if (polinecount > 0) {
-                po.setStatus(PoAsnStatus.PO_RCVD);
-            } else {
-                po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
-            }
-            int updatePoCount = this.whPoDao.saveOrUpdateByVersion(po);
-            if (updatePoCount <= 0) {
-                throw new BusinessException("2");
-            }
-        }
-    }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -572,7 +325,16 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
             // @mender yimin.lu 2017/3/7
             // 自动关单逻辑：ASN自动关单逻辑：Asn不允许超收，实收数量=计划数量时候；仓库下PO单自动关单逻辑：PO单不允许超收，实收数量=计划数量
-            this.autoClose(po, asn, ouId, userId);
+            if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
+                if (asn.getIsAutoClose() != null && asn.getIsAutoClose()) {
+                    this.asnManager.closeAsn(asn.getId(), ouId, userId);
+                }
+            }
+            if (po.getQtyRcvd() >= po.getQtyPlanned()) {
+                if (po.getIsAutoClose() != null && po.getIsAutoClose()) {
+                    this.poManager.closePoToShard(po.getId(), ouId, userId);
+                }
+            }
 
 
         } catch (BusinessException e) {
@@ -584,74 +346,6 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     }
 
 
-    private void autoClose(WhPo po, WhAsn asn, Long ouId, Long userId) {
-        Double overRate = this.getOverChargeRate(asn.getId(), ouId);
-        if (overRate == null || overRate <= 0) {
-            // 自动关闭ASN单据
-            if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
-                List<WhAsnLine> lineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asn.getId(), ouId);
-                if (lineList != null && lineList.size() > 0) {
-                    for (WhAsnLine line : lineList) {
-                        line.setStatus(PoAsnStatus.ASNLINE_CLOSE);
-                        line.setModifiedId(userId);
-                        int updateCountLine = this.whAsnLineDao.saveOrUpdateByVersion(line);
-                        if (updateCountLine <= 0) {
-                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                        }
-                    }
-                }
-                WhAsn updateAsn = this.whAsnDao.findWhAsnById(asn.getId(), ouId);
-                updateAsn.setModifiedId(userId);
-                updateAsn.setStatus(PoAsnStatus.ASN_CLOSE);
-                int updateCountAsn = this.whAsnDao.saveOrUpdateByVersion(updateAsn);
-                if (updateCountAsn <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
-                // zhu.kai 收货反馈
-                Store store = storeDao.findById(asn.getStoreId());
-                if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 2) {
-    				// 按ASN单反馈, 上位系统单据才反馈
-                	WhPo whPo = whPoDao.findWhPoById(asn.getPoId(), ouId);
-            		if (null != whPo.getIsVmi() && whPo.getIsVmi()) {
-            			// 根据asnId查找出asnLine, 用WhPoLine封装参数
-            			List<WhPoLine> asnLineList = whAsnLineDao.findAsnInboundData(asn.getId(), ouId);
-            			WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(whPo, asnLineList, ouId);
-            			whInboundManager.insertWhInboundData(inboundConfirmCommand);
-            		}
-    			}
-            }
-            // 自动关闭PO单据
-            if (po.getQtyRcvd() >= po.getQtyPlanned()) {
-                List<WhPoLine> lineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(po.getId(), ouId, null);
-                if (lineList != null && lineList.size() > 0) {
-                    for (WhPoLine line : lineList) {
-                        line.setModifiedId(userId);
-                        line.setStatus(PoAsnStatus.POLINE_CLOSE);
-                        int updateCountLine = this.whPoLineDao.saveOrUpdateByVersion(line);
-                        if (updateCountLine <= 0) {
-                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                        }
-                    }
-                }
-                WhPo updatePo = this.whPoDao.findWhPoById(po.getId(), ouId);
-                updatePo.setModifiedId(userId);
-                updatePo.setStatus(PoAsnStatus.PO_CLOSE);
-                int updateCountPo = this.whPoDao.saveOrUpdateByVersion(updatePo);
-                if (updateCountPo <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
-                // zhu.kai 收货反馈
-                Store store = storeDao.findById(updatePo.getStoreId());
-            	if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 1) {
-					// 按PO单反馈, 上位系统单据才反馈
-            		if (null != updatePo.getIsVmi() && updatePo.getIsVmi()) {
-            			WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(updatePo, lineList, ouId);
-            			whInboundManager.insertWhInboundData(inboundConfirmCommand);
-            		}
-				}
-            }
-        }
-    }
 
     private void updateContainerAssistByVersion(Long id, Long ouId) {
         this.containerAssistDao.findByContainerId(id, ouId);

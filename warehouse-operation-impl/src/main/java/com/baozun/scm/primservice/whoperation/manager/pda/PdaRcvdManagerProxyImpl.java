@@ -650,9 +650,13 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
             this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, container, saveWhCartonList, wh);
             WhPo shardPo = this.poManager.findWhPoByIdToShard(po.getId(), ouId);
             // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
+            WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(po.getExtCode(), po.getStoreId(), ouId);
             if (PoAsnStatus.PO_CLOSE == shardPo.getStatus()) {
-                WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(po.getExtCode(), po.getStoreId(), ouId);
-                this.poManager.closePoToInfo(infoPo.getId(), ouId, userId);
+                this.poManager.snycPoToInfo("CLOSE", infoPo, savePoLineList);
+            } else if (PoAsnStatus.PO_RCVD == shardPo.getStatus()) {
+                this.poManager.snycPoToInfo("RCVD", infoPo, savePoLineList);
+            } else if (PoAsnStatus.PO_RCVD_FINISH == shardPo.getStatus()) {
+                this.poManager.snycPoToInfo("RCVD_FINISH", infoPo, savePoLineList);
             }
         } catch (BusinessException e) {
             throw e;

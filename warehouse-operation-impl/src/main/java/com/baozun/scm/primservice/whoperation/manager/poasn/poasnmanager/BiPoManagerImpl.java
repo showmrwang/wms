@@ -509,8 +509,24 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
                 whpo.setStatus(PoAsnStatus.PO_RCVD);
             }
         }
-        this.whPoDao.saveOrUpdateByVersion(whpo);
+        // #自动关单逻辑
         BiPo bipo = this.biPoDao.findById(id);
+        if (bipo.getIsAutoClose() != null && bipo.getIsAutoClose()) {
+            Warehouse wh = this.getWhToRedis(ouId);
+            if (wh.getPoOverchargeProportion() != null && wh.getPoOverchargeProportion() != 0) {
+                whpo.setIsAutoClose(false);
+                bipo.setIsAutoClose(false);
+            } else {
+                if (wh.getIsPoAutoVerify() != null && wh.getIsPoAutoVerify()) {
+
+                } else {
+                    whpo.setIsAutoClose(false);
+                    bipo.setIsAutoClose(false);
+                }
+            }
+        }
+
+        this.whPoDao.saveOrUpdateByVersion(whpo);
         if (PoAsnStatus.BIPO_NEW == bipo.getStatus()) {
             bipo.setStatus(PoAsnStatus.BIPO_ALLOT);
             this.biPoDao.saveOrUpdateByVersion(bipo);

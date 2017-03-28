@@ -760,7 +760,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             // 同步到集团下
             WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), command.getOuId());
             packageUpdatePoData(command, infoPo);
-            poManager.snycPoToInfo(infoPo, "EDIT_HEAD");
+            poManager.snycPoToInfo("EDIT_HEAD", infoPo, null);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");
