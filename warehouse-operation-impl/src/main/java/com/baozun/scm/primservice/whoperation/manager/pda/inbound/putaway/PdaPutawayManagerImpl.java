@@ -236,6 +236,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         ScanResultCommand srCmd = new ScanResultCommand();
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.PALLET_PUTAWAY);
+        if (null == containerCmd) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
         Integer containerStatus = containerCmd.getStatus();
@@ -3280,7 +3285,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         Integer scanPattern = (WhScanPatternType.ONE_BY_ONE_SCAN == putawyaFunc.getScanPattern()) ? WhScanPatternType.ONE_BY_ONE_SCAN : WhScanPatternType.NUMBER_ONLY_SCAN;
         // 2.提示商品并判断是否需要扫描属性
-        Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();
+        // Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();
         // Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect =
         // isCmd.getInsideContainerSkuAttrIdsSnDefect();
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();

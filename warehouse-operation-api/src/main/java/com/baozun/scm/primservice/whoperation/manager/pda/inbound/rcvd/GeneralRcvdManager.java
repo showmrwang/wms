@@ -3,7 +3,6 @@ package com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd;
 import java.util.List;
 import java.util.Map;
 
-import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.skucommand.SkuStandardPackingCommand;
@@ -36,14 +35,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
  *
  */
 public interface GeneralRcvdManager extends BaseManager {
-
-    /**
-     * 通用收货：将扫描的商品数据从缓存中推送到数据库中
-     * 
-     * @param commmand
-     */
-    @Deprecated
-    void saveScanedSkuWhenGeneralRcvdForPda(List<RcvdCacheCommand> commmandList);
 
     /**
      * 根据内部容器号查询容器是否有库存

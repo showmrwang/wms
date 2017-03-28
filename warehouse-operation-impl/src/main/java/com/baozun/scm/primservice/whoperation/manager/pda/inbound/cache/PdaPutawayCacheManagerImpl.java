@@ -2930,7 +2930,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.error("tip container is not in cache server error, logId is[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-        Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);// 当前内部容器中所有唯一sku
+//        Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);// 当前内部容器中所有唯一sku
         Map<String, Set<String>> skuAttrIdsSnDefect = insideContainerSkuAttrIdsSnDefect.get(icId);// 唯一sku对应的所有sn残次信息
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icId);// 库位对应的所有唯一sku及Sn残次条码
         Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(icId);// 库位对应的所有唯一sku总件数
@@ -3434,6 +3434,29 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 if (null != isCmd) {
                     Set<Long> insideContainerIds = isCmd.getInsideContainerIds();
                     for (Long icId : insideContainerIds) {
+                        TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
+                        if (null != tipLocCmd) {
+                            ArrayDeque<Long> tipLocationIds = tipLocCmd.getTipLocationIds();
+                            if (null != tipLocationIds && tipLocationIds.size() > 0) {
+                                Iterator<Long> locIter = tipLocationIds.iterator();
+                                while (locIter.hasNext()) {
+                                    Long locValue = locIter.next();
+                                    if (null != locValue) {
+                                        TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locValue.toString());
+                                        if (null != tipScanSkuCmd) {
+                                            ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                                            if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                                                Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                                                while (iter2.hasNext()) {
+                                                    String skuAttrId = iter2.next();
+                                                    if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                         cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
@@ -3449,10 +3472,34 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 Long icId = insideContainerCmd.getId();
                 // 0.清除商品队列或库位队列
                 if (true == isAfterPutawayTipLoc) {
+                    // 除清逐件扫描商品数量
+                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                    if (null != tipScanSkuCmd) {
+                        ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                        if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                            Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                            while (iter2.hasNext()) {
+                                String skuAttrId = iter2.next();
+                                if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                            }
+                        }
+                    }
                     // 清除商品队列
                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                 }
                 if (true == isAfterPutawayTipContainer) {
+                    // 除清逐件扫描商品数量
+                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                    if (null != tipScanSkuCmd) {
+                        ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                        if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                            Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                            while (iter2.hasNext()) {
+                                String skuAttrId = iter2.next();
+                                if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                            }
+                        }
+                    }
                     // 清除商品队列及库位队列
                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                     cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
@@ -3467,10 +3514,34 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Long icId = insideContainerCmd.getId();
             // 0.清除商品队列或库位队列
             if (true == isAfterPutawayTipLoc) {
+                // 除清逐件扫描商品数量
+                TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                if (null != tipScanSkuCmd) {
+                    ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                    if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                        Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                        while (iter2.hasNext()) {
+                            String skuAttrId = iter2.next();
+                            if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                        }
+                    }
+                }
                 // 清除商品队列
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
             }
             if (true == isAfterPutawayTipContainer) {
+                // 除清逐件扫描商品数量
+                TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                if (null != tipScanSkuCmd) {
+                    ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                    if (null != oneByOneScanSkuAttrIds && oneByOneScanSkuAttrIds.size() > 0) {
+                        Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
+                        while (iter2.hasNext()) {
+                            String skuAttrId = iter2.next();
+                            if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                        }
+                    }
+                }
                 // 清除商品队列及库位队列
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                 cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
@@ -3860,7 +3931,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             }
             boolean isSkuChecked = true;
                 if(scanPattern == WhScanPatternType.NUMBER_ONLY_SCAN) {  //批量扫描
-                    if(scanSkuQty.longValue() > skuQty.longValue()){
+                    long value = 0L;
+                    if(value + scanSkuQty.longValue() > skuQty.longValue()){
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, skuQty, scanSkuQty, logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY); 
                     }else{
