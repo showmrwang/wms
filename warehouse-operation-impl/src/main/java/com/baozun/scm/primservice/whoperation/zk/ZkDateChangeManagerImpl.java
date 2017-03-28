@@ -13,7 +13,7 @@ public class ZkDateChangeManagerImpl implements ZkDateChangeManager {
     protected static final Logger log = LoggerFactory.getLogger(ZkDateChangeManagerImpl.class);
     @Value("${zk.config.app.root}")
     private String sysconfigPath;
-    // @Value("${zk.notice.log.change}")
+    @Value("${zk.notice.log.change}")
     private String logChangePath;
 
     // @Autowired

@@ -43,7 +43,7 @@
 		<property name="dataChangePaths">
 			<list>
 				<value>${zk.config.app.root}</value>
-			
+				<value>${zk.notice.log.change}</value>
 			</list>
 		</property>
 		<property name="subscribeStateChange">
