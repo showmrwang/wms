@@ -1,6 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.print.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreatePickingWorkResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreateWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoOutBoundBoxMapper;
@@ -20,8 +20,6 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentRuleManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 @Service("createWorkManagerProxy")
 public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
@@ -51,6 +49,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      */
     public void createWorkInWave(Long waveId, Long ouId, Long userId) {
         try {
+            CreateWorkResultCommand createWorkResultCommand = new CreateWorkResultCommand();
             // 查询波次中的所有小批次
             WhWave whWave = whWaveManager.getWaveByWaveIdAndOuId(waveId, ouId);
             if (null == whWave) {
@@ -58,20 +57,26 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             }
             if( null != whWave.getIsCreateReplenishedWork() && false == whWave.getIsCreateReplenishedWork()){
                 // 波次中创建补货工作和作业
-                Boolean isReplenishmentWorkInWave = this.createReplenishmentWorkInWave(waveId, ouId, userId);
+                createWorkResultCommand = this.createReplenishmentWorkInWave(whWave, ouId, userId);
+                Boolean isReplenishmentWorkInWave = createWorkResultCommand.getIsReplenishmentWorkInWave();
+                // 这个地方确认过，如果没有补货工作也会状态也会改为ture               
                 if(true == isReplenishmentWorkInWave){
+                    whWave = createWorkResultCommand.getWhWave();
                     whWave.setIsCreateReplenishedWork(true);
                 }
             }
             if( null != whWave.getIsCreatePickingWork() && false == whWave.getIsCreatePickingWork()){
                 // 波次中创建拣货工作和作业
-                Boolean isPickingWorkInWave = this.createPickingWorkInWave(waveId, ouId, userId);
+                createWorkResultCommand = this.createPickingWorkInWave(whWave, ouId, userId);
+                Boolean isPickingWorkInWave = createWorkResultCommand.getIsPickingWorkInWave();
                 if(true == isPickingWorkInWave){
+                    whWave = createWorkResultCommand.getWhWave();
                     whWave.setIsCreatePickingWork(true);
                 }
             }
             if(true == whWave.getIsCreateReplenishedWork() && true == whWave.getIsCreatePickingWork()){
                 whWave.setStatus(WaveStatus.WAVE_EXECUTED);
+                whWave.setFinishTime(new Date());
             }
             whWaveManager.updateWaveByWhWave(whWave); 
         } catch (Exception e) {
@@ -101,13 +106,16 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      * @param userId
      * @return
      */
-    public Boolean createReplenishmentWorkInWave(Long waveId, Long ouId, Long userId) {
+    public CreateWorkResultCommand createReplenishmentWorkInWave(WhWave whWave, Long ouId, Long userId) {
         // 查询补货工作释放及拆分条件分组 -- 补货工作
         Boolean isReplenishmentWorkInWave = true;
-        List<ReplenishmentRuleCommand> replenishmentRuleCommands = replenishmentRuleManager.getInReplenishmentConditionGroup(waveId, ouId);
+        CreateWorkResultCommand resultCommand = new CreateWorkResultCommand();
+        resultCommand.setWhWave(whWave);
+        List<ReplenishmentRuleCommand> replenishmentRuleCommands = replenishmentRuleManager.getInReplenishmentConditionGroup(whWave.getId(), ouId);
         if(null == replenishmentRuleCommands){
             log.error("replenishmentRuleCommands is null", replenishmentRuleCommands);
-            return false;
+            resultCommand.setIsReplenishmentWorkInWave(false);
+            return resultCommand;
         }
         // 循环补货工作释放及拆分条件分组        
         for(ReplenishmentRuleCommand replenishmentRuleCommand : replenishmentRuleCommands){
@@ -117,14 +125,15 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             // 循环统计的分组信息分别创建工作           
             for(String key : siacMap.keySet()){
                 try {
-                    createWorkManager.createReplenishmentWorkInWave(siacMap.get(key), replenishmentRuleCommand, userId);
+                    resultCommand = createWorkManager.createReplenishmentWorkInWave(resultCommand.getWhWave(), siacMap.get(key), replenishmentRuleCommand, userId);
                 } catch (Exception e) {
                     log.error("", e);
                     isReplenishmentWorkInWave = false;
                 }
             }
         }
-        return isReplenishmentWorkInWave;
+        resultCommand.setIsReplenishmentWorkInWave(isReplenishmentWorkInWave);
+        return resultCommand;
     }
 
     /**
@@ -134,11 +143,12 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      * @param userId
      * @return
      */
-    public Boolean createPickingWorkInWave(Long waveId, Long ouId, Long userId) {
+    public CreateWorkResultCommand createPickingWorkInWave(WhWave whWave, Long ouId, Long userId) {
         Boolean isPickingWorkInWave = true;
-        CreatePickingWorkResultCommand resultCommand = new CreatePickingWorkResultCommand();
+        CreateWorkResultCommand resultCommand = new CreateWorkResultCommand();
+        resultCommand.setWhWave(whWave);
         // 查询出小批次列表
-        List<WhOdoOutBoundBox> whOdoOutBoundBoxList = odoOutBoundBoxMapper.getBoxBatchsForPicking(waveId, ouId);
+        List<WhOdoOutBoundBox> whOdoOutBoundBoxList = odoOutBoundBoxMapper.getBoxBatchsForPicking(whWave.getId(), ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
             throw new BusinessException("小批次列表为空"); 
         }
@@ -151,7 +161,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 //循环小批次下所有分组信息分别创建工作 和作业         
                 for(WhOdoOutBoundBox whOdoOutBoundBoxGroup : odoOutBoundBoxForGroup){
                     try {
-                        resultCommand = createWorkManager.createPickingWorkInWave(whOdoOutBoundBoxGroup, whOdoOutBoundBox, resultCommand, userId);
+                        resultCommand = createWorkManager.createPickingWorkInWave(resultCommand.getWhWave(), whOdoOutBoundBoxGroup, whOdoOutBoundBox, resultCommand, userId);
                     } catch (Exception e) {
                         log.error("", e);
                         isPickingWorkInWave = false;
@@ -160,7 +170,8 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 }
             }
     	}
-    	return isPickingWorkInWave;
+    	resultCommand.setIsPickingWorkInWave(isPickingWorkInWave);
+    	return resultCommand;
     }
     
     /**

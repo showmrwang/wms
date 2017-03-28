@@ -31,7 +31,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationComma
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreatePickingWorkResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreateWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -163,11 +163,17 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createReplenishmentWorkInWave(List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst, ReplenishmentRuleCommand replenishmentRuleCommand, Long userId) {
+    public CreateWorkResultCommand createReplenishmentWorkInWave(WhWave whWave, List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst, ReplenishmentRuleCommand replenishmentRuleCommand, Long userId) {
+        CreateWorkResultCommand createWorkResultCommand = new CreateWorkResultCommand();
         try {
+            // 工作总单数
+            Integer execOdoQty = null == whWave.getExecOdoQty()? 0 : whWave.getExecOdoQty();
+            // 工作总行数
+            Integer execOdoLineQty = null == whWave.getExecOdoLineQty()? 0 : whWave.getExecOdoLineQty();
             // 创建拣货工作--创建工作头信息
             WhSkuInventoryAllocatedCommand siaCommand = whSkuInventoryAllocatedCommandLst.get(0);
             String replenishmentWorkCode = this.saveReplenishmentWork(replenishmentRuleCommand.getWaveId(), siaCommand, userId);
+            execOdoQty = execOdoQty + 1;
             int rWorkLineTotal = 0;
             Set<String> replenishmentCodes = new HashSet<String>();
             // 循环统计的分组补货信息列表
@@ -178,6 +184,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 }
                 // 创建补货工作明细
                 this.saveReplenishmentWorkLine(replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
+                execOdoLineQty = execOdoLineQty + 1;
                 //工作明细数量                        
                 rWorkLineTotal = rWorkLineTotal + 1;
                 //获取明细补货单据号
@@ -227,10 +234,14 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                     replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
                 }
             }
+            whWave.setExecOdoQty(execOdoQty);
+            whWave.setExecOdoLineQty(execOdoLineQty);
+            createWorkResultCommand.setWhWave(whWave);
         } catch (Exception e) {
             log.error("", e);
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
+        return createWorkResultCommand;
     }
 
     /**
@@ -242,19 +253,24 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public CreatePickingWorkResultCommand createPickingWorkInWave(WhOdoOutBoundBox whOdoOutBoundBoxGroup, WhOdoOutBoundBox whOdoOutBoundBox, CreatePickingWorkResultCommand createPickingWorkResultCommand, Long userId) {
+    public CreateWorkResultCommand createPickingWorkInWave(WhWave whWave, WhOdoOutBoundBox whOdoOutBoundBoxGroup, WhOdoOutBoundBox whOdoOutBoundBox, CreateWorkResultCommand createWorkResultCommand, Long userId) {
         try {
             Map<Long, List<WhSkuInventory>> odoLineIdAndInventory = new HashMap<Long, List<WhSkuInventory>>();
             Map<Long, List<WhSkuInventoryTobefilled>> odoLineIdAndTobefilled = new HashMap<Long, List<WhSkuInventoryTobefilled>>();
             Map<Long, Double> odoLineIdAndQtyMap = new HashMap<Long, Double>();
             Double odoLineIdAndQty = 0.00;
-            odoLineIdAndInventory = createPickingWorkResultCommand.getOdoLineIdAndInventory();
-            odoLineIdAndTobefilled = createPickingWorkResultCommand.getOdoLineIdAndTobefilled();
-            odoLineIdAndQtyMap = createPickingWorkResultCommand.getOdoLineIdAndQty();
+            odoLineIdAndInventory = createWorkResultCommand.getOdoLineIdAndInventory();
+            odoLineIdAndTobefilled = createWorkResultCommand.getOdoLineIdAndTobefilled();
+            odoLineIdAndQtyMap = createWorkResultCommand.getOdoLineIdAndQty();
+            // 工作总单数
+            Integer execOdoQty = null == whWave.getExecOdoQty()? 0 : whWave.getExecOdoQty();
+            // 工作总行数
+            Integer execOdoLineQty = null == whWave.getExecOdoLineQty()? 0 : whWave.getExecOdoLineQty();
             //2.1.1 根据小批次分组查询出所有出库箱/容器信息
             List<WhOdoOutBoundBoxCommand> whOdoOutBoundBoxCommandList = this.getOdoOutBoundBoxListByGroup(whOdoOutBoundBoxGroup);
             //2.1.2 创建拣货工作--创建工作头信息
-            String workCode = this.savePickingWork(whOdoOutBoundBoxGroup, userId);
+            String workCode = this.savePickingWork(whWave, whOdoOutBoundBoxGroup, userId);
+            execOdoQty = execOdoQty + 1;
             //2.1.3 循环出库箱/容器信息列表创建工作明细
             for(WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand : whOdoOutBoundBoxCommandList){
                 //2.1.3.1 判断库位占用量是否满足
@@ -365,9 +381,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 odoLineIdAndTobefilled.put(whOdoOutBoundBoxCommand.getOdoLineId(), whSkuInventoryTobefilledList);
                 //2.1.3.2 创建工作明细
                 this.savePickingWorkLine(whOdoOutBoundBoxCommand, whSkuInventoryLst, whSkuInventoryTobefilledLst, userId, workCode);
+                execOdoLineQty = execOdoLineQty + whSkuInventoryLst.size() + whSkuInventoryTobefilledLst.size();
             }
             //2.1.4 更新工作头信息
-            this.updatePickingWork(workCode, whOdoOutBoundBoxGroup);
+            this.updatePickingWork(whWave, workCode, whOdoOutBoundBoxGroup);
             //2.1.5 创建作业头
             String operationCode = this.savePickingOperation(workCode, whOdoOutBoundBoxGroup);
             //2.1.6 创建作业明细
@@ -376,13 +393,16 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 //2.1.3.3 设置出库箱行标识  
                 this.updateWhOdoOutBoundBoxCommand(whOdoOutBoundBoxCommand);    
             }
-            createPickingWorkResultCommand.setOdoLineIdAndInventory(odoLineIdAndInventory);
-            createPickingWorkResultCommand.setOdoLineIdAndTobefilled(odoLineIdAndTobefilled);
+            createWorkResultCommand.setOdoLineIdAndInventory(odoLineIdAndInventory);
+            createWorkResultCommand.setOdoLineIdAndTobefilled(odoLineIdAndTobefilled);
+            whWave.setExecOdoQty(execOdoQty);
+            whWave.setExecOdoLineQty(execOdoLineQty);
+            createWorkResultCommand.setWhWave(whWave);
         } catch (Exception e) {
             log.error("", e);
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
-        return createPickingWorkResultCommand;
+        return createWorkResultCommand;
     }
     
     /**
@@ -429,11 +449,11 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             }
             // 判断补货单号对应库存是否都创完工作
             for(String replenishmentCode : replenishmentCodes){
-                Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getOuId());
-                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getOuId());
+                Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
+                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
                 if(null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)){
                     // 将补货任务行标识为已创建工作
-                    ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getOuId());
+                    ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
                     replenishmentTask.setIsCreateWork(true);
                     replenishmentTaskDao.saveOrUpdateByVersion(replenishmentTask);
                 }
@@ -1082,10 +1102,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
      * @return
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public String savePickingWork(WhOdoOutBoundBox whOdoOutBoundBox, Long userId) {
-        //查询波次头信息     
-        WhWave whWave = new WhWave();
-        whWave = this.waveDao.findWaveExtByIdAndOuIdAndLifecycle(whOdoOutBoundBox.getWaveId(), whOdoOutBoundBox.getOuId(), BaseModel.LIFECYCLE_NORMAL);
+    public String savePickingWork(WhWave whWave, WhOdoOutBoundBox whOdoOutBoundBox, Long userId) {
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      
@@ -1420,14 +1437,11 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
      * @return
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void updatePickingWork(String workCode, WhOdoOutBoundBox odoOutBoundBox) {
+    public void updatePickingWork(WhWave whWave, String workCode, WhOdoOutBoundBox odoOutBoundBox) {
         //获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, odoOutBoundBox.getOuId());
         //获取工作明细信息列表        
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByWorkId(whWorkCommand.getId(), odoOutBoundBox.getOuId());
-        //查询波次头信息     
-        WhWave whWave = new WhWave();
-        whWave = this.waveDao.findWaveExtByIdAndOuIdAndLifecycle(odoOutBoundBox.getWaveId(), odoOutBoundBox.getOuId(), BaseModel.LIFECYCLE_NORMAL);
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      

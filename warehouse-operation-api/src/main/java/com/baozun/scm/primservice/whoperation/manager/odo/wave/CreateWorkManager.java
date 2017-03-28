@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreatePickingWorkResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreateWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 
 /**
  * @author qiming.liu
@@ -30,7 +31,7 @@ public interface CreateWorkManager extends BaseManager {
      * @param userId
      * @return
      */
-    public void createReplenishmentWorkInWave(List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst, ReplenishmentRuleCommand replenishmentRuleCommand, Long userId);
+    public CreateWorkResultCommand createReplenishmentWorkInWave(WhWave whWave, List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst, ReplenishmentRuleCommand replenishmentRuleCommand, Long userId);
     
     /**
      * [业务方法] 波次中创建捡货工作和作业
@@ -38,7 +39,7 @@ public interface CreateWorkManager extends BaseManager {
      * @param userId
      * @return
      */
-    public CreatePickingWorkResultCommand createPickingWorkInWave(WhOdoOutBoundBox whOdoOutBoundBoxGroup, WhOdoOutBoundBox whOdoOutBoundBox, CreatePickingWorkResultCommand createPickingWorkResultCommand, Long userId);
+    public CreateWorkResultCommand createPickingWorkInWave(WhWave whWave, WhOdoOutBoundBox whOdoOutBoundBoxGroup, WhOdoOutBoundBox whOdoOutBoundBox, CreateWorkResultCommand createPickingWorkResultCommand, Long userId);
     
    
     /**
