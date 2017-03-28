@@ -66,7 +66,7 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
 
     /** 备份集团/仓库whPo */
     private static final String WhPoInsert = "id,po_code,ext_code,ext_po_code,ou_id,customer_id,store_id,supplier_id,from_location,to_location,logistics_provider,po_type,ext_po_type,status,is_iqc,po_date,eta,delivery_time,"
-            + "qty_planned,qty_rcvd,ctn_planned,ctn_rcvd,start_time,stop_time,inbound_time,is_wms,is_vmi,data_source,create_time,created_id,last_modify_time,modified_id";
+            + "qty_planned,qty_rcvd,ctn_planned,ctn_rcvd,start_time,stop_time,inbound_time,is_wms,is_vmi,data_source,create_time,created_id,last_modify_time,modified_id,original_ext_odo_code,original_ec_order_code";
     /** 备份集团/仓库whPo */
     /** 备份集团/仓库whPoLine */
     private static final String WhPoLineInsert = "id,po_id,ou_id,linenum,ext_line_num,sku_id,qty_planned,overshipped,available_qty,"
@@ -79,9 +79,9 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
 
     /** 备份集团BiPo */
     private static final String BiPoInsert = "id,po_code,ext_code,ext_po_code,customer_id,store_id,supplier_id,from_location,to_location,logistics_provider,po_type,ext_po_type,status,is_iqc,po_date,eta,delivery_time,"
-            + "qty_planned,qty_rcvd,ctn_planned,ctn_rcvd,start_time,stop_time,inbound_time,is_wms,is_vmi,data_source,create_time,created_id,last_modify_time,modified_id,archiv_time";
+            + "qty_planned,qty_rcvd,ctn_planned,ctn_rcvd,start_time,stop_time,inbound_time,is_wms,is_vmi,data_source,create_time,created_id,last_modify_time,modified_id,archiv_time,original_ext_odo_code,original_ec_order_code";
     private static final String BiPoSelect = "id,po_code,ext_code,ext_po_code,customer_id,store_id,supplier_id,from_location,to_location,logistics_provider,po_type,ext_po_type,status,is_iqc,po_date,eta,delivery_time,"
-            + "qty_planned,qty_rcvd,ctn_planned,ctn_rcvd,start_time,stop_time,inbound_time,is_wms,is_vmi,data_source,create_time,created_id,last_modify_time,modified_id,now()";
+            + "qty_planned,qty_rcvd,ctn_planned,ctn_rcvd,start_time,stop_time,inbound_time,is_wms,is_vmi,data_source,create_time,created_id,last_modify_time,modified_id,now(),original_ext_odo_code,original_ec_order_code";
     /** 备份集团BiPo */
     /** 备份集团BiPoLine */
     private static final String BiPoLineInsert = "id,po_id,linenum,ext_line_num,sku_id,qty_planned,overshipped,available_qty,"

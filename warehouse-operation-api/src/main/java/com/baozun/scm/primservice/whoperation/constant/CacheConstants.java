@@ -55,12 +55,12 @@ public final class CacheConstants {
     /** 缓存库位推荐队列 */
     public static final String LOCATION_RECOMMEND = "LOCATION_RECOMMEND";
 
-    /**人工上架:扫sn*/
+    /** 人工上架:扫sn */
     public static final String PDA_MAN_MANDE_SCAN_SKU_SN = "MAN_MANDE_SCAN_SKU_SN";
-    /**人工上架:扫sn/残次*/
+    /** 人工上架:扫sn/残次 */
     public static final String PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT = "PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT";
 
-    /**人工上架:扫SKU残次信息*/
+    /** 人工上架:扫SKU残次信息 */
     public static final String PDA_MAN_MANDE_SCAN_SKU_DEFECT = "MAN_MANDE_SCAN_SKU_DEFECT";
     /** 人工上架:容器库存缓存 */
     public static final String PDA_MAN_MANDE_CONTAINER_INVENTORY = "MAN_MANDE_CONTAINER_INVENTORY";
@@ -76,50 +76,51 @@ public final class CacheConstants {
     public static final String PDA_MAN_MANDE_CONTAINER_STATISTIC = "MAN_MANDE_CONTAINER_STATISTIC";
 
     // pda拣货
-    /***pda拣货和补货，作业明细统计*/
+    /*** pda拣货和补货，作业明细统计 */
     public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
-    /***pda补货，作业执行明细统计*/
+    /*** pda补货，作业执行明细统计 */
     public static final String OPERATIONEXEC_STATISTICS = "OPERATIONEXEC_STATISTICS";
 
 
-    /***缓存库位*/
+    /*** 缓存库位 */
     public static final String CACHE_LOCATION = "CACHE_LOCATION";
-    /***缓存单个库位库存*/
+    /*** 缓存单个库位库存 */
     public static final String CACHE_LOC_INVENTORY = "CACHE_LOC_INVENTORY";
-//    /***缓存唯一sku*/
-//    public static final String CACHE_LOC_SKU_ATTR = "CACHE_LOC_SKU_ATTR";
+    // /***缓存唯一sku*/
+    // public static final String CACHE_LOC_SKU_ATTR = "CACHE_LOC_SKU_ATTR";
     /** pda拣货:已扫描的Sku队列 */
     public static final String PDA_PICKING_SCAN_SKU_QUEUE = "PDA_PICKING_SCAN_SKU_QUEUE_";
 
     public static final String OPERATION_LINE = "OPERATION_LINE";
 
-    /**满箱作业处理*/
+    /** 满箱作业处理 */
     public static final String CACHE_OPERATION_LINE = "CACHE_OPERATION_LINE";
 
-    /**补货上架缓存库位*/
+    /** 补货上架缓存库位 */
     public static final String CACHE_PUTAWAY_LOCATION = "CACHE_PUTAWAY_LOCATION";
-    /**补货上架缓存周转箱*/
+    /** 补货上架缓存周转箱 */
     public static final String CACHE_TURNOVERBOX_IDS = "CACHE_TURNOVERBOX_IDS";
-    /**缓存作业执行明细统计信息*/
+    /** 缓存作业执行明细统计信息 */
     public static final String CACHE_OPERATION_EXEC_LINE = "CACHE_OPERATION_EXEC_LINE";
-    
+
     /** 播种商品数据缓存 */
     public static final String CACHE_SEEDING = "SEEDING";
 
-    /*************************************播种缓存***********************************/
+    /************************************* 播种缓存 ***********************************/
     /** 播种集货信息周转箱列表缓存 */
     public static final String CACHE_SEEDING_COLLECTION = "SEEDING-COLLECTION";
     /** odo出库单绑定货格 */
     public static final String CACHE_SEEDING_ODO_BIND_GRID = "SEEDING-ODO-BIND-GRID";
 
     // --------------------------------------------集货缓存--------------------------------------------
-    /** 集货推荐结果缓存:前缀+USERID*/
+    /** 集货推荐结果缓存:前缀+USERID */
     public static final String PDA_CACHE_COLLECTION_REC = "CACHE_COLLECTION_REC";
     /** 人为集货扫描容器缓存 */
     public static final String PDA_CACHE_MANUAL_COLLECTION_CONTAINER = "CACHE_MANUAL_COLLECTION_CONTAINER";
-    /** 未获得推荐结果的容器列表缓存:前缀+USERID*/
+    /** 未获得推荐结果的容器列表缓存:前缀+USERID */
     public static final String PDA_CACHE_COLLECTION_REC_FAIL = "CACHE_COLLECTION_REC_FAIL";
     /** 人为集货-集货推荐结果缓存 */
     public static final String PDA_CACHE_MANUAL_COLLECTION_REC = "CACHE_MANUAL_COLLECTION_REC";
+
 
 }
