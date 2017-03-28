@@ -106,7 +106,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 扫描skuId */
     private Long skuId;
     /*** 货箱内待拣货sku库存属性是否唯一 */
-    private Boolean isUniqueSkuAttrInside;
+    private Boolean isUniqueSkuAttrInside = false;
     /** 是否需要扫商品的库存类型 */
     private Boolean isNeedScanSkuInvType = false;
     /** 提示商品库存类型 */
