@@ -114,7 +114,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否需要扫商品的库存状态 */
     private Boolean isNeedScanSkuInvStatus = false;
     /** 提示商品库存状态 */
-    private String skuInvStatus = "";
+    private Long skuInvStatus;
     /** 是否需要扫描批次号 */
     private Boolean isNeedScanBatchNumber = false;
     /** 批次号 */
@@ -199,6 +199,8 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isNeedTipLoc;
 
     private Boolean isScanOutBoundBox = false; // 是否已经扫描出库箱 isPicking= 2时使用
+    
+    private Double scanSkuQty;   //扫描数量
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -574,14 +576,6 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsNeedScanSkuInvStatus(Boolean isNeedScanSkuInvStatus) {
         this.isNeedScanSkuInvStatus = isNeedScanSkuInvStatus;
-    }
-
-    public String getSkuInvStatus() {
-        return skuInvStatus;
-    }
-
-    public void setSkuInvStatus(String skuInvStatus) {
-        this.skuInvStatus = skuInvStatus;
     }
 
     public Boolean getIsNeedScanBatchNumber() {
@@ -1075,6 +1069,22 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsNeedScanSkuDefect(Boolean isNeedScanSkuDefect) {
         this.isNeedScanSkuDefect = isNeedScanSkuDefect;
+    }
+
+    public Double getScanSkuQty() {
+        return scanSkuQty;
+    }
+
+    public void setScanSkuQty(Double scanSkuQty) {
+        this.scanSkuQty = scanSkuQty;
+    }
+
+    public Long getSkuInvStatus() {
+        return skuInvStatus;
+    }
+
+    public void setSkuInvStatus(Long skuInvStatus) {
+        this.skuInvStatus = skuInvStatus;
     }
 
 

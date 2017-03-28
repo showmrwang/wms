@@ -686,4 +686,9 @@ public final class Constants {
     public static final String DATA_SOURCE_HUB = "hub";
     public static final String COLLECTION_STATUS_10 = "10";
     
+    /**拣货操作库存*/
+    public static final String PICKING_INVENTORY = "PICKING_INVENTORY";
+    /**补货中的拣货操作库存*/
+    public static final String REPLENISHMENT_PICKING_INVENTORY="REPLENISHMENT_PICKING_INVENTORY";
+    
 }

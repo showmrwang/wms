@@ -60,4 +60,8 @@ public class CancelPattern implements Serializable {
     public static final int PICKING_SCAN_SKU_DETAIL = 10;   //sku库存属性取消
     
     public static final int PICKING_SCAN_OUT_BOUNX_BOX = 11;  //有小车情况下出库箱取消
+    
+    public static final int PICKING_SCAN_LATTICE_NO = 12;  //货格号取消
+    
+    
 }
