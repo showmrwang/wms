@@ -97,7 +97,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param command
      * @return
      */
-    public PickingScanResultCommand scanSku(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
+    public PickingScanResultCommand scanSku(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal,String operationWay);
     
     /***
      * 判断货箱内库存属性是否唯一

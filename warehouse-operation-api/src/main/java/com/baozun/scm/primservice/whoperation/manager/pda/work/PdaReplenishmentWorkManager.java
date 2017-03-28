@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
@@ -42,8 +43,14 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
     
-    
+    /***
+     * 缓存库位
+     * @param operationId
+     * @param locationCode
+     * @param ouId
+     */
     public void cacheLocation(Long operationId,String locationCode,Long ouId);
+    
     
     
 }

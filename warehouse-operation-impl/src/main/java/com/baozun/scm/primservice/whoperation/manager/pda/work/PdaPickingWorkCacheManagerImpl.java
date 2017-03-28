@@ -341,11 +341,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 if(null == container) {
                     throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
                 }
-                // 验证容器Lifecycle是否有效
                 if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
                     continue;
                 }
-                // 验证容器状态是否是待上架
                 if (!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE))) {
                     continue;
                 }
@@ -2570,7 +2568,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                      }
                      cacheManager.remove(CacheConstants.CACHE_LOCATION + locId.toString());
                  }
-                 cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+//                 cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
              }
           }
 }
