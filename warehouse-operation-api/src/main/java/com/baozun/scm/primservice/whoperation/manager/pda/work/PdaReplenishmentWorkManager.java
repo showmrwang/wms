@@ -51,6 +51,15 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public void cacheLocation(Long operationId,String locationCode,Long ouId);
     
-    
+    /***
+     * 拣货取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param replenishWay
+     * @param locationId
+     * @param ouId
+     */
+    public void cancelPattern(String outerContainerCode, String insideContainerCode,int cancelPattern,int replenishWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
     
 }

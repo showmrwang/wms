@@ -198,4 +198,15 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      
      
      public void cacheSkuAttrId(Long locationId,String skuAttrId,Long insideContainerId);
+     
+     /***
+      * 补货(拣货)取消流程
+      * @param outerContainerId
+      * @param insideContainerId
+      * @param cancelPattern
+      * @param pickingType
+      * @param locationId
+      * @param ouId
+      */
+     public void replenishmentCancelPattern(Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
 }

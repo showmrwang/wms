@@ -2571,4 +2571,25 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 //                 cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
              }
           }
+    
+    /***
+     * 补货(拣货)取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param pickingType
+     * @param locationId
+     * @param ouId
+     */
+    public void replenishmentCancelPattern(Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId){
+        if(CancelPattern.PICKING_SCAN_LOC_CANCEL == cancelPattern){
+            cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());  //删除统计缓存
+            cacheManager.remove(CacheConstants.OPERATION_LINE + operationId.toString());   //删除作业明细
+        }else if(CancelPattern.PICKING_TIP_CAR_CANCEL == cancelPattern){   //扫描周转箱
+        }else if(CancelPattern.PICKING_SCAN_OUTCONTAINER_CANCEL == cancelPattern){
+        }else if(CancelPattern.PICKING_SCAN_INSIDECONTAINER_CANCEL == cancelPattern){
+        }else if(CancelPattern.PICKING_SCAN_SKU_SCANCEL == cancelPattern){
+        }else if(CancelPattern.PICKING_SCAN_SKU_DETAIL == cancelPattern){
+        }
+    }
 }

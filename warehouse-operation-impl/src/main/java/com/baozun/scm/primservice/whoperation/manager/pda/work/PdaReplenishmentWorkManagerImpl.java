@@ -229,4 +229,34 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         pdaPickingWorkCacheManager.cacheLocation(operationId, locationId);
     }
     
+    /***
+     * 拣货取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param replenishWay
+     * @param locationId
+     * @param ouId
+     */
+    public void cancelPattern(String outerContainerCode, String insideContainerCode,int cancelPattern,int replenishWay,Long locationId,Long ouId,Long operationId,Long tipSkuId){
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = cmd.getId();
+        }
+        Long insideContainerId = null;
+        if(!StringUtils.isEmpty(insideContainerCode)){
+            ContainerCommand cmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = cmd.getId();
+        }
+        pdaPickingWorkCacheManager.replenishmentCancelPattern(outerContainerId, insideContainerId, cancelPattern, replenishWay, locationId, ouId, operationId, tipSkuId);
+    }
 }
