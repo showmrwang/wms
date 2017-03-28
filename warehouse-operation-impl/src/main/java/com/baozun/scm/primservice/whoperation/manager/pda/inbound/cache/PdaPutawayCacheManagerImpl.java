@@ -4508,7 +4508,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
     @Override
     public void sysGuidePutawayCancel(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, WhSkuCommand skuCmd, Long locationId, Long funcId, Integer putawayPatternDetailType, Integer cancelPattern, Long ouId, Long userId, String logId) {
         if (log.isInfoEnabled()) {
-            log.info("sys guide putaway cancel start");
+            log.info("sys guide putaway cancel start, containerId is:[{}], insideContainerId is:[{}], skuId is:[{}], locationId is:[{}], funcId is:[{}], putawayPatternDetailType is:[{}], cancelPattern is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd) ? containerCmd.getId() : null, (null != insideContainerCmd) ? insideContainerCmd.getId() : null, null, locationId, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId});
         }
         Long ocId = null;
         Long icId = null;
@@ -4777,7 +4778,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         if (log.isInfoEnabled()) {
-            log.info("sys guide putaway cancel end");
+            log.info("sys guide putaway cancel start, containerId is:[{}], insideContainerId is:[{}], skuId is:[{}], locationId is:[{}], funcId is:[{}], putawayPatternDetailType is:[{}], cancelPattern is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd) ? containerCmd.getId() : null, (null != insideContainerCmd) ? insideContainerCmd.getId() : null, null, locationId, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId});
         }
     }
     
