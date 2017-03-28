@@ -684,7 +684,9 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
         if (lineList != null && lineList.size() > 0) {
             for (WhPoLine poLine : lineList) {
-                WhPoLine infoPoLine = this.whPoLineDao.findWhPoLineById(poLine.getId(), poLine.getOuId());
+                WhPoLine infoPoLine =
+                        this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLine.getPoLineId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), infoPo.getId(),
+                                infoPo.getOuId(), null);
                 BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
                 biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
                 biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
@@ -757,7 +759,9 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
         if (lineList != null && lineList.size() > 0) {
             for (WhPoLine poLine : lineList) {
-                WhPoLine infoPoLine = this.whPoLineDao.findWhPoLineById(poLine.getId(), poLine.getOuId());
+                WhPoLine infoPoLine =
+                        this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLine.getPoLineId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), infoPo.getId(),
+                                infoPo.getOuId(), null);
                 BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
                 biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
                 biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
@@ -809,7 +813,9 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
         if (lineList != null && lineList.size() > 0) {
             for (WhPoLine poLine : lineList) {
-                WhPoLine infoPoLine = this.whPoLineDao.findWhPoLineById(poLine.getId(), poLine.getOuId());
+                WhPoLine infoPoLine =
+                        this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLine.getPoLineId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), infoPo.getId(),
+                                infoPo.getOuId(), null);
                 BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
                 biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
                 biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
