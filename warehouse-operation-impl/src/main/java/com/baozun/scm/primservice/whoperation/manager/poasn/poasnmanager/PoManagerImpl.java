@@ -563,7 +563,15 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void closePoToInfo(Long id, Long ouId, Long userId) {
-        closePo(id, ouId, userId, false);
+        try {
+            closePo(id, ouId, userId, false);
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception e) {
+            log.error("" + e);
+            throw new BusinessException(ErrorCodes.CLOSE_PO_ERROR);
+        }
+
     }
 
     private void closePo(Long id, Long ouId, Long userId, boolean flag) {
@@ -612,7 +620,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void snycPoToInfo(WhPo infoPo, String operateType) {
+    public void snycPoToInfo(String operateType, WhPo infoPo, List<WhPoLine> lineList) {
         try {
 
             if (operateType.equals("EIDT_HEAD")) {
@@ -631,6 +639,12 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 }
+            } else if (operateType.equals("RCVD")) {
+                this.snycPoToInfoWhenRcvd(infoPo, lineList);
+            } else if (operateType.equals("CLOSE")) {
+                this.snycPoToInfoWhenClosed(infoPo, lineList);
+            } else if (operateType.equals("RCVD_FINISH")) {
+                this.snycPoToInfoWhenRcvdFinished(infoPo, lineList);
             }
         } catch (BusinessException e) {
             throw e;
@@ -639,5 +653,194 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
+
+    private void snycPoToInfoWhenClosed(WhPo infoPo, List<WhPoLine> lineList) {
+        WhPo po = this.findWhPoByIdToInfo(infoPo.getId(), infoPo.getOuId());
+        if (po == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        BiPo bipo = this.biPoDao.findBiPoByExtCodeStoreId(po.getExtCode(), po.getStoreId());
+        if (bipo == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        bipo.setQtyRcvd(bipo.getQtyRcvd() + infoPo.getQtyRcvd() - po.getQtyRcvd());
+
+        po.setQtyRcvd(infoPo.getQtyRcvd());
+        po.setStatus(PoAsnStatus.PO_CLOSE);
+        this.saveOrUpdateByVersionToInfo(po);
+        if (PoAsnStatus.BIPO_ALLOT == bipo.getStatus()) {
+            bipo.setStatus(PoAsnStatus.PO_RCVD);
+        }
+        if (bipo.getQtyRcvd() >= bipo.getQtyPlanned()) {
+            if (bipo.getIsAutoClose() != null && bipo.getIsAutoClose()) {
+                bipo.setStatus(PoAsnStatus.BIPO_CLOSE);
+            } else {
+                bipo.setStatus(PoAsnStatus.BIPO_RCVD_FINISH);
+            }
+        }
+        int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
+        if (updateCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        if (lineList != null && lineList.size() > 0) {
+            for (WhPoLine poLine : lineList) {
+                WhPoLine infoPoLine = this.whPoLineDao.findWhPoLineById(poLine.getId(), poLine.getOuId());
+                BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
+                biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
+                biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
+                if (PoAsnStatus.BIPOLINE_ALLOT == biPoLine.getStatus()) {
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD);
+                }
+                if (biPoLine.getQtyRcvd() >= biPoLine.getQtyPlanned()) {
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD_FINISH);
+                }
+                if (PoAsnStatus.BIPO_CLOSE == bipo.getStatus()) {
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_CLOSE);
+                }
+                int updateBiPoLineCount = this.biPoLineDao.saveOrUpdateByVersion(biPoLine);
+                if (updateBiPoLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+
+                infoPoLine.setStatus(PoAsnStatus.POLINE_CLOSE);
+                infoPoLine.setQtyRcvd(poLine.getQtyRcvd());
+                infoPoLine.setAvailableQty(infoPoLine.getQtyPlanned() - infoPoLine.getQtyRcvd());
+                if (infoPoLine.getQtyRcvd() >= infoPoLine.getQtyPlanned()) {
+                    infoPoLine.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
+                }
+                int updateInfoPoLineCount = this.whPoLineDao.saveOrUpdateByVersion(infoPoLine);
+                if (updateInfoPoLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+        // 将别的明细行给关闭掉
+        this.closePoToInfo(infoPo.getId(), infoPo.getOuId(), infoPo.getModifiedId());
+        //关闭集团下的po单
+        if (PoAsnStatus.BIPO_CLOSE == bipo.getStatus()) {
+            List<BiPoLine> bipoLineList = this.biPoLineDao.findBiPoLineByPoIdAndUuid(bipo.getId(), null);
+            if (bipoLineList != null && bipoLineList.size() > 0) {
+                for (BiPoLine line : bipoLineList) {
+                    line.setStatus(PoAsnStatus.BIPOLINE_CLOSE);
+                    int count=this.biPoLineDao.saveOrUpdateByVersion(line);
+                    if(count<=0){
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
+        }
+    }
+
+    private void snycPoToInfoWhenRcvdFinished(WhPo infoPo, List<WhPoLine> lineList) {
+        WhPo po = this.findWhPoByIdToInfo(infoPo.getId(), infoPo.getOuId());
+        if (po == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        BiPo bipo = this.biPoDao.findBiPoByExtCodeStoreId(po.getExtCode(), po.getStoreId());
+        if (bipo == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        bipo.setQtyRcvd(bipo.getQtyRcvd() + infoPo.getQtyRcvd() - po.getQtyRcvd());
+
+        po.setQtyRcvd(infoPo.getQtyRcvd());
+        po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
+        this.saveOrUpdateByVersionToInfo(po);
+        if (PoAsnStatus.BIPO_ALLOT == bipo.getStatus()) {
+            bipo.setStatus(PoAsnStatus.PO_RCVD);
+        }
+        if (bipo.getQtyRcvd() >= bipo.getQtyPlanned()) {
+            bipo.setStatus(PoAsnStatus.BIPO_RCVD_FINISH);
+        }
+        int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
+        if (updateCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        if (lineList != null && lineList.size() > 0) {
+            for (WhPoLine poLine : lineList) {
+                WhPoLine infoPoLine = this.whPoLineDao.findWhPoLineById(poLine.getId(), poLine.getOuId());
+                BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
+                biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
+                biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
+                if (PoAsnStatus.BIPOLINE_ALLOT == biPoLine.getStatus()) {
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD);
+                }
+                if (biPoLine.getQtyRcvd() >= biPoLine.getQtyPlanned()) {
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD_FINISH);
+                }
+                int updateBiPoLineCount = this.biPoLineDao.saveOrUpdateByVersion(biPoLine);
+                if (updateBiPoLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+
+                infoPoLine.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
+                infoPoLine.setQtyRcvd(poLine.getQtyRcvd());
+                infoPoLine.setAvailableQty(infoPoLine.getQtyPlanned() - infoPoLine.getQtyRcvd());
+                int updateInfoPoLineCount = this.whPoLineDao.saveOrUpdateByVersion(infoPoLine);
+                if (updateInfoPoLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+    }
+
+    private void snycPoToInfoWhenRcvd(WhPo infoPo, List<WhPoLine> lineList) {
+        WhPo po = this.findWhPoByIdToInfo(infoPo.getId(), infoPo.getOuId());
+        if (po == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        BiPo bipo = this.biPoDao.findBiPoByExtCodeStoreId(po.getExtCode(), po.getStoreId());
+        if (bipo == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        bipo.setQtyRcvd(bipo.getQtyRcvd() + infoPo.getQtyRcvd() - po.getQtyRcvd());
+
+        po.setQtyRcvd(infoPo.getQtyRcvd());
+        po.setStatus(PoAsnStatus.PO_RCVD);
+        this.saveOrUpdateByVersionToInfo(po);
+        if (PoAsnStatus.BIPO_ALLOT == bipo.getStatus()) {
+            bipo.setStatus(PoAsnStatus.PO_RCVD);
+        }
+        if (bipo.getQtyRcvd() >= bipo.getQtyPlanned()) {
+            bipo.setStatus(PoAsnStatus.BIPO_RCVD_FINISH);
+        }
+        int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
+        if (updateCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        if (lineList != null && lineList.size() > 0) {
+            for (WhPoLine poLine : lineList) {
+                WhPoLine infoPoLine = this.whPoLineDao.findWhPoLineById(poLine.getId(), poLine.getOuId());
+                BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
+                biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
+                biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
+                if (PoAsnStatus.BIPOLINE_ALLOT == biPoLine.getStatus()) {
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD);
+                }
+                if (biPoLine.getQtyRcvd() >= biPoLine.getQtyPlanned()) {
+                    biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD_FINISH);
+                }
+                int updateBiPoLineCount = this.biPoLineDao.saveOrUpdateByVersion(biPoLine);
+                if (updateBiPoLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+
+                infoPoLine.setStatus(PoAsnStatus.POLINE_RCVD);
+                infoPoLine.setQtyRcvd(poLine.getQtyRcvd());
+                infoPoLine.setAvailableQty(infoPoLine.getQtyPlanned() - infoPoLine.getQtyRcvd());
+                if (infoPoLine.getQtyRcvd() >= infoPoLine.getQtyPlanned()) {
+                    infoPoLine.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
+                }
+                int updateInfoPoLineCount = this.whPoLineDao.saveOrUpdateByVersion(infoPoLine);
+                if (updateInfoPoLineCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+
+    }
+
+
+
+
 	
 }

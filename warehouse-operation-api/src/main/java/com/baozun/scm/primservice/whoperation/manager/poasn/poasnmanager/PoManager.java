@@ -204,6 +204,6 @@ public interface PoManager extends BaseManager {
      * @param infoPo
      * @param operateType
      */
-    void snycPoToInfo(WhPo infoPo, String operateType);
+    void snycPoToInfo(String operateType, WhPo infoPo, List<WhPoLine> savePoLineList);
 
 }

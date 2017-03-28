@@ -188,6 +188,8 @@ public class ErrorCodes {
     public static final int ADD_CARTONLIST_BCDEVANNINGQTY_ERROR = 3036;
     /** 每箱商品数量不能小于等于0，请重新设置 */
     public static final int ADD_CARTONLIST_QUANTITY_ERROR = 3037;
+    /** 关闭PO单失败 */
+    public static final int CLOSE_PO_ERROR = 3038;
 
 
     // 20000-30000 start
