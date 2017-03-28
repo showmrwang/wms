@@ -148,12 +148,6 @@ public class Store extends BaseModel {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
-    /** 入库单据反馈节点 1:收货时反馈 2:上架时反馈*/
-    private Integer inboundConfirmNode = 1;
-    /** 入库反馈类型 1:按单反馈 2:按箱反馈*/
-    private Integer inboundConfirmType = 1;
-    /** 入库反馈单据类型 1:按PO单反馈 2:按ASN单反馈*/
-    private Integer inboundConfirmOrderType = 1;
     
     /** 联系手机 */
     private String picMobileTelephone;
@@ -173,7 +167,22 @@ public class Store extends BaseModel {
     private Long villagesTownsId;
     /** 区ID */
     private Long districtId;
-
+    
+    /** 入库单据反馈节点 1:收货时反馈 2:上架时反馈*/
+    private Integer inboundConfirmNode = 1;
+    /** 入库反馈类型 1:按单反馈 2:按箱反馈*/
+    private Integer inboundConfirmType = 1;
+    /** 入库反馈单据类型 1:按PO单反馈 2:按ASN单反馈*/
+    private Integer inboundConfirmOrderType = 1;
+    /** 消费者退货入是否关联原出库单库存属性 */
+	private Boolean isReturnedPurchaseOriginalInvAttr = false;
+	/** 消费者退货入是否强制校验商品库存属性 */
+	private Boolean isCheckReturnedPurchaseInvAttr = false;
+	/** 消费者退货入是否强制校验商品库存状态 */
+	private Boolean isCheckReturnedPurchaseInvStatus = false;
+	/** 消费者退货入收货店铺 */
+	private String returnedPurchaseStore;
+    
     /*
      * 用于全局表最后修改时间统一
      */
@@ -506,6 +515,38 @@ public class Store extends BaseModel {
 
 	public void setInboundConfirmOrderType(Integer inboundConfirmOrderType) {
 		this.inboundConfirmOrderType = inboundConfirmOrderType;
+	}
+
+	public Boolean getIsReturnedPurchaseOriginalInvAttr() {
+		return isReturnedPurchaseOriginalInvAttr;
+	}
+
+	public void setIsReturnedPurchaseOriginalInvAttr(Boolean isReturnedPurchaseOriginalInvAttr) {
+		this.isReturnedPurchaseOriginalInvAttr = isReturnedPurchaseOriginalInvAttr;
+	}
+
+	public Boolean getIsCheckReturnedPurchaseInvAttr() {
+		return isCheckReturnedPurchaseInvAttr;
+	}
+
+	public void setIsCheckReturnedPurchaseInvAttr(Boolean isCheckReturnedPurchaseInvAttr) {
+		this.isCheckReturnedPurchaseInvAttr = isCheckReturnedPurchaseInvAttr;
+	}
+
+	public Boolean getIsCheckReturnedPurchaseInvStatus() {
+		return isCheckReturnedPurchaseInvStatus;
+	}
+
+	public void setIsCheckReturnedPurchaseInvStatus(Boolean isCheckReturnedPurchaseInvStatus) {
+		this.isCheckReturnedPurchaseInvStatus = isCheckReturnedPurchaseInvStatus;
+	}
+
+	public String getReturnedPurchaseStore() {
+		return returnedPurchaseStore;
+	}
+
+	public void setReturnedPurchaseStore(String returnedPurchaseStore) {
+		this.returnedPurchaseStore = returnedPurchaseStore;
 	}
     
 

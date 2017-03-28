@@ -74,6 +74,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.create_time as createTime,
 	        	s.last_modify_time as lastModifyTime,
 	        	s.operator_id as operatorId,
+	        	s.inbound_confirm_node as inboundConfirmNode,
+		        s.inbound_confirm_type as inboundConfirmType,
+		        s.inbound_confirm_order_type as inboundConfirmOrderType,
+		        s.is_returned_purchase_original_inv_attr as isReturnedPurchaseOriginalInvAttr,
+	        	s.is_check_returned_purchase_inv_attr as isCheckReturnedPurchaseInvAttr,
+	        	s.is_check_returned_purchase_inv_status as isCheckReturnedPurchaseInvStatus,
+	        	s.returned_purchase_store as returnedPurchaseStore,
 	        	s.lifecycle as lifecycle,
 	        	syst.dic_label as invoiceTypeName,
 	        	sysl.dic_label as paymentTermName,
@@ -203,11 +210,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = #{globalLastModifyTime} ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        pic_mobile_telephone = #{picMobileTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        country_id = #{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        province_id = #{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        city_id = #{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        zip_code = #{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        villages_towns_id = #{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        district_id = #{districtId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        inbound_confirm_node = #{inboundConfirmNode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	inbound_confirm_type = #{inboundConfirmType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	inbound_confirm_order_type = #{inboundConfirmOrderType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	is_returned_purchase_original_inv_attr = #{isReturnedPurchaseOriginalInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_check_returned_purchase_inv_attr = #{isCheckReturnedPurchaseInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_check_returned_purchase_inv_status = #{isCheckReturnedPurchaseInvStatus,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        returned_purchase_store = #{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        WHERE 
 			        id = #{id} 
 			        
-			         and last_modify_time	=  #{lastModifyTime}     
+			         and last_modify_time	=  #{lastModifyTime}  
 		    ]]>
 		</update>
 		
@@ -253,7 +276,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	lifecycle as lifecycle,
 	        	inbound_confirm_node as inboundConfirmNode,
 		        inbound_confirm_type as inboundConfirmType,
-		        inbound_confirm_order_type as inboundConfirmOrderType
+		        inbound_confirm_order_type as inboundConfirmOrderType,
+		        is_returned_purchase_original_inv_attr as isReturnedPurchaseOriginalInvAttr,
+	        	is_check_returned_purchase_inv_attr as isCheckReturnedPurchaseInvAttr,
+	        	is_check_returned_purchase_inv_status as isCheckReturnedPurchaseInvStatus,
+	        	returned_purchase_store as returnedPurchaseStore
 	    ]]>
 	</sql>
 	<sql id="storeDynamicWhereExpand">
