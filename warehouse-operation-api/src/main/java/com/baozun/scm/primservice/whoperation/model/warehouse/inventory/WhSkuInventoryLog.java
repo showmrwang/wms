@@ -97,6 +97,12 @@ public class WhSkuInventoryLog extends BaseModel {
     private String size;
     /** 库存事务类型 */
     private String invTransactionType;
+    /** 播种墙编码 */
+    private String seedingWallCode;
+    /** 货格号 */
+    private Integer containerLatticeNo;
+    /** 出库箱号 */
+    private String outboundboxCode;
 
     public String getSkuCode() {
         return skuCode;
@@ -368,6 +374,30 @@ public class WhSkuInventoryLog extends BaseModel {
 
     public void setInvTransactionType(String invTransactionType) {
         this.invTransactionType = invTransactionType;
+    }
+
+    public String getSeedingWallCode() {
+        return seedingWallCode;
+    }
+
+    public void setSeedingWallCode(String seedingWallCode) {
+        this.seedingWallCode = seedingWallCode;
+    }
+
+    public Integer getContainerLatticeNo() {
+        return containerLatticeNo;
+    }
+
+    public void setContainerLatticeNo(Integer containerLatticeNo) {
+        this.containerLatticeNo = containerLatticeNo;
+    }
+
+    public String getOutboundboxCode() {
+        return outboundboxCode;
+    }
+
+    public void setOutboundboxCode(String outboundboxCode) {
+        this.outboundboxCode = outboundboxCode;
     }
 
 
