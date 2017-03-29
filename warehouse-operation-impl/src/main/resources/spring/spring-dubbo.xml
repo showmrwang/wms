@@ -153,11 +153,10 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager" ref="customerManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager" ref="storeManager" />
     
-        <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.PoAsnArchivManager" ref="poAsnArchivManager" />
-        <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager" ref="odoArchivManager" />
-        
-        <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager" ref="whOdoArchivIndexManager" />
-        
-        <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager" ref="whOdoStatusConfirmManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.PoAsnArchivManager" ref="poAsnArchivManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager" ref="odoArchivManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager" ref="whOdoArchivIndexManager" />
+	        
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager" ref="whOdoStatusConfirmManager" />
 	
 </beans>

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -315,5 +316,33 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
         return count;
+    }
+
+	@Override
+	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	public List<Long> findOdoArchivData(Long ouId) {
+		return whOdoDao.findOdoArchivData(ouId);
+	}
+	
+	/***
+     * 归档仓库Odo信息
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void archivOdoExt(Long odoId, Long ouId) {
+    	// 归档
+    	int archivNum = this.archivOdo(odoId, ouId);
+    	// 删除
+    	int deleteNum = this.deleteOdo(odoId, ouId);
+    	// 归档影响行数要和删除影响行数保持一致
+    	if (archivNum != deleteNum) {
+    		log.error("Odo archiv, archivNum is not equals deleteNum! odoId:[{}], archivNum:[{}], deleteNum:[{}]", odoId, archivNum, deleteNum);
+			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+		}
     }
 }

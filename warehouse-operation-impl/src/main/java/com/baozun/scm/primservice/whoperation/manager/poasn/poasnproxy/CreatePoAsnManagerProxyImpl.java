@@ -40,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
@@ -50,6 +51,7 @@ import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -1157,12 +1159,41 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 
     }
     
+    @Autowired
+    private WhOdoArchivIndexManager whOdoArchivIndexManager;
+    
     /**
      * 创建上位系统传入的Po
      */
 	@Override
 	public void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
-		// 复用同一套创建Po的逻辑
-		this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
+		
+		// 退换货逻辑
+		if ("2".equals(whPo.getExtPoType())) {
+			Store store = this.getStoreByRedis(whPo.getStoreId());
+			if (null != store.getIsReturnedPurchaseOriginalInvAttr() && store.getIsReturnedPurchaseOriginalInvAttr()) {
+				// 退货入关联销售出
+				String ecOrderCode = whPo.getOriginalEcOrderCode();
+				String dataSource = whPo.getDataSource();
+				// 查询归档数据表中的数据
+				List<WhOdoArchivIndex> odoArchivIndexList = whOdoArchivIndexManager.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, dataSource, null, ouId);
+				if (null == odoArchivIndexList || odoArchivIndexList.isEmpty()) {
+					throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+				}
+				for (WhOdoArchivIndex odoArchivIndex : odoArchivIndexList) {
+					if (null != odoArchivIndex.getIsReturnedPurchase() && odoArchivIndex.getIsReturnedPurchase()) {
+						
+					}
+				}
+			} else {
+				// 退货入不关联销售出
+				
+			}
+			biPoManager.createPoByReturnStorage(whPo, whPoTm, whPoLines, ouId);
+		} else {
+			// 复用同一套创建Po的逻辑
+			this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
+		}
+		
 	}
 }

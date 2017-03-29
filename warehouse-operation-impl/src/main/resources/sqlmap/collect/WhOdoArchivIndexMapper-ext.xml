@@ -68,4 +68,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
+	<select id="findWhOdoArchivIndexData" resultMap="WhOdoArchivIndexResultExt">
+		select 
+			<include refid="whOdoArchivIndexColumnsExt"/>
+		from 
+			t_wh_odo_archiv_index
+		where
+			ou_id = #{ouId}
+	</select>
+	
+	<delete id="deleteWhOdoArchivIndexById">
+		delete from 
+			t_wh_odo_archiv_index 
+		where 
+			id = #{id}
+			and ou_id = #{ouId}
+	</delete>
 </mapper>
