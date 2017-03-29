@@ -580,6 +580,9 @@ public final class Constants {
     public static final Integer WH_GLOBAL_STATUS_1 = 1;// 空闲
     public static final Integer WH_GLOBAL_STATUS_2 = 1;// 占用
 
+    /** 拣货模式:播种*/
+    public static final String WH_PICKING_MODE = "2";
+
     /** 播种模式 */
     public static final String WH_SEEDING_WALL = "SEEDING_WALL_MODE";
 

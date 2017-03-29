@@ -67,13 +67,15 @@ public class PdaReplenishmentWorkEntranceManagerImpl extends BaseManagerImpl imp
         Long ouId = command.getOuId();
         // 判断已经显示多少条工作
         Integer maxObtainWorkQty = command.getMaxObtainWorkQty();
-        if (null == page) {
-            page = new Page();
-        }
-        Integer cnt = maxObtainWorkQty - page.getSize() * (page.getPage() - 1);
-        if (cnt <= page.getSize()) {
-            page.setSize(cnt);
-            isLastPage = true;
+        if (null != maxObtainWorkQty) {
+            if (null == page) {
+                page = new Page();
+            }
+            Integer cnt = maxObtainWorkQty - page.getSize() * (page.getPage() - 1);
+            if (cnt <= page.getSize()) {
+                page.setSize(cnt);
+                isLastPage = true;
+            }
         }
         param.put("category", "REPLENISHMENT");
         param.put("userId", userId);

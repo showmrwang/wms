@@ -123,7 +123,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 seedingCollection.setBatch(batch);
                 seedingCollection.setContainerId(execLineCommand.getUseContainerId());
                 seedingCollection.setOuId(ouId);
-                this.whSeedingCollectionDao.saveOrUpdateByVersion(seedingCollection);
+                seedingCollection.setCollectionStatus(CollectionStatus.NEW);
+                this.whSeedingCollectionDao.insert(seedingCollection);
             }
         }
     }
@@ -426,20 +427,24 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Boolean checkAndMoveContainer(WorkCollectionCommand workCollectionCommand) {
+        Boolean isSuccess = true;
         String inputContainerCode = workCollectionCommand.getInputContainerCode();
         String containerCode = workCollectionCommand.getContainerCode();
         if (!containerCode.equals(inputContainerCode)) {
+            isSuccess = false;
             throw new BusinessException("容器不匹配");
         }
         Boolean isRecordSuccess = this.recordSeedingCollection(workCollectionCommand);
         if (!isRecordSuccess) {
+            isSuccess = false;
             throw new BusinessException("记录容器集货信息失败");
         }
         Boolean isMoveSuccess = this.moveContainer(workCollectionCommand);
         if (!isMoveSuccess) {
+            isSuccess = false;
             throw new BusinessException("移动容器失败");
         }
-        return null;
+        return isSuccess;
     }
 
     /**
@@ -456,7 +461,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             WhSeedingCollection whSeedingCollection = new WhSeedingCollection();
             whSeedingCollection.setBatch(workCollectionCommand.getBatch());
             whSeedingCollection.setOuId(ouId);
-            whSeedingCollection.setCollectionStatus(CollectionStatus.EXECUTING);
+            whSeedingCollection.setCollectionStatus(CollectionStatus.SEEDING);
             whSeedingCollection.setContainerId(containerId);
             whSeedingCollection.setId(1L);
             Integer targetType = workCollectionCommand.getTargetType();
@@ -767,7 +772,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
             collection.setTemporaryLocationId(temporaryStorageLocationId);
-            collection.setCollectionStatus(CollectionStatus.EXECUTING);
+            collection.setCollectionStatus(CollectionStatus.SEEDING);
         } else if (destinationType == Constants.TRANSIT_LOCATION) {
             // 目标移到中转库位
             Long transitLocationId = rec.getTransitLocationId();
@@ -775,7 +780,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
             collection.setLocationId(transitLocationId);
-            collection.setCollectionStatus(CollectionStatus.EXECUTING);
+            collection.setCollectionStatus(CollectionStatus.SEEDING);
         }
         collection.setContainerId(containerId);
         collection.setBatch(batch);
