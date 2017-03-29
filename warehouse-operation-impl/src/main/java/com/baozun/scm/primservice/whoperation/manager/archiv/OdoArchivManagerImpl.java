@@ -125,7 +125,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             // 归档Odo outboundBoxLine+outboundBoxLindSn信息
             count = archivWhOdoOutBoundBoxLine(odoid, ouid, sysDate, count);
             // 保存出库单索引数据(仓库) 只限于出库单状态为完成&&数据来源!=WMS
-            if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH) && !whOdo.getDataSource().equals(Constants.WMS_DATA_SOURCE)) {
+            if (OdoStatus.ODO_OUTSTOCK_FINISH.equals(whOdo.getOdoStatus()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())) {
                 WhOdoArchivIndex oai = new WhOdoArchivIndex();
                 oai.setEcOrderCode(whOdo.getEcOrderCode());
                 oai.setDataSource(whOdo.getDataSource());
