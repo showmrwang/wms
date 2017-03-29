@@ -124,6 +124,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
                }
                psRCmd.setTipLocationBarCode(location.getBarCode());
                psRCmd.setTipLocationCode(location.getCode());
+               psRCmd.setLocationId(locationId);
            }
            //查询补货功能模板参数
            WhFunctionReplenishment resplenishment = whFunctionReplenishmentDao.findByFunctionIdExt(ouId, functionId);
@@ -140,35 +141,35 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
            return psRCmd;
     }
 
-    /**
-     * 校验库位
-     * @param locationCode
-     * @param locationBarCode
-     * @param ouId
-     * @return
-     */
-    @Override
-    public Long verificationLocation(String locationCode, String locationBarCode, Long ouId) {
-        // TODO Auto-generated method stub
-        log.info("PdaPickingWorkController verificationLocation is start");
-        Long locationId = null;
-        if(!StringUtils.isEmpty(locationCode)) {
-            Location location =  whLocationDao.findLocationByCode(locationCode, ouId);
-            if(null == location) {
-                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
-            }
-            locationId = location.getId();
-        }
-        if(!StringUtils.isEmpty(locationBarCode)) {
-            Location location =  whLocationDao.getLocationByBarcode(locationBarCode, ouId);
-            if(null == location) {
-                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
-            }
-            locationId = location.getId();
-        }
-        log.info("PdaPickingWorkController verificationLocation is end");
-        return locationId;
-    }
+//    /**
+//     * 校验库位
+//     * @param locationCode
+//     * @param locationBarCode
+//     * @param ouId
+//     * @return
+//     */
+//    @Override
+//    public Long verificationLocation(String locationCode, String locationBarCode, Long ouId) {
+//        // TODO Auto-generated method stub
+//        log.info("PdaPickingWorkController verificationLocation is start");
+//        Long locationId = null;
+//        if(!StringUtils.isEmpty(locationCode)) {
+//            Location location =  whLocationDao.findLocationByCode(locationCode, ouId);
+//            if(null == location) {
+//                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
+//            }
+//            locationId = location.getId();
+//        }
+//        if(!StringUtils.isEmpty(locationCode)) {
+//            Location location =  whLocationDao.getLocationByBarcode(locationCode, ouId);
+//            if(null == location) {
+//                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
+//            }
+//            locationId = location.getId();
+//        }
+//        log.info("PdaPickingWorkController verificationLocation is end");
+//        return locationId;
+//    }
     
     /***
      * 拣货完成

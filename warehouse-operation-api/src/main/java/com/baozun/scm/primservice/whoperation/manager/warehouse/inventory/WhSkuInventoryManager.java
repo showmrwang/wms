@@ -170,7 +170,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param operationId
      * @param ouId
      */
-    public void pickingAddContainerInventory(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId);
+    public void pickingAddContainerInventory(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,Integer pickingWay);
     
     
     /**

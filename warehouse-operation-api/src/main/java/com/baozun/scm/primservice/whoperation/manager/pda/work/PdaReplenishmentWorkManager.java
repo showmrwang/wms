@@ -28,14 +28,14 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public PickingScanResultCommand replenishmentTipLocation(Long functionId,Long operationId,Long ouId);
     
-    /**
-     * 校验库位
-     * @param locationCode
-     * @param locationBarCode
-     * @param ouId
-     * @return
-     */
-    public Long verificationLocation(String locationCode,String locationBarCode,Long ouId);
+//    /**
+//     * 校验库位
+//     * @param locationCode
+//     * @param locationBarCode
+//     * @param ouId
+//     * @return
+//     */
+//    public Long verificationLocation(String locationCode,String locationBarCode,Long ouId);
     
     /***
      * 拣货完成
