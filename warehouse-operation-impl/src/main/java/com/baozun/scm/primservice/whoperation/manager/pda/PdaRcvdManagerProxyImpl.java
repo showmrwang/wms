@@ -573,18 +573,10 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
             }
             asnLine.setQtyRcvd(asnLine.getQtyRcvd() + entry.getValue());
             asnLine.setModifiedId(userId);
-            if (null == asn.getOverChageRate() || asn.getOverChageRate() < 0) {
-                if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
-                    asnLine.setStatus(PoAsnStatus.ASN_CLOSE);
-                } else {
-                    asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
-                }
+            if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
+                asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD_FINISH);
             } else {
-                if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
-                    asnLine.setStatus(PoAsnStatus.ASN_CLOSE);
-                } else {
-                    asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
-                }
+                asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
             }
             saveAsnLineList.add(asnLine);
             if (polineMap.containsKey(asnLine.getPoLineId())) {
@@ -597,6 +589,12 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         // 1.更新ASN明细
         // 2.筛选PO明细数据集合
         asn.setQtyRcvd(asn.getQtyRcvd() + asnCount);
+        // mender yimin.lu 设置完成与关闭节点，在内层方法体封装
+        /*
+         * if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
+         * asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH); } else { asn.setStatus(PoAsnStatus.ASN_RCVD);
+         * } asn.setStopTime(new Date());
+         */
         asn.setModifiedId(userId);
         if (asn.getDeliveryTime() == null) {
             asn.setDeliveryTime(new Date());
@@ -604,7 +602,6 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         if (asn.getStartTime() == null) {
             asn.setStartTime(new Date());
         }
-        asn.setStopTime(new Date());
         Iterator<Entry<Long, Double>> poIt = polineMap.entrySet().iterator();
         Long poId = null;
         // 更新PO明细数据集合
