@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
@@ -122,8 +123,8 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count = archivWhOdoOutBoundBox(odoid, ouid, sysDate, count);
             // 归档Odo outboundBoxLine+outboundBoxLindSn信息
             count = archivWhOdoOutBoundBoxLine(odoid, ouid, sysDate, count);
-            // 保存出库单索引数据(仓库) 只限于出库单状态为完成
-            if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+            // 保存出库单索引数据(仓库) 只限于出库单状态为完成&&数据来源!=WMS
+            if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH) && !whOdo.getDataSource().equals(Constants.WMS_DATA_SOURCE)) {
                 WhOdoArchivIndex oai = new WhOdoArchivIndex();
                 oai.setEcOrderCode(whOdo.getEcOrderCode());
                 oai.setDataSource(whOdo.getDataSource());
