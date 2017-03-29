@@ -37,6 +37,10 @@ public class BiPo extends BaseModel {
     private String extCode;
     /** 上位系统平台单据号 */
     private String extPoCode;
+    /** 原始上位系统出库单号 */
+	private String originalExtOdoCode;
+	/** 原始电商平台出库单号 */
+	private String originalEcOrderCode;
     /** 客户ID */
     private Long customerId;
     /** 店铺ID */
@@ -352,5 +356,21 @@ public class BiPo extends BaseModel {
     public void setExtPoCode(String extPoCode) {
         this.extPoCode = extPoCode;
     }
+
+	public String getOriginalExtOdoCode() {
+		return originalExtOdoCode;
+	}
+
+	public void setOriginalExtOdoCode(String originalExtOdoCode) {
+		this.originalExtOdoCode = originalExtOdoCode;
+	}
+
+	public String getOriginalEcOrderCode() {
+		return originalEcOrderCode;
+	}
+
+	public void setOriginalEcOrderCode(String originalEcOrderCode) {
+		this.originalEcOrderCode = originalEcOrderCode;
+	}
 
 }

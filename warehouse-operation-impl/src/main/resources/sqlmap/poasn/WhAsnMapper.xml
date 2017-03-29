@@ -13,7 +13,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        	id as id,
 	        	asn_code as asnCode,
+	        	asn_ext_code as asnExtCode,
 	        	po_id as poId,
+	        	original_ext_odo_code as originalExtOdoCode,
+	        	original_ec_order_code as originalEcOrderCode,
 	        	ou_id as ouId,
 	        	customer_id as customerId,
 	        	store_id as storeId,
@@ -56,6 +59,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn_code ,
 	        	asn_ext_code ,
 	        	po_id ,
+	        	original_ext_odo_code ,
+		        original_ec_order_code ,
 	        	ou_id ,
 	        	customer_id ,
 	        	store_id ,
@@ -89,6 +94,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{asnExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -128,6 +135,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        asn_code = #{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        asn_ext_code = #{asnExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        po_id = #{poId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        original_ext_odo_code = #{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        original_ec_order_code = #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -210,6 +219,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="poId!=null">
 					and po_id = #{poId}
+				</if>
+				
+				<if test="originalExtOdoCode!=null and originalExtOdoCode!=''">
+					and original_ext_odo_code = #{originalExtOdoCode}
+				</if>
+	       
+		       	<if test="originalEcOrderCode!=null and originalEcOrderCode!=''">
+					and original_ec_order_code = #{originalEcOrderCode}
 				</if>
 	       
 				<if test="ouId!=null">

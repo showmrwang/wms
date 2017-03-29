@@ -196,5 +196,12 @@ public interface BiPoManager extends BaseManager {
      * @return
      */
     Boolean calIsAutoClose(Long storeId, Long ouId);
+    
+    /**
+     * 退换货创建Po单逻辑
+     * @author kai.zhu
+     * @version 2017年3月28日
+     */
+	void createPoByReturnStorage(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId);
 
 }
