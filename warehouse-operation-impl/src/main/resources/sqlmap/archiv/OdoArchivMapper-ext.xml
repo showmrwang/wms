@@ -286,61 +286,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             ]]>
     </insert>
     
-        <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr" flushCache="true">
-        <![CDATA[
-                INSERT INTO
-                t_wh_odo_attr_archiv${sysDate} (
-                    id,
-                    odo_id ,
-                    odo_attr1 ,
-                    odo_attr2 ,
-                    odo_attr3 ,
-                    odo_attr4 ,
-                    odo_attr5 ,
-                    odo_attr6 ,
-                    odo_attr7 ,
-                    odo_attr8 ,
-                    odo_attr9 ,
-                    odo_attr10 ,
-                    odo_attr11 ,
-                    odo_attr12 ,
-                    odo_attr13 ,
-                    odo_attr14 ,
-                    odo_attr15 ,
-                    odo_attr16 ,
-                    odo_attr17 ,
-                    odo_attr18 ,
-                    odo_attr19 ,
-                    odo_attr20 ,
-                    ou_id 
-                ) VALUES (
-               		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{odoAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
-                )
-            ]]>
-    </insert>
-    
         <insert id="archivWhOdoAttr" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr" flushCache="true">
         <![CDATA[
                 INSERT INTO
@@ -664,7 +609,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 			</insert>
 			
-		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox" 
+		<insert id="archivWhOutboundbox" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox" 
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
