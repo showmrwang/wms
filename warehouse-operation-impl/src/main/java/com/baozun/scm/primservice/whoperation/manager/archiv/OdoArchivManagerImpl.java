@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
@@ -110,17 +111,19 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             // 归档odoVas by odoid
             count = archivWhOdoVas(odoid, ouid, sysDate, count);
 
-            // 保存出库单索引数据(仓库)
-            WhOdoArchivIndex oai = new WhOdoArchivIndex();
-            oai.setEcOrderCode(whOdo.getEcOrderCode());
-            oai.setDataSource(whOdo.getDataSource());
-            oai.setWmsOdoCode(whOdo.getOdoCode());
-            oai.setSysDate(sysDate);
-            oai.setOuId(ouid);
-            int odoIndex = odoArchivDao.saveOdoArchivIndex(oai);
-            if (odoIndex == 0) {
-                log.error("OdoArchivManagerImpl saveOdoArchivIndex error");
-                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            // 保存出库单索引数据(仓库) 只限于出库单状态为完成
+            if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+                WhOdoArchivIndex oai = new WhOdoArchivIndex();
+                oai.setEcOrderCode(whOdo.getEcOrderCode());
+                oai.setDataSource(whOdo.getDataSource());
+                oai.setWmsOdoCode(whOdo.getOdoCode());
+                oai.setSysDate(sysDate);
+                oai.setOuId(ouid);
+                int odoIndex = odoArchivDao.saveOdoArchivIndex(oai);
+                if (odoIndex == 0) {
+                    log.error("OdoArchivManagerImpl saveOdoArchivIndex error");
+                    throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+                }
             }
         } catch (Exception e) {
             log.error("OdoArchivManagerImpl archivOdo error" + e);

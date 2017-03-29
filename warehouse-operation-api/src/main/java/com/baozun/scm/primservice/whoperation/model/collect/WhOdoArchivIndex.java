@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.model.collect;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -42,6 +44,8 @@ public class WhOdoArchivIndex extends BaseModel {
     private String sysDate;
     /** 数据来源 */
     private String dataSource;
+    /** 创建时间 */
+    private Date createTime;
 
     /** 表序号 */
     private String num;
@@ -100,6 +104,14 @@ public class WhOdoArchivIndex extends BaseModel {
 
     public void setIsReturnedPurchase(Boolean isReturnedPurchase) {
         this.isReturnedPurchase = isReturnedPurchase;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
 
