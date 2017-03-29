@@ -15,6 +15,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	po_code as poCode,
 	        	ext_code as extCode,
 	        	ext_po_code as extPoCode,
+	        	original_ext_odo_code as originalExtOdoCode,
+	        	original_ec_order_code as originalEcOrderCode,
 	        	ou_id as ouId,
 	        	customer_id as customerId,
 	        	store_id as storeId,
@@ -58,6 +60,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	po_code ,
 	        	ext_code ,
 	        	ext_po_code ,
+	        	original_ext_odo_code ,
+	        	original_ec_order_code ,
 	        	ou_id ,
 	        	customer_id ,
 	        	store_id ,
@@ -94,6 +98,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -136,6 +142,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        po_code = #{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_po_code = #{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        original_ext_odo_code = #{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        original_ec_order_code = #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        store_id = #{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -215,7 +223,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="poCode!=null and poCode!=''">
 					and po_code = #{poCode}
 				</if>
+	       		
+	       		<if test="originalExtOdoCode!=null and originalExtOdoCode!=''">
+					and original_ext_odo_code = #{originalExtOdoCode}
+				</if>
 	       
+		       <if test="originalEcOrderCode!=null and originalEcOrderCode!=''">
+					and original_ec_order_code = #{originalEcOrderCode}
+				</if>
+				
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
 				</if>

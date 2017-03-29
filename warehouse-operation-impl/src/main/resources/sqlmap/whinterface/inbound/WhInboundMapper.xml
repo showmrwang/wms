@@ -15,6 +15,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	uuid as uuid,
 	        	ext_po_code as extPoCode,
 	        	ext_code as extCode,
+	        	original_ext_odo_code as originalExtOdoCode,
+	        	original_ec_order_code as originalEcOrderCode,
 	        	customer_code as customerCode,
 	        	store_code as storeCode,
 	        	from_location as fromLocation,
@@ -30,6 +32,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	data_source as dataSource,
 	        	status as status,
 	        	error_count as errorCount,
+	        	error_code as errorCode,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime
 	    ]]>
@@ -47,6 +50,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	uuid ,
 		        	ext_po_code ,
 		        	ext_code ,
+		        	original_ext_odo_code ,
+		        	original_ec_order_code ,
 		        	customer_code ,
 		        	store_code ,
 		        	from_location ,
@@ -62,12 +67,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	data_source ,
 		        	status ,
 		        	error_count ,
+		        	error_code ,
 		        	create_time ,
 		        	last_modify_time 
 		        ) VALUES (
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -83,6 +91,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{errorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 		        )
@@ -97,6 +106,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_po_code = #{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        original_ext_odo_code = #{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        original_ec_order_code = #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        from_location = #{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -112,6 +123,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        error_count = #{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        error_code = #{errorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = now() 
 	        WHERE 
@@ -172,7 +184,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ext_code = #{extCode}
 				</if>
 	       
+	       		<if test="originalExtOdoCode!=null and originalExtOdoCode!=''">
+					and original_ext_odo_code = #{originalExtOdoCode}
+				</if>
 	       
+	       
+		       <if test="originalEcOrderCode!=null and originalEcOrderCode!=''">
+					and original_ec_order_code = #{originalEcOrderCode}
+				</if>
+				
 		       <if test="customerCode!=null and customerCode!=''">
 					and customer_code = #{customerCode}
 				</if>
@@ -238,6 +258,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="errorCount!=null">
 					and error_count = #{errorCount}
+				</if>
+				
+				<if test="errorCode!=null and errorCode!=''">
+					and error_code = #{errorCode}
 				</if>
 	       
 				<if test="createTime!=null">

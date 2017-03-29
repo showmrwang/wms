@@ -106,14 +106,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	is_returned_purchase ,
 		        	ou_id ,
 		        	sys_date ,
-		        	data_source 
+		        	data_source ,
+		        	create_time
 		        ) VALUES (
 		        	#{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		            #{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		            #{isReturnedPurchase,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{sysDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
 		        )
 		    ]]>
 	

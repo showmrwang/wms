@@ -626,5 +626,17 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         }
         return flag;
     }
+    
+    @Override
+	public void createPoByReturnStorage(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
+		Store store = this.getStoreByRedis(whPo.getStoreId());
+		if (null != store.getIsReturnedPurchaseOriginalInvAttr() && store.getIsReturnedPurchaseOriginalInvAttr()) {
+			// 退货入关联销售出
+			
+		} else {
+			// 退货入不关联销售出
+			
+		}
+	}
 
 }

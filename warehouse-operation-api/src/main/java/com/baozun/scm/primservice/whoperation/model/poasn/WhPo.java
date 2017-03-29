@@ -38,6 +38,10 @@ public class WhPo extends BaseModel {
     private String extCode;
     /** 上位系统平台单据号 */
     private String extPoCode;
+    /** 原始上位系统出库单号 */
+	private String originalExtOdoCode;
+	/** 原始电商平台出库单号 */
+	private String originalEcOrderCode;
     /** 对应组织ID */
     private Long ouId;
     /** 客户ID */
@@ -395,6 +399,22 @@ public class WhPo extends BaseModel {
     public void setArchivTime(Date archivTime) {
         this.archivTime = archivTime;
     }
+
+	public String getOriginalExtOdoCode() {
+		return originalExtOdoCode;
+	}
+
+	public void setOriginalExtOdoCode(String originalExtOdoCode) {
+		this.originalExtOdoCode = originalExtOdoCode;
+	}
+
+	public String getOriginalEcOrderCode() {
+		return originalEcOrderCode;
+	}
+
+	public void setOriginalEcOrderCode(String originalEcOrderCode) {
+		this.originalEcOrderCode = originalEcOrderCode;
+	}
 
 
 }

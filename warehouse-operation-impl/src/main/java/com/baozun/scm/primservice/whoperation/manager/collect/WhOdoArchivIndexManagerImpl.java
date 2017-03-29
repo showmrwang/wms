@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.collect;
 
+import java.util.Date;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
@@ -46,6 +47,7 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         whOdoArchivIndex.setNum(serialNumber);
+        whOdoArchivIndex.setCreateTime(new Date());
         count = whOdoArchivIndexDao.insert(whOdoArchivIndex);
         log.info("WhOdoArchivIndexManagerImpl.saveWhOdoArchivIndex end!");
         return count.intValue();

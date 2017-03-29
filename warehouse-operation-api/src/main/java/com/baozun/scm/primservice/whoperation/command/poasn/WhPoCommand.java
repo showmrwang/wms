@@ -31,6 +31,12 @@ public class WhPoCommand extends BaseCommand {
     private String poCode;
     /** 上位系统入库单据号 相关单据号 */
     private String extCode;
+    /** 上位系统平台单据号 */
+    private String extPoCode;
+    /** 原始上位系统出库单号 */
+	private String originalExtOdoCode;
+	/** 原始电商平台出库单号 */
+	private String originalEcOrderCode;
     /** 对应组织ID */
     private Long ouId;
     /** 客户ID */
@@ -39,12 +45,18 @@ public class WhPoCommand extends BaseCommand {
     private Long storeId;
     /** 供应商ID */
     private Long supplierId;
+    /** 来源地 */
+    private String fromLocation;
+    /** 目的地 */
+    private String toLocation;
     /** 运输商ID */
     private Long logisticsProviderId;
     /** 运输商Code */
     private String logisticsProvider;
     /** PO单类型 */
     private Integer poType;
+    /** 上位系统单据类型 */
+    private String extPoType;
     /** 状态 */
     private Integer status;
     /** 是否质检 1:是 0:否 */
@@ -89,6 +101,8 @@ public class WhPoCommand extends BaseCommand {
     private Boolean isWms = false;
     /** 是否VMI创建PO单 true:是 false:否 */
     private Boolean isVmi = false;
+    /** 数据来源 区分上位系统 */
+    private String dataSource;
     /** 客户名称 */
     private String customerName;
     /** 店铺名称 */
@@ -562,6 +576,62 @@ public class WhPoCommand extends BaseCommand {
     public void setLogisticsProvider(String logisticsProvider) {
         this.logisticsProvider = logisticsProvider;
     }
+
+	public String getExtPoCode() {
+		return extPoCode;
+	}
+
+	public void setExtPoCode(String extPoCode) {
+		this.extPoCode = extPoCode;
+	}
+
+	public String getOriginalExtOdoCode() {
+		return originalExtOdoCode;
+	}
+
+	public void setOriginalExtOdoCode(String originalExtOdoCode) {
+		this.originalExtOdoCode = originalExtOdoCode;
+	}
+
+	public String getOriginalEcOrderCode() {
+		return originalEcOrderCode;
+	}
+
+	public void setOriginalEcOrderCode(String originalEcOrderCode) {
+		this.originalEcOrderCode = originalEcOrderCode;
+	}
+
+	public String getFromLocation() {
+		return fromLocation;
+	}
+
+	public void setFromLocation(String fromLocation) {
+		this.fromLocation = fromLocation;
+	}
+
+	public String getToLocation() {
+		return toLocation;
+	}
+
+	public void setToLocation(String toLocation) {
+		this.toLocation = toLocation;
+	}
+
+	public String getExtPoType() {
+		return extPoType;
+	}
+
+	public void setExtPoType(String extPoType) {
+		this.extPoType = extPoType;
+	}
+
+	public String getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
+	}
 
 
 
