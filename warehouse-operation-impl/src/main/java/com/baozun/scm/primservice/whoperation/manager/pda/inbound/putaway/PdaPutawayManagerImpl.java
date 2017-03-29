@@ -1094,12 +1094,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
      * @return
      */
     private ScanResultCommand sysGuideContainerPutawayScanContainer(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long funcId, Long ouId, Long userId, String logId) {
-        if(containerCmd == null){
-        	throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-        }
     	ScanResultCommand srCmd = new ScanResultCommand();
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.CONTAINER_PUTAWAY);
+        if (null == containerCmd) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
         Integer containerStatus = containerCmd.getStatus();
@@ -1950,6 +1952,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         ScanResultCommand srCmd = new ScanResultCommand();
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
         srCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
+        if (null == containerCmd) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
         Integer containerStatus = containerCmd.getStatus();
