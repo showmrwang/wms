@@ -58,6 +58,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -152,6 +153,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     
     @Autowired
     private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
+    
+    @Autowired
+    private ReplenishmentTaskManager replenishmentTaskManager;
 
 
     /**
@@ -1105,6 +1109,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     public String savePickingWork(WhWave whWave, WhOdoOutBoundBox whOdoOutBoundBox, Long userId) {
         //查询波次主档信息     
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
+        // 判断是否有补货工作  
+        List<ReplenishmentTask> replenishmentTaskLst = replenishmentTaskManager.findTaskByWave(whWave.getId(), whWave.getOuId());
         //获取工作类型      
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
         //根据容器ID获取容器CODE      
@@ -1136,10 +1142,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
         //工作优先级 
-        if(false == whWave.getIsCreateReplenishedWork()){
-            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        if(null != replenishmentTaskLst && 0 > replenishmentTaskLst.size()){
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());    
         }else{
-            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
         }
         //小批次
         whWorkCommand.setBatch(whOdoOutBoundBox.getBoxBatch());
@@ -1446,6 +1452,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         //获取工作类型      
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whWave.getOuId());
+        // 判断是否有补货工作  
+        List<ReplenishmentTask> replenishmentTaskLst = replenishmentTaskManager.findTaskByWave(whWave.getId(), whWave.getOuId());
         String workArea = "" ;
         int count = 0;
         Boolean isFromLocationId = true;
@@ -1539,10 +1547,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
         //工作优先级 
-        if(false == whWave.getIsCreateReplenishedWork()){
-            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
+        if(null != replenishmentTaskLst && 0 > replenishmentTaskLst.size()){
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());    
         }else{
-            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());
+            whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
         }
         WhWork whWork = new WhWork();
         //复制数据        

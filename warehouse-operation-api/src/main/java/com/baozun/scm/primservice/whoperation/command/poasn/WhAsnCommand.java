@@ -32,6 +32,10 @@ public class WhAsnCommand extends BaseCommand {
     private String asnExtCode;
     /** 对应PO_ID */
     private Long poId;
+    /** 原始上位系统出库单号 */
+	private String originalExtOdoCode;
+	/** 原始电商平台出库单号 */
+	private String originalEcOrderCode;
     /** 所属仓库ID */
     private Long ouId;
     /** 客户ID */
@@ -527,6 +531,22 @@ public class WhAsnCommand extends BaseCommand {
     public void setLogisticsProvider(String logisticsProvider) {
         this.logisticsProvider = logisticsProvider;
     }
+
+	public String getOriginalExtOdoCode() {
+		return originalExtOdoCode;
+	}
+
+	public void setOriginalExtOdoCode(String originalExtOdoCode) {
+		this.originalExtOdoCode = originalExtOdoCode;
+	}
+
+	public String getOriginalEcOrderCode() {
+		return originalEcOrderCode;
+	}
+
+	public void setOriginalEcOrderCode(String originalEcOrderCode) {
+		this.originalEcOrderCode = originalEcOrderCode;
+	}
 
 
 }

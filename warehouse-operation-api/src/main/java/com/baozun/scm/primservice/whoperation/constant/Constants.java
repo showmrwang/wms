@@ -580,6 +580,9 @@ public final class Constants {
     public static final Integer WH_GLOBAL_STATUS_1 = 1;// 空闲
     public static final Integer WH_GLOBAL_STATUS_2 = 1;// 占用
 
+    /** 拣货模式:播种*/
+    public static final String WH_PICKING_MODE = "2";
+
     /** 播种模式 */
     public static final String WH_SEEDING_WALL = "SEEDING_WALL_MODE";
 
@@ -685,10 +688,13 @@ public final class Constants {
     public static final String DATA_SOURCE_PAC = "pac";
     public static final String DATA_SOURCE_HUB = "hub";
     public static final String COLLECTION_STATUS_10 = "10";
-    
-    /**拣货操作库存*/
+
+    /** 拣货操作库存 */
     public static final String PICKING_INVENTORY = "PICKING_INVENTORY";
-    /**补货中的拣货操作库存*/
-    public static final String REPLENISHMENT_PICKING_INVENTORY="REPLENISHMENT_PICKING_INVENTORY";
-    
+    /** 补货中的拣货操作库存 */
+    public static final String REPLENISHMENT_PICKING_INVENTORY = "REPLENISHMENT_PICKING_INVENTORY";
+
+    /**数据来源=WMS*/
+    public static final String WMS_DATA_SOURCE = "WMS";
+
 }

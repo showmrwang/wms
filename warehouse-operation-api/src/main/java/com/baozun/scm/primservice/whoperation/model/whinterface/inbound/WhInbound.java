@@ -36,6 +36,10 @@ public class WhInbound extends BaseModel {
 	private String extPoCode;
 	/** 上位系统原始单号 */
 	private String extCode;
+	/** 原始上位系统出库单号 */
+	private String originalExtOdoCode;
+	/** 原始电商平台出库单号 */
+	private String originalEcOrderCode;
 	/** 客户编码 */
 	private String customerCode;
 	/** 店铺CODE */
@@ -66,6 +70,8 @@ public class WhInbound extends BaseModel {
 	private Integer status;
 	/** 失败次数 */
 	private Integer errorCount;
+	/** 失败编码 */
+	private String errorCode;
 	/** 创建时间 */
 	private Date createTime;
 	/** 最后修改时间 */
@@ -237,6 +243,30 @@ public class WhInbound extends BaseModel {
 
 	public void setLastModifyTime(Date lastModifyTime) {
 		this.lastModifyTime = lastModifyTime;
+	}
+
+	public String getOriginalExtOdoCode() {
+		return originalExtOdoCode;
+	}
+
+	public void setOriginalExtOdoCode(String originalExtOdoCode) {
+		this.originalExtOdoCode = originalExtOdoCode;
+	}
+
+	public String getOriginalEcOrderCode() {
+		return originalEcOrderCode;
+	}
+
+	public void setOriginalEcOrderCode(String originalEcOrderCode) {
+		this.originalEcOrderCode = originalEcOrderCode;
+	}
+
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
 	}
 
 }

@@ -24,5 +24,28 @@ public interface WhOdoArchivIndexManager extends BaseManager {
      * @return
      */
     List<WhOdoArchivIndex> findWhOdoArchivIndexByEcOrderCode(String ecOrderCode, String dataSource, String wmsOdoCode, Long ouid);
+    
+    /**
+     * 保存仓库出库单归档索引数据
+     *   添加前增加了是否已存在判断
+     * 
+     * @author kai.zhu
+     * @version 2017年3月29日
+     */
+	void saveWhOdoArchivIndexExt(WhOdoArchivIndex whOdoArchivIndex);
+	
+	/**
+	 * 查找出归档到collect库的出库单数据
+	 * @author kai.zhu
+	 * @version 2017年3月29日
+	 */
+	List<WhOdoArchivIndex> findWhOdoArchivIndexData(Long ouId);
+	
+	/**
+	 * 删除仓库出库单归档索引数据
+	 * @author kai.zhu
+	 * @version 2017年3月29日
+	 */
+	void deleteWhOdoArchivIndex(WhOdoArchivIndex index);
 
 }

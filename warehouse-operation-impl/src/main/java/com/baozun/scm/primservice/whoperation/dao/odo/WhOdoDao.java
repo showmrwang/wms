@@ -282,4 +282,11 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     List<WhOdo> findByExtCodeOuIdNotCancel(@Param("extCode") String extOdoCode, @Param("ouId") Long ouId);
+    
+    /**
+     * 查询仓库下需要归档的出库单(状态为10和17的)
+     * @author kai.zhu
+     * @version 2017年3月29日
+     */
+	List<Long> findOdoArchivData(@Param("ouId") Long ouId);
 }

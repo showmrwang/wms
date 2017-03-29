@@ -286,61 +286,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             ]]>
     </insert>
     
-        <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr" flushCache="true">
-        <![CDATA[
-                INSERT INTO
-                t_wh_odo_attr_archiv${sysDate} (
-                    id,
-                    odo_id ,
-                    odo_attr1 ,
-                    odo_attr2 ,
-                    odo_attr3 ,
-                    odo_attr4 ,
-                    odo_attr5 ,
-                    odo_attr6 ,
-                    odo_attr7 ,
-                    odo_attr8 ,
-                    odo_attr9 ,
-                    odo_attr10 ,
-                    odo_attr11 ,
-                    odo_attr12 ,
-                    odo_attr13 ,
-                    odo_attr14 ,
-                    odo_attr15 ,
-                    odo_attr16 ,
-                    odo_attr17 ,
-                    odo_attr18 ,
-                    odo_attr19 ,
-                    odo_attr20 ,
-                    ou_id 
-                ) VALUES (
-               		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{odoAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr6,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr7,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr8,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr9,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr10,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr11,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr12,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr13,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr14,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr15,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr16,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr17,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr18,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr19,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{odoAttr20,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
-                )
-            ]]>
-    </insert>
-    
         <insert id="archivWhOdoAttr" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr" flushCache="true">
         <![CDATA[
                 INSERT INTO
@@ -634,6 +579,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <delete id="deleteOdoTransportMgmt" parameterType="map">
 			delete from t_wh_odo_transport_mgmt where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
+	 <delete id="deleteOdoOutBoundBox" parameterType="map">
+			delete from t_wh_outboundbox where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deleteOdoOutBoundBoxLine" parameterType="map">
+			delete from t_wh_outboundbox_line where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
 	 
 	 	<insert id="saveOdoArchivIndex" parameterType="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex" 
 				useGeneratedKeys="true" keyProperty="id" 
@@ -657,4 +608,118 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        )
 		    ]]>
 			</insert>
+			
+		<insert id="archivWhOutboundbox" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outboundbox_archiv${sysDate}  (
+		        	id,
+		        	batch ,
+		        	wave_code ,
+		        	customer_code ,
+		        	customer_name ,
+		        	store_code ,
+		        	store_name ,
+		        	transport_code ,
+		        	transport_name ,
+		        	product_code ,
+		        	product_name ,
+		        	time_effect_code ,
+		        	time_effect_name ,
+		        	status ,
+		        	ou_id ,
+		        	odo_id ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	distribution_mode ,
+		        	picking_mode ,
+		        	checking_mode 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{productCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{productName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{timeEffectCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{timeEffectName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+		</insert>
+		
+		<insert id="archivWhOutboundboxLine" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outboundbox_line_archiv${sysDate} (
+		       		id,
+		        	wh_outboundbox_id ,
+		        	sku_code ,
+		        	sku_ext_code ,
+		        	sku_bar_code ,
+		        	sku_name ,
+		        	qty ,
+		        	customer_code ,
+		        	customer_name ,
+		        	store_code ,
+		        	store_name ,
+		        	inv_status ,
+		        	inv_type ,
+		        	batch_number ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	country_of_origin ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	uuid ,
+		        	ou_id ,
+		        	odo_id ,
+		        	odo_line_id 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{whOutboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+		</insert>
 </mapper>

@@ -49,5 +49,19 @@ public interface WhOdoArchivIndexDao extends BaseDao<WhOdoArchivIndex, Long> {
      * 通过电商平台订单号(NOT NULL) or 数据来源(DEFAULT NULL) 查询仓库出库单归档索引数据
      */
     List<WhOdoArchivIndex> findWhOdoArchivIndexByEcOrderCode(@Param("ecOrderCode") String ecOrderCode, @Param("dataSource") String dataSource, @Param("wmsOdoCode") String wmsOdoCode, @Param("num") String num, @Param("ouid") Long ouid);
+    
+    /**
+	 * 查找出归档到collect库的出库单数据
+	 * @author kai.zhu
+	 * @version 2017年3月29日
+	 */
+	List<WhOdoArchivIndex> findWhOdoArchivIndexData(@Param("ouId") Long ouId);
+	
+	/**
+	 * 根据id删除仓库出库单归档索引数据
+	 * @author kai.zhu
+	 * @version 2017年3月29日
+	 */
+	int deleteWhOdoArchivIndexById(@Param("id") Long id, @Param("ouId") Long ouId);
 
 }

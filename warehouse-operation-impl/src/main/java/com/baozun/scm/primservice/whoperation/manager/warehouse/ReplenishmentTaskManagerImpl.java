@@ -41,4 +41,15 @@ public class ReplenishmentTaskManagerImpl extends BaseManagerImpl implements Rep
         return result.get(0);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<ReplenishmentTask> findTaskByWave(Long waveId, Long ouId) {
+        ReplenishmentTask task = new ReplenishmentTask();
+        task.setOuId(ouId);
+        task.setWaveId(waveId);
+        List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(task);
+        return result;
+    }
+
+
 }

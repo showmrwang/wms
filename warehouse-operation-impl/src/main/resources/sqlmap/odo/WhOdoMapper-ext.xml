@@ -3363,4 +3363,14 @@
        where ext_code =#{extCode} and ouId=#{ouId} and odo_status!=17
 
     </select>
+    
+    <select id="findOdoArchivData" resultType="long">
+    	select
+			odo.id
+		from
+			t_wh_odo odo
+		where
+			odo.odo_status in (10, 17)
+			and odo.ou_id = #{ouId}
+    </select>
 </mapper>

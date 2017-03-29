@@ -123,7 +123,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	modified_id ,
 	        	archiv_time ,
 	        	from_location ,
-	        	to_location
+	        	to_location ,
+	        	original_ext_odo_code ,
+	        	original_ec_order_code 
 	        ) VALUES (
 	            #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{poCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -156,7 +158,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 	        	#{fromLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        	#{toLocation,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        )
 	    ]]>
 		</insert>
@@ -298,7 +302,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	po_ou_id ,
 	        	ext_code ,
 	        	urgent_status ,
-	        	archiv_time
+	        	archiv_time ,
+	        	original_ext_odo_code ,
+	        	original_ec_order_code 
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -330,7 +336,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{poOuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
+	        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        )
 	    ]]>
 		</insert>

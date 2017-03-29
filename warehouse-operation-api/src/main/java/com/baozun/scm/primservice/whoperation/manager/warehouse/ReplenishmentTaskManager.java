@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 
@@ -16,4 +18,13 @@ public interface ReplenishmentTaskManager extends BaseManager {
      * @return
      */
     ReplenishmentTask findTaskByWaveWithStatus(Long waveId, Long ouId, Integer status);
+    
+    /**
+     * 根据波次查找可以补货的任务
+     * 
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<ReplenishmentTask> findTaskByWave(Long waveId, Long ouId);
 }

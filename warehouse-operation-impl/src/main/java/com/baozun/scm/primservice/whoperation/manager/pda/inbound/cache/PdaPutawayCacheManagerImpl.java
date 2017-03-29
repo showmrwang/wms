@@ -3915,6 +3915,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);  //获取唯一sku,当skuAttrId，存在sn/残次条码时
             // 4.判断当前商品是否扫描完毕
             Double scanSkuQty  = skuCmd.getScanSkuQty();
+            if (null == scanSkuQty) {
+                log.error("scan sku qty is valid, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+            }
             Long skuQty = 0L;
             if(isRecommendFail == false) { //使用推荐库位
                     if(true == isSnLine) {//存在sn/残次信息

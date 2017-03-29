@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.collect;
 
+import java.util.Date;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -46,6 +48,7 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         whOdoArchivIndex.setNum(serialNumber);
+        whOdoArchivIndex.setCreateTime(new Date());
         count = whOdoArchivIndexDao.insert(whOdoArchivIndex);
         log.info("WhOdoArchivIndexManagerImpl.saveWhOdoArchivIndex end!");
         return count.intValue();
@@ -78,4 +81,41 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
         log.info("WhOdoArchivIndexManagerImpl.findWhOdoArchivIndexByEcOrderCode end!");
         return whOdoArchivIndexList;
     }
+    
+    /**
+     * 保存仓库出库单归档索引数据
+     * 
+     * @param whOdoArchivIndex
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
+    public void saveWhOdoArchivIndexExt(WhOdoArchivIndex index) {
+    	// 先判断是否已在表中存在
+		List<WhOdoArchivIndex> odoArchivIndexList = this.findWhOdoArchivIndexByEcOrderCode(index.getEcOrderCode(), 
+				index.getDataSource(), index.getWmsOdoCode(), index.getOuId());
+		// 不存在则保存
+        if (null == odoArchivIndexList || odoArchivIndexList.isEmpty()) {
+			int insertCount = this.saveWhOdoArchivIndex(index);
+			if (insertCount != 1) {
+				throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+			}
+		}
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Transactional(propagation=Propagation.NOT_SUPPORTED)
+	public List<WhOdoArchivIndex> findWhOdoArchivIndexData(Long ouId) {
+    	return whOdoArchivIndexDao.findWhOdoArchivIndexData(ouId);
+	}
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+	public void deleteWhOdoArchivIndex(WhOdoArchivIndex index) {
+    	int updateCount = whOdoArchivIndexDao.deleteWhOdoArchivIndexById(index.getId(), index.getOuId());
+		if (updateCount != 1) {
+			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+		}
+	}
 }
