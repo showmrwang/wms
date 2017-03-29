@@ -568,6 +568,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         PickingScanResultCommand pSRcmd = new PickingScanResultCommand();
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
+        Long functionId = command.getFunctionId();
         Integer pickingWay = command.getPickingWay();
         pSRcmd.setOperationId(operationId);
         pSRcmd.setPickingWay(pickingWay);
@@ -618,6 +619,29 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             pSRcmd.setName(c2c.getCategoryName());
+        }
+        if(pickingWay == Constants.PICKING_WAY_FIVE || pickingWay == Constants.PICKING_WAY_SIX) {
+            WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
+            pSRcmd.setIsScanLocation(picking.getIsScanLocation());// 是否扫描库位
+            pSRcmd.setIsScanOuterContainer(picking.getIsScanOuterContainer());// 是否扫描托盘
+            pSRcmd.setIsScanInsideContainer(picking.getIsScanInsideContainer());// 是否扫描内部容器
+            pSRcmd.setIsScanSku(picking.getIsScanSku());// 是否扫描sku
+            pSRcmd.setIsScanInvAttr(picking.getIsScanInvAttr());// 是否扫描sku属性
+            pSRcmd.setScanPattern(picking.getScanPattern());// 扫描模式 
+            pSRcmd.setIsTipInvAttr(picking.getIsTipInvAttr());// 是否提示商品库存属性
+            pSRcmd.setPalletPickingMode(picking.getPalletPickingMode());// 整拖拣货模式
+            OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
+            List<Long> locationIds = operatorLine.getLocationIds();
+            CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.tipLocation(operationId, locationIds);
+            if(cSRCmd.getIsNeedTipLoc()) { // 提示库位
+                Long locationId = cSRCmd.getTipLocationId();
+                Location location = whLocationDao.findByIdExt(locationId, ouId);
+                if(null == location) {
+                    throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+                }
+                pSRcmd.setLocationId(locationId);
+                pSRcmd.setTipLocationCode(location.getCode());
+            }
         }
         log.info("PdaPickingWorkManagerImpl pdaPickingRemmendContainer is end");
         return pSRcmd;
@@ -707,25 +731,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         containerDao.saveOrUpdateByVersion(container);
         log.info("PdaPickingWorkManagerImpl updateContainerStauts is end");
         
-    }
-    
-    /**
-     * pda拣货整托整箱--获取缓存中的统计信息
-     * @author qiming.liu
-     * @param command
-     * @return
-     */
-    @Override
-    public PickingScanResultCommand pdaPickingWholeCase(PickingScanResultCommand command) {
-        // TODO Auto-generated method stub
-        log.info("PdaPickingWorkManagerImpl pdaPickingWholeCase is start");
-        PickingScanResultCommand pickingScanResultCommand = new PickingScanResultCommand();
-        OperatioLineStatisticsCommand operatioLineStatisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(command.getOperationId(),command.getOuId());
-        if(null != operatioLineStatisticsCommand.getLocationIds()){
-            pickingScanResultCommand.setLocationId(operatioLineStatisticsCommand.getLocationIds().get(0));
-        }
-        log.info("PdaPickingWorkManagerImpl pdaPickingWholeCase is end");
-        return pickingScanResultCommand;
     }
     
     /**
