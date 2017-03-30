@@ -144,7 +144,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
                 whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
-                this.whCheckingCollectionDao.saveOrUpdate(whCheckingCollection);
+                this.whCheckingCollectionDao.insert(whCheckingCollection);
             }
         }
     }
