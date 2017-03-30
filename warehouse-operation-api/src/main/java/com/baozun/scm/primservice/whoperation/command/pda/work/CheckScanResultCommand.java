@@ -42,8 +42,8 @@ public class CheckScanResultCommand extends BaseCommand {
     private Long tipSkuBarcode;
     /** 是否直接核扫商品 */
     private Boolean isNeedScanSku = false;
-    /** 是否提示sn明细 */
-    private Boolean isNeedTipSkuSn;
+    /** 是否扫描sn明细 */
+    private Boolean isNeedScanSkuSn = false; //默认不继续扫描sn
     /** 提示唯一sku */
     private String tipSkuAttrId;
     /**唯一sku,sn及残次条码*/
@@ -118,12 +118,6 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setIsNeedScanSku(Boolean isNeedScanSku) {
         this.isNeedScanSku = isNeedScanSku;
     }
-    public Boolean getIsNeedTipSkuSn() {
-        return isNeedTipSkuSn;
-    }
-    public void setIsNeedTipSkuSn(Boolean isNeedTipSkuSn) {
-        this.isNeedTipSkuSn = isNeedTipSkuSn;
-    }
     public String getTipSkuAttrId() {
         return tipSkuAttrId;
     }
@@ -178,5 +172,13 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setIsHaveInsideContainer(Boolean isHaveInsideContainer) {
         this.isHaveInsideContainer = isHaveInsideContainer;
     }
+    public Boolean getIsNeedScanSkuSn() {
+        return isNeedScanSkuSn;
+    }
+    public void setIsNeedScanSkuSn(Boolean isNeedScanSkuSn) {
+        this.isNeedScanSkuSn = isNeedScanSkuSn;
+    }
+    
+    
     
 }

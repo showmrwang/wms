@@ -25,8 +25,6 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 public class ScanTipSkuCacheCommand extends BaseCommand {
 
     private static final long serialVersionUID = -3767908553974150072L;
-    /** 上架类型 */
-    private int putawayWay;
     /** 外部容器id */
     private Long outerContainerId;
     /** 外部容器号 */
@@ -37,18 +35,13 @@ public class ScanTipSkuCacheCommand extends BaseCommand {
     private String insideContainerCode;
     /** 已复合商品队列 */
     private ArrayDeque<Long> scanSkuIds = new ArrayDeque<Long>();
-    /** 已复合唯一商品列表 */
+    /** 已复合唯一商品列表(包含sn,残次信息) */
     private ArrayDeque<String> scanSkuAttrIds = new ArrayDeque<String>();
     /** 逐件扫描商品列表 */
     private ArrayDeque<Long> oneByOneScanSkuIds = new ArrayDeque<Long>();
 
-    public int getPutawayWay() {
-        return putawayWay;
-    }
-
-    public void setPutawayWay(int putawayWay) {
-        this.putawayWay = putawayWay;
-    }
+    /** 已复合唯一商品列表(不包含sn,残次信息) */
+    private ArrayDeque<String> scanSkuAttrIdsNoSn = new ArrayDeque<String>();
 
     public Long getOuterContainerId() {
         return outerContainerId;
@@ -104,6 +97,14 @@ public class ScanTipSkuCacheCommand extends BaseCommand {
 
     public void setOneByOneScanSkuIds(ArrayDeque<Long> oneByOneScanSkuIds) {
         this.oneByOneScanSkuIds = oneByOneScanSkuIds;
+    }
+
+    public ArrayDeque<String> getScanSkuAttrIdsNoSn() {
+        return scanSkuAttrIdsNoSn;
+    }
+
+    public void setScanSkuAttrIdsNoSn(ArrayDeque<String> scanSkuAttrIdsNoSn) {
+        this.scanSkuAttrIdsNoSn = scanSkuAttrIdsNoSn;
     }
 
 

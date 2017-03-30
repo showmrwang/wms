@@ -1358,8 +1358,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         invSkuCmd.setInvType(command.getSkuInvType());
         invSkuCmd.setBatchNumber(command.getBatchNumber());
         try {
-            invSkuCmd.setMfgDate(new SimpleDateFormat("yyyyMMddHHmmss").parse(command.getSkuMfgDate()));
-            invSkuCmd.setExpDate(new SimpleDateFormat("yyyyMMddHHmmss").parse(command.getSkuExpDate()));
+            if(null != command.getSkuMfgDate()) {
+                invSkuCmd.setMfgDate(new SimpleDateFormat("yyyyMMddHHmmss").parse(command.getSkuMfgDate()));
+            }else{
+                invSkuCmd.setMfgDate(null);
+            }
+            if(null != command.getSkuExpDate()) {
+                invSkuCmd.setExpDate(new SimpleDateFormat("yyyyMMddHHmmss").parse(command.getSkuExpDate()));
+            }else{
+                invSkuCmd.setExpDate(null);
+            }
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -1371,17 +1379,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         invSkuCmd.setInvAttr4(command.getSkuInvAttr4());
         invSkuCmd.setInvAttr5(command.getSkuInvAttr5());
         invSkuCmd.setInvStatus(command.getSkuInvStatus());
-//        List<InventoryStatus> listInventoryStatus = inventoryStatusManager.findAllInventoryStatus();
-//        String statusValue = command.getSkuInvStatus();
-//        // 库存状态
-//        if (!StringUtils.isEmpty(statusValue)) {
-//            for (InventoryStatus inventoryStatus : listInventoryStatus) {
-//                if (statusValue.equals(inventoryStatus.getName())) invSkuCmd.setInvStatus(inventoryStatus.getId()); // 库存状态
-//                break;
-//            }
-//        }
-        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
-        pdaPickingWorkCacheManager.cacheSkuAttrId(locationId,skuAttrIds,insideContainerId);
+        String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);   //没有sn/残次信息
+        pdaPickingWorkCacheManager.cacheSkuAttrIdNoSn(locationId, skuAttrIds, insideContainerId);
+        String skuAttrIdsSn = SkuCategoryProvider.concatSkuAttrId(skuAttrIds,command.getSkuSn(),command.getSkuDefect());   //拼接sn/残次信息
+        pdaPickingWorkCacheManager.cacheSkuAttrId(locationId,skuAttrIdsSn,insideContainerId);  //缓存的必须有sn/残次信息
         WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
         if (null == picking) {
             log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
@@ -1460,10 +1461,31 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         skuCmd.setId(skuId);
         skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
+        skuCmd.setIsNeedTipSkuDefect(command.getIsNeedScanSkuDefect());
+        skuCmd.setIsNeedTipSkuSn(command.getIsNeedScanSkuSn());
         CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.pdaPickingyCacheSkuAndCheckContainer(ouId, operLocSkuIds,insideSkuAttrIdsSnDefect,skuAttrIdsSnDefect,insideSkuAttrIds,locSkuAttrIdsQty,skuAttrIds,scanPattern ,locationIds, locSkuQty, locationId, icSkuIds, outerContainerIds, outerContainerCmd, operationId, insideContainerSkuIdsQty, insideContainerSkuIds, insideContainerIds, locInsideContainerIds, insideContainerCmd, skuCmd);
 //        统计作业明细对应扫描sku的数量
         this.statisticOpertaionLineIdQty(locationId, outerContainerId, insideContainerId, skuAttrIds, skuCmd.getScanSkuQty(), operationId, ouId, isShortPikcing);
-        if(cSRCmd.getIsNeedScanSku()) {
+        if(cSRCmd.getIsNeedScanSkuSn()){
+            command.setIsContinueScanSn(true);
+            String skuAttrId = cSRCmd.getTipSkuAttrId();   //提示唯一的sku包含唯一sku
+            Map<Long, Map<String, Long>>  skuIdSkuAttrIdsQty =  null;
+            if(cSRCmd.getIsHaveInsideContainer()){   //当前sku有货箱
+                skuIdSkuAttrIdsQty = insideSkuAttrIds.get(insideContainerId);
+            }else{
+                skuIdSkuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+            }
+            Long skuId1 = SkuCategoryProvider.getSkuId(skuAttrId);
+            Map<String,Long> skuAttrIdsQty = skuIdSkuAttrIdsQty.get(skuId1);
+            WhSkuCommand whSkuCmd = whSkuDao.findWhSkuByIdExt(SkuCategoryProvider.getSkuId(skuAttrId), ouId);
+            if(null == whSkuCmd) {
+                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+            }
+            command.setTipSkuBarCode(whSkuCmd.getBarCode());
+            command.setIsNeedTipSku(true);
+            command.setSkuId(skuId);
+            this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
+        }else if(cSRCmd.getIsNeedScanSku()) {
             if(pickingWay == Constants.PICKING_WAY_THREE && isTrunkful) { //是否出库箱满箱
                 //跳转到扫描出库箱页面
                 command.setIsUserNewContainer(true);
@@ -1475,7 +1497,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 return command;
             }
             command.setIsNeedTipSku(true);
-            String skuAttrId = cSRCmd.getTipSkuAttrId();   //提示唯一的sku
+            String skuAttrId = cSRCmd.getTipSkuAttrId();   //提示唯一的sku包含唯一sku
             Map<Long, Map<String, Long>>  skuIdSkuAttrIdsQty =  null;
             if(cSRCmd.getIsHaveInsideContainer()){   //当前sku有货箱
                 skuIdSkuAttrIdsQty = insideSkuAttrIds.get(insideContainerId);
@@ -2260,9 +2282,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      */
     public PickingScanResultCommand judgeIsOccupationCode(PickingScanResultCommand command){
         log.info("PdaPickingWorkManagerImpl judgeIsOccupationCode is start");
+        Long operationId = command.getOperationId();
         WhSkuInventoryCommand invSkuCmd = new WhSkuInventoryCommand();
         invSkuCmd.setInvStatus(Long.valueOf(command.getSkuInvStatus())); // 库存状态
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
         try {
             invSkuCmd.setMfgDate(sdf.parse(command.getSkuMfgDate()));
         } catch (ParseException e) {
@@ -2287,20 +2310,33 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         invSkuCmd.setInvAttr5(command.getSkuInvAttr5());
         String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
         Long locationId = command.getLocationId();
-        String insideContainerCode = command.getInsideContainerCode();
         Long ouId = command.getOuId();
+        String outerContinerCode = command.getTipOuterContainerCode();
+        Long outerContainerId = null;
+        ContainerCommand oc = containerDao.getContainerByCode(outerContinerCode, ouId);
+        if(null == oc) {
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); 
+        }
+        outerContainerId = oc.getId();
+        String insideContainerCode = command.getTipInsideContainerCode();
         ContainerCommand c = containerDao.getContainerByCode(insideContainerCode, ouId);
         if(null == c) {
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); 
         }
         Long insideContainerId = c.getId();
+        String skuAttrId = locationId+"┊"+outerContainerId+"︴"+insideContainerId;
         String uuid = "";
         if(!StringUtils.isEmpty(command.getSkuSn()) || !StringUtils.isEmpty(command.getSkuDefect())) {  //是sn残次信息
             //判断是否占用sn/残次条码
-            List<WhSkuInventoryCommand> whSkuInvCmdList = whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId,locationId);
+            //到库存表中查询
+            List<WhSkuInventoryCommand> whSkuInvCmdList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
+            if(null == whSkuInvCmdList || whSkuInvCmdList.size() == 0){
+                    throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
             for(WhSkuInventoryCommand skuInvCmd:whSkuInvCmdList) {
+                String skuInvAttrId = skuInvCmd.getLocationId()+"┊"+skuInvCmd.getOuterContainerId()+"︴"+skuInvCmd.getInsideContainerId();
                 String skuInvAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                if(insideContainerId.equals(skuInvCmd.getInsideContainerId()) && skuAttrIds.equals(skuInvAttrIds)){
+                if(skuAttrId.equals(skuInvAttrId) && skuAttrIds.equals(skuInvAttrIds)){
                      uuid = skuInvCmd.getUuid();
                      break;
                 }

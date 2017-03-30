@@ -201,6 +201,8 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isScanOutBoundBox = false; // 是否已经扫描出库箱 isPicking= 2时使用
     
     private Double scanSkuQty;   //扫描数量
+    /** 是否继续扫描sn明细 */
+    private Boolean isContinueScanSn = false; //默认不继续扫描sn
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -1087,6 +1089,12 @@ public class PickingScanResultCommand extends BaseCommand {
         this.skuInvStatus = skuInvStatus;
     }
 
+    public Boolean getIsContinueScanSn() {
+        return isContinueScanSn;
+    }
 
+    public void setIsContinueScanSn(Boolean isContinueScanSn) {
+        this.isContinueScanSn = isContinueScanSn;
+    }
 
 }
