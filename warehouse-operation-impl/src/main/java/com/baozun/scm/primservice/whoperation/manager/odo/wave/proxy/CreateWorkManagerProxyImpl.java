@@ -150,7 +150,9 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
         // 查询出小批次列表
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = odoOutBoundBoxMapper.getBoxBatchsForPicking(whWave.getId(), ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
-            throw new BusinessException("小批次列表为空"); 
+            log.error("whOdoOutBoundBoxList is null", whOdoOutBoundBoxList);
+            resultCommand.setIsPickingWorkInWave(false);
+            return resultCommand;
         }
     	if(whOdoOutBoundBoxList != null){
     		// 循环小批次        
