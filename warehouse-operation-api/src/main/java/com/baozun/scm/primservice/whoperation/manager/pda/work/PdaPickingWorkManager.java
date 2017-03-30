@@ -69,14 +69,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public PickingScanResultCommand tipOuterContainer(PickingScanResultCommand  command);
     
-    /**
-     * pda拣货整托整箱--获取缓存中的统计信息
-     * @author qiming.liu
-     * @param command
-     * @return
-     */
-    public PickingScanResultCommand pdaPickingWholeCase(PickingScanResultCommand  command);
-    
     /****
      * @author tangming
      * @param command

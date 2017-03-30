@@ -39,6 +39,5 @@ public interface WhCheckingCollectionDao extends BaseDao<WhCheckingCollection, L
 
     Long queryCount(QueryCondition cond);
 
-    int saveOrUpdate(WhCheckingCollection o);
 
 }

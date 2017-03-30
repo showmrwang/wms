@@ -1142,7 +1142,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         //当前工作明细设计到的所有库区编码信息列表--更新时获取数据      
         whWorkCommand.setWorkArea(null);
         //工作优先级 
-        if(null != replenishmentTaskLst && 0 > replenishmentTaskLst.size()){
+        if(null != replenishmentTaskLst && 0 < replenishmentTaskLst.size()){
             whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());    
         }else{
             whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
@@ -1547,7 +1547,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
         //工作优先级 
-        if(null != replenishmentTaskLst && 0 > replenishmentTaskLst.size()){
+        if(null != replenishmentTaskLst && 0 < replenishmentTaskLst.size()){
             whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());    
         }else{
             whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingWorkPriority() ? whWaveMaster.getPickingWorkPriority() : workType.getPriority());
