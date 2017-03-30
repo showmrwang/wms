@@ -108,6 +108,16 @@ public class WhOdo extends BaseModel {
     private String sysDate;
     /** 归档时间 */
     private Date archivTime;
+    /** 上位系统单据类型 */
+    private String extOdoType;
+
+    public String getExtOdoType() {
+        return extOdoType;
+    }
+
+    public void setExtOdoType(String extOdoType) {
+        this.extOdoType = extOdoType;
+    }
 
     public String getDistributionCode() {
         return distributionCode;

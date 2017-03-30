@@ -63,7 +63,9 @@
 	        	modified_id as modifiedId,
 	        	wave_code as waveCode,
 	        	counter_code as counterCode,
-	        	distribution_code as distributionCode
+	        	distribution_code as distributionCode,
+	        	data_source as dataSource,
+				ext_odo_type as extOdoType
         ]]>
 	</sql>
 
@@ -205,6 +207,13 @@
 				
 				  <if test="counterCode!=null and counterCode!=''">
 					and counter_code = #{counterCode}
+				</if>
+				 <if test="dataSource!=null and dataSource!=''">
+					and data_source = #{dataSource}
+				</if>
+	       
+		       <if test="extOdoType!=null and extOdoType!=''">
+					and ext_odo_type = #{extOdoType}
 				</if>
 		</where>
     </sql>
@@ -768,7 +777,9 @@
 			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        counter_code = #{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR},
-			        distribution_code = #{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR}  
+			        distribution_code = #{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        data_source=#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR} 
            
         ]]>
 		<where>
