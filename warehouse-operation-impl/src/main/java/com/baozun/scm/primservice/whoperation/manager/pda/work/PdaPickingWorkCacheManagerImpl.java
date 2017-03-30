@@ -1467,6 +1467,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {insideContainerCmd.getCode()});
               }
           } else if(null == outerContainerCmd && null != insideContainerCmd){
+              cssrCmd.setIsHaveOuterContainer(false);
               Long insideContainerId = insideContainerCmd.getId();
               Map<Long, Map<String, Long>> skuAttrIdsQty =  insideSkuAttrIds.get(insideContainerId);
               // 0.先判断当前内部容器是否在缓存中
@@ -2127,6 +2128,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {insideContainerCmd.getCode()});
               }
           }else if(null == outerContainerCmd && null == insideContainerCmd){//  sku直接放在库位上
+              cssrCmd.setIsHaveInsideContainer(false);
               Set<Long> skuIds = locSkuIds.get(locationId);
               Map<Long, Map<String, Long>> skuAttrIdsQty =  locSkuAttrIdsQty.get(locationId); //库位上每个sku对应的唯一sku及件数 (不在容器内，散装sku)
               Map<String, Set<String>>  skuSnDefect = skuAttrIdsSnDefect.get(locationId);   //库位上每个唯一sku对应的所有sn及残次条码
