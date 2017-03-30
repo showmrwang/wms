@@ -1589,7 +1589,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if (null == work) {
             throw new BusinessException("no work found");
         }
-        if (!Constants.WH_PICKING_MODE.equals(work.getPickingMode())) {
+        if (Constants.WH_PICKING_MODE.equals(work.getPickingMode())) {
             // 拣货模式为播种
             this.pdaConcentrationManager.insertIntoSeedingCollection(command.getBatch(), work.getId(), ouId);
         } else {
