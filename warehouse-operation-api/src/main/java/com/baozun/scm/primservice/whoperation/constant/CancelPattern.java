@@ -25,22 +25,24 @@ import java.io.Serializable;
 public class CancelPattern implements Serializable {
 
     private static final long serialVersionUID = -7666851291432416397L;
-    /**上架(建议上架和人工上架)*/
-    public static final int  PUTAWAY_SKU_CANCEL = 1; // sku取消
-    
-    public static final int  PUTAWAY_SCAN_LOCATION_CANCEL = 2; // 扫描库位取消
-    
-    public static final int  PUTAWAY_CONTAINER_CACNCEL = 3; //容器取消
-    
-    public static final int  PUTAWAY_INSIDECONTAINER_CANCEL= 4;//内部容器取消
-    
-    public static final int  PUTAWAY_TIP_LOCATION_CANCEL = 5; // 提示库位取消
-    
-    public static final int  PUTAWAY_OUTERCONTAINER_CANCEL= 6;//外部容器取消
-    
-    public static final int  PUTAWAY_MAN_SPILIT_SN_CANCEL = 7;  //人工上架拆箱上架(sn.残次信息取消)
-    
-    public static final int  PUTAWAY_MAN_SPILIT_SKU_DETIAL_CANCEL = 8;  //人工上架拆箱上架(sku库存属性取消)
+    /** 上架(建议上架和人工上架) */
+    public static final int PUTAWAY_SKU_CANCEL = 1; // sku取消
+
+    public static final int PUTAWAY_SCAN_LOCATION_CANCEL = 2; // 扫描库位取消
+
+    public static final int PUTAWAY_CONTAINER_CACNCEL = 3; // 容器取消
+
+    public static final int PUTAWAY_INSIDECONTAINER_CANCEL = 4;// 内部容器取消
+
+    public static final int PUTAWAY_TIP_LOCATION_CANCEL = 5; // 提示库位取消
+
+    public static final int PUTAWAY_OUTERCONTAINER_CANCEL = 6;// 外部容器取消
+
+    public static final int PUTAWAY_MAN_SPILIT_SN_CANCEL = 7; // 人工上架拆箱上架(sn.残次信息取消)
+
+    public static final int PUTAWAY_MAN_SPILIT_SKU_DETIAL_CANCEL = 8; // 人工上架拆箱上架(sku库存属性取消)
+
+    public static final int PUTAWAY_SKU_SN_CANCEL = 9; //
     
     /**拣货流程*/
     

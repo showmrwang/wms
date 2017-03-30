@@ -4777,6 +4777,89 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
 
                 }
             }
+            if (CancelPattern.PUTAWAY_SKU_SN_CANCEL == cancelPattern) {
+                if (null != icId) {
+                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                    if (null != tipScanSkuCmd) {
+                        String skuAttrId = "";
+                        String saId = "";
+                        Boolean isTipSkuSn = skuCmd.getIsNeedTipSkuSn();
+                        Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
+                        boolean isSnLine = false;
+                        if ((null != isTipSkuSn && true == isTipSkuSn) || (null != isTipSkuDefect && true == isTipSkuDefect)) {
+                            skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvBatchNumber(), skuCmd.getInvCountryOfOrigin(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(),
+                                    skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(), skuCmd.getInvAttr4(), skuCmd.getInvAttr5(), skuCmd.getSkuSn(), skuCmd.getSkuDefect());
+                            isSnLine = true;
+                        } else {
+                            skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvBatchNumber(), skuCmd.getInvCountryOfOrigin(), skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(),
+                                    skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(), skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
+                            isSnLine = false;
+                        }
+                        saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
+                        // 4.判断当前商品是否扫描完毕
+                        if (true == isSnLine) {
+                            // sn或残次商品
+                            ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
+                            ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
+                            ArrayDeque<String> actualScanSkuAttrIds = new ArrayDeque<String>();
+                            ArrayDeque<String> actualOneByOneScanSkuAttrIds = new ArrayDeque<String>();
+                            if (null != oneByOneScanSkuAttrIds && !oneByOneScanSkuAttrIds.isEmpty()) {
+                                Iterator<String> iter = oneByOneScanSkuAttrIds.iterator();
+                                while (iter.hasNext()) {
+                                    String value = iter.next();
+                                    String actualSaId = value;
+                                    if (null == value)
+                                        value = "";
+                                    else
+                                        value = SkuCategoryProvider.getSkuAttrId(value);
+                                    if (!value.equals(saId)) {
+                                        actualOneByOneScanSkuAttrIds.addFirst(actualSaId);
+                                    }
+                                }
+                            }
+                            if (null != scanSkuAttrIds && !scanSkuAttrIds.isEmpty()) {
+                                Iterator<String> iter = scanSkuAttrIds.iterator();
+                                while (iter.hasNext()) {
+                                    String value = iter.next();
+                                    String actualSaId = value;
+                                    if (null == value)
+                                        value = "";
+                                    else
+                                        value = SkuCategoryProvider.getSkuAttrId(value);
+                                    if (!value.equals(saId)) {
+                                        actualScanSkuAttrIds.addFirst(actualSaId);
+                                    }
+                                }
+                            }
+                            tipScanSkuCmd.setScanSkuAttrIds(actualScanSkuAttrIds);
+                            tipScanSkuCmd.setOneByOneScanSkuAttrIds(actualOneByOneScanSkuAttrIds);
+                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd);
+                        } else {
+                            // 非sn残次商品
+                            ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
+                            ArrayDeque<String> actualScanSkuAttrIds = new ArrayDeque<String>();
+                            if (null != scanSkuAttrIds && !scanSkuAttrIds.isEmpty()) {
+                                Iterator<String> iter = scanSkuAttrIds.iterator();
+                                while (iter.hasNext()) {
+                                    String value = iter.next();
+                                    String actualSaId = value;
+                                    if (null == value)
+                                        value = "";
+                                    else
+                                        value = SkuCategoryProvider.getSkuAttrId(value);
+                                    if (!value.equals(saId)) {
+                                        actualScanSkuAttrIds.addFirst(actualSaId);
+                                    }
+                                }
+                            }
+                            tipScanSkuCmd.setScanSkuAttrIds(actualScanSkuAttrIds);
+                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd);
+                        }
+                    }
+                } else {
+
+                }
+            }
         } else {
             log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
