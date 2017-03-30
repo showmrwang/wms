@@ -4870,7 +4870,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                this.addLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
                          }
                          if(Constants.PICKING_WAY_ONE == pickingWay){  //小车
-                               invSkuId =  this.addContianerInventory(pickingWay,skuInvCmd, qty, isTabbInvTotal, ouId, userId,  null, outerContainerId, null, null,null);  //出库箱模式,添加容器库存
+                               invSkuId =  this.addContianerInventory(pickingWay,skuInvCmd, qty, isTabbInvTotal, ouId, userId,  null, outerContainerId, useContainerLatticeNo, null,null);  //出库箱模式,添加容器库存
                          }
                          if(Constants.PICKING_WAY_TWO == pickingWay){
                                containerLatticeNoList.add(useContainerLatticeNo);   //货格号
@@ -5043,6 +5043,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if(Constants.PICKING_WAY_ONE == pickingWay){
                 inv.setOuterContainerId(outerContainerId);     //小车 
                 inv.setInsideContainerId(null);
+                inv.setContainerLatticeNo(containerLatticeNo);
             }
             if(Constants.PICKING_WAY_TWO == pickingWay){
                 inv.setOuterContainerId(outerContainerId);  //小车加出库箱模式

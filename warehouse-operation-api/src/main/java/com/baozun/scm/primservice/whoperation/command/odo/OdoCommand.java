@@ -132,6 +132,27 @@ public class OdoCommand extends BaseCommand {
      */
     private String menuId;
 
+    /** 上位系统单据类型 */
+    private String extOdoType;
+    /** 数据来源 */
+    private String dataSource;
+
+
+    public String getExtOdoType() {
+        return extOdoType;
+    }
+
+    public void setExtOdoType(String extOdoType) {
+        this.extOdoType = extOdoType;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public String getMenuId() {
         return menuId;

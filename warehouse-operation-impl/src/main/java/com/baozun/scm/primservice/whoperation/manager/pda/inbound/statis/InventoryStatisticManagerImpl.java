@@ -1283,10 +1283,6 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             }
                         }
                         skuAttrIds.add(skuAttrId);    //所有唯一的sku(包含库存属性)
-//                        if(null != locationId) {
-//                            locSkuAttrIds.put(locationId, skuAttrIds);
-//                        }
-//                        insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                         Long stroeId = invCmd.getStoreId();
                         if (null != stroeId) {
                             storeIds.add(stroeId);  //统计所有店铺
@@ -1388,6 +1384,12 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                                       }
                                     }
                                 }
+                            }else{
+                                Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
+                                if(null != locationId) {
+                                  locSkuAttrIds.put(locationId, skuAttrIds);
+                                }
+                                insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                             }
                             if (null != snDefects) {
                                 if (null != insideContainerSkuAttrIdsSnDefect.get(icId)) {
@@ -1407,6 +1409,12 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                                     insideContainerSkuAttrIdsSnDefect.put(icId, skuAttrIdsDefect);
                                 }
                             }
+                        }else{
+                            Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
+                            if(null != locationId) {
+                              locSkuAttrIds.put(locationId, skuAttrIds);
+                            }
+                            insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                         }
                         
                     }

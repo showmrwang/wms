@@ -746,6 +746,23 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
 
               }
+              OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+              ArrayDeque<Long> cacheLocaitionIds = null;
+              if (null != operLineCacheCmd) {
+                  cacheLocaitionIds = operLineCacheCmd.getTipLocationIds();
+              }
+              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
+                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
+                  if (null == value) value = -1L;
+                  if (0 != value.compareTo(locationId)) {
+                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                  }
+              } else {
+                  log.error("scan container queue is exception, logId is:[{}]", logId);
+                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+
+              }
               // 2.当前的外部容器是不是提示外部容器队列中的第一个
               ArrayDeque<Long> cacheOuterContainerIds = null;
               if(null != cacheContainerCmd) {
@@ -891,8 +908,22 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                                cssrCmd.setIsPicking(true); 
                                                            }
                                                         }else{
-                                                            cssrCmd.setIsPicking(true);
+                                                            cssrCmd.setIsPicking(true); 
                                                         }
+                                                       if(cssrCmd.getIsPicking()){
+                                                           //获取下一个库位
+                                                           Long tipLocId = null;
+                                                           for(Long lId:locationIds){
+                                                                 if(!cacheLocaitionIds.contains(lId)){
+                                                                     tipLocId  = lId;
+                                                                 }
+                                                           }
+                                                           if(null != tipLocId){
+                                                                 cssrCmd.setIsNeedTipLoc(true);
+                                                                 cssrCmd.setIsPicking(false);
+                                                                 cssrCmd.setTipLocationId(tipLocId);
+                                                           }
+                                                       }
                                                    }
                                               }
                                           } else {
@@ -1064,6 +1095,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                           }
                                                        }else{
                                                            cssrCmd.setIsPicking(true);
+                                                       }
+                                                       if(cssrCmd.getIsPicking()){
+                                                          //获取下一个库位
+                                                          Long tipLocId = null;
+                                                          for(Long lId:locationIds){
+                                                                if(!cacheLocaitionIds.contains(lId)){
+                                                                    tipLocId  = lId;
+                                                                }
+                                                          }
+                                                          if(null != tipLocId){
+                                                                cssrCmd.setIsNeedTipLoc(true);
+                                                                cssrCmd.setIsPicking(false);
+                                                                cssrCmd.setTipLocationId(tipLocId);
+                                                          }
                                                        }
                                                   }
                                               }
@@ -1253,6 +1298,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                           }else{
                                                               cssrCmd.setIsPicking(true);
                                                           }
+                                                          if(cssrCmd.getIsPicking()){
+                                                             //获取下一个库位
+                                                             Long tipLocId = null;
+                                                             for(Long lId:locationIds){
+                                                                   if(!cacheLocaitionIds.contains(lId)){
+                                                                       tipLocId  = lId;
+                                                                   }
+                                                             }
+                                                             if(null != tipLocId){
+                                                                   cssrCmd.setIsNeedTipLoc(true);
+                                                                   cssrCmd.setIsPicking(false);
+                                                                   cssrCmd.setTipLocationId(tipLocId);
+                                                             }
+                                                         }
                                                      }
                                                  }
                                              } else {
@@ -1396,6 +1455,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                      }else{
                                                          cssrCmd.setIsPicking(true);
                                                      }
+                                                    if(cssrCmd.getIsPicking()){
+                                                        //获取下一个库位
+                                                        Long tipLocId = null;
+                                                        for(Long lId:locationIds){
+                                                              if(!cacheLocaitionIds.contains(lId)){
+                                                                  tipLocId  = lId;
+                                                              }
+                                                        }
+                                                        if(null != tipLocId){
+                                                              cssrCmd.setIsNeedTipLoc(true);
+                                                              cssrCmd.setIsPicking(false);
+                                                              cssrCmd.setTipLocationId(tipLocId);
+                                                        }
+                                                    }
                                                 }
                                             }
                                         } else {
@@ -1467,6 +1540,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {insideContainerCmd.getCode()});
               }
           } else if(null == outerContainerCmd && null != insideContainerCmd){
+              cssrCmd.setIsHaveOuterContainer(false);
               Long insideContainerId = insideContainerCmd.getId();
               Map<Long, Map<String, Long>> skuAttrIdsQty =  insideSkuAttrIds.get(insideContainerId);
               // 0.先判断当前内部容器是否在缓存中
@@ -1480,6 +1554,23 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               if (false == icExists) {
                   log.error("tip container is not in cache server error, logId is[{}]", logId);
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+              }
+              OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+              ArrayDeque<Long> cacheLocaitionIds = null;
+              if (null != operLineCacheCmd) {
+                  cacheLocaitionIds = operLineCacheCmd.getTipLocationIds();
+              }
+              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
+                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
+                  if (null == value) value = -1L;
+                  if (0 != value.compareTo(locationId)) {
+                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                  }
+              } else {
+                  log.error("scan container queue is exception, logId is:[{}]", logId);
+                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+
               }
              // 1.当前的内部容器是不是提示容器队列的第一个
               LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject( CacheConstants.CACHE_LOCATION  + locationId.toString());
@@ -1611,7 +1702,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                               }else{
                                                   cssrCmd.setIsPicking(true);
                                               }
-                                             
+                                              if(cssrCmd.getIsPicking()){
+                                                  //获取下一个库位
+                                                  Long tipLocId = null;
+                                                  for(Long lId:locationIds){
+                                                        if(!cacheLocaitionIds.contains(lId)){
+                                                            tipLocId  = lId;
+                                                        }
+                                                  }
+                                                  if(null != tipLocId){
+                                                        cssrCmd.setIsNeedTipLoc(true);
+                                                        cssrCmd.setIsPicking(false);
+                                                        cssrCmd.setTipLocationId(tipLocId);
+                                                  }
+                                              }
                                           } else {
                                               //提示下一个货箱
                                               Long icId = null;
@@ -1761,6 +1865,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                   
                                               }else{
                                                   cssrCmd.setIsPicking(true);
+                                              }
+                                              if(cssrCmd.getIsPicking()){
+                                                  //获取下一个库位
+                                                  Long tipLocId = null;
+                                                  for(Long lId:locationIds){
+                                                        if(!cacheLocaitionIds.contains(lId)){
+                                                            tipLocId  = lId;
+                                                        }
+                                                  }
+                                                  if(null != tipLocId){
+                                                        cssrCmd.setIsNeedTipLoc(true);
+                                                        cssrCmd.setIsPicking(false);
+                                                        cssrCmd.setTipLocationId(tipLocId);
+                                                  }
                                               }
                                           } else {
                                               //提示下一个货箱
@@ -1929,7 +2047,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                 }else{
                                                     cssrCmd.setIsPicking(true);
                                                 }
-                                                 
+                                                if(cssrCmd.getIsPicking()){
+                                                    //获取下一个库位
+                                                    Long tipLocId = null;
+                                                    for(Long lId:locationIds){
+                                                          if(!cacheLocaitionIds.contains(lId)){
+                                                              tipLocId  = lId;
+                                                          }
+                                                    }
+                                                    if(null != tipLocId){
+                                                          cssrCmd.setIsNeedTipLoc(true);
+                                                          cssrCmd.setIsPicking(false);
+                                                          cssrCmd.setTipLocationId(tipLocId);
+                                                    }
+                                                } 
                                             } else {
                                                 //提示下一个货箱
                                                 Long icId = null;
@@ -2058,7 +2189,20 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                             }else{
                                                 cssrCmd.setIsPicking(true);
                                             }
-                                          
+                                            if(cssrCmd.getIsPicking()){
+                                                //获取下一个库位
+                                                Long tipLocId = null;
+                                                for(Long lId:locationIds){
+                                                      if(!cacheLocaitionIds.contains(lId)){
+                                                          tipLocId  = lId;
+                                                      }
+                                                }
+                                                if(null != tipLocId){
+                                                      cssrCmd.setIsNeedTipLoc(true);
+                                                      cssrCmd.setIsPicking(false);
+                                                      cssrCmd.setTipLocationId(tipLocId);
+                                                }
+                                            }
                                         } else {
                                             //提示下一个货箱
                                             Long icId = null;
@@ -2127,6 +2271,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {insideContainerCmd.getCode()});
               }
           }else if(null == outerContainerCmd && null == insideContainerCmd){//  sku直接放在库位上
+              cssrCmd.setIsHaveInsideContainer(false);
               Set<Long> skuIds = locSkuIds.get(locationId);
               Map<Long, Map<String, Long>> skuAttrIdsQty =  locSkuAttrIdsQty.get(locationId); //库位上每个sku对应的唯一sku及件数 (不在容器内，散装sku)
               Map<String, Set<String>>  skuSnDefect = skuAttrIdsSnDefect.get(locationId);   //库位上每个唯一sku对应的所有sn及残次条码
@@ -2799,9 +2944,26 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                }
                Map<Long, Set<Long>> operSkuIds = operatorLine.getSkuIds();  //散装sku
-               if(null != insideContianerId) {
-                   Map<Long, Set<Long>> locInsideContainerIds = operatorLine.getInsideContainerIds();    //库位上所有的内部容器
-                   Map<Long, Set<Long>> insideSkuIds = operatorLine.getInsideContainerIds();  //内部容器对应所有sku
+               Map<Long, Set<Long>> locInsideContainerIds = operatorLine.getInsideContainerIds();    //库位上所有的内部容器
+               Map<Long, Set<Long>> insideSkuIds = operatorLine.getInsideSkuIds();  //内部容器对应所有sku
+               Map<Long, Set<Long>> outerInsideId = operatorLine.getOuterToInside();
+               Map<Long, Set<Long>> locOuterContainerIds = operatorLine.getOuterContainerIds();
+               //先删除托盘上的
+               if(null != locOuterContainerIds  && locOuterContainerIds.size() != 0) {
+                   Set<Long> outerContainerIds = locOuterContainerIds.get(locationId);
+                   for(Long outerId:outerContainerIds){
+                       Set<Long> insideIds = outerInsideId.get(outerId);
+                       //先清楚内部容器的sku
+                       for(Long insideId:insideIds) {
+                           Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
+                           for(Long skuId:skuIds){
+                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
+                           }
+                       }
+                   }
+               }
+               //在删库位上的货箱
+               if(null != locInsideContainerIds && locInsideContainerIds.size() != 0) {
                    Set<Long> insideIds = locInsideContainerIds.get(locationId);
                    //先清楚内部容器的sku
                    for(Long insideId:insideIds) {
@@ -2810,7 +2972,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
                        }
                    }
-                   cacheManager.remove(CacheConstants.CACHE_LOCATION+locationId.toString());
                }
                
                //散装sku
@@ -2824,6 +2985,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                    }
                }
                cacheManager.remove(CacheConstants.CACHE_LOC_INVENTORY+locationId.toString());    //单个库位的缓存
+               cacheManager.remove(CacheConstants.CACHE_LOCATION+locationId.toString());
            }else{
              //清楚作业明细
                cacheManager.remove(CacheConstants.OPERATION_LINE+operationId.toString());
