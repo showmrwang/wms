@@ -2361,7 +2361,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL); 
         }
         outerContainerId = oc.getId();
-        String insideContainerCode = command.getTipInsideContainerCode();
         ContainerCommand c = containerDao.getContainerByCode(insideContainerCode, ouId);
         if (null == c) {
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
