@@ -633,7 +633,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         if (null == po.getStartTime()) {
             po.setStartTime(new Date());
         }
-        po.setStopTime(new Date());
+        // po.setStopTime(new Date());
         // 更新容器
         Container container = null;
         container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
@@ -649,10 +649,13 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
             // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
             WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(po.getExtCode(), po.getStoreId(), ouId);
             if (PoAsnStatus.PO_CLOSE == shardPo.getStatus()) {
+                infoPo.setStopTime(shardPo.getStopTime());
                 this.poManager.snycPoToInfo("CLOSE", infoPo, savePoLineList);
             } else if (PoAsnStatus.PO_RCVD == shardPo.getStatus()) {
+                infoPo.setStartTime(shardPo.getStartTime());
                 this.poManager.snycPoToInfo("RCVD", infoPo, savePoLineList);
             } else if (PoAsnStatus.PO_RCVD_FINISH == shardPo.getStatus()) {
+                infoPo.setStopTime(shardPo.getStopTime());
                 this.poManager.snycPoToInfo("RCVD_FINISH", infoPo, savePoLineList);
             }
         } catch (BusinessException e) {
