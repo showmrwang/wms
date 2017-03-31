@@ -761,7 +761,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         Location location = whLocationDao.findLocationByCode(locationCode, ouId);
         if (null == location) {
-            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+            location = whLocationDao.getLocationByBarcode(locationCode, ouId);
+            if(null == location) {
+                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+            }
         }
         Long locationId = location.getId();
         command.setLocationId(location.getId());

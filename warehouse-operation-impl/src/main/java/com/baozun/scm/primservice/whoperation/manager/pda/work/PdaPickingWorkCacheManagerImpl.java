@@ -3461,6 +3461,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         if(CancelPattern.PICKING_SCAN_LOC_CANCEL == cancelPattern){
             cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());  //删除统计缓存
             cacheManager.remove(CacheConstants.OPERATION_LINE + operationId.toString());   //删除作业明细
+            cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE+operationId.toString());
         }else if(CancelPattern.PICKING_TIP_CAR_CANCEL == cancelPattern){   //取消周转箱,删除当前库位缓存
             OperationLineCacheCommand  operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
             ArrayDeque<Long> tipLocationIds  = operLineCacheCmd.getTipLocationIds();

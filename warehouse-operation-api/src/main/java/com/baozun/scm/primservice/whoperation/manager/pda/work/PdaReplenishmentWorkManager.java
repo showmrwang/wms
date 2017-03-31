@@ -62,4 +62,12 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public void cancelPattern(String outerContainerCode, String insideContainerCode,int cancelPattern,int replenishWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
     
+    /***
+     * 校验周转箱
+     * @param turnoverBoxCode
+     * @param ouId
+     * @return
+     */
+    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId);
+    
 }

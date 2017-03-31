@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationComma
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
@@ -26,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -113,10 +116,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
            }
            List<Long> locationIds = operatorLine.getLocationIds();   //所有排序后的拣货库位
            CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.tipLocation(operationId, locationIds);
-           if(cSRCmd.getIsPicking()) {
-               throw new BusinessException(ErrorCodes.REPLE_WORK_ISEND);
-           }else{
-               psRCmd.setIsPicking(false);
+           if(cSRCmd.getIsNeedTipLoc()) {
                Long locationId = cSRCmd.getTipLocationId();   //提示库位id
                Location location = whLocationDao.findByIdExt(locationId, ouId);
                if(null == location){
@@ -259,5 +259,34 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             insideContainerId = cmd.getId();
         }
         pdaPickingWorkCacheManager.replenishmentCancelPattern(outerContainerId, insideContainerId, cancelPattern, replenishWay, locationId, ouId, operationId, tipSkuId);
+    }
+    
+    
+    /***
+     * 校验周转箱
+     * @param turnoverBoxCode
+     * @param ouId
+     * @return
+     */
+    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId){
+        ContainerCommand cmd =  containerDao.getContainerByCode(turnoverBoxCode, ouId);
+        if(null == cmd) {
+            log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        // 验证容器Lifecycle是否有效
+        if (cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        // 验证容器状态是否是
+        if (cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        //修改周转箱状态
+        Container c = new Container();
+        BeanUtils.copyProperties(cmd, c);
+        c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+        c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+        containerDao.saveOrUpdateByVersion(c);
     }
 }
