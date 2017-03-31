@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineSnDao">
+	<resultMap id="WhOutboundboxLineSnResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundboxLineSnColumns">
+	    <![CDATA[
+	        	id as id,
+	        	wh_outboundbox_line_id as whOutboundboxLineId,
+	        	sn as sn,
+	        	occupation_code as occupationCode,
+	        	replenishment_code as replenishmentCode,
+	        	defect_ware_barcode as defectWareBarcode,
+	        	defect_source as defectSource,
+	        	defect_type_id as defectTypeId,
+	        	defect_reasons_id as defectReasonsId,
+	        	status as status,
+	        	inv_attr as invAttr,
+	        	uuid as uuid,
+	        	ou_id as ouId,
+	        	sys_uuid as sysUuid
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outboundbox_line_sn (
+		        id,
+		        	wh_outboundbox_line_id ,
+		        	sn ,
+		        	occupation_code ,
+		        	replenishment_code ,
+		        	defect_ware_barcode ,
+		        	defect_source ,
+		        	defect_type_id ,
+		        	defect_reasons_id ,
+		        	status ,
+		        	inv_attr ,
+		        	uuid ,
+		        	ou_id ,
+		        	sys_uuid 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{whOutboundboxLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{defectReasonsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn">
+	    <![CDATA[
+	        UPDATE t_wh_outboundbox_line_sn SET
+		        wh_outboundbox_line_id = #{whOutboundboxLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        sn = #{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        defect_ware_barcode = #{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        defect_source = #{defectSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        defect_type_id = #{defectTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        defect_reasons_id = #{defectReasonsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        inv_attr = #{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        sys_uuid = #{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outboundbox_line_sn where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outboundbox_line_sn 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundboxLineSnResult" flushCache="false">
+			select <include refid="whOutboundboxLineSnColumns" />
+		    <![CDATA[
+			    from t_wh_outboundbox_line_sn 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundboxLineSnResult" flushCache="false">
+			select <include refid="whOutboundboxLineSnColumns" />
+			    from t_wh_outboundbox_line_sn 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundboxLineSnDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="whOutboundboxLineId!=null">
+					and wh_outboundbox_line_id = #{whOutboundboxLineId}
+				</if>
+	       
+	       
+		       <if test="sn!=null and sn!=''">
+					and sn = #{sn}
+				</if>
+	       
+	       
+		       <if test="occupationCode!=null and occupationCode!=''">
+					and occupation_code = #{occupationCode}
+				</if>
+	       
+	       
+		       <if test="replenishmentCode!=null and replenishmentCode!=''">
+					and replenishment_code = #{replenishmentCode}
+				</if>
+	       
+	       
+		       <if test="defectWareBarcode!=null and defectWareBarcode!=''">
+					and defect_ware_barcode = #{defectWareBarcode}
+				</if>
+	       
+	       
+		       <if test="defectSource!=null and defectSource!=''">
+					and defect_source = #{defectSource}
+				</if>
+	       
+				<if test="defectTypeId!=null">
+					and defect_type_id = #{defectTypeId}
+				</if>
+	       
+				<if test="defectReasonsId!=null">
+					and defect_reasons_id = #{defectReasonsId}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+	       
+		       <if test="invAttr!=null and invAttr!=''">
+					and inv_attr = #{invAttr}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="sysUuid!=null and sysUuid!=''">
+					and sys_uuid = #{sysUuid}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outboundbox_line_sn 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outboundbox_line_sn 
+		<include refid="whOutboundboxLineSnDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outboundbox_line_sn 
+		<include refid="whOutboundboxLineSnDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundboxLineSnResult">
+    	select <include refid="whOutboundboxLineSnColumns" />
+	    from t_wh_outboundbox_line_sn 
+		<include refid="whOutboundboxLineSnDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundboxLineSnResult">
+    	select <include refid="whOutboundboxLineSnColumns" />
+	    from t_wh_outboundbox_line_sn 
+		<include refid="whOutboundboxLineSnDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundboxLineSnResult">
+    	select <include refid="whOutboundboxLineSnColumns" />
+	    from t_wh_outboundbox_line_sn 
+		<include refid="whOutboundboxLineSnDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
