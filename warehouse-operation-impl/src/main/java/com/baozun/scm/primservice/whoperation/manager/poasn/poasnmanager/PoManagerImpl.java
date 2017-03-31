@@ -667,6 +667,12 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
         po.setQtyRcvd(infoPo.getQtyRcvd());
         po.setStatus(PoAsnStatus.PO_CLOSE);
+        if (null == po.getStartTime()) {
+            po.setStartTime(infoPo.getStartTime());
+        }
+        if (null == po.getStopTime()) {
+            po.setStopTime(infoPo.getStopTime());
+        }
         this.saveOrUpdateByVersionToInfo(po);
         if (PoAsnStatus.BIPO_ALLOT == bipo.getStatus()) {
             bipo.setStatus(PoAsnStatus.PO_RCVD);
@@ -689,7 +695,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                                 infoPo.getOuId(), null);
                 BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
                 biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
-                biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
                 if (PoAsnStatus.BIPOLINE_ALLOT == biPoLine.getStatus()) {
                     biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD);
                 }
@@ -746,6 +751,12 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
         po.setQtyRcvd(infoPo.getQtyRcvd());
         po.setStatus(PoAsnStatus.PO_RCVD_FINISH);
+        if (null == po.getStartTime()) {
+            po.setStartTime(infoPo.getStartTime());
+        }
+        if (null == po.getStopTime()) {
+            po.setStopTime(infoPo.getStopTime());
+        }
         this.saveOrUpdateByVersionToInfo(po);
         if (PoAsnStatus.BIPO_ALLOT == bipo.getStatus()) {
             bipo.setStatus(PoAsnStatus.PO_RCVD);
@@ -764,7 +775,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                                 infoPo.getOuId(), null);
                 BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
                 biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
-                biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
                 if (PoAsnStatus.BIPOLINE_ALLOT == biPoLine.getStatus()) {
                     biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD);
                 }
@@ -800,6 +810,12 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
         po.setQtyRcvd(infoPo.getQtyRcvd());
         po.setStatus(PoAsnStatus.PO_RCVD);
+        if (null == po.getStartTime()) {
+            po.setStartTime(infoPo.getStartTime());
+        }
+        if (null == po.getStopTime()) {
+            po.setStopTime(infoPo.getStopTime());
+        }
         this.saveOrUpdateByVersionToInfo(po);
         if (PoAsnStatus.BIPO_ALLOT == bipo.getStatus()) {
             bipo.setStatus(PoAsnStatus.PO_RCVD);
@@ -818,7 +834,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                                 infoPo.getOuId(), null);
                 BiPoLine biPoLine = this.biPoLineDao.findById(poLine.getPoLineId());
                 biPoLine.setQtyRcvd(biPoLine.getQtyRcvd() - infoPoLine.getQtyRcvd() + poLine.getQtyRcvd());
-                biPoLine.setAvailableQty(biPoLine.getQtyPlanned() - biPoLine.getQtyRcvd());
                 if (PoAsnStatus.BIPOLINE_ALLOT == biPoLine.getStatus()) {
                     biPoLine.setStatus(PoAsnStatus.BIPOLINE_RCVD);
                 }
