@@ -14,10 +14,12 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.Contai
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.InventoryStatisticResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipScanSkuCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
@@ -5680,11 +5683,137 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
             }
+            if (CancelPattern.PUTAWAY_SKU_SN_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    // 内部容器信息不存在
+                    log.error("inside container is not exists, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                }
+                Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+
+                InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString());
+                if (null == isCmd) {
+                    isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, ouId, logId);
+                }
+                Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();
+                Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(insideContainerCmd.getId());
+                Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = isCmd.getInsideContainerLocSkuAttrIdsQty();
+                Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(insideContainerCmd.getId());
+                Map<String, Long> skuAttrIdsQty = locSkuAttrIdsQty.get(loc.getId());
+                WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(funcId, ouId, logId);
+                if (null == putawyaFunc) {
+                    log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.COMMON_FUNCTION_CONF_IS_NULL_ERROR);
+                }
+                Integer scanPattern = (WhScanPatternType.ONE_BY_ONE_SCAN == putawyaFunc.getScanPattern()) ? WhScanPatternType.ONE_BY_ONE_SCAN : WhScanPatternType.NUMBER_ONLY_SCAN;
+
+                // 商品校验
+                Long sId = null;
+                skuCmd.setId(sId);
+                SkuRedisCommand cacheSkuCmd = skuRedisManager.findSkuMasterBySkuId(sId, ouId, logId);
+                if (null == cacheSkuCmd) {
+                    log.error("sku is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+                }
+                Sku s = cacheSkuCmd.getSku();
+                WhSkuCommand sku = new WhSkuCommand();
+                BeanUtils.copyProperties(s, sku);
+                sku.setId(skuCmd.getId());
+                sku.setIsNeedTipSkuDetail(null == skuCmd.getIsNeedTipSkuDetail() ? false : skuCmd.getIsNeedTipSkuDetail());
+                sku.setIsNeedTipSkuSn(null == skuCmd.getIsNeedTipSkuSn() ? false : skuCmd.getIsNeedTipSkuSn());
+                sku.setIsNeedTipSkuDefect(null == skuCmd.getIsNeedTipSkuDefect() ? false : skuCmd.getIsNeedTipSkuDefect());
+                sku.setInvType(StringUtils.isEmpty(skuCmd.getInvType()) ? "" : skuCmd.getInvType());
+                sku.setInvStatus(StringUtils.isEmpty(skuCmd.getInvStatus()) ? "" : skuCmd.getInvStatus());
+                sku.setInvBatchNumber(StringUtils.isEmpty(skuCmd.getInvBatchNumber()) ? "" : skuCmd.getInvBatchNumber());
+                sku.setInvCountryOfOrigin(StringUtils.isEmpty(skuCmd.getInvCountryOfOrigin()) ? "" : skuCmd.getInvCountryOfOrigin());
+                sku.setInvMfgDate(StringUtils.isEmpty(skuCmd.getInvMfgDate()) ? "" : skuCmd.getInvMfgDate());
+                sku.setInvExpDate(StringUtils.isEmpty(skuCmd.getInvExpDate()) ? "" : skuCmd.getInvExpDate());
+                sku.setInvAttr1(StringUtils.isEmpty(skuCmd.getInvAttr1()) ? "" : skuCmd.getInvAttr1());
+                sku.setInvAttr2(StringUtils.isEmpty(skuCmd.getInvAttr2()) ? "" : skuCmd.getInvAttr2());
+                sku.setInvAttr3(StringUtils.isEmpty(skuCmd.getInvAttr3()) ? "" : skuCmd.getInvAttr3());
+                sku.setInvAttr4(StringUtils.isEmpty(skuCmd.getInvAttr4()) ? "" : skuCmd.getInvAttr4());
+                sku.setInvAttr5(StringUtils.isEmpty(skuCmd.getInvAttr5()) ? "" : skuCmd.getInvAttr5());
+                sku.setSkuSn(StringUtils.isEmpty(skuCmd.getSkuSn()) ? "" : skuCmd.getSkuSn());
+                sku.setSkuDefect(StringUtils.isEmpty(skuCmd.getSkuDefect()) ? "" : skuCmd.getSkuDefect());
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, sku, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+                // 提示下一个商品
+                TipScanSkuCacheCommand tipSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerCmd.toString() + loc.getId().toString());
+                ArrayDeque<String> tipSkuAttrIds = null;
+                if (null != tipSkuCmd) {
+                    tipSkuAttrIds = tipSkuCmd.getScanSkuAttrIds();
+                }
+                Set<String> skuAttrIds = locSkuAttrIds.get(loc.getId());
+                String tipSkuAttrId = "";
+                boolean isAllCache = isCacheAllExists2(skuAttrIds, tipSkuAttrIds);
+                if (false == isAllCache) {
+                    // 提示下个商品
+                    for (String saId : skuAttrIds) {
+                        Set<String> tempSkuAttrIds = new HashSet<String>();
+                        tempSkuAttrIds.add(saId);
+                        boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                        if (true == isExists) {
+                            continue;
+                        } else {
+                            tipSkuAttrId = saId;
+                            break;
+                        }
+                    }
+                }
+                srCmd.setScanPattern(scanPattern);
+                srCmd.setNeedTipSku(true);
+                Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
+                SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
+                if (null == cacheSku) {
+                    log.error("sku is not found error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+                }
+                Sku tipSku = cacheSku.getSku();
+                tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
+                srCmd.setTipSkuBarcode(tipSku.getBarCode());
+                pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(insideContainerCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
+            }
         } else {
             log.error("param putawayPatternDetailType is invalid, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         return srCmd;
+    }
+    
+    private boolean isCacheAllExists2(Set<String> ids, ArrayDeque<String> cacheKeys) {
+        boolean allExists = true;
+        if (null != cacheKeys && !cacheKeys.isEmpty()) {
+            for (String id : ids) {
+                String cId = id;
+                boolean isExists = false;
+                Iterator<String> iter = cacheKeys.iterator();
+                while (iter.hasNext()) {
+                    String value = iter.next();
+                    if (null == value) value = "-1";
+                    if (value.equals(cId)) {
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    allExists = false;
+                }
+            }
+        } else {
+            allExists = false;
+        }
+        return allExists;
     }
 
 }
