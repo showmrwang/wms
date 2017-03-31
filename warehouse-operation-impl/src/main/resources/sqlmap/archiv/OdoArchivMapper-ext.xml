@@ -5,7 +5,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao">
-
+	
+	<resultMap id="whOdoLineResultMap" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine" />
+	<resultMap id="WhOutboundboxLineSnResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn" />
+	
     <insert id="archivWhOdo" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdo" flushCache="true">
         <![CDATA[
                 INSERT INTO
@@ -721,5 +724,102 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
+		</insert>
+		
+		<select id="findWhOutboundboxLineArchivByOdoId" resultMap="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao.WhOutboundboxLineResult">
+			select 
+				box.id as whOutboundboxLineId,
+				line.sku_id as skuId,
+				line.store_id as storeId,
+				box.qty as returnedPurchaseQty,
+				box.mfg_date as mfgDate,
+				box.exp_date as expDate,
+				box.batch_number as batchNumber,
+				box.country_of_origin as countryOfOrigin,
+				box.inv_status as invStatus,
+				box.inv_type as invType,
+				box.inv_attr1 as invAttr1,
+				box.inv_attr2 as invAttr2,
+				box.inv_attr3 as invAttr3,
+				box.inv_attr4 as invAttr4,
+				box.inv_attr5 as invAttr5,
+				line.color as color,
+				line.style as style,
+				line.size as size,
+				box.uuid as uuid
+			from 
+				t_wh_outboundbox_line_archiv${sysDate} box
+				left join t_wh_odo_line_archiv${sysDate} line on box.odo_line_id = line.id
+			where 
+				box.odo_id = #{odoId}
+				and box.ou_id = #{ouId}
+		</select>
+		
+		<select id="findWhOutboundboxSnLineArchivByOutBoundLineId" resultMap="WhOutboundboxLineSnResult">
+			select 
+				sn.id as id,
+				sn.wh_outboundbox_line_id as whOutboundboxLineId,
+				sn.sn as sn,
+				sn.status as status,
+				sn.inv_attr as invAttr,
+				sn.uuid as uuid,
+				sn.ou_id as ouId,
+				sn.sys_uuid as sysUuid
+			from 
+				t_wh_outboundbox_line_sn_archiv${sysDate} sn
+			where 
+				sn.wh_outboundbox_line_id = #{boxLineId}
+				and sn.sn is not null
+				and sn.ou_id = #{ouId}
+		</select>
+		
+		<insert id="saveOdoArchivLineIndex" parameterType="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex"
+			useGeneratedKeys="true" keyProperty="id" >
+			INSERT INTO
+		        t_wh_odo_archiv_line_index_${num} (
+		        	ec_order_code ,
+		        	data_source ,
+		        	sku_id ,
+		        	store_id ,
+		        	returned_purchase_qty ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	batch_number ,
+		        	country_of_origin ,
+		        	inv_status ,
+		        	inv_type ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	color ,
+		        	style ,
+		        	size ,
+		        	sn ,
+		        	uuid 
+		        ) VALUES (
+		        	#{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{returnedPurchaseQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
 		</insert>
 </mapper>

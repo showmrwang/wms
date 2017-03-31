@@ -13,10 +13,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.collect.WhOdoArchivIndexDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.util.HashUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
@@ -28,7 +30,9 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
 
     @Autowired
     private WhOdoArchivIndexDao whOdoArchivIndexDao;
-
+    @Autowired
+    private OdoArchivDao odoArchivDao;
+    
     /**
      * 保存仓库出库单归档索引数据
      * 
@@ -117,5 +121,33 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
 		if (updateCount != 1) {
 			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
 		}
+	}
+
+	@Override
+	@MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
+	public List<WhOdoArchivLineIndex> saveWhOdoLineArchivListIntoCollect(List<WhOdoArchivLineIndex> whOdoArchivLineIndexList) {
+		if (null == whOdoArchivLineIndexList || whOdoArchivLineIndexList.isEmpty()) {
+            return null;
+        }
+		for (WhOdoArchivLineIndex index : whOdoArchivLineIndexList) {
+            int count = odoArchivDao.saveOdoArchivLineIndex(index);
+            if (count != 1) {
+                throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            }
+            index.setCollectOdoArchivLineId(index.getId());
+            index.setCollectTableName("t_wh_odo_archiv_line_index_" + index.getNum());
+        }
+		return whOdoArchivLineIndexList;
+	}
+	
+	@Override
+    @MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
+    public boolean checkWhOdoArchivLineIndexExsits(String ecOrderCode, String dataSource, Long ouId) {
+	    String num = HashUtil.serialNumberByHashCode(ecOrderCode);
+	    int count = whOdoArchivIndexDao.checkWhOdoArchivLineIndexExsits(ecOrderCode, dataSource, num);
+	    if (count > 0) {
+            return false;
+        }
+	    return true;
 	}
 }

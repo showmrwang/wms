@@ -87,7 +87,7 @@ public interface AsnManager extends BaseManager {
      * @param whpo
      * @param whPoLines
      */
-    void createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines);
+    Long createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines);
 
     /**
      * [通用方法]根据poId,ouId查询asn

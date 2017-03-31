@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 
 public interface WhOdoArchivIndexManager extends BaseManager {
 
@@ -47,5 +48,18 @@ public interface WhOdoArchivIndexManager extends BaseManager {
 	 * @version 2017年3月29日
 	 */
 	void deleteWhOdoArchivIndex(WhOdoArchivIndex index);
-
+	
+	/**
+	 * 保存出库明细到collect库
+	 * @author kai.zhu
+	 * @version 2017年3月30日
+	 */
+	List<WhOdoArchivLineIndex> saveWhOdoLineArchivListIntoCollect(List<WhOdoArchivLineIndex> whOdoArchivLineIndexList);
+	
+	/**
+	 * 判断归档明细中是否有数据
+	 * @author kai.zhu
+	 * @version 2017年3月31日
+	 */
+    boolean checkWhOdoArchivLineIndexExsits(String ecOrderCode, String dataSource, Long ouId);
 }
