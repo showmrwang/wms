@@ -636,19 +636,67 @@ public final class Constants {
     public static final String ODO_CROSS_DOCKING_SYSMBOL_3 = "3";// 越库
 
     /** 箱标签(出库) */
-    public static final String PRINT_ORDER_TYPE_1 = "1";
+    public static final String PRINT_ORDER_TYPE_1 = "OutBoxLabel";
+    /** 箱号(出库) */
+    public static final String PRINT_ORDER_TYPE_2 = "OutBoxNo";
+    /** 箱标签(入库) */
+    public static final String PRINT_ORDER_TYPE_3 = "InBoxLabel";
+    /** 箱号(入库) */
+    public static final String PRINT_ORDER_TYPE_4 = "InBoxNo";
     /** 月台标签 */
-    public static final String PRINT_ORDER_TYPE_5 = "5";
-    /** 箱號标签 */
-    public static final String PRINT_ORDER_TYPE_4 = "4";
+    public static final String PRINT_ORDER_TYPE_5 = "PlatformLabel";
+    /** 质检单号 */
+    public static final String PRINT_ORDER_TYPE_6 = "QCNo";
+    /** 残次标签 */
+    public static final String PRINT_ORDER_TYPE_7 = "DefectiveLabel";
+    /** PO单*/
+    public static final String PRINT_ORDER_TYPE_8 = "PO";
+    /** ASN单 */
+    public static final String PRINT_ORDER_TYPE_9 = "ASN";
+    /** 质检单 */
+    public static final String PRINT_ORDER_TYPE_10 = "QC";
+    /** 预收货交接清单 */
+    public static final String PRINT_ORDER_TYPE_11 = "PreReceipt";
+    /** PO收货差异清单*/
+    public static final String PRINT_ORDER_TYPE_12 = "PoDifferenceReceipt";
     /** 销售清单 */
-    public static final String PRINT_ORDER_TYPE_13 = "13";
+    public static final String PRINT_ORDER_TYPE_13 = "Sales";
     /** 发票 */
-    public static final String PRINT_ORDER_TYPE_14 = "14";
+    public static final String PRINT_ORDER_TYPE_14 = "Invoice";
     /** 面单 */
-    public static final String PRINT_ORDER_TYPE_15 = "15";
+    public static final String PRINT_ORDER_TYPE_15 = "Logistics";
     /** 装箱清单 */
-    public static final String PRINT_ORDER_TYPE_16 = "16";
+    public static final String PRINT_ORDER_TYPE_16 = "Packing";
+    /** 拣货单*/
+    public static final String PRINT_ORDER_TYPE_17 = "Picking";
+    /** 出库交接清单 */
+    public static final String PRINT_ORDER_TYPE_18 = "OutboundTransfer";
+    /** 工作条码*/
+    public static final String PRINT_ORDER_TYPE_19 = "WorkBarCode";
+    /** 工作标签 */
+    public static final String PRINT_ORDER_TYPE_20 = "WorkLabel";
+    /** 工作清单 */
+    public static final String PRINT_ORDER_TYPE_21 = "WorkList";
+    /** 库位条码 */
+    public static final String PRINT_ORDER_TYPE_22 = "LocationBarCode";
+    /** 库位校验码*/
+    public static final String PRINT_ORDER_TYPE_23 = "LocationCheckCode";
+    /** 库位标签 */
+    public static final String PRINT_ORDER_TYPE_24 = "LocationLabel";
+    /** 容器条码 */
+    public static final String PRINT_ORDER_TYPE_25 = "ContainerBarCode";
+    /** 出库箱条码 */
+    public static final String PRINT_ORDER_TYPE_26 = "OutBoundBoxBarCode";
+    /** 盘点表*/
+    public static final String PRINT_ORDER_TYPE_27 = "Check";
+    /** 商品条码 */
+    public static final String PRINT_ORDER_TYPE_28 = "SkuBarCode";
+    /** 出库设施条码 */
+    public static final String PRINT_ORDER_TYPE_29 = "FacilityBarCode";
+    /** 出库设施校验码 */
+    public static final String PRINT_ORDER_TYPE_30 = "FacilityCheckCode";
+    /** ASN收货差异清单 */
+    public static final String PRINT_ORDER_TYPE_31 = "AsnDifferenceReceipt";
 
 
     /** 波次阶段创建出库箱 */
