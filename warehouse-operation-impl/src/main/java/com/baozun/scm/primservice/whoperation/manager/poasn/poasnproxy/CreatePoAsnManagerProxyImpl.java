@@ -1179,7 +1179,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 	public void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
 		
 		// 退换货逻辑
-		if ("2".equals(whPo.getPoType())) {
+		if (whPo.getPoType() == 2) {
 			Store store = this.getStoreByRedis(whPo.getStoreId());
 			// 退货入关联销售出
 			String ecOrderCode = whPo.getOriginalEcOrderCode();
@@ -1218,7 +1218,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 // 查找
                 whOdoArchivLineIndexList = odoArchivManager.findWhOdoLineArchivByOdoCode(odoCode, ouId, sysDate, ecOrderCode, dataSource);
                 // 保存
-                whOdoArchivLineIndexList = whOdoArchivIndexManager.saveWhOdoLineArchivListIntoCollect(whOdoArchivLineIndexList);
+                whOdoArchivLineIndexList = whOdoArchivIndexManager.saveWhOdoLineArchivListIntoCollect(odoArchivIndex, whOdoArchivLineIndexList);
             }
         }
         // 创建Po的逻辑

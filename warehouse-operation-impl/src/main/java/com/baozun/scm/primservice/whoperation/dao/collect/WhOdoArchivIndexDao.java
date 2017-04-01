@@ -70,5 +70,12 @@ public interface WhOdoArchivIndexDao extends BaseDao<WhOdoArchivIndex, Long> {
 	 * @version 2017年3月31日
 	 */
     int checkWhOdoArchivLineIndexExsits(@Param("ecOrderCode") String ecOrderCode, @Param("dataSource") String dataSource, @Param("num") String num);
+    
+    /**
+     * 更新collect库中退货入为1
+     * @author kai.zhu
+     * @version 2017年4月1日
+     */
+    int updateReturnedPurchase(@Param("id") Long id, @Param("ouId") Long ouId, @Param("num")String num);
 
 }

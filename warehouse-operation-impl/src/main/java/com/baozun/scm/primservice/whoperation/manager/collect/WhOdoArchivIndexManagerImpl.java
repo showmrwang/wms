@@ -125,10 +125,11 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
 
 	@Override
 	@MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
-	public List<WhOdoArchivLineIndex> saveWhOdoLineArchivListIntoCollect(List<WhOdoArchivLineIndex> whOdoArchivLineIndexList) {
+	public List<WhOdoArchivLineIndex> saveWhOdoLineArchivListIntoCollect(WhOdoArchivIndex odoArchivIndex, List<WhOdoArchivLineIndex> whOdoArchivLineIndexList) {
 		if (null == whOdoArchivLineIndexList || whOdoArchivLineIndexList.isEmpty()) {
             return null;
         }
+		// 插入t_wh_odo_archiv_line_index_${num}中
 		for (WhOdoArchivLineIndex index : whOdoArchivLineIndexList) {
             int count = odoArchivDao.saveOdoArchivLineIndex(index);
             if (count != 1) {
@@ -136,6 +137,13 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
             }
             index.setCollectOdoArchivLineId(index.getId());
             index.setCollectTableName("t_wh_odo_archiv_line_index_" + index.getNum());
+        }
+		// 更新t_wh_odo_archiv_index_${num}的isReturnedPurchase为1
+		String ecOrderCode = odoArchivIndex.getEcOrderCode();
+		String num = HashUtil.serialNumberByHashCode(ecOrderCode);
+		int updateCount = whOdoArchivIndexDao.updateReturnedPurchase(odoArchivIndex.getId(), odoArchivIndex.getOuId(), num);
+		if (updateCount != 1) {
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
 		return whOdoArchivLineIndexList;
 	}

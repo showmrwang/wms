@@ -662,8 +662,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      */
     private void removeOutBoundBox(Long operationId){
         OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
-        tipLocationCmd.setTipOutBonxBoxIds(null);
-        cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+        if(null != tipLocationCmd){
+            tipLocationCmd.setTipOutBonxBoxIds(null);
+            cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE+ operationId.toString(), tipLocationCmd, CacheConstants.CACHE_ONE_DAY);
+        }
     }
     /***
      * pda推荐容器拣货扫描容器
@@ -1531,7 +1533,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private void statisticOpertaionLineIdQty(Long locationId, Long outerContainerId, Long insideContainerId, String skuAttrId, Double qty, Long operationId, Long ouId, Boolean isShortPikcing) {
         OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
         if (null == operLineCacheCmd) {
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            operLineCacheCmd = new OperationLineCacheCommand();
         }
         Map<Long, Set<Long>> insideShortPikcingOperIds = operLineCacheCmd.getInsideShortPikcingOperIds();
         Map<Long, Set<Long>> insidepickingOperIds = operLineCacheCmd.getInsidePickingOperIds(); // 非短拣的作业明细id集合

@@ -8,6 +8,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<resultMap id="whOdoLineResultMap" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine" />
 	<resultMap id="WhOutboundboxLineSnResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn" />
+	<resultMap id="WhOdoArchivLineIndexCommand" type="com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand" />
 	
     <insert id="archivWhOdo" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdo" flushCache="true">
         <![CDATA[
@@ -51,7 +52,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	wave_code,
 		        	counter_code,
 		        	distribution_code ,
-		        	archiv_time
+		        	archiv_time ,
+		        	data_source ,
+		        	ext_odo_type
                 ) VALUES (
                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -91,7 +94,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR},
 		        	#{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP}
+		        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
     </insert>
@@ -767,7 +772,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</insert>
 		
-		<select id="findWhOutboundboxLineArchivByOdoId" resultMap="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao.WhOutboundboxLineResult">
+		<select id="findWhOutboundboxLineArchivByOdoId" resultMap="WhOdoArchivLineIndexCommand">
 			select 
 				box.id as whOutboundboxLineId,
 				line.sku_id as skuId,
@@ -863,5 +868,53 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		</insert>
+		
+		<select id="findOdoByCodeAndSysDate" resultMap="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao.WhOdoResult">
+			select 
+				id as id,
+	        	odo_code as odoCode,
+	        	ext_code as extCode,
+	        	ec_order_code as ecOrderCode,
+	        	customer_id as customerId,
+	        	store_id as storeId,
+	        	odo_type as odoType,
+	        	group_odo_code as groupOdoCode,
+	        	original_odo_code as originalOdoCode,
+	        	priority_level as priorityLevel,
+	        	is_whole_order_outbound as isWholeOrderOutbound,
+	        	cross_docking_symbol as crossDockingSymbol,
+	        	order_type as orderType,
+	        	order_time as orderTime,
+	        	odo_status as odoStatus,
+	        	qty as qty,
+	        	current_qty as currentQty,
+	        	actual_qty as actualQty,
+	        	cancel_qty as cancelQty,
+	        	sku_number_of_packages as skuNumberOfPackages,
+	        	amt as amt,
+	        	distribute_mode as distributeMode,
+	        	epistatic_systems_order_type as epistaticSystemsOrderType,
+	        	outbound_carton_type as outboundCartonType,
+	        	include_hazardous_cargo as includeHazardousCargo,
+	        	include_fragile_cargo as includeFragileCargo,
+	        	is_assign_success as isAssignSuccess,
+	        	assign_fail_reason as assignFailReason,
+	        	is_allow_merge as isAllowMerge,
+	        	is_locked as isLocked,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId,
+	        	wave_code as waveCode,
+	        	counter_code as counterCode,
+	        	distribution_code as distributionCode,
+		        ext_odo_type as extOdoType
+			from 
+				t_wh_odo_archiv${sysDate}
+			where 
+				odo_code = #{odoCode}
+				and ou_id = #{ouId}
+		</select>
 
 </mapper>

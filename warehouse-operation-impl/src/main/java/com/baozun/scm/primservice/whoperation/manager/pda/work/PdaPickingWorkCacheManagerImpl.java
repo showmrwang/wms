@@ -729,58 +729,89 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   log.error("tip container is not in cache server error, logId is[{}]", logId);
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
               }
+              Long skuId = skuCmd.getId();
+              for (Long sId : iSkuIds) {
+                  if (0 == skuId.compareTo(sId)) {
+                      icExists = true;
+                      break;
+                  }
+              }
+              if (false == icExists) {
+                  log.error("tip container is not in cache server error, logId is[{}]", logId);
+                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+              }
+              //判断当前扫描的sku是否在缓存中
               // 1.当前的内部容器是不是提示容器队列的第一个
               LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
               ArrayDeque<Long> cacheInsideContainerIds = null;
               if (null != cacheContainerCmd) {
-                  cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
-              }
-              if (null != cacheInsideContainerIds && !cacheInsideContainerIds.isEmpty()) {
-                  Long value = cacheInsideContainerIds.peekFirst();// 队列的第一个
-                  if (null == value) value = -1L;
-                  if (0 != value.compareTo(insideContainerId)) {
-                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                  cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
+                  if(null == cacheContainerCmd.getTipOuterInsideContainerIds() ||  cacheContainerCmd.getTipOuterInsideContainerIds().size() == 0){
+                      cacheInsideContainerIds = new ArrayDeque<Long>();
+                  }else{
+                      cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
                   }
-              } else {
-                  log.error("scan container queue is exception, logId is:[{}]", logId);
-                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-
+              }else{
+                  cacheInsideContainerIds = new ArrayDeque<Long>();
               }
+              cacheInsideContainerIds.add(insideContainerId);
+//              if (null != cacheInsideContainerIds && !cacheInsideContainerIds.isEmpty()) {
+//                  Long value = cacheInsideContainerIds.peekFirst();// 队列的第一个
+//                  if (null == value) value = -1L;
+//                  if (0 != value.compareTo(insideContainerId)) {
+//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                  }
+//              } else {
+//                  log.error("scan container queue is exception, logId is:[{}]", logId);
+//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//
+//              }
               OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
               ArrayDeque<Long> cacheLocaitionIds = null;
               if (null != operLineCacheCmd) {
                   cacheLocaitionIds = operLineCacheCmd.getTipLocationIds();
-              }
-              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
-                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
-                  if (null == value) value = -1L;
-                  if (0 != value.compareTo(locationId)) {
-                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                  if(null == cacheLocaitionIds) {
+                      cacheLocaitionIds = new  ArrayDeque<Long>();
                   }
-              } else {
-                  log.error("scan container queue is exception, logId is:[{}]", logId);
-                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-
               }
+              cacheLocaitionIds.add(locationId);
+//              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
+//                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
+//                  if (null == value) value = -1L;
+//                  if (0 != value.compareTo(locationId)) {
+//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                  }
+//              } else {
+//                  log.error("scan container queue is exception, logId is:[{}]", logId);
+//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//
+//              }
               // 2.当前的外部容器是不是提示外部容器队列中的第一个
               ArrayDeque<Long> cacheOuterContainerIds = null;
               if(null != cacheContainerCmd) {
-                  cacheOuterContainerIds = cacheContainerCmd.getTipLocOuterContainerIds().get(locationId);
-              }
-              if (null != cacheOuterContainerIds && !cacheOuterContainerIds.isEmpty()) {
-                  Long value = cacheOuterContainerIds.peekFirst();// 队列的第一个
-                  if (null == value) value = -1L;
-                  if (0 != value.compareTo(outerContainerId)) {
-                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                  if(null == cacheContainerCmd.getTipLocOuterContainerIds()) {
+                      cacheOuterContainerIds = new ArrayDeque<Long>();
+                  }else{
+                      cacheOuterContainerIds = cacheContainerCmd.getTipLocOuterContainerIds().get(locationId);
                   }
-              } else {
-                  log.error("scan container queue is exception, logId is:[{}]", logId);
-                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-
               }
+              if(null == cacheOuterContainerIds){
+                  cacheOuterContainerIds = new ArrayDeque<Long>();
+              }
+//              if (null != cacheOuterContainerIds && !cacheOuterContainerIds.isEmpty()) {
+//                  Long value = cacheOuterContainerIds.peekFirst();// 队列的第一个
+//                  if (null == value) value = -1L;
+//                  if (0 != value.compareTo(outerContainerId)) {
+//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                  }
+//              } else {
+//                  log.error("scan container queue is exception, logId is:[{}]", logId);
+//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//
+//              }
               Boolean isTipSkuSn = skuCmd.getIsNeedTipSkuSn();
               Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
               boolean isSnLine = false;
@@ -790,7 +821,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   isSnLine = false; //没有sn/残次信息
               }
               // 3.得到当前内部容器的所有商品并复核商品
-              Long skuId = skuCmd.getId();
               Double skuQty = skuCmd.getScanSkuQty();
               Set<Long> icSkusIds = insideContainerSkuIds.get(insideContainerId);
               boolean skuExists = false;
@@ -1616,10 +1646,21 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               cssrCmd.setIsHaveOuterContainer(false);
               Long insideContainerId = insideContainerCmd.getId();
               Map<Long, Map<String, Long>> skuAttrIdsQty =  insideSkuAttrIds.get(insideContainerId);
-              // 0.先判断当前内部容器是否在缓存中
+              // 0.先判断当前内部容器是否在缓存中(是否在当前库位上)
               boolean icExists = false;
               for (Long iId : locInsideContainerIds) {
                   if (0 == insideContainerId.compareTo(iId)) {
+                      icExists = true;
+                      break;
+                  }
+              }
+              if (false == icExists) {
+                  log.error("tip container is not in cache server error, logId is[{}]", logId);
+                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+              }
+              Long skuId = skuCmd.getId();
+              for (Long sId : iSkuIds) {
+                  if (0 == skuId.compareTo(sId)) {
                       icExists = true;
                       break;
                   }
@@ -1633,36 +1674,48 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               if (null != operLineCacheCmd) {
                   cacheLocaitionIds = operLineCacheCmd.getTipLocationIds();
               }
-              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
-                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
-                  if (null == value) value = -1L;
-                  if (0 != value.compareTo(locationId)) {
-                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-                  }
-              } else {
-                  log.error("scan container queue is exception, logId is:[{}]", logId);
-                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-
+              if(null == cacheLocaitionIds) {
+                  cacheLocaitionIds = new ArrayDeque<Long>();
               }
+              cacheLocaitionIds.add(locationId);
+//              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
+//                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
+//                  if (null == value) value = -1L;
+//                  if (0 != value.compareTo(locationId)) {
+//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                  }
+//              } else {
+//                  log.error("scan container queue is exception, logId is:[{}]", logId);
+//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//
+//              }
              // 1.当前的内部容器是不是提示容器队列的第一个
               LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject( CacheConstants.CACHE_LOCATION  + locationId.toString());
               ArrayDeque<Long> cacheInsideContainerIds = null;
               if (null != cacheContainerCmd) {
-                  cacheInsideContainerIds = cacheContainerCmd.getTipLocInsideContainerIds().get(locationId);
-              }
-              if (null != cacheInsideContainerIds && !cacheInsideContainerIds.isEmpty()) {
-                  Long value = cacheInsideContainerIds.peekFirst();// 队列的第一个
-                  if (null == value) value = -1L;
-                  if (0 != value.compareTo(insideContainerId)) {
-                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                  if(null == cacheContainerCmd.getTipLocInsideContainerIds()){
+                      cacheInsideContainerIds = new ArrayDeque<Long>();
+                  }else{
+                      cacheInsideContainerIds = cacheContainerCmd.getTipLocInsideContainerIds().get(locationId);
                   }
-              } else {
-                  log.error("scan container queue is exception, logId is:[{}]", logId);
-                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-
               }
+              if(null == cacheInsideContainerIds){
+                  cacheInsideContainerIds = new ArrayDeque<Long>();
+              }
+              cacheInsideContainerIds.add(insideContainerId);
+//              if (null != cacheInsideContainerIds && !cacheInsideContainerIds.isEmpty()) {
+//                  Long value = cacheInsideContainerIds.peekFirst();// 队列的第一个
+//                  if (null == value) value = -1L;
+//                  if (0 != value.compareTo(insideContainerId)) {
+//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                  }
+//              } else {
+//                  log.error("scan container queue is exception, logId is:[{}]", logId);
+//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//
+//              }
               Boolean isTipSkuSn = skuCmd.getIsNeedTipSkuSn();
               Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
               boolean isSnLine = false;
@@ -1672,7 +1725,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   isSnLine = false; //没有sn/残次信息
               }
               // 2.得到当前内部容器的所有商品并复核商品
-              Long skuId = skuCmd.getId();
               Double skuQty = skuCmd.getScanSkuQty();
               boolean skuExists = false;
               for (Long sId : iSkuIds) {
@@ -2369,27 +2421,43 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               }
           }else if(null == outerContainerCmd && null == insideContainerCmd){//  sku直接放在库位上
               cssrCmd.setIsHaveInsideContainer(false);
+              Long skuId = skuCmd.getId();
               Set<Long> skuIds = locSkuIds.get(locationId);
+              // 0.判断sku是否在缓存中
+              boolean icExists = false; 
+              for (Long sId : skuIds) {
+                  if (0 == skuId.compareTo(sId)) {
+                      icExists = true;
+                      break;
+                  }
+              }
+              if (false == icExists) {
+                  log.error("tip container is not in cache server error, logId is[{}]", logId);
+                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+              }
               Map<Long, Map<String, Long>> skuAttrIdsQty =  locSkuAttrIdsQty.get(locationId); //库位上每个sku对应的唯一sku及件数 (不在容器内，散装sku)
               Map<String, Set<String>>  skuSnDefect = skuAttrIdsSnDefect.get(locationId);   //库位上每个唯一sku对应的所有sn及残次条码
-              Long skuId = skuCmd.getId();
               OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
               ArrayDeque<Long> cacheLocaitionIds = null;
               if (null != operLineCacheCmd) {
                   cacheLocaitionIds = operLineCacheCmd.getTipLocationIds();
               }
-              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
-                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
-                  if (null == value) value = -1L;
-                  if (0 != value.compareTo(locationId)) {
-                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-                  }
-              } else {
-                  log.error("scan container queue is exception, logId is:[{}]", logId);
-                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-
+              if(null == cacheLocaitionIds) {
+                  cacheLocaitionIds = new ArrayDeque<Long>();
               }
+              cacheLocaitionIds.add(locationId);
+//              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
+//                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
+//                  if (null == value) value = -1L;
+//                  if (0 != value.compareTo(locationId)) {
+//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
+//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                  }
+//              } else {
+//                  log.error("scan container queue is exception, logId is:[{}]", logId);
+//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//
+//              }
               Boolean isTipSkuSn = skuCmd.getIsNeedTipSkuSn();
               Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
               boolean isSnLine = false;
@@ -3535,70 +3603,72 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
                  }
                  OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
-                 List<Map<Long,Map<Long,Double>>> operLineIdToQtyList = operLineCacheCmd.getOperLineIdToQtyList();
-                 //清楚sku对应当前的作业id
-                 if(null != insideContainerId) { //当前sku存在内部容器
-                     Map<Long,Set<Long>> insidePickingOperIds = operLineCacheCmd.getInsidePickingOperIds();
-                     if(null != insidePickingOperIds && insidePickingOperIds.size() != 0) {
-                         insidePickingOperIds.remove(insideContainerId);
-                         operLineCacheCmd.setInsidePickingOperIds(insidePickingOperIds);//非短拣
-                     }
-                     Map<Long,Set<Long>> insideShortPikcingOperIds = operLineCacheCmd.getInsideShortPikcingOperIds();
-                     if(null != insideShortPikcingOperIds && insideShortPikcingOperIds.size() != 0) {
-                         insideShortPikcingOperIds.remove(insideContainerId);
-                         operLineCacheCmd.setInsideShortPikcingOperIds(insideShortPikcingOperIds);//短拣
-                     }
-                     if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
-                         int count = 0;
-                         Boolean result = false;
-                         for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
-                             Set<Long> ids = operLineIdToQtyMap.keySet();
-                             for(Long id:ids) {
-                                 if(id.equals(insideContainerId)) {
-                                     operLineIdToQtyList.remove(count);
-                                     result = true;
+                 if(null != operLineCacheCmd) {
+                     List<Map<Long,Map<Long,Double>>> operLineIdToQtyList = operLineCacheCmd.getOperLineIdToQtyList();
+                     //清楚sku对应当前的作业id
+                     if(null != insideContainerId) { //当前sku存在内部容器
+                         Map<Long,Set<Long>> insidePickingOperIds = operLineCacheCmd.getInsidePickingOperIds();
+                         if(null != insidePickingOperIds && insidePickingOperIds.size() != 0) {
+                             insidePickingOperIds.remove(insideContainerId);
+                             operLineCacheCmd.setInsidePickingOperIds(insidePickingOperIds);//非短拣
+                         }
+                         Map<Long,Set<Long>> insideShortPikcingOperIds = operLineCacheCmd.getInsideShortPikcingOperIds();
+                         if(null != insideShortPikcingOperIds && insideShortPikcingOperIds.size() != 0) {
+                             insideShortPikcingOperIds.remove(insideContainerId);
+                             operLineCacheCmd.setInsideShortPikcingOperIds(insideShortPikcingOperIds);//短拣
+                         }
+                         if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
+                             int count = 0;
+                             Boolean result = false;
+                             for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
+                                 Set<Long> ids = operLineIdToQtyMap.keySet();
+                                 for(Long id:ids) {
+                                     if(id.equals(insideContainerId)) {
+                                         operLineIdToQtyList.remove(count);
+                                         result = true;
+                                         break;
+                                     }
+                                 }
+                                 if(result) {
                                      break;
                                  }
+                                 count++;
                              }
-                             if(result) {
-                                 break;
-                             }
-                             count++;
+                             operLineCacheCmd.setOperLineIdToQtyList(operLineIdToQtyList);
                          }
-                         operLineCacheCmd.setOperLineIdToQtyList(operLineIdToQtyList);
-                     }
-                 }else{//当期sku不存在内部容器
-                     Map<Long,Set<Long>> locPickingOperIds = operLineCacheCmd.getLocPickingOperIds();
-                     if(null != locPickingOperIds && locPickingOperIds.size() != 0) {
-                         locPickingOperIds.remove(locationId);
-                         operLineCacheCmd.setLocPickingOperIds(locPickingOperIds);
-                     }
-                     Map<Long,Set<Long>> locShortPikcingOperIds = operLineCacheCmd.getLocShortPikcingOperIds();
-                     if(null != locShortPikcingOperIds && locShortPikcingOperIds.size() !=0) {
-                         locShortPikcingOperIds.remove(locShortPikcingOperIds);
-                         operLineCacheCmd.setLocShortPikcingOperIds(locShortPikcingOperIds);
-                     }
-                     if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
-                         int count = 0;
-                         Boolean result = false;
-                         for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
-                             Set<Long> ids = operLineIdToQtyMap.keySet();
-                             for(Long id:ids) {
-                                 if(id.equals(locationId)) {
-                                     operLineIdToQtyList.remove(count);
-                                     result = true;
+                     }else{//当期sku不存在内部容器
+                         Map<Long,Set<Long>> locPickingOperIds = operLineCacheCmd.getLocPickingOperIds();
+                         if(null != locPickingOperIds && locPickingOperIds.size() != 0) {
+                             locPickingOperIds.remove(locationId);
+                             operLineCacheCmd.setLocPickingOperIds(locPickingOperIds);
+                         }
+                         Map<Long,Set<Long>> locShortPikcingOperIds = operLineCacheCmd.getLocShortPikcingOperIds();
+                         if(null != locShortPikcingOperIds && locShortPikcingOperIds.size() !=0) {
+                             locShortPikcingOperIds.remove(locShortPikcingOperIds);
+                             operLineCacheCmd.setLocShortPikcingOperIds(locShortPikcingOperIds);
+                         }
+                         if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
+                             int count = 0;
+                             Boolean result = false;
+                             for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
+                                 Set<Long> ids = operLineIdToQtyMap.keySet();
+                                 for(Long id:ids) {
+                                     if(id.equals(locationId)) {
+                                         operLineIdToQtyList.remove(count);
+                                         result = true;
+                                         break;
+                                     }
+                                 }
+                                 if(result) {
                                      break;
                                  }
+                                 count++;
                              }
-                             if(result) {
-                                 break;
-                             }
-                             count++;
+                             operLineCacheCmd.setOperLineIdToQtyList(operLineIdToQtyList);
                          }
-                         operLineCacheCmd.setOperLineIdToQtyList(operLineIdToQtyList);
                      }
+                     cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(),  operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
                  }
-                 cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(),  operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
              }
              if(CancelPattern.PICKING_SCAN_OUT_BOUNX_BOX == cancelPattern){
                  OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
