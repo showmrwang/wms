@@ -275,11 +275,11 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         // 验证容器Lifecycle是否有效
-        if (cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+        if (!cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
         }
         // 验证容器状态是否是
-        if (cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+        if (!cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
         }
         //修改周转箱状态
