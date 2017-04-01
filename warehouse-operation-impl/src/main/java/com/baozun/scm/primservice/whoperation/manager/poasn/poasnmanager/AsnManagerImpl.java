@@ -522,7 +522,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines) {
+    public Long createAsnBatch(WhAsnCommand asn, WhPo whpo, List<WhPoLine> whPoLines) {
         try {
             Long userId = asn.getUserId();
             Long ouId = asn.getOuId();
@@ -636,6 +636,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             this.insertGlobalLog(GLOBAL_LOG_UPDATE, whAsn, ouId, userId, null, null);
+            return whAsn.getId();
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {

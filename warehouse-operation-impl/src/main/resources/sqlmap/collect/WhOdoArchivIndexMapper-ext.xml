@@ -84,4 +84,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			id = #{id}
 			and ou_id = #{ouId}
 	</delete>
+	
+	<select id="checkWhOdoArchivLineIndexExsits" resultType="int">
+		select
+			count(1)
+		from
+			t_wh_odo_archiv_line_index_#{num} l
+		where
+			l.ec_order_code = #{ecOrderCode}
+			and l.data_source = #{dataSource}
+	</select>
 </mapper>

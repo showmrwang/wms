@@ -5707,6 +5707,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 if (null == isCmd) {
                     isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, ouId, logId);
                 }
+                Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerSkuIds();
                 Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();
                 Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(insideContainerCmd.getId());
                 Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = isCmd.getInsideContainerLocSkuAttrIdsQty();
@@ -5721,6 +5722,22 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 
                 // 商品校验
                 Long sId = null;
+                Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuCmd.getBarCode(), logId);
+                Set<Long> icSkuIds = insideContainerSkuIds.get(insideContainerCmd.getId());
+                boolean isSkuExists = false;
+                for (Long cacheId : cacheSkuIdsQty.keySet()) {
+                    if (icSkuIds.contains(cacheId)) {
+                        isSkuExists = true;
+                    }
+                    if (true == isSkuExists) {
+                        sId = cacheId;
+                        break;
+                    }
+                }
+                if (false == isSkuExists) {
+                    log.error("scan sku is not found in current inside contianer error, ocId is:[{}], icId is:[{}], scanSkuId is:[{}], logId is:[{}]", (null != containerCmd ? containerCmd.getId() : ""), insideContainerCmd.getId(), sId, logId);
+                    throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {insideContainerCmd.getCode()});
+                }
                 skuCmd.setId(sId);
                 SkuRedisCommand cacheSkuCmd = skuRedisManager.findSkuMasterBySkuId(sId, ouId, logId);
                 if (null == cacheSkuCmd) {

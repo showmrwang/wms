@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
@@ -14,6 +15,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
@@ -61,6 +63,7 @@ public class PdaReplenishmentWorkEntranceManagerImpl extends BaseManagerImpl imp
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public ReplenishmentWorkCommand retrieveReplenishmentWorkList(ReplenishmentWorkCommand command, Page page, Sort[] sorts, Map<String, Object> param) {
         Boolean isLastPage = false;
         Long userId = command.getUserId();
@@ -98,6 +101,13 @@ public class PdaReplenishmentWorkEntranceManagerImpl extends BaseManagerImpl imp
         Pagination<WhWorkCommand> workList = privilegeControl(page, sorts, param);
         if (isLastPage) {
             workList.setTotalPages(workList.getCurrentPage());
+        }
+        if (null != maxObtainWorkQty) {
+            Long count = workList.getCount();
+            if (count > maxObtainWorkQty) {
+                workList.setCount(maxObtainWorkQty);
+                workList.setTotalPages(new Double(Math.ceil(maxObtainWorkQty.doubleValue() / 6)).intValue());
+            }
         }
         /*
          * List<WhWorkCommand> list = workList.getItems(); if (null != list && !list.isEmpty()) {

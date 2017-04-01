@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.archiv;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,15 +8,18 @@ import lark.common.annotation.MoreDB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
+import com.baozun.scm.primservice.whoperation.dao.collect.WhOdoArchivIndexDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -31,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
@@ -43,7 +48,9 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
+import com.baozun.scm.primservice.whoperation.util.HashUtil;
 
 /***
  * 出库单归档
@@ -83,7 +90,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     private WhOutboundboxDao whOutboundboxDao;
     @Autowired
     private WhOutboundboxLineDao whOutboundboxLineDao;
-
+    
     /***
      * 归档仓库Odo信息
      * 
@@ -386,10 +393,6 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
 	
 	/***
      * 归档仓库Odo信息
-     * 
-     * @param odoid
-     * @param ouid
-     * @return
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -404,4 +407,35 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
 			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
 		}
     }
+
+	@Override
+	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+	public List<WhOdoArchivLineIndex> findWhOdoLineArchivByOdoCode(String odoCode, Long ouId, String sysDate, String ecOrderCode, String dataSource) {
+		WhOdo odo = whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
+		if (null == odo) {
+			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+		}
+		List<WhOdoArchivLineIndex> indexList = new ArrayList<WhOdoArchivLineIndex>();
+		List<WhOdoArchivLineIndexCommand> whOdoLineArchivList = odoArchivDao.findWhOutboundboxLineArchivByOdoId(odo.getId(), ouId, sysDate);
+		for (WhOdoArchivLineIndexCommand lineIndex : whOdoLineArchivList) {
+		    List<WhOutboundboxLineSn> snList = odoArchivDao.findWhOutboundboxSnLineArchivByOutBoundLineId(lineIndex.getWhOutboundboxLineId(), ouId, sysDate);
+		    WhOdoArchivLineIndex index = new WhOdoArchivLineIndex();
+		    BeanUtils.copyProperties(lineIndex, index);
+		    index.setEcOrderCode(ecOrderCode);
+		    index.setDataSource(dataSource);
+		    index.setNum(HashUtil.serialNumberByHashCode(ecOrderCode));
+		    if (null != snList && !snList.isEmpty()) {
+		        // 平铺Sn信息
+		        for (WhOutboundboxLineSn boxSn : snList) {
+		            index.setSn(boxSn.getSn());
+		            index.setReturnedPurchaseQty(1D);
+		            indexList.add(index);
+                }
+            } else {
+                indexList.add(index);
+            }
+        }
+		return indexList;
+	}
+
 }

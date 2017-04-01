@@ -9,6 +9,7 @@ import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
@@ -93,10 +94,11 @@ public interface BiPoManager extends BaseManager {
      * @param whPo
      * @param whPoTm 
      * @param whPoLines
+     * @param indexList 
      * @param rm
      * @return
      */
-    void createPoAndLineToShared(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines);
+    void createPoAndLineToShared(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, List<WhOdoArchivLineIndex> indexList);
 
     /**
      * [业务方法]删除BIPO单操作：删除BIPO及明细
@@ -197,11 +199,4 @@ public interface BiPoManager extends BaseManager {
      */
     Boolean calIsAutoClose(Long storeId, Long ouId);
     
-    /**
-     * 退换货创建Po单逻辑
-     * @author kai.zhu
-     * @version 2017年3月28日
-     */
-	void createPoByReturnStorage(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId);
-
 }

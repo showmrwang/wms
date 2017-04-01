@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.collect.WhOdoArchivLineIndexDao">
+	<resultMap id="WhOdoArchivLineIndexResultExt" type="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOdoArchivLineIndexColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	asn_id as asnId,
+	        	collect_table_name as collectTableName,
+	        	collect_odo_archiv_line_id as collectOdoArchivLineId,
+	        	ou_id as ouId,
+	        	sku_id as skuId,
+	        	store_id as storeId,
+	        	returned_purchase_qty as returnedPurchaseQty,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	batch_number as batchNumber,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	color as color,
+	        	style as style,
+	        	size as size,
+	        	sn as sn,
+	        	uuid as uuid
+	    ]]>
+	</sql>
+	
+	<sql id="whOdoArchivLineIndexDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="asnId!=null">
+					and asn_id = #{asnId}
+				</if>
+	       
+	       
+		       <if test="collectTableName!=null and collectTableName!=''">
+					and collect_table_name = #{collectTableName}
+				</if>
+	       
+				<if test="collectOdoArchivLineId!=null">
+					and collect_odo_archiv_line_id = #{collectOdoArchivLineId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="storeId!=null">
+					and store_id = #{storeId}
+				</if>
+	       
+				<if test="returnedPurchaseQty!=null">
+					and returned_purchase_qty = #{returnedPurchaseQty}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+				<if test="invStatus!=null">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+	       
+		       <if test="color!=null and color!=''">
+					and color = #{color}
+				</if>
+	       
+	       
+		       <if test="style!=null and style!=''">
+					and style = #{style}
+				</if>
+	       
+	       
+		       <if test="size!=null and size!=''">
+					and size = #{size}
+				</if>
+	       
+	       
+		       <if test="sn!=null and sn!=''">
+					and sn = #{sn}
+				</if>
+	       
+	       
+		       <if test="uuid!=null and uuid!=''">
+					and uuid = #{uuid}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>
