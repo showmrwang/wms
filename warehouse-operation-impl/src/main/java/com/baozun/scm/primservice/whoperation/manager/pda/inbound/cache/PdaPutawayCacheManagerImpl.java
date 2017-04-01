@@ -3598,7 +3598,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             ArrayDeque<String> tipSkuIds = new ArrayDeque<String>();
             tipSkuIds.addFirst(tipSkuAttrId);
             tipCmd.setScanSkuAttrIds(tipSkuIds);
-            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipSkuCmd);
+            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipCmd, CacheConstants.CACHE_ONE_DAY);
         }
         return tipSkuAttrId;
     }
