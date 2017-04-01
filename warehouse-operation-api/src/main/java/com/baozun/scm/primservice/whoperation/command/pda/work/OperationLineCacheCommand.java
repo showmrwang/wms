@@ -23,8 +23,8 @@ public class OperationLineCacheCommand extends BaseCommand{
     private Map<Long,Set<Long>> locPickingOperIds;
     /**作业明细id对应的拣货数量*/
     private List<Map<Long,Map<Long,Double>>> operLineIdToQtyList;
-    /**出库箱列表*/
-    private Set<String> outBoundxBoxs;
+//    /**出库箱列表*/
+//    private Set<String> outBoundxBoxs;
     /** 周转箱列表*/
     private Set<Long> turnoverBoxs;
     /** 缓存库位队列 */
@@ -32,13 +32,13 @@ public class OperationLineCacheCommand extends BaseCommand{
     /**有小车有出库箱的情况下:出库箱的队列*/
     private ArrayDeque<String> tipOutBonxBoxIds = new ArrayDeque<String>();
 
-    public Set<String> getOutBoundxBoxs() {
-        return outBoundxBoxs;
-    }
-
-    public void setOutBoundxBoxs(Set<String> outBoundxBoxs) {
-        this.outBoundxBoxs = outBoundxBoxs;
-    }
+//    public Set<String> getOutBoundxBoxs() {
+//        return outBoundxBoxs;
+//    }
+//
+//    public void setOutBoundxBoxs(Set<String> outBoundxBoxs) {
+//        this.outBoundxBoxs = outBoundxBoxs;
+//    }
 
     public Set<Long> getTurnoverBoxs() {
         return turnoverBoxs;
