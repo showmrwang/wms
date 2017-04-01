@@ -14,11 +14,15 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.archiv;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
@@ -31,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
 
 
 
@@ -247,5 +252,35 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     int saveOdoArchivIndex(WhOdoArchivIndex whOdoArchivIndex);
+    
+    /**
+     * 保存出库单明细索引数据(仓库)
+     * 
+     * @return
+     */
+    int saveOdoArchivLineIndex(WhOdoArchivLineIndex whOdoArchivLineIndex);
+    
+    /**
+     * 查询归档的出库单明细数据
+     * @author kai.zhu
+     * @version 2017年3月30日
+     * @return
+     */
+    List<WhOdoArchivLineIndexCommand> findWhOutboundboxLineArchivByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("sysDate") String sysDate);
+    
+    /**
+     * 查找出库箱明细Sn信息
+     * @author kai.zhu
+     * @version 2017年3月31日
+     */
+    List<WhOutboundboxLineSn> findWhOutboundboxSnLineArchivByOutBoundLineId(@Param("boxLineId") Long boxLineId, @Param("ouId") Long ouId, @Param("sysDate") String sysDate);
+    
+    /**
+     * 查找归档的odo信息
+     * @author kai.zhu
+     * @version 2017年3月31日
+     * @return
+     */
+    WhOdo findOdoByCodeAndSysDate(@Param("odoCode") String odoCode, @Param("sysDate") String sysDate, @Param("ouId") Long ouId);
 
 }

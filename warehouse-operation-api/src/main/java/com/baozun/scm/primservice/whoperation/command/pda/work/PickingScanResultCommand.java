@@ -192,17 +192,17 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否满箱 */
     private Boolean isTrunkful;
     /** 出库箱/周转箱满箱后是否使用新的容器 */
-    private Boolean isUserNewContainer =false;
+    private Boolean isUserNewContainer = false;
 
     private Boolean isNeedScanSku; // 是否扫描sku
 
     private Boolean isNeedTipLoc;
 
     private Boolean isScanOutBoundBox = false; // 是否已经扫描出库箱 isPicking= 2时使用
-    
-    private Double scanSkuQty;   //扫描数量
+
+    private Double scanSkuQty; // 扫描数量
     /** 是否继续扫描sn明细 */
-    private Boolean isContinueScanSn = false; //默认不继续扫描sn
+    private Boolean isContinueScanSn = false; // 默认不继续扫描sn
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -242,6 +242,8 @@ public class PickingScanResultCommand extends BaseCommand {
     private Integer replenishWay;
 
     /************************************************** pda补货结束 **************************************************/
+    /** 拣货模式:2, 播种墙; 其余为非播种墙*/
+    private String pickingMode;
 
 
     public String getWorkBarCode() {
@@ -1095,6 +1097,14 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsContinueScanSn(Boolean isContinueScanSn) {
         this.isContinueScanSn = isContinueScanSn;
+    }
+
+    public String getPickingMode() {
+        return pickingMode;
+    }
+
+    public void setPickingMode(String pickingMode) {
+        this.pickingMode = pickingMode;
     }
 
 }

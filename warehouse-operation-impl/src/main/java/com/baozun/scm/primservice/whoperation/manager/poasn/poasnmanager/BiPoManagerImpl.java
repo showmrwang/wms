@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.dao.collect.WhOdoArchivLineIndexDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoTransportMgmtDao;
@@ -38,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProvider
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoTransportMgmt;
@@ -72,6 +74,8 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
     private AsnManager asnManager;
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private WhOdoArchivLineIndexDao whOdoArchivLineIndexDao;
     
     protected static final Logger log = LoggerFactory.getLogger(BiPoManager.class);
 
@@ -272,7 +276,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createPoAndLineToShared(WhPo po, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines) {
+    public void createPoAndLineToShared(WhPo po, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, List<WhOdoArchivLineIndex> indexList) {
         // 逻辑:
         // 将INFO.WHPO数据同步到SHARD.WHPO中
         // 1.头信息同步：po
@@ -331,7 +335,17 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
             asn.setAsnCode(asnCode);
             String asnExtCode = this.getAsnExtCode(po.getStoreId(), po.getOuId());
             asn.setAsnExtCode(asnExtCode);
-			asnManager.createAsnBatch(asn, po, whPoLines);
+			Long asnId = asnManager.createAsnBatch(asn, po, whPoLines);
+			if (null != indexList && "2".equals(po.getPoType())) {
+                for (WhOdoArchivLineIndex index : indexList) {
+                    index.setId(null);
+                    index.setAsnId(asnId);
+                    long count = whOdoArchivLineIndexDao.insert(index);
+                    if (count != 1) {
+                        throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                    }
+                }
+            }
 		}
         log.info("BiPoManagerImpl.createPoAndLineToShared method end!");
     }
@@ -627,16 +641,4 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         return flag;
     }
     
-    @Override
-	public void createPoByReturnStorage(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
-		Store store = this.getStoreByRedis(whPo.getStoreId());
-		if (null != store.getIsReturnedPurchaseOriginalInvAttr() && store.getIsReturnedPurchaseOriginalInvAttr()) {
-			// 退货入关联销售出
-			
-		} else {
-			// 退货入不关联销售出
-			
-		}
-	}
-
 }

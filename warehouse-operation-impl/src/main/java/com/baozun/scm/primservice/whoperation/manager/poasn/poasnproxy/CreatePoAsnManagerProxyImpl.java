@@ -40,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager;
 import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
@@ -52,6 +53,9 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -100,6 +104,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     private StoreManager storeManager;
     @Autowired
     private SkuRedisManager skuRedisManager;
+    @Autowired
+    private OdoArchivManager odoArchivManager;
 
     /**
      * 验证po单数据是否完整
@@ -497,13 +503,17 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     }
     
     private void createPoDefault(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
+        createPoDefault(whPo, whPoTm, whPoLines, null, ouId);
+    }
+    
+    private void createPoDefault(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, List<WhOdoArchivLineIndex> indexList, Long ouId) {
         Boolean isAutoClose = this.biPoManager.calIsAutoClose(whPo.getStoreId(), ouId);
         whPo.setIsAutoClose(isAutoClose);
-    	biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
-    	if (ouId != null) {
-    		whPo.setPoCode(getUniqueCode());
-    		biPoManager.createPoAndLineToShared(whPo, whPoTm, whPoLines);
-    	}
+        biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
+        if (ouId != null) {
+            whPo.setPoCode(getUniqueCode());
+            biPoManager.createPoAndLineToShared(whPo, whPoTm, whPoLines, indexList);
+        }
     }
 
     @Override
@@ -1169,31 +1179,50 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 	public void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
 		
 		// 退换货逻辑
-		if ("2".equals(whPo.getExtPoType())) {
+		if (whPo.getPoType() == 2) {
 			Store store = this.getStoreByRedis(whPo.getStoreId());
+			// 退货入关联销售出
+			String ecOrderCode = whPo.getOriginalEcOrderCode();
+			String dataSource = whPo.getDataSource();
 			if (null != store.getIsReturnedPurchaseOriginalInvAttr() && store.getIsReturnedPurchaseOriginalInvAttr()) {
-				// 退货入关联销售出
-				String ecOrderCode = whPo.getOriginalEcOrderCode();
-				String dataSource = whPo.getDataSource();
-				// 查询归档数据表中的数据
-				List<WhOdoArchivIndex> odoArchivIndexList = whOdoArchivIndexManager.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, dataSource, null, ouId);
-				if (null == odoArchivIndexList || odoArchivIndexList.isEmpty()) {
-					throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-				}
-				for (WhOdoArchivIndex odoArchivIndex : odoArchivIndexList) {
-					if (null != odoArchivIndex.getIsReturnedPurchase() && odoArchivIndex.getIsReturnedPurchase()) {
-						
-					}
-				}
+			    this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId);
 			} else {
 				// 退货入不关联销售出
-				
+			    // 查询归档(collect)数据表中的数据
+			    boolean flag = whOdoArchivIndexManager.checkWhOdoArchivLineIndexExsits(ecOrderCode, dataSource, ouId);
+			    if (!flag) {
+			        // 代表原来关联过原始单据, 则此订单依旧关联
+			        // 创建到(collect)数据表并生成PoAsn
+			        this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId);
+                }
 			}
-			biPoManager.createPoByReturnStorage(whPo, whPoTm, whPoLines, ouId);
 		} else {
 			// 复用同一套创建Po的逻辑
 			this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
 		}
 		
 	}
+
+    private void createOdoArchivLineIndex(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, String ecOrderCode, String dataSource, Long ouId) {
+        // 查询归档(collect)数据表中的数据
+        List<WhOdoArchivIndex> odoArchivIndexList = whOdoArchivIndexManager.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, dataSource, null, ouId);
+        if (null == odoArchivIndexList || odoArchivIndexList.isEmpty()) {
+        	throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
+        List<WhOdoArchivLineIndex> whOdoArchivLineIndexList = null;
+        for (WhOdoArchivIndex odoArchivIndex : odoArchivIndexList) {
+            if (null != odoArchivIndex.getIsReturnedPurchase() && !odoArchivIndex.getIsReturnedPurchase()) {
+                // 退货入标记为0时,同步出库单明细到collect
+                String odoCode = odoArchivIndex.getWmsOdoCode();
+                String sysDate = odoArchivIndex.getSysDate();
+                // 查找
+                whOdoArchivLineIndexList = odoArchivManager.findWhOdoLineArchivByOdoCode(odoCode, ouId, sysDate, ecOrderCode, dataSource);
+                // 保存
+                whOdoArchivLineIndexList = whOdoArchivIndexManager.saveWhOdoLineArchivListIntoCollect(odoArchivIndex, whOdoArchivLineIndexList);
+            }
+        }
+        // 创建Po的逻辑
+        this.createPoDefault(whPo, whPoTm, whPoLines, whOdoArchivLineIndexList, ouId);
+    }
+
 }
