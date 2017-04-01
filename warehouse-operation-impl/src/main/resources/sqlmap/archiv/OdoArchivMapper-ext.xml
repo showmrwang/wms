@@ -550,6 +550,44 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 )
             ]]>
     </insert>
+    		
+	<insert id="archivWhOutboundboxLineSn" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn" 	
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outboundbox_line_sn_archiv${sysDate} (
+		        	id,
+		        	wh_outboundbox_line_id ,
+		        	sn ,
+		        	occupation_code ,
+		        	replenishment_code ,
+		        	defect_ware_barcode ,
+		        	defect_source ,
+		        	defect_type_id ,
+		        	defect_reasons_id ,
+		        	status ,
+		        	inv_attr ,
+		        	uuid ,
+		        	ou_id ,
+		        	sys_uuid 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{whOutboundboxLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{defectReasonsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+		</insert>
     
     <!-- 删除WhOdo信息 -->
     <delete id="deleteOdo" parameterType="map">
@@ -587,6 +625,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 </delete>
 	 <delete id="deleteOdoOutBoundBoxLine" parameterType="map">
 			delete from t_wh_outboundbox_line where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deleteOdoOutBoundBoxLineSn" parameterType="map">
+			delete from t_wh_outboundbox_line_sn where wh_outboundbox_line_id in (select id from t_wh_outboundbox_line where odo_id = #{odoid} and ou_id = #{ouid}) and ou_id = #{ouid}
 	 </delete>
 	 
 	 	<insert id="saveOdoArchivIndex" parameterType="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex" 
@@ -822,4 +863,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		</insert>
+
 </mapper>

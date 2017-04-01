@@ -14,7 +14,10 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
 
@@ -32,5 +35,12 @@ public interface WhOutboundboxLineSnDao extends BaseDao<WhOutboundboxLineSn, Lon
 
     @CommonQuery
     int saveOrUpdate(WhOutboundboxLineSn o);
+
+    /**
+     * 通过whOutBoundBoxLineId查询对应数据
+     * 
+     * @return
+     */
+    List<WhOutboundboxLineSn> findWhOutboundboxLineSnByOutBoundBoxLineId(@Param("obblid") Long obblid, @Param("ouid") Long ouid);
 
 }

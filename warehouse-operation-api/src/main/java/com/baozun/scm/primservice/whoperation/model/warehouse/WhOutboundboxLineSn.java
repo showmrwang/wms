@@ -52,6 +52,10 @@ public class WhOutboundboxLineSn extends BaseModel {
     private Long ouId;
     /** 系统uuid 用于逻辑处理 */
     private String sysUuid;
+
+    /** 当前月份 用于归档 */
+    private String sysDate;
+
     // columns END
 
     public WhOutboundboxLineSn() {}
@@ -164,5 +168,12 @@ public class WhOutboundboxLineSn extends BaseModel {
         return sysUuid;
     }
 
-}
+    public String getSysDate() {
+        return sysDate;
+    }
 
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
+}

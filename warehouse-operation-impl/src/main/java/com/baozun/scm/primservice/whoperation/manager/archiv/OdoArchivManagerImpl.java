@@ -31,6 +31,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineSnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
@@ -89,7 +90,9 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     private WhOutboundboxDao whOutboundboxDao;
     @Autowired
     private WhOutboundboxLineDao whOutboundboxLineDao;
-    
+    @Autowired
+    private WhOutboundboxLineSnDao whOutboundboxLineSnDao;
+
     /***
      * 归档仓库Odo信息
      * 
@@ -340,6 +343,12 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             int obbl = odoArchivDao.archivWhOutboundboxLine(whOutboundboxLine);
             count += obbl;
             // 查询outboundboxLineSn数据
+            List<WhOutboundboxLineSn> whOutboundboxLineSns = whOutboundboxLineSnDao.findWhOutboundboxLineSnByOutBoundBoxLineId(whOutboundboxLine.getId(), ouid);
+            for (WhOutboundboxLineSn whOutboundboxLineSn : whOutboundboxLineSns) {
+                whOutboundboxLineSn.setSysDate(sysDate);
+                int obbls = odoArchivDao.archivWhOutboundboxLineSn(whOutboundboxLineSn);
+                count += obbls;
+            }
         }
         return count;
     }
@@ -366,10 +375,12 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count += odoInvoice;
             int odoAttr = odoArchivDao.deleteOdoAttr(odoid, ouid);
             count += odoAttr;
-            int obb = odoArchivDao.deleteOdoOutBoundBox(odoid, ouid);
-            count += obb;
+            int obbls = odoArchivDao.deleteOdoOutBoundBoxLineSn(odoid, ouid);
+            count += obbls;
             int obbl = odoArchivDao.deleteOdoOutBoundBoxLine(odoid, ouid);
             count += obbl;
+            int obb = odoArchivDao.deleteOdoOutBoundBox(odoid, ouid);
+            count += obb;
             int odoLine = odoArchivDao.deleteOdoLine(odoid, ouid);
             count += odoLine;
             int odoAddress = odoArchivDao.deleteOdoAddress(odoid, ouid);
@@ -383,58 +394,58 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
         return count;
     }
 
-	@Override
-	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-	@Transactional(propagation=Propagation.NOT_SUPPORTED)
-	public List<Long> findOdoArchivData(Long ouId) {
-		return whOdoDao.findOdoArchivData(ouId);
-	}
-	
-	/***
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public List<Long> findOdoArchivData(Long ouId) {
+        return whOdoDao.findOdoArchivData(ouId);
+    }
+
+    /***
      * 归档仓库Odo信息
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void archivOdoExt(Long odoId, Long ouId) {
-    	// 归档
-    	int archivNum = this.archivOdo(odoId, ouId);
-    	// 删除
-    	int deleteNum = this.deleteOdo(odoId, ouId);
-    	// 归档影响行数要和删除影响行数保持一致
-    	if (archivNum != deleteNum) {
-    		log.error("Odo archiv, archivNum is not equals deleteNum! odoId:[{}], archivNum:[{}], deleteNum:[{}]", odoId, archivNum, deleteNum);
-			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-		}
+        // 归档
+        int archivNum = this.archivOdo(odoId, ouId);
+        // 删除
+        int deleteNum = this.deleteOdo(odoId, ouId);
+        // 归档影响行数要和删除影响行数保持一致
+        if (archivNum != deleteNum) {
+            log.error("Odo archiv, archivNum is not equals deleteNum! odoId:[{}], archivNum:[{}], deleteNum:[{}]", odoId, archivNum, deleteNum);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
     }
 
-	@Override
-	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-	public List<WhOdoArchivLineIndex> findWhOdoLineArchivByOdoCode(String odoCode, Long ouId, String sysDate, String ecOrderCode, String dataSource) {
-		WhOdo odo = whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
-		if (null == odo) {
-			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-		}
-		List<WhOdoArchivLineIndex> indexList = new ArrayList<WhOdoArchivLineIndex>();
-		List<WhOdoArchivLineIndexCommand> whOdoLineArchivList = odoArchivDao.findWhOutboundboxLineArchivByOdoId(odo.getId(), ouId, sysDate);
-		for (WhOdoArchivLineIndexCommand lineIndex : whOdoLineArchivList) {
-		    List<WhOutboundboxLineSn> snList = odoArchivDao.findWhOutboundboxSnLineArchivByOutBoundLineId(lineIndex.getWhOutboundboxLineId(), ouId, sysDate);
-		    WhOdoArchivLineIndex index = new WhOdoArchivLineIndex();
-		    BeanUtils.copyProperties(lineIndex, index);
-		    index.setEcOrderCode(ecOrderCode);
-		    index.setDataSource(dataSource);
-		    index.setNum(HashUtil.serialNumberByHashCode(ecOrderCode));
-		    if (null != snList && !snList.isEmpty()) {
-		        // 平铺Sn信息
-		        for (WhOutboundboxLineSn boxSn : snList) {
-		            index.setSn(boxSn.getSn());
-		            index.setReturnedPurchaseQty(1D);
-		            indexList.add(index);
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdoArchivLineIndex> findWhOdoLineArchivByOdoCode(String odoCode, Long ouId, String sysDate, String ecOrderCode, String dataSource) {
+        WhOdo odo = whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
+        if (null == odo) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        List<WhOdoArchivLineIndex> indexList = new ArrayList<WhOdoArchivLineIndex>();
+        List<WhOdoArchivLineIndexCommand> whOdoLineArchivList = odoArchivDao.findWhOutboundboxLineArchivByOdoId(odo.getId(), ouId, sysDate);
+        for (WhOdoArchivLineIndexCommand lineIndex : whOdoLineArchivList) {
+            List<WhOutboundboxLineSn> snList = odoArchivDao.findWhOutboundboxSnLineArchivByOutBoundLineId(lineIndex.getWhOutboundboxLineId(), ouId, sysDate);
+            WhOdoArchivLineIndex index = new WhOdoArchivLineIndex();
+            BeanUtils.copyProperties(lineIndex, index);
+            index.setEcOrderCode(ecOrderCode);
+            index.setDataSource(dataSource);
+            index.setNum(HashUtil.serialNumberByHashCode(ecOrderCode));
+            if (null != snList && !snList.isEmpty()) {
+                // 平铺Sn信息
+                for (WhOutboundboxLineSn boxSn : snList) {
+                    index.setSn(boxSn.getSn());
+                    index.setReturnedPurchaseQty(1D);
+                    indexList.add(index);
                 }
             } else {
                 indexList.add(index);
             }
         }
-		return indexList;
-	}
+        return indexList;
+    }
 
 }
