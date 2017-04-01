@@ -274,5 +274,13 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @version 2017年3月31日
      */
     List<WhOutboundboxLineSn> findWhOutboundboxSnLineArchivByOutBoundLineId(@Param("boxLineId") Long boxLineId, @Param("ouId") Long ouId, @Param("sysDate") String sysDate);
+    
+    /**
+     * 查找归档的odo信息
+     * @author kai.zhu
+     * @version 2017年3月31日
+     * @return
+     */
+    WhOdo findOdoByCodeAndSysDate(@Param("odoCode") String odoCode, @Param("sysDate") String sysDate, @Param("ouId") Long ouId);
 
 }

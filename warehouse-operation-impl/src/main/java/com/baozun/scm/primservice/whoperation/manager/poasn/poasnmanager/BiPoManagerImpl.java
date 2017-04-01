@@ -338,6 +338,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
 			Long asnId = asnManager.createAsnBatch(asn, po, whPoLines);
 			if (null != indexList && "2".equals(po.getPoType())) {
                 for (WhOdoArchivLineIndex index : indexList) {
+                    index.setId(null);
                     index.setAsnId(asnId);
                     long count = whOdoArchivLineIndexDao.insert(index);
                     if (count != 1) {

@@ -54,7 +54,7 @@ public interface WhOdoArchivIndexManager extends BaseManager {
 	 * @author kai.zhu
 	 * @version 2017年3月30日
 	 */
-	List<WhOdoArchivLineIndex> saveWhOdoLineArchivListIntoCollect(List<WhOdoArchivLineIndex> whOdoArchivLineIndexList);
+	List<WhOdoArchivLineIndex> saveWhOdoLineArchivListIntoCollect(WhOdoArchivIndex odoArchivIndex, List<WhOdoArchivLineIndex> whOdoArchivLineIndexList);
 	
 	/**
 	 * 判断归档明细中是否有数据
