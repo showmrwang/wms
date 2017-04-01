@@ -775,6 +775,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                       cacheLocaitionIds = new  ArrayDeque<Long>();
                   }
               }
+              if(null == cacheLocaitionIds) {
+                  cacheLocaitionIds = new  ArrayDeque<Long>();
+              }
               cacheLocaitionIds.add(locationId);
 //              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
 //                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
@@ -3601,73 +3604,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                  }else{
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString());
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
-                 }
-                 OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
-                 if(null != operLineCacheCmd) {
-                     List<Map<Long,Map<Long,Double>>> operLineIdToQtyList = operLineCacheCmd.getOperLineIdToQtyList();
-                     //清楚sku对应当前的作业id
-                     if(null != insideContainerId) { //当前sku存在内部容器
-                         Map<Long,Set<Long>> insidePickingOperIds = operLineCacheCmd.getInsidePickingOperIds();
-                         if(null != insidePickingOperIds && insidePickingOperIds.size() != 0) {
-                             insidePickingOperIds.remove(insideContainerId);
-                             operLineCacheCmd.setInsidePickingOperIds(insidePickingOperIds);//非短拣
-                         }
-                         Map<Long,Set<Long>> insideShortPikcingOperIds = operLineCacheCmd.getInsideShortPikcingOperIds();
-                         if(null != insideShortPikcingOperIds && insideShortPikcingOperIds.size() != 0) {
-                             insideShortPikcingOperIds.remove(insideContainerId);
-                             operLineCacheCmd.setInsideShortPikcingOperIds(insideShortPikcingOperIds);//短拣
-                         }
-                         if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
-                             int count = 0;
-                             Boolean result = false;
-                             for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
-                                 Set<Long> ids = operLineIdToQtyMap.keySet();
-                                 for(Long id:ids) {
-                                     if(id.equals(insideContainerId)) {
-                                         operLineIdToQtyList.remove(count);
-                                         result = true;
-                                         break;
-                                     }
-                                 }
-                                 if(result) {
-                                     break;
-                                 }
-                                 count++;
-                             }
-                             operLineCacheCmd.setOperLineIdToQtyList(operLineIdToQtyList);
-                         }
-                     }else{//当期sku不存在内部容器
-                         Map<Long,Set<Long>> locPickingOperIds = operLineCacheCmd.getLocPickingOperIds();
-                         if(null != locPickingOperIds && locPickingOperIds.size() != 0) {
-                             locPickingOperIds.remove(locationId);
-                             operLineCacheCmd.setLocPickingOperIds(locPickingOperIds);
-                         }
-                         Map<Long,Set<Long>> locShortPikcingOperIds = operLineCacheCmd.getLocShortPikcingOperIds();
-                         if(null != locShortPikcingOperIds && locShortPikcingOperIds.size() !=0) {
-                             locShortPikcingOperIds.remove(locShortPikcingOperIds);
-                             operLineCacheCmd.setLocShortPikcingOperIds(locShortPikcingOperIds);
-                         }
-                         if(null != operLineIdToQtyList && operLineIdToQtyList.size() != 0) {
-                             int count = 0;
-                             Boolean result = false;
-                             for(Map<Long,Map<Long,Double>> operLineIdToQtyMap:operLineIdToQtyList){
-                                 Set<Long> ids = operLineIdToQtyMap.keySet();
-                                 for(Long id:ids) {
-                                     if(id.equals(locationId)) {
-                                         operLineIdToQtyList.remove(count);
-                                         result = true;
-                                         break;
-                                     }
-                                 }
-                                 if(result) {
-                                     break;
-                                 }
-                                 count++;
-                             }
-                             operLineCacheCmd.setOperLineIdToQtyList(operLineIdToQtyList);
-                         }
-                     }
-                     cacheManager.setObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString(),  operLineCacheCmd, CacheConstants.CACHE_ONE_DAY);
                  }
              }
              if(CancelPattern.PICKING_SCAN_OUT_BOUNX_BOX == cancelPattern){
