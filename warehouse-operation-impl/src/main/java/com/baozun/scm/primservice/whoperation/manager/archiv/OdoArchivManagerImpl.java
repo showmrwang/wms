@@ -418,28 +418,6 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
         }
     }
 
-	@Override
-	@MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-	public List<WhOdoArchivLineIndex> findWhOdoLineArchivByOdoCode(String odoCode, Long ouId, String sysDate, String ecOrderCode, String dataSource) {
-		WhOdo odo = odoArchivDao.findOdoByCodeAndSysDate(odoCode, sysDate, ouId);
-		if (null == odo) {
-			throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-		}
-		List<WhOdoArchivLineIndex> indexList = new ArrayList<WhOdoArchivLineIndex>();
-		List<WhOdoArchivLineIndexCommand> whOdoLineArchivList = odoArchivDao.findWhOutboundboxLineArchivByOdoId(odo.getId(), ouId, sysDate);
-		for (WhOdoArchivLineIndexCommand lineIndex : whOdoLineArchivList) {
-		    List<WhOutboundboxLineSn> snList = odoArchivDao.findWhOutboundboxSnLineArchivByOutBoundLineId(lineIndex.getWhOutboundboxLineId(), ouId, sysDate);
-		    WhOdoArchivLineIndex index = new WhOdoArchivLineIndex();
-		    BeanUtils.copyProperties(lineIndex, index);
-		    index.setEcOrderCode(ecOrderCode);
-		    index.setDataSource(dataSource);
-		    index.setNum(HashUtil.serialNumberByHashCode(ecOrderCode));
-		    if (null != snList && !snList.isEmpty()) {
-		        // 平铺Sn信息
-		        for (WhOutboundboxLineSn boxSn : snList) {
-		            index.setSn(boxSn.getSn());
-		            index.setReturnedPurchaseQty(1D);
-		            indexList.add(index);
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdoArchivLineIndex> findWhOdoLineArchivByOdoCode(String odoCode, Long ouId, String sysDate, String ecOrderCode, String dataSource) {
@@ -469,5 +447,4 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
         }
         return indexList;
     }
-
 }
