@@ -2252,7 +2252,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Long locationId = whSkuInventoryAllocatedCommandLst.get(0).getToLocationId();
         LocationCommand location = locationDao.findLocationCommandByParam(locationId, ouId);
         Long maxVolume = Constants.DEFAULT_LONG;
-        Long minVolume = Constants.DEFAULT_LONG;
         // 上限
         Integer upBound = location.getUpBound();
         Integer downBound = location.getDownBound();
@@ -2265,43 +2264,46 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Set<Long> containers = new HashSet<Long>();
         // 库位上所有sku（sku不在任何容器内）
         Map<Long, Double> skuIds = new HashMap<Long, Double>();
+        // sku对应库位容量
+        Map<Long, Long> skuProducts = new HashMap<Long, Long>();
+        // sku对应库位容量
+        Long skuProductQty = Constants.DEFAULT_LONG;
         // 计算库位可用体积
         List<WhSkuInventoryCommand> skuInvList = this.whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, locationId);
         for (WhSkuInventoryCommand whSkuInventoryCommand : skuInvList) {
-            if (null != skuIds.get(whSkuInventoryCommand.getSkuId())) {
-                Double onHandQty = skuIds.get(whSkuInventoryCommand.getSkuId());
-                BigDecimal oldQty = new BigDecimal(onHandQty.toString());
-                BigDecimal newQty = new BigDecimal(whSkuInventoryCommand.getQty().toString());
-                Double newOnHandQty = oldQty.add(newQty).doubleValue();
-                skuIds.put(whSkuInventoryCommand.getSkuId(), newOnHandQty);
+            if (null != whSkuInventoryCommand.getOuterContainerId()) {
+                pallets.add(whSkuInventoryCommand.getOuterContainerId());
             } else {
-                skuIds.put(whSkuInventoryCommand.getSkuId(), whSkuInventoryCommand.getQty());
-            }
-        }
-        List<WhSkuInventoryTobefilled> toBeFilledList = this.whSkuInventoryTobefilledDao.findLocWhSkuInventoryTobefilled(locationId, ouId);
-        for (WhSkuInventoryTobefilled whSkuInventoryTobefilled : toBeFilledList) {
-            if (null != skuIds.get(whSkuInventoryTobefilled.getSkuId())) {
-                Double onHandQty = skuIds.get(whSkuInventoryTobefilled.getSkuId());
-                BigDecimal oldQty = new BigDecimal(onHandQty.toString());
-                BigDecimal newQty = new BigDecimal(whSkuInventoryTobefilled.getQty().toString());
-                Double newOnHandQty = oldQty.add(newQty).doubleValue();
-                skuIds.put(whSkuInventoryTobefilled.getSkuId(), newOnHandQty);
-            } else {
-                skuIds.put(whSkuInventoryTobefilled.getSkuId(), whSkuInventoryTobefilled.getQty());
-            }
-        }
-        for (WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand : whSkuInventoryAllocatedCommandLst) {
-            if (null != skuIds.get(whSkuInventoryAllocatedCommand.getSkuId())) {
-                Double onHandQty = skuIds.get(whSkuInventoryAllocatedCommand.getSkuId());
-                BigDecimal oldQty = new BigDecimal(onHandQty.toString());
-                BigDecimal newQty = new BigDecimal(whSkuInventoryAllocatedCommand.getQty().toString());
-                Double newOnHandQty = oldQty.subtract(newQty).doubleValue();
-                skuIds.put(whSkuInventoryAllocatedCommand.getSkuId(), newOnHandQty);
+                if (null != whSkuInventoryCommand.getInsideContainerId()) {
+                    containers.add(whSkuInventoryCommand.getInsideContainerId());
+                } else {
+                    if (null != skuIds.get(whSkuInventoryCommand.getSkuId())) {
+                        Double onHandQty = skuIds.get(whSkuInventoryCommand.getSkuId());
+                        BigDecimal oldQty = new BigDecimal(onHandQty.toString());
+                        BigDecimal newQty = new BigDecimal(whSkuInventoryCommand.getOnHandQty().toString());
+                        Double newOnHandQty = oldQty.add(newQty).doubleValue();
+                        skuIds.put(whSkuInventoryCommand.getSkuId(), newOnHandQty);
+                    } else {
+                        skuIds.put(whSkuInventoryCommand.getSkuId(), whSkuInventoryCommand.getOnHandQty());
+                    }
+                }
             }
         }
         
         // 已经被占用的体积       
         Double occupyVolume = 0.0;
+        // 计算托盘体积
+        for (Long palletId : pallets) {
+            Container container = containerDao.findByIdExt(palletId, ouId);
+            Container2ndCategory container2ndCategory = container2ndCategoryDao.findByIdExt(container.getTwoLevelType(), ouId);
+            occupyVolume = occupyVolume + container2ndCategory.getVolume();
+        }
+        // 计算货箱体积
+        for (Long containerId : containers) {
+            Container container = containerDao.findByIdExt(containerId, ouId);
+            Container2ndCategory container2ndCategory = container2ndCategoryDao.findByIdExt(container.getTwoLevelType(), ouId);
+            occupyVolume = occupyVolume + container2ndCategory.getVolume();
+        }
         // 计算sku体积
         for (Long key : skuIds.keySet()) {
             SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(key, ouId, logId);
@@ -2309,22 +2311,18 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             occupyVolume = occupyVolume + sku.getVolume() * skuIds.get(key);
         }
         maxVolume = (long) (location.getVolume() * upBound / 100);
-        minVolume = (long) Math.ceil(new Double(location.getVolume() * downBound / 100));
-        if (occupyVolume >= maxVolume) {
-            log.error("occupyVolume >= maxVolume", occupyVolume, maxVolume);
-            return null;
-        }
         // 剩余体积        
-        Long surplusVolume = (long) Math.floor(maxVolume - occupyVolume);
-        
+        Long surplusVolume = (long) (maxVolume - occupyVolume);
+        // 定义返回list            
         List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = new ArrayList<WhSkuInventoryAllocatedCommand>();
+        // 计算补货数量       
         for (WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand : whSkuInventoryAllocatedCommandLst) {
             // 根据商品id和组织id获取商品所有相关属性
             SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(whSkuInventoryAllocatedCommand.getSkuId(), ouId, logId);
             Sku sku = skuRedis.getSku();
             // 可以放入sku数量      
             Long replenishmentQty = (long) Math.floor(surplusVolume / sku.getVolume());
-            Long locationQty = 0L;
+            // 库位容量流程            
             if (StringUtils.hasText(location.getSizeType())) {
                 // 仓库商品管理
                 WhSkuWhmgmt skuWhmgmt = skuRedis.getWhSkuWhMgmt();
@@ -2333,34 +2331,37 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                     if (skuWhmgmt.getTypeOfGoods() != null) {
                         LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTypeOfGoods(), location.getSizeType(), ouId);
                         if (locationProductVolume != null) {
-                            locationQty = locationProductVolume.getVolume();
-                            // 上下限数量
-                            Long maxQty = locationQty * upBound / 100;
-                            Long minQty = (long) Math.ceil(new Double(locationQty * downBound / 100));
-                            // 库位库存量=库位在库库存+库位待移入库存
-                            double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
-                            if (invQty >= minQty) {
-                                return null;
+                            if(null != skuProducts.get(sku.getId())){
+                                skuProducts.put(sku.getId(), locationProductVolume.getVolume());  
                             }
+                            Long locationQty = Constants.DEFAULT_LONG;
+                            // 库位容量
+                            if(null != skuProducts.get(sku.getId())){
+                                locationQty = locationProductVolume.getVolume() - skuProducts.get(sku.getId());    
+                            }else{
+                                locationQty = locationProductVolume.getVolume();
+                            }
+                            // 上限数量
+                            Long maxQty = locationQty * upBound / 100;
+                            // 在库数量
+                            double invQty = skuIds.get(whSkuInventoryAllocatedCommand.getSkuId());
+                            // 计算可用容量
                             replenishmentQty = (long) Math.floor(maxQty - invQty);
+                            skuProductQty = (long) (skuProductQty + whSkuInventoryAllocatedCommand.getQty());
+                            skuProducts.put(sku.getId(), skuProductQty);
                         }
                     }
                 }
             }
-            // 计算多余sku数量
-            Long cQty = (long) Math.floor(whSkuInventoryAllocatedCommand.getQty() - replenishmentQty);
-            Long rQty = 0L;
-            if(0 < cQty){
+            if(whSkuInventoryAllocatedCommand.getQty() > replenishmentQty){
                 whSkuInventoryAllocatedCommand.setQty((double)replenishmentQty);
                 skuInventoryAllocatedCommandLst.add(whSkuInventoryAllocatedCommand);
                 break;
             }else{
                 skuInventoryAllocatedCommandLst.add(whSkuInventoryAllocatedCommand);
+                surplusVolume = (long) (surplusVolume - sku.getVolume()*whSkuInventoryAllocatedCommand.getQty());
             }
         }
-        
-        
-        
         return skuInventoryAllocatedCommandLst;
     }
 
