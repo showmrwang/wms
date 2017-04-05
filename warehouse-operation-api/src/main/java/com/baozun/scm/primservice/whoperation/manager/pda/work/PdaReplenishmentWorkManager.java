@@ -28,15 +28,6 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public PickingScanResultCommand replenishmentTipLocation(Long functionId,Long operationId,Long ouId);
     
-//    /**
-//     * 校验库位
-//     * @param locationCode
-//     * @param locationBarCode
-//     * @param ouId
-//     * @return
-//     */
-//    public Long verificationLocation(String locationCode,String locationBarCode,Long ouId);
-    
     /***
      * 拣货完成
      * @param command
@@ -69,5 +60,12 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      * @return
      */
     public void verificationTurnoverBox(String turnoverBoxCode,Long ouId);
+    
+    /***
+     * 修改周转箱状态
+     * @param turnoverBoxCode
+     * @param ouId
+     */
+    public void updateTurnoverBox(String turnoverBoxCode,Long ouId);
     
 }

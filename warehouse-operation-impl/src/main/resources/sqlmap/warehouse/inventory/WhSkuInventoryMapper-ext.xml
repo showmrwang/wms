@@ -3106,6 +3106,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.container_lattice_no as containerLatticeNo,
 	                inv.outboundbox_code as outboundboxCode,
 	                inv.temporary_location_id as temporaryLocationId,
+	                inv.occupation_line_id as occupationLineId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,

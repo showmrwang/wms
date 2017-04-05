@@ -289,4 +289,32 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
         containerDao.saveOrUpdateByVersion(c);
     }
+    
+    
+    /***
+     * 修改周转箱状态
+     * @param turnoverBoxCode
+     * @param ouId
+     */
+    public void updateTurnoverBox(String turnoverBoxCode,Long ouId){
+        ContainerCommand cmd =  containerDao.getContainerByCode(turnoverBoxCode, ouId);
+        if(null == cmd) {
+            log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        // 验证容器Lifecycle是否有效
+        if (!cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        // 验证容器状态是否是
+        if (!cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        //修改周转箱状态
+        Container c = new Container();
+        BeanUtils.copyProperties(cmd, c);
+        c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        containerDao.saveOrUpdateByVersion(c); 
+    }
 }
