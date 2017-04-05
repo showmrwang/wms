@@ -792,6 +792,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				line.color as color,
 				line.style as style,
 				line.size as size,
+				box.ou_id as ouId,
 				box.uuid as uuid
 			from 
 				t_wh_outboundbox_line_archiv${sysDate} box

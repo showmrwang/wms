@@ -336,7 +336,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
             String asnExtCode = this.getAsnExtCode(po.getStoreId(), po.getOuId());
             asn.setAsnExtCode(asnExtCode);
 			Long asnId = asnManager.createAsnBatch(asn, po, whPoLines);
-			if (null != indexList && "2".equals(po.getPoType())) {
+			if (null != indexList && po.getPoType() != null && po.getPoType() == 2) {
                 for (WhOdoArchivLineIndex index : indexList) {
                     index.setId(null);
                     index.setAsnId(asnId);

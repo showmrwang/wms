@@ -421,7 +421,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdoArchivLineIndex> findWhOdoLineArchivByOdoCode(String odoCode, Long ouId, String sysDate, String ecOrderCode, String dataSource) {
-        WhOdo odo = whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
+        WhOdo odo = odoArchivDao.findOdoByCodeAndSysDate(odoCode, sysDate, ouId);
         if (null == odo) {
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
