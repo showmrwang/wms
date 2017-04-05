@@ -47,11 +47,11 @@ public class WhWorkLineCommand extends BaseCommand {
     /** 商品ID */
     private java.lang.Long skuId;
     /** 计划量 */
-    private Double qty;
+    private Double qty = 0.0;
     /** 执行量/完成量 */
-    private Double completeQty;
+    private Double completeQty = 0.0;
     /** 取消量 */
-    private Double cancelQty;
+    private Double cancelQty = 0.0;
     /** 库存状态 */
     private java.lang.Long invStatus;
     /** 库存类型 */
