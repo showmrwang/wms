@@ -322,32 +322,41 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         // 上位系统传入入库单据,直接创建Asn
         if (null != po.getIsVmi() && po.getIsVmi()) {
         	log.info("BiPoManagerImpl.createAsnByVmi");
-        	WhAsnCommand asn = new WhAsnCommand();
-        	asn.setOuId(po.getOuId());
-        	asn.setUserId(po.getCreatedId());
-        	asn.setModifiedId(po.getModifiedId());
-        	// WMS单据号 调用HUB编码生成器获得
-            String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
-            if (StringUtil.isEmpty(asnCode)) {
-                log.warn("CreateAsnBatch warn asnCode generateCode is null");
-                throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
-            }
-            asn.setAsnCode(asnCode);
-            String asnExtCode = this.getAsnExtCode(po.getStoreId(), po.getOuId());
-            asn.setAsnExtCode(asnExtCode);
-			Long asnId = asnManager.createAsnBatch(asn, po, whPoLines);
-			if (null != indexList && "2".equals(po.getPoType())) {
-                for (WhOdoArchivLineIndex index : indexList) {
-                    index.setId(null);
-                    index.setAsnId(asnId);
-                    long count = whOdoArchivLineIndexDao.insert(index);
-                    if (count != 1) {
-                        throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-                    }
-                }
-            }
+        	this.createAsnExt(po, whPoLines, indexList);
 		}
         log.info("BiPoManagerImpl.createPoAndLineToShared method end!");
+    }
+    
+    /**
+     * 上位系统传入入库单据,直接创建Asn
+     * @author kai.zhu
+     */
+    private void createAsnExt(WhPo po, List<WhPoLine> whPoLines, List<WhOdoArchivLineIndex> indexList) {
+        WhAsnCommand asn = new WhAsnCommand();
+        asn.setOuId(po.getOuId());
+        asn.setUserId(po.getCreatedId());
+        asn.setModifiedId(po.getModifiedId());
+        // WMS单据号 调用HUB编码生成器获得
+        String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+        if (StringUtil.isEmpty(asnCode)) {
+            log.warn("CreateAsnBatch warn asnCode generateCode is null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+        }
+        asn.setAsnCode(asnCode);
+        String asnExtCode = this.getAsnExtCode(po.getStoreId(), po.getOuId());
+        asn.setAsnExtCode(asnExtCode);
+        Long asnId = asnManager.createAsnBatch(asn, po, whPoLines);
+        if (null != indexList && po.getPoType() != null && po.getPoType() == 2) {
+            // 消费者退入库
+            for (WhOdoArchivLineIndex index : indexList) {
+                index.setId(null);
+                index.setAsnId(asnId);
+                long count = whOdoArchivLineIndexDao.insert(index);
+                if (count != 1) {
+                    throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                }
+            }
+        }
     }
     
     /**

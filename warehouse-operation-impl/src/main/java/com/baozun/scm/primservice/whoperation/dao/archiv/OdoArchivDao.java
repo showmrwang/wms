@@ -137,6 +137,14 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      */
     int archivWhOutboundboxLine(WhOutboundboxLine whOutboundboxLine);
 
+    /***
+     * 归档whOutboundboxLineSn
+     * 
+     * @param whOutboundboxLineSn
+     * @return
+     */
+    int archivWhOutboundboxLineSn(WhOutboundboxLineSn whOutboundboxLineSn);
+
     /**
      * 删除WhOdo
      * 
@@ -246,30 +254,41 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
     int deleteOdoOutBoundBoxLine(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
 
     /**
+     * 删除WhOutBoundBoxLineSn
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoOutBoundBoxLineSn(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
      * 保存出库单索引数据(仓库)
      * 
      * @param whOdoArchivIndex
      * @return
      */
     int saveOdoArchivIndex(WhOdoArchivIndex whOdoArchivIndex);
-    
+
     /**
      * 保存出库单明细索引数据(仓库)
      * 
      * @return
      */
     int saveOdoArchivLineIndex(WhOdoArchivLineIndex whOdoArchivLineIndex);
-    
+
     /**
      * 查询归档的出库单明细数据
+     * 
      * @author kai.zhu
      * @version 2017年3月30日
      * @return
      */
     List<WhOdoArchivLineIndexCommand> findWhOutboundboxLineArchivByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("sysDate") String sysDate);
-    
+
     /**
      * 查找出库箱明细Sn信息
+     * 
      * @author kai.zhu
      * @version 2017年3月31日
      */

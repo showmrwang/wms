@@ -42,12 +42,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex" 
-				
+				useGeneratedKeys="true" keyProperty="id"
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_odo_archiv_line_index (
-		        id,
 		        	asn_id ,
 		        	collect_table_name ,
 		        	collect_odo_archiv_line_id ,
@@ -72,7 +71,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	sn ,
 		        	uuid 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{collectTableName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{collectOdoArchivLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,

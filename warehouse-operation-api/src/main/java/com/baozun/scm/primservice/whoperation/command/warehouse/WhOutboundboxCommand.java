@@ -30,6 +30,9 @@ public class WhOutboundboxCommand extends BaseModel {
     private static final long serialVersionUID = 8454463474615848733L;
     
     //columns START
+    
+    /** 主键ID */
+    private Long id;
 	/** 小批次 */
 	private java.lang.String batch;
 	/** 波次号 */
@@ -70,8 +73,8 @@ public class WhOutboundboxCommand extends BaseModel {
 	private java.lang.String pickingMode;
 	/** 复核模式 */
 	private java.lang.String checkingMode;
-	//columns END
 	
+	//columns END
 	
     public java.lang.String getBatch() {
         return batch;
@@ -192,6 +195,12 @@ public class WhOutboundboxCommand extends BaseModel {
     }
     public void setCheckingMode(java.lang.String checkingMode) {
         this.checkingMode = checkingMode;
+    }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

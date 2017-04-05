@@ -49,13 +49,15 @@ public class PdaInventoryMoveWorkEntranceManagerImpl extends BaseManagerImpl imp
         Long ouId = command.getOuId();
         // 判断已经显示多少条工作
         Integer maxObtainWorkQty = command.getMaxObtainWorkQty();
-        if (null == page) {
-            page = new Page();
-        }
-        Integer cnt = maxObtainWorkQty - page.getSize() * (page.getPage() - 1);
-        if (cnt <= page.getSize()) {
-            page.setSize(cnt);
-            isLastPage = true;
+        if (null != maxObtainWorkQty) {
+            if (null == page) {
+                page = new Page();
+            }
+            Integer cnt = maxObtainWorkQty - page.getSize() * (page.getPage() - 1);
+            if (cnt <= page.getSize()) {
+                page.setSize(cnt);
+                isLastPage = true;
+            }
         }
         param.put("category", "INVENTROY_MOVE");
         param.put("userId", userId);
@@ -74,7 +76,13 @@ public class PdaInventoryMoveWorkEntranceManagerImpl extends BaseManagerImpl imp
         if (isLastPage) {
             workList.setTotalPages(workList.getCurrentPage());
         }
-
+        if (null != maxObtainWorkQty) {
+            Long count = workList.getCount();
+            if (count > maxObtainWorkQty) {
+                workList.setCount(maxObtainWorkQty);
+                workList.setTotalPages(new Double(Math.ceil(maxObtainWorkQty.doubleValue() / 6)).intValue());
+            }
+        }
         if (null != param.get("scanLocCode")) {
             String locCode = param.get("scanLocCode").toString();
             if (null != workList && (null == workList.getItems() || workList.getItems().isEmpty())) {

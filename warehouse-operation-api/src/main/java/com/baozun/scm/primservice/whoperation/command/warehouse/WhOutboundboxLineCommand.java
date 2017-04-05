@@ -16,18 +16,26 @@ package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import java.util.Date;
 
-import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
+/**
+ * 
+ * @author larkark
+ *
+ */
+public class WhOutboundboxLineCommand extends BaseModel {
 
-public class WhCheckingLineCommand extends BaseCommand {
-
-
-    private static final long serialVersionUID = 8095167255432777708L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6629366412773404578L;
+    
+    // columns START
     
     /** 主键ID */
     private Long id;
-    /** 复核ID */
-    private Long checkingId;
+    /** 出库箱ID */
+    private Long whOutboundboxId;
     /** 商品编码 */
     private String skuCode;
     /** 商品外部编码 */
@@ -36,10 +44,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String skuBarCode;
     /** 商品名称 */
     private String skuName;
-    /** 计划数量 */
+    /** 数量 */
     private Long qty;
-    /** 已复核数量 */
-    private Long checkingQty;
     /** 客户CODE */
     private String customerCode;
     /** 客户名称 */
@@ -79,20 +85,17 @@ public class WhCheckingLineCommand extends BaseCommand {
     /** 出库单明细ID */
     private Long odoLineId;
 
-    public Long getId() {
-        return id;
+    /** 当前月份 用于归档 */
+    private String sysDate;
+
+    // columns END
+
+    public Long getWhOutboundboxId() {
+        return whOutboundboxId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getCheckingId() {
-        return checkingId;
-    }
-
-    public void setCheckingId(Long checkingId) {
-        this.checkingId = checkingId;
+    public void setWhOutboundboxId(Long whOutboundboxId) {
+        this.whOutboundboxId = whOutboundboxId;
     }
 
     public String getSkuCode() {
@@ -133,14 +136,6 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setQty(Long qty) {
         this.qty = qty;
-    }
-
-    public Long getCheckingQty() {
-        return checkingQty;
-    }
-
-    public void setCheckingQty(Long checkingQty) {
-        this.checkingQty = checkingQty;
     }
 
     public String getCustomerCode() {
@@ -294,4 +289,21 @@ public class WhCheckingLineCommand extends BaseCommand {
     public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
     }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }

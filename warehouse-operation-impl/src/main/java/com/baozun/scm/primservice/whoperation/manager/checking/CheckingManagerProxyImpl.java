@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +29,17 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
-import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
@@ -49,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManage
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionOutBoundManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOdoPackageInfoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxLineManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxLineSnManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
@@ -56,7 +55,6 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 
@@ -80,16 +78,18 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     @Autowired
     private WhOdoPackageInfoManager whOdoPackageInfoManager;
     @Autowired
+    private WhOutboundboxManager whOutboundboxManager;
+    @Autowired
     private WhOutboundboxLineManager whOutboundboxLineManager;
     @Autowired
-    private WhOutboundboxManager whOutboundboxManager;
+    private WhOutboundboxLineSnManager whOutboundboxLineSnManager;
     @Autowired
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
     private OdoManager odoManager;
     @Autowired
     private WhSkuManager whSkuManager;
-    
+
 
     /**
      * 根据复核打印配置打印单据
@@ -175,6 +175,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             // 小车货格库存，小车出库箱库存，播种墙货格库存，播种墙出库箱库存，周转箱库存            
             if(null != whCheckingCommand.getFacilityId() || null != whCheckingCommand.getContainerId() || null != whCheckingCommand.getOuterContainerId() || null != whCheckingCommand.getContainerLatticeNo()){
                 List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
+                this.saveWhOutboundboxCommand(whCheckingCommand);
                 for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
                     // 获取查询条件                    
                     WhSkuInventory skuInventory = new WhSkuInventory();
@@ -190,13 +191,14 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     List<WhSkuInventory> whSkuInventoryLst = whSkuInventoryManager.findWhSkuInventoryByPramas(skuInventory);
                     // 遍历库存统计信息        
                     for(WhSkuInventory whSkuInventory : whSkuInventoryLst){
-                     // 生成出库箱库存 
+                        // 生成出库箱库存 
                         checkingManager.createOutboundboxInventory(whCheckingCommand, whCheckingLineCommand, whSkuInventory);    
                     }
                     // 删除原有库存
                     for(WhSkuInventory whSkuInventory : whSkuInventoryLst){
                         whSkuInventoryManager.deleteSkuInventory( whSkuInventory.getId(), whSkuInventory.getOuId());
                     }
+                    this.saveWhOutboundboxLineCommand(whCheckingLineCommand);
                 }
             }
         }
@@ -283,5 +285,104 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             checkingLineMap.put(key, checkingLineCommandLst);
         }
         return checkingLineMap;
+    }
+    
+    /**
+     * 出库箱头信息
+     * 
+     * @author qiming.liu
+     * @param whCheckingResultCommand
+     */
+    public void saveWhOutboundboxCommand(WhCheckingCommand whCheckingCommand) {
+        
+        WhOutboundboxCommand whOutboundboxCommand = new WhOutboundboxCommand();
+        whOutboundboxCommand.setBatch(whCheckingCommand.getBatch());
+        whOutboundboxCommand.setWaveCode(whCheckingCommand.getWaveCode());
+        whOutboundboxCommand.setCustomerCode(whCheckingCommand.getCustomerCode());
+        whOutboundboxCommand.setCustomerName(whCheckingCommand.getCustomerName());
+        whOutboundboxCommand.setStoreCode(whCheckingCommand.getStoreCode());
+        whOutboundboxCommand.setStoreName(whCheckingCommand.getStoreName());
+        whOutboundboxCommand.setTransportCode(whCheckingCommand.getTransportCode());
+        whOutboundboxCommand.setTransportName(whCheckingCommand.getTransportName());
+        whOutboundboxCommand.setProductCode(whCheckingCommand.getProductCode());
+        whOutboundboxCommand.setProductName(whCheckingCommand.getProductName());
+        whOutboundboxCommand.setTimeEffectCode(whCheckingCommand.getTimeEffectCode());
+        whOutboundboxCommand.setTimeEffectName(whCheckingCommand.getTimeEffectName());
+        whOutboundboxCommand.setStatus(whCheckingCommand.getStatus().toString());
+        whOutboundboxCommand.setOuId(whCheckingCommand.getOuId());
+        whOutboundboxCommand.setOdoId(null);
+        whOutboundboxCommand.setOutboundboxId(whCheckingCommand.getOutboundboxId());
+        whOutboundboxCommand.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
+        whOutboundboxCommand.setDistributionMode(whCheckingCommand.getDistributionMode());
+        whOutboundboxCommand.setPickingMode(whCheckingCommand.getPickingMode());
+        whOutboundboxCommand.setCheckingMode(whCheckingCommand.getCheckingMode());
+        whOutboundboxManager.saveOrUpdate(whOutboundboxCommand);
+        
+    }
+    
+    /**
+     * 出库箱明细
+     * 
+     * @author qiming.liu
+     * @param whCheckingResultCommand
+     */
+    public void saveWhOutboundboxLineCommand(WhCheckingLineCommand whCheckingLineCommand) {
+        
+        WhOutboundboxLineCommand whOutboundboxLineCommand = new WhOutboundboxLineCommand();
+//        whOutboundboxLineCommand.setWhOutboundboxId(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setSkuCode(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setSkuExtCode(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setSkuBarCode(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setSkuName(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setQty(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setCustomerCode(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setCustomerName(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setStoreCode(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setStoreName(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setInvStatus(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setInvType(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setBatchNumber(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setMfgDate(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setExpDate(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setCountryOfOrigin(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setInvAttr1(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setInvAttr2(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setInvAttr3(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setInvAttr4(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setInvAttr5(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setUuid(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setOuId(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setOdoId(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setOdoLineId(whCheckingLineCommand);
+//        whOutboundboxLineCommand.setSysDate(whCheckingLineCommand);
+        whOutboundboxLineManager.saveOrUpdate(whOutboundboxLineCommand);
+        
+    }
+    
+    /**
+     * t_wh_outboundbox_line_sn
+     * 
+     * @author qiming.liu
+     * @param whCheckingResultCommand
+     */
+    public void saveWhOutboundboxLineSnCommand() {
+        
+        WhOutboundboxLineSnCommand whOutboundboxLineSnCommand = new WhOutboundboxLineSnCommand();
+//        whOutboundboxLineSnCommand.setWhOutboundboxLineId(whOutboundboxLineId);
+//        whOutboundboxLineSnCommand.setSn(sn);
+//        whOutboundboxLineSnCommand.setOccupationCode(occupationCode);
+//        whOutboundboxLineSnCommand.setReplenishmentCode(replenishmentCode);
+//        whOutboundboxLineSnCommand.setDefectWareBarcode(defectWareBarcode);
+//        whOutboundboxLineSnCommand.setDefectSource(defectSource);
+//        whOutboundboxLineSnCommand.setDefectTypeId(defectTypeId);
+//        whOutboundboxLineSnCommand.setDefectReasonsId(defectReasonsId);
+//        whOutboundboxLineSnCommand.setStatus(status);
+//        whOutboundboxLineSnCommand.setInvAttr(invAttr);
+//        whOutboundboxLineSnCommand.setUuid(uuid);
+//        whOutboundboxLineSnCommand.setOuId(ouId);
+//        whOutboundboxLineSnCommand.setSysUuid(sysUuid);
+//        whOutboundboxLineSnCommand.setSysDate(sysDate);
+        whOutboundboxLineSnManager.saveOrUpdate(whOutboundboxLineSnCommand);
+        
     }
 }

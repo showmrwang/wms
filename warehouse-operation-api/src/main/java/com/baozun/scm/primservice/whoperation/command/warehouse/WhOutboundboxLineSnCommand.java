@@ -12,7 +12,7 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.warehouse;
+package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
@@ -21,11 +21,17 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  * @author larkark
  *
  */
-public class WhOutboundboxLineSn extends BaseModel {
+public class WhOutboundboxLineSnCommand extends BaseModel {
 
-    private static final long serialVersionUID = 1214558575182808179L;
-
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7150910093135074938L;
+    
     // columns START
+    
+    /** 主键ID */
+    private Long id;
     /** 出库箱明细行ID */
     private Long whOutboundboxLineId;
     /** sn号 */
@@ -52,120 +58,121 @@ public class WhOutboundboxLineSn extends BaseModel {
     private Long ouId;
     /** 系统uuid 用于逻辑处理 */
     private String sysUuid;
-
     /** 当前月份 用于归档 */
     private String sysDate;
 
     // columns END
+    
+    public Long getId() {
+        return id;
+    }
 
-    public WhOutboundboxLineSn() {}
-
-    public WhOutboundboxLineSn(Long id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getWhOutboundboxLineId() {
+        return whOutboundboxLineId;
     }
 
     public void setWhOutboundboxLineId(Long whOutboundboxLineId) {
         this.whOutboundboxLineId = whOutboundboxLineId;
     }
 
-    public Long getWhOutboundboxLineId() {
-        return this.whOutboundboxLineId;
+    public String getSn() {
+        return sn;
     }
 
     public void setSn(String sn) {
         this.sn = sn;
     }
 
-    public String getSn() {
-        return this.sn;
+    public String getOccupationCode() {
+        return occupationCode;
     }
 
     public void setOccupationCode(String occupationCode) {
         this.occupationCode = occupationCode;
     }
 
-    public String getOccupationCode() {
-        return this.occupationCode;
+    public String getReplenishmentCode() {
+        return replenishmentCode;
     }
 
     public void setReplenishmentCode(String replenishmentCode) {
         this.replenishmentCode = replenishmentCode;
     }
 
-    public String getReplenishmentCode() {
-        return this.replenishmentCode;
+    public String getDefectWareBarcode() {
+        return defectWareBarcode;
     }
 
     public void setDefectWareBarcode(String defectWareBarcode) {
         this.defectWareBarcode = defectWareBarcode;
     }
 
-    public String getDefectWareBarcode() {
-        return this.defectWareBarcode;
+    public String getDefectSource() {
+        return defectSource;
     }
 
     public void setDefectSource(String defectSource) {
         this.defectSource = defectSource;
     }
 
-    public String getDefectSource() {
-        return this.defectSource;
+    public Long getDefectTypeId() {
+        return defectTypeId;
     }
 
     public void setDefectTypeId(Long defectTypeId) {
         this.defectTypeId = defectTypeId;
     }
 
-    public Long getDefectTypeId() {
-        return this.defectTypeId;
+    public Long getDefectReasonsId() {
+        return defectReasonsId;
     }
 
     public void setDefectReasonsId(Long defectReasonsId) {
         this.defectReasonsId = defectReasonsId;
     }
 
-    public Long getDefectReasonsId() {
-        return this.defectReasonsId;
+    public Integer getStatus() {
+        return status;
     }
 
     public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Integer getStatus() {
-        return this.status;
+    public String getInvAttr() {
+        return invAttr;
     }
 
     public void setInvAttr(String invAttr) {
         this.invAttr = invAttr;
     }
 
-    public String getInvAttr() {
-        return this.invAttr;
+    public String getUuid() {
+        return uuid;
     }
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 
-    public String getUuid() {
-        return this.uuid;
+    public Long getOuId() {
+        return ouId;
     }
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
 
-    public Long getOuId() {
-        return this.ouId;
+    public String getSysUuid() {
+        return sysUuid;
     }
 
     public void setSysUuid(String sysUuid) {
         this.sysUuid = sysUuid;
-    }
-
-    public String getSysUuid() {
-        return sysUuid;
     }
 
     public String getSysDate() {

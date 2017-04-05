@@ -98,4 +98,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+		
+<select id="findWhOutboundboxLineSnByOutBoundBoxLineId" resultMap="WhOutboundboxLineSnResultExt">
+    	select 
+    		<include refid="whOutboundboxLineSnColumnsExt" />
+	   		 from  t_wh_outboundbox_line_sn 
+	   		 where
+	   		 wh_outboundbox_line_id = #{obblid}
+	   		 and ou_id = #{ouid}
+    </select>
+	
 </mapper>

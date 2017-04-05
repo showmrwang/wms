@@ -20,28 +20,28 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineCommand;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineSnDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
 
-@Service("whOutboundboxLineManager")
-public class WhOutboundboxLineManagerImpl extends BaseManagerImpl implements WhOutboundboxLineManager {
+@Service("whOutboundboxLineSnManager")
+public class WhOutboundboxLineSnManagerImpl extends BaseManagerImpl implements WhOutboundboxLineSnManager {
     
-    public static final Logger log = LoggerFactory.getLogger(WhOutboundboxLineManagerImpl.class);
+    public static final Logger log = LoggerFactory.getLogger(WhOutboundboxLineSnManagerImpl.class);
     
     @Autowired
-    private WhOutboundboxLineDao whOutboundboxLineDao;
+    private WhOutboundboxLineSnDao whOutboundboxLineSnDao;
 
     @Override
-    public void saveOrUpdate(WhOutboundboxLineCommand whOutboundboxLineCommand) {
-        WhOutboundboxLine whOutboundboxLine = new WhOutboundboxLine();
+    public void saveOrUpdate(WhOutboundboxLineSnCommand whOutboundboxLineSnCommand) {
+        WhOutboundboxLineSn whOutboundboxLineSn = new WhOutboundboxLineSn();
         //复制数据        
-        BeanUtils.copyProperties(whOutboundboxLineCommand, whOutboundboxLine);
-        if(null != whOutboundboxLineCommand.getId() ){
-            whOutboundboxLineDao.saveOrUpdate(whOutboundboxLine);
+        BeanUtils.copyProperties(whOutboundboxLineSnCommand, whOutboundboxLineSn);
+        if(null != whOutboundboxLineSnCommand.getId() ){
+            whOutboundboxLineSnDao.saveOrUpdate(whOutboundboxLineSn);
         }else{
-            whOutboundboxLineDao.insert(whOutboundboxLine);
+            whOutboundboxLineSnDao.insert(whOutboundboxLineSn);
         }
     }
 
