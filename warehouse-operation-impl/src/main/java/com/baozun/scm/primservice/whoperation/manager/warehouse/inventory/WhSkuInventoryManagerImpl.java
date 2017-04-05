@@ -4209,13 +4209,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 skuCommand.setAllocateUnitCodes(Constants.ALLOCATE_UNIT_PIECE);
                 List<WhSkuInventoryCommand> skuInvs = findInventorysByAllocateStrategy(rsc.getStrategyCode(), skuCommand, upperLimitQty);
                 // 补货逻辑
-                Map<String, Double> replenishmentMap = new HashMap<String, Double>();
-                if (Constants.ALLOCATE_STRATEGY_QUANTITYBESTMATCH.equals(rsc.getStrategyCode())) {
-                    // TODO 数量最佳匹配逻辑 kai.zhu
-                    
-                } else {
-                    replenishmentMap = this.replenishment(skuInvs, upperLimitQty, units, rsc.getReplenishmentCode(), bhCode, null, null, locationId, ruleId, wh);
-                }
+                Map<String, Double> replenishmentMap = this.replenishment(skuInvs, upperLimitQty, units, rsc.getReplenishmentCode(), bhCode, null, null, locationId, ruleId, wh);
                 upperLimitQty -= replenishmentMap.get("qty") == null ? 0.0 : replenishmentMap.get("qty");
 
                 if (upperLimitQty == 0) {
