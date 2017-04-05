@@ -654,13 +654,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	
 
-    <select id="getWhWaveByPhaseCode" resultMap="whWaveCommand">
+    <select id="getWhWaveByParam" resultMap="whWaveCommand">
         select
-        <include refid="whWaveColumnsExt"/>
+        <include refid="whWaveColumns"/>
         from t_wh_wave
-        where
-            phase_code = #{phaseCode}
-            and ou_id = #{ouId}
+        <include refid="whWaveDynamicWhere"/>
     </select>
     
     <select id="findWavePhaseOrderListByWaveId" resultType="int">
