@@ -1206,8 +1206,16 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
      * @return
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWaveCommand> getWhWaveByPhaseCode(String phaseCode, Long ouId) {
-        return whWaveDao.getWhWaveByPhaseCode(phaseCode, ouId);
+        WhWave whWave = new WhWave();
+        whWave.setOuId(ouId);
+        whWave.setPhaseCode(phaseCode);
+        whWave.setAllocatePhase(null);
+        whWave.setIsRunWave(true);
+        whWave.setStatus(WaveStatus.WAVE_EXECUTING);
+        return  this.whWaveDao.getWhWaveByParam(whWave);
+
     }
 
     @Override

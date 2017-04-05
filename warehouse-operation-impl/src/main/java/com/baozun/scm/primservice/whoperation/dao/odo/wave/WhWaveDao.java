@@ -94,11 +94,9 @@ public interface WhWaveDao extends BaseDao<WhWave, Long> {
      * 根据波次编码获取波次列表
      *
      * @author mingwei.xie
-     * @param phaseCode
-     * @param ouId
      * @return
      */
-    List<WhWaveCommand> getWhWaveByPhaseCode(@Param("phaseCode") String phaseCode, @Param("ouId") Long ouId);
+    List<WhWaveCommand> getWhWaveByParam(WhWave whWave);
     
     /**
      * 获取波次的PhaseOrder
