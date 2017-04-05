@@ -471,6 +471,8 @@ public class ErrorCodes {
     public static final int RCVD_INV_SKU_QTY_ERROR = 40025;
     /** 商品扫描数量[{0}]大于收货量 */
     public static final int SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY = 40026;
+    /** 容器号[{0}]当前库位未找到待移入库存信息 */
+    public static final int CONTAINER_NOT_FOUND_TOBEFILLED_INV_ERROR = 40027;
     // 40001-50000 lichuan
 
     // 50001-60000 hubin

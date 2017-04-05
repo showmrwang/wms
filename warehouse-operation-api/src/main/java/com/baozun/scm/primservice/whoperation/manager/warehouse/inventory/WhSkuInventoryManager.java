@@ -62,6 +62,20 @@ public interface WhSkuInventoryManager extends BaseManager {
      */
     void execBinding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
     
+    /**
+     * 库位解绑（生成容器库存及删除待移入库存）
+     * 
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param locationCode
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void execUnbinding(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
     
     /**
      * 执行上架（已分配容器库存出库及待移入库位库存入库）
