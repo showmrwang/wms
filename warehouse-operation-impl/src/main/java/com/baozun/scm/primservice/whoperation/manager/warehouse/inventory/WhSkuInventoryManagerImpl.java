@@ -5292,10 +5292,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if(null== operationExecLineList || operationExecLineList.size()==0) {
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
         }
-//        for(WhSkuInventoryCommand skuInvCmd:allSkuInvList){
-//           Double sumQty = 0.0;// 库位库存中sku商品的总和(同一个库位上,相同的sku库存属性没有合并的情况)
-//           String skuInvioIds = (skuInvCmd.getOuterContainerId()== null?"┊":skuInvCmd.getOuterContainerId()+"┊") + (skuInvCmd.getInsideContainerId()==null?"︴":skuInvCmd.getInsideContainerId()+"︴");
-          for(WhOperationExecLine opLineExec:operationExecLineList) {
+        Boolean result = false;
+        for(WhSkuInventoryCommand skuInvCmd:allSkuInvList){
+           Double sumQty = 0.0;// 库位库存中sku商品的总和(同一个库位上,相同的sku库存属性没有合并的情况)
+           String skuInvioIds = (skuInvCmd.getOuterContainerId()== null?"┊":skuInvCmd.getOuterContainerId()+"┊") + (skuInvCmd.getInsideContainerId()==null?"︴":skuInvCmd.getInsideContainerId()+"︴");
+           String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+           for(WhOperationExecLine opLineExec:operationExecLineList) {
                //作业执行明细id
                String outBoundBox = opLineExec.getUseOutboundboxCode();   //出库箱
                Long turnoverBoxId = opLineExec.getUseContainerId();   //周转箱
@@ -5303,10 +5305,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                Long insideContainerId = opLineExec.getUseContainerId();
                String execLineioIds = (opLineExec.getFromOuterContainerId()== null?"┊":opLineExec.getFromOuterContainerId()+"┊") + (opLineExec.getFromInsideContainerId()==null?"︴":opLineExec.getFromInsideContainerId()+"︴");
                String execSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(opLineExec);
-               for(WhSkuInventoryCommand skuInvCmd:allSkuInvList){
-                   String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                   Double sumQty = 0.0;// 库位库存中sku商品的总和(同一个库位上,相同的sku库存属性没有合并的情况)
-                   String skuInvioIds = (skuInvCmd.getOuterContainerId()== null?"┊":skuInvCmd.getOuterContainerId()+"┊") + (skuInvCmd.getInsideContainerId()==null?"︴":skuInvCmd.getInsideContainerId()+"︴");
+//               for(WhSkuInventoryCommand skuInvCmd:allSkuInvList){
+//                   String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+//                   Double sumQty = 0.0;// 库位库存中sku商品的总和(同一个库位上,相同的sku库存属性没有合并的情况)
+//                   String skuInvioIds = (skuInvCmd.getOuterContainerId()== null?"┊":skuInvCmd.getOuterContainerId()+"┊") + (skuInvCmd.getInsideContainerId()==null?"︴":skuInvCmd.getInsideContainerId()+"︴");
                    if(skuAttrIds.equals(execSkuAttrIds) && skuInvCmd.getLocationId().longValue() == opLineExec.getFromLocationId().longValue() && skuInvioIds.equals(execLineioIds)){
                        if(Constants.PICKING_WAY_THREE == pickingWay) {   //使用出库箱(使用小车加出库箱和只使用出库箱的情况)
                                 outboundboxCodeList.add(outBoundBox);  //出库箱
@@ -5380,8 +5382,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                        if(result1 < 1) {
                            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                        }
+                       result = true;
                        break;  //跳出当前循环
                    }
+            }
+            if(result){
+                break;
             }
         }
 //        //直接删除所有的库位库存
