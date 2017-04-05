@@ -57,7 +57,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void createOutboundboxInventory(WhCheckingCommand checkingCommand, WhCheckingLineCommand checkingLineCommand, WhSkuInventory whSkuInventory);
+    String createOutboundboxInventory(WhCheckingCommand checkingCommand, List<WhSkuInventory> whSkuInventoryLst);
     
     /**
      * 根据id查询播种墙
