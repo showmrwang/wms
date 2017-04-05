@@ -2,7 +2,6 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.work.LocationTipCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationLineCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
@@ -303,15 +301,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Map<Long, Long> skuIdQtyMap = new HashMap<Long, Long>();
                     skuIdQtyMap = skuQty.get(operationLine.getFromLocationId());
                     if (null != skuIdQtyMap.get(operationLine.getSkuId())) {
-                        Long qty = skuIdQtyMap.get(operationLine.getSkuId()) + operationLine.getQty().longValue();
+                        Long qty = skuIdQtyMap.get(operationLine.getSkuId()) + (long) (operationLine.getQty() - operationLine.getCompleteQty());
                         skuIdQtyMap.put(operationLine.getSkuId(), qty);
                     } else {
-                        skuIdQtyMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                        skuIdQtyMap.put(operationLine.getSkuId(), (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                     }
                     skuQty.put(operationLine.getFromLocationId(), skuIdQtyMap);
                 } else if (null != operationLine.getFromLocationId() && null != operationLine.getSkuId() && null != operationLine.getQty() && null == skuQty.get(operationLine.getFromLocationId())) {
                     Map<Long, Long> skuIdQtyMap = new HashMap<Long, Long>();
-                    skuIdQtyMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                    skuIdQtyMap.put(operationLine.getSkuId(), (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                     skuQty.put(operationLine.getFromLocationId(), skuIdQtyMap);
                 }
                 // 获取每个sku对应的唯一sku及件数
@@ -321,21 +319,21 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if (null != skuIdMap.get(operationLine.getSkuId())) {
                         Map<String, Long> skuAttrIdsQty = skuIdMap.get(operationLine.getSkuId());
                         if (null != skuAttrIdsQty.get(onlySku)) {
-                            skuAttrIdsQty.put(onlySku, skuAttrIdsQty.get(onlySku) + operationLine.getQty().longValue());
+                            skuAttrIdsQty.put(onlySku, skuAttrIdsQty.get(onlySku) + (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                         } else {
-                            skuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                            skuAttrIdsQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                         }
                         skuIdMap.put(operationLine.getSkuId(), skuAttrIdsQty);
                     } else {
                         Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
-                        insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                        insideSkuAttrIdsQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                         skuIdMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
                     }
                     skuAttrIds.put(operationLine.getFromLocationId(), skuIdMap);
                 } else if (null != operationLine.getFromLocationId() && null != operationLine.getSkuId() && null != operationLine.getQty() && null != onlySku && null == skuAttrIds.get(operationLine.getFromLocationId())) {
                     Map<Long, Map<String, Long>> skuIdMap = new HashMap<Long, Map<String, Long>>();
                     Map<String, Long> skuAttrIdsQty = new HashMap<String, Long>();
-                    skuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                    skuAttrIdsQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                     skuIdMap.put(operationLine.getSkuId(), skuAttrIdsQty);
                     skuAttrIds.put(operationLine.getFromLocationId(), skuIdMap);
                 }
@@ -417,15 +415,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Map<Long, Long> skuIdQtyMap = new HashMap<Long, Long>();
                     skuIdQtyMap = insideSkuQty.get(operationLine.getFromInsideContainerId());
                     if (null != skuIdQtyMap.get(operationLine.getSkuId())) {
-                        Long insQty = skuIdQtyMap.get(operationLine.getSkuId()) + operationLine.getQty().longValue();
+                        Long insQty = skuIdQtyMap.get(operationLine.getSkuId()) + (long) (operationLine.getQty() - operationLine.getCompleteQty());
                         skuIdQtyMap.put(operationLine.getSkuId(), insQty);
                     } else {
-                        skuIdQtyMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                        skuIdQtyMap.put(operationLine.getSkuId(), (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                     }
                     insideSkuQty.put(operationLine.getFromInsideContainerId(), skuIdQtyMap);
                 } else if (null != operationLine.getFromInsideContainerId() && null != operationLine.getSkuId() && null != operationLine.getQty() && null == insideSkuQty.get(operationLine.getFromInsideContainerId())) {
                     Map<Long, Long> skuIdQtyMap = new HashMap<Long, Long>();
-                    skuIdQtyMap.put(operationLine.getSkuId(), operationLine.getQty().longValue());
+                    skuIdQtyMap.put(operationLine.getSkuId(), (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                     insideSkuQty.put(operationLine.getFromInsideContainerId(), skuIdQtyMap);
                 }
                 // 内部容器每个sku对应的唯一sku及件数
@@ -435,21 +433,21 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if (null != fromInsideContainerIdMap.get(operationLine.getSkuId())) {
                         Map<String, Long> insideSkuAttrIdsQty = fromInsideContainerIdMap.get(operationLine.getSkuId());
                         if (null != insideSkuAttrIdsQty.get(onlySku)) {
-                            insideSkuAttrIdsQty.put(onlySku, insideSkuAttrIdsQty.get(onlySku) + operationLine.getQty().longValue());
+                            insideSkuAttrIdsQty.put(onlySku, insideSkuAttrIdsQty.get(onlySku) + (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                         } else {
-                            insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                            insideSkuAttrIdsQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                         }
                         fromInsideContainerIdMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
                     } else {
                         Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
-                        insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                        insideSkuAttrIdsQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                         fromInsideContainerIdMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
                     }
                     insideSkuAttrIds.put(operationLine.getFromInsideContainerId(), fromInsideContainerIdMap);
                 } else if (null != operationLine.getFromInsideContainerId() && null != operationLine.getSkuId() && null != operationLine.getQty() && null != onlySku && null == insideSkuAttrIds.get(operationLine.getFromInsideContainerId())) {
                     Map<Long, Map<String, Long>> fromInsideContainerIdMap = new HashMap<Long, Map<String, Long>>();
                     Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
-                    insideSkuAttrIdsQty.put(onlySku, operationLine.getQty().longValue());
+                    insideSkuAttrIdsQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                     fromInsideContainerIdMap.put(operationLine.getSkuId(), insideSkuAttrIdsQty);
                     insideSkuAttrIds.put(operationLine.getFromInsideContainerId(), fromInsideContainerIdMap);
                 }

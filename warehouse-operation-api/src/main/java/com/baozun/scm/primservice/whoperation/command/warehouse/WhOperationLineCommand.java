@@ -43,6 +43,10 @@ public class WhOperationLineCommand extends BaseModel {
     private java.lang.Long skuId;
     /** 计划量 */
     private Double qty;
+    /** 执行量 */
+    private Double completeQty;
+    /** 取消量 */
+    private Double cancelQty;
     /** 库存状态 */
     private java.lang.Long invStatus;
     /** 库存类型 */
@@ -348,6 +352,18 @@ public class WhOperationLineCommand extends BaseModel {
     }
     public void setInvMoveCode(java.lang.String invMoveCode) {
         this.invMoveCode = invMoveCode;
+    }
+    public Double getCompleteQty() {
+        return completeQty;
+    }
+    public void setCompleteQty(Double completeQty) {
+        this.completeQty = completeQty;
+    }
+    public Double getCancelQty() {
+        return cancelQty;
+    }
+    public void setCancelQty(Double cancelQty) {
+        this.cancelQty = cancelQty;
     }
     
 }

@@ -16,13 +16,33 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 
 @Service("whOutboundboxManager")
 public class WhOutboundboxManagerImpl extends BaseManagerImpl implements WhOutboundboxManager {
     
     public static final Logger log = LoggerFactory.getLogger(WhOutboundboxManagerImpl.class);
+    
+    @Autowired
+    private WhOutboundboxDao whOutboundboxDao;
+
+    @Override
+    public void saveOrUpdate(WhOutboundboxCommand whOutboundboxCommand) {
+        WhOutboundbox whOutboundbox = new WhOutboundbox();
+        //复制数据        
+        BeanUtils.copyProperties(whOutboundboxCommand, whOutboundbox);
+        if(null != whOutboundboxCommand.getId() ){
+            whOutboundboxDao.saveOrUpdate(whOutboundbox);
+        }else{
+            whOutboundboxDao.insert(whOutboundbox);
+        }
+    }
     
 }
