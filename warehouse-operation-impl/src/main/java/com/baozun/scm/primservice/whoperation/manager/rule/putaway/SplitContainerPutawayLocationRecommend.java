@@ -180,6 +180,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
         Double onHandQty = 0.0;
         Map<String, Double> lenUomConversionRate = uomMap.get(WhUomType.LENGTH_UOM);
         Map<String, Double> weightUomConversionRate = uomMap.get(WhUomType.WEIGHT_UOM);
+        if (log.isInfoEnabled()) {
+            log.info("split container recommand location invRuleList size is:[{}], logId is:[{}]", (null != invRuleList ? invRuleList.size() : 0), logId);
+        }
         for (WhSkuInventoryCommand invRule : invRuleList) {
             // 商品
             Long skuId = invRule.getSkuId();
@@ -198,11 +201,17 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
             boolean skuIsMixAllowed = (null == skuMgmt.getIsMixAllowed() ? false : skuMgmt.getIsMixAllowed());
             String skuMixAttr = (null == skuMgmt.getMixAttr() ? "" : skuMgmt.getMixAttr());
             List<WhSkuInventorySnCommand> invSnRuleList = invRule.getWhSkuInventorySnCommandList();
+            if (log.isInfoEnabled()) {
+                log.info("split container recommand location invId is:[{}], snSize is:[{}], logId is:[{}]", invRule.getId(), invSnRuleList.size(), logId);
+            }
             if (null == invSnRuleList || 0 == invSnRuleList.size()) {
                 // 非残次品，上架规则匹配到sku库存行上
                 onHandQty = invRule.getOnHandQty();
                 // 获取当前sku行匹配到的所有上架规则
                 List<ShelveRecommendRuleCommand> ruleList = invRule.getShelveRecommendRuleCommandList();
+                if (log.isInfoEnabled()) {
+                    log.info("split container recommand location invId is:[{}], ruleList size is:[{}], logId is:[{}]", invRule.getId(), (null != ruleList ? ruleList.size() : 0), logId);
+                }
                 if (null == ruleList || 0 == ruleList.size()) {
                     // 当前sku库存行没有匹配到任何可用上架规则
                     LocationRecommendResultCommand lrrc = new LocationRecommendResultCommand();
@@ -223,6 +232,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                     for (ShelveRecommendRuleCommand rule : ruleList) {
                         Long ruleId = rule.getId();
                         List<RecommendShelveCommand> rsList = recommendShelveDao.findCommandByRuleIdOrderByPriority(ruleId, ouId);
+                        if (log.isInfoEnabled()) {
+                            log.info("split container recommand location invId is:[{}], ruleId is:[{}], rsList size is:[{}], logId is:[{}]", invRule.getId(), ruleId, (null != rsList ? rsList.size() : 0), logId);
+                        }
                         if (null == rsList || 0 == rsList.size()) {
                             continue;// 继续遍历剩下规则
                         }
@@ -267,6 +279,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         avaliableLocs.add(loc);
                                     }
                                 }
+                                if (log.isInfoEnabled()) {
+                                    log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                }
                             } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
                                 attrParams.setContainerId(containerId);
@@ -278,6 +293,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     cSql = null;
                                 }
                                 avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
+                                if (log.isInfoEnabled()) {
+                                    log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                }
                             } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
                                 attrParams.setIsMixStacking(false);// 库位不允许混放
@@ -293,6 +311,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     cSql = null;
                                 }
                                 avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
+                                if (log.isInfoEnabled()) {
+                                    log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                }
                             } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
                                 attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
                                 WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
@@ -329,6 +350,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     cSql = null;
                                 }
                                 avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
+                                if (log.isInfoEnabled()) {
+                                    log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                }
                             } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                                 // attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
                                 // PutawayCondition putawayCondition =
@@ -348,6 +372,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                             }
                             if (null == avaliableLocs || 0 == avaliableLocs.size()) {
                                 continue;// 如果没有可用的库位，则遍历下一个上架规则
+                            }
+                            if (log.isInfoEnabled()) {
+                                log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], logId is:[{}], calc aLocs start...", invRule.getId(), ruleId, locationRecommendRule, logId);
                             }
                             for (LocationCommand al : avaliableLocs) {
                                 Long locId = al.getId();
@@ -404,6 +431,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setDefectBarcode(null);
                                         lrrc.setSn(null);
                                         list.add(lrrc);
+                                    }
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                list.size(), logId);
                                     }
                                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                     int count = whSkuLocationDao.findSkuCountInSkuLocation(ouId, locId, skuId);
@@ -500,6 +531,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setSn(null);
                                         list.add(lrrc);
                                     }
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                list.size(), logId);
+                                    }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                     Boolean isStatic = al.getIsStatic();
                                     if (null != isStatic && true == isStatic) {
@@ -537,6 +572,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setDefectBarcode(null);
                                         lrrc.setSn(null);
                                         list.add(lrrc);
+                                    }
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                list.size(), logId);
                                     }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
                                     Boolean isStatic = al.getIsStatic();
@@ -594,6 +633,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setSn(null);
                                         list.add(lrrc);
                                     }
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                list.size(), logId);
+                                    }
                                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                                     LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
                                     Double livwVolume = livw.getVolume();// 库位上已有货物总体积
@@ -631,6 +674,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                 if (null != lrrc) {
                                     break;
                                 }
+                            }
+                            if (log.isInfoEnabled()) {
+                                log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], logId is:[{}], calc aLocs end", invRule.getId(), ruleId, locationRecommendRule, logId);
                             }
                             if (null != lrrc) {
                                 break;
@@ -732,6 +778,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             avaliableLocs.add(loc);
                                         }
                                     }
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                    }
                                 } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.STATIC_LOCATION);
                                     attrParams.setContainerId(containerId);
@@ -743,6 +792,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         cSql = null;
                                     }
                                     avaliableLocs = locationDao.findAllStaticLocsByAreaId(area.getId(), ouId, cSql);
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                    }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS);
                                     attrParams.setIsMixStacking(false);// 库位不允许混放
@@ -758,6 +810,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         cSql = null;
                                     }
                                     avaliableLocs = locationDao.findAllInvLocsByAreaIdAndSameAttrs(area.getId(), ouId, cSql);
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                    }
                                 } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
                                     attrParams.setLrt(WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS);
                                     WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
@@ -794,6 +849,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         cSql = null;
                                     }
                                     avaliableLocs = locationDao.findAllInvLocsByAreaIdAndDiffAttrs(area.getId(), ouId, cSql);
+                                    if (log.isInfoEnabled()) {
+                                        log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], aLocs size is:[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, avaliableLocs.size(), logId);
+                                    }
                                 } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                                     // attrParams.setLrt(WhLocationRecommendType.ONE_LOCATION_ONLY);
                                     // PutawayCondition putawayCondition =
@@ -813,6 +871,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                 }
                                 if (null == avaliableLocs || 0 == avaliableLocs.size()) {
                                     continue;// 如果没有可用的库位，则遍历下一个上架规则
+                                }
+                                if (log.isInfoEnabled()) {
+                                    log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], logId is:[{}], calc aLocs start...", invRule.getId(), ruleId, locationRecommendRule, logId);
                                 }
                                 for (LocationCommand al : avaliableLocs) {
                                     Long locId = al.getId();
@@ -874,6 +935,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setDefectBarcode(defectBarcode);
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
+                                        }
+                                        if (log.isInfoEnabled()) {
+                                            log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                    list.size(), logId);
                                         }
                                     } else if (WhLocationRecommendType.STATIC_LOCATION.equals(locationRecommendRule)) {
                                         // int count =
@@ -977,6 +1042,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
                                         }
+                                        if (log.isInfoEnabled()) {
+                                            log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                    list.size(), logId);
+                                        }
                                     } else if (WhLocationRecommendType.MERGE_LOCATION_SAME_INV_ATTRS.equals(locationRecommendRule)) {
                                         Boolean isStatic = al.getIsStatic();
                                         if (null != isStatic && true == isStatic) {
@@ -1014,6 +1083,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setDefectBarcode(defectBarcode);
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
+                                        }
+                                        if (log.isInfoEnabled()) {
+                                            log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                    list.size(), logId);
                                         }
                                     } else if (WhLocationRecommendType.MERGE_LOCATION_DIFF_INV_ATTRS.equals(locationRecommendRule)) {
                                         Boolean isStatic = al.getIsStatic();
@@ -1071,6 +1144,10 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
                                         }
+                                        if (log.isInfoEnabled()) {
+                                            log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], calc loc is:[{}], result is[{}], logId is:[{}]", invRule.getId(), ruleId, locationRecommendRule, al.getId(),
+                                                    list.size(), logId);
+                                        }
                                     } else if (WhLocationRecommendType.ONE_LOCATION_ONLY.equals(locationRecommendRule)) {
                                         // LocationInvVolumeWeightCommand livw =
                                         // whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId,
@@ -1116,6 +1193,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     if (null != lrrc) {
                                         break;
                                     }
+                                }
+                                if (log.isInfoEnabled()) {
+                                    log.info("split container recommand location invId is:[{}], ruleId is:[{}], recommand type is:[{}], logId is:[{}], calc aLocs end", invRule.getId(), ruleId, locationRecommendRule, logId);
                                 }
                                 if (null != lrrc) {
                                     break;
