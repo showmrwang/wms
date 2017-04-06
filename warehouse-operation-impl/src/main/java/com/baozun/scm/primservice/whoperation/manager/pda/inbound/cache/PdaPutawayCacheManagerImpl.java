@@ -1301,7 +1301,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
      * @return
      */
     @Override
-    public InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, Long ouId, String logId) {
+    public InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, Integer putawayPatternDetailType, Long ouId, String logId) {
         Long containerId = insideContainerCmd.getId();
         if (log.isInfoEnabled()) {
             log.info("sys guide container putaway cache inventoryStatistic start, contianerId is:[{}], ouId is:[{}], logId is:[{}]", containerId, ouId, logId);
@@ -1323,7 +1323,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.error("sys guide container putaway container:[{}] rcvd inventory not found error!, logId is:[{}]", containerCode, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {containerCode});
         }
-        InventoryStatisticResultCommand isCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.PALLET_PUTAWAY, ouId, logId);
+        InventoryStatisticResultCommand isCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, putawayPatternDetailType, ouId, logId);
         isCmd.setInsideContainerId(containerId);
         cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString(), isCmd, CacheConstants.CACHE_ONE_DAY);
         if (log.isInfoEnabled()) {
@@ -4552,6 +4552,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                         cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
                     }
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
                 } else {
 
                 }
@@ -4607,6 +4609,54 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
             }
         } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
+            if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
+                if (null != ocId) {
+                    Long containerId = ocId;
+                    TipContainerCacheCommand tipContainerCmd = cacheManager.getObject(CacheConstants.SCAN_CONTAINER_QUEUE + containerId.toString());
+                    if (null != tipContainerCmd) {
+                        ArrayDeque<Long> tipInsideContainerIds = tipContainerCmd.getTipInsideContainerIds();
+                        if (null != tipInsideContainerIds && tipInsideContainerIds.size() > 0) {
+                            Iterator<Long> iter = tipInsideContainerIds.iterator();
+                            while (iter.hasNext()) {
+                                Long value = iter.next();
+                                if (null != value && 0 == value.compareTo(icId)) {
+                                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + value.toString());
+                                    if (null != tipScanSkuCmd) {
+                                        ArrayDeque<Long> oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
+                                        if (null != oneByOneScanSkuIds && oneByOneScanSkuIds.size() > 0) {
+                                            Iterator<Long> iter2 = oneByOneScanSkuIds.iterator();
+                                            while (iter2.hasNext()) {
+                                                Long skuId = iter2.next();
+                                                if (null != skuId) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + skuId.toString());
+                                            }
+                                        }
+                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString());
+                                    }
+                                }
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + icId.toString());
+                    }
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
+                } else {
+                    Long containerId = icId;
+                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + containerId.toString());
+                    if (null != tipScanSkuCmd) {
+                        ArrayDeque<Long> oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
+                        if (null != oneByOneScanSkuIds && oneByOneScanSkuIds.size() > 0) {
+                            Iterator<Long> iter2 = oneByOneScanSkuIds.iterator();
+                            while (iter2.hasNext()) {
+                                Long skuId = iter2.next();
+                                if (null != skuId) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + containerId.toString() + skuId.toString());
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + containerId.toString());
+                    }
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
+                }
+            }
             if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 if (null != ocId) {
                     Long containerId = ocId;
@@ -4732,6 +4782,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
                 if (null != icId) {
                     Long value = icId;
+                    ArrayDeque<Long> tipLocIds = new ArrayDeque<Long>();
                     TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
                     if (null != tipLocCmd) {
                         ArrayDeque<Long> tipLocationIds = tipLocCmd.getTipLocationIds();
@@ -4739,7 +4790,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             Iterator<Long> locIter = tipLocationIds.iterator();
                             while (locIter.hasNext()) {
                                 Long locValue = locIter.next();
-                                if (null != locValue) {
+                                if (null != locValue && 0 == locValue.compareTo(locationId)) {
                                     TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locValue.toString());
                                     if (null != tipScanSkuCmd) {
                                         ArrayDeque<String> oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
@@ -4752,11 +4803,38 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                         }
                                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locValue.toString());
                                     }
+                                } else {
+                                    if (null != locValue) {
+                                        tipLocIds.addFirst(locValue);
+                                    }
                                 }
                             }
                         }
-                        cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
+                        tipLocCmd.setTipLocationIds(tipLocIds);
+                        cacheManager.setObject(CacheConstants.SCAN_LOCATION_QUEUE + value.toString(), tipLocCmd, CacheConstants.CACHE_ONE_DAY);
                     }
+                    InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.toString());
+                    if (null == isCmd) {
+                        isCmd = sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, logId);
+                    }
+                    Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();
+                    Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(insideContainerCmd.getId());
+                    Set<Long> locIds = new HashSet<Long>();
+                    if (null != locSkuAttrIds) {
+                        locSkuAttrIds.remove(locationId);
+                        //locIds = locSkuAttrIds.keySet();
+                    }
+                    insideContainerLocSkuAttrIds.put(insideContainerCmd.getId(), locSkuAttrIds);
+                    isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
+                    Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = isCmd.getInsideContainerLocSkuAttrIdsQty();
+                    Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(insideContainerCmd.getId());
+                    if (null != locSkuAttrIdsQty) {
+                        locSkuAttrIdsQty.remove(locationId);
+                    }
+                    insideContainerLocSkuAttrIdsQty.put(insideContainerCmd.getId(), locSkuAttrIdsQty);
+                    isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
+                    isCmd.setLocationIds(locIds);
+                    cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString(), isCmd, CacheConstants.CACHE_ONE_DAY);
                 }
             }
             if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {

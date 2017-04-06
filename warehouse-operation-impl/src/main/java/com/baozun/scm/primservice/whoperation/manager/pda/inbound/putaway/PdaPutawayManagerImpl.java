@@ -2496,11 +2496,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         if (null != isrCmd) {
             locationIds = isrCmd.getLocationIds();
-            if (null == locationIds || 0 == locationIds.size()) {
+            /*if (null == locationIds || 0 == locationIds.size()) {
                 pdaPutawayCacheManager.sysGuidePutawayRemoveInventoryStatistic(insideContainerCmd, ouId, logId);
                 log.error("sys guide container putaway cache is error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-            }
+            }*/
         }
         if (0 < locationIds.size()) {
             srCmd.setRecommendLocation(true);// 已推荐库位
@@ -2719,6 +2719,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);
+        isCmd.setInsideContainerAsists(insideContainerAsists);
         // cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC,
         // containerId.toString(), isCmd, CacheConstants.CACHE_ONE_MONTH);
         pdaPutawayCacheManager.sysGuideSplitContainerPutawayCacheInventoryStatistic(insideContainerCmd, isCmd, ouId, logId);
@@ -3154,7 +3155,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
         if (null == isCmd) {
-            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, ouId, logId);
+            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, logId);
         }
         ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
         if (null != containerCmd) {
@@ -4002,7 +4003,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icCmd.getId().toString());
         if (null == isCmd) {
-            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(icCmd, ouId, logId);
+            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(icCmd, WhPutawayPatternDetailType.CONTAINER_PUTAWAY, ouId, logId);
         }
         ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
         if (null != ocCmd) {
@@ -4208,7 +4209,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icCmd.getId().toString());
         if (null == isCmd) {
-            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(icCmd, ouId, logId);
+            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(icCmd, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, logId);
         }
         ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
         if (null != ocCmd) {
@@ -5499,7 +5500,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
             }
             if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
-                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, null, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+                Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, null, skuCmd, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+                whSkuInventoryManager.execUnbinding(containerCmd, null, locationCode, putawayPatternDetailType, ouId, userId, logId);
             }
             if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
@@ -5563,6 +5570,26 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                     log.error("container status is invalid, containerStatus is:[{}], logId is:[{}]", containerStatus, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_STATUS_ERROR_UNABLE_PUTAWAY, new Object[] {containerCode});
                 }
+            }
+            if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
+                ContainerCommand insideContainerCmd = null;
+                if (!StringUtils.isEmpty(insideContainerCode)) {
+                    insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+                    if (null == insideContainerCmd) {
+                        // 内部容器信息不存在
+                        log.error("inside container is not exists, logId is:[{}]", logId);
+                        throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
+                    }
+                } else {
+                    insideContainerCmd = null;
+                }
+                Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+                whSkuInventoryManager.execUnbinding(containerCmd, insideContainerCmd, locationCode, putawayPatternDetailType, ouId, userId, logId); 
             }
             if (CancelPattern.PUTAWAY_INSIDECONTAINER_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
@@ -5653,7 +5680,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 } else {
                     insideContainerCmd = null;
                 }
-                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, null, funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+                Location loc = locationDao.findLocationByCode(locationCode, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locCode is:[{}], logId is:[{}]", locationCode, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+                pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, skuCmd, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
+                whSkuInventoryManager.execUnbinding(containerCmd, insideContainerCmd, locationCode, putawayPatternDetailType, ouId, userId, logId);
             }
             if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
                 ContainerCommand insideContainerCmd;
@@ -5705,7 +5738,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 
                 InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString());
                 if (null == isCmd) {
-                    isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, ouId, logId);
+                    isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideContainerCmd, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, logId);
                 }
                 Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerSkuIds();
                 Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();
