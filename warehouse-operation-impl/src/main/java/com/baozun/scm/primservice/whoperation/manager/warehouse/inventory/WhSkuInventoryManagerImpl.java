@@ -4756,7 +4756,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		Double occupyQty = Constants.DEFAULT_DOUBLE;
 		Double moreQty = Constants.DEFAULT_DOUBLE;
     	if (null == skuInvs || skuInvs.isEmpty()) {
-			return null;
+			return new HashMap<String, Double>();
 		}
     	for (int i = 0; i < skuInvs.size(); i++) {
     		WhSkuInventoryCommand inv = skuInvs.get(i);
