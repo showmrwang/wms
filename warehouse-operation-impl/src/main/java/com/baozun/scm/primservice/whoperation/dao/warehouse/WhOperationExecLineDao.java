@@ -67,7 +67,7 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @param ouId
      * @return
      */
-    public List<WhOperationExecLine> checkOperationExecLine(@Param("operationId") Long operationId, @Param("ouId") Long ouId);
+    public List<WhOperationExecLine> checkOperationExecLine(@Param("ouId") Long ouId, @Param("operExecLineId") List<Long> operExecLineId, @Param("operLineId") List<Long> operLineId,@Param("scanPattern") Boolean scanPattern);
 
 
     public WhOperationExecLine findOperationExecLine(@Param("ouId") Long ouId, @Param("id") Long id);

@@ -159,4 +159,6 @@
 	        
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager" ref="whOdoStatusConfirmManager" />
 	
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager" ref="whSkuInventoryFlowManager" />
+	
 </beans>

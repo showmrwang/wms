@@ -14,6 +14,8 @@ public class PickingScanResultCommand extends BaseCommand {
      */
     private static final long serialVersionUID = 5696756957904723061L;
 
+    
+    private Boolean isShortPickingEnd;   //是否短拣
 
     private Long workAreaId;
     /** 小批次 */
@@ -1107,4 +1109,13 @@ public class PickingScanResultCommand extends BaseCommand {
         this.pickingMode = pickingMode;
     }
 
+    public Boolean getIsShortPickingEnd() {
+        return isShortPickingEnd;
+    }
+
+    public void setIsShortPickingEnd(Boolean isShortPickingEnd) {
+        this.isShortPickingEnd = isShortPickingEnd;
+    }
+
+    
 }

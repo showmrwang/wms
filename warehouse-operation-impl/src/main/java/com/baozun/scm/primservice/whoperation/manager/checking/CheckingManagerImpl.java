@@ -14,7 +14,6 @@
 
 package com.baozun.scm.primservice.whoperation.manager.checking;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -28,9 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.baseservice.print.command.PrintDataCommand;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
@@ -124,7 +121,11 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      * @param ouId 仓库Id
      */
     @Override
-    public void createOutboundboxInventory(WhCheckingCommand checkingCommand, WhCheckingLineCommand checkingLineCommand, WhSkuInventory whSkuInventory) {
+    public String createOutboundboxInventory(WhCheckingCommand checkingCommand, List<WhSkuInventory> whSkuInventoryLst) {
+        if(null == whSkuInventoryLst){
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);    
+        }
+        WhSkuInventory whSkuInventory = whSkuInventoryLst.get(0);
         WhSkuInventoryCommand whSkuInventoryCommand = new WhSkuInventoryCommand();
         /** 商品ID */
         whSkuInventoryCommand.setSkuId(whSkuInventory.getSkuId());
@@ -165,21 +166,21 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         /** 批次号 */
         whSkuInventoryCommand.setBatchNumber(whSkuInventory.getBatchNumber());
         /** 生产日期 */
-        whSkuInventoryCommand.setMfgDate(checkingLineCommand.getMfgDate());
+        whSkuInventoryCommand.setMfgDate(whSkuInventory.getMfgDate());
         /** 失效日期 */
-        whSkuInventoryCommand.setExpDate(checkingLineCommand.getExpDate());
+        whSkuInventoryCommand.setExpDate(whSkuInventory.getExpDate());
         /** 原产地 */
-        whSkuInventoryCommand.setCountryOfOrigin(checkingLineCommand.getCountryOfOrigin());
+        whSkuInventoryCommand.setCountryOfOrigin(whSkuInventory.getCountryOfOrigin());
         /** 库存属性1 */
-        whSkuInventoryCommand.setInvAttr1(checkingLineCommand.getInvAttr1());
+        whSkuInventoryCommand.setInvAttr1(whSkuInventory.getInvAttr1());
         /** 库存属性2 */
-        whSkuInventoryCommand.setInvAttr2(checkingLineCommand.getInvAttr2());
+        whSkuInventoryCommand.setInvAttr2(whSkuInventory.getInvAttr2());
         /** 库存属性3 */
-        whSkuInventoryCommand.setInvAttr3(checkingLineCommand.getInvAttr3());
+        whSkuInventoryCommand.setInvAttr3(whSkuInventory.getInvAttr3());
         /** 库存属性4 */
-        whSkuInventoryCommand.setInvAttr4(checkingLineCommand.getInvAttr4());
+        whSkuInventoryCommand.setInvAttr4(whSkuInventory.getInvAttr4());
         /** 库存属性5 */
-        whSkuInventoryCommand.setInvAttr5(checkingLineCommand.getInvAttr5());
+        whSkuInventoryCommand.setInvAttr5(whSkuInventory.getInvAttr5());
         /** 内部对接码 */
         try {
             WhSkuInventory inv = new WhSkuInventory();
@@ -201,6 +202,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         /** 最后操作时间 */
         whSkuInventoryCommand.setLastModifyTime(new Date());
         whSkuInventoryManager.saveOrUpdate(whSkuInventoryCommand);
+        return whSkuInventoryCommand.getUuid();
     }
 
     @Override

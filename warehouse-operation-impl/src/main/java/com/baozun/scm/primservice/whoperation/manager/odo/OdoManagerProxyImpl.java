@@ -353,14 +353,14 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     transportMgmt.setPlanDeliverGoodsTime(DateUtils.parseDate(transportMgmt.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
                 }
             } catch (Exception ex) {
-                log.error(ex + "");
+                log.error("", ex);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
             odoId = this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, invoice, invoiceLineList, ouId, userId);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
-            log.error(ex + "");
+            log.error("", ex);
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
         return odoId;

@@ -91,6 +91,8 @@ public class OdoCommand extends BaseCommand {
     private String distributionCode;
     /** 是否允许合并 1：允许 0：不允许 */
     private java.lang.Boolean isAllowMerge;
+    /** 是否货票分离 0:否 1:是 */
+    private Boolean isFreightInvoiceSunder;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -601,5 +603,13 @@ public class OdoCommand extends BaseCommand {
 
     public void setDistributionCode(String distributionCode) {
         this.distributionCode = distributionCode;
+    }
+
+    public Boolean getIsFreightInvoiceSunder() {
+        return isFreightInvoiceSunder;
+    }
+
+    public void setIsFreightInvoiceSunder(Boolean isFreightInvoiceSunder) {
+        this.isFreightInvoiceSunder = isFreightInvoiceSunder;
     }
 }

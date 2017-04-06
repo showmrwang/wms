@@ -81,6 +81,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.is_check_returned_purchase_inv_attr as isCheckReturnedPurchaseInvAttr,
 	        	s.is_check_returned_purchase_inv_status as isCheckReturnedPurchaseInvStatus,
 	        	s.returned_purchase_store as returnedPurchaseStore,
+	        	s.make_out_an_invoice_company as makeOutAnInvoiceCompany,
+	        	s.invoice_export_templet as invoiceExportTemplet,
+	        	s.make_out_an_invoice_group as makeOutAnInvoiceGroup,
 	        	s.lifecycle as lifecycle,
 	        	syst.dic_label as invoiceTypeName,
 	        	sysl.dic_label as paymentTermName,
@@ -226,7 +229,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	is_returned_purchase_original_inv_attr = #{isReturnedPurchaseOriginalInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        is_check_returned_purchase_inv_attr = #{isCheckReturnedPurchaseInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        is_check_returned_purchase_inv_status = #{isCheckReturnedPurchaseInvStatus,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        returned_purchase_store = #{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} 
+			        returned_purchase_store = #{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        make_out_an_invoice_company = #{makeOutAnInvoiceCompany,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        invoice_export_templet = #{invoiceExportTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        make_out_an_invoice_group = #{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        WHERE 
 			        id = #{id} 
 			        
@@ -280,7 +286,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_returned_purchase_original_inv_attr as isReturnedPurchaseOriginalInvAttr,
 	        	is_check_returned_purchase_inv_attr as isCheckReturnedPurchaseInvAttr,
 	        	is_check_returned_purchase_inv_status as isCheckReturnedPurchaseInvStatus,
-	        	returned_purchase_store as returnedPurchaseStore
+	        	returned_purchase_store as returnedPurchaseStore,
+	        	make_out_an_invoice_company as makeOutAnInvoiceCompany,
+	        	invoice_export_templet as invoiceExportTemplet,
+	        	make_out_an_invoice_group as makeOutAnInvoiceGroup
 	    ]]>
 	</sql>
 	<sql id="storeDynamicWhereExpand">

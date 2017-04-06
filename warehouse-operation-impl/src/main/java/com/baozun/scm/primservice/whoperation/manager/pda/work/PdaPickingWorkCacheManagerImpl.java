@@ -1,10 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineC
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -745,7 +742,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
               ArrayDeque<Long> cacheInsideContainerIds = null;
               if (null != cacheContainerCmd) {
-//                  cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
                   if(null == cacheContainerCmd.getTipOuterInsideContainerIds() ||  cacheContainerCmd.getTipOuterInsideContainerIds().size() == 0){
                       cacheInsideContainerIds = new ArrayDeque<Long>();
                   }else{
@@ -803,6 +799,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               if(null == cacheOuterContainerIds){
                   cacheOuterContainerIds = new ArrayDeque<Long>();
               }
+              cacheOuterContainerIds.add(outerContainerId);
 //              if (null != cacheOuterContainerIds && !cacheOuterContainerIds.isEmpty()) {
 //                  Long value = cacheOuterContainerIds.peekFirst();// 队列的第一个
 //                  if (null == value) value = -1L;

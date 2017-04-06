@@ -1,8 +1,6 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
 import java.util.ArrayDeque;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
@@ -13,16 +11,16 @@ public class OperationLineCacheCommand extends BaseCommand{
      * 
      */
     private static final long serialVersionUID = -8243021325918156706L;
-    /**内部容器短拣作业明细id集合*/
-    private Map<Long,Set<Long>> insideShortPikcingOperIds;
-    /**内部容器非短拣作业明细id集合*/
-    private Map<Long,Set<Long>> insidePickingOperIds;
-    /**库位上散装sku对应短拣作业明细id集合*/
-    private Map<Long,Set<Long>> locShortPikcingOperIds;
-    /**库位上散装sku对应非短拣作业明细id集合*/
-    private Map<Long,Set<Long>> locPickingOperIds;
-    /**作业明细id对应的拣货数量*/
-    private List<Map<Long,Map<Long,Double>>> operLineIdToQtyList;
+//    /**内部容器短拣作业明细id集合*/
+//    private Map<Long,Set<Long>> insideShortPikcingOperIds;
+//    /**内部容器非短拣作业明细id集合*/
+//    private Map<Long,Set<Long>> insidePickingOperIds;
+//    /**库位上散装sku对应短拣作业明细id集合*/
+//    private Map<Long,Set<Long>> locShortPikcingOperIds;
+//    /**库位上散装sku对应非短拣作业明细id集合*/
+//    private Map<Long,Set<Long>> locPickingOperIds;
+//    /**作业明细id对应的拣货数量*/
+//    private List<Map<Long,Map<Long,Double>>> operLineIdToQtyList;
 //    /**出库箱列表*/
 //    private Set<String> outBoundxBoxs;
     /** 周转箱列表*/
@@ -63,45 +61,45 @@ public class OperationLineCacheCommand extends BaseCommand{
     public void setTipOutBonxBoxIds(ArrayDeque<String> tipOutBonxBoxIds) {
         this.tipOutBonxBoxIds = tipOutBonxBoxIds;
     }
-    public Map<Long, Set<Long>> getInsideShortPikcingOperIds() {
-        return insideShortPikcingOperIds;
-    }
-
-    public void setInsideShortPikcingOperIds(Map<Long, Set<Long>> insideShortPikcingOperIds) {
-        this.insideShortPikcingOperIds = insideShortPikcingOperIds;
-    }
-
-    public Map<Long, Set<Long>> getInsidePickingOperIds() {
-        return insidePickingOperIds;
-    }
-
-    public void setInsidePickingOperIds(Map<Long, Set<Long>> insidePickingOperIds) {
-        this.insidePickingOperIds = insidePickingOperIds;
-    }
-
-    public Map<Long, Set<Long>> getLocShortPikcingOperIds() {
-        return locShortPikcingOperIds;
-    }
-
-    public void setLocShortPikcingOperIds(Map<Long, Set<Long>> locShortPikcingOperIds) {
-        this.locShortPikcingOperIds = locShortPikcingOperIds;
-    }
-
-    public Map<Long, Set<Long>> getLocPickingOperIds() {
-        return locPickingOperIds;
-    }
-
-    public void setLocPickingOperIds(Map<Long, Set<Long>> locPickingOperIds) {
-        this.locPickingOperIds = locPickingOperIds;
-    }
-
-    public List<Map<Long, Map<Long, Double>>> getOperLineIdToQtyList() {
-        return operLineIdToQtyList;
-    }
-
-    public void setOperLineIdToQtyList(List<Map<Long, Map<Long, Double>>> operLineIdToQtyList) {
-        this.operLineIdToQtyList = operLineIdToQtyList;
-    }
+//    public Map<Long, Set<Long>> getInsideShortPikcingOperIds() {
+//        return insideShortPikcingOperIds;
+//    }
+//
+//    public void setInsideShortPikcingOperIds(Map<Long, Set<Long>> insideShortPikcingOperIds) {
+//        this.insideShortPikcingOperIds = insideShortPikcingOperIds;
+//    }
+//
+//    public Map<Long, Set<Long>> getInsidePickingOperIds() {
+//        return insidePickingOperIds;
+//    }
+//
+//    public void setInsidePickingOperIds(Map<Long, Set<Long>> insidePickingOperIds) {
+//        this.insidePickingOperIds = insidePickingOperIds;
+//    }
+//
+//    public Map<Long, Set<Long>> getLocShortPikcingOperIds() {
+//        return locShortPikcingOperIds;
+//    }
+//
+//    public void setLocShortPikcingOperIds(Map<Long, Set<Long>> locShortPikcingOperIds) {
+//        this.locShortPikcingOperIds = locShortPikcingOperIds;
+//    }
+//
+//    public Map<Long, Set<Long>> getLocPickingOperIds() {
+//        return locPickingOperIds;
+//    }
+//
+//    public void setLocPickingOperIds(Map<Long, Set<Long>> locPickingOperIds) {
+//        this.locPickingOperIds = locPickingOperIds;
+//    }
+//
+//    public List<Map<Long, Map<Long, Double>>> getOperLineIdToQtyList() {
+//        return operLineIdToQtyList;
+//    }
+//
+//    public void setOperLineIdToQtyList(List<Map<Long, Map<Long, Double>>> operLineIdToQtyList) {
+//        this.operLineIdToQtyList = operLineIdToQtyList;
+//    }
 
     
     

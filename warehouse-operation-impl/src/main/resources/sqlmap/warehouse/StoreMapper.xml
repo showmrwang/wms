@@ -55,7 +55,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_returned_purchase_original_inv_attr as isReturnedPurchaseOriginalInvAttr,
 	        	is_check_returned_purchase_inv_attr as isCheckReturnedPurchaseInvAttr,
 	        	is_check_returned_purchase_inv_status as isCheckReturnedPurchaseInvStatus,
-	        	returned_purchase_store as returnedPurchaseStore
+	        	returned_purchase_store as returnedPurchaseStore,
+	        	make_out_an_invoice_company as makeOutAnInvoiceCompany,
+	        	invoice_export_templet as invoiceExportTemplet,
+	        	make_out_an_invoice_group as makeOutAnInvoiceGroup
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -107,7 +110,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_returned_purchase_original_inv_attr ,
 	        	is_check_returned_purchase_inv_attr ,
 	        	is_check_returned_purchase_inv_status ,
-	        	returned_purchase_store 
+	        	returned_purchase_store ,
+	        	make_out_an_invoice_company ,
+	        	invoice_export_templet ,
+	        	make_out_an_invoice_group 
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -153,7 +159,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    #{isReturnedPurchaseOriginalInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{isCheckReturnedPurchaseInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{isCheckReturnedPurchaseInvStatus,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        	#{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{makeOutAnInvoiceCompany,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{invoiceExportTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        )
 	    ]]>
 
@@ -196,7 +205,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_returned_purchase_original_inv_attr = #{isReturnedPurchaseOriginalInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        is_check_returned_purchase_inv_attr = #{isCheckReturnedPurchaseInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        is_check_returned_purchase_inv_status = #{isCheckReturnedPurchaseInvStatus,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        returned_purchase_store = #{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        returned_purchase_store = #{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        make_out_an_invoice_company = #{makeOutAnInvoiceCompany,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        invoice_export_templet = #{invoiceExportTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        make_out_an_invoice_group = #{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>

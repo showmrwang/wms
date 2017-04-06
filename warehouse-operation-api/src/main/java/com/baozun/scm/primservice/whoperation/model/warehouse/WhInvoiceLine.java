@@ -12,21 +12,22 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.odo;
+package com.baozun.scm.primservice.whoperation.model.warehouse;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
- * 
+ * t_wh_invoice_line
  * @author larkark
  *
  */
-public class WhOdoInvoiceLine extends BaseModel {
+public class WhInvoiceLine extends BaseModel {
 
-    private static final long serialVersionUID = -5565968440109885293L;
-
+    private static final long serialVersionUID = 1161402855531979536L;
+    
+    // columns START
     /** 发票头ID */
-    private Long odoInvoiceId;
+    private Long whInvoiceId;
     /** 行号 */
     private String linenum;
     /** 数量 */
@@ -39,73 +40,68 @@ public class WhOdoInvoiceLine extends BaseModel {
     private String item;
     /** 仓库组织ID */
     private Long ouId;
+    // columns END
 
-    /** 当前月份 用于归档 */
-    private String sysDate;
+    public WhInvoiceLine() {}
 
-    public Long getOdoInvoiceId() {
-        return odoInvoiceId;
+    public WhInvoiceLine(Long id) {
+        this.id = id;
     }
 
-    public void setOdoInvoiceId(Long odoInvoiceId) {
-        this.odoInvoiceId = odoInvoiceId;
+    public void setWhInvoiceId(Long whInvoiceId) {
+        this.whInvoiceId = whInvoiceId;
     }
 
-    public String getLinenum() {
-        return linenum;
+    public Long getWhInvoiceId() {
+        return this.whInvoiceId;
     }
 
     public void setLinenum(String linenum) {
         this.linenum = linenum;
     }
 
-    public Integer getQty() {
-        return qty;
+    public String getLinenum() {
+        return this.linenum;
     }
 
     public void setQty(Integer qty) {
         this.qty = qty;
     }
 
-    public Double getUnitPrice() {
-        return unitPrice;
+    public Integer getQty() {
+        return this.qty;
     }
 
     public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
-    public Double getAmt() {
-        return amt;
+    public Double getUnitPrice() {
+        return this.unitPrice;
     }
 
     public void setAmt(Double amt) {
         this.amt = amt;
     }
 
-    public String getItem() {
-        return item;
+    public Double getAmt() {
+        return this.amt;
     }
 
     public void setItem(String item) {
         this.item = item;
     }
 
-    public Long getOuId() {
-        return ouId;
+    public String getItem() {
+        return this.item;
     }
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
 
-    public String getSysDate() {
-        return sysDate;
+    public Long getOuId() {
+        return this.ouId;
     }
-
-    public void setSysDate(String sysDate) {
-        this.sysDate = sysDate;
-    }
-
-
 }
+
