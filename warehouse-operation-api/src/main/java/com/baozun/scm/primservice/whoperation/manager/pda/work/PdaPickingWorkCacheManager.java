@@ -95,7 +95,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @param ouId
      * @return
      */
-    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operatorId,Long locationId,Long ouId);
+    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operatorId,Long locationId,Long ouId,String operationWay);
     
     /***
      * pda拣货提示托盘
@@ -122,7 +122,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param operatorId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipSku(Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId,Map<Long, Map<String, Set<String>>> locskuAttrIdsSnDefect,Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect);
+      public CheckScanResultCommand pdaPickingTipSku(String operationWay,Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId,Map<Long, Map<String, Set<String>>> locskuAttrIdsSnDefect,Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect);
       
       /***
        *  @tangming
@@ -140,7 +140,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param skuCmd
        * @return
        */
-      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Long ouId,Map<Long, Set<Long>> locSkuIds, Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrIds,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> icSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
+      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(String operationWay,Long ouId,Map<Long, Set<Long>> locSkuIds, Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrIds,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> icSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
     
       /***
        * 有小车，而且有出库箱的时候，提示出库箱

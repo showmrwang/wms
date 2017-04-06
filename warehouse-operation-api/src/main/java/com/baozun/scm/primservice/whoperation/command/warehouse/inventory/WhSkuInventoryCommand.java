@@ -193,6 +193,16 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 残次来源 */
     private String snSource;
     // --------------------------------------------------------------------------------------------
+    
+    
+    
+    //-------------------------------------------------
+    /** 补货单号 */
+    private java.lang.String replenishmentCode;
+    
+    /** 补货阶段使用的规则id */
+    private java.lang.Long replenishmentRuleId;
+    //--------------------------------------------------
 
     /** 是否允许货箱收货完成 */
     private Boolean isContainerRcvdFinished;
@@ -1082,4 +1092,22 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.outboundboxCode = outboundboxCode;
     }
 
+    public java.lang.String getReplenishmentCode() {
+        return replenishmentCode;
+    }
+
+    public void setReplenishmentCode(java.lang.String replenishmentCode) {
+        this.replenishmentCode = replenishmentCode;
+    }
+
+    public java.lang.Long getReplenishmentRuleId() {
+        return replenishmentRuleId;
+    }
+
+    public void setReplenishmentRuleId(java.lang.Long replenishmentRuleId) {
+        this.replenishmentRuleId = replenishmentRuleId;
+    }
+
+    
+    
 }

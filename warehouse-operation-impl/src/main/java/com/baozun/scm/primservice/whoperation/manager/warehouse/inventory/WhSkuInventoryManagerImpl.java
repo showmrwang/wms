@@ -6576,7 +6576,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                        }
                        //
                    }
-                   List<WhSkuInventoryAllocatedCommand> allocatedList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(ouId, operationId,replenishmentCode);
+                   List<WhSkuInventoryAllocatedCommand> allocatedList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(ouId, operationId);
                    //删除库位库存表中的容器库存
                    for(WhSkuInventoryAllocatedCommand allocatedCmd:allocatedList) {
                        Long outerId = allocatedCmd.getOuterContainerId();
@@ -6693,9 +6693,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if(null== operationExecLineList || operationExecLineList.size()==0) {
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
         }
-        String replenishmentCode = operationExecLineList.get(0).getReplenishmentCode();
         //到已分配库存表中查询
-        List<WhSkuInventoryAllocatedCommand> skuInvCmdList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(ouId, operationId,replenishmentCode);
+        List<WhSkuInventoryAllocatedCommand> skuInvCmdList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(ouId, operationId);
         if(null == skuInvCmdList || skuInvCmdList.size() == 0){
                 throw new BusinessException(ErrorCodes.ALLOCATE_INVENTORY_NO_EXIST);  //分配库存不存在
         }
@@ -6703,7 +6702,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if(null == workCmd) {
             throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
         }
-      //先添加后删除,改变库存表中的库存记录
+        //先添加后删除,改变库存表中的库存记录
         for(WhSkuInventoryAllocatedCommand allocated:skuInvCmdList){
             String suuid = allocated.getUuid();
             String allocatedSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(allocated);
@@ -6754,7 +6753,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         whSkuInventoryDao.insert(skuInv);
                         insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
                         // 记录入库库存日志
-                        insertSkuInventoryLog(allocated.getId(), allocated.getQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
+                        insertSkuInventoryLog(skuInv.getId(), allocated.getQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                         //修改库位库存表中的在库库存
                         String uuid1 = "";
                         if(skuInvCmd.getOnHandQty() > allocated.getQty()) {
@@ -6928,7 +6927,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     oldQty = 0.0;
                 }
                 allocated.setLastModifyTime(new Date());
-                whSkuInventoryAllocatedDao.saveOrUpdate(allocated);
+                whSkuInventoryAllocatedDao.insert(allocated);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, allocated, ouId, userId, null, null);
                 // 记录入库库存日志(这个实现的有问题)
                 insertSkuInventoryLog(allocated.getId(), allocated.getQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
@@ -6985,10 +6984,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     oldQty = 0.0;
                 }
                 allocated.setLastModifyTime(new Date());
-                whSkuInventoryAllocatedDao.saveOrUpdate(allocated);
+                whSkuInventoryAllocatedDao.insert(allocated);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, allocated, ouId, userId, null, null);
                 // 记录入库库存日志(这个实现的有问题)
                 insertSkuInventoryLog(allocated.getId(), allocated.getQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
+                //删除原来的已分配库位库存
+                whSkuInventoryAllocatedDao.deleteExt(skuInvCmd.getId(), ouId);
             }
         }
     }

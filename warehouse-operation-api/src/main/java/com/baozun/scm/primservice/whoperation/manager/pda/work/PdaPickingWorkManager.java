@@ -82,7 +82,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param command
      * @return
      */
-    public PickingScanResultCommand  tipSku(PickingScanResultCommand  command);
+    public PickingScanResultCommand  tipSku(PickingScanResultCommand  command,String operationWay);
     
     /***pda扫描sku
      * @author tangminmg
@@ -96,7 +96,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param command
      * @return
      */
-    public PickingScanResultCommand judgeSkuAttrIdsIsUnique(PickingScanResultCommand  command);
+    public PickingScanResultCommand judgeSkuAttrIdsIsUnique(PickingScanResultCommand  command,String operationWay);
     
     /***
      * 出库箱或者周转箱/满箱处理

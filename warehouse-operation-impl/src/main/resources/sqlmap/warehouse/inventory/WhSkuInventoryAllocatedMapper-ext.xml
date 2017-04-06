@@ -651,7 +651,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.uuid as uuid,
 	          inv.ou_id as ouId,
 	          inv.last_modify_time as lastModifyTime,
-	          inv.replenishment_rule_id as replenishmentRuleId
+	          inv.replenishment_rule_id as replenishmentRuleId,
 	          sn.id AS snId,
 	          sn.sn AS snSn,
 	          sn.occupation_code AS snOccupationCode,
@@ -665,14 +665,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          sn.ou_id AS snOuId,
 	          sn.sys_uuid AS snSysUuid
 		      from 
-					t_wh_sku_inventory_allocated inv, t_wh_operation_line operLine, t_wh_odo odo ,t_wh_sku_inventory_sn sn
+					t_wh_operation_line operLine, 
+					t_wh_sku_inventory_allocated inv
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid 
 			  where
-					operLine.odo_line_id = inv.occupation_line_id
-				and operLine.replenishment_code = inv.replenishment_code
-				and odo.id = operLine.odo_id
-				and odo.odo_code = inv.occupation_code
-				and inv.uuid = sn.uuid 
-				and inv.occupation_code IS NOT NULL
+				    operLine.replenishment_code = inv.replenishment_code
+				and inv.replenishment_code IS NOT NULL
 				and inv.ou_id = #{ouId}
 				and operLine.operation_id = #{operationId}
 	</select>
