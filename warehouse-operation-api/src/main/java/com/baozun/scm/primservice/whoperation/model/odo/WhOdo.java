@@ -104,7 +104,7 @@ public class WhOdo extends BaseModel {
     /** 数据来源 */
     private String dataSource;
     /** 是否货票分离 0:否 1:是 */
-    private Boolean isFreightInvoiceSunder = false;
+    private Boolean isFreightInvoiceSunder;
 
     /** 当前月份 用于归档 */
     private String sysDate;

@@ -326,6 +326,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         try {
             WhOdo odo = new WhOdo();
             BeanUtils.copyProperties(odoCommand, odo);
+            // 货票分离
+            if (odo.getIsFreightInvoiceSunder() == null) {
+                odo.setIsFreightInvoiceSunder(Boolean.FALSE);
+            }
             this.whOdoDao.insert(odo);
             odoId = odo.getId();
             // 头增值服务
@@ -1159,6 +1163,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList) {
+        // 验证所有出库单上店铺所配置的发票公司和发票模板一致
+        
         int batchCount = 500;
         int totalCount = odoIdList.size();
         int ceil = (int) Math.ceil((double) totalCount / batchCount);
