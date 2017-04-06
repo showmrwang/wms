@@ -375,9 +375,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             WhOdoTransportMgmt trans = new WhOdoTransportMgmt();
             BeanUtils.copyProperties(transCommand, trans);
             trans.setOdoId(odo.getId());
-            // TODO 下面两个值数据库不能为空, 需要赋值
-            // trans.setPlanDeliverGoodsTime(new Date());
-            // trans.setOutboundTargetType("2");
             this.whOdoTransportMgmtDao.insert(trans);
 
             if (invoice != null) {
