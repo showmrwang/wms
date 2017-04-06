@@ -182,6 +182,12 @@ public class Store extends BaseModel {
 	private Boolean isCheckReturnedPurchaseInvStatus = false;
 	/** 消费者退货入收货店铺 */
 	private String returnedPurchaseStore;
+	/** 开票公司 */
+    private String makeOutAnInvoiceCompany;
+    /** 发票导出模板 */
+    private String invoiceExportTemplet;
+    /** 开票分组 */
+    private String makeOutAnInvoiceGroup;
     
     /*
      * 用于全局表最后修改时间统一
@@ -548,6 +554,30 @@ public class Store extends BaseModel {
 	public void setReturnedPurchaseStore(String returnedPurchaseStore) {
 		this.returnedPurchaseStore = returnedPurchaseStore;
 	}
+
+    public String getMakeOutAnInvoiceCompany() {
+        return makeOutAnInvoiceCompany;
+    }
+
+    public void setMakeOutAnInvoiceCompany(String makeOutAnInvoiceCompany) {
+        this.makeOutAnInvoiceCompany = makeOutAnInvoiceCompany;
+    }
+
+    public String getInvoiceExportTemplet() {
+        return invoiceExportTemplet;
+    }
+
+    public void setInvoiceExportTemplet(String invoiceExportTemplet) {
+        this.invoiceExportTemplet = invoiceExportTemplet;
+    }
+
+    public String getMakeOutAnInvoiceGroup() {
+        return makeOutAnInvoiceGroup;
+    }
+
+    public void setMakeOutAnInvoiceGroup(String makeOutAnInvoiceGroup) {
+        this.makeOutAnInvoiceGroup = makeOutAnInvoiceGroup;
+    }
     
 
 }
