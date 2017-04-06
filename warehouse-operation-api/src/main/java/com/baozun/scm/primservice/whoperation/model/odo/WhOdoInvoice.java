@@ -40,9 +40,9 @@ public class WhOdoInvoice extends BaseModel {
     /** 数量 */
     private Integer qty;
     /** 单价 */
-    private Long unitPrice;
+    private Double unitPrice;
     /** 总金额 */
-    private Long amt;
+    private Double amt;
     /** 发票备注 */
     private String memo;
     /** 收款人 */
@@ -115,19 +115,19 @@ public class WhOdoInvoice extends BaseModel {
         this.qty = qty;
     }
 
-    public Long getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(Long unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
-    public Long getAmt() {
+    public Double getAmt() {
         return amt;
     }
 
-    public void setAmt(Long amt) {
+    public void setAmt(Double amt) {
         this.amt = amt;
     }
 

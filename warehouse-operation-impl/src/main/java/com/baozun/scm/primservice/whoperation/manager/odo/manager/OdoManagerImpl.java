@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,6 +54,9 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceAddressDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProviderDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -74,6 +78,9 @@ import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("odoManager")
@@ -114,7 +121,13 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhDistributionPatternRuleDao whDistributionPatternRuleDao;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
-
+    @Autowired
+    private WhInvoiceDao whInvoiceDao;
+    @Autowired
+    private WhInvoiceAddressDao whInvoiceAddressDao;
+    @Autowired
+    private WhInvoiceLineDao whInvoiceLineDao;
+    
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -355,23 +368,70 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
             if (odoAddress != null) {
+                odoAddress.setOdoId(odoId);
                 this.whOdoAddressDao.insert(odoAddress);
             }
 
             WhOdoTransportMgmt trans = new WhOdoTransportMgmt();
             BeanUtils.copyProperties(transCommand, trans);
             trans.setOdoId(odo.getId());
+            // TODO 下面两个值数据库不能为空, 需要赋值
+            // trans.setPlanDeliverGoodsTime(new Date());
+            // trans.setOutboundTargetType("2");
             this.whOdoTransportMgmtDao.insert(trans);
 
             if (invoice != null) {
                 invoice.setOdoId(odoId);
                 invoice.setOuId(ouId);
                 this.whOdoInvoiceDao.insert(invoice);
+                
+                Store store = this.getStoreByRedis(odo.getStoreId());
+                // 复制odo发票信息到发票信息表中
+                WhInvoice whInvoice = new WhInvoice();
+                whInvoice.setOdoCode(odo.getOdoCode());
+                whInvoice.setStoreCode(store.getStoreCode());
+                whInvoice.setInvoiceCode(invoice.getInvoiceCode());
+                whInvoice.setInvoiceDate(invoice.getInvoiceDate());
+                whInvoice.setInvoiceNo(invoice.getInvoiceNo());
+                whInvoice.setPayer(invoice.getPayer());
+                whInvoice.setItem(invoice.getItem());
+                whInvoice.setQty(invoice.getQty());
+                whInvoice.setUnitPrice(invoice.getUnitPrice());
+                whInvoice.setAmt(invoice.getAmt());
+                whInvoice.setMemo(invoice.getMemo());
+                whInvoice.setPayee(invoice.getPayee());
+                whInvoice.setDrawer(invoice.getDrawer());
+                whInvoice.setExportCount(0);
+                whInvoice.setCompany(invoice.getCompany());
+                whInvoice.setIsFreightInvoiceSunder(Boolean.FALSE);
+                whInvoice.setOuId(invoice.getOuId());
+                whInvoice.setCreateTime(new Date());
+                whInvoice.setLastModifyTime(new Date());
+                whInvoice.setOperatorId(userId);
+                whInvoiceDao.insert(whInvoice);
+                
+                Long whInvoiceId = whInvoice.getId();
+                if (odoAddress == null) {
+                    throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                }
+                // 发票配送地址
+                WhInvoiceAddress whInvoiceAddress = new WhInvoiceAddress();
+                BeanUtils.copyProperties(odoAddress, whInvoiceAddress, "id");
+                whInvoiceAddress.setWhInvoiceId(whInvoiceId);
+                whInvoiceAddress.setTransportCode(transCommand.getTransportServiceProvider());
+                whInvoiceAddressDao.insert(whInvoiceAddress);
+                
                 if (invoiceLineList != null && invoiceLineList.size() > 0) {
                     for (WhOdoInvoiceLine invoiceLine : invoiceLineList) {
                         invoiceLine.setOdoInvoiceId(invoice.getId());
                         invoiceLine.setOuId(ouId);
                         this.whOdoInvoiceLineDao.insert(invoiceLine);
+                        
+                        // 发票明细
+                        WhInvoiceLine whInvoiceLine = new WhInvoiceLine();
+                        BeanUtils.copyProperties(invoiceLine, whInvoiceLine, "id");
+                        whInvoiceLine.setWhInvoiceId(whInvoiceId);
+                        whInvoiceLineDao.insert(whInvoiceLine);
                     }
                 }
             }
@@ -384,7 +444,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
         } catch (Exception e) {
-            log.error(e + "");
+            log.error("", e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
         return odoId;

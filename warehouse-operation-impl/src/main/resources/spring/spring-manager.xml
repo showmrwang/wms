@@ -69,6 +69,9 @@
                     <value>com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine</value>
 				</list>
 			</property>
 			
