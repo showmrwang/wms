@@ -4822,7 +4822,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     Set<Long> locIds = new HashSet<Long>();
                     if (null != locSkuAttrIds) {
                         locSkuAttrIds.remove(locationId);
-                        //locIds = locSkuAttrIds.keySet();
+                        for (Long lId : locSkuAttrIds.keySet()) {
+                            if (null != lId) {
+                                locIds.add(lId);
+                            }
+                        }
                     }
                     insideContainerLocSkuAttrIds.put(insideContainerCmd.getId(), locSkuAttrIds);
                     isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
