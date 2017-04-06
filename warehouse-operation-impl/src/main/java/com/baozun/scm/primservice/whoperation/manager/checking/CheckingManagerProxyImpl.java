@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCom
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -52,6 +54,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxMan
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
@@ -85,6 +88,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     private WhOutboundboxLineSnManager whOutboundboxLineSnManager;
     @Autowired
     private WhSkuInventoryManager whSkuInventoryManager;
+    @Autowired
+    private WhSkuInventorySnManager whSkuInventorySnManager;
     @Autowired
     private OdoManager odoManager;
     @Autowired
@@ -172,10 +177,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     public Boolean createOutboundbox(WhCheckingResultCommand whCheckingResultCommand) {
         Boolean isSuccess = true;
         for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
+            List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
             // 小车货格库存，小车出库箱库存，播种墙货格库存，播种墙出库箱库存，周转箱库存            
             if(null != whCheckingCommand.getFacilityId() || null != whCheckingCommand.getContainerId() || null != whCheckingCommand.getOuterContainerId() || null != whCheckingCommand.getContainerLatticeNo()){
-                List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
-                this.saveWhOutboundboxCommand(whCheckingCommand);
                 for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
                     // 获取查询条件                    
                     WhSkuInventory skuInventory = new WhSkuInventory();
@@ -188,17 +192,25 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     }
                     skuInventory.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
                     skuInventory.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
+                    skuInventory.setUuid(whCheckingLineCommand.getUuid());
                     List<WhSkuInventory> whSkuInventoryLst = whSkuInventoryManager.findWhSkuInventoryByPramas(skuInventory);
-                    // 遍历库存统计信息        
-                    for(WhSkuInventory whSkuInventory : whSkuInventoryLst){
-                        // 生成出库箱库存 
-                        checkingManager.createOutboundboxInventory(whCheckingCommand, whCheckingLineCommand, whSkuInventory);    
-                    }
+                    // 生成出库箱库存 
+                    String uuid = checkingManager.createOutboundboxInventory(whCheckingCommand, whSkuInventoryLst);
+                    whCheckingLineCommand.setUuid(uuid);
                     // 删除原有库存
                     for(WhSkuInventory whSkuInventory : whSkuInventoryLst){
                         whSkuInventoryManager.deleteSkuInventory( whSkuInventory.getId(), whSkuInventory.getOuId());
                     }
-                    this.saveWhOutboundboxLineCommand(whCheckingLineCommand);
+                }
+            }
+            this.saveWhOutboundboxCommand(whCheckingCommand);
+            for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
+                this.saveWhOutboundboxLineCommand(whCheckingLineCommand);
+                List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = whSkuInventorySnManager.findWhSkuInventoryByUuid(whCheckingLineCommand.getOuId(), whCheckingLineCommand.getUuid());
+                for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
+                    whSkuInventorySnCommand.setUuid(whSkuInventorySnCommand.getUuid());
+                    whSkuInventorySnManager.saveOrUpdate(whSkuInventorySnCommand);
+                    this.saveWhOutboundboxLineSnCommand(whSkuInventorySnCommand, whCheckingLineCommand);
                 }
             }
         }
@@ -327,34 +339,35 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * @param whCheckingResultCommand
      */
     public void saveWhOutboundboxLineCommand(WhCheckingLineCommand whCheckingLineCommand) {
-        
+        Calendar now = Calendar.getInstance();
+        int month = now.get(Calendar.MONTH) + 1;
         WhOutboundboxLineCommand whOutboundboxLineCommand = new WhOutboundboxLineCommand();
-//        whOutboundboxLineCommand.setWhOutboundboxId(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setSkuCode(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setSkuExtCode(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setSkuBarCode(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setSkuName(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setQty(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setCustomerCode(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setCustomerName(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setStoreCode(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setStoreName(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setInvStatus(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setInvType(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setBatchNumber(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setMfgDate(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setExpDate(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setCountryOfOrigin(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setInvAttr1(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setInvAttr2(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setInvAttr3(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setInvAttr4(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setInvAttr5(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setUuid(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setOuId(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setOdoId(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setOdoLineId(whCheckingLineCommand);
-//        whOutboundboxLineCommand.setSysDate(whCheckingLineCommand);
+        whOutboundboxLineCommand.setWhOutboundboxId(null);
+        whOutboundboxLineCommand.setSkuCode(whCheckingLineCommand.getSkuCode());
+        whOutboundboxLineCommand.setSkuExtCode(whCheckingLineCommand.getSkuExtCode());
+        whOutboundboxLineCommand.setSkuBarCode(whCheckingLineCommand.getSkuBarCode());
+        whOutboundboxLineCommand.setSkuName(whCheckingLineCommand.getSkuName());
+        whOutboundboxLineCommand.setQty(whCheckingLineCommand.getQty());
+        whOutboundboxLineCommand.setCustomerCode(whCheckingLineCommand.getCustomerCode());
+        whOutboundboxLineCommand.setCustomerName(whCheckingLineCommand.getCustomerName());
+        whOutboundboxLineCommand.setStoreCode(whCheckingLineCommand.getStoreCode());
+        whOutboundboxLineCommand.setStoreName(whCheckingLineCommand.getStoreName());
+        whOutboundboxLineCommand.setInvStatus(whCheckingLineCommand.getInvStatus());
+        whOutboundboxLineCommand.setInvType(whCheckingLineCommand.getInvType());
+        whOutboundboxLineCommand.setBatchNumber(whCheckingLineCommand.getBatchNumber());
+        whOutboundboxLineCommand.setMfgDate(whCheckingLineCommand.getMfgDate());
+        whOutboundboxLineCommand.setExpDate(whCheckingLineCommand.getExpDate());
+        whOutboundboxLineCommand.setCountryOfOrigin(whCheckingLineCommand.getCountryOfOrigin());
+        whOutboundboxLineCommand.setInvAttr1(whCheckingLineCommand.getInvAttr1());
+        whOutboundboxLineCommand.setInvAttr2(whCheckingLineCommand.getInvAttr2());
+        whOutboundboxLineCommand.setInvAttr3(whCheckingLineCommand.getInvAttr3());
+        whOutboundboxLineCommand.setInvAttr4(whCheckingLineCommand.getInvAttr4());
+        whOutboundboxLineCommand.setInvAttr5(whCheckingLineCommand.getInvAttr5());
+        whOutboundboxLineCommand.setUuid(whCheckingLineCommand.getUuid());
+        whOutboundboxLineCommand.setOuId(whCheckingLineCommand.getOuId());
+        whOutboundboxLineCommand.setOdoId(whCheckingLineCommand.getOdoId());
+        whOutboundboxLineCommand.setOdoLineId(whCheckingLineCommand.getOdoLineId());
+        whOutboundboxLineCommand.setSysDate(String.valueOf(month));
         whOutboundboxLineManager.saveOrUpdate(whOutboundboxLineCommand);
         
     }
@@ -365,24 +378,24 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * @author qiming.liu
      * @param whCheckingResultCommand
      */
-    public void saveWhOutboundboxLineSnCommand() {
-        
+    public void saveWhOutboundboxLineSnCommand(WhSkuInventorySnCommand whSkuInventorySnCommand, WhCheckingLineCommand whCheckingLineCommand) {
+        Calendar now = Calendar.getInstance();
+        int month = now.get(Calendar.MONTH) + 1;
         WhOutboundboxLineSnCommand whOutboundboxLineSnCommand = new WhOutboundboxLineSnCommand();
-//        whOutboundboxLineSnCommand.setWhOutboundboxLineId(whOutboundboxLineId);
-//        whOutboundboxLineSnCommand.setSn(sn);
-//        whOutboundboxLineSnCommand.setOccupationCode(occupationCode);
-//        whOutboundboxLineSnCommand.setReplenishmentCode(replenishmentCode);
-//        whOutboundboxLineSnCommand.setDefectWareBarcode(defectWareBarcode);
-//        whOutboundboxLineSnCommand.setDefectSource(defectSource);
-//        whOutboundboxLineSnCommand.setDefectTypeId(defectTypeId);
-//        whOutboundboxLineSnCommand.setDefectReasonsId(defectReasonsId);
-//        whOutboundboxLineSnCommand.setStatus(status);
-//        whOutboundboxLineSnCommand.setInvAttr(invAttr);
-//        whOutboundboxLineSnCommand.setUuid(uuid);
-//        whOutboundboxLineSnCommand.setOuId(ouId);
-//        whOutboundboxLineSnCommand.setSysUuid(sysUuid);
-//        whOutboundboxLineSnCommand.setSysDate(sysDate);
+        whOutboundboxLineSnCommand.setWhOutboundboxLineId(whCheckingLineCommand.getId());
+        whOutboundboxLineSnCommand.setSn(whSkuInventorySnCommand.getSn());
+        whOutboundboxLineSnCommand.setOccupationCode(whSkuInventorySnCommand.getOccupationCode());
+        whOutboundboxLineSnCommand.setReplenishmentCode(null);
+        whOutboundboxLineSnCommand.setDefectWareBarcode(whSkuInventorySnCommand.getDefectWareBarcode());
+        whOutboundboxLineSnCommand.setDefectSource(whSkuInventorySnCommand.getDefectSource());
+        whOutboundboxLineSnCommand.setDefectTypeId(whSkuInventorySnCommand.getDefectTypeId());
+        whOutboundboxLineSnCommand.setDefectReasonsId(whSkuInventorySnCommand.getDefectReasonsId());
+        whOutboundboxLineSnCommand.setStatus(whSkuInventorySnCommand.getStatus());
+        whOutboundboxLineSnCommand.setInvAttr(whSkuInventorySnCommand.getInvAttr());
+        whOutboundboxLineSnCommand.setUuid(whSkuInventorySnCommand.getUuid());
+        whOutboundboxLineSnCommand.setOuId(whSkuInventorySnCommand.getOuId());
+        whOutboundboxLineSnCommand.setSysUuid(whSkuInventorySnCommand.getSysUuid());
+        whOutboundboxLineSnCommand.setSysDate(String.valueOf(month));
         whOutboundboxLineSnManager.saveOrUpdate(whOutboundboxLineSnCommand);
-        
     }
 }
