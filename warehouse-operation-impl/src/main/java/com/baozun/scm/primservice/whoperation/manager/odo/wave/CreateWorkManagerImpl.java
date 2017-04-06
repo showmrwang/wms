@@ -824,7 +824,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 LocationCommand locationCommand = locationDao.findLocationCommandByParam(whWorkLineCommand.getFromLocationId(), whWorkLineCommand.getOuId());
                 if (null != locationCommand) {
                     Area area = areaDao.findByIdExt(locationCommand.getWorkAreaId(), locationCommand.getOuId());
-                    if (workArea == "") {
+                    if ("".equals(workArea)) {
                         workArea = area.getAreaCode();
                     } else {
                         workArea = workArea + "," + area.getAreaCode();
@@ -832,16 +832,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 }
                 // 索引自增
                 count++;
-            }
-        } else {
-            LocationCommand locationCommand = locationDao.findLocationCommandByParam(whWorkLineCommandList.get(0).getFromLocationId(), whWorkLineCommandList.get(0).getOuId());
-            if (null != locationCommand) {
-                Area area = areaDao.findByIdExt(locationCommand.getWorkAreaId(), locationCommand.getOuId());
-                if (workArea == "") {
-                    workArea = area.getAreaCode();
-                } else {
-                    workArea = workArea + "," + area.getAreaCode();
-                }
             }
         }
         // 判断工作明细是否只有唯一库位
@@ -1462,6 +1452,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(workCode, odoOutBoundBox.getOuId());
         // 获取工作明细信息列表
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByWorkId(whWorkCommand.getId(), odoOutBoundBox.getOuId());
+        if (null == whWorkLineCommandList) {
+            throw new BusinessException("工作明细列表为空");
+        }
         // 查询波次主档信息
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         // 获取工作类型
@@ -2331,13 +2324,13 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                     if (skuWhmgmt.getTypeOfGoods() != null) {
                         LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTypeOfGoods(), location.getSizeType(), ouId);
                         if (locationProductVolume != null) {
-                            if(null != skuProducts.get(sku.getId())){
-                                skuProducts.put(sku.getId(), locationProductVolume.getVolume());  
+                            if(null != skuProducts.get(whSkuInventoryAllocatedCommand.getSkuId())){
+                                skuProducts.put(whSkuInventoryAllocatedCommand.getSkuId(), locationProductVolume.getVolume());  
                             }
                             Long locationQty = Constants.DEFAULT_LONG;
                             // 库位容量
                             if(null != skuProducts.get(sku.getId())){
-                                locationQty = locationProductVolume.getVolume() - skuProducts.get(sku.getId());    
+                                locationQty = locationProductVolume.getVolume() - skuProducts.get(whSkuInventoryAllocatedCommand.getSkuId());    
                             }else{
                                 locationQty = locationProductVolume.getVolume();
                             }
@@ -2348,18 +2341,20 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                             // 计算可用容量
                             replenishmentQty = (long) Math.floor(maxQty - invQty);
                             skuProductQty = (long) (skuProductQty + whSkuInventoryAllocatedCommand.getQty());
-                            skuProducts.put(sku.getId(), skuProductQty);
+                            skuProducts.put(whSkuInventoryAllocatedCommand.getSkuId(), skuProductQty);
                         }
                     }
                 }
             }
-            if(whSkuInventoryAllocatedCommand.getQty() > replenishmentQty){
-                whSkuInventoryAllocatedCommand.setQty((double)replenishmentQty);
-                skuInventoryAllocatedCommandLst.add(whSkuInventoryAllocatedCommand);
-                break;
-            }else{
-                skuInventoryAllocatedCommandLst.add(whSkuInventoryAllocatedCommand);
-                surplusVolume = (long) (surplusVolume - sku.getVolume()*whSkuInventoryAllocatedCommand.getQty());
+            if(0 < replenishmentQty){
+                if(whSkuInventoryAllocatedCommand.getQty() > replenishmentQty){
+                    whSkuInventoryAllocatedCommand.setQty((double)replenishmentQty);
+                    skuInventoryAllocatedCommandLst.add(whSkuInventoryAllocatedCommand);
+                    break;
+                }else{
+                    skuInventoryAllocatedCommandLst.add(whSkuInventoryAllocatedCommand);
+                    surplusVolume = (long) (surplusVolume - sku.getVolume()*whSkuInventoryAllocatedCommand.getQty());
+                }
             }
         }
         return skuInventoryAllocatedCommandLst;
