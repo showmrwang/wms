@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceAddressDao">
+	<resultMap id="WhInvoiceAddressResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whInvoiceAddressColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	wh_invoice_id as whInvoiceId,
+	        	distribution_target_name as distributionTargetName,
+	        	distribution_target_mobile_phone as distributionTargetMobilePhone,
+	        	distribution_target_telephone as distributionTargetTelephone,
+	        	distribution_target_country as distributionTargetCountry,
+	        	distribution_target_province as distributionTargetProvince,
+	        	distribution_target_city as distributionTargetCity,
+	        	distribution_target_district as distributionTargetDistrict,
+	        	distribution_target_villages_towns as distributionTargetVillagesTowns,
+	        	distribution_target_address as distributionTargetAddress,
+	        	distribution_target_email as distributionTargetEmail,
+	        	distribution_target_zip as distributionTargetZip,
+	        	transport_code as transportCode,
+	        	waybill_code as waybillCode,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whInvoiceAddressDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="whInvoiceId!=null">
+					and wh_invoice_id = #{whInvoiceId}
+				</if>
+	       
+	       
+		       <if test="distributionTargetName!=null and distributionTargetName!=''">
+					and distribution_target_name = #{distributionTargetName}
+				</if>
+	       
+	       
+		       <if test="distributionTargetMobilePhone!=null and distributionTargetMobilePhone!=''">
+					and distribution_target_mobile_phone = #{distributionTargetMobilePhone}
+				</if>
+	       
+	       
+		       <if test="distributionTargetTelephone!=null and distributionTargetTelephone!=''">
+					and distribution_target_telephone = #{distributionTargetTelephone}
+				</if>
+	       
+	       
+		       <if test="distributionTargetCountry!=null and distributionTargetCountry!=''">
+					and distribution_target_country = #{distributionTargetCountry}
+				</if>
+	       
+	       
+		       <if test="distributionTargetProvince!=null and distributionTargetProvince!=''">
+					and distribution_target_province = #{distributionTargetProvince}
+				</if>
+	       
+	       
+		       <if test="distributionTargetCity!=null and distributionTargetCity!=''">
+					and distribution_target_city = #{distributionTargetCity}
+				</if>
+	       
+	       
+		       <if test="distributionTargetDistrict!=null and distributionTargetDistrict!=''">
+					and distribution_target_district = #{distributionTargetDistrict}
+				</if>
+	       
+	       
+		       <if test="distributionTargetVillagesTowns!=null and distributionTargetVillagesTowns!=''">
+					and distribution_target_villages_towns = #{distributionTargetVillagesTowns}
+				</if>
+	       
+	       
+		       <if test="distributionTargetAddress!=null and distributionTargetAddress!=''">
+					and distribution_target_address = #{distributionTargetAddress}
+				</if>
+	       
+	       
+		       <if test="distributionTargetEmail!=null and distributionTargetEmail!=''">
+					and distribution_target_email = #{distributionTargetEmail}
+				</if>
+	       
+	       
+		       <if test="distributionTargetZip!=null and distributionTargetZip!=''">
+					and distribution_target_zip = #{distributionTargetZip}
+				</if>
+	       
+	       
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
+				</if>
+	       
+	       
+		       <if test="waybillCode!=null and waybillCode!=''">
+					and waybill_code = #{waybillCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

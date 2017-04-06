@@ -103,6 +103,8 @@ public class WhOdo extends BaseModel {
     private String distributionCode;
     /** 数据来源 */
     private String dataSource;
+    /** 是否货票分离 0:否 1:是 */
+    private Boolean isFreightInvoiceSunder;
 
     /** 当前月份 用于归档 */
     private String sysDate;
@@ -437,6 +439,14 @@ public class WhOdo extends BaseModel {
 
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public Boolean getIsFreightInvoiceSunder() {
+        return isFreightInvoiceSunder;
+    }
+
+    public void setIsFreightInvoiceSunder(Boolean isFreightInvoiceSunder) {
+        this.isFreightInvoiceSunder = isFreightInvoiceSunder;
     }
 
 }

@@ -65,7 +65,8 @@
 	        	counter_code as counterCode,
 	        	distribution_code as distributionCode,
 	        	data_source as dataSource,
-				ext_odo_type as extOdoType
+				ext_odo_type as extOdoType,
+				is_freight_invoice_sunder as isFreightInvoiceSunder
         ]]>
 	</sql>
 
@@ -779,7 +780,8 @@
 			        counter_code = #{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR},
 			        distribution_code = #{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        data_source=#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR},
-		        	ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} 
            
         ]]>
 		<where>

@@ -54,7 +54,8 @@
 	        	counter_code as counterCode,
 	        	distribution_code as distributionCode,
 	        	data_source as dataSource,
-		        ext_odo_type as extOdoType
+		        ext_odo_type as extOdoType,
+		        is_freight_invoice_sunder as isFreightInvoiceSunder
         ]]>
     </sql>
     <sql id="whOdoConditionWhereExt">
@@ -180,7 +181,8 @@
 		        	counter_code,
 		        	distribution_code,
 		        	data_source,
-		        	ext_odo_type
+		        	ext_odo_type,
+		        	is_freight_invoice_sunder
                 ) VALUES (
                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -221,7 +223,8 @@
 		        	#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR},
 		        	#{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR},
-		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR}
+		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} 
                 )
             ]]>
 
@@ -267,7 +270,8 @@
 		        counter_code=#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR} ,
 		        distribution_code=#{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR},
 		        data_source=#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR},
-		        ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR}
+		        ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
+		        is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} 
             WHERE 
                 id = #{id} 
                 and ou_id = #{ouId}

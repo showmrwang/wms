@@ -124,8 +124,8 @@
                     #{odoInvoiceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{linenum,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                    #{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
-                    #{amt,javaType=Long,jdbcType=DECIMAL} ,
+                    #{unitPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                    #{amt,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                     #{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
                 )
@@ -139,8 +139,8 @@
                 odo_invoice_id = #{odoInvoiceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 linenum = #{linenum,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 qty = #{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                unit_price = #{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
-                amt = #{amt,javaType=Long,jdbcType=DECIMAL} ,
+                unit_price = #{unitPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+                amt = #{amt,javaType=java.lang.Double,jdbcType=DECIMAL} ,
                 item = #{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
             WHERE 

@@ -251,7 +251,7 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, Long ouId, String logId);
+    InventoryStatisticResultCommand sysGuideContainerPutawayCacheInventoryStatistic(ContainerCommand insideContainerCmd, Integer putawayPatternDetailType, Long ouId, String logId);
 
     /**
      * pda整箱上架缓存库存和统计信息

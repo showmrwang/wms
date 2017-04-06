@@ -21,7 +21,7 @@ public final class Constants {
 
     /** 拆分库 */
     public static final Integer SHARD_SOURCE = 2;
-
+    
     /** 调编码生成器租户编码 */
     public static final String WMS = "wms";
 

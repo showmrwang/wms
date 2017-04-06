@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceAddressDao">
+	<resultMap id="WhInvoiceAddressResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whInvoiceAddressColumns">
+	    <![CDATA[
+	        	id as id,
+	        	wh_invoice_id as whInvoiceId,
+	        	distribution_target_name as distributionTargetName,
+	        	distribution_target_mobile_phone as distributionTargetMobilePhone,
+	        	distribution_target_telephone as distributionTargetTelephone,
+	        	distribution_target_country as distributionTargetCountry,
+	        	distribution_target_province as distributionTargetProvince,
+	        	distribution_target_city as distributionTargetCity,
+	        	distribution_target_district as distributionTargetDistrict,
+	        	distribution_target_villages_towns as distributionTargetVillagesTowns,
+	        	distribution_target_address as distributionTargetAddress,
+	        	distribution_target_email as distributionTargetEmail,
+	        	distribution_target_zip as distributionTargetZip,
+	        	transport_code as transportCode,
+	        	waybill_code as waybillCode,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_invoice_address (
+		        id,
+		        	wh_invoice_id ,
+		        	distribution_target_name ,
+		        	distribution_target_mobile_phone ,
+		        	distribution_target_telephone ,
+		        	distribution_target_country ,
+		        	distribution_target_province ,
+		        	distribution_target_city ,
+		        	distribution_target_district ,
+		        	distribution_target_villages_towns ,
+		        	distribution_target_address ,
+		        	distribution_target_email ,
+		        	distribution_target_zip ,
+		        	transport_code ,
+		        	waybill_code ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{whInvoiceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{distributionTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress">
+	    <![CDATA[
+	        UPDATE t_wh_invoice_address SET
+		        wh_invoice_id = #{whInvoiceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        distribution_target_name = #{distributionTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_mobile_phone = #{distributionTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_telephone = #{distributionTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_country = #{distributionTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_province = #{distributionTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_city = #{distributionTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_district = #{distributionTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_villages_towns = #{distributionTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_address = #{distributionTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_email = #{distributionTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_target_zip = #{distributionTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_invoice_address where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_invoice_address 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhInvoiceAddressResult" flushCache="false">
+			select <include refid="whInvoiceAddressColumns" />
+		    <![CDATA[
+			    from t_wh_invoice_address 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhInvoiceAddressResult" flushCache="false">
+			select <include refid="whInvoiceAddressColumns" />
+			    from t_wh_invoice_address 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whInvoiceAddressDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="whInvoiceId!=null">
+					and wh_invoice_id = #{whInvoiceId}
+				</if>
+	       
+	       
+		       <if test="distributionTargetName!=null and distributionTargetName!=''">
+					and distribution_target_name = #{distributionTargetName}
+				</if>
+	       
+	       
+		       <if test="distributionTargetMobilePhone!=null and distributionTargetMobilePhone!=''">
+					and distribution_target_mobile_phone = #{distributionTargetMobilePhone}
+				</if>
+	       
+	       
+		       <if test="distributionTargetTelephone!=null and distributionTargetTelephone!=''">
+					and distribution_target_telephone = #{distributionTargetTelephone}
+				</if>
+	       
+	       
+		       <if test="distributionTargetCountry!=null and distributionTargetCountry!=''">
+					and distribution_target_country = #{distributionTargetCountry}
+				</if>
+	       
+	       
+		       <if test="distributionTargetProvince!=null and distributionTargetProvince!=''">
+					and distribution_target_province = #{distributionTargetProvince}
+				</if>
+	       
+	       
+		       <if test="distributionTargetCity!=null and distributionTargetCity!=''">
+					and distribution_target_city = #{distributionTargetCity}
+				</if>
+	       
+	       
+		       <if test="distributionTargetDistrict!=null and distributionTargetDistrict!=''">
+					and distribution_target_district = #{distributionTargetDistrict}
+				</if>
+	       
+	       
+		       <if test="distributionTargetVillagesTowns!=null and distributionTargetVillagesTowns!=''">
+					and distribution_target_villages_towns = #{distributionTargetVillagesTowns}
+				</if>
+	       
+	       
+		       <if test="distributionTargetAddress!=null and distributionTargetAddress!=''">
+					and distribution_target_address = #{distributionTargetAddress}
+				</if>
+	       
+	       
+		       <if test="distributionTargetEmail!=null and distributionTargetEmail!=''">
+					and distribution_target_email = #{distributionTargetEmail}
+				</if>
+	       
+	       
+		       <if test="distributionTargetZip!=null and distributionTargetZip!=''">
+					and distribution_target_zip = #{distributionTargetZip}
+				</if>
+	       
+	       
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
+				</if>
+	       
+	       
+		       <if test="waybillCode!=null and waybillCode!=''">
+					and waybill_code = #{waybillCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_invoice_address 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_invoice_address 
+		<include refid="whInvoiceAddressDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_invoice_address 
+		<include refid="whInvoiceAddressDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhInvoiceAddressResult">
+    	select <include refid="whInvoiceAddressColumns" />
+	    from t_wh_invoice_address 
+		<include refid="whInvoiceAddressDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhInvoiceAddressResult">
+    	select <include refid="whInvoiceAddressColumns" />
+	    from t_wh_invoice_address 
+		<include refid="whInvoiceAddressDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhInvoiceAddressResult">
+    	select <include refid="whInvoiceAddressColumns" />
+	    from t_wh_invoice_address 
+		<include refid="whInvoiceAddressDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
