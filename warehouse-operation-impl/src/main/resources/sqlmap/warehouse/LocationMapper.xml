@@ -59,7 +59,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	size_type as sizeType,
 	        	tray_count as trayCount,
 	        	max_chaos_sku as maxChaosSku,
-	        	volume_rate as volumeRate
+	        	volume_rate as volumeRate,
+	        	is_check_location as isCheckLocation
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -115,7 +116,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        size_type,
 		        tray_count,
 		        max_chaos_sku,
-		        volume_rate
+		        volume_rate,
+		        is_check_location as isCheckLocation
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -164,7 +166,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        #{sizeType,javaType=java.lang.String,jdbcType=VARCHAR},
 		        #{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER},
 		        #{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT},
-		        #{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE}   
+		        #{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE},
+	        	#{isCheckLocation,javaType=java.lang.Boolean,jdbcType=BIT}
 	        )
 	    ]]>
 
@@ -209,6 +212,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	dimension7=#{dimension7,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	dimension8=#{dimension8,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	isStatic=#{isStatic,javaType=java.lang.Boolean,jdbcType=BIT},
+	        	isCheckLocation=#{isCheckLocation,javaType=java.lang.Boolean,jdbcType=BIT},
 	        	up_bound = #{upBound,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        down_bound = #{downBound,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
@@ -329,6 +333,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="isTemporaryLocation!=null">
 					and is_temporary_location = #{isTemporaryLocation}
+				</if>
+
+				<if test="isCheckLocation!=null">
+					and is_check_location = #{isCheckLocation}
 				</if>
 	       
 	       
