@@ -340,9 +340,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         if (isAfterPutawayTipContainer) {
             Long ocId = containerCmd.getId();
             ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, ocId.toString());
-            Set<Long> insideContainerIds = isCmd.getInsideContainerIds();   //所有内部容器集合
-            Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
             if (null != isCmd) {
+                Set<Long> insideContainerIds = isCmd.getInsideContainerIds();   //所有内部容器集合
+                Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
                        for(Long icId:insideContainerIds){
                            Set<Long> skuIds = insideContainerSkuIds.get(icId);
                            for (Long skuId : skuIds) {
@@ -362,18 +362,20 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         } else {
             Long icId = containerCmd.getId();
             ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, icId.toString());
-            Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
-            // 0.清除所有商品队列
-            Set<Long> skuIds = insideContainerSkuIds.get(icId);
-            for (Long skuId : skuIds) {
-                 // 清楚扫描商品数量
-                 cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
-             }
-            cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
-            // 1.清除所有库存统计信息
-            cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, icId.toString());
-            // 2.清除所有库存缓存信息
-            cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, icId.toString());
+            if(null != isCmd) {
+                Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
+                // 0.清除所有商品队列
+                Set<Long> skuIds = insideContainerSkuIds.get(icId);
+                for (Long skuId : skuIds) {
+                     // 清楚扫描商品数量
+                     cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
+                 }
+                cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
+                // 1.清除所有库存统计信息
+                cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, icId.toString());
+                // 2.清除所有库存缓存信息
+                cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, icId.toString());
+            }
         }
     }
     
