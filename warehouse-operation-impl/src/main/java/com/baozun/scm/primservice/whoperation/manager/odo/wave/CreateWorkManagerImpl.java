@@ -794,20 +794,33 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
 
         if (null != whWorkLineCommandList && whWorkLineCommandList.size() > 0) {
             for (WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList) {
+                if (null == whWorkLineCommand.getFromLocationId()) {
+                    isFromLocationId = false;
+                }
+                if (null == whWorkLineCommand.getFromOuterContainerId()) {
+                    isFromOuterContainerId = false;
+                }
+                if (null == whWorkLineCommand.getFromInsideContainerId()) {
+                    isFromInsideContainerId = false;
+                }
+                if (null == whWorkLineCommand.getOdoId()) {
+                    isOdoId = false;
+                }
+                
                 if (count != 0) {
                     // 获取上一次循环的实体类
                     WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count - 1);
 
-                    if (0 == whWorkLineCommandBefor.getFromLocationId().compareTo(whWorkLineCommand.getFromLocationId())) {
+                    if (null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && 0 != whWorkLineCommandBefor.getFromLocationId().compareTo(whWorkLineCommand.getFromLocationId())) {
                         isFromLocationId = false;
                     }
-                    if (0 == whWorkLineCommandBefor.getFromOuterContainerId().compareTo(whWorkLineCommand.getFromOuterContainerId())) {
+                    if (null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && 0 != whWorkLineCommandBefor.getFromOuterContainerId().compareTo(whWorkLineCommand.getFromOuterContainerId())) {
                         isFromOuterContainerId = false;
                     }
-                    if (0 == whWorkLineCommandBefor.getFromInsideContainerId().compareTo(whWorkLineCommand.getFromInsideContainerId())) {
+                    if (null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && 0 != whWorkLineCommandBefor.getFromInsideContainerId().compareTo(whWorkLineCommand.getFromInsideContainerId())) {
                         isFromInsideContainerId = false;
                     }
-                    if (0 == whWorkLineCommandBefor.getOdoId().compareTo(whWorkLineCommand.getOdoId())) {
+                    if (null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && 0 != whWorkLineCommandBefor.getOdoId().compareTo(whWorkLineCommand.getOdoId())) {
                         isOdoId = false;
                     }
                 }
@@ -1460,6 +1473,19 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Boolean isOdoId = true;
 
         for (WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList) {
+            if (null == whWorkLineCommand.getFromLocationId()) {
+                isFromLocationId = false;
+            }
+            if (null == whWorkLineCommand.getFromOuterContainerId()) {
+                isFromOuterContainerId = false;
+            }
+            if (null == whWorkLineCommand.getFromInsideContainerId()) {
+                isFromInsideContainerId = false;
+            }
+            if (null == whWorkLineCommand.getOdoId()) {
+                isOdoId = false;
+            }
+            
             if (count != 0) {
                 // 获取上一次循环的实体类
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count - 1);
@@ -1761,15 +1787,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     public String saveOutReplenishmentWork(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long userId) {
         // 获取工作类型
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
-        // 根据容器ID获取容器CODE
-        Container outerContainer = new Container();
-        Container insideContainer = new Container();
-        if (skuInventoryAllocatedCommand.getOuterContainerId() != null) {
-            outerContainer = containerDao.findByIdExt(skuInventoryAllocatedCommand.getOuterContainerId(), skuInventoryAllocatedCommand.getOuId());
-        }
-        if (skuInventoryAllocatedCommand.getInsideContainerId() != null) {
-            insideContainer = containerDao.findByIdExt(skuInventoryAllocatedCommand.getInsideContainerId(), skuInventoryAllocatedCommand.getOuId());
-        }
         // 调编码生成器工作头实体标识
         String workCode = codeManager.generateCode(Constants.WMS, Constants.WHWORK_MODEL_URL, "", "WORK", null);
         // 所有值为null的字段，将会在更新工作头信息时获取，如果到时候还没有值，那就是被骗了
@@ -1817,9 +1834,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 库位--更新时获取数据
         whWorkCommand.setLocationCode(null);
         // 托盘--更新时获取数据
-        whWorkCommand.setOuterContainerCode(null == outerContainer ? null : outerContainer.getCode());
+        whWorkCommand.setOuterContainerCode(null);
         // 容器--更新时获取数据
-        whWorkCommand.setContainerCode(null == insideContainer ? null : insideContainer.getCode());
+        whWorkCommand.setContainerCode(null);
         // 创建时间
         whWorkCommand.setCreateTime(new Date());
         // 最后操作时间
@@ -1865,6 +1882,19 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Boolean isOdoId = true;
 
         for (WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList) {
+            if (null == whWorkLineCommand.getFromLocationId()) {
+                isFromLocationId = false;
+            }
+            if (null == whWorkLineCommand.getFromOuterContainerId()) {
+                isFromOuterContainerId = false;
+            }
+            if (null == whWorkLineCommand.getFromInsideContainerId()) {
+                isFromInsideContainerId = false;
+            }
+            if (null == whWorkLineCommand.getOdoId()) {
+                isOdoId = false;
+            }
+            
             if (count != 0) {
                 // 获取上一次循环的实体类
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count - 1);
