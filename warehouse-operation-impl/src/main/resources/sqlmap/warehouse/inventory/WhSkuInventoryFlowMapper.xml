@@ -142,7 +142,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{odoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{revisionQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{revisionQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,

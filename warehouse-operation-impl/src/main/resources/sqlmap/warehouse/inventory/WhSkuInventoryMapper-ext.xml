@@ -3683,9 +3683,82 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
     <select id="findWhSkuInventoryByIdAndUuidAndOuid" resultMap="WhSkuInventoryCommandResultExt">
-		select <include refid="whSkuInventoryCommandMergeExt" />
+		select 
+			t.id as id,
+			t.sku_id as skuId,
+			t.location_id as locationId,
+			t.outer_container_id as outerContainerId,
+			t.inside_container_id as insideContainerId,
+			t.customer_id as customerId,
+			t.store_id as storeId,
+			t.occupation_code as occupationCode,
+			sum(t.on_hand_qty) as onHandQty,
+			sum(t.allocated_qty) as allocatedQty,
+			sum(t.to_be_filled_qty) as toBeFilledQty,
+			sum(t.frozen_qty) as frozenQty,
+			sum(t.on_hand_qty - t.allocated_qty + t.to_be_filled_qty - t.frozen_qty) as qty,
+			t.inv_status as invStatus,
+			t.inv_type as invType,
+			t.batch_number as batchNumber,
+			date_format(t.mfg_date,'%Y-%m-%d %T') as mfgDateStr,
+			date_format(t.exp_date,'%Y-%m-%d %T') as expDateStr,
+			t.mfg_date as mfgDate,
+			t.exp_date as expDate,
+			t.country_of_origin as countryOfOrigin,
+			t.inv_attr1 as invAttr1,
+			t.inv_attr2 as invAttr2,
+			t.inv_attr3 as invAttr3,
+			t.inv_attr4 as invAttr4,
+			t.inv_attr5 as invAttr5,
+			t.uuid as uuid,
+			t.is_locked as isLocked,
+			t.ou_id as ouId,
+			t.occupation_code_source as occupationCodeSource,
+			t.inbound_time as inboundTime,
+	        t.last_modify_time as lastModifyTime,
+			t.skuCode as skuCode,
+			t.skuName as skuName,
+			t.locationCode as locationCode,
+			t.outerContainerCode as outerContainerCode,
+			t.insideContainerCode as insideContainerCode,
+			t.invstatusName as invstatusName
 		from (
-		    	select <include refid="whSkuInventoryCommandMapExt" />
+		    	select 
+					t.id as id,
+					t.sku_id as sku_id,
+					t.location_id as location_id,
+					t.outer_container_id as outer_container_id,
+					t.inside_container_id as inside_container_id,
+					t.customer_id as customer_id,
+					t.store_id as store_id,
+					t.occupation_code as occupation_code,
+					t.on_hand_qty as on_hand_qty,
+					(case when t.is_locked=1 then on_hand_qty else 0.00 end ) as allocated_qty,
+					0.00 as to_be_filled_qty,
+					t.frozen_qty as frozen_qty,
+					t.inv_status as inv_status,
+					t.inv_type as inv_type,
+					t.batch_number as batch_number,
+					t.mfg_date as mfg_date,
+					t.exp_date as exp_date,
+					t.country_of_origin as country_of_origin,
+					t.inv_attr1 as inv_attr1,
+					t.inv_attr2 as inv_attr2,
+					t.inv_attr3 as inv_attr3,
+					t.inv_attr4 as inv_attr4,
+					t.inv_attr5 as inv_attr5,
+					t.uuid as uuid,
+					t.is_locked as is_locked,
+					t.ou_id as ou_id,
+					t.occupation_code_source as occupation_code_source,
+					t.inbound_time as inbound_time,
+			        t.last_modify_time as last_modify_time,
+					sku.code as skuCode,
+					sku.name as skuName,
+					l.code as locationCode,
+					cout.code as outerContainerCode,
+					iout.code as insideContainerCode,
+					invstatus.name as invstatusName
 				from 
 					t_wh_sku_inventory t 
 					left join t_wh_sku sku on t.sku_id = sku.id 
@@ -3703,7 +3776,42 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					</if>
 				</where> 
 				union all
-				select <include refid="whSkuInventoryAllocatedCommandMapExt" />
+				select 
+					null as id,
+					t.sku_id as sku_id,
+					t.location_id as location_id,
+					t.outer_container_id as outer_container_id,
+					t.inside_container_id as inside_container_id,
+					t.customer_id as customer_id,
+					t.store_id as store_id,
+					t.occupation_code as occupation_code,
+					0.00 as on_hand_qty,
+					t.qty as allocated_qty,
+					0.00 as to_be_filled_qty,
+					0.00 as frozen_qty,
+					t.inv_status as inv_status,
+					t.inv_type as inv_type,
+					t.batch_number as batch_number,
+					t.mfg_date as mfg_date,
+					t.exp_date as exp_date,
+					t.country_of_origin as country_of_origin,
+					t.inv_attr1 as inv_attr1,
+					t.inv_attr2 as inv_attr2,
+					t.inv_attr3 as inv_attr3,
+					t.inv_attr4 as inv_attr4,
+					t.inv_attr5 as inv_attr5,
+					t.uuid as uuid,
+					null as is_locked,
+					t.ou_id as ou_id,
+					null as occupation_code_source,
+					null as inbound_time,
+			        t.last_modify_time as last_modify_time,
+					sku.code as skuCode,
+					sku.name as skuName,
+					l.code as locationCode,
+					cout.code as outerContainerCode,
+					iout.code as insideContainerCode,
+					invstatus.name as invstatusName
 				from 
 					t_wh_sku_inventory_allocated t 
 					left join t_wh_sku sku on t.sku_id = sku.id 
@@ -3721,7 +3829,42 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					</if>
 				</where> 
 				union all
-				select <include refid="whSkuInventoryTobefilledCommandMapExt" />
+				select 
+					null as id,
+					t.sku_id as sku_id,
+					t.location_id as location_id,
+					t.outer_container_id as outer_container_id,
+					t.inside_container_id as inside_container_id,
+					t.customer_id as customer_id,
+					t.store_id as store_id,
+					t.occupation_code as occupation_code,
+					0.00 as on_hand_qty,
+					0.00 as allocated_qty,
+					t.qty as to_be_filled_qty,
+					0.00 as frozen_qty,
+					t.inv_status as inv_status,
+					t.inv_type as inv_type,
+					t.batch_number as batch_number,
+					t.mfg_date as mfg_date,
+					t.exp_date as exp_date,
+					t.country_of_origin as country_of_origin,
+					t.inv_attr1 as inv_attr1,
+					t.inv_attr2 as inv_attr2,
+					t.inv_attr3 as inv_attr3,
+					t.inv_attr4 as inv_attr4,
+					t.inv_attr5 as inv_attr5,
+					t.uuid as uuid,
+					null as is_locked,
+					t.ou_id as ou_id,
+					null as occupation_code_source,
+					null as inbound_time,
+			        t.last_modify_time as last_modify_time,
+					sku.code as skuCode,
+					sku.name as skuName,
+					l.code as locationCode,
+					cout.code as outerContainerCode,
+					iout.code as insideContainerCode,
+					invstatus.name as invstatusName
 				from 
 					t_wh_sku_inventory_tobefilled t 
 					left join t_wh_sku sku on t.sku_id = sku.id 

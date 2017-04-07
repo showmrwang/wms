@@ -40,7 +40,7 @@ public class WhSkuInventoryFlow extends BaseModel {
     /** WMS出库单类型 */
     private String odoType;
     /** 调整数量 */
-    private Long revisionQty;
+    private Double revisionQty;
     /** 库存状态 */
     private String invStatus;
     /** 库存类型名称 */
@@ -110,11 +110,11 @@ public class WhSkuInventoryFlow extends BaseModel {
         this.odoType = odoType;
     }
 
-    public Long getRevisionQty() {
+    public Double getRevisionQty() {
         return revisionQty;
     }
 
-    public void setRevisionQty(Long revisionQty) {
+    public void setRevisionQty(Double revisionQty) {
         this.revisionQty = revisionQty;
     }
 
