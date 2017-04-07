@@ -159,7 +159,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 			        work_id = #{workId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        work_type = #{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        work_category = #{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -185,7 +184,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
 		        WHERE 
 			        id = #{id} 
-			        
+			        and ou_id = #{ouId}
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>

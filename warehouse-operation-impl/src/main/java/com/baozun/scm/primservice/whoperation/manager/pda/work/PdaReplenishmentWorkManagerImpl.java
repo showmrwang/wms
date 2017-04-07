@@ -171,51 +171,51 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
 //        return locationId;
 //    }
     
-    /***
-     * 拣货完成
-     * @param command
-     */
-    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal){
-        Long operationId = command.getOperationId();
-        String workCode = command.getWorkBarCode();
-        Long ouId = command.getOuId();
-        Long userId = command.getUserId();
-        Long locationId = command.getLocationId();
-        String outerContainerCode = command.getOuterContainerCode();
-        String turnoverBoxCode = command.getTurnoverBoxCode();
-        String insideContainerCode = command.getInsideContainerCode();
-        Long outerContainerId = null;
-        if(StringUtils.isEmpty(outerContainerCode)) {
-            ContainerCommand c = containerDao.getContainerByCode(outerContainerCode, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            outerContainerId = c.getId();
-        }
-        Long insideContainerId = null;
-        if(StringUtils.isEmpty(insideContainerCode)) {
-            ContainerCommand c = containerDao.getContainerByCode(insideContainerCode, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            insideContainerId = c.getId();
-        }
-        
-        Long turnoverBoxId = null;
-        if(StringUtils.isEmpty(turnoverBoxCode)) {
-            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            turnoverBoxId = c.getId();
-        }
-        //已分配的库位库存转变为容器库存
-        whSkuInventoryManager.replenishmentContainerInventory(operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId,workCode);
-       //更新工作及作业状态
-        pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
-        //清除缓存
-        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId,null);
-    }
+//    /***
+//     * 拣货完成
+//     * @param command
+//     */
+//    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal){
+//        Long operationId = command.getOperationId();
+//        String workCode = command.getWorkBarCode();
+//        Long ouId = command.getOuId();
+//        Long userId = command.getUserId();
+//        Long locationId = command.getLocationId();
+//        String outerContainerCode = command.getOuterContainerCode();
+//        String turnoverBoxCode = command.getTurnoverBoxCode();
+//        String insideContainerCode = command.getInsideContainerCode();
+//        Long outerContainerId = null;
+//        if(StringUtils.isEmpty(outerContainerCode)) {
+//            ContainerCommand c = containerDao.getContainerByCode(outerContainerCode, ouId);
+//            if(null == c) {
+//                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+//            }
+//            outerContainerId = c.getId();
+//        }
+//        Long insideContainerId = null;
+//        if(StringUtils.isEmpty(insideContainerCode)) {
+//            ContainerCommand c = containerDao.getContainerByCode(insideContainerCode, ouId);
+//            if(null == c) {
+//                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+//            }
+//            insideContainerId = c.getId();
+//        }
+//        
+//        Long turnoverBoxId = null;
+//        if(StringUtils.isEmpty(turnoverBoxCode)) {
+//            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+//            if(null == c) {
+//                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+//            }
+//            turnoverBoxId = c.getId();
+//        }
+//        //已分配的库位库存转变为容器库存
+//        whSkuInventoryManager.replenishmentContainerInventory(operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId,workCode);
+//       //更新工作及作业状态
+//        pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
+//        //清除缓存
+//        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId,null);
+//    }
     
     public void cacheLocation(Long operationId,String locationCode,Long ouId){
 

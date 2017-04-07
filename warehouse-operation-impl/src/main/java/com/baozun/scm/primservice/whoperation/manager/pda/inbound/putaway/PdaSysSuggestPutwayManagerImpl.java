@@ -318,19 +318,18 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 if(StringUtils.isEmpty(outerContainerCode)) {
                     log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
-                }else{
-                    this.removeCachce(outerContainerId, false);
                 }
             } 
            srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
            srCmd.setInsideContainerCode(containerCode);
            if(null != outerContainerId){
+               this.removeCachce(outerContainerId, false);
                this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
            }
             
         }
         if (0 < outerCount1 || 0 < outerCount2) {
-            this.removeCachce(outerContainerId, true);
+            this.removeCachce(containerId, true);
             srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器
             srCmd.setHasOuterContainer(true);// 有外部容器，需要循环提示容器
             srCmd.setOuterContainerCode(containerCmd.getCode());    //外部容器号
@@ -464,11 +463,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         Long containerId = containerCmd.getId();
         String containerCode = containerCmd.getCode();
-        Long outerContainerId = null;
-        if(!StringUtils.isEmpty(outerContainerCode)){
-            ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-            outerContainerId = outerCmd.getId();
-        }
         //根据库是否是外部容器
         int outerCount1 = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId,containerCmd.getId());  //根据容器id，查询容器是否是外部
         int insideCount1 = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId,containerCmd.getId()); //根据容器id，查询容器是否是内部
@@ -484,21 +478,24 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     log.error("sys guide container putaway scan container has outer container, should scan outer container first, containerCode is:[{}], logId is:[{}]", containerCode, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER_HAS_OUTER_CONTAINER_SCAN_OUTER_FIRST, new Object[] {containerCode});
                 }else{
+                    ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+                    Long outerContainerId = outerCmd.getId();
                     this.removeCachce(outerContainerId, false);
+                    this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
                 }
             } else {
                 srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
                 srCmd.setInsideContainerCode(containerCode);
             }
-            if(!StringUtils.isEmpty(outerContainerCode)) {
+//            if(!StringUtils.isEmpty(outerContainerCode)) {
 //                ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
 //                Long outerContainerId = outerCmd.getId();
-                this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
-            }
+//                this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
+//            }
         }
         if (0 < outerCount1 || 0 < outerCount2) {
             //外部容器，判断是否已经存在缓存,如果存在先删除
-            this.removeCachce(outerContainerId, true);
+            this.removeCachce(containerId, true);
             srCmd.setContainerType(WhContainerType.OUTER_CONTAINER);// 外部容器
             srCmd.setHasOuterContainer(true);// 有外部容器，需要循环提示容器
             srCmd.setOuterContainerCode(containerCmd.getCode());    //外部容器号
