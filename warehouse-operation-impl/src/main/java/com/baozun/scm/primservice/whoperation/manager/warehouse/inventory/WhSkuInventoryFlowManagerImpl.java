@@ -4,6 +4,8 @@ import java.util.Date;
 
 import lark.common.annotation.MoreDB;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ import com.baozun.scm.primservice.whoperation.util.StringUtil;
 @Transactional
 @Service("whSkuInventoryFlowManager")
 public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager {
+
+    protected static final Logger logger = LoggerFactory.getLogger(WhSkuInventoryFlowManagerImpl.class);
 
     @Autowired
     private WhSkuInventoryFlowDao whSkuInventoryFlowDao;
@@ -50,6 +54,8 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
                 flow.setOdoType(odo.getOdoType());
             }
         }
+        logger.info(flow.toString());
+        System.out.println(flow.toString());
         whSkuInventoryFlowDao.insert(flow);
     }
 }
