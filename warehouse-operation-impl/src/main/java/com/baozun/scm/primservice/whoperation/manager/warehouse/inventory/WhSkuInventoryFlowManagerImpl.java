@@ -40,7 +40,7 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
     public void insertWhSkuInventoryFlow(WhSkuInventoryLog log) {
         // 插入库存流水信息
         WhSkuInventoryFlow flow = new WhSkuInventoryFlow();
-        BeanUtils.copyProperties(flow, log);
+        BeanUtils.copyProperties(log, flow);
         flow.setUpc(log.getExtCode());
         flow.setCreateTime(new Date());
         flow.setRevisionQty(log.getRevisionQty());
@@ -54,8 +54,6 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
                 flow.setOdoType(odo.getOdoType());
             }
         }
-        logger.info(flow.toString());
-        System.out.println(flow.toString());
         whSkuInventoryFlowDao.insert(flow);
     }
 }
