@@ -15,7 +15,14 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 
 public interface WhSkuInventoryFlowManager extends BaseManager {
 
+    /**
+     * 保存库存流水信息
+     * 
+     * @param log
+     */
+    void insertWhSkuInventoryFlow(WhSkuInventoryLog log);
 }

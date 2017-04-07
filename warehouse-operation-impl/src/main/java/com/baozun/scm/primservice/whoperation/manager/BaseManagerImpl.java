@@ -38,6 +38,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnLogManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -83,6 +84,8 @@ public abstract class BaseManagerImpl implements BaseManager {
     private WhWavePhaseDao whWavePhaseDao;
     @Autowired
     private WarehouseDao warehouseDao;
+    @Autowired
+    private WhSkuInventoryFlowManager whSkuInventoryFlowManager;
 
 
     /**
@@ -180,6 +183,13 @@ public abstract class BaseManagerImpl implements BaseManager {
             }
         }
         whSkuInventoryLogManager.insertSkuInventoryLog(log);
+        if (!StringUtil.isEmpty(invTransactionType)) {
+            // 存在库存事务类型 上架 交接出库 库内调整 库内调拨 库内加工需要生成库存流水数据
+            if (invTransactionType.equals(InvTransactionType.SHELF) || invTransactionType.equals(InvTransactionType.HANDOVER_OUTBOUND) || invTransactionType.equals(InvTransactionType.INTRA_WH_ADJUSTMENT)
+                    || invTransactionType.equals(InvTransactionType.INTRA_WH_MACHINING) || invTransactionType.equals(InvTransactionType.WH_TO_WH_FLITTING)) {
+                whSkuInventoryFlowManager.insertWhSkuInventoryFlow(log);
+            }
+        }
     }
 
     /**
@@ -498,9 +508,9 @@ public abstract class BaseManagerImpl implements BaseManager {
                 }
                 if (null != sys) {
                     // 判断系统参数的lifecycle是否=传入的lifecycle
-                    if(null == lifecycle || lifecycle.equals(sys.getLifecycle())){
+                    if (null == lifecycle || lifecycle.equals(sys.getLifecycle())) {
                         returnList.add(sys);
-                     }
+                    }
                 }
             }
         } else {

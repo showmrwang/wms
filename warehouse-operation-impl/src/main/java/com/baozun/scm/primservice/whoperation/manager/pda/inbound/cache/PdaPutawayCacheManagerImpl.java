@@ -287,15 +287,31 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         String fisrt = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
         // String[] values = ParamsUtil.splitParam(fisrt);
         String fContainerId = fisrt;
-        if (containerId.toString().equals(fContainerId)) {
-            // 弹出队列
-            cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
-            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
-            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
-        } else {
-            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
-            cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+        try{
+            if (containerId.toString().equals(fContainerId)) {
+                // 弹出队列
+                cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+            } else {
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+            }
+        }catch(Exception e){
+            // 补偿机制
+            log.error("pop loc recommand queue error, try again, containerId is:[{}], logId is:[{}]", containerId, logId);
+            fisrt = cacheManager.findListItem(CacheConstants.LOCATION_RECOMMEND_QUEUE, 0);
+            if (containerId.toString().equals(fisrt)) {
+                // 弹出队列
+                cacheManager.popListHead(CacheConstants.LOCATION_RECOMMEND_QUEUE);
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+            } else {
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_EXPIRE_TIME, containerId.toString());
+                cacheManager.removeMapValue(CacheConstants.LOCATION_RECOMMEND_VALID_TIME, containerId.toString());
+            }
         }
+        
         if (log.isInfoEnabled()) {
             log.info("sys guide putaway locRecommend popQueue end, contianerId is:[{}], logId is:[{}]", containerId, logId);
         }
@@ -4822,7 +4838,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     Set<Long> locIds = new HashSet<Long>();
                     if (null != locSkuAttrIds) {
                         locSkuAttrIds.remove(locationId);
-                        //locIds = locSkuAttrIds.keySet();
+                        for (Long lId : locSkuAttrIds.keySet()) {
+                            if (null != lId) {
+                                locIds.add(lId);
+                            }
+                        }
                     }
                     insideContainerLocSkuAttrIds.put(insideContainerCmd.getId(), locSkuAttrIds);
                     isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);

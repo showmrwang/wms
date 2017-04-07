@@ -16,7 +16,7 @@ public class InWarehouseMoveWorkCommand  extends BaseModel {
     //columns START
     /** 分配库存集合 */
     private List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst;
-    /** 分配库存集合 */
+    /** 待移入库存集合 */
     private List<WhSkuInventoryTobefilledCommand> WhSkuInventoryTobefilledCommandLst;
     //columns END
     
