@@ -1164,7 +1164,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList) {
         // 验证所有出库单上店铺所配置的发票公司和发票模板一致
-        
+        int invoiceCount = this.whOdoDao.countInvoiceInfo(odoIdList, wave.getOuId());
+        if (invoiceCount > 1) {
+            throw new BusinessException(ErrorCodes.WAVE_ODOLIST_INVOICE_DIFFERENCE, new Object[] { wave.getCode() });
+        }
         int batchCount = 500;
         int totalCount = odoIdList.size();
         int ceil = (int) Math.ceil((double) totalCount / batchCount);

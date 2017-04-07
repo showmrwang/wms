@@ -3386,4 +3386,30 @@
 			odo.odo_status in (10, 17)
 			and odo.ou_id = #{ouId}
     </select>
+    
+    <select id="countInvoiceInfo" resultType="int">
+    	select count(1) from (
+			select
+				s.make_out_an_invoice_company,
+				s.invoice_export_templet
+			from
+				t_bi_store s
+			where
+				s.id in (
+					select
+						o.store_id
+					from
+						t_wh_odo o
+					where
+						o.id in 
+						<foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+			                #{id}
+			            </foreach>
+					and o.ou_id = #{ouId}
+				) 
+			group by 
+				s.make_out_an_invoice_company,
+				s.invoice_export_templet
+		) t
+    </select>
 </mapper>

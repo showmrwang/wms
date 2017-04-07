@@ -810,5 +810,7 @@ public class ErrorCodes {
     public static final int COLLECTION_RECOMMEND_RESULT_ERROR = 80009;
     /** 系统错误,推荐结果不唯一 */
     public static final int COLLECTION_RECOMMEND_RESULT_NOT_UNIQE = 80010;
+    /** 波次[{}]中出库单集合含有不同的发票信息 */
+    public static final int WAVE_ODOLIST_INVOICE_DIFFERENCE = 80011;
 	// 80001-90000 zhukai
 }

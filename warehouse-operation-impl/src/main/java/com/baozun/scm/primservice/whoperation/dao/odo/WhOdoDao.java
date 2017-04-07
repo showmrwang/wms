@@ -289,4 +289,11 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @version 2017年3月29日
      */
 	List<Long> findOdoArchivData(@Param("ouId") Long ouId);
+	
+	/**
+	 * 
+	 * @author kai.zhu
+	 * @version 2017年4月7日
+	 */
+    int countInvoiceInfo(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
 }
