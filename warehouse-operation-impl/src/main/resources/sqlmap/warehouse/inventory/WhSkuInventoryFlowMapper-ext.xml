@@ -140,4 +140,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhSkuInventoryFlowByCreateTime" resultMap="WhSkuInventoryFlowResultExt">
+		select <include refid="whSkuInventoryFlowColumns" />
+		from t_wh_sku_inventory_flow 
+		where 
+		create_time &gt; #{beginTime} 
+		and create_time &lt; #{endTime} 
+		and ou_id = #{ouid}
+	</select>
+	
 </mapper>

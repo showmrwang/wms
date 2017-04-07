@@ -626,7 +626,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="getWhSkuInventoryCommandByOccupationLineId" resultMap="WhSkuInventoryAllocatedCommandResultExt">
 	    select
-	          inv.id as invId,
+	          inv.id as alloctedId,
 	          inv.sku_id as skuId,
 	          inv.location_id as locationId,
 	          inv.outer_container_id as outerContainerId,

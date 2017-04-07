@@ -28,11 +28,11 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public PickingScanResultCommand replenishmentTipLocation(Long functionId,Long operationId,Long ouId);
     
-    /***
-     * 拣货完成
-     * @param command
-     */
-    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
+//    /***
+//     * 拣货完成
+//     * @param command
+//     */
+//    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
     
     /***
      * 缓存库位

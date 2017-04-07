@@ -163,6 +163,7 @@
 		where
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and is_create_work != 1
 			and whole_case is not null
 		group by
 			whole_case
@@ -174,6 +175,7 @@
 		where
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and is_create_work != 1
 			and whole_case is null
 			and outer_container_id is not null
 		group by
@@ -186,6 +188,7 @@
 		where
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and is_create_work != 1
 			and whole_case is null
 			and outer_container_id is null
 			and outbounxbox_type_code is not null
@@ -200,6 +203,7 @@
 		where
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and is_create_work != 1
 			and whole_case is null
 			and outer_container_id is null
 			and outbounxbox_type_code is null
@@ -216,6 +220,7 @@
 		<where>
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
+			and is_create_work != 1
 			<if test="wholeCase!=null">
 				and whole_case = #{wholeCase}
 			</if>

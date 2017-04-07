@@ -14,7 +14,10 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 
 public interface WhSkuInventoryFlowManager extends BaseManager {
@@ -25,4 +28,11 @@ public interface WhSkuInventoryFlowManager extends BaseManager {
      * @param log
      */
     void insertWhSkuInventoryFlow(WhSkuInventoryLog log);
+
+    /**
+     * 通过创建时间段+仓库ID获取对应库存流水数据
+     * 
+     * @return
+     */
+    List<WhSkuInventoryFlow> findWhSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid);
 }

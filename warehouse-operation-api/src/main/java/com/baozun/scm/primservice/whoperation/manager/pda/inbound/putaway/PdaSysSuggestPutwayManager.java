@@ -182,4 +182,28 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      */
     public String getPalletPutawayCacheSkuOrTipContainer(String outerContainerCode,Long ouId);
     
+    
+    
+    /**
+     * 库位解绑（生成容器库存及删除待移入库存）
+     * 
+     * @param outerContainerCode
+     * @param insideContainerCode
+     * @param locationCode
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    public void execUnbinding(String outerContainerCode, String insideContainerCode, String locationCode, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /***
+     * 点上架完成时，清楚缓存
+     * @param outerContainerCode
+     * @param insideContainerCode
+     * @param locationCode
+     * @param ouId
+     */
+    public void putawayEndRemoveCache(String outerContainerCode, String insideContainerCode, String locationCode,Long ouId);
+    
 }

@@ -60,6 +60,8 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
 	public static final String ALIAS_OCCUPATION_CODE_SOURCE = "占用单据来源";
 	public static final String ALIAS_REPLENISHMENT_RULE_ID = "补货阶段使用的规则id";
 	
+	
+	private java.lang.Long alloctedId;
 	//columns START
 	/** 商品ID */
 	private java.lang.Long skuId;
@@ -466,5 +468,17 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
 
 			.isEquals();
 	}
+
+    public java.lang.Long getAlloctedId() {
+        return alloctedId;
+    }
+
+    public void setAlloctedId(java.lang.Long alloctedId) {
+        this.alloctedId = alloctedId;
+    }
+    
+    
+    
+    
 }
 

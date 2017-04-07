@@ -64,7 +64,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	size_type as sizeType,
 	        	tray_count as trayCount,
 	        	max_chaos_sku as maxChaosSku,
-	        	volume_rate as volumeRate
+	        	volume_rate as volumeRate,
+	        	is_check_location
 	    ]]>
 	</sql>
 
@@ -138,6 +139,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 			<if test="isTemporaryLocation!=null">
 				and is_temporary_location = #{isTemporaryLocation}
+			</if>
+
+			<if test="isCheckLocation!=null">
+				and is_check_location = #{isCheckLocation}
 			</if>
 
 			<if test="templetCode!=null and templetCode!=''">
@@ -245,6 +250,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        is_batch_mgt = #{isBatchMgt,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        is_track_vessel = #{isTrackVessel,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        is_temporary_location = #{isTemporaryLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        is_check_location = #{isCheckLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
 			        templet_code = #{templetCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now() ,
@@ -329,7 +335,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       size_type,
 		       tray_count,
 		       max_chaos_sku,
-		       volume_rate
+		       volume_rate,
+		       is_check_location
 	        ) VALUES 
 ]]>
 		<foreach collection="list" item="item" index="index"
@@ -384,7 +391,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			#{sizeType,javaType=java.lang.String,jdbcType=VARCHAR},
 			#{trayCount,javaType=java.lang.Integer,jdbcType=INTEGER},
 			#{maxChaosSku,javaType=java.lang.Long,jdbcType=BIGINT},
-			#{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE}
+			#{volumeRate,javaType=java.lang.Double,jdbcType=DOUBLE},
+			#{isCheckLocation,javaType=java.lang.Boolean,jdbcType=BIT}
 			)
 		</foreach>
 	</insert>
@@ -456,6 +464,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="isTemporaryLocation!=null">
 				and l.is_temporary_location = #{isTemporaryLocation}
+			</if>
+			<if test="isCheckLocation!=null">
+				and l.is_check_location = #{isCheckLocation}
 			</if>
 			<if test="templetCode!=null and templetCode!=''">
 				and l.templet_code like #{templetCode}
@@ -618,7 +629,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	l.size_type as sizeType,
 	        	l.tray_count as trayCount,
 	        	l.max_chaos_sku as maxChaosSku,
-	        	l.volume_rate as volumeRate
+	        	l.volume_rate as volumeRate,
+	        	l.is_check_location as isCheckLocation
 	    ]]>
 	</sql>
 
