@@ -87,7 +87,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         if (prePath != null) {
             this.occupyFacilityAndlocationByPrePath(prePath, recFacilityPath, ouId);
         } else {
-            this.occupyFacilityAndlocationByFacilityGroup(facilityGroup, recFacilityPath, ouId);
+            this.occupyFacilityAndlocationByFacilityGroup(facilityGroup, recFacilityPath, wh);
         }
 
         // 最后一箱逻辑
@@ -156,8 +156,9 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
 
     }
 
-    private WhFacilityRecPath occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, RecFacilityPathCommand recFacilityPath, Long ouId) {
-        String pickingMode = recFacilityPath.getPickingMode();
+    private WhFacilityRecPath occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, RecFacilityPathCommand recFacilityPath, Warehouse wh) {
+        Long ouId=wh.getId();
+        String seedingMode = wh.getSeedingMode();
         String batch = recFacilityPath.getBatch();
         WhFacilityRecPath recPath = new WhFacilityRecPath();
 
@@ -165,7 +166,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         Area fromArea = this.areaDao.findByIdExt(recFacilityPath.getAreaId(), ouId);
 
         boolean facilityFlag, locationFlag = true;
-        if (Constants.SEEDING_MODE_1.equals(pickingMode)) {
+        if (Constants.SEEDING_MODE_1.equals(seedingMode)) {
             facilityFlag = true;
         } else {
             facilityFlag = false;

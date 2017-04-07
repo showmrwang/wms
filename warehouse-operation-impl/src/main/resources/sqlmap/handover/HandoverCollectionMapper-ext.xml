@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao">
+	<resultMap id="HandoverCollectionResultExt" type="com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="handoverCollectionColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	handover_station_id as handoverStationId,
+	        	HANDOVER_STATION_TYPE as handoverStationType,
+	        	handover_batch as handoverBatch,
+	        	handover_status as handoverStatus,
+	        	group_condition as groupCondition,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="handoverCollectionDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+				<if test="handoverStationId!=null">
+					and handover_station_id = #{handoverStationId}
+				</if>
+	       
+	       
+		       <if test="handoverStationType!=null and handoverStationType!=''">
+					and HANDOVER_STATION_TYPE = #{handoverStationType}
+				</if>
+	       
+	       
+		       <if test="handoverBatch!=null and handoverBatch!=''">
+					and handover_batch = #{handoverBatch}
+				</if>
+	       
+	       
+		       <if test="handoverStatus!=null and handoverStatus!=''">
+					and handover_status = #{handoverStatus}
+				</if>
+	       
+	       
+		       <if test="groupCondition!=null and groupCondition!=''">
+					and group_condition = #{groupCondition}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>
