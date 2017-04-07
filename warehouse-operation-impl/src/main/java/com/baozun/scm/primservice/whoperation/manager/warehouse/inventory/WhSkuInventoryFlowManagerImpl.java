@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.util.Date;
+import java.util.List;
 
 import lark.common.annotation.MoreDB;
 
@@ -32,7 +33,7 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
     private WhOdoDao whOdoDao;
 
     /**
-     * 保存库存流水信息
+     * 保存库存流水信息 bin.hu
      * 
      * @param log
      */
@@ -66,5 +67,16 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
             }
         }
         whSkuInventoryFlowDao.insert(flow);
+    }
+
+    /**
+     * 通过创建时间段+仓库ID获取对应库存流水数据
+     * 
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventoryFlow> findWhSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid) {
+        return whSkuInventoryFlowDao.findWhSkuInventoryFlowByCreateTime(beginTime, endTime, ouid);
     }
 }

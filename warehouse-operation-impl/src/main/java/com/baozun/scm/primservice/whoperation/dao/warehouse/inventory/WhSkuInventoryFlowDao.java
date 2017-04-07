@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse.inventory;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,5 +44,12 @@ public interface WhSkuInventoryFlowDao extends BaseDao<WhSkuInventoryFlow, Long>
 
     @CommonQuery
     int saveOrUpdate(WhSkuInventoryFlow o);
+
+    /**
+     * 通过创建时间段+仓库ID获取对应库存流水数据
+     * 
+     * @return
+     */
+    List<WhSkuInventoryFlow> findWhSkuInventoryFlowByCreateTime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid);
 
 }
