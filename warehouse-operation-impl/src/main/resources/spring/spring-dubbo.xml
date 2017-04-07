@@ -161,4 +161,7 @@
 	
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager" ref="whSkuInventoryFlowManager" />
 	
+	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsInboundServiceManagerProxy" ref="wmsInboundServiceManagerProxy" />
+	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsOutboundServiceManagerProxy" ref="wmsOutboundServiceManagerProxy" />
+	
 </beans>
