@@ -492,15 +492,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
         // 获取工作类型
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("REPLENISHMENT", skuInventoryAllocatedCommand.getOuId());
-        // 根据容器ID获取容器CODE
-        Container outerContainer = new Container();
-        Container insideContainer = new Container();
-        if (skuInventoryAllocatedCommand.getOuterContainerId() != null) {
-            outerContainer = containerDao.findByIdExt(skuInventoryAllocatedCommand.getOuterContainerId(), skuInventoryAllocatedCommand.getOuId());
-        }
-        if (skuInventoryAllocatedCommand.getInsideContainerId() != null) {
-            insideContainer = containerDao.findByIdExt(skuInventoryAllocatedCommand.getInsideContainerId(), skuInventoryAllocatedCommand.getOuId());
-        }
         // 调编码生成器工作头实体标识
         String workCode = codeManager.generateCode(Constants.WMS, Constants.WHWORK_MODEL_URL, "", "WORK", null);
         // 封装数据
@@ -548,9 +539,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 库位--更新时获取数据
         whWorkCommand.setLocationCode(null);
         // 托盘--更新时获取数据
-        whWorkCommand.setOuterContainerCode(null == outerContainer ? null : outerContainer.getCode());
+        whWorkCommand.setOuterContainerCode(null);
         // 容器--更新时获取数据
-        whWorkCommand.setContainerCode(null == insideContainer ? null : insideContainer.getCode());
+        whWorkCommand.setContainerCode(null);
         // 创建时间
         whWorkCommand.setCreateTime(new Date());
         // 最后操作时间
