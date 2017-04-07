@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryFlowDao;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -38,6 +39,16 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void insertWhSkuInventoryFlow(WhSkuInventoryLog log) {
+        if (log.getInvTransactionType().equals(InvTransactionType.SHELF)) {
+            // 如果是上架库存事务类型 判断是否有库位信息
+            if (!StringUtil.isEmpty(log.getLocationCode())) {
+                // 有库位信息 才是有效的上架库存流失
+                saveWhSkuInventoryFlow(log);
+            }
+        }
+    }
+
+    private void saveWhSkuInventoryFlow(WhSkuInventoryLog log) {
         // 插入库存流水信息
         WhSkuInventoryFlow flow = new WhSkuInventoryFlow();
         BeanUtils.copyProperties(log, flow);
