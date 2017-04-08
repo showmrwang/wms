@@ -70,7 +70,7 @@ public interface WhOperationDao extends BaseDao<WhOperation, Long> {
      * @param ouId
      * @return
      */
-    WhOperationCommand findOperationCommandById(@Param("workId") Long workId, @Param("ouId") Long ouId);
+    WhOperationCommand findOperationCommandById(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /***
      * 查询作业信息

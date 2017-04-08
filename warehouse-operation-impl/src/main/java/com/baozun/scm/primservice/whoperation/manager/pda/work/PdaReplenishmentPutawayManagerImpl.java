@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.redis.manager.CacheManager;
-import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioExecLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentScanResultComamnd;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
@@ -43,7 +43,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 /***
@@ -90,7 +89,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         log.info("PdaReplenishmentPutawayManagerImpl putawayTipLocation is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
-        OperatioExecLineStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_EXEC_LINE + operationId.toString());
+        OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
@@ -116,11 +115,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
         Long locationId = command.getLcoationId();
-        OperatioExecLineStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_EXEC_LINE + operationId.toString());
+        OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-        Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getLocationToTurnoverBoxIds();
+        Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
         Set<Long> turnoverBoxIds = locToTurnoverBoxIds.get(locationId);
         ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId);
         Long turnoverBoxId = sRCmd.getTurnoverBoxId();
@@ -161,13 +160,17 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Long locationId = command.getLcoationId();
         Long userId = command.getUserId();
         String workCode = command.getWorkBarCode();
-        OperatioExecLineStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_EXEC_LINE + operationId.toString());
+        OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-        Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getLocationToTurnoverBoxIds();
+        Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();   //所有目标库位对应的周黄钻想
         Set<Long> turnoverBoxIds = locToTurnoverBoxIds.get(locationId);
         List<Long> locationIds = opExecLineCmd.getLocationIds();
+        String turnoverBoxCode = command.getTurnoverBoxCode();
+        ContainerCommand cmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+        //缓存上一个周转箱
+        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, cmd.getId());
         ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId);
         if(sRCmd.getIsNeedScanTurnoverBox()) {  //当前库位对应的周转箱扫描完毕
             Long turnoverBoxId = sRCmd.getTurnoverBoxId();
@@ -177,6 +180,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }else{//继续扫描下一个库位
             ReplenishmentScanResultComamnd  rishSRCmd =  pdaReplenishmentPutawayCacheManager.tipLocation(locationIds, operationId);
             if(rishSRCmd.getIsNeedScanLocation()) { //还有库位没有扫描，继续扫描库位
+                //如果存在库位则缓存上一个库位
+                pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheLoc(operationId, locationId);
                 Long locId = rishSRCmd.getLocationId();
                 Location location = whLocationDao.findByIdExt(locId, ouId);
                 if(null == location) {

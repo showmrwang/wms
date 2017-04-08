@@ -301,15 +301,15 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         }
         for(String code:outbounxBoxCodes) {
             if(null != code) {
-                OutBoundBoxType o = outBoundBoxTypeDao.findByCode(code, ouId);
-                if(null == o) {
-                    throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL );
-                }
-                // 验证容器Lifecycle是否有效
-                if (!o.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
-                    continue;
-                }
-                outbounxBox = o.getCode();
+//                OutBoundBoxType o = outBoundBoxTypeDao.findByCode(code, ouId);
+//                if(null == o) {
+//                    throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL );
+//                }
+//                // 验证容器Lifecycle是否有效
+//                if (!o.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+//                    continue;
+//                }
+                outbounxBox = code;
                 break;
             }
         }

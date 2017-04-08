@@ -77,7 +77,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         PickingScanResultCommand psRCmd = new PickingScanResultCommand();
         // 作业id        
         psRCmd.setOperationId(whOperationCommand.getId());
-        // 捡货方式        
+        // 捡货方式           
         if(whOperationCommand.getIsWholeCase() == false){
             psRCmd.setReplenishWay(Constants.REPLENISH_WAY_ONE);
         }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getPallets().size() > 0){
