@@ -45,4 +45,10 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * @return
      */
     OperationExecStatisticsCommand getOperationExecForGroup(ReplenishmentPutawayCommand replenishmentPutawayCommand);
+    
+    /***
+     * 补货上架取消
+     * @param operationId
+     */
+    public void cancelPattern(Long operationId,Integer cancelPattern);
 }

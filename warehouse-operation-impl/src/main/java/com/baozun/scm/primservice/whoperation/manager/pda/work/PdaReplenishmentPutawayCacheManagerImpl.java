@@ -30,7 +30,6 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
     public ReplenishmentScanResultComamnd tipLocation(List<Long> locationIds, Long operationId) {
         // TODO Auto-generated method stub
         log.info("PdaReplenishmentPutawayCacheManagerImpl tipLocation is start");
-        this.pdaReplenishPutwayRemoveAllCache(operationId);
         ReplenishmentScanResultComamnd command = new ReplenishmentScanResultComamnd();
         ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
         Long tipLocationId = null;
@@ -70,26 +69,30 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         Long turnoverBoxId = null;
         ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
         if(null == replenishment) {
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-        }
-        for(Long id:turnoverBoxIds) {
-            ArrayDeque<Long> tipTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
-            if(null == tipTurnoverBoxIds) {
-                 turnoverBoxId = id;
-                 break;
-            }else{
-                if(null == turnoverBoxIds || turnoverBoxIds.isEmpty()) {
-                    turnoverBoxId = id;
-                  break;
-              }else{
-                  if(tipTurnoverBoxIds.contains(id)){
-                      continue;
-                  }else{
-                      turnoverBoxId = id;
+            for(Long id:turnoverBoxIds) {
+                turnoverBoxId = id;
+                break;
+            }
+        }else{
+            for(Long id:turnoverBoxIds) {
+                ArrayDeque<Long> tipTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
+                if(null == tipTurnoverBoxIds) {
+                     turnoverBoxId = id;
+                     break;
+                }else{
+                    if(null == turnoverBoxIds || turnoverBoxIds.isEmpty()) {
+                        turnoverBoxId = id;
                       break;
+                  }else{
+                      if(tipTurnoverBoxIds.contains(id)){
+                          continue;
+                      }else{
+                          turnoverBoxId = id;
+                          break;
+                      }
                   }
-              }
-               
+                   
+                }
             }
         }
         if(null != turnoverBoxId){

@@ -23,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationComma
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -114,13 +115,16 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanLocation is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
-        Long locationId = command.getLcoationId();
+        Long locationId = command.getLcoationId();                            
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
         Set<Long> turnoverBoxIds = locToTurnoverBoxIds.get(locationId);
+        if(null == turnoverBoxIds || turnoverBoxIds.size() == 0){
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
         ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId);
         Long turnoverBoxId = sRCmd.getTurnoverBoxId();
         String containerCode = this.judeContainer(turnoverBoxId, ouId);
@@ -533,4 +537,17 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
 //        //清除所有缓存
 //        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
 //    }
+    
+    
+    /***
+     * 补货上架取消
+     * @param operationId
+     */
+    public void cancelPattern(Long operationId,Integer cancelPattern){
+        if(CancelPattern.PICKING_SCAN_LOC_CANCEL == cancelPattern){
+            cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());
+        }else if(CancelPattern.PICKING_TIP_CAR_CANCEL == cancelPattern){
+            cacheManager.remove(CacheConstants.OPERATIONEXEC_STATISTICS+operationId.toString());
+        }
+    }
 }

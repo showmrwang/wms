@@ -533,11 +533,11 @@ public final class Constants {
     /** 配置为目标库位 */
     public static final String TO_LOCATION = "TO_LOCATION";
 
-    /** 整托拣货流程 */
+    /** 非整托整箱拣货流程 */
     public static final Integer REPLENISH_WAY_ONE = 1;
     /** 整托拣货流程 */
     public static final Integer REPLENISH_WAY_TWO = 2;
-    /** 整托拣货流程 */
+    /** 整箱拣货流程 */
     public static final Integer REPLENISH_WAY_THREE = 3;
 
     /** 导入EXCEL 错误信息文件上传路径 zk 配置 */
