@@ -1,7 +1,10 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -34,6 +38,8 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WorkTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
@@ -44,7 +50,9 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
+import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("createInWarehouseMoveWorkManager")
 @Transactional
@@ -90,9 +98,98 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @return
      */
     @Override
-    public InWarehouseMoveWorkCommand saveAllocatedAndTobefilled(List<WhSkuInventoryCommand> whSkuInventoryCommandLst, Long ouId, Long userId) {
-        // TODO        
-        return null;
+    public InWarehouseMoveWorkCommand saveAllocatedAndTobefilled(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, List<WhSkuInventoryCommand> whSkuInventoryCommandLst) {
+        List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst = new ArrayList<WhSkuInventoryAllocatedCommand>();
+        List<WhSkuInventoryTobefilledCommand> whSkuInventoryTobefilledCommandLst = new ArrayList<WhSkuInventoryTobefilledCommand>();
+        Map<Long, Double> idAndQtyMap = new HashMap<Long, Double>();
+        idAndQtyMap = inWarehouseMoveWorkCommand.getIdAndQtyMap();
+        for(WhSkuInventoryCommand whSkuInventoryCommand : whSkuInventoryCommandLst){
+            // 分配库存            
+            WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand = new WhSkuInventoryAllocatedCommand();
+            whSkuInventoryAllocatedCommand.setSkuId(whSkuInventoryCommand.getSkuId());
+            whSkuInventoryAllocatedCommand.setLocationId(whSkuInventoryCommand.getLocationId());
+            whSkuInventoryAllocatedCommand.setOuterContainerId(whSkuInventoryCommand.getOuterContainerId());
+            whSkuInventoryAllocatedCommand.setInsideContainerId(whSkuInventoryCommand.getInsideContainerId());
+            whSkuInventoryAllocatedCommand.setCustomerId(whSkuInventoryCommand.getCustomerId());
+            whSkuInventoryAllocatedCommand.setStoreId(whSkuInventoryCommand.getStoreId());
+            whSkuInventoryAllocatedCommand.setOccupationCode(whSkuInventoryCommand.getOccupationCode());
+            whSkuInventoryAllocatedCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
+            whSkuInventoryAllocatedCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
+            whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getId()));
+            whSkuInventoryAllocatedCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
+            whSkuInventoryAllocatedCommand.setInvType(whSkuInventoryCommand.getInvType());
+            whSkuInventoryAllocatedCommand.setBatchNumber(whSkuInventoryCommand.getBatchNumber());
+            whSkuInventoryAllocatedCommand.setMfgDate(whSkuInventoryCommand.getMfgDate());
+            whSkuInventoryAllocatedCommand.setExpDate(whSkuInventoryCommand.getExpDate());
+            whSkuInventoryAllocatedCommand.setCountryOfOrigin(whSkuInventoryCommand.getCountryOfOrigin());
+            whSkuInventoryAllocatedCommand.setInvAttr1(whSkuInventoryCommand.getInvAttr1());
+            whSkuInventoryAllocatedCommand.setInvAttr2(whSkuInventoryCommand.getInvAttr2());
+            whSkuInventoryAllocatedCommand.setInvAttr3(whSkuInventoryCommand.getInvAttr3());
+            whSkuInventoryAllocatedCommand.setInvAttr4(whSkuInventoryCommand.getInvAttr4());
+            whSkuInventoryAllocatedCommand.setInvAttr5(whSkuInventoryCommand.getInvAttr4());
+            whSkuInventoryAllocatedCommand.setUuid(null);
+            whSkuInventoryAllocatedCommand.setOuId(whSkuInventoryCommand.getOuId());
+            whSkuInventoryAllocatedCommand.setLastModifyTime(whSkuInventoryCommand.getLastModifyTime());
+            whSkuInventoryAllocatedCommand.setReplenishmentRuleId(whSkuInventoryCommand.getReplenishmentRuleId());
+            WhSkuInventoryAllocated whSkuInventoryAllocated = new WhSkuInventoryAllocated();
+            // 复制数据        
+            BeanUtils.copyProperties(whSkuInventoryAllocatedCommand, whSkuInventoryAllocated);
+            // 内部对接码
+            try {
+                whSkuInventoryAllocatedCommand.setUuid(SkuInventoryUuid.invUuid(whSkuInventoryAllocated));
+                whSkuInventoryAllocated.setUuid(whSkuInventoryAllocatedCommand.getUuid());
+            } catch (Exception e) {
+                log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
+                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+            }
+            // 插入数据            
+            skuInventoryAllocatedDao.insert(whSkuInventoryAllocated);
+            // 待移入库存           
+            WhSkuInventoryTobefilledCommand whSkuInventoryTobefilledCommand = new WhSkuInventoryTobefilledCommand();
+            whSkuInventoryTobefilledCommand.setSkuId(whSkuInventoryCommand.getSkuId());
+            whSkuInventoryTobefilledCommand.setLocationId(inWarehouseMoveWorkCommand.getToLocationId());
+            whSkuInventoryTobefilledCommand.setOuterContainerId(whSkuInventoryCommand.getOuterContainerId());
+            whSkuInventoryTobefilledCommand.setInsideContainerId(whSkuInventoryCommand.getInsideContainerId());
+            whSkuInventoryTobefilledCommand.setCustomerId(whSkuInventoryCommand.getCustomerId());
+            whSkuInventoryTobefilledCommand.setStoreId(whSkuInventoryCommand.getStoreId());
+            whSkuInventoryTobefilledCommand.setOccupationCode(whSkuInventoryCommand.getOccupationCode());
+            whSkuInventoryTobefilledCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
+            whSkuInventoryTobefilledCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
+            whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getId()));
+            whSkuInventoryTobefilledCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
+            whSkuInventoryTobefilledCommand.setInvType(whSkuInventoryCommand.getInvType());
+            whSkuInventoryTobefilledCommand.setBatchNumber(whSkuInventoryCommand.getBatchNumber());
+            whSkuInventoryTobefilledCommand.setMfgDate(whSkuInventoryCommand.getMfgDate());
+            whSkuInventoryTobefilledCommand.setExpDate(whSkuInventoryCommand.getExpDate());
+            whSkuInventoryTobefilledCommand.setCountryOfOrigin(whSkuInventoryCommand.getCountryOfOrigin());
+            whSkuInventoryTobefilledCommand.setInvAttr1(whSkuInventoryCommand.getInvAttr1());
+            whSkuInventoryTobefilledCommand.setInvAttr2(whSkuInventoryCommand.getInvAttr2());
+            whSkuInventoryTobefilledCommand.setInvAttr3(whSkuInventoryCommand.getInvAttr3());
+            whSkuInventoryTobefilledCommand.setInvAttr4(whSkuInventoryCommand.getInvAttr4());
+            whSkuInventoryTobefilledCommand.setInvAttr5(whSkuInventoryCommand.getInvAttr5());
+            whSkuInventoryTobefilledCommand.setUuid(null);
+            whSkuInventoryTobefilledCommand.setOuId(whSkuInventoryCommand.getOuId());
+            whSkuInventoryTobefilledCommand.setLastModifyTime(whSkuInventoryCommand.getLastModifyTime());
+            WhSkuInventoryTobefilled whSkuInventoryTobefilled = new WhSkuInventoryTobefilled();
+            //复制数据        
+            BeanUtils.copyProperties(whSkuInventoryTobefilledCommand, whSkuInventoryTobefilled);
+            // 内部对接码
+            try {
+                whSkuInventoryTobefilledCommand.setUuid(SkuInventoryUuid.invUuid(whSkuInventoryTobefilled));
+                whSkuInventoryTobefilled.setUuid(whSkuInventoryTobefilledCommand.getUuid());
+            } catch (Exception e) {
+                log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
+                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+            }
+            // 插入数据            
+            skuInventoryTobefilledDao.insert(whSkuInventoryTobefilled);
+            // 插入返回数据           
+            whSkuInventoryAllocatedCommandLst.add(whSkuInventoryAllocatedCommand);
+            whSkuInventoryTobefilledCommandLst.add(whSkuInventoryTobefilledCommand);
+        }
+        inWarehouseMoveWorkCommand.setWhSkuInventoryAllocatedCommandLst(whSkuInventoryAllocatedCommandLst);
+        inWarehouseMoveWorkCommand.setWhSkuInventoryTobefilledCommandLst(whSkuInventoryTobefilledCommandLst);
+        return inWarehouseMoveWorkCommand;
     }
 
     /**
@@ -106,11 +203,12 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     public void createInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, Long ouId, Long userId) {
         try {
             WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand = inWarehouseMoveWorkCommand.getWhSkuInventoryAllocatedCommandLst().get(0);
+            Long toLocationId = inWarehouseMoveWorkCommand.getToLocationId();
             // 6.创建库内移动工作头
             String inWarehouseMoveWorkCode = this.saveInWarehouseMoveWork(whSkuInventoryAllocatedCommand, ouId, userId);
             // 7.创建库内移动工作明细
             for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : inWarehouseMoveWorkCommand.getWhSkuInventoryAllocatedCommandLst()){
-                this.saveInWarehouseMoveWorkLine(inWarehouseMoveWorkCode, skuInventoryAllocatedCommand, userId);
+                this.saveInWarehouseMoveWorkLine(inWarehouseMoveWorkCode, skuInventoryAllocatedCommand, toLocationId, userId);
             }
             // 8.更新工作头
             this.updateInWarehouseMoveWork(inWarehouseMoveWorkCode, whSkuInventoryAllocatedCommand);
@@ -154,7 +252,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
         //工作类型编码
         whWorkCommand.setWorkType(null == workType ? null : workType.getCode());
         //工作类别编码 
-        whWorkCommand.setWorkCategory("REPLENISHMENT");
+        whWorkCommand.setWorkCategory("IN_WAREHOUSE_MOVE");
         //是否锁定 默认值：1
         whWorkCommand.setIsLocked(true);
         //是否已迁出        
@@ -223,7 +321,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @param skuInventoryCommand
      * @return
      */
-    private void saveInWarehouseMoveWorkLine(String inWarehouseMoveWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand,  Long userId) {
+    private void saveInWarehouseMoveWorkLine(String inWarehouseMoveWorkCode, WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long toLocationId, Long userId) {
         
         // 判断是否整托整箱
         Boolean isWholeCase = false; 
@@ -372,7 +470,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
         //使用货格编码数
         whWorkLineCommand.setUseContainerLatticeNo(null);
         //目标库位 --捡货模式没有
-        whWorkLineCommand.setToLocationId(skuInventoryAllocatedCommand.getToLocationId());
+        whWorkLineCommand.setToLocationId(toLocationId);
         //目标库位外部容器 --捡货模式没有
         whWorkLineCommand.setToOuterContainerId(null);
         //目标库位内部容器 --捡货模式没有

@@ -29,7 +29,7 @@ public interface CreateInWarehouseMoveWorkManager extends BaseManager {
      * @param userId
      * @return
      */
-    public InWarehouseMoveWorkCommand saveAllocatedAndTobefilled(List<WhSkuInventoryCommand> whSkuInventoryCommandLst, Long ouId, Long userId);
+    public InWarehouseMoveWorkCommand saveAllocatedAndTobefilled(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, List<WhSkuInventoryCommand> whSkuInventoryCommandLst);
     
     /**
      * [业务方法] 波次中创建补货工作和作业

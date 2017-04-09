@@ -41,19 +41,24 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids,String toLocation, Boolean isExecute, Long ouId, Long userId) {
+    public Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids, Double[] moveQtys, Long toLocationId, Boolean isExecute, Long ouId, Long userId) {
         Boolean isSuccess = true;
         // 1.系统校验
         Boolean systemCheck = this.systemCheck();
+        if(false == systemCheck){
+            return false;    
+        }
         // 2.将库存行根据原始库位与目标库位进行分组
-        Map<String, List<WhSkuInventoryCommand>> skuInventoryMap = this.getSkuInventoryForGroup(ids, uuids, ouId);
+        InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(ids, uuids, moveQtys, ouId);
+        inWarehouseMoveWorkCommand.setToLocationId(toLocationId);
+        Map<String, List<WhSkuInventoryCommand>> skuInventoryMap = inWarehouseMoveWorkCommand.getSkuInventoryMap();
         // 3.循环库存分组信息分别创建工作
         for(String key : skuInventoryMap.keySet()){
             // 4.获取每个分组的所有库存明细数据
             List<WhSkuInventoryCommand> skuInventoryCommandLst = skuInventoryMap.get(key);
-            // 5.库存分配（生成分配库存与待移入库存）
-            InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = createInWarehouseMoveWorkManager.saveAllocatedAndTobefilled(skuInventoryCommandLst, ouId, userId);
             try {
+                // 5.库存分配（生成分配库存与待移入库存）
+                inWarehouseMoveWorkCommand = createInWarehouseMoveWorkManager.saveAllocatedAndTobefilled(inWarehouseMoveWorkCommand, skuInventoryCommandLst);
                 // 6-9.创建库内移动工作               
                 createInWarehouseMoveWorkManager.createInWarehouseMoveWork(inWarehouseMoveWorkCommand, ouId, userId);
                 // 10.是否直接执行
@@ -63,11 +68,11 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 }
             } catch (Exception e) {
                 log.error(e + "");
+                isSuccess = false;
                 continue;
             }
         }
         // 12.所有统计分组是否都已创建工作
-        
         return isSuccess;
     }
 
@@ -100,8 +105,10 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      * @param ouId
      * @return
      */
-    private Map<String, List<WhSkuInventoryCommand>> getSkuInventoryForGroup(Long[] ids, String[] uuids,  Long ouId) {
+    private InWarehouseMoveWorkCommand getSkuInventoryForGroup(Long[] ids, String[] uuids, Double[] moveQtys, Long ouId) {
+        InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = new InWarehouseMoveWorkCommand();
         Map<String, List<WhSkuInventoryCommand>> skuInventoryMap = new HashMap<String, List<WhSkuInventoryCommand>>();
+        Map<Long, Double> idAndQtyMap = new HashMap<Long, Double>();
         try {
             for(int i = 0; i < ids.length; i++){
                 List<WhSkuInventoryCommand> skuInventoryCommandLst = new ArrayList<WhSkuInventoryCommand>();
@@ -111,12 +118,16 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 }
                 skuInventoryCommandLst.add(whSkuInventoryCommand);
                 skuInventoryMap.put(whSkuInventoryCommand.getLocationCode(), skuInventoryCommandLst);
+                idAndQtyMap.put(ids[i], moveQtys[i]);
             }
         } catch (Exception e) {
             log.error(e + "");
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        return skuInventoryMap;
+        
+        inWarehouseMoveWorkCommand.setSkuInventoryMap(skuInventoryMap);
+        inWarehouseMoveWorkCommand.setIdAndQtyMap(idAndQtyMap);
+        return inWarehouseMoveWorkCommand;
     }
     
 }

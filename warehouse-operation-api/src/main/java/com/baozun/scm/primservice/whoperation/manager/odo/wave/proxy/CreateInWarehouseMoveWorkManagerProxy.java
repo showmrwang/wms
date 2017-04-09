@@ -13,6 +13,6 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @param toLocation
      * @return
      */
-    Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids,String toLocation, Boolean isExecute, Long ouId, Long userId);
+    Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId);
     
 }
