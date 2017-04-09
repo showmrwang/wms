@@ -31,7 +31,7 @@ public class WhOperationCommand extends BaseModel {
     
     //columns START
     /** 主键ID */
-    private java.lang.Long id;
+//    private java.lang.Long id;
     /** 作业号 */
     private java.lang.String code;
     /** 状态 */

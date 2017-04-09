@@ -1220,7 +1220,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     public PickingScanResultCommand scanSku(PickingScanResultCommand command, WhSkuCommand skuCmd, Boolean isTabbInvTotal, String operationWay) {
         log.info("PdaPickingWorkManagerImpl scanSku is start");
         Long operationId = command.getOperationId();
-        Long functionId = command.getFunctionId();
         Long locationId = command.getLocationId();
         String outBoundBoxCode = command.getOutBounxBoxCode();
         Long userId = command.getUserId();
@@ -1725,23 +1724,30 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if (!StringUtils.isEmpty(outBoundBoxCode) && null != outBoundBoxId) { // 判断当前的出库箱和拣货的出库箱是否一致
             if (!outBoundBoxCode.equals(operationExecLine.getUseOutboundboxCode())) { // 不一致的时候
                 operationExecLine.setIsUseNew(true);
-                operationExecLine.setOldOutboundboxId(operationExecLine.getUseOutboundboxId());
-                operationExecLine.setOldOutboundboxCode(operationExecLine.getUseOutboundboxCode());
-                operationExecLine.setUseOutboundboxCode(outBoundBoxCode);
-                operationExecLine.setUseOutboundboxId(outBoundBoxId);
+            }else{//一致， 没有满箱的情况
+                operationExecLine.setIsUseNew(false);
             }
+            operationExecLine.setUseOutboundboxCode(outBoundBoxCode);
+            operationExecLine.setUseOutboundboxId(outBoundBoxId);
+            operationExecLine.setOldOutboundboxId(operationExecLine.getUseOutboundboxId());
+            operationExecLine.setOldOutboundboxCode(operationExecLine.getUseOutboundboxCode());
         }
         if (null != turnoverBoxId) { // 判断当前的周转箱和拣货的周转箱是否一致
             if (turnoverBoxId.equals(operationExecLine.getUseContainerId())) {
+                operationExecLine.setIsUseNew(false);
+//                operationExecLine.setOldContainerId(operationExecLine.getUseContainerId());
+//                operationExecLine.setUseContainerId(turnoverBoxId);
+//                operationExecLine.setToInsideContainerId(turnoverBoxId);
+            }else{//有满箱的情况
                 operationExecLine.setIsUseNew(true);
-                operationExecLine.setOldContainerId(operationExecLine.getUseContainerId());
-                operationExecLine.setUseContainerId(turnoverBoxId);
-                operationExecLine.setToInsideContainerId(turnoverBoxId);
             }
+            operationExecLine.setOldContainerId(operationExecLine.getUseContainerId());
+            operationExecLine.setUseContainerId(turnoverBoxId);
+            operationExecLine.setToInsideContainerId(turnoverBoxId);
         }
         if (null != outerContainerId && null != insideContainerId) {// 整托 ,使用新的托盘
             if (outerContainerId.equals(operationExecLine.getUseOuterContainerId())) {
-                operationExecLine.setIsUseNew(true);
+                operationExecLine.setIsUseNew(false);
                 operationExecLine.setOldContainerId(operationExecLine.getUseContainerId());
                 operationExecLine.setUseContainerId(insideContainerId);
                 operationExecLine.setOldOuterContainerId(operationExecLine.getUseOuterContainerId());
@@ -1752,7 +1758,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         if (null == outerContainerId && null != insideContainerId) { // 整箱
             if (insideContainerId.equals(operationExecLine.getUseContainerId())) {
-                operationExecLine.setIsUseNew(true);
+                operationExecLine.setIsUseNew(false);
                 operationExecLine.setOldContainerId(operationExecLine.getUseContainerId());
                 operationExecLine.setUseContainerId(insideContainerId);
                 operationExecLine.setToInsideContainerId(insideContainerId);

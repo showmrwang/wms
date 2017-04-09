@@ -36,31 +36,16 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         for(Long id:locationIds) {
             if(null == replenishment){
                 tipLocationId = id;
-                replenishment = new ReplenishmentPutawayCacheCommand();
-                ArrayDeque<Long> tipLocationIds = new ArrayDeque<Long>();
-                tipLocationIds.addFirst(id);
-                replenishment.setTipLocationIds(tipLocationIds);
-                cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
                 break;
             }else{
                 ArrayDeque<Long> tipLocationIds = replenishment.getTipLocationIds(); 
                 if(null == tipLocationIds || tipLocationIds.isEmpty()) {
-                    cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
-                    ReplenishmentPutawayCacheCommand replenishmentCmd = new ReplenishmentPutawayCacheCommand();
-                    ArrayDeque<Long> cacheLocationIds = new ArrayDeque<Long>();
-                    cacheLocationIds.addFirst(id);
-                    replenishmentCmd.setTipLocationIds(cacheLocationIds);
-                    cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishmentCmd, CacheConstants.CACHE_ONE_DAY);
                     tipLocationId = id;
                     break;
                 }else{
                     if(tipLocationIds.contains(id)) {
                         continue;
-                    }else{
-                        tipLocationIds.addFirst(id);
                     }
-                    replenishment.setTipLocationIds(tipLocationIds);
-                    cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
                     tipLocationId = id;
                     break;
                 }
@@ -84,26 +69,29 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         Long turnoverBoxId = null;
         ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
         if(null == replenishment) {
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-        }
-        for(Long id:turnoverBoxIds) {
-            ArrayDeque<Long> tipTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
-            if(null == tipTurnoverBoxIds) {
-                 tipTurnoverBoxIds = new ArrayDeque<Long>(); 
-                 tipTurnoverBoxIds.addFirst(id);
-                 replenishment.setTipTurnoverBoxIds(tipTurnoverBoxIds);
-                 cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
-                 turnoverBoxId = id;
-                 break;
-            }else{
-                if(tipTurnoverBoxIds.contains(id)){
-                    continue;
+            for(Long id:turnoverBoxIds) {
+                turnoverBoxId = id;
+                break;
+            }
+        }else{
+            for(Long id:turnoverBoxIds) {
+                ArrayDeque<Long> tipTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
+                if(null == tipTurnoverBoxIds) {
+                     turnoverBoxId = id;
+                     break;
                 }else{
-                    tipTurnoverBoxIds.addFirst(id);
-                    replenishment.setTipTurnoverBoxIds(tipTurnoverBoxIds);
-                    cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
-                    turnoverBoxId = id;
-                    break;
+                    if(null == turnoverBoxIds || turnoverBoxIds.isEmpty()) {
+                        turnoverBoxId = id;
+                      break;
+                  }else{
+                      if(tipTurnoverBoxIds.contains(id)){
+                          continue;
+                      }else{
+                          turnoverBoxId = id;
+                          break;
+                      }
+                  }
+                   
                 }
             }
         }
@@ -117,19 +105,82 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         return command;
     }
     
+    
+    
 
     /***
      * 清楚补货上架缓存
      * @param operationId
      */
+    @Override
      public void pdaReplenishPutwayRemoveAllCache(Long operationId){
          log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is start");
-         ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
-         if(null == replenishment) {
-             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-         }
          cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());
+         cacheManager.remove(CacheConstants.OPERATIONEXEC_STATISTICS+operationId.toString());
          log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is end");
      }
+     
 
+     /**
+      * 补货上架缓存库位
+      * @param operationId
+      * @param locationId
+      */
+    @Override
+     public void pdaReplenishPutwayCacheLoc(Long operationId,Long locationId){
+        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+            if(null == replenishment){
+                replenishment = new ReplenishmentPutawayCacheCommand();
+                ArrayDeque<Long> tipLocationIds = new ArrayDeque<Long>();
+                tipLocationIds.addFirst(locationId);
+                replenishment.setTipLocationIds(tipLocationIds);
+                cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+            }else{
+                ArrayDeque<Long> tipLocationIds = replenishment.getTipLocationIds(); 
+                if(null == tipLocationIds || tipLocationIds.isEmpty()) {
+                    tipLocationIds = new ArrayDeque<Long>();
+                    tipLocationIds.addFirst(locationId);
+                    replenishment.setTipLocationIds(tipLocationIds);
+                    cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+                }else{
+                    if(!tipLocationIds.contains(locationId)) {
+                        tipLocationIds.addFirst(locationId);
+                        replenishment.setTipLocationIds(tipLocationIds);
+                        cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+                    }
+                }
+            }
+     }
+    
+    
+    /**
+     * 补货上架缓存周转箱
+     * @param operationId
+     * @param locationId
+     */
+    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId){
+        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+        if(null == replenishment){
+            replenishment = new ReplenishmentPutawayCacheCommand();
+            ArrayDeque<Long> tipTurnoverBoxIds = new ArrayDeque<Long>();
+            tipTurnoverBoxIds.addFirst(turnoverBoxId);
+            replenishment.setTipTurnoverBoxIds(tipTurnoverBoxIds);
+            cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+        }else{
+            ArrayDeque<Long> tipTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
+            if(null == tipTurnoverBoxIds || tipTurnoverBoxIds.isEmpty()) {
+                 tipTurnoverBoxIds = new ArrayDeque<Long>();
+                tipTurnoverBoxIds.addFirst(turnoverBoxId);
+                replenishment.setTipTurnoverBoxIds(tipTurnoverBoxIds);
+                cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+            }else{
+                if(!tipTurnoverBoxIds.contains(turnoverBoxId)) {
+                    tipTurnoverBoxIds.addFirst(turnoverBoxId);
+                    replenishment.setTipTurnoverBoxIds(tipTurnoverBoxIds);
+                    cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+                }
+            }
+        }
+        
+    }
 }

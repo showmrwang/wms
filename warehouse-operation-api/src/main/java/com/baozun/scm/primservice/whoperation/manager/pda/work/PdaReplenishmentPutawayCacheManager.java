@@ -29,4 +29,22 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      * @param operationId
      */
     public void pdaReplenishPutwayRemoveAllCache(Long operationId);
+    
+    
+    /**
+     * 补货上架缓存库位
+     * @param operationId
+     * @param locationId
+     */
+    public void pdaReplenishPutwayCacheLoc(Long operationId,Long locationId);
+    
+    
+    
+
+    /**
+     * 补货上架缓存周转箱
+     * @param operationId
+     * @param locationId
+     */
+    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId);
 }

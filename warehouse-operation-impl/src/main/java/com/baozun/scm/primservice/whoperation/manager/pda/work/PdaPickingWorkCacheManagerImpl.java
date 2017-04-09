@@ -301,15 +301,15 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         }
         for(String code:outbounxBoxCodes) {
             if(null != code) {
-                OutBoundBoxType o = outBoundBoxTypeDao.findByCode(code, ouId);
-                if(null == o) {
-                    throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL );
-                }
-                // 验证容器Lifecycle是否有效
-                if (!o.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
-                    continue;
-                }
-                outbounxBox = o.getCode();
+//                OutBoundBoxType o = outBoundBoxTypeDao.findByCode(code, ouId);
+//                if(null == o) {
+//                    throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL );
+//                }
+//                // 验证容器Lifecycle是否有效
+//                if (!o.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+//                    continue;
+//                }
+                outbounxBox = code;
                 break;
             }
         }
@@ -3233,8 +3233,24 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                //先删除托盘上的
                if(null != locOuterContainerIds  && locOuterContainerIds.size() != 0) {
                    Set<Long> outerContainerIds = locOuterContainerIds.get(locationId);
-                   for(Long outerId:outerContainerIds){
-                       Set<Long> insideIds = outerInsideId.get(outerId);
+                   if(null != outerContainerIds){
+                       for(Long outerId:outerContainerIds){
+                           Set<Long> insideIds = outerInsideId.get(outerId);
+                           //先清楚内部容器的sku
+                           for(Long insideId:insideIds) {
+                               Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
+                               for(Long skuId:skuIds){
+                                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
+                               }
+                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString());
+                           }
+                       }
+                   }
+               }
+               //在删库位上的货箱
+               if(null != locInsideContainerIds && locInsideContainerIds.size() != 0) {
+                   Set<Long> insideIds = locInsideContainerIds.get(locationId);
+                   if(null != insideIds) {
                        //先清楚内部容器的sku
                        for(Long insideId:insideIds) {
                            Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
@@ -3243,18 +3259,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                            }
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString());
                        }
-                   }
-               }
-               //在删库位上的货箱
-               if(null != locInsideContainerIds && locInsideContainerIds.size() != 0) {
-                   Set<Long> insideIds = locInsideContainerIds.get(locationId);
-                   //先清楚内部容器的sku
-                   for(Long insideId:insideIds) {
-                       Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
-                       for(Long skuId:skuIds){
-                           cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
-                       }
-                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString());
                    }
                }
                
@@ -3274,6 +3278,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                //清楚作业明细
                cacheManager.remove(CacheConstants.OPERATION_LINE+operationId.toString());
                cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+               cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS+ operationId.toString());
            }
            
            log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is end");
