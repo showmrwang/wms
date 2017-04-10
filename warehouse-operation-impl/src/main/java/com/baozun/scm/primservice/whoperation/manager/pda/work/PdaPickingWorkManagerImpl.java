@@ -235,6 +235,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 根据作业id获取作业明细信息
         List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), whOperationCommand.getOuId());
         for (WhOperationLineCommand operationLine : operationLineList) {
+            // 计划量减执行量
+            int lineQty =  operationLine.getQty().compareTo(operationLine.getCompleteQty());
+            // 如果计划量减执行量等于0，跳出循环
+            if(0 == lineQty){ continue; }
             // 流程相关统计信息
             if (whOperationCommand.getIsWholeCase() == false) {
                 // 所有小车
