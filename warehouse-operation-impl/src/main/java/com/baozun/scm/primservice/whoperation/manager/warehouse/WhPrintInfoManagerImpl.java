@@ -47,5 +47,10 @@ public class WhPrintInfoManagerImpl extends BaseManagerImpl implements WhPrintIn
     public List<WhPrintInfo> findByOutboundboxCodeAndPrintType(String outboundboxCode, String checkingPrint, Long ouId) {
         return whPrintInfoDao.findByOutboundboxCodeAndPrintType(outboundboxCode, checkingPrint, ouId);
     }
+
+    @Override
+    public void saveOrUpdate(WhPrintInfo whPrintInfo) {
+        whPrintInfoDao.insert(whPrintInfo);
+    }
     
 }

@@ -43,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
@@ -57,6 +58,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -95,6 +97,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     private OdoManager odoManager;
     @Autowired
     private WhSkuManager whSkuManager;
+    @Autowired
+    private ContainerDao containerDao;
 
 
     /**
@@ -116,8 +120,25 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 List<Long> idsList = new ArrayList<Long>();
                 for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
                    List<WhPrintInfo> whPrintInfoLst = whPrintInfoManager.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
-                   if(null == whPrintInfoLst){
-                       idsList.add(whCheckingCommand.getId());    
+                   if(null == whPrintInfoLst || 0 == whPrintInfoLst.size()){
+                       idsList.add(whCheckingCommand.getId());
+                       WhPrintInfo whPrintInfo = new WhPrintInfo();
+                       whPrintInfo.setFacilityId(whCheckingCommand.getFacilityId());
+                       whPrintInfo.setContainerId(whCheckingCommand.getContainerId());
+                       Container container = containerDao.findByIdExt(whCheckingCommand.getContainerId(), whCheckingCommand.getOuId());
+                       whPrintInfo.setContainerCode(container.getCode());
+                       whPrintInfo.setBatch(whCheckingCommand.getBatch());
+                       whPrintInfo.setWaveCode(whCheckingCommand.getWaveCode());
+                       whPrintInfo.setOuId(whCheckingCommand.getOuId());
+                       whPrintInfo.setOuterContainerId(whCheckingCommand.getOuterContainerId());
+                       Container outerContainer = containerDao.findByIdExt(whCheckingCommand.getOuterContainerId(), whCheckingCommand.getOuId());
+                       whPrintInfo.setOuterContainerCode(outerContainer.getCode());
+                       whPrintInfo.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
+                       whPrintInfo.setOutboundboxId(whCheckingCommand.getOutboundboxId());
+                       whPrintInfo.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
+                       whPrintInfo.setPrintType(checkingPrintArray[i]);
+                       whPrintInfo.setPrintCount(1);
+                       whPrintInfoManager.saveOrUpdate(whPrintInfo);
                    }
                 }
                 try {

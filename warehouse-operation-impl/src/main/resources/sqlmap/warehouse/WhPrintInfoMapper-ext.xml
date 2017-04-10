@@ -96,4 +96,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findByOutboundboxCodeAndPrintType" resultMap="WhPrintInfoResultExt">
+    	select 
+    		<include refid="whPrintInfoColumnsExt" />
+	   	from  
+	   		t_wh_print_info 
+	   	where
+			outboundbox_code = #{outboundboxCode}
+			and print_type = #{checkingPrint}
+	   		and ou_id = #{ouid}
+    </select>
+	
 </mapper>
