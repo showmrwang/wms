@@ -25,6 +25,9 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 
 public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
@@ -42,5 +45,9 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhChecking o);
+
+    WeightingCommand findByWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
+
+    WeightingCommand findByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 
 }
