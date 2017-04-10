@@ -16,6 +16,8 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryFlowDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
@@ -40,9 +42,11 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void insertWhSkuInventoryFlow(WhSkuInventoryLog log) {
+        logger.info("WhSkuInventoryFlowManagerImpl.insertWhSkuInventoryFlow begin!");
         // 校验是否需要生成库存流水信息
         boolean checkFlow = checkFlow(log);
         if (checkFlow) {
+            Long count = 0L;
             // 插入库存流水信息
             WhSkuInventoryFlow flow = new WhSkuInventoryFlow();
             BeanUtils.copyProperties(log, flow);
@@ -59,8 +63,13 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
                     flow.setOdoType(odo.getOdoType());
                 }
             }
-            whSkuInventoryFlowDao.insert(flow);
+            count = whSkuInventoryFlowDao.insert(flow);
+            if (count.intValue() == 0) {
+                logger.error("WhSkuInventoryFlowManagerImpl insertWhSkuInventoryFlow error");
+                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            }
         }
+        logger.info("WhSkuInventoryFlowManagerImpl.insertWhSkuInventoryFlow end!");
     }
 
     /**

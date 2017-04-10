@@ -12,7 +12,7 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.confirm;
+package com.baozun.scm.primservice.whinterface.model.outbound;
 
 import java.util.Date;
 
@@ -23,13 +23,14 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  * 
  *
  */
-public class WhOdoStatusConfirm extends BaseModel {
+public class WmsOutBoundStatusConfirm extends BaseModel {
+
+
 
     /**
      * 
      */
-    private static final long serialVersionUID = -2977200582165857673L;
-
+    private static final long serialVersionUID = 8335217566158955109L;
     /** 上位系统出库单号 */
     private String extOdoCode;
     /** wms出库单号 */
@@ -40,8 +41,8 @@ public class WhOdoStatusConfirm extends BaseModel {
     private String customerCode;
     /** 店铺编码 */
     private String storeCode;
-    /** 组织仓库ID */
-    private Long ouId;
+    /** 组织仓库Code */
+    private String whCode;
     /** 创建时间 */
     private Date createTime;
     /** 数据来源 区分上位系统 */
@@ -87,12 +88,12 @@ public class WhOdoStatusConfirm extends BaseModel {
         this.storeCode = storeCode;
     }
 
-    public Long getOuId() {
-        return ouId;
+    public String getWhCode() {
+        return whCode;
     }
 
-    public void setOuId(Long ouId) {
-        this.ouId = ouId;
+    public void setWhCode(String whCode) {
+        this.whCode = whCode;
     }
 
     public Date getCreateTime() {

@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.confirm;
 
 import java.util.Date;
+import java.util.List;
 
 import lark.common.annotation.MoreDB;
 
@@ -12,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.confirm.WhOdoStatusConfirmDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("whOdoStatusConfirmManager")
 @Transactional
@@ -47,8 +49,6 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
         Customer c = getCustomerByRedis(whOdo.getCustomerId());
         // 获取店铺信息
         Store s = getStoreByRedis(whOdo.getStoreId());
-        // 获取仓库信息
-        Warehouse w = getWhToRedis(whOdo.getOuId());
         // 生成出库单状态反馈数据
         WhOdoStatusConfirm odo = new WhOdoStatusConfirm();
         odo.setCustomerCode(c.getCustomerCode());
@@ -56,11 +56,30 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
         odo.setExtOdoCode(whOdo.getExtCode());
         odo.setWmsOdoCode(whOdo.getOdoCode());
         odo.setWmsOdoStatus(Integer.parseInt(whOdo.getOdoStatus()));
-        odo.setWhCode(w.getCode());
         odo.setOuId(whOdo.getOuId());
         odo.setCreateTime(new Date());
+        odo.setDataSource(whOdo.getDataSource());
         count = whOdoStatusConfirmDao.insert(odo);
+        if (count.intValue() == 0) {
+            log.error("WhOdoStatusConfirmManagerImpl saveWhOdoStatusConfirm error");
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
         log.info("WhOdoStatusConfirmManagerImpl.saveWhOdoStatusConfirm end!");
         return count.intValue();
+    }
+
+    /**
+     * 通过创建时间段+仓库ID+数据来源获取对应出库单状态反馈数据
+     * 
+     * @param beginTime
+     * @param endTime
+     * @param ouid
+     * @param dataSource
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdoStatusConfirm> findWhOdoStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
+        return null;
     }
 }
