@@ -752,7 +752,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   }else{
                       cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
                   }
-              }else{
+              }
+              if(null == cacheInsideContainerIds){
                   cacheInsideContainerIds = new ArrayDeque<Long>();
               }
               cacheInsideContainerIds.add(insideContainerId);
