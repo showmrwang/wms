@@ -1,8 +1,9 @@
 package com.baozun.scm.primservice.whoperation.util;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * 时间格式化
@@ -13,16 +14,52 @@ import java.util.Date;
 public class DateUtil {
 
     /**
-     * String转date
+     * <p>
+     * Parses a string representing a date by trying a variety of different parsers.
+     * </p>
      * 
-     * @param date
-     * @param format
-     * @return
-     * @throws ParseException
+     * <p>
+     * The parse will try each parse pattern in turn. A parse is only deemed successful if it parses
+     * the whole of the input string. If no parse patterns match, a ParseException is thrown.
+     * </p>
+     * The parser will be lenient toward the parsed date.
+     * 
+     * @param str the date to parse, not null
+     * @param parsePatterns the date format patterns to use, see SimpleDateFormat, not null
+     * @return the parsed date,when prase exceprion,then reun null.
+     * 
      */
-    public static Date getDateFormat(String date, String format) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        return sdf.parse(date);
+    public static Date parseDate(final String str, final String... parsePatterns) {
+        try {
+            return DateUtils.parseDate(str, parsePatterns);
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    /**
+     * <p>
+     * Formats a date/time into a specific pattern.
+     * </p>
+     * 
+     * @param date the date to format, not null
+     * @param pattern the pattern to use to format the date, not null
+     * @return the formatted date
+     */
+    public static String formatDate(Date date, String pattern) {
+        return DateFormatUtils.format(date, pattern);
+    }
+
+    /**
+     * <p>
+     * Format current date/time
+     * </p>
+     * 
+     * @param pattern the pattern to use to format the date, not null
+     * @return the formatted date
+     */
+    public static String getSysDateFormat(String pattern) {
+        return formatDate(new Date(), pattern);
     }
 
     /**
@@ -31,13 +68,18 @@ public class DateUtil {
      * @return
      */
     public static String getSysDate() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMM");// 设置日期格式
-        return df.format(new Date());// new Date()为获取当前系统时间
+        return getSysDateFormat("yyyyMM");
     }
 
-    public static String getSysDateFormat(String format) {
-        SimpleDateFormat df = new SimpleDateFormat(format);// 设置日期格式
-        return df.format(new Date());// new Date()为获取当前系统时间
+    /**
+     * String转date
+     * 
+     * @param date
+     * @param format
+     * @return
+     * @throws ParseException
+     */
+    public static Date getDateFormat(String date, String format) throws ParseException {
+        return parseDate(date, format);
     }
-
 }
