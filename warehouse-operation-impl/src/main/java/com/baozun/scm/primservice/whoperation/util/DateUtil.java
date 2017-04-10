@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.util;
 
 import java.text.ParseException;
 import java.util.Date;
+
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -12,6 +13,18 @@ import org.apache.commons.lang3.time.DateUtils;
  * 
  */
 public class DateUtil {
+
+
+    /** yyyy-MM-dd */
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+    /** yyyyMMdd */
+    public static final String DATE_FORMAT = "yyyyMMdd";
+    /** HH:mm:ss */
+    public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+    /** yyyy-MM-dd HH:mm:ss */
+    public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    /** yyyy年MM月dd日 */
+    public static final String CN_DATE_FORMAT = "yyyy年MM月dd日";
 
     /**
      * <p>
