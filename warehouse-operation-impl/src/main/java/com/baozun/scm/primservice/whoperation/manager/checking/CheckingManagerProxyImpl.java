@@ -42,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
+import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
@@ -320,7 +321,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundboxCommand.setProductName(whCheckingCommand.getProductName());
         whOutboundboxCommand.setTimeEffectCode(whCheckingCommand.getTimeEffectCode());
         whOutboundboxCommand.setTimeEffectName(whCheckingCommand.getTimeEffectName());
-        whOutboundboxCommand.setStatus(whCheckingCommand.getStatus().toString());
+        whOutboundboxCommand.setStatus(OutboundboxStatus.NEW);
         whOutboundboxCommand.setOuId(whCheckingCommand.getOuId());
         whOutboundboxCommand.setOdoId(null);
         whOutboundboxCommand.setOutboundboxId(whCheckingCommand.getOutboundboxId());

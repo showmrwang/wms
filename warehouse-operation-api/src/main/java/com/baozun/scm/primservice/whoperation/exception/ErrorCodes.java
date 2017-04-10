@@ -813,4 +813,7 @@ public class ErrorCodes {
     /** 波次[{}]中出库单集合含有不同的发票信息 */
     public static final int WAVE_ODOLIST_INVOICE_DIFFERENCE = 80011;
 	// 80001-90000 zhukai
+    
+    // 100001-110000 liuqiming
+    // 100001-110000 liuqiming
 }
