@@ -55,8 +55,8 @@ public class SimpleCubeCalculator {
     private static final String coords_y = COORDS_Y;
     private static final String coords_z = COORDS_Z;
     private static final String coords_all = COORDS_ALL;
-    private static final String[][] coordsCache = new String[][] { {"x", "y", "z"}, {"y", "z", "x"}, {"z", "x", "y"}};
-    private static final String[][] coordsCacheAll = new String[][] { {"x", "y", "z"}, {"x", "z", "y"}, {"y", "z", "x"}, {"y", "x", "z"}, {"z", "x", "y"}, {"z", "y", "x"}};
+//    private static final String[][] coordsCache = new String[][] { {"x", "y", "z"}, {"y", "z", "x"}, {"z", "x", "y"}};
+//    private static final String[][] coordsCacheAll = new String[][] { {"x", "y", "z"}, {"x", "z", "y"}, {"y", "z", "x"}, {"y", "x", "z"}, {"z", "x", "y"}, {"z", "y", "x"}};
     // 填充立方体系统单位的边长
     private Double x;
     private Double y;
@@ -383,7 +383,7 @@ public class SimpleCubeCalculator {
         for (int i = uomList.size(); i > 0; i--) {
             reverseList.add(uomList.get(i - 1));
         }
-        temp = (String[]) reverseList.toArray();
+        temp = reverseList.toArray(new String [reverseList.size()]);
         return temp;
     }
 
@@ -509,28 +509,28 @@ public class SimpleCubeCalculator {
         return ret;
     }
 
-    private Map<String, Double> coordsValues(String[] cds, Double x, Double y, Double z) {
-        Map<String, Double> values = new HashMap<String, Double>();
-        int index = 1;
-        for (String c : cds) {
-            if (1 == index) {
-                values.put(c, x);
-                index++;
-                continue;
-            }
-            if (2 == index) {
-                values.put(c, y);
-                index++;
-                continue;
-            }
-            if (3 == index) {
-                values.put(c, z);
-                index++;
-                break;
-            }
-        }
-        return values;
-    }
+//    private Map<String, Double> coordsValues(String[] cds, Double x, Double y, Double z) {
+//        Map<String, Double> values = new HashMap<String, Double>();
+//        int index = 1;
+//        for (String c : cds) {
+//            if (1 == index) {
+//                values.put(c, x);
+//                index++;
+//                continue;
+//            }
+//            if (2 == index) {
+//                values.put(c, y);
+//                index++;
+//                continue;
+//            }
+//            if (3 == index) {
+//                values.put(c, z);
+//                index++;
+//                break;
+//            }
+//        }
+//        return values;
+//    }
 
     private boolean permutationCompare(Double rx, Double ry, Double rz, Double ax, Double ay, Double az) {
         // 将容器和目标物品的三边边长分别排序之后，

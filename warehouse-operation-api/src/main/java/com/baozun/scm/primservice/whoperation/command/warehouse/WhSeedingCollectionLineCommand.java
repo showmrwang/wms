@@ -12,21 +12,24 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.warehouse;
+package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import java.util.Date;
 
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 /**
  * 
  * @author larkark
  *
  */
-public class WhSeedingCollectionLine extends BaseModel {
+public class WhSeedingCollectionLineCommand extends BaseCommand {
 
-    private static final long serialVersionUID = -3063727353047968263L;
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8416678397575967292L;
     // columns START
     /** 集货ID */
     private Long seedingCollectionId;
@@ -80,15 +83,19 @@ public class WhSeedingCollectionLine extends BaseModel {
     private Long odoId;
     /** 出库单明细ID */
     private Long odoLineId;
+    /** 客户id*/
+    private Long customerId;
+    /** 店铺id*/
+    private Long storeId;
     /** skuId*/
     private Long skuId;
 
-    // columns END
+    public Long getSeedingCollectionId() {
+        return seedingCollectionId;
+    }
 
-    public WhSeedingCollectionLine() {}
-
-    public WhSeedingCollectionLine(Long id) {
-        this.id = id;
+    public void setSeedingCollectionId(Long seedingCollectionId) {
+        this.seedingCollectionId = seedingCollectionId;
     }
 
     public String getSkuCode() {
@@ -129,6 +136,14 @@ public class WhSeedingCollectionLine extends BaseModel {
 
     public void setQty(Long qty) {
         this.qty = qty;
+    }
+
+    public Long getSeedingQty() {
+        return seedingQty;
+    }
+
+    public void setSeedingQty(Long seedingQty) {
+        this.seedingQty = seedingQty;
     }
 
     public String getCustomerCode() {
@@ -267,30 +282,6 @@ public class WhSeedingCollectionLine extends BaseModel {
         this.ouId = ouId;
     }
 
-    public Long getSkuId() {
-        return skuId;
-    }
-
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
-    }
-
-    public Long getSeedingCollectionId() {
-        return seedingCollectionId;
-    }
-
-    public void setSeedingCollectionId(Long seedingCollectionId) {
-        this.seedingCollectionId = seedingCollectionId;
-    }
-
-    public Long getSeedingQty() {
-        return seedingQty;
-    }
-
-    public void setSeedingQty(Long seedingQty) {
-        this.seedingQty = seedingQty;
-    }
-
     public Long getOdoId() {
         return odoId;
     }
@@ -305,6 +296,30 @@ public class WhSeedingCollectionLine extends BaseModel {
 
     public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
 }

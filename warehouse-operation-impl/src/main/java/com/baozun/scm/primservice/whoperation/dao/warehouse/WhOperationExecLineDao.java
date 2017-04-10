@@ -91,5 +91,13 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      */
     public List<WhOperationExecLine> checkContainerInventory(@Param("invSkuIds") Set<Long> invSkuIds, @Param("ouId") Long ouId, @Param("execLineIds") Set<Long> execLineIds);
 
-	Long getWorkIdByUseContainerId(@Param("batch") String batch, @Param("scanContainerId") Long scanContainerId, @Param("ouId") Long ouId);
+    Long getWorkIdByUseContainerId(@Param("batch") String batch, @Param("scanContainerId") Long scanContainerId, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 根据工作号查找工作中使用的容器列表
+     * @param workId
+     * @param ouId
+     * @return
+     */
+    public List<Long> findUseContainerListByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
 }

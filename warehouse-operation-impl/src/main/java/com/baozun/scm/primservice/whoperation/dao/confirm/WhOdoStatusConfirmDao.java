@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.confirm;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,5 +44,10 @@ public interface WhOdoStatusConfirmDao extends BaseDao<WhOdoStatusConfirm, Long>
 
     @CommonQuery
     int saveOrUpdate(WhOdoStatusConfirm o);
+
+    /**
+     * 通过创建时间段+仓库ID+数据来源获取对应出库单状态反馈数据
+     */
+    List<WhOdoStatusConfirm> findWhOdoStatusConfirmByCreateTimeAndDataSource(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid, @Param("dataSource") String dataSource);
 
 }

@@ -260,7 +260,7 @@ public class SimpleStandardCubeCalculator {
         for (int i = uomList.size(); i > 0; i--) {
             reverseList.add(uomList.get(i - 1));
         }
-        temp = (String[]) reverseList.toArray();
+        temp = reverseList.toArray(new String[reverseList.size()]);
         return temp;
     }
 

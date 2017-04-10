@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.NumberToTextConverter;
 
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
-import com.baozun.scm.primservice.whoperation.excel.util.DateUtil;
+import com.baozun.scm.primservice.whoperation.excel.util.ExcelDateUtil;
 import com.baozun.scm.primservice.whoperation.excel.util.ReflectUtil;
 import com.baozun.scm.primservice.whoperation.excel.util.SpringUtil;
 import com.baozun.scm.primservice.whoperation.excel.vo.FieldValue;
@@ -159,10 +159,10 @@ public abstract class AbstractExcelResolver implements ResolveFieldValueConverte
 					String [] patterns = StringUtils.split(pattern, ",");
 					if (Type.EXPORT == type) {
 						//导出使用第一个pattern
-						return DateUtil.date2Str((Date) value, patterns[0]);
+						return ExcelDateUtil.date2Str((Date) value, patterns[0]);
 					} else if (Type.IMPORT == type) {
 						if (value instanceof String) {
-							Date date = DateUtil.tryStr2Date((String) value, patterns);
+							Date date = ExcelDateUtil.tryStr2Date((String) value, patterns);
 							if(date==null){
 								StringBuilder errMsg = new StringBuilder("[");
 								errMsg.append(value.toString()).append("]")

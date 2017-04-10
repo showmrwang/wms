@@ -20,9 +20,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	wms_odo_status as wmsOdoStatus,
 	        	customer_code as customerCode,
 	        	store_code as storeCode,
-	        	wh_code as whCode,
 	        	ou_id as ouId,
-	        	create_time as createTime
+	        	create_time as createTime,
+	        	data_source as dataSource
 	    ]]>
 	</sql>
 	<sql id="whOdoStatusConfirmConditionWhereExt">
@@ -98,12 +98,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm" 
-				
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_odo_status_confirm (
-		       		id,
+		       		id ,
 		        	ext_odo_code ,
 		        	wms_odo_code ,
 		        	wms_odo_status ,
@@ -111,9 +110,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	store_code ,
 		        	wh_code ,
 		        	ou_id ,
-		        	create_time 
+		        	create_time ,
+		        	data_source
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{wmsOdoStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -121,7 +121,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        )
 		    ]]>
 
@@ -138,7 +139,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        wh_code = #{whCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 	    ]]>

@@ -14,40 +14,26 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
-import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
-import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
-import org.apache.ibatis.annotations.Param;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 
-public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
+
+public interface WhSeedingCollectionLineDao extends BaseDao<WhSeedingCollectionLine, Long> {
 
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<WhChecking> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
-
-    @QueryPage("queryCount")
-    Pagination<WhChecking> query(Page page, Sort[] sorts, QueryCondition cond);
-
-    List<WhChecking> query(QueryCondition cond);
-
-    Long queryCount(QueryCondition cond);
+    Pagination<WhSeedingCollectionLine> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
 
     @CommonQuery
-    int saveOrUpdate(WhChecking o);
-
-    WeightingCommand findByWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
-
-    WeightingCommand findByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
+    int saveOrUpdate(WhSeedingCollectionLine o);
 
 }

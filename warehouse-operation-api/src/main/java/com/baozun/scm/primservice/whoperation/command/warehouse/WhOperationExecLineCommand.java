@@ -156,6 +156,10 @@ public class WhOperationExecLineCommand extends BaseCommand {
     private String operator;
     /** 是否最后一个拣货库位*/
     private Boolean isLastPickingLocation;
+    /** 使用出库箱id*/
+    private Long outboundBoxId;
+    /** 工作区域*/
+    private Long workAreaId;
 
 
     public Long getOperationId() {
@@ -724,6 +728,22 @@ public class WhOperationExecLineCommand extends BaseCommand {
 
     public void setIsLastPickingLocation(Boolean isLastPickingLocation) {
         this.isLastPickingLocation = isLastPickingLocation;
+    }
+
+    public Long getOutboundBoxId() {
+        return outboundBoxId;
+    }
+
+    public void setOutboundBoxId(Long outboundBoxId) {
+        this.outboundBoxId = outboundBoxId;
+    }
+
+    public Long getWorkAreaId() {
+        return workAreaId;
+    }
+
+    public void setWorkAreaId(Long workAreaId) {
+        this.workAreaId = workAreaId;
     }
 
 }

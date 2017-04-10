@@ -17,9 +17,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	wms_odo_status as wmsOdoStatus,
 	        	customer_code as customerCode,
 	        	store_code as storeCode,
-	        	wh_code as whCode,
 	        	ou_id as ouId,
-	        	create_time as createTime
+	        	create_time as createTime,
+	        	data_source as dataSource
 	    ]]>
 	</sql>
 	
@@ -69,5 +69,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
+	
+	<select id="findWhOdoStatusConfirmByCreateTimeAndDataSource" resultMap="WhOdoStatusConfirmResultExt">
+		select <include refid="whOdoStatusConfirmColumnsExt" />
+		from t_wh_odo_status_confirm 
+		where 
+		create_time &gt; #{beginTime} 
+		and create_time &lt; #{endTime} 
+		and data_source = #{dataSource}
+		and ou_id = #{ouid}
+	</select>
 	
 </mapper>
