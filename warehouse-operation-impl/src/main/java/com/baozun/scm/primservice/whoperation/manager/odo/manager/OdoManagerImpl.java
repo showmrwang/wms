@@ -409,6 +409,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 whInvoice.setCreateTime(new Date());
                 whInvoice.setLastModifyTime(new Date());
                 whInvoice.setOperatorId(userId);
+                whInvoice.setDataSource(odoCommand.getDataSource());
                 whInvoiceDao.insert(whInvoice);
                 
                 Long whInvoiceId = whInvoice.getId();

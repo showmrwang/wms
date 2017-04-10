@@ -3275,6 +3275,8 @@
 			t_wh_odo 
 	   set
 	    	odo_status=#{odoStatus},
+	    	head_start_odo_status=#{odoStatus},
+	    	lag_odo_status=#{odoStatus},
 	    	last_modify_time=now(),
 	    	modified_id=#{userId},
 	    	wave_code=#{waveCode},

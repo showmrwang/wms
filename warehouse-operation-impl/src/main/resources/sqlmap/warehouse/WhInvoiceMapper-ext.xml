@@ -29,6 +29,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	export_batch as exportBatch,
 	        	company as company,
 	        	is_freight_invoice_sunder as isFreightInvoiceSunder,
+	        	data_source as dataSource,
 	        	ou_id as ouId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
@@ -124,6 +125,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and is_freight_invoice_sunder = #{isFreightInvoiceSunder}
 				</if>
 	       
+				<if test="dataSource!=null">
+					and data_source = #{dataSource}
+				</if>
+	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
 				</if>
@@ -163,6 +168,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        export_batch = #{exportBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        company = #{company,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 

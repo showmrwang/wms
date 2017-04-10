@@ -69,9 +69,6 @@
                     <value>com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress</value>
-                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow</value>
 				</list>
 			</property>
@@ -91,6 +88,9 @@
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog" value="com.baozun.scm.primservice.whinfo.model.warehouse.WhAsnRcvdSnLog"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave" value="com.baozun.scm.primservice.whinfo.model.odo.wave.WhWave"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine" value="com.baozun.scm.primservice.whinfo.model.odo.wave.WhWaveLine"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress" value="com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoiceAddress"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice" value="com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoice"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine" value="com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoiceLine"> </entry>
 			</map>
 			</property>
 		</bean>

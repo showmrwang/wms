@@ -62,6 +62,8 @@ public class WhInvoice extends BaseModel {
     private String company;
     /** 是否货票分离 0:否 1:是 */
     private Boolean isFreightInvoiceSunder;
+    /** 数据来源 区分上位系统 */
+    private String dataSource;
     /** 仓库组织ID */
     private Long ouId;
     /** 创建时间 */
@@ -244,6 +246,14 @@ public class WhInvoice extends BaseModel {
 
     public Long getOperatorId() {
         return this.operatorId;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
     }
 }
 
