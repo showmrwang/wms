@@ -6,6 +6,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollect
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 
 /**
  * PDA-集货
@@ -23,6 +24,13 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param ouId
      */
     void insertIntoSeedingCollection(String batch, Long workId, Long ouId);
+
+    /**
+     * [业务方法] 插入集货明细表
+     * 
+     * @param whSeedingCollection
+     */
+    void insertIntoSeedingCollectionLine(WhSeedingCollection whSeedingCollection);
 
     /**
      * [业务方法] 插入复核台集货表

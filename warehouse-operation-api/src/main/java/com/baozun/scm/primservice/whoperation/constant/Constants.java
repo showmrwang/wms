@@ -21,7 +21,7 @@ public final class Constants {
 
     /** 拆分库 */
     public static final Integer SHARD_SOURCE = 2;
-    
+
     /** 调编码生成器租户编码 */
     public static final String WMS = "wms";
 
@@ -578,7 +578,7 @@ public final class Constants {
      * 仓库暂存库位增加状态
      */
     public static final Integer WH_GLOBAL_STATUS_1 = 1;// 空闲
-    public static final Integer WH_GLOBAL_STATUS_2 = 1;// 占用
+    public static final Integer WH_GLOBAL_STATUS_2 = 2;// 占用
 
     /** 拣货模式:播种*/
     public static final String WH_PICKING_MODE = "2";

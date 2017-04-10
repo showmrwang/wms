@@ -188,12 +188,12 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * 根据提供波次ID查找当中有波次明细未分配规则的出库单ID
      */
     List<OdoCommand> getNoRuleOdoIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);
-    
+
     /**
      * 修改出库单waveCode为空,并添加失败原因
      */
     int updateOdoByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
-    
+
     /**
      * 修改出库单waveCode为空,并添加失败原因
      */
@@ -264,6 +264,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     List<WhSeedingWallLatticeLine> getSeedingOdoLineInfo(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
     /**
      *根据ID获取出库单列表
      *
@@ -296,4 +297,13 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 	 * @version 2017年4月7日
 	 */
     int countInvoiceInfo(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 查找出库单状态, 判断是否已完成复核
+     * @param outboundBoxCode
+     * @param waybillCode
+     * @param ouId
+     * @return
+     */
+    String checkOdoStatus(@Param("outboundBoxCode") String outboundBoxCode, @Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
 }

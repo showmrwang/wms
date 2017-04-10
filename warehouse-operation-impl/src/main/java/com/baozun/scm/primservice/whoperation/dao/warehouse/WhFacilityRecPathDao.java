@@ -45,7 +45,7 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhFacilityRecPath o);
-    
+
     /**
      * 查询容器是否有推荐结果
      * @param containerCode
@@ -53,15 +53,15 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
      * @param ouId
      * @return
      */
-	WhFacilityRecPathCommand getRecommendResultByContainerCode(@Param("containerCode") String containerCode, @Param("batch") String batch, @Param("ouId") Long ouId);
-	
-	/**
-	 * 根据批次查询暂存库位编码
-	 * @param batch
-	 * @param ouId
-	 * @return
-	 */
-	String findTemporaryStorageLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+    List<WhFacilityRecPathCommand> getRecommendResultByContainerCode(@Param("containerCode") String containerCode, @Param("batch") String batch, @Param("ouId") Long ouId);
+
+    /**
+     * 根据批次查询暂存库位编码
+     * @param batch
+     * @param ouId
+     * @return
+     */
+    String findTemporaryStorageLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
 
     /**
      * [业务方法] 根据批次号和容器号查找推荐路径
@@ -71,7 +71,7 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
      * @return
      */
     WhFacilityRecPath findWhFacilityRecPathByBatchAndContainer(String batch, String containerCode, Long ouId);
-    
+
     /**
      * [业务方法] 根据批次号和容器号查找推荐路径
      * 
@@ -86,20 +86,20 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
      * 
      * @param batch
      */
-	String getRecommendSeedingWallCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
-	
-	/**
-	 * 根据批次获取推荐表中对应的路径code
-	 * @param batch
-	 */
-	String getRecommendTemporaryStorageLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
-	
-	/**
-	 * 根据批次获取推荐表中对应的路径code
-	 * @param batch
-	 */
-	String getRecommendTransitLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+    String getRecommendSeedingWallCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
 
-	List<String> getBatchListByDestinationCode(@Param("destinationCode") String destinationCode, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
+    /**
+     * 根据批次获取推荐表中对应的路径code
+     * @param batch
+     */
+    String getRecommendTemporaryStorageLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+
+    /**
+     * 根据批次获取推荐表中对应的路径code
+     * @param batch
+     */
+    String getRecommendTransitLocationCodeByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+
+    List<String> getBatchListByDestinationCode(@Param("destinationCode") String destinationCode, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
 
 }
