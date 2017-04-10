@@ -40,33 +40,45 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void insertWhSkuInventoryFlow(WhSkuInventoryLog log) {
-        if (log.getInvTransactionType().equals(InvTransactionType.SHELF)) {
-            // 如果是上架库存事务类型 判断是否有库位信息
-            if (!StringUtil.isEmpty(log.getLocationCode())) {
-                // 有库位信息 才是有效的上架库存流失
-                saveWhSkuInventoryFlow(log);
+        // 校验是否需要生成库存流水信息
+        boolean checkFlow = checkFlow(log);
+        if (checkFlow) {
+            // 插入库存流水信息
+            WhSkuInventoryFlow flow = new WhSkuInventoryFlow();
+            BeanUtils.copyProperties(log, flow);
+            flow.setUpc(log.getExtCode());
+            flow.setCreateTime(new Date());
+            flow.setRevisionQty(log.getRevisionQty());
+            // 判断是否存在出库单占用
+            if (!StringUtil.isEmpty(log.getOccupationCode())) {
+                // 查询对应出库单信息
+                WhOdo odo = whOdoDao.findOdoByCodeAndOuId(log.getOccupationCode(), log.getOuId());
+                if (null != odo) {
+                    // 有出库单信息 插入电商平台订单号+出库单类型
+                    flow.setEcOrderCode(odo.getEcOrderCode());
+                    flow.setOdoType(odo.getOdoType());
+                }
             }
+            whSkuInventoryFlowDao.insert(flow);
         }
     }
 
-    private void saveWhSkuInventoryFlow(WhSkuInventoryLog log) {
-        // 插入库存流水信息
-        WhSkuInventoryFlow flow = new WhSkuInventoryFlow();
-        BeanUtils.copyProperties(log, flow);
-        flow.setUpc(log.getExtCode());
-        flow.setCreateTime(new Date());
-        flow.setRevisionQty(log.getRevisionQty());
-        // 判断是否存在出库单占用
-        if (!StringUtil.isEmpty(log.getOccupationCode())) {
-            // 查询对应出库单信息
-            WhOdo odo = whOdoDao.findOdoByCodeAndOuId(log.getOccupationCode(), log.getOuId());
-            if (null != odo) {
-                // 有出库单信息 插入电商平台订单号+出库单类型
-                flow.setEcOrderCode(odo.getEcOrderCode());
-                flow.setOdoType(odo.getOdoType());
+    /**
+     * 校验是否需要生成库存流水信息
+     * 
+     * @param log
+     * @return
+     */
+    private boolean checkFlow(WhSkuInventoryLog log) {
+        boolean b = true;
+        if (log.getInvTransactionType().equals(InvTransactionType.SHELF)) {
+            // 如果是上架库存事务类型 判断是否有库位信息
+            if (StringUtil.isEmpty(log.getLocationCode())) {
+                // 没有库位信息 不需要保存库存流水
+                return false;
             }
         }
-        whSkuInventoryFlowDao.insert(flow);
+        return b;
     }
 
     /**
