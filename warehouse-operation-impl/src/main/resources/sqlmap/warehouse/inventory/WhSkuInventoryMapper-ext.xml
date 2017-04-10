@@ -18,6 +18,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<resultMap id="WhSeedingCollectionLineResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine">
 	</resultMap>
+	<resultMap id="WhSeedingCollectionLineCommandResult" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand">
+	</resultMap>
 	
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -3936,4 +3938,39 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and inv.ou_id = #{ouId}
 				and operLine.operation_id = #{operationId}
 	</select>
+
+    <select id="findListByContainerId" resultMap="WhSeedingCollectionLineCommandResult">
+		select 
+			sku.code as skuCode, 
+			sku.ext_code as skuExtCode, 
+			sku.bar_code as skuBarCode,
+			sku.name as skuName, 
+			sum(inv.on_hand_qty) as qty,
+			inv.customer_id as customerId, 
+			inv.store_id as storeId,
+			inv.inv_status as invStatus, 
+			inv.inv_type as invType, 
+			inv.batch_number as batchNumber,
+			inv.mfg_date as mfgDate,
+			inv.exp_date as expDate, 
+			inv.country_of_origin as countryOfOrigin,
+			inv.inv_attr1 as invAttr1,
+			inv.inv_attr2 as invAttr2,
+			inv.inv_attr3 as invAttr3,
+			inv.inv_attr4 as invAttr4,
+			inv.inv_attr5 as invAttr5,
+			inv.uuid as uuid,
+			inv.ou_id as ouId,
+			inv.occupation_line_id as odoLineId, 
+			odo.id as odoId,
+			sku.id as skuId
+		from 
+			t_wh_sku_inventory inv 
+			left join t_wh_sku sku on inv.sku_id = sku.id 
+			left join t_wh_odo odo on inv.occupation_code = odo.odo_code
+		where 
+			inv.inside_container_id = #{containerId} and inv.ou_id = #{ouId}
+		group by inv.uuid 
+    </select>
+    
 </mapper>

@@ -157,7 +157,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
     }
 
     private WhFacilityRecPath occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, RecFacilityPathCommand recFacilityPath, Warehouse wh) {
-        Long ouId=wh.getId();
+        Long ouId = wh.getId();
         String seedingMode = wh.getSeedingMode();
         String batch = recFacilityPath.getBatch();
         WhFacilityRecPath recPath = new WhFacilityRecPath();
@@ -234,6 +234,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         recPath.setTransitLocationCheckCode(transitLocation.getCheckCode());
         recPath.setTransitLocationCode(transitLocation.getTemporaryStorageCode());
         recPath.setOuId(ouId);
+        // @Gianni 修改状态为占用 2017-04-10
+        recPath.setStatus(Constants.WH_GLOBAL_STATUS_2);
         this.whFacilityRecPathDao.insert(recPath);
 
         // 如果没有推荐到播种墙，则加入推荐队列
@@ -270,6 +272,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         recPath.setTransitLocationCheckCode(prePath.getTransitLocationCheckCode());
         recPath.setTransitLocationCode(prePath.getTransitLocationCode());
         recPath.setOuId(ouId);
+        // @Gianni 修改状态为占用 2017-04-10
+        recPath.setStatus(Constants.WH_GLOBAL_STATUS_2);
         this.whFacilityRecPathDao.insert(recPath);
         return recPath;
     }

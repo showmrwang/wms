@@ -349,4 +349,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and lifecycle = 1
     </select>
 
+	<sql id="whDistributionPatternRuleColumnsExt1">
+	    <![CDATA[
+	        	rule.id as id,
+	        	rule.distribution_pattern_name as distributionPatternName,
+	        	rule.distribution_pattern_code as distributionPatternCode,
+	        	rule.rule as rule,
+	        	rule.rule_sql as ruleSql,
+	        	rule.ou_id as ouId,
+	        	rule.picking_mode as pickingMode,
+                rule.orders_upper_limit as ordersUpperLimit,
+                rule.checking_mode as checkingMode,
+	        	rule.priority as priority,
+	        	rule.is_need_outbound_carton as isNeedOutboundCarton,
+	        	rule.description as description,
+	        	rule.create_time as createTime,
+	        	rule.last_modify_time as lastModifyTime,
+	        	rule.created_id as createdId,
+	        	rule.modified_id as modifiedId,
+	        	rule.lifecycle as lifecycle,
+	        	rule.is_sys as isSys
+	    ]]>
+	</sql>
+    <select id="findByOdoIdAndOuId" resultMap="whDistributionPatternRuleResultExt">
+        select
+        <include refid="whDistributionPatternRuleColumnsExt1"/>
+        from t_wh_distribution_pattern_rule rule left join t_wh_odo odo on odo.distribute_mode = rule.distribution_pattern_code
+        where
+            rule.ou_id = #{ouId}
+            and rule.lifecycle = 1
+            and odo.id = #{odoId}
+    </select>
+    
+    
+
 </mapper>

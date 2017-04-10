@@ -116,6 +116,8 @@
    	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager"  ref="whDistributionPatternRuleManager" />
 	
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaContainerRcvdManagerProxy"  ref="pdaContainerRcvdManagerProxy" />
+	<!-- 称重 -->
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WeightingManager"  ref="weightingManager" />
 	
     <!--生成远程服务代理，可以和本地bean一样使用demoService-->
 <!--     <dubbo:reference id="demoManager" interface="com.baozun.scm.primservice.whoperation.manager.DemoManager" cluster="failfast" loadbalance="consistenthash"/> -->

@@ -26,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPat
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
@@ -43,6 +44,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhTemporaryStorageLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -51,7 +53,9 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilityManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
@@ -74,6 +78,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhSeedingCollectionDao whSeedingCollectionDao;
+
+    @Autowired
+    private WhSeedingCollectionLineDao whSeedingCollectionLineDao;
 
     @Autowired
     private WhCheckingCollectionDao whCheckingCollectionDao;
@@ -125,6 +132,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 seedingCollection.setOuId(ouId);
                 seedingCollection.setCollectionStatus(CollectionStatus.NEW);
                 this.whSeedingCollectionDao.insert(seedingCollection);
+                insertIntoSeedingCollectionLine(seedingCollection);
             }
         }
     }
@@ -156,6 +164,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         WorkCollectionCommand command = new WorkCollectionCommand();
         // TODO 需要odoIds, 最后一个库位位子, 容器列表
         // 通过工作和组织找到批次下的所有拣货工作使用的容器和出库单列表
+        command.setOuId(ouId);
         Set<String> containerSet = new HashSet<String>();
         Set<Long> containerIdSet = new HashSet<Long>();
         Set<Long> odoIdSet = new HashSet<Long>();
@@ -168,11 +177,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         // Long lastPickingLocation;
         if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
+            command.setAreaId(execLineCommandList.get(0).getWorkAreaId());
             for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
                 containerSet.add(execLineCommand.getUseContainerCode());
                 containerIdSet.add(execLineCommand.getUseContainerId());
                 odoIdSet.add(execLineCommand.getOdoId());
-                if (execLineCommand.getIsLastPickingLocation()) {
+                if (isLastContainer) {
                     // 计算最后一个容器库位
                     command.setLastLocationId(execLineCommand.getFromLocationId()); // 最后一个容器库位
                 }
@@ -217,7 +227,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // TODO 根据workId查出批次号以及是否是播种模式
         WhWorkCommand work = this.whWorkDao.findWorkByWorkCode(workCollectionCommand.getWorkCode(), workCollectionCommand.getOuId());
         WhOdo odo = new WhOdo();
-        odo.setWaveCode(workCollectionCommand.getWorkCode());
+        odo.setWaveCode(work.getWaveCode());
         odo.setOuId(workCollectionCommand.getOuId());
         List<WhOdo> odoList = whOdoDao.findListByParam(odo);
         if (null == odoList || odoList.isEmpty()) {
@@ -227,14 +237,15 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         Integer pickingMode = whDistributionPatternRule.getPickingMode(); // 拣货模式
         String batch = work.getBatch();
         workCollectionCommand.setBatch(batch);
-        Long userId = workCollectionCommand.getUserId();
-        Boolean flag = false;
+        // Long userId = workCollectionCommand.getUserId();
+        // Boolean flag = false;
+        Boolean hasRec = false;
         // TODO 判断是否是播种模式
-        if (!flag) {
-            Boolean hasRec = initRecFacilityPath(workCollectionCommand);
+        if (Constants.PICKING_MODE_SEED.equals(pickingMode.toString())) {
+            hasRec = initRecFacilityPath(workCollectionCommand);
         }
         // TODO flag
-        workCollectionCommand.setIsSuccess(flag);
+        workCollectionCommand.setIsSuccess(hasRec);
         return workCollectionCommand;
     }
 
@@ -257,15 +268,22 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             recFacilityPath.setBatch(batch);
             recFacilityPath.setContainerCode(containerCode);
             recFacilityPath.setOdoIdList(workCollectionCommand.getOdoIdList());
+            recFacilityPath.setPickingMode(Constants.WH_SEEDING_WALL);
+            recFacilityPath.setAreaId(workCollectionCommand.getAreaId());
             // TODO 调用播种墙推荐逻辑
             RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
             if (1 == command.getStatus()) {
                 // TODO 应该是是否推荐成功
                 hasSuccess = true;
-                WhFacilityRecPathCommand wrpc = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+                WhFacilityRecPathCommand wrpc = new WhFacilityRecPathCommand();
+                List<WhFacilityRecPathCommand> whFacilityRecPathCommand = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+                if (null != whFacilityRecPathCommand && !whFacilityRecPathCommand.isEmpty()) {
+                    wrpc = whFacilityRecPathCommand.get(0);
+                }
                 List<WhFacilityRecPathCommand> rfpList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId, batch);
                 if (null == rfpList || rfpList.isEmpty()) {
                     rfpList = new ArrayList<WhFacilityRecPathCommand>();
+                    rfpList.add(wrpc);
                 } else {
                     rfpList.add(wrpc);
                 }
@@ -273,6 +291,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             } else {
                 failContainerList.add(containerCode);
                 containerList.remove(containerCode);
+                if (containerList.isEmpty()) {
+                    break;
+                }
             }
         }
         // 补偿机制:当有成功获取推荐路径 才会有补偿机制
@@ -299,7 +320,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         WhFacilityRecPathCommand rfp = this.findRecFacilityPathCommandByIndex(command);
         if (null == rfp) {
-            return "FINISH";
+            return Constants.FINISH;
         }
         String targetPosUrl = "";
         String targetPos = "";
@@ -358,6 +379,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             return null;
         }
         WhFacilityRecPathCommand command = rfpList.get(workCollectionCommand.getIndex());
+        // cacheManager.remonKeys(CacheConstants.PDA_CACHE_COLLECTION_REC + userId);
         return command;
 
     }
@@ -461,9 +483,15 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             WhSeedingCollection whSeedingCollection = new WhSeedingCollection();
             whSeedingCollection.setBatch(workCollectionCommand.getBatch());
             whSeedingCollection.setOuId(ouId);
-            whSeedingCollection.setCollectionStatus(CollectionStatus.SEEDING);
+            // whSeedingCollection.setCollectionStatus(CollectionStatus.SEEDING);
+            whSeedingCollection.setCollectionStatus(CollectionStatus.NEW);
             whSeedingCollection.setContainerId(containerId);
-            whSeedingCollection.setId(1L);
+            List<WhSeedingCollection> scList = whSeedingCollectionDao.findListByParam(whSeedingCollection);
+            if (null == scList || scList.isEmpty()) {
+                throw new BusinessException("no seeding collection");
+            }
+            whSeedingCollection = scList.get(0);
+            // whSeedingCollection.setId(1L);
             Integer targetType = workCollectionCommand.getTargetType();
             switch (targetType) {
                 case Constants.SEEDING_WALL:
@@ -479,7 +507,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 default:
                     throw new BusinessException("error");
             }
-            int cnt = this.whSeedingCollectionDao.saveOrUpdateByVersion(whSeedingCollection);
+            int cnt = this.whSeedingCollectionDao.update(whSeedingCollection);
             if (0 >= cnt) {
                 return false;
             }
@@ -666,7 +694,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (StringUtils.isEmpty(containerCode)) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        WhFacilityRecPathCommand rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+        WhFacilityRecPathCommand rec = new WhFacilityRecPathCommand();
+        List<WhFacilityRecPathCommand> recList = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+        if (null != recList && !recList.isEmpty()) {
+            rec = recList.get(0);
+        }
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
         if (null == recPathList) {
             recPathList = new ArrayList<WhFacilityRecPathCommand>();
@@ -973,7 +1005,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         WhOutboundFacility facility = null;
         WhTemporaryStorageLocation storageLocation = null;
         Location location = null;
-        WhFacilityRecPathCommand recCommand = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+        WhFacilityRecPathCommand recCommand = new WhFacilityRecPathCommand();
+        List<WhFacilityRecPathCommand> recCommandList = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+        if (null != recCommandList && !recCommandList.isEmpty()) {
+            recCommand = recCommandList.get(0);
+        }
         if (null == recCommand) {
             recCommand = new WhFacilityRecPathCommand();
             if (destinationType == Constants.SEEDING_WALL) {
@@ -1131,7 +1167,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // 判断是否有播种推荐结果
         WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
         String batch = seedingCollection.getBatch();
-        WhFacilityRecPathCommand rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+        WhFacilityRecPathCommand rec = new WhFacilityRecPathCommand();
+        List<WhFacilityRecPathCommand> recList = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+        if (null != recList && !recList.isEmpty()) {
+            rec = recList.get(0);
+        }
         if (null == rec) {
             /*
              * List<Long> odoIdList = whWorkDao.getOdoIdListByBatch(batch, ouId); if (null ==
@@ -1153,7 +1193,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
             if (1 == command.getStatus()) {
                 // 推荐成功
-                rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+                // rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode,
+                // batch, ouId);
+                List<WhFacilityRecPathCommand> recList2 = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+                if (null != recList2 && !recList2.isEmpty()) {
+                    rec = recList2.get(0);
+                }
             } else {
                 throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
             }
@@ -1250,4 +1295,37 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         return null;
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertIntoSeedingCollectionLine(WhSeedingCollection whSeedingCollection) {
+        Long containerId = whSeedingCollection.getContainerId();
+        if (null != containerId) {
+            List<WhSeedingCollectionLineCommand> invList = this.whSkuInventoryDao.findListByContainerId(containerId, whSeedingCollection.getOuId());
+            if (null != invList && !invList.isEmpty()) {
+                for (WhSeedingCollectionLineCommand inv : invList) {
+                    if (null != inv.getStoreId()) {
+                        Store store = this.getStoreByRedis(inv.getStoreId());
+                        if (null != store) {
+                            inv.setStoreCode(store.getStoreCode());
+                            inv.setStoreName(store.getStoreName());
+                        }
+                    }
+                    if (null != inv.getCustomerId()) {
+                        Customer customer = this.getCustomerByRedis(inv.getCustomerId());
+                        if (null != customer) {
+                            inv.setCustomerCode(customer.getCustomerCode());
+                            inv.setCustomerName(customer.getCustomerName());
+                        }
+                    }
+                    WhSeedingCollectionLine line = new WhSeedingCollectionLine();
+                    BeanUtils.copyProperties(inv, line);
+                    line.setSeedingCollectionId(whSeedingCollection.getId());
+                    line.setSeedingQty(0L);
+                    this.whSeedingCollectionLineDao.insert(line);
+                }
+            }
+
+        }
+
+    }
 }

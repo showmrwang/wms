@@ -74,6 +74,10 @@ public class WorkCollectionCommand extends BaseCommand {
     private Long workId;
     /** 最后一个容器库位*/
     private Long lastLocationId;
+    /** 区域id*/
+    private Long areaId;
+    /** 跳转url*/
+    private String originalUrl;
 
     public Long getOuId() {
         return ouId;
@@ -313,6 +317,22 @@ public class WorkCollectionCommand extends BaseCommand {
 
     public void setLastLocationId(Long lastLocationId) {
         this.lastLocationId = lastLocationId;
+    }
+
+    public Long getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(Long areaId) {
+        this.areaId = areaId;
+    }
+
+    public String getOriginalUrl() {
+        return originalUrl;
+    }
+
+    public void setOriginalUrl(String originalUrl) {
+        this.originalUrl = originalUrl;
     }
 
 }

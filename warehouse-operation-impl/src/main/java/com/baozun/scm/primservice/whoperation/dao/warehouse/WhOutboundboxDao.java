@@ -17,14 +17,14 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 
@@ -47,5 +47,15 @@ public interface WhOutboundboxDao extends BaseDao<WhOutboundbox, Long> {
      * @return
      */
     List<WhOutboundbox> findWhOutboundboxByOdoId(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+
+    /**
+     * [业务方法] 称重-通过出库箱编码或者运单号编码查找
+     * @param outboundBoxCode
+     * @param waybillCode
+     * @param ouId
+     * @return
+     */
+    String checkOutboundBoxStatus(@Param("outboundBoxCode") String outboundBoxCode, @Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
 
 }

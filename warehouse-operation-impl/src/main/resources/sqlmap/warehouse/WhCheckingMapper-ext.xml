@@ -11,6 +11,9 @@
     <resultMap id="WhCheckingCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand">
     </resultMap>
 
+    <resultMap id="WeightingCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand">
+    </resultMap>
+
     <!-- 用于select查询公用抽取的列 -->
     <sql id="whCheckingColumnsExt">
         <![CDATA[
@@ -38,6 +41,35 @@
                 distribution_mode as distributionMode,
                 picking_mode as pickingMode,
                 checking_mode as checkingMode
+        ]]>
+    </sql>
+
+    <sql id="whCheckWeightingExt">
+        <![CDATA[
+                ch.id as id,
+                ch.facility_id as facilityId,
+                ch.container_id as containerId,
+                ch.batch as batch,
+                ch.wave_code as waveCode,
+                ch.customer_code as customerCode,
+                ch.customer_name as customerName,
+                ch.store_code as storeCode,
+                ch.store_name as storeName,
+                ch.transport_code as transportCode,
+                ch.transport_name as transportName,
+                ch.product_code as productCode,
+                ch.product_name as productName,
+                ch.time_effect_code as timeEffectCode,
+                ch.time_effect_name as timeEffectName,
+                ch.status as status,
+                ch.ou_id as ouId,
+                ch.outer_container_id as outerContainerId,
+                ch.container_lattice_no as containerLatticeNo,
+                ch.outboundbox_id as outboundboxId,
+                ch.outboundbox_code as outboundboxCode,
+                ch.distribution_mode as distributionMode,
+                ch.picking_mode as pickingMode,
+                ch.checking_mode as checkingMode
         ]]>
     </sql>
 
@@ -158,5 +190,21 @@
             </if>
         </where>
     </sql>
+    
+    
+     <select id="findByWaybillCode" resultMap="WeightingCommand" flushCache="false">
+        select
+        <include refid="whCheckWeightingExt"/>
+        from t_wh_checking ch left join t_wh_odo_delivery_info info on ch.outboundbox_code = info.outboundbox_code
+		where info.waybill_code = #{waybillCode} and ch.ou_id = #{ouId}
+    </select>
+
+     <select id="findByOutboundBoxCode" resultMap="WeightingCommand" flushCache="false">
+        select
+        <include refid="whCheckWeightingExt"/>
+        from t_wh_checking ch 
+		where ch.outboundbox_code = #{outboundBoxCode} and ch.ou_id = #{ouId}
+    </select>
+    
 
 </mapper>
