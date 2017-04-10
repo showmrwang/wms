@@ -16,7 +16,7 @@ import org.apache.commons.lang.Validate;
  * @author lisuo
  *
  */
-public abstract class DateUtil {
+public abstract class ExcelDateUtil {
 	
 	/** yyyy-MM-dd */
 	public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -51,7 +51,7 @@ public abstract class DateUtil {
 		if (StringUtils.isNotEmpty(value)) {
 			for (String p : patterns) {
 				try {
-					d = DateUtil.str2Date(value, p);
+					d = ExcelDateUtil.str2Date(value, p);
 					break;
 				} catch (Exception e) {
 					continue;
