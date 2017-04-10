@@ -15,6 +15,7 @@
 		<version.logback>1.0.3</version.logback>
 		<native2ascii_pattern>**/*.properties</native2ascii_pattern>
 		<poi.version>3.14</poi.version>
+		<version.commons.lang3>3.5</version.commons.lang3>
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<!-- tomcat6-maven-plugin properties -->
 		<tomcat6.port>80</tomcat6.port>
@@ -22,6 +23,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-lang3</artifactId>
+		  <version>${version.commons.lang3}</version>
+		</dependency>	
 		<dependency>
 			<groupId>com.baozun.scm.baseservice</groupId>
 			<artifactId>print-api</artifactId>
