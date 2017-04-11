@@ -138,6 +138,8 @@ public class Warehouse extends BaseModel {
 
     /** 拣货出现差异是否生成盘点任务 */
     private Boolean isGenerateInventoryTask;
+    /** 是否强制校验消费者退货入的包裹登记 */
+    private Boolean isCheckReturnedPurchaseReg;
     
 
     /** 邮箱 */
@@ -184,6 +186,17 @@ public class Warehouse extends BaseModel {
     private Integer zqty;
     /** 播种墙对应单据数 */
     private Integer seedingOdoQty;
+
+
+
+    public Boolean getIsCheckReturnedPurchaseReg() {
+        return isCheckReturnedPurchaseReg;
+    }
+
+    public void setIsCheckReturnedPurchaseReg(Boolean isCheckReturnedPurchaseReg) {
+        this.isCheckReturnedPurchaseReg = isCheckReturnedPurchaseReg;
+    }
+
     public String getCode() {
         return code;
     }
