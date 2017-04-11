@@ -38,12 +38,12 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int saveWhOdoStatusConfirm(WhOdo whOdo) {
+    public void saveWhOdoStatusConfirm(WhOdo whOdo) {
         log.info("WhOdoStatusConfirmManagerImpl.saveWhOdoStatusConfirm begin!");
         Long count = 0L;
         if (null == whOdo) {
             log.warn("WhOdoStatusConfirmManagerImpl.saveWhOdoStatusConfirm whOdo is null");
-            return count.intValue();
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"whOdo"});
         }
         // 获取客户信息
         Customer c = getCustomerByRedis(whOdo.getCustomerId());
@@ -65,7 +65,6 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
         log.info("WhOdoStatusConfirmManagerImpl.saveWhOdoStatusConfirm end!");
-        return count.intValue();
     }
 
     /**

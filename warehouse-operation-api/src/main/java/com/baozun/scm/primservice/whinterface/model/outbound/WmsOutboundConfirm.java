@@ -12,31 +12,30 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.confirm.outbound;
+package com.baozun.scm.primservice.whinterface.model.outbound;
 
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * 出库单反馈信息
  *
  */
-public class WhOutboundConfirm extends BaseModel {
+public class WmsOutboundConfirm implements Serializable {
+
 
     /**
      * 
      */
-    private static final long serialVersionUID = -8596808927374075521L;
-
+    private static final long serialVersionUID = 1234575103500528426L;
     /** 上位系统出库单号 */
     private String extOdoCode;
     /** WMS出库单号 */
     private String wmsOdoCode;
     /** 上位系统出库单类型 */
     private String extOdoType;
-    /** 运输服务商 */
-    private String transportServiceProvider;
-    /** 快递单号 */
-    private String trackingNumber;
+    /** 运输服务商-快递单号 */
+    private List<String> transportServiceProvider;
     /** 出库单状态 */
     private Integer wmsOdoStatus;
     /** 客户CODE */
@@ -45,12 +44,16 @@ public class WhOutboundConfirm extends BaseModel {
     private String storeCode;
     /** 仓库编码 */
     private String ouCode;
-    /** 仓库组织ID */
-    private Long ouId;
+    /** 仓库组织Code */
+    private String whCode;
     /** 数据来源 区分上位系统 */
     private String dataSource;
     /** 是否整单出库完成 默认是 */
-    private Boolean isOutboundFinish = true;
+    private Boolean isOutboundFinish;
+    /** 出库单反馈明细 */
+    private List<WmsOutboundLineConfirm> wmsOutBoundLineConfirm;
+    /** 出库单发票信息 */
+    private List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceLineConfirm;
 
     public String getExtOdoCode() {
         return extOdoCode;
@@ -74,22 +77,6 @@ public class WhOutboundConfirm extends BaseModel {
 
     public void setExtOdoType(String extOdoType) {
         this.extOdoType = extOdoType;
-    }
-
-    public String getTransportServiceProvider() {
-        return transportServiceProvider;
-    }
-
-    public void setTransportServiceProvider(String transportServiceProvider) {
-        this.transportServiceProvider = transportServiceProvider;
-    }
-
-    public String getTrackingNumber() {
-        return trackingNumber;
-    }
-
-    public void setTrackingNumber(String trackingNumber) {
-        this.trackingNumber = trackingNumber;
     }
 
     public Integer getWmsOdoStatus() {
@@ -124,12 +111,12 @@ public class WhOutboundConfirm extends BaseModel {
         this.ouCode = ouCode;
     }
 
-    public Long getOuId() {
-        return ouId;
+    public String getWhCode() {
+        return whCode;
     }
 
-    public void setOuId(Long ouId) {
-        this.ouId = ouId;
+    public void setWhCode(String whCode) {
+        this.whCode = whCode;
     }
 
     public String getDataSource() {
@@ -140,12 +127,36 @@ public class WhOutboundConfirm extends BaseModel {
         this.dataSource = dataSource;
     }
 
+    public List<String> getTransportServiceProvider() {
+        return transportServiceProvider;
+    }
+
+    public void setTransportServiceProvider(List<String> transportServiceProvider) {
+        this.transportServiceProvider = transportServiceProvider;
+    }
+
     public Boolean getIsOutboundFinish() {
         return isOutboundFinish;
     }
 
     public void setIsOutboundFinish(Boolean isOutboundFinish) {
         this.isOutboundFinish = isOutboundFinish;
+    }
+
+    public List<WmsOutboundLineConfirm> getWmsOutBoundLineConfirm() {
+        return wmsOutBoundLineConfirm;
+    }
+
+    public void setWmsOutBoundLineConfirm(List<WmsOutboundLineConfirm> wmsOutBoundLineConfirm) {
+        this.wmsOutBoundLineConfirm = wmsOutBoundLineConfirm;
+    }
+
+    public List<WmsOutboundInvoiceConfirm> getWmsOutBoundInvoiceLineConfirm() {
+        return wmsOutBoundInvoiceLineConfirm;
+    }
+
+    public void setWmsOutBoundInvoiceLineConfirm(List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceLineConfirm) {
+        this.wmsOutBoundInvoiceLineConfirm = wmsOutBoundInvoiceLineConfirm;
     }
 
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundConfirm;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
@@ -127,5 +128,19 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         log.info("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm end!");
         return wobsc;
+    }
+
+    /**
+     * 同步出库单反馈 bin.hu
+     * 
+     * @param beginTime not null 数据开始时间
+     * @param endTime not null 数据结束时间
+     * @param whCode not null 仓库编码
+     * @param dataSource not null 数据来源 区分上位系统
+     * @return
+     */
+    @Override
+    public List<WmsOutboundConfirm> wmsOutBoundConfirm(Date beginTime, Date endTime, String whCode, String dataSource) {
+        return null;
     }
 }

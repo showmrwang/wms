@@ -14,7 +14,7 @@ public interface WhOdoStatusConfirmManager extends BaseManager {
      * @param whOdo
      * @return
      */
-    int saveWhOdoStatusConfirm(WhOdo whOdo);
+    void saveWhOdoStatusConfirm(WhOdo whOdo);
 
     /**
      * 通过创建时间段+仓库ID+数据来源获取对应出库单状态反馈数据

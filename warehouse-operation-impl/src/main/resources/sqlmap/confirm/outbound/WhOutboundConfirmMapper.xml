@@ -25,7 +25,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	store_code as storeCode,
 	        	ou_code as ouCode,
 	        	ou_id as ouId,
-	        	data_source as dataSource
+	        	data_source as dataSource,
+	        	is_outbound_finish as isOutboundFinish
 	    ]]>
 	</sql>
 	<sql id="whOutboundConfirmConditionWhereExt">
@@ -117,9 +118,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	store_code ,
 		        	ou_code ,
 		        	ou_id ,
-		        	data_source 
+		        	data_source ,
+		        	is_outbound_finish 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -130,7 +132,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} 
 		        )
 		    ]]>
 
@@ -150,7 +153,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_code = #{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_outbound_finish = #{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
