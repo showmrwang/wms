@@ -234,8 +234,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         recPath.setTransitLocationCheckCode(transitLocation.getCheckCode());
         recPath.setTransitLocationCode(transitLocation.getTemporaryStorageCode());
         recPath.setOuId(ouId);
-        // @Gianni 修改状态为占用 2017-04-10
-        recPath.setStatus(Constants.WH_GLOBAL_STATUS_2);
+        // @Gianni 修改状态为新建 2017-04-10
+        recPath.setStatus(1);
         this.whFacilityRecPathDao.insert(recPath);
 
         // 如果没有推荐到播种墙，则加入推荐队列
@@ -272,8 +272,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         recPath.setTransitLocationCheckCode(prePath.getTransitLocationCheckCode());
         recPath.setTransitLocationCode(prePath.getTransitLocationCode());
         recPath.setOuId(ouId);
-        // @Gianni 修改状态为占用 2017-04-10
-        recPath.setStatus(Constants.WH_GLOBAL_STATUS_2);
+        // @Gianni 修改状态为新建 2017-04-10
+        recPath.setStatus(1);
         this.whFacilityRecPathDao.insert(recPath);
         return recPath;
     }

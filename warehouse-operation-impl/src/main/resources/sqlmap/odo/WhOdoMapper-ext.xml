@@ -66,7 +66,9 @@
 	        	distribution_code as distributionCode,
 	        	data_source as dataSource,
 				ext_odo_type as extOdoType,
-				is_freight_invoice_sunder as isFreightInvoiceSunder
+				is_freight_invoice_sunder as isFreightInvoiceSunder,
+				head_start_odo_status as headStartOdoStatus,
+		        lag_odo_status as lagOdoStatus
         ]]>
 	</sql>
 
@@ -781,7 +783,9 @@
 			        distribution_code = #{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        data_source=#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
-		        	is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} 
+		        	is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	head_start_odo_status=#{headStartOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
+		       		lag_odo_status=#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR}
            
         ]]>
 		<where>

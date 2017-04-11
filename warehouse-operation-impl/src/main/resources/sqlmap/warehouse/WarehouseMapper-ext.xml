@@ -119,7 +119,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         mgmt.x_qty as xqty,
         mgmt.y_qty as yqty,
         mgmt.z_qty as zqty,
-        mgmt.seeding_odo_qty as seedingOdoQty
+        mgmt.seeding_odo_qty as seedingOdoQty,
+        mgmt.is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
     </sql>
 
 	<sql id="warehouseDynamicWhereExt">
@@ -365,7 +366,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       	mgmt.x_qty as xqty,
 		       	mgmt.y_qty as yqty,
 		       	mgmt.z_qty as zqty,
-		       	mgmt.seeding_odo_qty as seedingOdoQty
+		       	mgmt.seeding_odo_qty as seedingOdoQty,
+		       	mgmt.is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
 	    ]]>
 	</sql>
 	<select id="findListByQueryMapWithPageExt" resultMap="warehouseCommand">

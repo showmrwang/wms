@@ -449,6 +449,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Boolean checkAndMoveContainer(WorkCollectionCommand workCollectionCommand) {
+        if (null == workCollectionCommand) {
+            throw new BusinessException("object null");
+        }
         Boolean isSuccess = true;
         String inputContainerCode = workCollectionCommand.getInputContainerCode();
         String containerCode = workCollectionCommand.getContainerCode();

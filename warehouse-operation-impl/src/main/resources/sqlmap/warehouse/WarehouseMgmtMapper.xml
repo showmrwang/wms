@@ -56,7 +56,8 @@
                 x_qty as xqty,
                 y_qty as yqty,
                 z_qty as zqty,
-                seeding_odo_qty as seedingOdoQty
+                seeding_odo_qty as seedingOdoQty,
+                is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
         ]]>
     </sql>
 
@@ -114,7 +115,8 @@
                     x_qty ,
                     y_qty ,
                     z_qty ,
-                    seeding_odo_qty 
+                    seeding_odo_qty ,
+                    is_check_returned_purchase_reg
                 ) VALUES (
                 #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{warehouseId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -161,7 +163,8 @@
                     #{xqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     #{yqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     #{zqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                    #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                    #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                     #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} 
                 )
             ]]>
 
@@ -215,7 +218,8 @@
                 x_qty = #{xqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 y_qty = #{yqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 z_qty = #{zqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                seeding_odo_qty = #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
+                seeding_odo_qty = #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} 
             WHERE 
                 id = #{id} 
         ]]>
@@ -289,6 +293,9 @@
 
             <if test="isPoAutoVerify!=null">
                 and is_po_auto_verify = #{isPoAutoVerify}
+            </if>
+			<if test="isCheckReturnedPurchaseReg!=null">
+                and is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg}
             </if>
 
             <if test="isAsnAutoVerify!=null">
@@ -370,6 +377,9 @@
 
             <if test="isCalcSuits!=null">
                 and is_calc_suits = #{isCalcSuits}
+            </if>
+			<if test="isCheckReturnedPurchaseReg!=null">
+                and is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg}
             </if>
 
             <if test="suitsOdoQtys!=null">

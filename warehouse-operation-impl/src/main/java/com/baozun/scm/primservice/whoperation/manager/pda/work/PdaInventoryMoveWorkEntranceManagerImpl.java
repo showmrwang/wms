@@ -59,7 +59,7 @@ public class PdaInventoryMoveWorkEntranceManagerImpl extends BaseManagerImpl imp
                 isLastPage = true;
             }
         }
-        param.put("category", "INVENTROY_MOVE");
+        param.put("category", "IN_WAREHOUSE_MOVE");
         param.put("userId", userId);
         param.put("ouId", ouId);
 

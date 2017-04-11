@@ -323,6 +323,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (StringUtils.isEmpty(odo.getOdoStatus())) {
                 odo.setOdoStatus(OdoStatus.ODO_NEW);
             }
+            if (StringUtils.isEmpty(odo.getHeadStartOdoStatus())) {
+                odo.setHeadStartOdoStatus(OdoStatus.HEADSTARTODOSTATUS_NEW);
+            }
+            if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
+                odo.setLagOdoStatus(OdoStatus.LAGODOSTATUS_NEW);
+            }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
@@ -787,6 +793,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
      */
     @Override
     public void cancel(WhOdo odo,Long ouId,Boolean isOdoCancel,List<WhOdoLine> lineList,Long userId,String logId){
+        //@mender yimin.lu 2017/4/10 屏蔽部分取消接口
+        if(!isOdoCancel){
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         if(isOdoCancel){
             this.cancelOdo(odo, ouId, logId);
         }else{

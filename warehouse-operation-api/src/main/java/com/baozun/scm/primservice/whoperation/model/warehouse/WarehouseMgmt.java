@@ -116,10 +116,19 @@ public class WarehouseMgmt extends BaseModel {
     private Integer zqty;
     /** 播种墙对应单据数 */
     private Integer seedingOdoQty;
-
+    /** 是否强制校验消费者退货入的包裹登记 */
+    private Boolean isCheckReturnedPurchaseReg;
     // columns END
 
     public WarehouseMgmt() {}
+
+    public Boolean getIsCheckReturnedPurchaseReg() {
+        return isCheckReturnedPurchaseReg;
+    }
+
+    public void setIsCheckReturnedPurchaseReg(Boolean isCheckReturnedPurchaseReg) {
+        this.isCheckReturnedPurchaseReg = isCheckReturnedPurchaseReg;
+    }
 
     public WarehouseMgmt(Long id) {
         this.id = id;

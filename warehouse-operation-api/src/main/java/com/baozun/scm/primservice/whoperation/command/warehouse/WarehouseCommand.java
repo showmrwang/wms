@@ -142,8 +142,18 @@ public class WarehouseCommand extends BaseCommand {
 	private Integer zqty;
 	/** 播种墙对应单据数 */
 	private Integer seedingOdoQty;
+    /** 是否强制校验消费者退货入的包裹登记 */
+    private Boolean isCheckReturnedPurchaseReg;
     
     
+    public Boolean getIsCheckReturnedPurchaseReg() {
+        return isCheckReturnedPurchaseReg;
+    }
+
+    public void setIsCheckReturnedPurchaseReg(Boolean isCheckReturnedPurchaseReg) {
+        this.isCheckReturnedPurchaseReg = isCheckReturnedPurchaseReg;
+    }
+
     public Boolean getIsGenerateInventoryTask() {
         return isGenerateInventoryTask;
     }

@@ -56,7 +56,8 @@
                 x_qty as xqty,
                 y_qty as yqty,
                 z_qty as zqty,
-                seeding_odo_qty as seedingOdoQty
+                seeding_odo_qty as seedingOdoQty,
+                is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
         ]]>
     </sql>
 
@@ -118,6 +119,9 @@
 
             <if test="isSkuNeedsScan!=null">
                 and is_sku_needs_scan = #{isSkuNeedsScan}
+            </if>
+            <if test="isCheckReturnedPurchaseReg!=null">
+                and is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg}
             </if>
 
 
