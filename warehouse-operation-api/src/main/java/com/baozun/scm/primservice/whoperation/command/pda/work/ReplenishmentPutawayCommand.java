@@ -32,7 +32,7 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     /** 是否扫描库位编码 */
     private Boolean isInboundLocationBarcode;
     /** 库位id */
-    private Long lcoationId;
+    private Long locationId;
     /***/
     private String tipTurnoverBoxCode;
     
@@ -114,14 +114,6 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
         this.isInboundLocationBarcode = isInboundLocationBarcode;
     }
 
-    public Long getLcoationId() {
-        return lcoationId;
-    }
-
-    public void setLcoationId(Long lcoationId) {
-        this.lcoationId = lcoationId;
-    }
-
     public String getTipLocationCode() {
         return tipLocationCode;
     }
@@ -201,4 +193,14 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     public void setReplenishWay(Integer replenishWay) {
         this.replenishWay = replenishWay;
     }
+
+    public Long getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
+    }
+    
+    
 }

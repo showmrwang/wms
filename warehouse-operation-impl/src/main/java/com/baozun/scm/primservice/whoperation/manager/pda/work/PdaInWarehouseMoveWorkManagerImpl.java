@@ -208,7 +208,7 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
             turnoverBoxId = c.getId();
         }
         //已分配的库位库存转变为容器库存
-        whSkuInventoryManager.replenishmentContainerInventory(operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId,workCode);
+        whSkuInventoryManager.replenishmentContainerInventory(operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId,workCode,null);
        //更新工作及作业状态
         pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
         //清除缓存

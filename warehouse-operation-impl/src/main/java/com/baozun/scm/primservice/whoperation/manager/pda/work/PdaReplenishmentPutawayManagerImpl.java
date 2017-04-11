@@ -103,7 +103,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }
         command.setTipLcoationBarCode(location.getBarCode());
         command.setTipLocationCode(location.getCode());
-        command.setLcoationId(location.getId()); 
+        command.setLocationId(location.getId()); 
         command.setIsNeedScanLocation(true);
         log.info("PdaReplenishmentPutawayManagerImpl putawayTipLocation is end");
         return command;
@@ -115,7 +115,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanLocation is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
-        Long locationId = command.getLcoationId();                            
+        Long locationId = command.getLocationId();                            
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -161,7 +161,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is start");
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
-        Long locationId = command.getLcoationId();
+        Long locationId = command.getLocationId();
         Long userId = command.getUserId();
         String workCode = command.getWorkBarCode();
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
@@ -193,7 +193,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 }
                 command.setTipLcoationBarCode(location.getBarCode());
                 command.setTipLocationCode(location.getCode());
-                command.setLcoationId(location.getId()); 
+                command.setLocationId(location.getId()); 
                 command.setIsNeedScanLocation(true);
             }else{ //库位已经扫描完毕
                 command.setIsScanFinsh(true);
