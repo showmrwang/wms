@@ -4,7 +4,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace=com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceConfirmDao>
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceConfirmDao">
 	<resultMap id="WhOutboundInvoiceConfirmResultExt" type="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm">
 	</resultMap>
 	
