@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundLineConfirmDao">
+	<resultMap id="WhOutboundLineConfirmResult" type="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm">
+	</resultMap>
+	<resultMap id="WhOutboundLineConfirmPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhOutboundLineConfirmResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundLineConfirmColumns">
+	    <![CDATA[
+	        	id as id,
+	        	outbounc_confirm_id as outbouncConfirmId,
+	        	store_code as storeCode,
+	        	wms_odo_code as wmsOdoCode,
+	        	tracking_number as trackingNumber,
+	        	outbound_box_code as outboundBoxCode,
+	        	ext_line_num as extLineNum,
+	        	upc as upc,
+	        	style as style,
+	        	color as color,
+	        	size as size,
+	        	qty as qty,
+	        	actual_qty as actualQty,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	<sql id="whOutboundLineConfirmConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_line_confirm (
+		        id,
+		        	outbounc_confirm_id ,
+		        	store_code ,
+		        	wms_odo_code ,
+		        	tracking_number ,
+		        	outbound_box_code ,
+		        	ext_line_num ,
+		        	upc ,
+		        	style ,
+		        	color ,
+		        	size ,
+		        	qty ,
+		        	actual_qty ,
+		        	inv_status ,
+		        	inv_type ,
+		        	batch_number ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	country_of_origin ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outbouncConfirmId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{trackingNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{outboundBoxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extLineNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{upc,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{actualQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_line_confirm SET
+		        outbounc_confirm_id = #{outbouncConfirmId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wms_odo_code = #{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tracking_number = #{trackingNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outbound_box_code = #{outboundBoxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_line_num = #{extLineNum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        upc = #{upc,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        actual_qty = #{actualQty,javaType=Long,jdbcType=DECIMAL} ,
+		        inv_status = #{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_outbound_line_confirm SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whOutboundLineConfirmConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_line_confirm where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_line_confirm 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_outbound_line_confirm <include refid="whOutboundLineConfirmConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundLineConfirmResult" flushCache="false">
+			select <include refid="whOutboundLineConfirmColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_line_confirm 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundLineConfirmResult" flushCache="false">
+			select <include refid="whOutboundLineConfirmColumns" />
+			    from t_wh_outbound_line_confirm 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundLineConfirmDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outbouncConfirmId!=null">
+					and outbounc_confirm_id = #{outbouncConfirmId}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="wmsOdoCode!=null and wmsOdoCode!=''">
+					and wms_odo_code = #{wmsOdoCode}
+				</if>
+	       
+	       
+		       <if test="trackingNumber!=null and trackingNumber!=''">
+					and tracking_number = #{trackingNumber}
+				</if>
+	       
+	       
+		       <if test="outboundBoxCode!=null and outboundBoxCode!=''">
+					and outbound_box_code = #{outboundBoxCode}
+				</if>
+	       
+				<if test="extLineNum!=null">
+					and ext_line_num = #{extLineNum}
+				</if>
+	       
+	       
+		       <if test="upc!=null and upc!=''">
+					and upc = #{upc}
+				</if>
+	       
+	       
+		       <if test="style!=null and style!=''">
+					and style = #{style}
+				</if>
+	       
+	       
+		       <if test="color!=null and color!=''">
+					and color = #{color}
+				</if>
+	       
+	       
+		       <if test="size!=null and size!=''">
+					and size = #{size}
+				</if>
+	       
+				<if test="qty!=null">
+					and qty = #{qty}
+				</if>
+	       
+				<if test="actualQty!=null">
+					and actual_qty = #{actualQty}
+				</if>
+	       
+	       
+		       <if test="invStatus!=null and invStatus!=''">
+					and inv_status = #{invStatus}
+				</if>
+	       
+	       
+		       <if test="invType!=null and invType!=''">
+					and inv_type = #{invType}
+				</if>
+	       
+	       
+		       <if test="batchNumber!=null and batchNumber!=''">
+					and batch_number = #{batchNumber}
+				</if>
+	       
+				<if test="mfgDate!=null">
+					and mfg_date = #{mfgDate}
+				</if>
+	       
+				<if test="expDate!=null">
+					and exp_date = #{expDate}
+				</if>
+	       
+	       
+		       <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+					and country_of_origin = #{countryOfOrigin}
+				</if>
+	       
+	       
+		       <if test="invAttr1!=null and invAttr1!=''">
+					and inv_attr1 = #{invAttr1}
+				</if>
+	       
+	       
+		       <if test="invAttr2!=null and invAttr2!=''">
+					and inv_attr2 = #{invAttr2}
+				</if>
+	       
+	       
+		       <if test="invAttr3!=null and invAttr3!=''">
+					and inv_attr3 = #{invAttr3}
+				</if>
+	       
+	       
+		       <if test="invAttr4!=null and invAttr4!=''">
+					and inv_attr4 = #{invAttr4}
+				</if>
+	       
+	       
+		       <if test="invAttr5!=null and invAttr5!=''">
+					and inv_attr5 = #{invAttr5}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_line_confirm 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_line_confirm 
+		<include refid="whOutboundLineConfirmDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_line_confirm 
+		<include refid="whOutboundLineConfirmDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundLineConfirmResult">
+    	select <include refid="whOutboundLineConfirmColumns" />
+	    from t_wh_outbound_line_confirm 
+		<include refid="whOutboundLineConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundLineConfirmResult">
+    	select <include refid="whOutboundLineConfirmColumns" />
+	    from t_wh_outbound_line_confirm 
+		<include refid="whOutboundLineConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundLineConfirmResult">
+    	select <include refid="whOutboundLineConfirmColumns" />
+	    from t_wh_outbound_line_confirm 
+		<include refid="whOutboundLineConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhOutboundLineConfirmResult">
+		select <include refid="whOutboundLineConfirmColumns" />
+	    from t_wh_outbound_line_confirm  
+		<include refid="whOutboundLineConfirmConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_outbound_line_confirm  
+		<include refid="whOutboundLineConfirmConditionWhereExt"/>
+    </select>
+
+	
+</mapper>
