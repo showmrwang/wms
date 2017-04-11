@@ -49,6 +49,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendR
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -97,6 +98,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
+import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
@@ -2529,17 +2531,48 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 内部容器辅助表信息
         Map<Long, ContainerAssist> caMap = new HashMap<Long, ContainerAssist>();
         Double icTotalWeight = 0.0;
-        for (Long insideId : insideContainerIds) {
-            ContainerAssist containerAssist = insideContainerAsists.get(insideId);
-            icTotalWeight += insideContainerWeight.get(insideId);
-            containerAssist.setSysWeight(insideContainerWeight.get(insideId));
-            containerAssist.setSkuCategory(insideContainerSkuIds.get(insideId).size() + 0L);
-            containerAssist.setSkuAttrCategory(insideContainerSkuAttrIds.get(insideId).size() + 0L);
-            containerAssist.setSkuQty(insideContainerSkuQty.get(insideId));
-            containerAssist.setStoreQty(insideContainerStoreIds.get(insideId).size() + 0L);
-            containerAssistDao.insert(containerAssist);
-            insertGlobalLog(GLOBAL_LOG_INSERT, containerAssist, ouId, userId, null, null);
-            caMap.put(insideId, containerAssist);// 所有的容器辅助信息
+        if (null == insideContainerAsists) {
+            // 重新计算容器辅助信息
+            invStatisticCmd = inventoryStatisticManager.sysGuidePutawayInvStatistic(invList, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, lenUomCmds, weightUomCmds, insideContainerCmd, ouId, userId, logId);
+            insideContainerIds = invStatisticCmd.getInsideContainerIds();// 所有内部容器
+            caselevelContainerIds = invStatisticCmd.getCaselevelContainerIds();// 所有caselevel内部容器
+            notcaselevelContainerIds = invStatisticCmd.getNotcaselevelContainerIds();// 所有非caselevel内部容器
+            skuIds = invStatisticCmd.getSkuIds();// 所有sku种类
+            skuQty = invStatisticCmd.getSkuQty();// sku总件数
+            skuAttrIds = invStatisticCmd.getSkuAttrIds();// 所有唯一sku
+            storeIds = invStatisticCmd.getStoreIds();// 所有店铺
+            locationIds = invStatisticCmd.getLocationIds();// 所有推荐库位
+            insideContainerSkuIds = invStatisticCmd.getInsideContainerSkuIds();// 内部容器所有sku种类
+            insideContainerSkuQty = invStatisticCmd.getInsideContainerSkuQty();// 内部容器所有sku总件数
+            insideContainerSkuIdsQty = invStatisticCmd.getInsideContainerSkuIdsQty();// 内部容器单个sku总件数
+            insideContainerSkuAttrIds = invStatisticCmd.getInsideContainerSkuAttrIds();// 内部容器唯一sku种类
+            insideContainerSkuAttrIdsQty = invStatisticCmd.getInsideContainerSkuAttrIdsQty();// 内部容器唯一sku总件数
+            //Map<Long, Map<Long, Set<String>>> insideContainerSkuAndSkuAttrIds = invStatisticCmd.getInsideContainerSkuAndSkuAttrIds();// 内部容器sku对应所有唯一sku
+            insideContainerSkuAttrIdsSnDefect = invStatisticCmd.getInsideContainerSkuAttrIdsSnDefect();// 内部容器唯一sku对应所有残次条码
+            insideContainerStoreIds = invStatisticCmd.getInsideContainerStoreIds();// 内部容器所有店铺
+            insideContainerWeight = invStatisticCmd.getInsideContainerWeight();// 内部容器重量
+            //Map<Long, Double> insideContainerVolume = invStatisticCmd.getInsideContainerVolume();// 内部容器体积
+            insideContainerAsists = invStatisticCmd.getInsideContainerAsists();
+        }
+        if (null != insideContainerAsists) {
+            for (Long insideId : insideContainerIds) {
+                ContainerAssist containerAssist = insideContainerAsists.get(insideId);
+                if (null != containerAssist) {
+                    icTotalWeight += insideContainerWeight.get(insideId);
+                    containerAssist.setSysWeight(insideContainerWeight.get(insideId));
+                    containerAssist.setSkuCategory(insideContainerSkuIds.get(insideId).size() + 0L);
+                    containerAssist.setSkuAttrCategory(insideContainerSkuAttrIds.get(insideId).size() + 0L);
+                    containerAssist.setSkuQty(insideContainerSkuQty.get(insideId));
+                    containerAssist.setStoreQty(insideContainerStoreIds.get(insideId).size() + 0L);
+                    containerAssistDao.insert(containerAssist);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, containerAssist, ouId, userId, null, null);
+                    caMap.put(insideId, containerAssist);// 所有的容器辅助信息
+                }
+            }
+        }
+        if (null == caMap || 0 == caMap.size()) {
+            log.error("container assist info generate error, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_ASSIST_INFO_GENERATE_ERROR);
         }
         // 6.匹配上架规则
         List<String> icCodeList = new ArrayList<String>();
@@ -2566,10 +2599,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.RECOMMEND_LOCATION_NO_RULE_ERROR);
         }
         // 7.推荐库位
-        if (null == caMap || 0 == caMap.size()) {
-            log.error("container assist info generate error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.CONTAINER_ASSIST_INFO_GENERATE_ERROR);
-        }
         // 判断是否需要排队
         boolean isRecommend = pdaPutawayCacheManager.sysGuidePutawayLocRecommendQueue(insideContainerId, logId);
         if (false == isRecommend) {
@@ -2955,7 +2984,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         srCmd.setNeedTipLocation(true);// 提示库位
         return srCmd;
     }
-
+    
     /**
      * 系统指导上架扫库位
      * 
