@@ -5,7 +5,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.WhHandoverStationDao">
-	<resultMap id="WhHandoverStationResultExt" type=com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation>
+	<resultMap id="WhHandoverStationResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation">
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
@@ -93,7 +93,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whinfo.model.warehouse.WhHandoverStation">
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation">
 	    <![CDATA[
 	        UPDATE t_wh_handover_station SET
 		        type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
