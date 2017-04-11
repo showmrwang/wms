@@ -106,12 +106,35 @@ public class WhOdo extends BaseModel {
     /** 是否货票分离 0:否 1:是 */
     private Boolean isFreightInvoiceSunder;
 
+    /** 领先出库单状态 */
+    private String headStartOdoStatus;
+    /** 滞后出库单状态 */
+    private String lagOdoStatus;
+
     /** 当前月份 用于归档 */
     private String sysDate;
     /** 归档时间 */
     private Date archivTime;
     /** 上位系统单据类型 */
     private String extOdoType;
+
+
+
+    public String getHeadStartOdoStatus() {
+        return headStartOdoStatus;
+    }
+
+    public void setHeadStartOdoStatus(String headStartOdoStatus) {
+        this.headStartOdoStatus = headStartOdoStatus;
+    }
+
+    public String getLagOdoStatus() {
+        return lagOdoStatus;
+    }
+
+    public void setLagOdoStatus(String lagOdoStatus) {
+        this.lagOdoStatus = lagOdoStatus;
+    }
 
     public String getExtOdoType() {
         return extOdoType;
