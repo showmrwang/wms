@@ -166,4 +166,5 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsInboundServiceManagerProxy" ref="wmsInboundServiceManagerProxy" />
 	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsOutboundServiceManagerProxy" ref="wmsOutboundServiceManagerProxy" />
 	
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager" ref="whOutboundConfirmManager" />
 </beans>

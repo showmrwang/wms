@@ -15,6 +15,8 @@ public class WmsSkuInventoryFlow implements Serializable {
      */
     private static final long serialVersionUID = -4142475583092154869L;
 
+    /** 数据唯一标识 */
+    private Long id;
     /** 商品唯一编码 */
     private String upc;
     /** 客户CODE */
@@ -55,6 +57,16 @@ public class WmsSkuInventoryFlow implements Serializable {
     private String invTransactionType;
     /** 仓库组织Code */
     private String whCode;
+
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUpc() {
         return upc;

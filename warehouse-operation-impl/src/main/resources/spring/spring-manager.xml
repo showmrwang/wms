@@ -71,6 +71,10 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm</value>
 				</list>
 			</property>
 			

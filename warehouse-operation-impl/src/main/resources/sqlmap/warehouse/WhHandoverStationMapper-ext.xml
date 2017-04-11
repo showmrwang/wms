@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.WhHandoverStationDao">
+	<resultMap id="WhHandoverStationResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whHandoverStationColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	type as type,
+	        	serial_number as serialNumber,
+	        	code as code,
+	        	facility_group_id as facilityGroupId,
+	        	ou_id as ouId,
+	        	upper_capacity as upperCapacity,
+	        	automatic_warehouse_crossing as automaticWarehouseCrossing,
+	        	chr_id as chrId,
+	        	lifecycle as lifecycle,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	
+	<sql id="whHandoverStationDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="type!=null and type!=''">
+					and type = #{type}
+				</if>
+	       
+				<if test="serialNumber!=null">
+					and serial_number = #{serialNumber}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+				<if test="facilityGroupId!=null">
+					and facility_group_id = #{facilityGroupId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="upperCapacity!=null">
+					and upper_capacity = #{upperCapacity}
+				</if>
+	       
+	       
+		       <if test="automaticWarehouseCrossing!=null and automaticWarehouseCrossing!=''">
+					and automatic_warehouse_crossing = #{automaticWarehouseCrossing}
+				</if>
+	       
+				<if test="chrId!=null">
+					and chr_id = #{chrId}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation">
+	    <![CDATA[
+	        UPDATE t_wh_handover_station SET
+		        type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        serial_number = #{serialNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        facility_group_id = #{facilityGroupId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        upper_capacity = #{upperCapacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        automatic_warehouse_crossing = #{automaticWarehouseCrossing,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        chr_id = #{chrId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} and ou_id = #{ouId}
+	    ]]>
+		</update>
+		
+	<delete id="deleteByExt">
+	            <![CDATA[
+	        delete from t_wh_handover_station where
+		                id = #{id}  and ou_id = #{ouId}
+	    ]]>
+	</delete>
+	
+	<select id="findWhHandoverStationByIdSort" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	       select hd.id as id,
+	        	  hd.type as type,
+	        	  hd.serial_number as serialNumber,
+	        	  hd.code as code,
+	        	  hd.facility_group_id as facilityGroupId,
+	        	  hd.ou_id as ouId,
+	        	  hd.upper_capacity as upperCapacity,
+	        	  hd.automatic_warehouse_crossing as automaticWarehouseCrossing,
+	        	  hd.chr_id as chrId,
+	        	  hd.lifecycle as lifecycle,
+	        	  hd.create_id as createId,
+	              hd.create_time as createTime,
+	        	  hd.last_modify_time as lastModifyTime,
+	        	  hd.modified_id as modifiedId,
+	        	  hr.rule_code as chrCode
+	              from t_wh_handover_station hd
+	              left join t_wh_handover_collection_rule hr on hd.chr_id = hr.id
+	              where hd.facility_group_id=#{facilityGroupId} and hd.ou_id = #{ouId} order by hd.serial_number
+	</select>
+	
+	
+	<select id="findByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	       select id as id,
+	        	type as type,
+	        	serial_number as serialNumber,
+	        	code as code,
+	        	facility_group_id as facilityGroupId,
+	        	ou_id as ouId,
+	        	upper_capacity as upperCapacity,
+	        	automatic_warehouse_crossing as automaticWarehouseCrossing,
+	        	chr_id as chrId,
+	        	lifecycle as lifecycle,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	              from t_wh_handover_station  
+	              where code=#{code}
+	</select>
+</mapper>
