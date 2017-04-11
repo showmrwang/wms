@@ -78,11 +78,11 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否扫描拣货库位托盘 */
     private java.lang.Boolean isScanOuterContainer;
     /** 是否已经扫描外部容器 */
-    private Boolean isNeedScanOuter = false;
+//    private Boolean isNeedScanOuter = false;
     /** 是否扫描拣货库位货箱 */
     private java.lang.Boolean isScanInsideContainer;
     /** 是否已经扫描内部容器 */
-    private Boolean isNeedScanInsider = false;
+//    private Boolean isNeedScanInsider = false;
     /** 是否扫描商品 */
     private java.lang.Boolean isScanSku;
     /** 扫描模式 1数量扫描 2逐件扫描 默认数量扫描 */
@@ -952,21 +952,21 @@ public class PickingScanResultCommand extends BaseCommand {
         this.isTipOuterContainer = isTipOuterContainer;
     }
 
-    public Boolean getIsNeedScanOuter() {
-        return isNeedScanOuter;
-    }
-
-    public void setIsNeedScanOuter(Boolean isNeedScanOuter) {
-        this.isNeedScanOuter = isNeedScanOuter;
-    }
-
-    public Boolean getIsNeedScanInsider() {
-        return isNeedScanInsider;
-    }
-
-    public void setIsNeedScanInsider(Boolean isNeedScanInsider) {
-        this.isNeedScanInsider = isNeedScanInsider;
-    }
+//    public Boolean getIsNeedScanOuter() {
+//        return isNeedScanOuter;
+//    }
+//
+//    public void setIsNeedScanOuter(Boolean isNeedScanOuter) {
+//        this.isNeedScanOuter = isNeedScanOuter;
+//    }
+//
+//    public Boolean getIsNeedScanInsider() {
+//        return isNeedScanInsider;
+//    }
+//
+//    public void setIsNeedScanInsider(Boolean isNeedScanInsider) {
+//        this.isNeedScanInsider = isNeedScanInsider;
+//    }
 
     public Boolean getIsNeedScanSku() {
         return isNeedScanSku;

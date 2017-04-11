@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundConfirmDao">
+	<resultMap id="WhOutboundConfirmResult" type="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm">
+	</resultMap>
+	<resultMap id="WhOutboundConfirmPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhOutboundConfirmResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundConfirmColumns">
+	    <![CDATA[
+	        	id as id,
+	        	ext_odo_code as extOdoCode,
+	        	wms_odo_code as wmsOdoCode,
+	        	ext_odo_type as extOdoType,
+	        	transport_service_provider as transportServiceProvider,
+	        	tracking_number as trackingNumber,
+	        	wms_odo_status as wmsOdoStatus,
+	        	customer_code as customerCode,
+	        	store_code as storeCode,
+	        	ou_code as ouCode,
+	        	ou_id as ouId,
+	        	data_source as dataSource
+	    ]]>
+	</sql>
+	<sql id="whOutboundConfirmConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_confirm (
+		        	id,
+		        	ext_odo_code ,
+		        	wms_odo_code ,
+		        	ext_odo_type ,
+		        	transport_service_provider ,
+		        	tracking_number ,
+		        	wms_odo_status ,
+		        	customer_code ,
+		        	store_code ,
+		        	ou_code ,
+		        	ou_id ,
+		        	data_source 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportServiceProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{trackingNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{wmsOdoStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_confirm SET
+		        ext_odo_code = #{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wms_odo_code = #{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_odo_type = #{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_service_provider = #{transportServiceProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tracking_number = #{trackingNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wms_odo_status = #{wmsOdoStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_code = #{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_outbound_confirm SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whOutboundConfirmConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_confirm where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_confirm 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_outbound_confirm <include refid="whOutboundConfirmConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundConfirmResult" flushCache="false">
+			select <include refid="whOutboundConfirmColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_confirm 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundConfirmResult" flushCache="false">
+			select <include refid="whOutboundConfirmColumns" />
+			    from t_wh_outbound_confirm 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundConfirmDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="extOdoCode!=null and extOdoCode!=''">
+					and ext_odo_code = #{extOdoCode}
+				</if>
+	       
+	       
+		       <if test="wmsOdoCode!=null and wmsOdoCode!=''">
+					and wms_odo_code = #{wmsOdoCode}
+				</if>
+	       
+	       
+		       <if test="extOdoType!=null and extOdoType!=''">
+					and ext_odo_type = #{extOdoType}
+				</if>
+	       
+	       
+		       <if test="transportServiceProvider!=null and transportServiceProvider!=''">
+					and transport_service_provider = #{transportServiceProvider}
+				</if>
+	       
+	       
+		       <if test="trackingNumber!=null and trackingNumber!=''">
+					and tracking_number = #{trackingNumber}
+				</if>
+	       
+				<if test="wmsOdoStatus!=null">
+					and wms_odo_status = #{wmsOdoStatus}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="ouCode!=null and ouCode!=''">
+					and ou_code = #{ouCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="dataSource!=null and dataSource!=''">
+					and data_source = #{dataSource}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_confirm 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_confirm 
+		<include refid="whOutboundConfirmDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_confirm 
+		<include refid="whOutboundConfirmDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundConfirmResult">
+    	select <include refid="whOutboundConfirmColumns" />
+	    from t_wh_outbound_confirm 
+		<include refid="whOutboundConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundConfirmResult">
+    	select <include refid="whOutboundConfirmColumns" />
+	    from t_wh_outbound_confirm 
+		<include refid="whOutboundConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundConfirmResult">
+    	select <include refid="whOutboundConfirmColumns" />
+	    from t_wh_outbound_confirm 
+		<include refid="whOutboundConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhOutboundConfirmResult">
+		select <include refid="whOutboundConfirmColumns" />
+	    from t_wh_outbound_confirm  
+		<include refid="whOutboundConfirmConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_outbound_confirm  
+		<include refid="whOutboundConfirmConditionWhereExt"/>
+    </select>
+
+	
+</mapper>
