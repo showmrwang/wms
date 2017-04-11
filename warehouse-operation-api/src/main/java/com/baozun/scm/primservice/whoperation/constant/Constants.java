@@ -202,6 +202,8 @@ public final class Constants {
     public static final String RULE_TYPE_OUTBOUND_BOX = "OUTBOUND_BOX";
     /** 装箱排序\拆分 */
     public static final String RULE_TYPE_OUTBOUND_BOX_TACTICS = "OUTBOUND_BOX_TACTICS";
+    /** 交接集货规则 */
+    public static final String RULE_TYPE_HANDOVER_COLLECTION = "HANDOVER_COLLECTION";
 
     // 库存状态
     public static final Long INVENTORY_STATUS_GOOD = 3L;// 良品
@@ -290,6 +292,8 @@ public final class Constants {
 
     /** 出库箱装箱规则sql占位符 */
     public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
+    /** 交接集货规则sql占位符 */
+    public static final String HANDOVER_COLLECTION_RULE_PALCEHOLDER = "${outboundboxCode}";
 
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
@@ -730,6 +734,8 @@ public final class Constants {
 
     /** 调编码生成器 出库箱推荐标识 */
     public static final String OUTBOUND_BOX_BATCH = "WMS_OUTBOUND_BOX_BATCH";
+    
+    public static final String HANDOVER_BATCH = "WMS_HANDOVER_BATCH";
 
     /** 对接系统系数来源 */
     public static final String DATA_SOURCE_WMS = "wms";
