@@ -1408,7 +1408,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
             command.setTipSkuBarCode(whSkuCmd.getBarCode());
-            command.setIsNeedTipSku(true);
+//            command.setIsNeedTipSku(true);
             command.setSkuId(skuId);
             this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
         } else if (cSRCmd.getIsNeedScanSku()) {

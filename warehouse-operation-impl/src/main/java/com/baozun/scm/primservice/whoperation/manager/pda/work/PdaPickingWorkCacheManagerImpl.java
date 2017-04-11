@@ -542,9 +542,19 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               return scanResult;
           }
           //  //拼装唯一sku及残次信息 缓存sku唯一标示
-          List<WhSkuInventoryCommand> list = this.cacheLocationInventory(operationId, locationId, ouId,operationWay);
+//          List<WhSkuInventoryCommand> list = this.cacheLocationInventory(operationId, locationId, ouId,operationWay);
+          List<WhSkuInventoryCommand> skuInvList  = null;
+          if (Constants.PICKING_INVENTORY.equals(operationWay)) { //拣货
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
+          }
+          if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId);
+          }
+          if(null == skuInvList || skuInvList.size() == 0){
+                  throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+          }
           String skuAttrId = null;
-          for(WhSkuInventoryCommand skuCmd:list) {
+          for(WhSkuInventoryCommand skuCmd:skuInvList) {
                if(null != insideContainerId) { //有货箱
                       if(insideContainerId.equals(skuCmd.getInsideContainerId()) && locationId.equals(skuCmd.getLocationId())) {
                           if(tipSkuId.longValue() == skuCmd.getSkuId().longValue()) {
@@ -2133,7 +2143,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
                                     Set<String> skuAttrIds = skuAttrIdQty.keySet();
                                     String tipSkuAttrId = null;
-                                    if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+                                    if(!isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
                                         //同一种sku有不同的库存属性
                                         for(String skuAttr:skuAttrIds){
                                              if(!scanSkuAttrIds.contains(skuAttr)) {
