@@ -911,13 +911,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				(
 					select distinct inv.sku_id  as sku_id
 	   				from
-	   				t_wh_asn asn,	
 					t_wh_sku_inventory inv,
 					t_wh_container c 
 					where 
 					inv.occupation_code is not null 
-					and asn.asn_code = inv.occupation_code
-					and (asn.status=5 or asn.status=10)
 					and inv.ou_id = #{ouId}
 			<if test="cSql!=null and cSql!=''">
 				and ${cSql}

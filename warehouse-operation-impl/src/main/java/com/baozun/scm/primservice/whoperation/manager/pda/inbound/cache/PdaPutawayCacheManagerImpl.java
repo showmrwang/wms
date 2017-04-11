@@ -4855,6 +4855,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
                     isCmd.setLocationIds(locIds);
                     cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString(), isCmd, CacheConstants.CACHE_ONE_DAY);
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, value.toString());
                 }
             }
             if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
