@@ -122,6 +122,9 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             WhWaveLine whWaveLine = this.whWaveLineManager.getWaveLineByIdAndOuId(waveLineId, ouId);
             Double skuQty = whWaveLine.getQty();
             Long qty = skuInvAvailableQtyMap.get(skuId);
+            if(qty==null){
+                qty = 0L;
+            }
             if (qty >= skuQty) {
                 // 实际可用数量 > 需求数量:可以占用 执行占用方法
                 Long odoLineId = whWaveLine.getOdoLineId();
