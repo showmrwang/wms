@@ -70,4 +70,47 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findByGroupCondition" resultMap="HandoverCollectionResultExt">
+		select <include refid="handoverCollectionColumnsExt" />
+	    from t_wh_handover_collection 
+		<where>
+	       		handover_status = 1
+		       <if test="groupCondition!=null and groupCondition!=''">
+					and group_condition = #{groupCondition}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+    </select>
+    
+    <select id="findByOutboundboxCode" resultMap="HandoverCollectionResultExt">
+		select <include refid="handoverCollectionColumnsExt" />
+	    from t_wh_handover_collection 
+		<where>
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+    </select>
+    
+    <select id="findByHandoverStation" resultMap="HandoverCollectionResultExt">
+		select <include refid="handoverCollectionColumnsExt" />
+	    from t_wh_handover_collection 
+		<where>
+	       		handover_status = 1 or handover_status = 5
+		       <if test="handoverStationId!=null and handoverStationId!=''">
+					and handover_station_id = #{handoverStationId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+    </select>
 </mapper>

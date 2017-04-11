@@ -3,15 +3,16 @@ package com.baozun.scm.primservice.whoperation.command.rule;
 import java.util.List;
 import java.util.Map;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingWallRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckOperationsAreaRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.HandoverCollectionRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingWallRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 
 /***
@@ -69,6 +70,8 @@ public class RuleExportCommand extends BaseCommand {
     private CheckOperationsAreaRuleCommand checkOperationsAreaRuleCommand;
     /** 播种墙推荐规则 */
     private WhSeedingWallRuleCommand whSeedingWallRuleCommand;
+    /** 交接集货规则 */
+    private List<HandoverCollectionRuleCommand> handoverCollectionRuleCommandList;
     
     public Boolean getUsableness() {
         return usableness;
@@ -197,4 +200,13 @@ public class RuleExportCommand extends BaseCommand {
 	public void setWhSeedingWallRuleCommand(WhSeedingWallRuleCommand whSeedingWallRuleCommand) {
 		this.whSeedingWallRuleCommand = whSeedingWallRuleCommand;
 	}
+
+    public List<HandoverCollectionRuleCommand> getHandoverCollectionRuleCommandList() {
+        return handoverCollectionRuleCommandList;
+    }
+
+    public void setHandoverCollectionRuleCommandList(List<HandoverCollectionRuleCommand> handoverCollectionRuleCommandList) {
+        this.handoverCollectionRuleCommandList = handoverCollectionRuleCommandList;
+    }
+
 }

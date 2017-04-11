@@ -180,4 +180,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="executeRuleSql" resultType="Long">
         ${handoverCollectionRuleSql}
     </select>
+    
+    <select id="findAllHandoverCollectionRules" resultMap="HandoverCollectionRuleResultExt">
+    	select
+    		<include refid="handoverCollectionRuleColumnsExt"/>
+    	from 
+    		t_wh_handover_collection_rule
+    	where 
+    		ou_id = #{ouId}
+    		and lifecycle = 1
+    	order by 
+    		priority
+    </select>
 </mapper>

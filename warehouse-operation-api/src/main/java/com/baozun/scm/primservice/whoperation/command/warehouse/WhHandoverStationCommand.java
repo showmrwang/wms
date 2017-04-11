@@ -64,6 +64,8 @@ public class WhHandoverStationCommand extends BaseModel {
     private java.lang.Integer Capacity;
     /** 状态 */
     private java.lang.String Status;
+    /** 是否提示交接 */
+    private boolean isTipHandover;
 
     public java.lang.String getStatus() {
         return Status;
@@ -207,6 +209,13 @@ public class WhHandoverStationCommand extends BaseModel {
         this.modifiedId = modifiedId;
     }
 
+    public boolean isTipHandover() {
+        return isTipHandover;
+    }
 
+    public void setTipHandover(boolean isTipHandover) {
+        this.isTipHandover = isTipHandover;
+    }
+    
 
 }

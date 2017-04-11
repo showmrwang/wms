@@ -17,6 +17,8 @@ public class HandoverCollectionConditionCommand extends BaseCommand {
     private Long ouId;
     /** 规则条件名 */
     private String ruleConditionName;
+    /** 规则条件编码 */
+    private String ruleCondtionCode;
 
     // columns END
     public Long getChrId() {
@@ -50,4 +52,13 @@ public class HandoverCollectionConditionCommand extends BaseCommand {
     public void setRuleConditionName(String ruleConditionName) {
         this.ruleConditionName = ruleConditionName;
     }
+
+    public String getRuleCondtionCode() {
+        return ruleCondtionCode;
+    }
+
+    public void setRuleCondtionCode(String ruleCondtionCode) {
+        this.ruleCondtionCode = ruleCondtionCode;
+    }
+    
 }

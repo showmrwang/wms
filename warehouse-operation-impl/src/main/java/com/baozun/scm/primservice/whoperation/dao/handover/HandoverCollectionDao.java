@@ -17,6 +17,8 @@ package com.baozun.scm.primservice.whoperation.dao.handover;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -42,5 +44,11 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
 
     @CommonQuery
     int saveOrUpdate(HandoverCollection o);
+    
+    List<HandoverCollection> findByGroupCondition(@Param("groupCondition") String groupCondition, @Param("ouId") Long ouId);
+    
+    HandoverCollection findByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
+    
+    List<HandoverCollection> findByHandoverStation(@Param("handoverStationId") Long handoverStationId, @Param("ouId") Long ouId);
 
 }

@@ -55,5 +55,7 @@ public interface HandoverCollectionConditionDao extends BaseDao<HandoverCollecti
     Long findListCountByRuleId(@Param("ruleConditionId") Long ruleConditionId, @Param("ouId") Long ouId);
 
     int deleteByRuleId(@Param("ruleConditionId") Long ruleConditionId, @Param("ouId") Long ouId);
+    
+    List<HandoverCollectionConditionCommand> findConditionListByRuleIdAndouId(@Param("hcrId") Long hcrId, @Param("ouId") Long ouId);
 
 }

@@ -32,6 +32,12 @@ public class RuleAfferCommand extends BaseCommand {
 
     /** 容器ID */
     private Long containerId;
+    
+    /** 出库箱号 */
+    private String outboundboxCode;
+    
+    /** 复核台ID */
+    private Long checkingFacilityId;
 
     /** 入库分拣规则对象 */
     private WhInBoundRuleCommand whInBoundRuleCommand;
@@ -123,6 +129,22 @@ public class RuleAfferCommand extends BaseCommand {
 
     public void setContainerId(Long containerId) {
         this.containerId = containerId;
+    }
+    
+    public String getOutboundboxCode() {
+        return outboundboxCode;
+    }
+
+    public void setOutboundboxCode(String outboundboxCode) {
+        this.outboundboxCode = outboundboxCode;
+    }
+    
+    public Long getCheckingFacilityId() {
+        return checkingFacilityId;
+    }
+
+    public void setCheckingFacilityId(Long checkingFacilityId) {
+        this.checkingFacilityId = checkingFacilityId;
     }
 
     public WhInBoundRuleCommand getWhInBoundRuleCommand() {

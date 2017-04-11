@@ -5,8 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lark.common.annotation.MoreDB;
-
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -14,11 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingWallRuleCommand;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingWallRuleDao;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckOperationsAreaRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.HandoverCollectionRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutboundBoxRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.PlatformRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.RecommendPlatformCommand;
@@ -27,11 +25,13 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRul
 import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhInBoundRuleCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingWallRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CheckOperationsAreaRuleDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.HandoverCollectionRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutboundBoxRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.PlatformRecommendRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RecommendPlatformDao;
@@ -40,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentRuleDao
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ShelveRecommendRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInBoundRuleDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingWallRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -47,6 +48,8 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
+
+import lark.common.annotation.MoreDB;
 
 @Service("ruleManager")
 @Transactional
@@ -82,6 +85,8 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
     private CheckOperationsAreaRuleDao checkOperationsAreaRuleDao;
     @Autowired
     private WhSeedingWallRuleDao whSeedingWallRuleDao;
+    @Autowired
+    private HandoverCollectionRuleDao handoverCollectionRuleDao;
     
     /***
      * 根据规则传入参数返回对应规则输出参数
@@ -143,6 +148,10 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
             case Constants.RULE_TYPE_SEEDING_WALL:
                 // 播种墙推荐规则
                 export = exportSeedingWallRule(ruleAffer);
+                break;
+            case Constants.RULE_TYPE_HANDOVER_COLLECTION:
+                // 交接集货规则
+                export = exportHandoverCollectionRule(ruleAffer);
                 break;
             default:
                 log.error("ruleExport ruleAffer.getRuleType() is error ruleAffer.getRuleType() = " + ruleAffer.getRuleType() + " logid: " + ruleAffer.getLogId());
@@ -563,6 +572,35 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         ruleExportCommand.setWhSeedingWallRuleCommand(availableRule);
 		return ruleExportCommand;
 	}
+    
+    /**
+     * 获取所有满足条件的集货交接规则
+     * 
+     * @author lichuan
+     * @param ruleAffer
+     * @return
+     */
+    private RuleExportCommand exportHandoverCollectionRule(RuleAfferCommand ruleAffer) {
+        RuleExportCommand ruleExportCommand = new RuleExportCommand();
+        if (StringUtils.isEmpty(ruleAffer.getOutboundboxCode()) || null == ruleAffer.getOuid()) {
+            log.error("ruleExport exportHandoverCollectionRule error, param outboundboxCode or ouId is null");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        String outboundBox = ruleAffer.getOutboundboxCode();
+        Long ouId = ruleAffer.getOuid();
+        // 获取所有可用规则
+        List<HandoverCollectionRuleCommand> availableRuleList = new ArrayList<HandoverCollectionRuleCommand>();
+        List<HandoverCollectionRuleCommand> ruleList = handoverCollectionRuleDao.findAllHandoverCollectionRules(ouId);
+        for (HandoverCollectionRuleCommand command : ruleList) {
+            List<Long> matchOdoIdList = handoverCollectionRuleDao.executeRuleSql(command.getRuleSql().replace(Constants.HANDOVER_COLLECTION_RULE_PALCEHOLDER, outboundBox), ouId);
+            if (null != matchOdoIdList && !matchOdoIdList.isEmpty()) {
+                // 可用的规则
+                availableRuleList.add(command);
+            }
+        }
+        ruleExportCommand.setHandoverCollectionRuleCommandList(availableRuleList);
+        return ruleExportCommand;
+    }
 
     /**
      * 配货模式规则
