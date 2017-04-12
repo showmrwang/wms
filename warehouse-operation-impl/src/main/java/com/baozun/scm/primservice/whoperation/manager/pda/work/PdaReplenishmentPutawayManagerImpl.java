@@ -353,14 +353,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     if(null != onlySkuAndSn.get(onlySku)){
                         snSet = onlySkuAndSn.get(onlySku);
                         for (int i = 0; i < operationExecLine.getQty(); i++) {
-                            if(null != skuInventorySnCommands && null != skuInventorySnCommands.get(i)){
+                            if(null != skuInventorySnCommands && i < skuInventorySnCommands.size() && null != skuInventorySnCommands.get(i)){
                                 snSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                             }
                         }
                         onlySkuAndSn.put(onlySku, snSet);
                     }else{
                         for (int i = 0; i < operationExecLine.getQty(); i++) {
-                            if(null != skuInventorySnCommands && null != skuInventorySnCommands.get(i)){
+                            if(null != skuInventorySnCommands && i < skuInventorySnCommands.size() && null != skuInventorySnCommands.get(i)){
                                 snSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                             }
                         }
@@ -371,7 +371,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     Map<String, Set<String>> onlySkuAndSn = new HashMap<String, Set<String>>();
                     Set<String> snSet = new HashSet<String>();
                     for (int i = 0; i < operationExecLine.getQty(); i++) {
-                        if(null != skuInventorySnCommands && null != skuInventorySnCommands.get(i)){
+                        if(null != skuInventorySnCommands && i < skuInventorySnCommands.size() && null != skuInventorySnCommands.get(i)){
                             snSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                         }
                     }
@@ -456,7 +456,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         Set<String> snSet = new HashSet<String>();
                         snSet = onlySkuAndSnMap.get(onlySku);
                         for (int i = 0; i < operationExecLine.getQty(); i++) {
-                            if(null != skuInventorySnCommands && null != skuInventorySnCommands.get(i)){
+                            if(null != skuInventorySnCommands && i < skuInventorySnCommands.size() && null != skuInventorySnCommands.get(i)){
                                 snSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                             }
                         }
@@ -464,7 +464,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     }else{
                         Set<String> snSet = new HashSet<String>();
                         for (int i = 0; i < operationExecLine.getQty(); i++) {
-                            if(null != skuInventorySnCommands && null != skuInventorySnCommands.get(i)){
+                            if(null != skuInventorySnCommands && i < skuInventorySnCommands.size() && null != skuInventorySnCommands.get(i)){
                                 snSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                             }
                         }
@@ -475,7 +475,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     Map<String, Set<String>> onlySkuAndSnMap = new HashMap<String, Set<String>>();
                     Set<String> snSet = new HashSet<String>();
                     for (int i = 0; i < operationExecLine.getQty(); i++) {
-                        if(null != skuInventorySnCommands && null != skuInventorySnCommands.get(i)){
+                        if(null != skuInventorySnCommands && i < skuInventorySnCommands.size() && null != skuInventorySnCommands.get(i)){
                             snSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                         }
                     }
