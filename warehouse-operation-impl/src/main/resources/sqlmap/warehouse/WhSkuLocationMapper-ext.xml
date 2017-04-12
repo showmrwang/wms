@@ -250,7 +250,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and inv.ou_id = #{ouId}
 		and inv.location_id = #{locId}
 		and inv.sku_id = #{skuId}
-		and inv.id not in (
+		and not exists (
 		select
 		inv.id
 		from t_wh_sku_inventory inv
@@ -272,7 +272,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and inv.ou_id = #{ouId}
 		and inv.location_id = #{locId}
 		and inv.sku_id = #{skuId}
-		and inv.id not in (
+		and not exists (
 		select
 		inv.id
 		from t_wh_sku_inventory_tobefilled inv
