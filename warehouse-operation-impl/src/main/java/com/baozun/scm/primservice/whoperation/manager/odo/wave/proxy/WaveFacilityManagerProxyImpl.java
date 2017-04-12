@@ -102,7 +102,8 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                 ruleAffer.setOuid(ouId);
                 ruleAffer.setRuleType(Constants.RULE_TYPE_SEEDING_WALL);
                 RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
-                WhSeedingWallRuleCommand whSeedingWallRule = export.getWhSeedingWallRuleCommand();
+                // TODO List<WhSeedingWallRuleCommand> whSeedingWallRule = export.getWhSeedingWallRuleCommandList();
+                WhSeedingWallRuleCommand whSeedingWallRule = null;
                 if (whSeedingWallRule == null) {
                     return responseMsgForFacility(recFacilityPath, 0);
                 }
