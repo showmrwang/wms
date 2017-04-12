@@ -231,8 +231,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 if (null != skuInventoryAllocatedCommandLst && 0 < skuInventoryAllocatedCommandLst.size()) {
                     // 基于目标库位容器及工作明细生成作业明细
                     int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, replenishmentRuleCommand.getTaskOuId(), skuInventoryAllocatedCommandLst);
-                    if (replenishmentOperationLineCount != rWorkLineTotal) {
-                        log.error("replenishmentOperationLineCount is error", rWorkLineTotal);
+                    if (replenishmentOperationLineCount != skuInventoryAllocatedCommandLst.size()) {
+                        log.error("replenishmentOperationLineCount is error", skuInventoryAllocatedCommandLst.size());
                         throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
                     }
                 }
@@ -2286,6 +2286,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Set<Long> containers = new HashSet<Long>();
         // 库位上所有sku（sku不在任何容器内）
         Map<Long, Double> skuIds = new HashMap<Long, Double>();
+        // 库位上所有sku
+        Map<Long, Double> skuIdAndQty = new HashMap<Long, Double>();
         // sku对应库位容量
         Map<Long, Long> skuProducts = new HashMap<Long, Long>();
         // sku对应库位容量
@@ -2309,6 +2311,15 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                         skuIds.put(whSkuInventoryCommand.getSkuId(), whSkuInventoryCommand.getOnHandQty());
                     }
                 }
+            }
+            if (null != skuIdAndQty.get(whSkuInventoryCommand.getSkuId())) {
+                Double onHandQty = skuIdAndQty.get(whSkuInventoryCommand.getSkuId());
+                BigDecimal oldQty = new BigDecimal(onHandQty.toString());
+                BigDecimal newQty = new BigDecimal(whSkuInventoryCommand.getOnHandQty().toString());
+                Double newOnHandQty = oldQty.add(newQty).doubleValue();
+                skuIdAndQty.put(whSkuInventoryCommand.getSkuId(), newOnHandQty);
+            } else {
+                skuIdAndQty.put(whSkuInventoryCommand.getSkuId(), whSkuInventoryCommand.getOnHandQty());
             }
         }
         
@@ -2366,7 +2377,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                             // 上限数量
                             Long maxQty = locationQty * upBound / 100;
                             // 在库数量
-                            double invQty = skuIds.get(whSkuInventoryAllocatedCommand.getSkuId());
+                            double invQty = skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId());
                             // 计算可用容量
                             replenishmentQty = (long) Math.floor(maxQty - invQty);
                             skuProductQty = (long) (skuProductQty + whSkuInventoryAllocatedCommand.getQty());
