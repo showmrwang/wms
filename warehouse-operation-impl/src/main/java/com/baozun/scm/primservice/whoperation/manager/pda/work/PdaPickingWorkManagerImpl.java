@@ -352,14 +352,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if (null != onlySkuSnMap.get(onlySku)) {
                         Set<String> snDefectWareBarcodeSet = new HashSet<String>();
                         snDefectWareBarcodeSet = onlySkuSnMap.get(onlySku);
-                        for (WhSkuInventorySnCommand skuInventorySnCommand : skuInventorySnCommands) {
-                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        for (int i = 0; i < operationLine.getQty() - operationLine.getCompleteQty(); i++) {
+                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                         }
                         onlySkuSnMap.put(onlySku, snDefectWareBarcodeSet);
                     } else {
                         Set<String> snDefectWareBarcodeSet = new HashSet<String>();
-                        for (WhSkuInventorySnCommand skuInventorySnCommand : skuInventorySnCommands) {
-                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        for (int i = 0; i < operationLine.getQty() - operationLine.getCompleteQty(); i++) {
+                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                         }
                         onlySkuSnMap.put(onlySku, snDefectWareBarcodeSet);
                     }
@@ -367,8 +367,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 } else if (null != operationLine.getFromLocationId() && null != onlySku && null == skuAttrIdsSnDefect.get(operationLine.getFromLocationId())) {
                     Map<String, Set<String>> onlySkuSnMap = new HashMap<String, Set<String>>();
                     Set<String> snDefectWareBarcodeSet = new HashSet<String>();
-                    for (WhSkuInventorySnCommand skuInventorySnCommand : skuInventorySnCommands) {
-                        snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                    for (int i = 0; i < operationLine.getQty() - operationLine.getCompleteQty(); i++) {
+                        snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                     }
                     onlySkuSnMap.put(onlySku, snDefectWareBarcodeSet);
                     skuAttrIdsSnDefect.put(operationLine.getFromLocationId(), onlySkuSnMap);
@@ -466,14 +466,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if (null != onlySkuSnMap.get(onlySku)) {
                         Set<String> snDefectWareBarcodeSet = new HashSet<String>();
                         snDefectWareBarcodeSet = onlySkuSnMap.get(onlySku);
-                        for (WhSkuInventorySnCommand skuInventorySnCommand : skuInventorySnCommands) {
-                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        for (int i = 0; i < operationLine.getQty() - operationLine.getCompleteQty(); i++) {
+                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                         }
                         onlySkuSnMap.put(onlySku, snDefectWareBarcodeSet);
                     } else {
                         Set<String> snDefectWareBarcodeSet = new HashSet<String>();
-                        for (WhSkuInventorySnCommand skuInventorySnCommand : skuInventorySnCommands) {
-                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                        for (int i = 0; i < operationLine.getQty() - operationLine.getCompleteQty(); i++) {
+                            snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                         }
                         onlySkuSnMap.put(onlySku, snDefectWareBarcodeSet);
                     }
@@ -481,8 +481,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 } else if (null != operationLine.getFromInsideContainerId() && null != onlySku && null == insideSkuAttrIdsSnDefect.get(operationLine.getFromInsideContainerId())) {
                     Map<String, Set<String>> onlySkuSnMap = new HashMap<String, Set<String>>();
                     Set<String> snDefectWareBarcodeSet = new HashSet<String>();
-                    for (WhSkuInventorySnCommand skuInventorySnCommand : skuInventorySnCommands) {
-                        snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommand.getSn(), skuInventorySnCommand.getDefectWareBarcode()));
+                    for (int i = 0; i < operationLine.getQty() - operationLine.getCompleteQty(); i++) {
+                        snDefectWareBarcodeSet.add(SkuCategoryProvider.concatSkuAttrId(skuInventorySnCommands.get(i).getSn(), skuInventorySnCommands.get(i).getDefectWareBarcode()));    
                     }
                     onlySkuSnMap.put(onlySku, snDefectWareBarcodeSet);
                     insideSkuAttrIdsSnDefect.put(operationLine.getFromInsideContainerId(), onlySkuSnMap);
