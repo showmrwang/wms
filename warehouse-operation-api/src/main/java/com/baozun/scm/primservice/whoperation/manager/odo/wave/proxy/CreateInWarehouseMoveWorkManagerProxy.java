@@ -1,6 +1,10 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
+import java.util.List;
+import java.util.Locale;
+
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 
 
@@ -14,5 +18,7 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @return
      */
     Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId);
+    
+    List<WhSkuInventorySn> batchImport(String url, String fileName, Long userImportExcelId, Locale locale,Long ouId, Long userId, String logId);
     
 }
