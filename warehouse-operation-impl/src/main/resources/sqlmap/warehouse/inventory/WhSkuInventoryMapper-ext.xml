@@ -3132,6 +3132,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     and inv.occupation_code IS NOT NULL
                     and inv.ou_id = #{ouId}
                     and operLine.operation_id = #{operationId}
+                   <if test="outerContainerId!=null and outerContainerId!=''">
+					 and inv.outer_container_id = #{outerContainerId}
+				   </if>
+				   <if test="insideContainerId!=null and insideContainerId!=''">
+								 and inv.inside_container_id=#{insideContainerId}
+				   </if>
     </select>
    <!--  
     <select id="getWhSkuInventoryTobefilledByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt">

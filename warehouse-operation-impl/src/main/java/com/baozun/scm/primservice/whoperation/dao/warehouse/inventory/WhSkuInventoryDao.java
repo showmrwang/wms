@@ -725,7 +725,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     Double getUseableQtyByUuid(@Param("uuid") String uuid, @Param("ouId") Long ouId);
 
-    public List<WhSkuInventoryCommand> getWhSkuInventoryByOccupationLineId(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
+    public List<WhSkuInventoryCommand> getWhSkuInventoryByOccupationLineId(@Param("ouId") Long ouId, @Param("operationId") Long operationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId);
 
     List<WhSkuInventoryCommand> findSkuInvByLocationIds(@Param("locationIds") List<Long> locationIds, @Param("allocateUnitCodes") String unitCodes, @Param("ouId") Long ouId);
 
@@ -814,4 +814,5 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOperationId(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
+    
 }

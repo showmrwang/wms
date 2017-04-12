@@ -18,6 +18,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
@@ -184,7 +185,8 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param operationId
      * @param ouId
      */
-    public void pickingAddContainerInventory(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,Integer pickingWay,Integer scanPattern,Double scanSkuQty);
+    public void pickingAddContainerInventory(Long locationId,String skuAttrIds,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,Integer pickingWay,Integer scanPattern,Double scanSkuQty,String outBoundBox,
+                                             Long turnoverBoxId,Long outerContainerId,Long insideContainerId,Boolean isShortPicking,Integer useContainerLatticeNo,Set<Long> insideContainerIds);
     
     
     /**
@@ -207,7 +209,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param ouId
      * @param skuAttrId
      */
-    public void sysManPutaway(Double skuScanQty,Warehouse warehouse,Long userId,ContainerCommand outerContainerCmd,ContainerCommand insideContainerCmd,String locationCode,Integer putawayPatternDetailType,Long ouId,String skuAttrId);
+    public void execPutaway(Double skuScanQty,Warehouse warehouse,Long userId,ContainerCommand outerContainerCmd,ContainerCommand insideContainerCmd,String locationCode,Integer putawayPatternDetailType,Long ouId,String skuAttrId);
     
     /***
      * 补货上架

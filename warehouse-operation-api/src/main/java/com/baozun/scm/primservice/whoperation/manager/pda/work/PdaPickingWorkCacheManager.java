@@ -87,15 +87,15 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      */
     public void cacheLocation(Long operation,Long locationId);
     
-    /***
-     * 缓存单个库位的作业明细
-     *  @tangming
-     * @param operatorId
-     * @param locationId
-     * @param ouId
-     * @return
-     */
-    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operatorId,Long locationId,Long ouId,String operationWay);
+//    /***
+//     * 缓存单个库位的作业明细
+//     *  @tangming
+//     * @param operatorId
+//     * @param locationId
+//     * @param ouId
+//     * @return
+//     */
+//    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operatorId,Long locationId,Long ouId,String operationWay);
     
     /***
      * pda拣货提示托盘

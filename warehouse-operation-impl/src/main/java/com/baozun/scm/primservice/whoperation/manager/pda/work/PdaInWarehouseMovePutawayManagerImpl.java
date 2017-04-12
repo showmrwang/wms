@@ -269,7 +269,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         // 根据作业id获取作业信息        
         WhOperationCommand whOperationCommand = whOperationManager.findOperationById(replenishmentPutawayCommand.getOperationId(), replenishmentPutawayCommand.getOuId());
         //根据作业id获取作业明细信息  
-        List<WhOperationExecLine> operationExecLineList = whOperationExecLineDao.getOperationExecLine(replenishmentPutawayCommand.getOperationId(), replenishmentPutawayCommand.getOuId());
+        List<WhOperationExecLine> operationExecLineList = whOperationExecLineDao.getOperationExecLine(replenishmentPutawayCommand.getOperationId(), replenishmentPutawayCommand.getOuId(),null,null);
         
         for(WhOperationExecLine operationExecLine : operationExecLineList){
             // 临时set 

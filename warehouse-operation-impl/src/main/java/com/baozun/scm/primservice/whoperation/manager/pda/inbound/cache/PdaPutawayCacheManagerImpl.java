@@ -3956,6 +3956,16 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, skuQty, scanSkuQty, logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY); 
                     }else{
+                     // 非sn残次商品
+                        if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(skuQty))) {
+                            isSkuChecked = true;
+                        } else {
+                            isSkuChecked = false;
+                        }
+                        if (false == isSkuChecked) {
+                            log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                        }
                         if(true== isSnLine) {
                             // sn或残次商品
                              String snDefect = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
@@ -3984,18 +3994,19 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                  cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                  return cssrCmd;
                              }
-                         }else{
-                             // 非sn残次商品
-                             if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(skuQty))) {
-                                 isSkuChecked = true;
-                             } else {
-                                 isSkuChecked = false;
-                             }
-                             if (false == isSkuChecked) {
-                                 log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
-                                 throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                             }
                          }
+//                        else{
+//                             // 非sn残次商品
+//                             if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(skuQty))) {
+//                                 isSkuChecked = true;
+//                             } else {
+//                                 isSkuChecked = false;
+//                             }
+//                             if (false == isSkuChecked) {
+//                                 log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
+//                                 throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+//                             }
+//                         }
                          //判断提示下一个容器
                          Set<Long> allContainerIds = insideContainerIds;
                          boolean isAllContainerCache = isCacheAllExists(allContainerIds, cacheContainerIds);
