@@ -69,7 +69,7 @@ public class RuleExportCommand extends BaseCommand {
     /** 复核台推荐规则 */
     private CheckOperationsAreaRuleCommand checkOperationsAreaRuleCommand;
     /** 播种墙推荐规则 */
-    private WhSeedingWallRuleCommand whSeedingWallRuleCommand;
+    private List<WhSeedingWallRuleCommand> whSeedingWallRuleCommandList;
     /** 交接集货规则 */
     private List<HandoverCollectionRuleCommand> handoverCollectionRuleCommandList;
     
@@ -193,20 +193,20 @@ public class RuleExportCommand extends BaseCommand {
         this.checkOperationsAreaRuleCommand = checkOperationsAreaRuleCommand;
     }
 
-	public WhSeedingWallRuleCommand getWhSeedingWallRuleCommand() {
-		return whSeedingWallRuleCommand;
-	}
-
-	public void setWhSeedingWallRuleCommand(WhSeedingWallRuleCommand whSeedingWallRuleCommand) {
-		this.whSeedingWallRuleCommand = whSeedingWallRuleCommand;
-	}
-
     public List<HandoverCollectionRuleCommand> getHandoverCollectionRuleCommandList() {
         return handoverCollectionRuleCommandList;
     }
 
     public void setHandoverCollectionRuleCommandList(List<HandoverCollectionRuleCommand> handoverCollectionRuleCommandList) {
         this.handoverCollectionRuleCommandList = handoverCollectionRuleCommandList;
+    }
+
+    public List<WhSeedingWallRuleCommand> getWhSeedingWallRuleCommandList() {
+        return whSeedingWallRuleCommandList;
+    }
+
+    public void setWhSeedingWallRuleCommandList(List<WhSeedingWallRuleCommand> whSeedingWallRuleCommandList) {
+        this.whSeedingWallRuleCommandList = whSeedingWallRuleCommandList;
     }
 
 }

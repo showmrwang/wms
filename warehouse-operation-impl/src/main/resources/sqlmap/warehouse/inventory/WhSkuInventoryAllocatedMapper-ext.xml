@@ -374,21 +374,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and invAllocated.occupation_line_id = invTobefilled.occupation_line_id 
 				and invAllocated.replenishment_rule_id = replenishRule.id
 				and invAllocated.inv_status = invTobefilled.inv_status
-				and invAllocated.inv_type = invTobefilled.inv_type
-				and invAllocated.batch_number = invTobefilled.batch_number
+				and (invAllocated.inv_type = invTobefilled.inv_type or (invAllocated.inv_type is null and invTobefilled.inv_type is null))
+				and (invAllocated.batch_number = invTobefilled.batch_number or (invAllocated.batch_number is null and invTobefilled.batch_number is null))
 				and (invAllocated.mfg_date = invTobefilled.mfg_date or (invAllocated.mfg_date is null and invTobefilled.mfg_date is null))
 				and (invAllocated.exp_date = invTobefilled.exp_date or (invAllocated.exp_date is null and invTobefilled.exp_date is null))
-				and invAllocated.country_of_origin = invTobefilled.country_of_origin
-				and invAllocated.inv_attr1 = invTobefilled.inv_attr1
-				and invAllocated.inv_attr2 = invTobefilled.inv_attr2
-				and invAllocated.inv_attr3 = invTobefilled.inv_attr3
-				and invAllocated.inv_attr4 = invTobefilled.inv_attr4
-				and invAllocated.inv_attr5 = invTobefilled.inv_attr5 
+				and (invAllocated.country_of_origin = invTobefilled.country_of_origin or (invAllocated.country_of_origin is null and invTobefilled.country_of_origin is null))
+				and (invAllocated.inv_attr1 = invTobefilled.inv_attr1 or (invAllocated.inv_attr1 is null and invTobefilled.inv_attr1 is null))
+				and (invAllocated.inv_attr2 = invTobefilled.inv_attr2 or (invAllocated.inv_attr2 is null and invTobefilled.inv_attr2 is null))
+				and (invAllocated.inv_attr3 = invTobefilled.inv_attr3 or (invAllocated.inv_attr3 is null and invTobefilled.inv_attr3 is null))
+				and (invAllocated.inv_attr4 = invTobefilled.inv_attr4 or (invAllocated.inv_attr4 is null and invTobefilled.inv_attr4 is null))
+				and (invAllocated.inv_attr5 = invTobefilled.inv_attr5 or (invAllocated.inv_attr5 is null and invTobefilled.inv_attr5 is null))
 				<if test="waveId!=null and waveId!=''">
 					and wave.id = #{waveId} 
 				</if>
-				<if test="ouId!=null and ouId!=''">
-					and wave.ou_id = #{ouId} 
+				<if test="taskOuId!=null and taskOuId!=''">
+					and wave.ou_id = #{taskOuId} 
 				</if>
 				<if test="releaseWorkWay!=null and releaseWorkWay!=''">
 					and replenishRule.release_work_way = #{releaseWorkWay} 
@@ -558,16 +558,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and invAllocated.sku_id = invTobefilled.sku_id
 				and invAllocated.replenishment_rule_id = replenishRule.id
 				and invAllocated.inv_status = invTobefilled.inv_status
-				and invAllocated.inv_type = invTobefilled.inv_type
-				and invAllocated.batch_number = invTobefilled.batch_number
+				and (invAllocated.inv_type = invTobefilled.inv_type or (invAllocated.inv_type is null and invTobefilled.inv_type is null))
+				and (invAllocated.batch_number = invTobefilled.batch_number or (invAllocated.batch_number is null and invTobefilled.batch_number is null))
 				and (invAllocated.mfg_date = invTobefilled.mfg_date or (invAllocated.mfg_date is null and invTobefilled.mfg_date is null))
 				and (invAllocated.exp_date = invTobefilled.exp_date or (invAllocated.exp_date is null and invTobefilled.exp_date is null))
-				and invAllocated.country_of_origin = invTobefilled.country_of_origin
-				and invAllocated.inv_attr1 = invTobefilled.inv_attr1
-				and invAllocated.inv_attr2 = invTobefilled.inv_attr2
-				and invAllocated.inv_attr3 = invTobefilled.inv_attr3
-				and invAllocated.inv_attr4 = invTobefilled.inv_attr4
-				and invAllocated.inv_attr5 = invTobefilled.inv_attr5
+				and (invAllocated.country_of_origin = invTobefilled.country_of_origin or (invAllocated.country_of_origin is null and invTobefilled.country_of_origin is null))
+				and (invAllocated.inv_attr1 = invTobefilled.inv_attr1 or (invAllocated.inv_attr1 is null and invTobefilled.inv_attr1 is null))
+				and (invAllocated.inv_attr2 = invTobefilled.inv_attr2 or (invAllocated.inv_attr2 is null and invTobefilled.inv_attr2 is null))
+				and (invAllocated.inv_attr3 = invTobefilled.inv_attr3 or (invAllocated.inv_attr3 is null and invTobefilled.inv_attr3 is null))
+				and (invAllocated.inv_attr4 = invTobefilled.inv_attr4 or (invAllocated.inv_attr4 is null and invTobefilled.inv_attr4 is null))
+				and (invAllocated.inv_attr5 = invTobefilled.inv_attr5 or (invAllocated.inv_attr5 is null and invTobefilled.inv_attr5 is null))
 				<if test="taskOuId!=null and taskOuId!=''">
 					and replenishTask.ou_id = #{taskOuId} 
 				</if>

@@ -557,19 +557,17 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         Long ouId = ruleAffer.getOuid();
         String odoIdListStr = this.listToStringWithoutBrackets(odoIdList);
         // 播种墙规则
-        WhSeedingWallRuleCommand availableRule = null;
         List<WhSeedingWallRuleCommand> ruleList = whSeedingWallRuleDao.findAllSeedingWallRules(ouId);
+        List<WhSeedingWallRuleCommand> availableRuleList = new ArrayList<WhSeedingWallRuleCommand>();
         for (WhSeedingWallRuleCommand command : ruleList) {
-        	List<Long> matchOdoIdList = whSeedingWallRuleDao.executeRuleSql(command.getRuleSql().replace(Constants.SEEDING_WALL_ODOID_LIST_PLACEHOLDER, odoIdListStr), ouId);
-        	if (null != matchOdoIdList && !matchOdoIdList.isEmpty()) {
-                //找到一个可用的即可
-                availableRule = command;
-                break;
+            List<Long> matchOdoIdList = whSeedingWallRuleDao.executeRuleSql(command.getRuleSql().replace(Constants.SEEDING_WALL_ODOID_LIST_PLACEHOLDER, odoIdListStr), ouId);
+            if (null != matchOdoIdList && !matchOdoIdList.isEmpty()) {
+                availableRuleList.add(command);
             }
-		}
+        }
         
         RuleExportCommand ruleExportCommand = new RuleExportCommand();
-        ruleExportCommand.setWhSeedingWallRuleCommand(availableRule);
+        ruleExportCommand.setWhSeedingWallRuleCommandList(availableRuleList);
 		return ruleExportCommand;
 	}
     

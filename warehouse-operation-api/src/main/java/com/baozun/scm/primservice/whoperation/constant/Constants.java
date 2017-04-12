@@ -750,5 +750,9 @@ public final class Constants {
 
     /**数据来源=WMS*/
     public static final String WMS_DATA_SOURCE = "WMS";
+    
+    public static final int COLLECTION_PATTERN_PICKING = 1;
+    public static final int COLLECTION_PATTERN_OUTBOUND = 2;
+    public static final int COLLECTION_PATTERN_MANUAL = 3;
 
 }
