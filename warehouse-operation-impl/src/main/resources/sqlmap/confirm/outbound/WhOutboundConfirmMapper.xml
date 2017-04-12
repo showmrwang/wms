@@ -23,10 +23,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	wms_odo_status as wmsOdoStatus,
 	        	customer_code as customerCode,
 	        	store_code as storeCode,
-	        	ou_code as ouCode,
 	        	ou_id as ouId,
 	        	data_source as dataSource,
-	        	is_outbound_finish as isOutboundFinish
+	        	is_outbound_finish as isOutboundFinish,
+	        	create_time as createTime
 	    ]]>
 	</sql>
 	<sql id="whOutboundConfirmConditionWhereExt">
@@ -116,10 +116,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	wms_odo_status ,
 		        	customer_code ,
 		        	store_code ,
-		        	ou_code ,
 		        	ou_id ,
 		        	data_source ,
-		        	is_outbound_finish 
+		        	is_outbound_finish ,
+		        	create_time 
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -130,10 +130,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{wmsOdoStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} 
+		        	#{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 		        )
 		    ]]>
 
@@ -151,10 +151,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        wms_odo_status = #{wmsOdoStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        ou_code = #{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        is_outbound_finish = #{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} 
+		        is_outbound_finish = #{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -246,11 +246,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 		       <if test="storeCode!=null and storeCode!=''">
 					and store_code = #{storeCode}
-				</if>
-	       
-	       
-		       <if test="ouCode!=null and ouCode!=''">
-					and ou_code = #{ouCode}
 				</if>
 	       
 				<if test="ouId!=null">
