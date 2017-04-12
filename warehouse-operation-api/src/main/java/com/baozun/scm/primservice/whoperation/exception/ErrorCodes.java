@@ -815,5 +815,21 @@ public class ErrorCodes {
 	// 80001-90000 zhukai
     
     // 100001-110000 liuqiming
+    /** 波次头信息为空 */
+    public static final int WHWAVE_IS_NULL = 100001;
+    /** 工作明细数量不正确 */
+    public static final int WORK_LINE_TOTAL_ERROR = 100002;
+    /** 数量不正确 */
+    public static final int QTY_ERROR = 100003;
+    /** 分配量与待移入量不相等 */
+    public static final int QTY_TOQTY_ERROR = 100004;
+    /** 作业明细数量不正确 */
+    public static final int OPERATION_LINE_TOTAL_ERROR = 100005;
+    /** 分配库存列表为空 */
+    public static final int ALLOCATED_LIST_IS_NULL = 100005;
+    /** 配货模式不存在 */
+    public static final int DISTRIBUTION_PATTERN_RULE_IS_NULL = 100006;
+    /** 工作明细信息列表 */
+    public static final int WORK_LINE_IS_NULL = 100006;
     // 100001-110000 liuqiming
 }

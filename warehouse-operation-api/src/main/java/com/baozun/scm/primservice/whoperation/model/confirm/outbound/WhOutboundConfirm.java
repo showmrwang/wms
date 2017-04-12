@@ -36,10 +36,8 @@ public class WhOutboundConfirm extends BaseModel {
     private String wmsOdoCode;
     /** 上位系统出库单类型 */
     private String extOdoType;
-    /** 运输服务商 */
+    /** 运输服务商-快递单号 */
     private String transportServiceProvider;
-    /** 快递单号 */
-    private String trackingNumber;
     /** 出库单状态 */
     private Integer wmsOdoStatus;
     /** 客户CODE */
@@ -90,14 +88,6 @@ public class WhOutboundConfirm extends BaseModel {
 
     public void setTransportServiceProvider(String transportServiceProvider) {
         this.transportServiceProvider = transportServiceProvider;
-    }
-
-    public String getTrackingNumber() {
-        return trackingNumber;
-    }
-
-    public void setTrackingNumber(String trackingNumber) {
-        this.trackingNumber = trackingNumber;
     }
 
     public Integer getWmsOdoStatus() {

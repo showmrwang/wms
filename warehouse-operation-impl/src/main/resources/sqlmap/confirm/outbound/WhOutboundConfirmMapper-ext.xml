@@ -16,7 +16,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	wms_odo_code as wmsOdoCode,
 	        	ext_odo_type as extOdoType,
 	        	transport_service_provider as transportServiceProvider,
-	        	tracking_number as trackingNumber,
 	        	wms_odo_status as wmsOdoStatus,
 	        	customer_code as customerCode,
 	        	store_code as storeCode,
@@ -54,10 +53,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and transport_service_provider = #{transportServiceProvider}
 				</if>
 	       
-	       
-		       <if test="trackingNumber!=null and trackingNumber!=''">
-					and tracking_number = #{trackingNumber}
-				</if>
 	       
 				<if test="wmsOdoStatus!=null">
 					and wms_odo_status = #{wmsOdoStatus}

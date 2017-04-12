@@ -3794,6 +3794,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
             }
         }else if(CancelPattern.PICKING_SCAN_SKU_DETAIL == cancelPattern){
+            if(null != insideContainerId) {
+                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
+                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString()+tipSkuId.toString());
+            }else{
+                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString());
+                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
+            }
         }
     }
 }

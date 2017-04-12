@@ -185,7 +185,15 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             BeanUtils.copyProperties(whOutboundConfirm, o);
             o.setWhCode(whCode);
             // 运输服务商 快递单号数据封装
-
+            List<String> tspList = new ArrayList<String>();
+            if (!StringUtil.isEmpty(whOutboundConfirm.getTransportServiceProvider())) {
+                // 不为空需要处理
+                String[] tsp = whOutboundConfirm.getTransportServiceProvider().split(",");
+                for (int i = 0; i < tsp.length; i++) {
+                    tspList.add(tsp[i]);
+                }
+                o.setTransportServiceProviders(tspList);
+            }
             List<WmsOutboundLineConfirm> lineConfirms = new ArrayList<WmsOutboundLineConfirm>();
             // 出库单明细信息
             List<WhOutboundLineConfirm> whOutboundLineConfirms = whOutboundConfirm.getWhOutBoundLineConfirm();

@@ -9,11 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baozun.scm.baseservice.print.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreateWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoOutBoundBoxMapper;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.CreateWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
@@ -53,7 +54,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             // 查询波次中的所有小批次
             WhWave whWave = whWaveManager.getWaveByWaveIdAndOuId(waveId, ouId);
             if (null == whWave) {
-                throw new BusinessException("没有波次头信息");
+                throw new BusinessException(ErrorCodes.WHWAVE_IS_NULL);
             }
             if( null != whWave.getIsCreateReplenishedWork() && false == whWave.getIsCreateReplenishedWork()){
                 // 波次中创建补货工作和作业
@@ -80,7 +81,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             }
             whWaveManager.updateWaveByWhWave(whWave); 
         } catch (Exception e) {
-            log.error("", e);
+            log.error("CreateWorkManagerProxyImpl createWorkInWave error" + e);
         }
     }
     
@@ -95,7 +96,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
         try {
             this.createReplenishmentWorkOutWave(ouId, userId);
         } catch (Exception e) {
-            log.error("", e);    
+            log.error("CreateWorkManagerProxyImpl createWorkOutWave error" + e);
         }
     }
     
@@ -127,7 +128,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 try {
                     resultCommand = createWorkManager.createReplenishmentWorkInWave(resultCommand.getWhWave(), siacMap.get(key), replenishmentRuleCommand, userId);
                 } catch (Exception e) {
-                    log.error("", e);
+                    log.error("CreateWorkManagerProxyImpl createReplenishmentWorkInWave error" + e);
                     isReplenishmentWorkInWave = false;
                 }
             }
@@ -165,7 +166,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                     try {
                         resultCommand = createWorkManager.createPickingWorkInWave(resultCommand.getWhWave(), whOdoOutBoundBoxGroup, whOdoOutBoundBox, resultCommand, userId);
                     } catch (Exception e) {
-                        log.error("", e);
+                        log.error("CreateWorkManagerProxyImpl createPickingWorkInWave error" + e);
                         isPickingWorkInWave = false;
                         continue;
                     }    
@@ -195,7 +196,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 try {
                     createWorkManager.createReplenishmentWorkOutWave(siacMap.get(key), replenishmentRuleCommand, userId);
                 } catch (Exception e) {
-                    log.error("", e);
+                    log.error("CreateWorkManagerProxyImpl createReplenishmentWorkOutWave error" + e);
                 }
             }
         }
