@@ -35,7 +35,7 @@ public class WmsOutboundConfirm implements Serializable {
     /** 上位系统出库单类型 */
     private String extOdoType;
     /** 运输服务商-快递单号 */
-    private List<String> transportServiceProvider;
+    private List<String> transportServiceProviders;
     /** 出库单状态 */
     private Integer wmsOdoStatus;
     /** 客户CODE */
@@ -117,12 +117,12 @@ public class WmsOutboundConfirm implements Serializable {
         this.dataSource = dataSource;
     }
 
-    public List<String> getTransportServiceProvider() {
-        return transportServiceProvider;
+    public List<String> getTransportServiceProviders() {
+        return transportServiceProviders;
     }
 
-    public void setTransportServiceProvider(List<String> transportServiceProvider) {
-        this.transportServiceProvider = transportServiceProvider;
+    public void setTransportServiceProviders(List<String> transportServiceProviders) {
+        this.transportServiceProviders = transportServiceProviders;
     }
 
     public Boolean getIsOutboundFinish() {
