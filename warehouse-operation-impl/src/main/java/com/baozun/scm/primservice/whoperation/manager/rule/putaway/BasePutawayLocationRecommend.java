@@ -17,8 +17,10 @@
 package com.baozun.scm.primservice.whoperation.manager.rule.putaway;
 
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.InvAttrMgmtType;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist;
 
 /**
@@ -50,6 +53,37 @@ public abstract class BasePutawayLocationRecommend extends BaseManagerImpl imple
     public List<LocationRecommendResultCommand> recommendLocation(RuleAfferCommand ruleAffer, RuleExportCommand export, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList, Map<String, Map<String, Double>> uomMap,
             String logId) {
         return null;
+    }
+    
+    protected int invSkuCountAspect(List<Long> skuIds) {
+        int counts = 0;
+        if (null == skuIds || 0 == skuIds.size()) {
+            return counts;
+        }
+        Set<Long> allSkus = new HashSet<Long>();
+        for (Long skuId : skuIds) {
+            if (null != skuId) {
+                allSkus.add(skuId);
+            }
+        }
+        counts = allSkus.size();
+        return counts;
+    }
+    
+    protected int invAttrCountAspect(List<WhSkuInventoryCommand> invList) {
+        int counts = 0;
+        if (null == invList || 0 == invList.size()) {
+            return counts;
+        }
+        Set<String> allSkuAttrs = new HashSet<String>();
+        for (WhSkuInventoryCommand inv : invList) {
+            WhSkuInventoryCommand iv = inv;
+            if (null != iv) {
+                allSkuAttrs.add(SkuCategoryProvider.getSkuAttrIdByInv(iv));
+            }
+        }
+        counts = allSkuAttrs.size();
+        return counts;
     }
     
     protected void invAttrMgmtAspect(AttrParams attrParams, WhSkuInventoryCommand invCmd) {
