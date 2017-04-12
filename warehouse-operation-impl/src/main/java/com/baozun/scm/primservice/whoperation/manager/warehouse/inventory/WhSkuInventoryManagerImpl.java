@@ -6752,7 +6752,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if(null == workCmd) {
             throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
         }
-        Set<Long> invSkuIds = new HashSet<Long>();  //添加的容器id
         for(WhSkuInventoryAllocatedCommand allocated:skuInvCmdList){
             String icAllocatedIds = (allocated.getOuterContainerId()== null?"┊":allocated.getOuterContainerId()+"┊") + (allocated.getInsideContainerId()==null?"︴":allocated.getInsideContainerId()+"︴");
             String allocatedSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(allocated);
