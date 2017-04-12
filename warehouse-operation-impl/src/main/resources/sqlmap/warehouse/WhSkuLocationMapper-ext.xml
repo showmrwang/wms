@@ -241,8 +241,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
      <select id="findOtherSkuAttrCountInLocation"  resultType="int">
      	select count(1)
-		from
-		(select invSkuAttrs.sku_id as sku_id,invSkuAttrs.inv_type,invSkuAttrs.inv_status,invSkuAttrs.batch_number,invSkuAttrs.country_of_origin,invSkuAttrs.mfg_date,invSkuAttrs.exp_date,invSkuAttrs.inv_attr1,invSkuAttrs.inv_attr2,invSkuAttrs.inv_attr3,invSkuAttrs.inv_attr4,invSkuAttrs.inv_attr5
 		from 
 		(select inv.sku_id as sku_id,inv.inv_type as inv_type,inv.inv_status as inv_status,inv.batch_number as batch_number,inv.country_of_origin as country_of_origin,inv.mfg_date as mfg_date,inv.exp_date as exp_date,inv.inv_attr1 as inv_attr1,inv.inv_attr2 as inv_attr2,inv.inv_attr3 as inv_attr3,inv.inv_attr4 as inv_attr4,inv.inv_attr5 as inv_attr5 
 		from t_wh_sku_inventory inv
@@ -285,10 +283,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</if>
 		)
 		group by inv.sku_id,inv.inv_type,inv.inv_status,inv.batch_number,inv.country_of_origin,inv.mfg_date,inv.exp_date,inv.inv_attr1,inv.inv_attr2,inv.inv_attr3,inv.inv_attr4,inv.inv_attr5
-		) invSkuAttrs 
+		) as invSkuAttrs 
 		where invSkuAttrs.sku_id is not null 
 		group by invSkuAttrs.sku_id,invSkuAttrs.inv_type,invSkuAttrs.inv_status,invSkuAttrs.batch_number,invSkuAttrs.country_of_origin,invSkuAttrs.mfg_date,invSkuAttrs.exp_date,invSkuAttrs.inv_attr1,invSkuAttrs.inv_attr2,invSkuAttrs.inv_attr3,invSkuAttrs.inv_attr4,invSkuAttrs.inv_attr5
-		) allInvSkuAttrs
-		where allInvSkuAttrs.sku_id is not null
     </select>
 </mapper>

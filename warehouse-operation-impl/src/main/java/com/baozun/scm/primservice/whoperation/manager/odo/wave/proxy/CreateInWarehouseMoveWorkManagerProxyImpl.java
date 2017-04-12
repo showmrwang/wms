@@ -1,8 +1,13 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
@@ -12,13 +17,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whoperation.command.sku.skushared.SkuCommand2Shared;
 import com.baozun.scm.primservice.whoperation.command.warehouse.InWarehouseMoveWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.excel.ExcelContext;
+import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.CreateInWarehouseMoveWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 @Service("createInWarehouseMoveWorkManagerProxy")
 public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWarehouseMoveWorkManagerProxy {
@@ -128,6 +137,49 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
         inWarehouseMoveWorkCommand.setSkuInventoryMap(skuInventoryMap);
         inWarehouseMoveWorkCommand.setIdAndQtyMap(idAndQtyMap);
         return inWarehouseMoveWorkCommand;
+    }
+
+    /**
+     * 批量导入Sn和残次条码Execl
+     * 
+     * @param url
+     * @param fileName
+     * @param userImportExcelId
+     * @param locale
+     * @param ouId
+     * @param userId
+     * @param logId 
+     * @return
+     */
+    @Override
+    public List<WhSkuInventorySn> batchImport(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId) {
+        File importExcelFile = new File(url, fileName);
+        if (!importExcelFile.exists()) {
+            throw new BusinessException("文件不存在");
+        }
+        List<WhSkuInventorySn> skuInventorySnsLst = new ArrayList<WhSkuInventorySn>();
+        try {
+            // 创建excel上下文实例,它的构成需要配置文件的路径
+            ExcelContext context = new ExcelContext("excel-config.xml");
+            // Sn和残次条码
+            ExcelImportResult result = this.readSkuFromExcel(context, importExcelFile, locale);
+            //查看学生集合导入结果
+            skuInventorySnsLst = result.getListBean();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return skuInventorySnsLst;
+    }
+    
+    private ExcelImportResult readSkuFromExcel(ExcelContext context, File importExcelFile, Locale locale) throws Exception {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(importExcelFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new BusinessException("文件读取异常");
+        }
+        return context.readExcel("whSkuInventorySn", 0, inputStream, locale);
     }
     
 }
