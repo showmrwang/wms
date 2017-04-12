@@ -589,7 +589,18 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     // SKU混放数量及SKU属性混放数必须满足
                                     WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                     // 库位上除当前上架商品之外所有商品种类数
-                                    int locSkuCategory = whSkuLocationDao.findOtherSkuCountInLocation(ouId, locId, skuId);
+                                    // int locSkuCategory = whSkuLocationDao.findOtherSkuCountInLocation(ouId, locId, skuId);
+                                    int locSkuCategory = 0;
+                                    List<Long> invSkus = whSkuLocationDao.findOtherSkuInInvLocation(ouId, locId, skuId);
+                                    List<Long> tobefilledSkus = whSkuLocationDao.findOtherSkuInTobefilledLocation(ouId, locId, skuId);
+                                    List<Long> allSkus = new ArrayList<Long>();
+                                    if(null != invSkus && invSkus.size() > 0){
+                                        allSkus.addAll(invSkus);
+                                    }
+                                    if(null != tobefilledSkus && tobefilledSkus.size() > 0){
+                                        allSkus.addAll(tobefilledSkus);
+                                    }
+                                    locSkuCategory = invSkuCountAspect(allSkus);
                                     AttrParams invAttr = new AttrParams();
                                     invAttr.setIsMixStacking(true);// 库位允许混放
                                     invAttr.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
@@ -599,7 +610,18 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     StringBuilder sql = new StringBuilder("");
                                     invAttrMgmtAspect(invAttr, sql);
                                     // 库位上当前商品属性之外所有商品属性总和
-                                    int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
+                                    // int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
+                                    int locSkuAttrCategory = 0;
+                                    List<WhSkuInventoryCommand> invSkuAttr = whSkuLocationDao.findOtherSkuAttrInInvLocation(ouId, locId, skuId, sql.toString());
+                                    List<WhSkuInventoryCommand> tobefilledInvSkuAttr = whSkuLocationDao.findOtherSkuAttrInTobefilledLocation(ouId, locId, skuId, sql.toString());
+                                    List<WhSkuInventoryCommand> allInvSkuAttr = new ArrayList<WhSkuInventoryCommand>();
+                                    if(null != invSkuAttr && invSkuAttr.size() > 0){
+                                        allInvSkuAttr.addAll(invSkuAttr); 
+                                    }
+                                    if(null != tobefilledInvSkuAttr && tobefilledInvSkuAttr.size() > 0){
+                                        allInvSkuAttr.addAll(tobefilledInvSkuAttr); 
+                                    }
+                                    locSkuAttrCategory = invAttrCountAspect(allInvSkuAttr);
                                     if (mixStackingNumber < (locSkuCategory + skuCategory) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory)) {
                                         // 此混放库位超过最大sku混放数或sku属性混放数
                                         continue;
@@ -1100,7 +1122,18 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         // SKU混放数量及SKU属性混放数必须满足
                                         WhSkuInventoryCommand invCmd = invRule;// 取到库存信息
                                         // 库位上除当前上架商品之外所有商品种类数
-                                        int locSkuCategory = whSkuLocationDao.findOtherSkuCountInLocation(ouId, locId, skuId);
+                                     // int locSkuCategory = whSkuLocationDao.findOtherSkuCountInLocation(ouId, locId, skuId);
+                                        int locSkuCategory = 0;
+                                        List<Long> invSkus = whSkuLocationDao.findOtherSkuInInvLocation(ouId, locId, skuId);
+                                        List<Long> tobefilledSkus = whSkuLocationDao.findOtherSkuInTobefilledLocation(ouId, locId, skuId);
+                                        List<Long> allSkus = new ArrayList<Long>();
+                                        if(null != invSkus && invSkus.size() > 0){
+                                            allSkus.addAll(invSkus);
+                                        }
+                                        if(null != tobefilledSkus && tobefilledSkus.size() > 0){
+                                            allSkus.addAll(tobefilledSkus);
+                                        }
+                                        locSkuCategory = invSkuCountAspect(allSkus);
                                         AttrParams invAttr = new AttrParams();
                                         invAttr.setIsMixStacking(true);// 库位允许混放
                                         invAttr.setInvAttrMgmt(InvAttrMgmtType.ALL_INV_ATTRS);
@@ -1110,7 +1143,18 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         StringBuilder sql = new StringBuilder("");
                                         invAttrMgmtAspect(invAttr, sql);
                                         // 库位上当前商品属性之外所有商品属性总和
-                                        int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
+                                        // int locSkuAttrCategory = whSkuLocationDao.findOtherSkuAttrCountInLocation(ouId, locId, skuId, sql.toString());
+                                        int locSkuAttrCategory = 0;
+                                        List<WhSkuInventoryCommand> invSkuAttr = whSkuLocationDao.findOtherSkuAttrInInvLocation(ouId, locId, skuId, sql.toString());
+                                        List<WhSkuInventoryCommand> tobefilledInvSkuAttr = whSkuLocationDao.findOtherSkuAttrInTobefilledLocation(ouId, locId, skuId, sql.toString());
+                                        List<WhSkuInventoryCommand> allInvSkuAttr = new ArrayList<WhSkuInventoryCommand>();
+                                        if(null != invSkuAttr && invSkuAttr.size() > 0){
+                                            allInvSkuAttr.addAll(invSkuAttr); 
+                                        }
+                                        if(null != tobefilledInvSkuAttr && tobefilledInvSkuAttr.size() > 0){
+                                            allInvSkuAttr.addAll(tobefilledInvSkuAttr); 
+                                        }
+                                        locSkuAttrCategory = invAttrCountAspect(allInvSkuAttr);
                                         if (mixStackingNumber < (locSkuCategory + 1) || maxChaosSku < (locSkuAttrCategory + 1)) {
                                             // 此混放库位超过最大sku混放数或sku属性混放数
                                             continue;
