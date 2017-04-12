@@ -35,15 +35,13 @@ public class WmsOutboundConfirm implements Serializable {
     /** 上位系统出库单类型 */
     private String extOdoType;
     /** 运输服务商-快递单号 */
-    private List<String> transportServiceProvider;
+    private List<String> transportServiceProviders;
     /** 出库单状态 */
     private Integer wmsOdoStatus;
     /** 客户CODE */
     private String customerCode;
     /** 店铺CODE */
     private String storeCode;
-    /** 仓库编码 */
-    private String ouCode;
     /** 仓库组织Code */
     private String whCode;
     /** 数据来源 区分上位系统 */
@@ -53,7 +51,7 @@ public class WmsOutboundConfirm implements Serializable {
     /** 出库单反馈明细 */
     private List<WmsOutboundLineConfirm> wmsOutBoundLineConfirm;
     /** 出库单发票信息 */
-    private List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceLineConfirm;
+    private List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceConfirm;
 
     public String getExtOdoCode() {
         return extOdoCode;
@@ -103,14 +101,6 @@ public class WmsOutboundConfirm implements Serializable {
         this.storeCode = storeCode;
     }
 
-    public String getOuCode() {
-        return ouCode;
-    }
-
-    public void setOuCode(String ouCode) {
-        this.ouCode = ouCode;
-    }
-
     public String getWhCode() {
         return whCode;
     }
@@ -127,12 +117,12 @@ public class WmsOutboundConfirm implements Serializable {
         this.dataSource = dataSource;
     }
 
-    public List<String> getTransportServiceProvider() {
-        return transportServiceProvider;
+    public List<String> getTransportServiceProviders() {
+        return transportServiceProviders;
     }
 
-    public void setTransportServiceProvider(List<String> transportServiceProvider) {
-        this.transportServiceProvider = transportServiceProvider;
+    public void setTransportServiceProviders(List<String> transportServiceProviders) {
+        this.transportServiceProviders = transportServiceProviders;
     }
 
     public Boolean getIsOutboundFinish() {
@@ -151,12 +141,12 @@ public class WmsOutboundConfirm implements Serializable {
         this.wmsOutBoundLineConfirm = wmsOutBoundLineConfirm;
     }
 
-    public List<WmsOutboundInvoiceConfirm> getWmsOutBoundInvoiceLineConfirm() {
-        return wmsOutBoundInvoiceLineConfirm;
+    public List<WmsOutboundInvoiceConfirm> getWmsOutBoundInvoiceConfirm() {
+        return wmsOutBoundInvoiceConfirm;
     }
 
-    public void setWmsOutBoundInvoiceLineConfirm(List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceLineConfirm) {
-        this.wmsOutBoundInvoiceLineConfirm = wmsOutBoundInvoiceLineConfirm;
+    public void setWmsOutBoundInvoiceConfirm(List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceConfirm) {
+        this.wmsOutBoundInvoiceConfirm = wmsOutBoundInvoiceConfirm;
     }
 
 
