@@ -130,42 +130,42 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         return cSRCmd;
     }
     
-    /***
-     * 统计要拣货的库位库存
-     * @param operationId
-     * @param locationId
-     * @param ouId
-     * @return
-     */
-    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operationId,Long locationId,Long ouId,String operationWay) {
-        log.info("PdaPickingWorkCacheManagerImpl cacheLocationInventory is start");
-        List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString());
-        if(null == skuInvList || skuInvList.size() == 0) {
-            if (Constants.PICKING_INVENTORY.equals(operationWay)) { //拣货
-                skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
-            }
-            if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
-                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId);
-            }
-            if(null == skuInvList || skuInvList.size() == 0){
-                    throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
-            }
-//            List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);   //当前工作下所有的作业明细集合
-//            for(WhOperationLineCommand operLineCmd : operationLineList){
-//                Long odoLineId = operLineCmd.getOdoLineId();  //出库单明细ID
-//                for(WhSkuInventoryCommand skuInvCmd:skuInvList) {
-//                    Long occupationLineId = skuInvCmd.getOccupationId();
-//                    if(odoLineId.equals(occupationLineId)) {
-//                        skuInvList.add(skuInvCmd); 
-//                    }
-//                }
+//    /***
+//     * 统计要拣货的库位库存
+//     * @param operationId
+//     * @param locationId
+//     * @param ouId
+//     * @return
+//     */
+//    public List<WhSkuInventoryCommand> cacheLocationInventory(Long operationId,Long locationId,Long ouId,String operationWay) {
+//        log.info("PdaPickingWorkCacheManagerImpl cacheLocationInventory is start");
+//        List<WhSkuInventoryCommand> skuInvList = cacheManager.getObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString());
+//        if(null == skuInvList || skuInvList.size() == 0) {
+//            if (Constants.PICKING_INVENTORY.equals(operationWay)) { //拣货
+//                skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
 //            }
-            cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString(), skuInvList, CacheConstants.CACHE_ONE_DAY);
-        }
-        log.info("PdaPickingWorkCacheManagerImpl cacheLocationInventory is end");
-        return skuInvList;
-    }
-    
+//            if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
+//                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId);
+//            }
+//            if(null == skuInvList || skuInvList.size() == 0){
+//                    throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+//            }
+////            List<WhOperationLineCommand> operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);   //当前工作下所有的作业明细集合
+////            for(WhOperationLineCommand operLineCmd : operationLineList){
+////                Long odoLineId = operLineCmd.getOdoLineId();  //出库单明细ID
+////                for(WhSkuInventoryCommand skuInvCmd:skuInvList) {
+////                    Long occupationLineId = skuInvCmd.getOccupationId();
+////                    if(odoLineId.equals(occupationLineId)) {
+////                        skuInvList.add(skuInvCmd); 
+////                    }
+////                }
+////            }
+//            cacheManager.setObject(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+locationId.toString(), skuInvList, CacheConstants.CACHE_ONE_DAY);
+//        }
+//        log.info("PdaPickingWorkCacheManagerImpl cacheLocationInventory is end");
+//        return skuInvList;
+//    }
+//    
     /***
      * 提示库位
      * @param command
@@ -545,7 +545,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 //          List<WhSkuInventoryCommand> list = this.cacheLocationInventory(operationId, locationId, ouId,operationWay);
           List<WhSkuInventoryCommand> skuInvList  = null;
           if (Constants.PICKING_INVENTORY.equals(operationWay)) { //拣货
-              skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId);
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId,null,insideContainerId);
           }
           if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
               skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId);
@@ -3458,7 +3458,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         if(null == whOperation) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId);
+        List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId,null,null);
         if(null == operationExecLineList || operationExecLineList.size()==0) {
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
         }
