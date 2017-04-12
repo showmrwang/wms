@@ -69,7 +69,7 @@
 	<field name="extSkuName" title="上位系统商品名称"/>
 	<field name="qty" title="计划数量"/>
 	<field name="planQty" title="计划数量"/>
-	<field name="linePrice" title=行单价/>
+	<field name="linePrice" title="行单价"/>
 	<field name="lineAmt" title="行总金额"/>
 	<field name="isCheck" title="是否复核"/>
 	<field name="fullLineOutbound" title="整行出库标志"/>
@@ -140,5 +140,8 @@
 	<field name="isCod" title="是否COD"/>
 	<field name="codAmt" title="COD金额"/>
 </excel>
-
+<excel id="whSkuInventorySn" class="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn" sheetname="Sn和残次条码" defaultColumnWidth="5000" enableStyle="true">
+	<field name="sn" title="sn号"/>
+	<field name="defectWareBarcode" title="残次品条码"/>
+</excel>
 </excels>
