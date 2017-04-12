@@ -160,15 +160,16 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager" ref="whOdoArchivIndexManager" />
 	        
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager" ref="whOdoStatusConfirmManager" />
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxManager" ref="whOutboundboxManager" />
+<!-- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxManager" ref="whOutboundboxManager" /> -->
 	
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager" ref="whSkuInventoryFlowManager" />
 	
 	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsInboundServiceManagerProxy" ref="wmsInboundServiceManagerProxy" />
 	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsOutboundServiceManagerProxy" ref="wmsOutboundServiceManagerProxy" />
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.handover.HandoverManager" ref="handoverManager" />
-	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManager" ref="whPrintInfoManager" />
+<!-- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.handover.HandoverManager" ref="handoverManager" /> -->
+<!-- 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManager" ref="whPrintInfoManager" /> -->
 	
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager" ref="whOutboundConfirmManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.WhOdoDeliveryInfoManager" ref="whOdoDeliveryInfoManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.rule.WhHandoverStationRecommendManager" ref="whHandoverStationRecommendManager" />
 </beans>
