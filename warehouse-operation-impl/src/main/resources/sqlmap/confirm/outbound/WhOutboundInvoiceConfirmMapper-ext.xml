@@ -104,4 +104,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhOutboundInvoiceConfirmByOutBoundId" resultMap="WhOutboundInvoiceConfirmResultExt">
+		select <include refid="whOutboundInvoiceConfirmColumnsExt" />
+		from t_wh_outbound_invoice_confirm 
+		where 
+		outbound_confirm_id = #{id} 
+		and ou_id = #{ouid}
+	</select>
+	
 </mapper>

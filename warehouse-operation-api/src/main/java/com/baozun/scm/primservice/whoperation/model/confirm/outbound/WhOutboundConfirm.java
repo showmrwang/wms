@@ -14,6 +14,9 @@
  */
 package com.baozun.scm.primservice.whoperation.model.confirm.outbound;
 
+import java.util.Date;
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -43,14 +46,19 @@ public class WhOutboundConfirm extends BaseModel {
     private String customerCode;
     /** 店铺CODE */
     private String storeCode;
-    /** 仓库编码 */
-    private String ouCode;
     /** 仓库组织ID */
     private Long ouId;
     /** 数据来源 区分上位系统 */
     private String dataSource;
     /** 是否整单出库完成 默认是 */
     private Boolean isOutboundFinish = true;
+    /** 创建时间 */
+    private Date createTime;
+
+    /** 出库单反馈明细 */
+    private List<WhOutboundLineConfirm> whOutBoundLineConfirm;
+    /** 出库单发票信息 */
+    private List<WhOutboundInvoiceConfirm> whOutBoundInvoiceConfirm;
 
     public String getExtOdoCode() {
         return extOdoCode;
@@ -116,14 +124,6 @@ public class WhOutboundConfirm extends BaseModel {
         this.storeCode = storeCode;
     }
 
-    public String getOuCode() {
-        return ouCode;
-    }
-
-    public void setOuCode(String ouCode) {
-        this.ouCode = ouCode;
-    }
-
     public Long getOuId() {
         return ouId;
     }
@@ -146,6 +146,30 @@ public class WhOutboundConfirm extends BaseModel {
 
     public void setIsOutboundFinish(Boolean isOutboundFinish) {
         this.isOutboundFinish = isOutboundFinish;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public List<WhOutboundLineConfirm> getWhOutBoundLineConfirm() {
+        return whOutBoundLineConfirm;
+    }
+
+    public void setWhOutBoundLineConfirm(List<WhOutboundLineConfirm> whOutBoundLineConfirm) {
+        this.whOutBoundLineConfirm = whOutBoundLineConfirm;
+    }
+
+    public List<WhOutboundInvoiceConfirm> getWhOutBoundInvoiceConfirm() {
+        return whOutBoundInvoiceConfirm;
+    }
+
+    public void setWhOutBoundInvoiceConfirm(List<WhOutboundInvoiceConfirm> whOutBoundInvoiceConfirm) {
+        this.whOutBoundInvoiceConfirm = whOutBoundInvoiceConfirm;
     }
 
 
