@@ -94,31 +94,44 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                 prePath = pathList.get(0);
             }
 
-            WhOutboundFacilityGroup facilityGroup = null;
             if (prePath == null) {
+                // 模式
+                if (StringUtils.isEmpty(wh.getSeedingMode())) {
+                    return responseMsgForFacility(recFacilityPath, 0);
+                }
                 // 规则
                 RuleAfferCommand ruleAffer = new RuleAfferCommand();
                 ruleAffer.setSeedingWallOdoIdList(odoIdList);
                 ruleAffer.setOuid(ouId);
                 ruleAffer.setRuleType(Constants.RULE_TYPE_SEEDING_WALL);
                 RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
-                // TODO List<WhSeedingWallRuleCommand> whSeedingWallRule = export.getWhSeedingWallRuleCommandList();
-                WhSeedingWallRuleCommand whSeedingWallRule = null;
-                if (whSeedingWallRule == null) {
+                List<WhSeedingWallRuleCommand> whSeedingWallRuleList = export.getWhSeedingWallRuleCommandList();
+                if (whSeedingWallRuleList == null || whSeedingWallRuleList.size() == 0) {
                     return responseMsgForFacility(recFacilityPath, 0);
                 }
-                // 模式
-                if (StringUtils.isEmpty(wh.getSeedingMode())) {
-                    return responseMsgForFacility(recFacilityPath, 0);
+                // @mender yimin.lu 2017/4/12 当第一个规则失败时候，进行后续规则校验
+                boolean flag = false;
+                for (WhSeedingWallRuleCommand whSeedingWallRule : whSeedingWallRuleList) {
+                    if (!flag) {
+                        // 播种墙组
+                        WhOutboundFacilityGroup facilityGroup = this.whFacilityRecPathManager.findOutboundFacilityGroupById(whSeedingWallRule.getOutboundFacilityGroupId(), ouId);
+                        if (facilityGroup == null) {
+                            return responseMsgForFacility(recFacilityPath, 0);
+                        }
+                        try {
+                            this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, null, recFacilityPath, wh);
+                            flag = true;
+                        } catch (Exception e) {
+                            flag=false;
+                        }
+                    }
                 }
-                // 播种墙组
-                facilityGroup = this.whFacilityRecPathManager.findOutboundFacilityGroupById(whSeedingWallRule.getOutboundFacilityGroupId(), ouId);
-                if (facilityGroup == null) {
-                    return responseMsgForFacility(recFacilityPath, 0);
-                }
+                return responseMsgForFacility(recFacilityPath, flag ? 1 : 0);
+            } else {
+                this.whFacilityRecPathManager.occupyFacilityAndlocation(null, prePath, recFacilityPath, wh);
             }
 
-            this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, prePath, recFacilityPath, wh);
+
         } catch (Exception e) {
             return responseMsgForFacility(recFacilityPath, 0);
         }
