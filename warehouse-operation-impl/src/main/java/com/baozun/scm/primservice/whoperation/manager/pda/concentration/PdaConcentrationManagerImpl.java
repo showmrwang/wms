@@ -271,7 +271,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             recFacilityPath.setPickingMode(Constants.WH_SEEDING_WALL);
             recFacilityPath.setAreaId(workCollectionCommand.getAreaId());
             // TODO 调用播种墙推荐逻辑
-            RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
+            RecFacilityPathCommand command = new RecFacilityPathCommand();
+            try {
+                command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
+            } catch (Exception e) {
+                command.setStatus(0);
+            }
             if (1 == command.getStatus()) {
                 // TODO 应该是是否推荐成功
                 hasSuccess = true;

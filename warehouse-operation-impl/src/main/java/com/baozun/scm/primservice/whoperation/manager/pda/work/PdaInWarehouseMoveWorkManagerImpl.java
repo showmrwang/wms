@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,16 +18,18 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionInventoryMoveDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInventoryMove;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 @Service("pdaInWarehouseMoveWorkManager")
@@ -34,7 +37,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implements PdaInWarehouseMoveWorkManager {
 
 
-    protected static final Logger log = LoggerFactory.getLogger(PdaInWarehouseMoveWorkManagerImpl.class);
+    protected static final Logger log = LoggerFactory.getLogger(PdaReplenishmentWorkManagerImpl.class);
     
     @Autowired
     private PdaPickingWorkCacheManager pdaPickingWorkCacheManager;
@@ -43,7 +46,7 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
     @Autowired
     private WhLocationDao whLocationDao;
     @Autowired
-    private WhFunctionReplenishmentDao whFunctionReplenishmentDao;
+    private WhFunctionInventoryMoveDao whFunctionInventoryMoveDao;
     @Autowired
     private PdaPickingWorkManager pdaPickingWorkManager;
     @Autowired
@@ -73,8 +76,8 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
         PickingScanResultCommand psRCmd = new PickingScanResultCommand();
         // 作业id        
         psRCmd.setOperationId(whOperationCommand.getId());
-        // 捡货方式        
-        if(whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() > 0 && statisticsCommand.getOutbounxBoxs().size() == 0){
+        // 捡货方式           
+        if(whOperationCommand.getIsWholeCase() == false){
             psRCmd.setReplenishWay(Constants.REPLENISH_WAY_ONE);
         }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getPallets().size() > 0){
             psRCmd.setReplenishWay(Constants.REPLENISH_WAY_TWO);
@@ -112,10 +115,7 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
            }
            List<Long> locationIds = operatorLine.getLocationIds();   //所有排序后的拣货库位
            CheckScanResultCommand cSRCmd =  pdaPickingWorkCacheManager.tipLocation(operationId, locationIds);
-           if(cSRCmd.getIsPicking()) {
-               throw new BusinessException(ErrorCodes.REPLE_WORK_ISEND);
-           }else{
-               psRCmd.setIsPicking(false);
+           if(cSRCmd.getIsNeedTipLoc()) {
                Long locationId = cSRCmd.getTipLocationId();   //提示库位id
                Location location = whLocationDao.findByIdExt(locationId, ouId);
                if(null == location){
@@ -123,97 +123,98 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
                }
                psRCmd.setTipLocationBarCode(location.getBarCode());
                psRCmd.setTipLocationCode(location.getCode());
+               psRCmd.setLocationId(locationId);
            }
            //查询补货功能模板参数
-           WhFunctionReplenishment resplenishment = whFunctionReplenishmentDao.findByFunctionIdExt(ouId, functionId);
-           if(null == resplenishment) {
+           WhFunctionInventoryMove inventoryMove = whFunctionInventoryMoveDao.findByFunctionIdExt(ouId, functionId);
+           if(null == inventoryMove) {
                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
            }
-           psRCmd.setIsScanLocation(resplenishment.getIsScanLocation());  //是否扫描库位
-           psRCmd.setIsScanOuterContainer(resplenishment.getIsScanOuterContainer());   //是否扫描托盘
-           psRCmd.setIsScanInsideContainer(resplenishment.getIsScanInsideContainer());    //是否扫描内部容器
-           psRCmd.setIsScanSku(resplenishment.getIsScanSku());                 //是否扫描sku
-           psRCmd.setIsScanInvAttr(resplenishment.getIsScanInvAttr());           //是否扫描sku属性
-           psRCmd.setIsTipInvAttr(resplenishment.getIsTipInvAttr());  //是否提示sku库存属性
-           psRCmd.setScanPattern(resplenishment.getScanPattern());  //扫描模式 
+           psRCmd.setIsScanLocation(inventoryMove.getIsScanLocation()); //是否扫描库位
+           psRCmd.setIsScanOuterContainer(inventoryMove.getIsScanOuterContainer()); //是否扫描托盘
+           psRCmd.setIsScanInsideContainer(inventoryMove.getIsScanInsideContainer()); //是否扫描内部容器
+           psRCmd.setIsScanSku(inventoryMove.getIsScanSku()); //是否扫描sku
+           psRCmd.setIsScanInvAttr(inventoryMove.getIsScanInvAttr()); //是否扫描sku属性
+           psRCmd.setIsTipInvAttr(inventoryMove.getIsTipInvAttr()); //是否提示sku库存属性
+           psRCmd.setScanPattern(inventoryMove.getScanPattern()); //扫描模式 
            return psRCmd;
     }
 
-    /**
-     * 校验库位
-     * @param locationCode
-     * @param locationBarCode
-     * @param ouId
-     * @return
-     */
-    @Override
-    public Long verificationLocation(String locationCode, String locationBarCode, Long ouId) {
-        // TODO Auto-generated method stub
-        log.info("PdaPickingWorkController verificationLocation is start");
-        Long locationId = null;
-        if(!StringUtils.isEmpty(locationCode)) {
-            Location location =  whLocationDao.findLocationByCode(locationCode, ouId);
-            if(null == location) {
-                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
-            }
-            locationId = location.getId();
-        }
-        if(!StringUtils.isEmpty(locationBarCode)) {
-            Location location =  whLocationDao.getLocationByBarcode(locationBarCode, ouId);
-            if(null == location) {
-                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
-            }
-            locationId = location.getId();
-        }
-        log.info("PdaPickingWorkController verificationLocation is end");
-        return locationId;
-    }
+//    /**
+//     * 校验库位
+//     * @param locationCode
+//     * @param locationBarCode
+//     * @param ouId
+//     * @return
+//     */
+//    @Override
+//    public Long verificationLocation(String locationCode, String locationBarCode, Long ouId) {
+//        // TODO Auto-generated method stub
+//        log.info("PdaPickingWorkController verificationLocation is start");
+//        Long locationId = null;
+//        if(!StringUtils.isEmpty(locationCode)) {
+//            Location location =  whLocationDao.findLocationByCode(locationCode, ouId);
+//            if(null == location) {
+//                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
+//            }
+//            locationId = location.getId();
+//        }
+//        if(!StringUtils.isEmpty(locationCode)) {
+//            Location location =  whLocationDao.getLocationByBarcode(locationCode, ouId);
+//            if(null == location) {
+//                throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL );
+//            }
+//            locationId = location.getId();
+//        }
+//        log.info("PdaPickingWorkController verificationLocation is end");
+//        return locationId;
+//    }
     
-    /***
-     * 拣货完成
-     * @param command
-     */
-    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal){
-        Long operationId = command.getOperationId();
-        String workCode = command.getWorkBarCode();
-        Long ouId = command.getOuId();
-        Long userId = command.getUserId();
-        Long locationId = command.getLocationId();
-        String outerContainerCode = command.getOuterContainerCode();
-        String turnoverBoxCode = command.getTurnoverBoxCode();
-        String insideContainerCode = command.getInsideContainerCode();
-        Long outerContainerId = null;
-        if(StringUtils.isEmpty(outerContainerCode)) {
-            ContainerCommand c = containerDao.getContainerByCode(outerContainerCode, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            outerContainerId = c.getId();
-        }
-        Long insideContainerId = null;
-        if(StringUtils.isEmpty(insideContainerCode)) {
-            ContainerCommand c = containerDao.getContainerByCode(insideContainerCode, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            insideContainerId = c.getId();
-        }
-        
-        Long turnoverBoxId = null;
-        if(StringUtils.isEmpty(turnoverBoxCode)) {
-            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-            if(null == c) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            turnoverBoxId = c.getId();
-        }
-        //已分配的库位库存转变为容器库存
-        whSkuInventoryManager.replenishmentContainerInventory(operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId,workCode,null);
-       //更新工作及作业状态
-        pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
-        //清除缓存
-        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId,null);
-    }
+//    /***
+//     * 拣货完成
+//     * @param command
+//     */
+//    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal){
+//        Long operationId = command.getOperationId();
+//        String workCode = command.getWorkBarCode();
+//        Long ouId = command.getOuId();
+//        Long userId = command.getUserId();
+//        Long locationId = command.getLocationId();
+//        String outerContainerCode = command.getOuterContainerCode();
+//        String turnoverBoxCode = command.getTurnoverBoxCode();
+//        String insideContainerCode = command.getInsideContainerCode();
+//        Long outerContainerId = null;
+//        if(StringUtils.isEmpty(outerContainerCode)) {
+//            ContainerCommand c = containerDao.getContainerByCode(outerContainerCode, ouId);
+//            if(null == c) {
+//                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+//            }
+//            outerContainerId = c.getId();
+//        }
+//        Long insideContainerId = null;
+//        if(StringUtils.isEmpty(insideContainerCode)) {
+//            ContainerCommand c = containerDao.getContainerByCode(insideContainerCode, ouId);
+//            if(null == c) {
+//                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+//            }
+//            insideContainerId = c.getId();
+//        }
+//        
+//        Long turnoverBoxId = null;
+//        if(StringUtils.isEmpty(turnoverBoxCode)) {
+//            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+//            if(null == c) {
+//                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+//            }
+//            turnoverBoxId = c.getId();
+//        }
+//        //已分配的库位库存转变为容器库存
+//        whSkuInventoryManager.replenishmentContainerInventory(operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId,workCode);
+//       //更新工作及作业状态
+//        pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId,userId);
+//        //清除缓存
+//        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId,null);
+//    }
     
     public void cacheLocation(Long operationId,String locationCode,Long ouId){
 
@@ -226,5 +227,85 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
         }
         Long locationId = location.getId();
         pdaPickingWorkCacheManager.cacheLocation(operationId, locationId);
+    }
+    
+    /***
+     * 拣货取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param replenishWay
+     * @param locationId
+     * @param ouId
+     */
+    public void cancelPattern(String outerContainerCode, String insideContainerCode,int cancelPattern,int replenishWay,Long locationId,Long ouId,Long operationId,Long tipSkuId){
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = cmd.getId();
+        }
+        Long insideContainerId = null;
+        if(!StringUtils.isEmpty(insideContainerCode)){
+            ContainerCommand cmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = cmd.getId();
+        }
+        pdaPickingWorkCacheManager.replenishmentCancelPattern(outerContainerId, insideContainerId, cancelPattern, replenishWay, locationId, ouId, operationId, tipSkuId);
+    }
+    
+    
+    /***
+     * 校验周转箱
+     * @param turnoverBoxCode
+     * @param ouId
+     * @return
+     */
+    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId){
+        ContainerCommand cmd =  containerDao.getContainerByCode(turnoverBoxCode, ouId);
+        if(null == cmd) {
+            log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        // 验证容器Lifecycle是否有效
+        if (!cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        // 验证容器状态是否是
+        if (!cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        //修改周转箱状态
+        Container c = new Container();
+        BeanUtils.copyProperties(cmd, c);
+        c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+        c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+        containerDao.saveOrUpdateByVersion(c);
+    }
+    
+    
+    /***
+     * 修改周转箱状态
+     * @param turnoverBoxCode
+     * @param ouId
+     */
+    public void updateTurnoverBox(String turnoverBoxCode,Long ouId){
+        ContainerCommand cmd =  containerDao.getContainerByCode(turnoverBoxCode, ouId);
+        if(null == cmd) {
+            log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        //修改周转箱状态
+        Container c = new Container();
+        BeanUtils.copyProperties(cmd, c);
+        c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        containerDao.saveOrUpdateByVersion(c); 
     }
 }

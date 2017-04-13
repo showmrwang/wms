@@ -46,15 +46,16 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
     private WhOutboundConfirmManager whOutboundConfirmManager;
 
     /**
-     * 同步库存流失 bin.hu
+     * 同步库存流水 bin.hu
      * 
      * @param beginTime not null 数据开始时间
      * @param endTime not null 数据结束时间
      * @param whCode not null 仓库编码
+     * @param customerCode not null 客户编码
      * @return
      */
     @Override
-    public List<WmsSkuInventoryFlow> wmsSkuInventoryFlow(Date beginTime, Date endTime, String whCode) {
+    public List<WmsSkuInventoryFlow> wmsSkuInventoryFlow(Date beginTime, Date endTime, String whCode, String customerCode) {
         log.info("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -66,6 +67,9 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(whCode)) {
             throw new BusinessException("whCode is null error");
         }
+        if (StringUtil.isEmpty(customerCode)) {
+            throw new BusinessException("customerCode is null error");
+        }
         // 验证仓库是否存在
         Warehouse w = warehouseManager.findWarehouseByCode(whCode);
         if (null == w) {
@@ -75,7 +79,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " whCode: " + whCode);
+            log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " customerCode: " + customerCode);
         }
         List<WmsSkuInventoryFlow> flow = new ArrayList<WmsSkuInventoryFlow>();
         // 获取对应时间段+仓库的库存流水信息

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionInventoryMoveDao">
+	<resultMap id="WhFunctionInventoryMoveResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInventoryMove">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFunctionInventoryMoveColumns">
+	    <![CDATA[
+	        	id as id,
+	        	function_id as functionId,
+	        	is_auto_obtain_work as isAutoObtainWork,
+	        	obtain_work_way as obtainWorkWay,
+	        	max_obtain_work_qty as maxObtainWorkQty,
+	        	is_scan_location as isScanLocation,
+	        	is_scan_outer_container as isScanOuterContainer,
+	        	is_scan_inside_container as isScanInsideContainer,
+	        	is_scan_sku as isScanSku,
+	        	scan_pattern as scanPattern,
+	        	is_tip_inv_attr as isTipInvAttr,
+	        	is_scan_inv_attr as isScanInvAttr,
+	        	pallet_picking_mode as palletPickingMode,
+	        	container_picking_mode as containerPickingMode,
+	        	putaway_scan_pattern as putawayScanPattern,
+	        	is_putaway_scan_inv_attr as isPutawayScanInvAttr,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInventoryMove" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_function_inventory_move (
+		        id,
+		        	function_id ,
+		        	is_auto_obtain_work ,
+		        	obtain_work_way ,
+		        	max_obtain_work_qty ,
+		        	is_scan_location ,
+		        	is_scan_outer_container ,
+		        	is_scan_inside_container ,
+		        	is_scan_sku ,
+		        	scan_pattern ,
+		        	is_tip_inv_attr ,
+		        	is_scan_inv_attr ,
+		        	pallet_picking_mode ,
+		        	container_picking_mode ,
+		        	putaway_scan_pattern ,
+		        	is_putaway_scan_inv_attr ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{isAutoObtainWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{obtainWorkWay,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{maxObtainWorkQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{isScanLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isScanOuterContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isScanInsideContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isScanSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{scanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{isTipInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{isScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{palletPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{containerPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{putawayScanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{isPutawayScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInventoryMove">
+	    <![CDATA[
+	        UPDATE t_wh_function_inventory_move SET
+		        function_id = #{functionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        is_auto_obtain_work = #{isAutoObtainWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        obtain_work_way = #{obtainWorkWay,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        max_obtain_work_qty = #{maxObtainWorkQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_scan_location = #{isScanLocation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_outer_container = #{isScanOuterContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_inside_container = #{isScanInsideContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_sku = #{isScanSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        scan_pattern = #{scanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_tip_inv_attr = #{isTipInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_scan_inv_attr = #{isScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        pallet_picking_mode = #{palletPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        container_picking_mode = #{containerPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        putaway_scan_pattern = #{putawayScanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_putaway_scan_inv_attr = #{isPutawayScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_function_inventory_move where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_function_inventory_move 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhFunctionInventoryMoveResult" flushCache="false">
+			select <include refid="whFunctionInventoryMoveColumns" />
+		    <![CDATA[
+			    from t_wh_function_inventory_move 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhFunctionInventoryMoveResult" flushCache="false">
+			select <include refid="whFunctionInventoryMoveColumns" />
+			    from t_wh_function_inventory_move 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whFunctionInventoryMoveDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="functionId!=null">
+					and function_id = #{functionId}
+				</if>
+	       
+				<if test="isAutoObtainWork!=null">
+					and is_auto_obtain_work = #{isAutoObtainWork}
+				</if>
+	       
+	       
+		       <if test="obtainWorkWay!=null and obtainWorkWay!=''">
+					and obtain_work_way = #{obtainWorkWay}
+				</if>
+	       
+				<if test="maxObtainWorkQty!=null">
+					and max_obtain_work_qty = #{maxObtainWorkQty}
+				</if>
+	       
+				<if test="isScanLocation!=null">
+					and is_scan_location = #{isScanLocation}
+				</if>
+	       
+				<if test="isScanOuterContainer!=null">
+					and is_scan_outer_container = #{isScanOuterContainer}
+				</if>
+	       
+				<if test="isScanInsideContainer!=null">
+					and is_scan_inside_container = #{isScanInsideContainer}
+				</if>
+	       
+				<if test="isScanSku!=null">
+					and is_scan_sku = #{isScanSku}
+				</if>
+	       
+				<if test="scanPattern!=null">
+					and scan_pattern = #{scanPattern}
+				</if>
+	       
+				<if test="isTipInvAttr!=null">
+					and is_tip_inv_attr = #{isTipInvAttr}
+				</if>
+	       
+				<if test="isScanInvAttr!=null">
+					and is_scan_inv_attr = #{isScanInvAttr}
+				</if>
+	       
+				<if test="palletPickingMode!=null">
+					and pallet_picking_mode = #{palletPickingMode}
+				</if>
+	       
+				<if test="containerPickingMode!=null">
+					and container_picking_mode = #{containerPickingMode}
+				</if>
+	       
+				<if test="putawayScanPattern!=null">
+					and putaway_scan_pattern = #{putawayScanPattern}
+				</if>
+	       
+				<if test="isPutawayScanInvAttr!=null">
+					and is_putaway_scan_inv_attr = #{isPutawayScanInvAttr}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_function_inventory_move 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_function_inventory_move 
+		<include refid="whFunctionInventoryMoveDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_function_inventory_move 
+		<include refid="whFunctionInventoryMoveDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhFunctionInventoryMoveResult">
+    	select <include refid="whFunctionInventoryMoveColumns" />
+	    from t_wh_function_inventory_move 
+		<include refid="whFunctionInventoryMoveDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhFunctionInventoryMoveResult">
+    	select <include refid="whFunctionInventoryMoveColumns" />
+	    from t_wh_function_inventory_move 
+		<include refid="whFunctionInventoryMoveDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhFunctionInventoryMoveResult">
+    	select <include refid="whFunctionInventoryMoveColumns" />
+	    from t_wh_function_inventory_move 
+		<include refid="whFunctionInventoryMoveDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>
