@@ -1167,9 +1167,21 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Override
     public void useSysRecommendResult(String containerCode, Long userId, Long ouId) {
+        ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
+        if (null == containerCmd) {
+            // 容器信息不存在
+            log.error("container is not exists, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
         // 判断是否有播种推荐结果
         WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
+        if (null == seedingCollection) {
+            throw new BusinessException(ErrorCodes.COLLECTION_NOT_HAVE_CONTAINER_INFO, new Object[]{ containerCode });
+        }
         String batch = seedingCollection.getBatch();
+        if (StringUtils.isEmpty(batch)) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
         WhFacilityRecPathCommand rec = new WhFacilityRecPathCommand();
         List<WhFacilityRecPathCommand> recList = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
         if (null != recList && !recList.isEmpty()) {
@@ -1181,7 +1193,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
              * odoIdList || odoIdList.isEmpty()) { throw new
              * BusinessException(ErrorCodes.DATA_BIND_EXCEPTION); }
              */
-            ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
             Long scanContainerId = containerCmd.getId();
             WorkCollectionCommand workCommand = this.createObject(batch, null, ouId, null, scanContainerId);
             // 推荐播种墙逻辑,并判断是否推荐成功
