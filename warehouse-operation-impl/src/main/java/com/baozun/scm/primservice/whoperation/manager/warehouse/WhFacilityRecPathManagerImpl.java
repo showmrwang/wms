@@ -188,7 +188,9 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         WhFacilityPath facilityPathSearch = new WhFacilityPath();
         facilityPathSearch.setOuId(ouId);
         facilityPathSearch.setFromAreaCode(fromArea.getAreaCode());
-        facilityPathSearch.setToAreaCode(section.getWorkingStorageSectionCode());
+        facilityPathSearch.setFromAreaType(fromArea.getAreaType());
+        facilityPathSearch.setToAreaType(facilityGroup.getFacilityGroupType());
+        facilityPathSearch.setToAreaCode(facilityGroup.getFacilityGroupCode());
         List<WhFacilityPath> facilityPathList = this.whFacilityPathDao.findListByParam(facilityPathSearch);
         if (facilityPathList != null && facilityPathList.size() > 0) {
             WhTemporaryStorageLocation search = new WhTemporaryStorageLocation();
