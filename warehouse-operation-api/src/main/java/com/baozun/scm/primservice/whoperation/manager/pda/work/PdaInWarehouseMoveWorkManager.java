@@ -27,23 +27,44 @@ public interface PdaInWarehouseMoveWorkManager extends BaseManager {
      */
     public PickingScanResultCommand replenishmentTipLocation(Long functionId,Long operationId,Long ouId);
     
-    /**
-     * 校验库位
+//    /***
+//     * 拣货完成
+//     * @param command
+//     */
+//    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
+    
+    /***
+     * 缓存库位
+     * @param operationId
      * @param locationCode
-     * @param locationBarCode
+     * @param ouId
+     */
+    public void cacheLocation(Long operationId,String locationCode,Long ouId);
+    
+    /***
+     * 拣货取消流程
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param cancelPattern
+     * @param replenishWay
+     * @param locationId
+     * @param ouId
+     */
+    public void cancelPattern(String outerContainerCode, String insideContainerCode,int cancelPattern,int replenishWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
+    
+    /***
+     * 校验周转箱
+     * @param turnoverBoxCode
      * @param ouId
      * @return
      */
-    public Long verificationLocation(String locationCode,String locationBarCode,Long ouId);
+    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId);
     
     /***
-     * 拣货完成
-     * @param command
+     * 修改周转箱状态
+     * @param turnoverBoxCode
+     * @param ouId
      */
-    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
-    
-    
-    public void cacheLocation(Long operationId,String locationCode,Long ouId);
-    
+    public void updateTurnoverBox(String turnoverBoxCode,Long ouId);
     
 }
