@@ -12,16 +12,20 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationCom
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationResponseCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationWaveCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("whWaveSoftManagerProxy")
 public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
@@ -40,6 +44,9 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
 
     @Autowired
     private OdoManager odoManager;
+
+    @Autowired
+    private WarehouseManager warehouseManager;
 
     @Override
     public SoftAllocationWaveCommand getWaveLineForSoft(Long waveId, Long ouId) {
@@ -122,7 +129,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             WhWaveLine whWaveLine = this.whWaveLineManager.getWaveLineByIdAndOuId(waveLineId, ouId);
             Double skuQty = whWaveLine.getQty();
             Long qty = skuInvAvailableQtyMap.get(skuId);
-            if(qty==null){
+            if (qty == null) {
                 qty = 0L;
             }
             if (qty >= skuQty) {
@@ -209,6 +216,15 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             // TODO 非整单出库 剔除逻辑
         }
 
+    }
+
+    @Override
+    public void removeWaveLineGeneral(Long waveId, Long odoId, Long ouId) {
+        Warehouse wh = warehouseManager.findWarehouseById(ouId);
+        if (null == wh) {
+            return;
+        }
+        whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, Constants.SOFT_ALLOCATION_FAIL, wh, WavePhase.WEAK_ALLOCATED_NUM);
     }
 
     @Override

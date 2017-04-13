@@ -86,6 +86,15 @@ public interface WhWaveSoftManagerProxy extends BaseManager {
     public void removeWaveLine(Long waveId, Long odoId, List<Long> odoLineIds, Long ouId);
 
     /**
+     * [业务方法] 通用剔除出库单方法
+     * @param waveId
+     * @param odoId
+     * @param odoLineIds
+     * @param ouId
+     */
+    public void removeWaveLineGeneral(Long waveId, Long odoId, Long ouId);
+
+    /**
     * [业务方法] 软分配-更新波次头
     * @param whWave
     * @param ouId
