@@ -65,4 +65,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhInvoiceConfirmByCreateTimeAndDataSource" resultMap="WhInvoiceConfirmResultExt">
+		select <include refid="whInvoiceConfirmColumnsExt" />
+		from t_wh_invoice_confirm 
+		where 
+		create_time &gt; #{beginTime} 
+		and create_time &lt; #{endTime} 
+		and data_source = #{dataSource}
+		and ou_id = #{ouid}
+	</select>
+	
 </mapper>

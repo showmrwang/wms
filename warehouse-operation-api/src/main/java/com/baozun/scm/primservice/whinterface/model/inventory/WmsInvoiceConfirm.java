@@ -12,22 +12,21 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.confirm;
+package com.baozun.scm.primservice.whinterface.model.inventory;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
  * 发票反馈数据
  *
  */
-public class WhInvoiceConfirm implements Serializable {
-
+public class WmsInvoiceConfirm extends BaseModel {
 
     /**
      * 
      */
-    private static final long serialVersionUID = 1052952229749439129L;
+    private static final long serialVersionUID = 1440976056393267263L;
+
     /** 发票编码 */
     private String invoiceCode;
     /** 发票号 */
@@ -36,10 +35,8 @@ public class WhInvoiceConfirm implements Serializable {
     private String transportServiceProviders;
     /** 快递单号 */
     private String trackingNumber;
-    /** 仓库组织ID */
-    private Long ouId;
-    /** 创建时间 */
-    private Date createTime;
+    /** 仓库组织CODE */
+    private String whCode;
     /** 数据来源 */
     private String dataSource;
 
@@ -75,20 +72,12 @@ public class WhInvoiceConfirm implements Serializable {
         this.trackingNumber = trackingNumber;
     }
 
-    public Long getOuId() {
-        return ouId;
+    public String getWhCode() {
+        return whCode;
     }
 
-    public void setOuId(Long ouId) {
-        this.ouId = ouId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setWhCode(String whCode) {
+        this.whCode = whCode;
     }
 
     public String getDataSource() {
