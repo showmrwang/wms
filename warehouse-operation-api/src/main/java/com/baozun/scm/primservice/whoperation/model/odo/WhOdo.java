@@ -110,6 +110,8 @@ public class WhOdo extends BaseModel {
     private String headStartOdoStatus;
     /** 滞后出库单状态 */
     private String lagOdoStatus;
+    /** 是否允许出库交接 默认是 */
+    private Boolean isPermitOutBound = true;
 
     /** 当前月份 用于归档 */
     private String sysDate;
@@ -470,6 +472,14 @@ public class WhOdo extends BaseModel {
 
     public void setIsFreightInvoiceSunder(Boolean isFreightInvoiceSunder) {
         this.isFreightInvoiceSunder = isFreightInvoiceSunder;
+    }
+
+    public Boolean getIsPermitOutBound() {
+        return isPermitOutBound;
+    }
+
+    public void setIsPermitOutBound(Boolean isPermitOutBound) {
+        this.isPermitOutBound = isPermitOutBound;
     }
 
 }
