@@ -50,7 +50,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                 return responseMsgForFacility(recFacilityPath, 0);
             }
 
-            if (Constants.WH_SEEDING_WALL.equals(recFacilityPath.getPickingMode())) {
+            if (Constants.PICKING_MODE_SEED.equals(recFacilityPath.getPickingMode())) {
                 return matchSeedingWallWhenSeeding(wh, recFacilityPath);
             } else {
                 // #TODO
@@ -122,7 +122,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                             this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, null, recFacilityPath, wh);
                             flag = true;
                         } catch (Exception e) {
-                            flag=false;
+                            flag = false;
                         }
                     }
                 }

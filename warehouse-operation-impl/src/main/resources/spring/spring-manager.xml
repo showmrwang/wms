@@ -75,6 +75,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm</value>
                     <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm</value>
                     <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.confirm.WhInvoiceConfirm</value>
 				</list>
 			</property>
 			

@@ -33,7 +33,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ou_id as ouId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	operator_id as operatorId
+	        	operator_id as operatorId,
+	        	is_export as isExport
 	    ]]>
 	</sql>
 	
@@ -124,6 +125,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="isFreightInvoiceSunder!=null">
 					and is_freight_invoice_sunder = #{isFreightInvoiceSunder}
 				</if>
+				
+				<if test="isExport!=null">
+					and is_export = #{isExport}
+				</if>
 	       
 				<if test="dataSource!=null">
 					and data_source = #{dataSource}
@@ -171,7 +176,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now() ,
-			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        is_export = #{isExport,javaType=java.lang.Boolean,jdbcType=BIT} 
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}

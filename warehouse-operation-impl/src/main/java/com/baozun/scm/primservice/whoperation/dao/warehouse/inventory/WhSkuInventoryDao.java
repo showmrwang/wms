@@ -402,7 +402,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param insideContainerid
      * @return
      */
+    int findToBefilledCountsByInsideContainerId(@Param("ouId") Long ouid, @Param("insideContainerId") Long insideContainerId);
+    
+    /**
+     * 根据内容容器获取库存总记录数(待移入)
+     * @param ouid
+     * @param insideContainerid
+     * @return
+     */
     int findAllInventoryCountsByInsideContainerId(@Param("ouId") Long ouid, @Param("insideContainerId") Long insideContainerId);
+    
 
     /**
      * 根据内部容器获取收货库存数量(外部容器不为空)

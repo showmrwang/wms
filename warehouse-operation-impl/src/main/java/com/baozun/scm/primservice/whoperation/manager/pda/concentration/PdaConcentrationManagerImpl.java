@@ -268,8 +268,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             recFacilityPath.setBatch(batch);
             recFacilityPath.setContainerCode(containerCode);
             recFacilityPath.setOdoIdList(workCollectionCommand.getOdoIdList());
-            recFacilityPath.setPickingMode(Constants.WH_SEEDING_WALL);
+            recFacilityPath.setPickingMode(Constants.PICKING_MODE_SEED);
             recFacilityPath.setAreaId(workCollectionCommand.getAreaId());
+            recFacilityPath.setLastContainer(workCollectionCommand.getIsLastContainer());
             // TODO 调用播种墙推荐逻辑
             RecFacilityPathCommand command = new RecFacilityPathCommand();
             try {
@@ -385,7 +386,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         WhFacilityRecPathCommand command = rfpList.get(workCollectionCommand.getIndex());
         // cacheManager.remonKeys(CacheConstants.PDA_CACHE_COLLECTION_REC + userId);
         return command;
-
     }
 
     /**
@@ -765,7 +765,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      */
     @Override
     public boolean checkBatchIsAllIntoSeedingWall(String batch, Long userId, Long ouId) {
-        cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
         int count = whSeedingCollectionDao.checkBatchIsAllIntoSeedingWall(batch, ouId);
         if (count == 0) {
             String temporaryStorageLocationCode = whFacilityRecPathDao.findTemporaryStorageLocationCodeByBatch(batch, ouId);
@@ -826,7 +825,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             collection.setLocationId(transitLocationId);
             collection.setCollectionStatus(CollectionStatus.TRANSFER);
         }
-        int updateCount = whSeedingCollectionDao.saveOrUpdateByVersion(collection);
+        int updateCount = whSeedingCollectionDao.saveOrUpdate(collection);
         if (updateCount != 1) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
@@ -1106,10 +1105,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // 4.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
             int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
-            if (count == 0 && StringUtils.hasText(storageLocation.getBatch())) {
-                storageLocation.setBatch(null);
-                storageLocation.setStatus(1);
-                whTemporaryStorageLocationDao.saveOrUpdateByVersion(storageLocation);
+            if (count == 0) {
+                List<WhTemporaryStorageLocation> storageLocationList = whTemporaryStorageLocationDao.findTsLocationByBatch(batch, ouId);
+                for (WhTemporaryStorageLocation ts : storageLocationList) {
+                    ts.setBatch(null);
+                    ts.setStatus(1);
+                    whTemporaryStorageLocationDao.saveOrUpdateByVersion(ts);
+                }
             }
         }
 
@@ -1185,7 +1187,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // 判断是否有播种推荐结果
         WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
         if (null == seedingCollection) {
-            throw new BusinessException(ErrorCodes.COLLECTION_NOT_HAVE_CONTAINER_INFO, new Object[]{ containerCode });
+            throw new BusinessException(ErrorCodes.COLLECTION_NOT_HAVE_CONTAINER_INFO, new Object[] {containerCode});
         }
         String batch = seedingCollection.getBatch();
         if (StringUtils.isEmpty(batch)) {
@@ -1269,7 +1271,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     }
 
     @Override
-    public Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long ouId) {
+    public Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long userId, Long ouId) {
         if (null == rec) {
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
@@ -1284,7 +1286,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         } else if (null != seedingCollection.getFacilityId()) {
             position = Constants.SEEDING_WALL;
         }
-        
+
         // 容器在集货区, 推荐结果中有中转库位, 移至中转库位
         if (!StringUtils.isEmpty(rec.getTransitLocationCode()) && position == 4) {
             return Constants.TRANSIT_LOCATION;
@@ -1298,7 +1300,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         } else {
             // 容器在暂存库位, 推荐结果中没有播种墙信息
             if (position == 2) {
-                // throw new BusinessException(ErrorCodes.COLLECTION_SYS_NO_MATCH_SEEDINGWALL);
+                List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_REC, userId.toString());
+                if (null != recPathList && !recPathList.isEmpty()) {
+                    recPathList.remove(0);
+                    cacheManager.setMapObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_REC, userId.toString(), recPathList, CacheConstants.CACHE_ONE_DAY);
+                }
+                return null;
             }
         }
         return Constants.TEMPORARY_STORAGE_LOCATION;

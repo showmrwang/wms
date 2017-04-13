@@ -72,6 +72,8 @@ public class WhInvoice extends BaseModel {
     private Date lastModifyTime;
     /** 操作人ID */
     private Long operatorId;
+    /** 是否导出 */
+    private Boolean isExport;
     // columns END
 
     public WhInvoice() {}
@@ -254,6 +256,14 @@ public class WhInvoice extends BaseModel {
 
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public Boolean getIsExport() {
+        return isExport;
+    }
+
+    public void setIsExport(Boolean isExport) {
+        this.isExport = isExport;
     }
 }
 

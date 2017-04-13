@@ -227,10 +227,11 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 通过推荐结果判断容器去哪
+     * @param ouId 
      * 
      * @return
      */
-    Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long ouId);
+    Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long userId, Long ouId);
 
 
 
