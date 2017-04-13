@@ -237,7 +237,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				group by invSKus.sku_id
     </select>
     
-     <select id="findOtherSkuAttrCountInInvLocation"  resultMap="WhSkuInventoryCommandSnResultExt">
+     <select id="findOtherSkuAttrCountInInvLocation"  resultMap="WhSkuInventoryCommandResultExt">
      	select invSkuAttrs.sku_id as sku_id,invSkuAttrs.inv_type,invSkuAttrs.inv_status,invSkuAttrs.batch_number,invSkuAttrs.country_of_origin,invSkuAttrs.mfg_date,invSkuAttrs.exp_date,invSkuAttrs.inv_attr1,invSkuAttrs.inv_attr2,invSkuAttrs.inv_attr3,invSkuAttrs.inv_attr4,invSkuAttrs.inv_attr5
 		from 
 		(select inv.sku_id as sku_id,inv.inv_type as inv_type,inv.inv_status as inv_status,inv.batch_number as batch_number,inv.country_of_origin as country_of_origin,inv.mfg_date as mfg_date,inv.exp_date as exp_date,inv.inv_attr1 as inv_attr1,inv.inv_attr2 as inv_attr2,inv.inv_attr3 as inv_attr3,inv.inv_attr4 as inv_attr4,inv.inv_attr5 as inv_attr5 
@@ -261,7 +261,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		group by inv.sku_id,inv.inv_type,inv.inv_status,inv.batch_number,inv.country_of_origin,inv.mfg_date,inv.exp_date,inv.inv_attr1,inv.inv_attr2,inv.inv_attr3,inv.inv_attr4,inv.inv_attr5
     </select>
     
-    <select id="findOtherSkuAttrCountInTobefilledLocation"  resultMap="WhSkuInventoryCommandSnResultExt">
+    <select id="findOtherSkuAttrCountInTobefilledLocation"  resultMap="WhSkuInventoryCommandResultExt">
      select inv.sku_id as sku_id,inv.inv_type as inv_type,inv.inv_status as inv_status,inv.batch_number as batch_number,inv.country_of_origin as country_of_origin,inv.mfg_date as mfg_date,inv.exp_date as exp_date,inv.inv_attr1 as inv_attr1,inv.inv_attr2 as inv_attr2,inv.inv_attr3 as inv_attr3,inv.inv_attr4 as inv_attr4,inv.inv_attr5 as inv_attr5 
 		from t_wh_sku_inventory_tobefilled inv
 		where inv.location_id is not null 
