@@ -79,6 +79,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 @Service("createWorkManager")
@@ -116,6 +117,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
 
     @Autowired
     private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
+    
+    @Autowired
+    private WhSkuInventoryAllocatedDao whSkuInventoryAllocatedDao;
 
     @Autowired
     private WhOdoDao odoDao;
@@ -188,7 +192,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 循环统计的分组补货信息列表
             for (WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : whSkuInventoryAllocatedCommandLst) {
                 // 判断分配量与待移入量是否相等
-                if (!skuInventoryAllocatedCommand.getQty().equals(skuInventoryAllocatedCommand.getToQty())) {
+                Boolean isAllocatedAndTobefilledQty = this.isAllocatedAndTobefilledQty(skuInventoryAllocatedCommand);
+                if (false == isAllocatedAndTobefilledQty) {
                     log.error("qty != toQty", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
                     throw new BusinessException(ErrorCodes.QTY_TOQTY_ERROR);
                 }
@@ -438,7 +443,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 循环统计的分组补货信息列表
             for (WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : whSkuInventoryAllocatedCommandLst) {
                 // 判断分配量与待移入量是否相等
-                if (!skuInventoryAllocatedCommand.getQty().equals(skuInventoryAllocatedCommand.getToQty())) {
+                Boolean isAllocatedAndTobefilledQty = this.isAllocatedAndTobefilledQty(skuInventoryAllocatedCommand);
+                if (false == isAllocatedAndTobefilledQty) {
                     log.error("qty != toQty, qty:{}, toQty:{}", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
                     throw new BusinessException(ErrorCodes.QTY_TOQTY_ERROR);
                 }
@@ -2400,4 +2406,31 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         return skuInventoryAllocatedCommandLst;
     }
 
+    /**
+     * 判断分配量与待移入量是否相等
+     * @param skuInventoryAllocatedCommand
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean isAllocatedAndTobefilledQty(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand) {
+        Boolean isAllocatedAndTobefilledQty = true;
+        Double allocatedQty = 0.0; 
+        Double tobefilledQty = 0.0;
+        WhSkuInventoryAllocated whSkuInventoryAllocated = new WhSkuInventoryAllocated();
+        whSkuInventoryAllocated.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+        List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst  = whSkuInventoryAllocatedDao.findskuInventoryAllocateds(whSkuInventoryAllocated);
+        for(WhSkuInventoryAllocated skuInventoryAllocated : whSkuInventoryAllocatedLst){
+            allocatedQty = allocatedQty + skuInventoryAllocated.getQty();
+        }
+        WhSkuInventoryTobefilled whSkuInventoryTobefilled = new WhSkuInventoryTobefilled();
+        whSkuInventoryTobefilled.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+        List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledLst =  whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(whSkuInventoryTobefilled);
+        for(WhSkuInventoryTobefilled skuInventoryTobefilled : whSkuInventoryTobefilledLst){
+            tobefilledQty = tobefilledQty + skuInventoryTobefilled.getQty();    
+        }
+        if(0 != Double.compare(allocatedQty, tobefilledQty)){
+            isAllocatedAndTobefilledQty = false;    
+        }
+        return isAllocatedAndTobefilledQty;
+    }
 }

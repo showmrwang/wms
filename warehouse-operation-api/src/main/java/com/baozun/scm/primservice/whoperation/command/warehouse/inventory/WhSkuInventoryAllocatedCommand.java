@@ -339,9 +339,6 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
         this.toQty = toQty;
     }
     
-    
-    
-    
     public List<WhSkuInventorySnCommand> getWhSkuInventorySnCommandList() {
         return whSkuInventorySnCommandList;
     }
@@ -476,9 +473,6 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
     public void setAlloctedId(java.lang.Long alloctedId) {
         this.alloctedId = alloctedId;
     }
-    
-    
-    
     
 }
 
