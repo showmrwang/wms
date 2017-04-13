@@ -314,4 +314,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			l.temporary_storage_code = #{code}
 			and l.ou_id = #{ouId}
 	</select>
+	
+	<select id="findTsLocationByBatch" resultMap="WhTemporaryStorageLocationResultExt">
+		select
+			<include refid="whTemporaryStorageLocationColumnsExt"/>
+		from 
+			t_wh_temporary_storage_location l
+		where 
+			l.batch = #{batch}
+			and l.ou_id = #{ouId}
+	</select>
 </mapper>

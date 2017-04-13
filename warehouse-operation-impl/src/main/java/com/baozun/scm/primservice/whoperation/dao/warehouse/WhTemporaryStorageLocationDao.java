@@ -65,4 +65,6 @@ public interface WhTemporaryStorageLocationDao extends BaseDao<WhTemporaryStorag
 
 	WhTemporaryStorageLocation findByCodeAndOuId(@Param("code") String temporaryStorageLocationCode, @Param("ouId") Long ouId);
 
+    List<WhTemporaryStorageLocation> findTsLocationByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+
 }
