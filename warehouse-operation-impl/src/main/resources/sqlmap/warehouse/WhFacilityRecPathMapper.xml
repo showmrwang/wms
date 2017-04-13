@@ -153,10 +153,10 @@
                 transit_location_code = #{transitLocationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 transit_location_check_code = #{transitLocationCheckCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 batch_container_qty = #{batchContainerQty,javaType=java.lang.Integer,jdbcType=INTEGER} 
             WHERE 
                 id = #{id} 
+                and ou_id = #{ouId}
         ]]>
     </update>
     <update id="batchUpdate">
