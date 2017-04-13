@@ -3979,4 +3979,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		group by inv.uuid 
     </select>
     
+    
+    <select id="findToBefilledCountsByInsideContainerId" resultType="Integer">
+		select count(1) from t_wh_sku_inventory_tobefilled inv,t_wh_asn asn where inv.occupation_code is not null 
+			and inv.ou_id=#{ouId}
+			and inv.occupation_code=asn.asn_code and (asn.status=5 or asn.status=10 or asn.status=20)
+			and inv.inside_container_id=#{insideContainerId}
+	</select>
 </mapper>

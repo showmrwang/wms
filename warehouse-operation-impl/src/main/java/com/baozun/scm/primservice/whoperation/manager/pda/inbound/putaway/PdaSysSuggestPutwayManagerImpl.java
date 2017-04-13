@@ -3001,20 +3001,20 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
               }else{
                 //提示下一个商品
+                  whSkuInventoryManager.execPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
+                  //拆箱清除缓存
+                    this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
                   Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
                   WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                   if (null == tipSkuCmd) {
                       log.error("sku is not found error, logId is:[{}]", logId);
                       throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                   }
-                  this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
                   tipSkuDetailAspect(isRecommendFail,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
                   srCmd.setTipSkuBarcode(skuCmd.getBarCode());
 //                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(),skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
 //                      skuCmd.getInvAttr4(), skuCmd.getInvAttr5());
-                  whSkuInventoryManager.execPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
-                //拆箱清除缓存
-                  this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
+                  this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
               }
              
           } else if (cssrCmd.isNeedTipLoc()) {
