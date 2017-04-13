@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 
@@ -69,7 +71,9 @@ public class WhCheckingCommand extends BaseCommand {
     private String pickingMode;
     /** 复核模式 */
     private String checkingMode;
-
+    /** 复核头集合 */
+    private List<WhCheckingLineCommand> checkingLineCommandLst;
+    
     public Long getId() {
         return id;
     }
@@ -261,4 +265,13 @@ public class WhCheckingCommand extends BaseCommand {
     public void setCheckingMode(String checkingMode) {
         this.checkingMode = checkingMode;
     }
+
+    public List<WhCheckingLineCommand> getCheckingLineCommandLst() {
+        return checkingLineCommandLst;
+    }
+
+    public void setCheckingLineCommandLst(List<WhCheckingLineCommand> checkingLineCommandLst) {
+        this.checkingLineCommandLst = checkingLineCommandLst;
+    }
+    
 }

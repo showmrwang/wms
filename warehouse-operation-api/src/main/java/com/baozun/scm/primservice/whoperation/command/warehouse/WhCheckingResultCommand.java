@@ -34,8 +34,6 @@ public class WhCheckingResultCommand extends BaseModel {
     private Long ouId;
     /** 用户Id */
     private Long userId;
-    /** 用户Id */
-    private Long checkingQty;
     
     /** 复核头集合 */
     private List<WhCheckingCommand> whCheckingCommandLst;
@@ -65,12 +63,6 @@ public class WhCheckingResultCommand extends BaseModel {
     }
     public void setUserId(Long userId) {
         this.userId = userId;
-    }
-    public Long getCheckingQty() {
-        return checkingQty;
-    }
-    public void setCheckingQty(Long checkingQty) {
-        this.checkingQty = checkingQty;
     }
 
 }
