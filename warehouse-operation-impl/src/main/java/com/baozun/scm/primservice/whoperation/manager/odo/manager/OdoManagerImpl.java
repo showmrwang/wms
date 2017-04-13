@@ -127,7 +127,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhInvoiceAddressDao whInvoiceAddressDao;
     @Autowired
     private WhInvoiceLineDao whInvoiceLineDao;
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -385,7 +385,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 invoice.setOdoId(odoId);
                 invoice.setOuId(ouId);
                 this.whOdoInvoiceDao.insert(invoice);
-                
+
                 Store store = this.getStoreByRedis(odo.getStoreId());
                 // 复制odo发票信息到发票信息表中
                 WhInvoice whInvoice = new WhInvoice();
@@ -411,7 +411,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 whInvoice.setOperatorId(userId);
                 whInvoice.setDataSource(odoCommand.getDataSource());
                 whInvoiceDao.insert(whInvoice);
-                
+
                 Long whInvoiceId = whInvoice.getId();
                 if (odoAddress == null) {
                     throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
@@ -422,13 +422,13 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 whInvoiceAddress.setWhInvoiceId(whInvoiceId);
                 whInvoiceAddress.setTransportCode(transCommand.getTransportServiceProvider());
                 whInvoiceAddressDao.insert(whInvoiceAddress);
-                
+
                 if (invoiceLineList != null && invoiceLineList.size() > 0) {
                     for (WhOdoInvoiceLine invoiceLine : invoiceLineList) {
                         invoiceLine.setOdoInvoiceId(invoice.getId());
                         invoiceLine.setOuId(ouId);
                         this.whOdoInvoiceLineDao.insert(invoiceLine);
-                        
+
                         // 发票明细
                         WhInvoiceLine whInvoiceLine = new WhInvoiceLine();
                         BeanUtils.copyProperties(invoiceLine, whInvoiceLine, "id");
@@ -1015,6 +1015,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     /**
      * 剔除出库单明细行
+     * 
      * @param whWaveLineIds
      * @param ouId
      */
@@ -1037,6 +1038,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     /**
      * 剔除出库单头
+     * 
      * @param odoId
      * @param ouId
      */
@@ -1146,16 +1148,16 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WaveCommand findWaveSumDatabyOdoIdList(List<Long> odoIdList, Long ouId) {
         // @mender yimin.lu 2017/3/23 修正商品总数的统计
-    	if (null == odoIdList || odoIdList.isEmpty()) {
-    		WaveCommand waveCommand = new WaveCommand();
-    		waveCommand.setSkuCategoryQty(Constants.DEFAULT_INTEGER);
-    		waveCommand.setTotalVolume(Constants.DEFAULT_DOUBLE);
-    		waveCommand.setTotalWeight(Constants.DEFAULT_DOUBLE);
-    		waveCommand.setTotalOdoLineQty(Constants.DEFAULT_INTEGER);
-    		waveCommand.setTotalAmount(Constants.DEFAULT_DOUBLE);
-    		waveCommand.setTotalSkuQty(Constants.DEFAULT_DOUBLE);
-    		return waveCommand;
-		}
+        if (null == odoIdList || odoIdList.isEmpty()) {
+            WaveCommand waveCommand = new WaveCommand();
+            waveCommand.setSkuCategoryQty(Constants.DEFAULT_INTEGER);
+            waveCommand.setTotalVolume(Constants.DEFAULT_DOUBLE);
+            waveCommand.setTotalWeight(Constants.DEFAULT_DOUBLE);
+            waveCommand.setTotalOdoLineQty(Constants.DEFAULT_INTEGER);
+            waveCommand.setTotalAmount(Constants.DEFAULT_DOUBLE);
+            waveCommand.setTotalSkuQty(Constants.DEFAULT_DOUBLE);
+            return waveCommand;
+        }
         WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoIdList(odoIdList, ouId);
         waveCommand.setTotalOdoQty(odoIdList.size());
         return waveCommand;
@@ -1167,7 +1169,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         // 验证所有出库单上店铺所配置的发票公司和发票模板一致
         int invoiceCount = this.whOdoDao.countInvoiceInfo(odoIdList, wave.getOuId());
         if (invoiceCount > 1) {
-            throw new BusinessException(ErrorCodes.WAVE_ODOLIST_INVOICE_DIFFERENCE, new Object[] { wave.getCode() });
+            throw new BusinessException(ErrorCodes.WAVE_ODOLIST_INVOICE_DIFFERENCE, new Object[] {wave.getCode()});
         }
         int batchCount = 500;
         int totalCount = odoIdList.size();
@@ -1228,7 +1230,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
 
     /**
-     *根据ID获取出库单列表
+     * 根据ID获取出库单列表
      *
      * @author mingwei.xie
      * @param odoIdList
@@ -1242,8 +1244,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, Long ouId) {
-        return this.whOdoDao.findByExtCodeOuIdNotCancel(extOdoCode, ouId);
+    public List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, String dataSource, Long ouId) {
+        return this.whOdoDao.findByExtCodeOuIdNotCancel(extOdoCode, dataSource, ouId);
     }
 
     @Override
@@ -1266,19 +1268,34 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void editOdo(WhOdo odo, WhOdoTransportMgmt trans) {
-       try{
-           int updateCount=this.whOdoDao.saveOrUpdateByVersion(odo);
-           if(updateCount<=0){
-               throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-           }
-           this.whOdoTransportMgmtDao.saveOrUpdate(trans);
-       }catch(BusinessException e){
-           throw e;
-       }catch(Exception ex){
-           log.error(ex+"");
+        try {
+            int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            this.whOdoTransportMgmtDao.saveOrUpdate(trans);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            log.error(ex + "");
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-       }
-        
+        }
+
+    }
+
+    /**
+     * 出库单允许出库
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void wmsOutBoundPermit(List<WhOdo> whOdos) {
+        for (WhOdo whOdo : whOdos) {
+            whOdo.setIsPermitOutBound(true);
+            int i = whOdoDao.saveOrUpdateByVersion(whOdo);
+            if (i == 0) {
+                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            }
+        }
     }
 
 

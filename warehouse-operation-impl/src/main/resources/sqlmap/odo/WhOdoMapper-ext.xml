@@ -3381,7 +3381,11 @@
         select
         <include refid="whOdoColumns"/>
         from t_wh_odo
-       where ext_code =#{extCode} and ouId=#{ouId} and odo_status!=17
+       where 
+       ext_code =#{extCode} 
+       and ou_id=#{ouId} 
+       and data_source = #{dataSource}
+       and odo_status!=17
 
     </select>
     
