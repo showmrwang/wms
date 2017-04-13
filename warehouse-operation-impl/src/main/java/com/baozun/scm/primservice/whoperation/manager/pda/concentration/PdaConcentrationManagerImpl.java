@@ -322,7 +322,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     public String findTargetPos(WorkCollectionCommand command) {
         Boolean isRecPath = command.getIsRecPath();
         int containerQty = (null == command.getContainerList()) ? 0 : command.getContainerList().size();
-
         WhFacilityRecPathCommand rfp = this.findRecFacilityPathCommandByIndex(command);
         if (null == rfp) {
             return Constants.FINISH;
@@ -352,7 +351,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     Boolean isMoveAllSuccess = MoveAllContainer(command);
                     if (isMoveAllSuccess) {
                         this.compensationCache(command);
-                        return findTargetPos(command);
+                        return Constants.FINISH;
                     }
                 } else if (Constants.SEEDING_WALL_MOVE_ONE == flag) {
                     // 按箱移动到播种墙
@@ -438,6 +437,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null != containerList && !containerList.isEmpty()) {
             for (int i = 0; i < containerList.size(); i++) {
                 workCollectionCommand.setIndex(i);
+                if (null == workCollectionCommand.getTargetType()) {
+                    workCollectionCommand.setTargetType(Constants.SEEDING_WALL);
+                }
                 Boolean isRecordSuccess = this.recordSeedingCollection(workCollectionCommand);
                 if (!isRecordSuccess) {
                     throw new BusinessException("记录容器集货信息失败");
