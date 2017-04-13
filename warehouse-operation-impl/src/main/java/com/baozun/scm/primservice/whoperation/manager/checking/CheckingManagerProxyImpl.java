@@ -181,7 +181,6 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 whCheckingManager.saveOrUpdate(whCheckingCommand);
                 List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
                 for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
-                    whCheckingLineCommand.setCheckingQty(whCheckingResultCommand.getCheckingQty());  
                     whCheckingLineManager.saveOrUpdate(whCheckingLineCommand);
                 }
             }
