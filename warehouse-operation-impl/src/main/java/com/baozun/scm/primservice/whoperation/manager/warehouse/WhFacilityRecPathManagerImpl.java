@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.odo.wave.RecFacilityPathCommand;
@@ -36,7 +37,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorage
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkingStorageSection;
 
 @Service("whFacilityRecPathManager")
-@Transactional
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhFacilityRecPathManager {
     protected static final Logger log = LoggerFactory.getLogger(WhFacilityRecPathManager.class);
     @Autowired
@@ -187,7 +188,9 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         WhFacilityPath facilityPathSearch = new WhFacilityPath();
         facilityPathSearch.setOuId(ouId);
         facilityPathSearch.setFromAreaCode(fromArea.getAreaCode());
-        facilityPathSearch.setToAreaCode(section.getWorkingStorageSectionCode());
+        facilityPathSearch.setFromAreaType(fromArea.getAreaType());
+        facilityPathSearch.setToAreaType(facilityGroup.getFacilityGroupType());
+        facilityPathSearch.setToAreaCode(facilityGroup.getFacilityGroupCode());
         List<WhFacilityPath> facilityPathList = this.whFacilityPathDao.findListByParam(facilityPathSearch);
         if (facilityPathList != null && facilityPathList.size() > 0) {
             WhTemporaryStorageLocation search = new WhTemporaryStorageLocation();

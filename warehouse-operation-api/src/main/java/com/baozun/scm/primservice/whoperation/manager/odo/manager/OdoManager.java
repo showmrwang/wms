@@ -182,6 +182,7 @@ public interface OdoManager extends BaseManager {
 
     /**
      * [通用方法] 修改出库单头和出库单明细状态
+     * 
      * @param odoId
      * @param odoLineId
      * @param ouId
@@ -192,17 +193,18 @@ public interface OdoManager extends BaseManager {
 
     /**
      * [业务方法] 软分配-剔除出库单头和明细逻辑
+     * 
      * @param waveId
      * @param odoId
      * @param odoLineIds
      * @param ouId
      */
     void removeOdoAndLineWhole(Long waveId, Long odoId, List<Long> odoLineIds, Long ouId);
-    
+
     /**
-	 * [业务方法] 硬分配-根据提供波次ID查找当中有波次明细未分配规则的出库单ID
-	 */
-	List<OdoCommand> getNoRuleOdoIdList(List<Long> waveIdList, Long id);
+     * [业务方法] 硬分配-根据提供波次ID查找当中有波次明细未分配规则的出库单ID
+     */
+    List<OdoCommand> getNoRuleOdoIdList(List<Long> waveIdList, Long id);
 
     /**
      * [通用方法]根据waveCode,ouId查找所有的出库单
@@ -260,7 +262,7 @@ public interface OdoManager extends BaseManager {
     List<Long> findOdoToBeAddedToWave(String waveCode, Long ouId);
 
     /**
-     *根据ID获取出库单列表
+     * 根据ID获取出库单列表
      *
      * @author mingwei.xie
      * @param odoIdList
@@ -269,7 +271,7 @@ public interface OdoManager extends BaseManager {
      */
     List<OdoCommand> getWhOdoListById(List<Long> odoIdList, Long ouId);
 
-    List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, Long ouId);
+    List<WhOdo> findByExtCodeOuIdNotCancel(String extOdoCode, String dataSource, Long ouId);
 
     WhOdo findByExtCodeStoreIdOuId(String extCode, Long storeId, Long ouId);
 
@@ -280,4 +282,6 @@ public interface OdoManager extends BaseManager {
      * @param trans
      */
     void editOdo(WhOdo odo, WhOdoTransportMgmt trans);
+
+    void wmsOutBoundPermit(List<WhOdo> whOdos);
 }

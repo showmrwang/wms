@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuLocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuLocation;
 
 import lark.common.annotation.CommonQuery;
@@ -125,10 +126,20 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
      * @param skuId
      * @return
      */
-    int findOtherSkuCountInLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId);
+    List<Long> findOtherSkuInInvLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId);
     
     /**
-     * 查询库位上指定商品属性之外所有商品属性数总和
+     * 查询库位上出指定商品之外商品的种类数
+     * @author lichuan
+     * @param ouId
+     * @param locId
+     * @param skuId
+     * @return
+     */
+    List<Long> findOtherSkuInTobefilledLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId);
+    
+    /**
+     * 查询库位上指定商品属性之外所有商品属性数
      * 
      * @author lichuan
      * @param ouId
@@ -136,5 +147,16 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
      * @param cSql
      * @return
      */
-    int findOtherSkuAttrCountInLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId, @Param("cSql") String cSql);
+    List<WhSkuInventoryCommand> findOtherSkuAttrInInvLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId, @Param("cSql") String cSql);
+    
+    /**
+     * 查询库位上指定商品属性之外所有商品属性数
+     * @author lichuan
+     * @param ouId
+     * @param locId
+     * @param skuId
+     * @param cSql
+     * @return
+     */
+    List<WhSkuInventoryCommand> findOtherSkuAttrInTobefilledLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId, @Param("cSql") String cSql);
 }

@@ -68,7 +68,8 @@
 				ext_odo_type as extOdoType,
 				is_freight_invoice_sunder as isFreightInvoiceSunder,
 				head_start_odo_status as headStartOdoStatus,
-		        lag_odo_status as lagOdoStatus
+		        lag_odo_status as lagOdoStatus,
+		        is_permit_outbound as isPermitOutBound
         ]]>
 	</sql>
 
@@ -785,7 +786,8 @@
 		        	ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	head_start_odo_status=#{headStartOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
-		       		lag_odo_status=#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR}
+		       		lag_odo_status=#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
+		       		is_permit_outbound = #{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT}
            
         ]]>
 		<where>
@@ -3379,7 +3381,11 @@
         select
         <include refid="whOdoColumns"/>
         from t_wh_odo
-       where ext_code =#{extCode} and ouId=#{ouId} and odo_status!=17
+       where 
+       ext_code =#{extCode} 
+       and ou_id=#{ouId} 
+       and data_source = #{dataSource}
+       and odo_status!=17
 
     </select>
     

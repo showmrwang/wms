@@ -81,6 +81,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     /**
      * [业务方法] 合并出库单-查找可以合并的出库单号
+     * 
      * @param ouId
      * @param outboundCartonType
      * @param epistaticSystemsOrderType
@@ -93,6 +94,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     /**
      * [业务方法] 波次中合并出库单-查找可以合并的出库单号
+     * 
      * @param ouId
      * @param outboundCartonType
      * @param epistaticSystemsOrderType
@@ -105,6 +107,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     /**
      * [业务方法] 合并订单-合并出库单
+     * 
      * @param odoIdString
      * @param ouId
      * @param outboundCartonType
@@ -118,6 +121,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     /**
      * [业务方法] 合并订单-合并出库单
+     * 
      * @param odoIdString
      * @param ouId
      * @param outboundCartonType
@@ -133,6 +137,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     /**
      * [通用方法] 查找已合并订单
+     * 
      * @param idString
      * @param ouId
      * @return
@@ -178,6 +183,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     /**
      * [通用方法] 根据出库单编码和组织获取出库单
+     * 
      * @param odoCode
      * @param ouId
      * @return
@@ -266,7 +272,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     List<WhSeedingWallLatticeLine> getSeedingOdoLineInfo(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
     /**
-     *根据ID获取出库单列表
+     * 根据ID获取出库单列表
      *
      * @author mingwei.xie
      * @param odoIdList
@@ -282,24 +288,26 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @param ouId
      * @return
      */
-    List<WhOdo> findByExtCodeOuIdNotCancel(@Param("extCode") String extOdoCode, @Param("ouId") Long ouId);
-    
+    List<WhOdo> findByExtCodeOuIdNotCancel(@Param("extCode") String extOdoCode, @Param("dataSource") String dataSource, @Param("ouId") Long ouId);
+
     /**
      * 查询仓库下需要归档的出库单(状态为10和17的)
+     * 
      * @author kai.zhu
      * @version 2017年3月29日
      */
-	List<Long> findOdoArchivData(@Param("ouId") Long ouId);
-	
-	/**
-	 * 
-	 * @author kai.zhu
-	 * @version 2017年4月7日
-	 */
+    List<Long> findOdoArchivData(@Param("ouId") Long ouId);
+
+    /**
+     * 
+     * @author kai.zhu
+     * @version 2017年4月7日
+     */
     int countInvoiceInfo(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
 
     /**
      * [业务方法] 查找出库单状态, 判断是否已完成复核
+     * 
      * @param outboundBoxCode
      * @param waybillCode
      * @param ouId

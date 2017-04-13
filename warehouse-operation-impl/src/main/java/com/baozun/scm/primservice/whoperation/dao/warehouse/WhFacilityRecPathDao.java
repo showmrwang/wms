@@ -79,7 +79,7 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
      * @param ouId
      * @return
      */
-    List<WhFacilityRecPath> findWhFacilityRecPathByBatch(String batch, Long ouId);
+    List<WhFacilityRecPath> findWhFacilityRecPathByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
 
     /**
      * 根据批次获取推荐表中对应的路径code

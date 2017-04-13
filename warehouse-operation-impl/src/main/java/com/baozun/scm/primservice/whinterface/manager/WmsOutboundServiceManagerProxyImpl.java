@@ -3,11 +3,14 @@ package com.baozun.scm.primservice.whinterface.manager;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundCancel;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundLocked;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundPermit;
 import com.baozun.scm.primservice.whinterface.msg.WmsErrorCode;
 import com.baozun.scm.primservice.whinterface.msg.WmsInterfaceConstant;
 import com.baozun.scm.primservice.whinterface.msg.WmsResponse;
@@ -22,6 +25,9 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("wmsOutboundServiceManagerProxy")
 public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceManagerProxy {
+
+    public static final Logger log = LoggerFactory.getLogger(WmsOutboundServiceManagerProxyImpl.class);
+
     @Autowired
     private WarehouseManager warehouseManager;
     @Autowired
@@ -30,6 +36,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
     private OdoLineManager odoLineManager;
     @Autowired
     private OdoManagerProxy odoManagerProxy;
+
     @Override
     public WmsResponse wmsOutBoundLocked(WmsOutBoundLocked wmsOutBoundLocked) {
         try {
@@ -44,7 +51,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
                 return new WmsResponse(0, WmsErrorCode.NOT_HAVE_WAREHOUSE_INFOMATION, "WAREHOUSE_IS_NULL");
             }
             Long ouId = warehouse.getId();
-            List<WhOdo> odoList = this.odoManager.findByExtCodeOuIdNotCancel(wmsOutBoundLocked.getExtOdoCode(), ouId);
+            List<WhOdo> odoList = this.odoManager.findByExtCodeOuIdNotCancel(wmsOutBoundLocked.getExtOdoCode(), wmsOutBoundLocked.getDataSource(), ouId);
 
             if (odoList == null || odoList.size() == 0) {
                 return new WmsResponse(0, WmsErrorCode.EXTCODE_NO_ERROR, "EXTCODE_NO_ERROR");
@@ -85,7 +92,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
     @Override
     public WmsResponse wmsOutBoundCancel(WmsOutBoundCancel wmsOutBoundCancel) {
         try {
-            WmsResponse checkResponse=this.checkParamsForOutBoundCancel(wmsOutBoundCancel);
+            WmsResponse checkResponse = this.checkParamsForOutBoundCancel(wmsOutBoundCancel);
             if (WmsResponse.STATUS_ERROR == checkResponse.getStatus()) {
                 return checkResponse;
             }
@@ -95,7 +102,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
                 return new WmsResponse(0, WmsErrorCode.NOT_HAVE_WAREHOUSE_INFOMATION, "WAREHOUSE_IS_NULL");
             }
             Long ouId = warehouse.getId();
-            List<WhOdo> odoList = this.odoManager.findByExtCodeOuIdNotCancel(wmsOutBoundCancel.getExtOdoCode(), ouId);
+            List<WhOdo> odoList = this.odoManager.findByExtCodeOuIdNotCancel(wmsOutBoundCancel.getExtOdoCode(), wmsOutBoundCancel.getDataSource(), ouId);
 
             if (odoList == null || odoList.size() == 0) {
                 return new WmsResponse(0, WmsErrorCode.EXTCODE_NO_ERROR, "EXTCODE_NO_ERROR");
@@ -169,6 +176,56 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
         return new WmsResponse(1, null, null);
     }
 
+    /**
+     * 出库单允许出库接口 bin.hu
+     * 
+     * @param wmsOutBoundPermit
+     * @return
+     */
+    @Override
+    public WmsResponse wmsOutBoundPermit(WmsOutBoundPermit wmsOutBoundPermit) {
+        log.info("WmsOutboundServiceManagerProxyImpl.wmsOutBoundPermit begin!");
+        try {
+            // 验证数据
+            WmsResponse checkResponse = checkParamsForOutBoundPermit(wmsOutBoundPermit);
+            if (WmsResponse.STATUS_ERROR == checkResponse.getStatus()) {
+                return checkResponse;
+            }
+            // 验证仓库是否存在
+            Warehouse warehouse = warehouseManager.findWarehouseByCode(wmsOutBoundPermit.getWhCode());
+            if (warehouse == null) {
+                return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.NOT_HAVE_WAREHOUSE_INFOMATION, "WAREHOUSE_IS_NULL");
+            }
+            // 获取对应出库单数据 状态不能为取消
+            List<WhOdo> odoList = odoManager.findByExtCodeOuIdNotCancel(wmsOutBoundPermit.getExtOdoCode(), wmsOutBoundPermit.getDataSource(), warehouse.getId());
+            if (null == odoList || odoList.size() == 0) {
+                return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.EXTCODE_NO_ERROR, "EXTCODE_NO_ERROR");
+            }
+            try {
+                // 修改对应数据
+                odoManager.wmsOutBoundPermit(odoList);
+            } catch (Exception e) {
+                return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.UPDATE_DATA_ERROR, "UPDATE_DATA_ERROR");
+            }
+        } catch (Exception e) {
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION");
+        }
+        log.info("WmsOutboundServiceManagerProxyImpl.wmsOutBoundPermit end!");
+        return new WmsResponse(WmsResponse.STATUS_SUCCESS, null, null);
+    }
+
+    private WmsResponse checkParamsForOutBoundPermit(WmsOutBoundPermit wmsOutBoundPermit) {
+        if (StringUtils.isEmpty(wmsOutBoundPermit.getExtOdoCode())) {
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.PARAM_IS_NULL, "ExtOdoCode");
+        }
+        if (StringUtils.isEmpty(wmsOutBoundPermit.getWhCode())) {
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.PARAM_IS_NULL, "WhCode");
+        }
+        if (StringUtils.isEmpty(wmsOutBoundPermit.getDataSource())) {
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.PARAM_IS_NULL, "dataSource");
+        }
+        return new WmsResponse(WmsResponse.STATUS_SUCCESS, null, null);
+    }
 
 
 }

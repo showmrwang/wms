@@ -172,4 +172,6 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager" ref="whOutboundConfirmManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.WhOdoDeliveryInfoManager" ref="whOdoDeliveryInfoManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.rule.WhHandoverStationRecommendManager" ref="whHandoverStationRecommendManager" />
+	
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager" ref="whInvoiceConfirmManager" />
 </beans>

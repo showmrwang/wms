@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundConfirm;
@@ -17,10 +18,12 @@ import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundInvoiceC
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundInvoiceLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundLineConfirm;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager;
+import com.baozun.scm.primservice.whoperation.model.confirm.WhInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
@@ -44,17 +47,20 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
     private WhOdoStatusConfirmManager whOdoStatusConfirmManager;
     @Autowired
     private WhOutboundConfirmManager whOutboundConfirmManager;
+    @Autowired
+    private WhInvoiceConfirmManager whInvoiceConfirmManager;
 
     /**
-     * 同步库存流失 bin.hu
+     * 同步库存流水 bin.hu
      * 
      * @param beginTime not null 数据开始时间
      * @param endTime not null 数据结束时间
      * @param whCode not null 仓库编码
+     * @param customerCode not null 客户编码
      * @return
      */
     @Override
-    public List<WmsSkuInventoryFlow> wmsSkuInventoryFlow(Date beginTime, Date endTime, String whCode) {
+    public List<WmsSkuInventoryFlow> wmsSkuInventoryFlow(Date beginTime, Date endTime, String whCode, String customerCode) {
         log.info("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -66,6 +72,9 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(whCode)) {
             throw new BusinessException("whCode is null error");
         }
+        if (StringUtil.isEmpty(customerCode)) {
+            throw new BusinessException("customerCode is null error");
+        }
         // 验证仓库是否存在
         Warehouse w = warehouseManager.findWarehouseByCode(whCode);
         if (null == w) {
@@ -75,7 +84,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " whCode: " + whCode);
+            log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " customerCode: " + customerCode);
         }
         List<WmsSkuInventoryFlow> flow = new ArrayList<WmsSkuInventoryFlow>();
         // 获取对应时间段+仓库的库存流水信息
@@ -224,5 +233,53 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         log.info("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm begin!");
         return wobc;
+    }
+
+    /**
+     * 发票信息反馈 bin.hu
+     * 
+     * @param beginTime not null 数据开始时间
+     * @param endTime not null 数据结束时间
+     * @param whCode not null 仓库编码
+     * @param dataSource not null 数据来源 区分上位系统
+     * @return
+     */
+    @Override
+    public List<WmsInvoiceConfirm> wmsInvoiceConfirm(Date beginTime, Date endTime, String whCode, String dataSource) {
+        log.info("WmsConfirmServiceManagerProxy.wmsInvoiceConfirm begin!");
+        // 判断传入值是否为空
+        if (null == beginTime) {
+            throw new BusinessException("beginTime is null error");
+        }
+        if (null == endTime) {
+            throw new BusinessException("endTime is null error");
+        }
+        if (StringUtil.isEmpty(whCode)) {
+            throw new BusinessException("whCode is null error");
+        }
+        if (StringUtil.isEmpty(dataSource)) {
+            throw new BusinessException("dataSource is null error");
+        }
+        // 验证仓库是否存在
+        Warehouse w = warehouseManager.findWarehouseByCode(whCode);
+        if (null == w) {
+            throw new BusinessException("warehouse is null error");
+        }
+        // 格式化时间
+        String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
+        String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
+        if (log.isDebugEnabled()) {
+            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode);
+        }
+        List<WmsInvoiceConfirm> invoiceConfirms = new ArrayList<WmsInvoiceConfirm>();
+        List<WhInvoiceConfirm> invoiceConfirmList = whInvoiceConfirmManager.findWhInvoiceConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
+        for (WhInvoiceConfirm whInvoiceConfirm : invoiceConfirmList) {
+            // 有数据生成同步数据
+            WmsInvoiceConfirm inv = new WmsInvoiceConfirm();
+            BeanUtils.copyProperties(whInvoiceConfirm, inv);
+            invoiceConfirms.add(inv);
+        }
+        log.info("WmsConfirmServiceManagerProxy.wmsInvoiceConfirm end!");
+        return invoiceConfirms;
     }
 }

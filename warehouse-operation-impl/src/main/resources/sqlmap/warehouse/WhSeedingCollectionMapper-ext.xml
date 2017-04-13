@@ -235,5 +235,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where facility_id = #{facilityId}
         and ou_id = #{ouId}
     </select>
-
+	
+	<select id="findSeedingCollectionByContainerId" resultMap="WhSeedingCollectionResultExt">
+		select
+			<include refid="whSeedingCollectionColumnsExt"/>
+		from 
+			t_wh_seeding_collection
+		where 
+			container_id = #{containerId}
+			<if test="batch != null and batch != ''">
+				and batch = #{batch} 
+			</if>
+			and ou_id = #{ouId}
+			and IFNULL(collection_status, 1) != 10
+	</select>
 </mapper>

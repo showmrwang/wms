@@ -32,6 +32,7 @@ import org.apache.ibatis.annotations.Param;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAllocated,Long>{
 
@@ -102,5 +103,13 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
 
     @CommonQuery
     int saveOrUpdateByVersion(WhSkuInventoryAllocated invAllocated);
+    
+    /**
+     * 根据条件查询信息
+     * 
+     * @param whSkuInventoryAllocated
+     * @return whSkuInventoryAllocated
+     */
+    public List<WhSkuInventoryAllocated> findskuInventoryAllocateds(WhSkuInventoryAllocated whSkuInventoryAllocated);
 
 }
