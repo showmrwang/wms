@@ -870,30 +870,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        (select 1 from t_wh_sku_inventory inv 
 		        where inv.location_id = loc.id and inv.ou_id = #{ouId}
 		        group by inv.ou_id,inv.location_id,inv.sku_id 
-				having (sum(inv.on_hand_qty)) > 0)
-		        and loc.is_mix_stacking = 1
+				having (sum(inv.on_hand_qty)) > 0 or sum(inv.frozen_qty) > 0)
+		        and ((loc.is_mix_stacking = 1
 		    ]]>
 		    <if test="cSql!=null and cSql!=''">
 				and ${cSql}
 			</if>
-			
-			union all
-			
-			select <include refid="locationColumnsExt" />
-		    <![CDATA[
-			    from t_wh_location loc
-		        where 
-		        loc.shelf_area_id = #{areaId} 
-		        and loc.ou_id = #{ouId}
-		        and loc.lifecycle = 1
-		        and not exists 
-		        (select 1 from t_wh_sku_inventory inv 
-		        where inv.location_id = loc.id and inv.ou_id = #{ouId}
-		        group by inv.ou_id,inv.location_id,inv.sku_id 
-				having (sum(inv.on_hand_qty)) > 0)
-		        and loc.is_mix_stacking = 0
-		    ]]>
-		       
+			)
+			or loc.is_mix_stacking = 0)
 	</select>
 
 	<select id="findAllStaticLocsByAreaId" resultMap="locationCommondResult"
