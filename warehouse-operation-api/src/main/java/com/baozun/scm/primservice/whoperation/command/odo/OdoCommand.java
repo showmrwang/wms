@@ -97,6 +97,8 @@ public class OdoCommand extends BaseCommand {
     private String headStartOdoStatus;
     /** 滞后出库单状态 */
     private String lagOdoStatus;
+    /** 是否允许出库交接 默认是 */
+    private Boolean isPermitOutBound = true;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -112,7 +114,7 @@ public class OdoCommand extends BaseCommand {
 
     private List<WhOdoVasCommand> vasList;
 
-    //出库箱推荐
+    // 出库箱推荐
     private WhWaveCommand whWaveCommand;
     /** 出库单下的波次明细列表 */
     private List<WhWaveLineCommand> whWaveLineCommandList;
@@ -632,4 +634,14 @@ public class OdoCommand extends BaseCommand {
     public void setIsFreightInvoiceSunder(Boolean isFreightInvoiceSunder) {
         this.isFreightInvoiceSunder = isFreightInvoiceSunder;
     }
+
+    public Boolean getIsPermitOutBound() {
+        return isPermitOutBound;
+    }
+
+    public void setIsPermitOutBound(Boolean isPermitOutBound) {
+        this.isPermitOutBound = isPermitOutBound;
+    }
+
+
 }

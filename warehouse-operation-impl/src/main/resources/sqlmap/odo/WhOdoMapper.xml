@@ -57,7 +57,8 @@
 		        ext_odo_type as extOdoType,
 		        is_freight_invoice_sunder as isFreightInvoiceSunder,
 		        head_start_odo_status as headStartOdoStatus,
-		        lag_odo_status as lagOdoStatus
+		        lag_odo_status as lagOdoStatus,
+		        is_permit_outbound as isPermitOutBound
         ]]>
     </sql>
     <sql id="whOdoConditionWhereExt">
@@ -186,7 +187,8 @@
 		        	ext_odo_type,
 		        	is_freight_invoice_sunder,
 		        	head_start_odo_status,
-		        	lag_odo_status
+		        	lag_odo_status,
+		        	is_permit_outbound
                 ) VALUES (
                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -230,7 +232,8 @@
 		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{headStartOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
-		        	#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR}
+		        	#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT}
                 )
             ]]>
 
@@ -279,7 +282,8 @@
 		        ext_odo_type=#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
 		        is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        head_start_odo_status=#{headStartOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
-		        lag_odo_status=#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR}
+		        lag_odo_status=#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
+		        is_permit_outbound = #{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT}
             WHERE 
                 id = #{id} 
                 and ou_id = #{ouId}
