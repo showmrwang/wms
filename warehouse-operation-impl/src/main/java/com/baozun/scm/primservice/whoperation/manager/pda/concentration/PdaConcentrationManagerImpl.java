@@ -268,8 +268,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             recFacilityPath.setBatch(batch);
             recFacilityPath.setContainerCode(containerCode);
             recFacilityPath.setOdoIdList(workCollectionCommand.getOdoIdList());
-            recFacilityPath.setPickingMode(Constants.WH_SEEDING_WALL);
+            recFacilityPath.setPickingMode(Constants.PICKING_MODE_SEED);
             recFacilityPath.setAreaId(workCollectionCommand.getAreaId());
+            recFacilityPath.setLastContainer(workCollectionCommand.getIsLastContainer());
             // TODO 调用播种墙推荐逻辑
             RecFacilityPathCommand command = new RecFacilityPathCommand();
             try {
@@ -385,7 +386,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         WhFacilityRecPathCommand command = rfpList.get(workCollectionCommand.getIndex());
         // cacheManager.remonKeys(CacheConstants.PDA_CACHE_COLLECTION_REC + userId);
         return command;
-
     }
 
     /**
@@ -1187,7 +1187,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // 判断是否有播种推荐结果
         WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
         if (null == seedingCollection) {
-            throw new BusinessException(ErrorCodes.COLLECTION_NOT_HAVE_CONTAINER_INFO, new Object[]{ containerCode });
+            throw new BusinessException(ErrorCodes.COLLECTION_NOT_HAVE_CONTAINER_INFO, new Object[] {containerCode});
         }
         String batch = seedingCollection.getBatch();
         if (StringUtils.isEmpty(batch)) {
@@ -1286,7 +1286,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         } else if (null != seedingCollection.getFacilityId()) {
             position = Constants.SEEDING_WALL;
         }
-        
+
         // 容器在集货区, 推荐结果中有中转库位, 移至中转库位
         if (!StringUtils.isEmpty(rec.getTransitLocationCode()) && position == 4) {
             return Constants.TRANSIT_LOCATION;

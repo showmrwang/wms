@@ -252,7 +252,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
             List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
             for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
-                OdoCommand odoCommand = odoManager.findOdoCommandByIdOuId(whCheckingLineCommand.getOuId(), whCheckingResultCommand.getOuId());
+                OdoCommand odoCommand = odoManager.findOdoCommandByIdOuId(whCheckingLineCommand.getId(), whCheckingResultCommand.getOuId());
                 WhOdo whOdo = new WhOdo();
                 //复制数据        
                 BeanUtils.copyProperties(odoCommand, whOdo);

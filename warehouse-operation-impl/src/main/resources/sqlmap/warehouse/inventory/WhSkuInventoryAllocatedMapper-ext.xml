@@ -701,4 +701,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
 	</select>
+	
+	<select id="findskuInventoryAllocateds" resultMap="WhSkuInventoryAllocatedResultExt">
+		select 
+			<include refid="whSkuInventoryAllocatedColumnsExt"/>
+		from 
+			t_wh_sku_inventory_allocated
+			<include refid="whSkuInventoryAllocatedDynamicWhereExt"/>
+	</select>
 </mapper>

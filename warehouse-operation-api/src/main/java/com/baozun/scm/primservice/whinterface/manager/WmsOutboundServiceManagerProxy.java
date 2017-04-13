@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whinterface.manager;
 
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundCancel;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundLocked;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundPermit;
 import com.baozun.scm.primservice.whinterface.msg.WmsResponse;
 
 /**
@@ -27,4 +28,12 @@ public interface WmsOutboundServiceManagerProxy {
      * @return
      */
     WmsResponse wmsOutBoundCancel(WmsOutBoundCancel wmsOutBoundCancel);
+
+    /**
+     * 出库单允许出库接口
+     * 
+     * @param wmsOutBoundPermit
+     * @return
+     */
+    WmsResponse wmsOutBoundPermit(WmsOutBoundPermit wmsOutBoundPermit);
 }
