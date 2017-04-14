@@ -235,7 +235,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         if (facility == null) {
             recPath.setSeedingwallCode(null);
             // @gianni 暂时设置一个上限 若为空会报错
-            recPath.setSeedingwallUpperLimit(66);
+            recPath.setSeedingwallUpperLimit(null);
             recPath.setSeedingwallCheckCode(null);
         } else {
             recPath.setSeedingwallCode(facility.getFacilityCode());

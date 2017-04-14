@@ -1574,6 +1574,17 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         ouId, skuCmd.getScanSkuQty());
                 // 添加容器库存
                 whSkuInventoryManager.pickingAddContainerInventory(containerId,locationId,skuAttrIds,operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(),skuCmd.getScanSkuQty(),outBoundBoxCode,turnoverBoxId,outerContainerId,insideContainerId,isShortPikcing,useContainerLatticeNo,null);
+                //判断是拣完在播，是否是最后一箱
+                List<WhWorkCommand> list =  workManager.findWorkByBatch(operatorLine.getBatch(), ouId);
+                int count = 0;
+                for(WhWorkCommand cmd:list) {
+                    if((!WorkStatus.FINISH.equals(cmd.getStatus()) ||  WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))){
+                                 count++;
+                    }
+                }
+                if(count == 1) {//当前工作是最后一个
+                    command.setIsLastWork(true); //当前工作是一个小批次下的最后一个工作
+                }
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
                 // 插入集货表

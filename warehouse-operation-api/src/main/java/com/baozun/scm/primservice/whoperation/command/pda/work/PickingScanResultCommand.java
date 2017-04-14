@@ -14,6 +14,7 @@ public class PickingScanResultCommand extends BaseCommand {
      */
     private static final long serialVersionUID = 5696756957904723061L;
 
+    private Boolean isLastWork =false;  //是否是最后一箱
     
     private Boolean isShortPickingEnd;   //是否短拣
 
@@ -1117,5 +1118,14 @@ public class PickingScanResultCommand extends BaseCommand {
         this.isShortPickingEnd = isShortPickingEnd;
     }
 
+    public Boolean getIsLastWork() {
+        return isLastWork;
+    }
+
+    public void setIsLastWork(Boolean isLastWork) {
+        this.isLastWork = isLastWork;
+    }
+
+   
     
 }

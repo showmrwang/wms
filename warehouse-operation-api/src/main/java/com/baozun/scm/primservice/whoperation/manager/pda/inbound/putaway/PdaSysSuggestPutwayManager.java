@@ -166,7 +166,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param skuId
      * @param cancelPattern
      */
-    public void cancelPattern(Boolean isRecommendFail,Boolean isCancel,String outerContainerCode,String insideContainerCode,int cancelPattern,Long ouId,String locationCode,int putawayPatternDetailType);
+    public void cancelPattern(Long sId,Boolean isRecommendFail,Boolean isCancel,String outerContainerCode,String insideContainerCode,int cancelPattern,Long ouId,String locationCode,int putawayPatternDetailType);
     
     /***
      * 点击取消按钮时获取上一个扫描的货箱号

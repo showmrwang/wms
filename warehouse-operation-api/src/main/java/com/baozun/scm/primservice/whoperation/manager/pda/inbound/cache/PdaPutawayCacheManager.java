@@ -593,5 +593,5 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param skuId
      * @param locationId
      */
-    public void cancelPath(Boolean isRecommendFail,Boolean isCancel,Long outerContainerId,Long insideContainerId,int cancelPattern,int putawayPatternDetailType,String locationCode,Long ouId);
+    public void cancelPath(Boolean isRecommendFail,Boolean isCancel,Long outerContainerId,Long insideContainerId,int cancelPattern,int putawayPatternDetailType,String locationCode,Long ouId,Long sId);
 }

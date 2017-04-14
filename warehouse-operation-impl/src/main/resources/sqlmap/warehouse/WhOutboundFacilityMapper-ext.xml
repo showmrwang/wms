@@ -198,6 +198,7 @@
                     facility_group = #{facilityGroup,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     check_code = #{checkCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     last_modify_time = now() ,
                     operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER},
