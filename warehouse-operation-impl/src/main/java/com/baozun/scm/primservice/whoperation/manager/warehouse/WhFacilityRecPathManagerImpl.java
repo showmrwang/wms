@@ -34,7 +34,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkingStorageSection;
 
 @Service("whFacilityRecPathManager")
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -114,8 +113,18 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         int batchContainerQty = WhFacilityRecPathList.size();
 
         // 当是边拣货边播种的时候，当播种墙上限满足当前批次容器数，是需要释放对应出库暂存库位
+        // 边拣货变播种，同时占用到播种墙和出库暂存库位的时候 @mender yimin.lu 2017/4/14 修正逻辑：添加判断：边拣货变播种时候，同时占用到播种墙和出库暂存库位
         // 占用的播种墙容量上限是否满足批次对应箱数
-        boolean isReleaseLocation = batchContainerQty <= WhFacilityRecPathList.get(0).getSeedingwallUpperLimit() ? true : false;// 是否需要释放库存
+        boolean isReleaseLocation = false;
+        if (null == WhFacilityRecPathList.get(0).getSeedingwallUpperLimit()) {
+            isReleaseLocation = false;
+        } else {
+            isReleaseLocation = true;
+        }
+        if (isReleaseLocation) {
+
+            isReleaseLocation = batchContainerQty <= WhFacilityRecPathList.get(0).getSeedingwallUpperLimit() ? true : false;// 是否需要释放库存
+        }
 
         for (int i = 0; i < WhFacilityRecPathList.size(); i++) {
             WhFacilityRecPath rec = WhFacilityRecPathList.get(i);
@@ -177,10 +186,12 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         if (toLocation == null) {
             throw new BusinessException(ErrorCodes.FACILITYMATCH_NO_TEMPORARYSTORAGELOCATION);
         }
-        WhWorkingStorageSection section = this.whWorkingStorageSectionDao.findByIdAndOuId(toLocation.getWorkingStorageSectionId(), ouId);
-        if (section == null) {
-            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
-        }
+        // @mender yimin.lu 2017/4/13 中转库位逻辑修正
+        /*
+         * WhWorkingStorageSection section =
+         * this.whWorkingStorageSectionDao.findByIdAndOuId(toLocation.getWorkingStorageSectionId(),
+         * ouId); if (section == null) { throw new BusinessException(ErrorCodes.PARAM_IS_NULL); }
+         */
 
 
         // 查询中转库位

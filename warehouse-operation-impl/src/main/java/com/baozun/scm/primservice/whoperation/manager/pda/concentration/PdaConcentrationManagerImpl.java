@@ -1016,7 +1016,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         WhOutboundFacility facility = null;
         WhTemporaryStorageLocation storageLocation = null;
         Location location = null;
-        WhFacilityRecPathCommand recCommand = new WhFacilityRecPathCommand();
+        WhFacilityRecPathCommand recCommand = null;
         List<WhFacilityRecPathCommand> recCommandList = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
         if (null != recCommandList && !recCommandList.isEmpty()) {
             recCommand = recCommandList.get(0);
