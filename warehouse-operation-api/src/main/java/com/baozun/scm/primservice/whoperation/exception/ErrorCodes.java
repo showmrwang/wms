@@ -814,6 +814,8 @@ public class ErrorCodes {
     public static final int COLLECTION_NOT_HAVE_CONTAINER_INFO = 80012;
     /** 系统没有匹配到推荐的播种墙,请稍后再试 */
     public static final int COLLECTION_SYS_NO_MATCH_SEEDINGWALL = 80013;
+    /** 系统错误,未找到系统推荐路径 */
+    public static final int COLLECTION_RECOMMEND_PATH_ERROR = 80014;
     /** 波次[{}]中出库单集合含有不同的发票信息 */
     public static final int WAVE_ODOLIST_INVOICE_DIFFERENCE = 80011;
 	// 80001-90000 zhukai

@@ -225,4 +225,15 @@
 		group by
 			p.batch
 	</select>
+	
+	<update id="updateStatusToFinish">
+		update
+			t_wh_facility_rec_path p
+		set 
+			p.status = 2
+		where 
+			p.batch = #{batch}
+			and p.container_code = #{containerCode}
+			and p.ou_id = #{ouId}
+	</update>
 </mapper>

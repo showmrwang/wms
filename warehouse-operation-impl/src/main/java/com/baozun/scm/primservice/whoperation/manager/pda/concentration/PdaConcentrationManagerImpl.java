@@ -704,10 +704,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (StringUtils.isEmpty(containerCode)) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        WhFacilityRecPathCommand rec = new WhFacilityRecPathCommand();
+        WhFacilityRecPathCommand rec = null;
         List<WhFacilityRecPathCommand> recList = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
         if (null != recList && !recList.isEmpty()) {
             rec = recList.get(0);
+        }
+        if (null == rec) {
+            throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_PATH_ERROR);
         }
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
         if (null == recPathList) {
@@ -786,11 +789,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     public void updateContainerToDestination(WhFacilityRecPathCommand rec, Integer destinationType, Long ouId) {
         Long containerId = rec.getContainerId();
-        if (null == containerId) {
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-        }
         String batch = rec.getBatch();
-        if (StringUtils.isEmpty(batch)) {
+        String containerCode = rec.getContainerCode();
+        if (null == containerId || StringUtils.isEmpty(batch) || StringUtils.isEmpty(containerCode)) {
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         WhSeedingCollection collection = whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, batch, ouId);
@@ -804,6 +805,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             collection.setTemporaryLocationId(null);
             collection.setLocationId(null);
             collection.setCollectionStatus(CollectionStatus.TO_SEED);
+            // 路径推荐结果状态修改为完成
+            whFacilityRecPathDao.updateStatusToFinish(batch, containerCode, ouId);
         } else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
             // 目标移到暂存库位
             Long temporaryStorageLocationId = rec.getTemporaryStorageLocationId();
@@ -831,7 +834,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         if (destinationType == Constants.SEEDING_WALL) {
             String seedingWallCode = rec.getSeedingwallCode();
-            String containerCode = rec.getContainerCode();
             // 移到播种墙时保存redis数据
             // SEEDING_(仓库ID)_(播种墙CODE)_(批次号)_(容器CODE)=Map<SkuId_uuid, WhSeedingCollectionLine>
             addSeedingDataIntoCache(seedingWallCode, containerCode, containerId, batch, ouId);
