@@ -4362,7 +4362,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      * @param skuId
      * @param cancelPattern
      */
-    public void cancelPattern(Boolean isRecommendFail,Boolean isCancel,String outerContainerCode,String insideContainerCode,int cancelPattern,Long ouId,String locationCode,int putawayPatternDetailType){
+    public void cancelPattern(Long sId,Boolean isRecommendFail,Boolean isCancel,String outerContainerCode,String insideContainerCode,int cancelPattern,Long ouId,String locationCode,int putawayPatternDetailType){
         
         Long outerContainerId = null;
         if(!StringUtils.isEmpty(outerContainerCode)) {
@@ -4381,7 +4381,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             insideContainerId = command.getId();
           
         }
-        pdaPutawayCacheManager.cancelPath(isRecommendFail,isCancel,outerContainerId, insideContainerId, cancelPattern,putawayPatternDetailType,locationCode,ouId);
+        pdaPutawayCacheManager.cancelPath(isRecommendFail,isCancel,outerContainerId, insideContainerId, cancelPattern,putawayPatternDetailType,locationCode,ouId,sId);
     }
     
     /***
