@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
@@ -281,5 +282,30 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         log.info("WmsConfirmServiceManagerProxy.wmsInvoiceConfirm end!");
         return invoiceConfirms;
+    }
+
+    /**
+     * 入库单信息反馈 bin.hu
+     * 
+     * @param beginTime not null 数据开始时间
+     * @param endTime not null 数据结束时间
+     * @param dataSource not null 数据来源 区分上位系统
+     * @return
+     */
+    @Override
+    public List<WmsInboundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource) {
+        log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm begin!");
+        // 判断传入值是否为空
+        if (null == beginTime) {
+            throw new BusinessException("beginTime is null error");
+        }
+        if (null == endTime) {
+            throw new BusinessException("endTime is null error");
+        }
+        if (StringUtil.isEmpty(dataSource)) {
+            throw new BusinessException("dataSource is null error");
+        }
+        log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm end!");
+        return null;
     }
 }

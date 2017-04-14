@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whinterface.model.inbound;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 入库单明细库存信息
@@ -57,6 +58,8 @@ public class WmsInboundInvLineConfirm implements Serializable {
     private String extMemo;
     /** 是否质检 默认否 */
     private Boolean isIqc;
+    /** 入库单明细SN信息 */
+    private List<WmsInboundSnLineConfirm> wmsInBoundSnConfirmLines;
 
     public Double getQtyRcvd() {
         return qtyRcvd;
@@ -168,6 +171,14 @@ public class WmsInboundInvLineConfirm implements Serializable {
 
     public void setIsIqc(Boolean isIqc) {
         this.isIqc = isIqc;
+    }
+
+    public List<WmsInboundSnLineConfirm> getWmsInBoundSnConfirmLines() {
+        return wmsInBoundSnConfirmLines;
+    }
+
+    public void setWmsInBoundSnConfirmLines(List<WmsInboundSnLineConfirm> wmsInBoundSnConfirmLines) {
+        this.wmsInBoundSnConfirmLines = wmsInBoundSnConfirmLines;
     }
 
 }

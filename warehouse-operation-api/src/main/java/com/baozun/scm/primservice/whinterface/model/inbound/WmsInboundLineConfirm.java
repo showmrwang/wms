@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whinterface.model.inbound;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 入库单反馈明细
@@ -43,6 +44,8 @@ public class WmsInboundLineConfirm implements Serializable {
     private String lineSeq;
     /** 箱号 */
     private String cartonNo;
+    /** 入库单明细库存信息 */
+    private List<WmsInboundInvLineConfirm> wmsInBoundInvLineConfirms;
 
     public String getUpc() {
         return upc;
@@ -98,6 +101,14 @@ public class WmsInboundLineConfirm implements Serializable {
 
     public void setCartonNo(String cartonNo) {
         this.cartonNo = cartonNo;
+    }
+
+    public List<WmsInboundInvLineConfirm> getWmsInBoundInvLineConfirms() {
+        return wmsInBoundInvLineConfirms;
+    }
+
+    public void setWmsInBoundInvLineConfirms(List<WmsInboundInvLineConfirm> wmsInBoundInvLineConfirms) {
+        this.wmsInBoundInvLineConfirms = wmsInBoundInvLineConfirms;
     }
 
 }
