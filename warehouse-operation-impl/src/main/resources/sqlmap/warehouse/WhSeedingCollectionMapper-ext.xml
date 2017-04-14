@@ -141,7 +141,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_container c on s.container_id = c.id
 		where 
 			c.code = #{containerCode}
-			and IFNULL(s.collection_status, 1) = 1
+			and IFNULL(s.collection_status, 1) != 10
 			and s.ou_id = #{ouId}
 	</select>
 	
@@ -191,7 +191,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="destinationType != null and destinationType == 3">
 				and s.location_id is not null
 			</if>
-			and ifnull(s.collection_status, 0) != 10
+			and ifnull(s.collection_status, 1) != 10
 			and s.ou_id = #{ouId}
 	</select>
 

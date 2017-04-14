@@ -83,7 +83,7 @@ public interface WhWaveLineManager extends BaseManager {
 	 */
 	void updateWaveLineByAllocateQty(Long id, Double allocateQty, Double containerQty, Boolean isStaticLocation, Set<String> staticLocationIds, Set<String> trayIds, Set<String> packingCaseIds, Long areaId, Long ouId, String logId);
 
-	Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId);
+	Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(Long waveId, Long ouId);
 
     /**
      * [通用方法]根据波次查询波次明细
