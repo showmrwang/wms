@@ -189,4 +189,36 @@
         </where>
     </select>
 
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine">
+        <![CDATA[
+            UPDATE t_wh_checking_line SET
+                checking_id = #{checkingId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_code = #{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_ext_code = #{skuExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+                checking_qty = #{checkingQty,javaType=Long,jdbcType=DECIMAL} ,
+                customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_status = #{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id}  and ou_id = #{ouId}
+        ]]>
+    </update>
 </mapper>

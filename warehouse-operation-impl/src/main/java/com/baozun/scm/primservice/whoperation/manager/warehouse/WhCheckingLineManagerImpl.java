@@ -52,4 +52,24 @@ public class WhCheckingLineManagerImpl extends BaseManagerImpl implements WhChec
             whCheckingLineDao.insert(whCheckingLine);
         }
     }
+    
+    
+    /**
+     * 修改、复合明细
+     * @param line
+     */
+    public void saveOrUpdateByVersion(WhCheckingLine line){
+        whCheckingLineDao.saveOrUpdateByVersion(line);
+    }
+    
+    /**
+     * 根据Id查询复合明细
+     * @param id
+     * @param ouId
+     * @return
+     */
+    public WhCheckingLineCommand getCheckingLineById(Long id,Long ouId){
+        
+        return whCheckingLineDao.findCheckingLineById(id, ouId);
+    }
 }
