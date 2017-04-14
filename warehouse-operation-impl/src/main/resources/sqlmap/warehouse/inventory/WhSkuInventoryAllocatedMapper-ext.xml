@@ -514,8 +514,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv_attr4,
 					inv_attr5,
 					uuid,
-					occupation_code, 
-					occupation_line_id,
 					ou_id,
 					last_modify_time,
 					replenishment_rule_id
@@ -523,6 +521,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					t_wh_sku_inventory_allocated
 				group by
 					uuid, 
+					occupation_code, 
+					occupation_line_id,
 					replenishment_code
 				) invAllocated,
 				(select
