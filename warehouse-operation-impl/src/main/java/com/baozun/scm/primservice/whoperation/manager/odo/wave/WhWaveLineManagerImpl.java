@@ -226,8 +226,8 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(List<Long> waveIdList, Long ouId) {
-        List<WhWaveLine> whWaveLines = whWaveLineDao.getWhWaveLinesByWaveIdList(waveIdList, ouId);
+    public Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> getNeedInventoryMap(Long waveId, Long ouId) {
+        List<WhWaveLine> whWaveLines = whWaveLineDao.getWhWaveLinesByWaveId(waveId, ouId);
         if (null != whWaveLines && !whWaveLines.isEmpty()) {
             Map<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>> map = new HashMap<Long, Map<Long, Map<Long, Map<Long, Map<Boolean, List<WhWaveLine>>>>>>();
             for (WhWaveLine line : whWaveLines) {
