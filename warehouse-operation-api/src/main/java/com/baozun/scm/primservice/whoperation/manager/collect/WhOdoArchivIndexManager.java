@@ -62,4 +62,13 @@ public interface WhOdoArchivIndexManager extends BaseManager {
 	 * @version 2017年3月31日
 	 */
     boolean checkWhOdoArchivLineIndexExsits(String ecOrderCode, String dataSource, Long ouId);
+
+    /**
+     * 根据ASNId查找归档数据
+     * 
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexListByAsnId(Long asnId, Long ouId);
 }

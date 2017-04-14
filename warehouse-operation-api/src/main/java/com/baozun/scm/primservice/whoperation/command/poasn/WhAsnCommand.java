@@ -132,8 +132,82 @@ public class WhAsnCommand extends BaseCommand {
     /** 是否自动关单 */
     private Boolean isAutoClose;
 
+    // ---------------------------------------------------------------------
+    // 退货单查询新增字段
+    private String trackingNumber;
+
+    private String senderTargetName;
+
+    private String phoneNumber;
+
+    private String senderTargetAddress;
+
+    private String barCode;
+
+    private String createTimeStart;
+
+    private String createTimeEnd;
+
+    // -----------------------------------------------------------------------
+
     public Boolean getIsAutoClose() {
         return isAutoClose;
+    }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
+    }
+
+    public String getSenderTargetName() {
+        return senderTargetName;
+    }
+
+    public void setSenderTargetName(String senderTargetName) {
+        this.senderTargetName = senderTargetName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getSenderTargetAddress() {
+        return senderTargetAddress;
+    }
+
+    public void setSenderTargetAddress(String senderTargetAddress) {
+        this.senderTargetAddress = senderTargetAddress;
+    }
+
+    public String getBarCode() {
+        return barCode;
+    }
+
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
+    }
+
+    public String getCreateTimeStart() {
+        return createTimeStart;
+    }
+
+    public void setCreateTimeStart(String createTimeStart) {
+        this.createTimeStart = createTimeStart;
+    }
+
+    public String getCreateTimeEnd() {
+        return createTimeEnd;
+    }
+
+    public void setCreateTimeEnd(String createTimeEnd) {
+        this.createTimeEnd = createTimeEnd;
     }
 
     public void setIsAutoClose(Boolean isAutoClose) {

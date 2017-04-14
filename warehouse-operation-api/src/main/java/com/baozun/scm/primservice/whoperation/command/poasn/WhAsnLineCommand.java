@@ -153,6 +153,38 @@ public class WhAsnLineCommand extends BaseCommand {
     private String uomCode;
     /** IT专用 */
     private String uuid;
+    // 款式码
+    private String style;
+
+    private String size;
+
+    private String color;
+
+
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
 
     public String getUuid() {
         return uuid;

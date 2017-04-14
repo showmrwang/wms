@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,36 +10,47 @@ import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnType;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.auth.OperationUnitManager;
+import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnSnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
+import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.utilities.DateUtil;
 
 /**
  * 查询PoAsn相关数据
@@ -58,6 +70,8 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     @Autowired
     private AsnManager asnManager;
     @Autowired
+    private AsnSnManager asnSnManager;
+    @Autowired
     private PoLineManager poLineManager;
     @Autowired
     private CodeManager codeManager;
@@ -71,6 +85,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     private OperationUnitManager operationUnitManager;
     @Autowired
     private WarehouseManager warehouseManager;
+    @Autowired
+    private SkuRedisManager skuRedisManager;
+    @Autowired
+    private WhOdoArchivIndexManager whOdoArchivIndexManager;
 
     /**
      * 
@@ -282,6 +300,28 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     }
 
     @Override
+    public List<WhAsnLineCommand> findWhAsnLineCommandListByAsnId(Long asnId, Long ouId) {
+        List<WhAsnLineCommand> asnLineList = this.asnLineManager.findWhAsnLineCommandListByAsnIdOuIdToShard(asnId, ouId);
+        if (asnLineList == null || asnLineList.size() == 0) {
+            return null;
+        }
+        for (WhAsnLineCommand line : asnLineList) {
+            SkuRedisCommand skuRedis = this.skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), line.getOuId(), "");
+
+
+            line.setSkuBarCode(skuRedis.getSku().getBarCode());
+            line.setSkuCode(skuRedis.getSku().getCode());
+            line.setSkuName(skuRedis.getSku().getName());
+
+            line.setColor(skuRedis.getSku().getColor());
+            line.setSize(skuRedis.getSku().getSize());
+            line.setStyle(skuRedis.getSku().getStyle());
+
+        }
+        return asnLineList;
+    }
+
+    @Override
     public BiPo findBiPoByPoCode(String poCode) {
         return this.biPoManager.findBiPoByPoCode(poCode);
     }
@@ -452,5 +492,41 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
     @Override
     public List<BiPoLine> findBiPoLineByBiPoIdAndLineNums(Long poId, List<Integer> extLinenums) {
         return this.biPoLineManager.findBiPoLineByBiPoIdAndLineNums(poId, extLinenums);
+    }
+
+    @Override
+    public List<WhAsnCommand> findNewReturnsAsn(String originalEcOrderCode, Long ouId) {
+        WhAsnCommand search=new WhAsnCommand();
+        search.setOriginalEcOrderCode(originalEcOrderCode);
+        search.setOuId(ouId);
+        search.setStatus(PoAsnStatus.ASN_NEW);
+        search.setAsnType(PoAsnType.POTYPE_2);
+        return this.asnManager.findListByParamsExt(search);
+    }
+
+    @Override
+    public List<WhAsnSn> findWhAsnSnByAsnLineId(Long lineId, Long ouId) {
+        WhAsnSn search = new WhAsnSn();
+        search.setOuId(ouId);
+        search.setAsnLineId(lineId);
+        return this.asnSnManager.findListByParamToShard(search);
+    }
+
+    @Override
+    public List<WhOdoArchivLineIndexCommand> findOrginalByAsnId(Long asnId, Long ouId) {
+        List<WhOdoArchivLineIndex> lineList = this.whOdoArchivIndexManager.findWhOdoArchivLineIndexListByAsnId(asnId, ouId);
+        if (lineList == null || lineList.size() == 0) {
+            return null;
+        }
+        List<WhOdoArchivLineIndexCommand> lineCommandList = new ArrayList<WhOdoArchivLineIndexCommand>();
+        for (WhOdoArchivLineIndex line : lineList) {
+            WhOdoArchivLineIndexCommand command = new WhOdoArchivLineIndexCommand();
+            BeanUtils.copyProperties(line, command);
+            command.setMfgDateStr(DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD));
+            command.setExpDateStr(DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD));
+            command.setQtyRcvd(Constants.DEFAULT_INTEGER);
+            lineCommandList.add(command);
+        }
+        return lineCommandList;
     }
 }
