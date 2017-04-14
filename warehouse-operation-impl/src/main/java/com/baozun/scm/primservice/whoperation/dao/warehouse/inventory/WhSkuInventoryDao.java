@@ -824,4 +824,14 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOperationId(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
     
+    
+    /***
+     * 查询容器库存(按单复合)
+     * @param ouId
+     * @param operationId
+     * @return
+     */
+    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOdo(@Param("odoLineId") Long odoLineId,@Param("odoId") Long odoId,@Param("ouId") Long ouId, @Param("outerContainerId") Long containerId,@Param("containerLatticeNo") Integer containerLatticeNo,@Param("outboundbox") String outboundbox,
+        @Param("turnoverBoxCode") String turnoverBoxCode,@Param("seedingWallCode") String seedingWallCode);
+    
 }
