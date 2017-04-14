@@ -85,7 +85,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	
 	<select id="findWmsOutBoundStatusConfirmByCreateTimeAndDataSource" resultMap="WmsOutBoundStatusResultExt">
-		select <include refid="wmsOdoStatusConfirmColumnsExt" />
+		select <include refid="wmsOutBoundStatusConfirmColumnsExt" />
 		from t_wh_odo_status_confirm 
 		where 
 		create_time &gt; #{beginTime} 
