@@ -140,8 +140,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	<select id="findWhSkuInventoryFlowByCreateTime" resultMap="WhSkuInventoryFlowResultExt">
-		select <include refid="whSkuInventoryFlowColumns" />
+		<sql id="findWmsSkuInventoryFlowColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	upc as upc,
+	        	customer_code as customerCode,
+	        	store_code as storeCode,
+	        	ec_order_code as ecOrderCode,
+	        	odo_type as odoType,
+	        	revision_qty as revisionQty,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	batch_number as batchNumber,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5
+	        	inv_transaction_type as invTransactionType,
+	        	create_time as createTime
+	    ]]>
+	</sql>
+	
+	<select id="findWmsSkuInventoryFlowByCreateTime" resultMap="com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow">
+		select <include refid="findWmsSkuInventoryFlowColumnsExt" />
 		from t_wh_sku_inventory_flow 
 		where 
 		create_time &gt; #{beginTime} 

@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whinterface.model.inbound;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 入库单反馈
@@ -31,9 +32,9 @@ public class WmsInboundConfirm implements Serializable {
 
     /** 数据唯一标识 */
     private String uuid;
-    /** 入库单据编码 */
+    /** 上位系统平台单据号 */
     private String extPoCode;
-    /** 上位系统原始单号 */
+    /** 上位系统入库单据号 */
     private String extCode;
     /** 客户编码 */
     private String customerCode;
@@ -51,6 +52,8 @@ public class WmsInboundConfirm implements Serializable {
     private String poStatus;
     /** 单据类型 */
     private String poType;
+    /** 上位系统单据类型 */
+    private String extPoType;
     /** 是否质检 默认否 */
     private Boolean isIqc;
     /** 计划数量 */
@@ -65,6 +68,8 @@ public class WmsInboundConfirm implements Serializable {
     private String extMemo;
     /** 数据来源 区分上位系统 */
     private String dataSource;
+    /** 入库单反馈明细 */
+    private List<WmsInboundLineConfirm> wmsInBoundConfirmLines;
 
     public String getUuid() {
         return uuid;
@@ -208,6 +213,22 @@ public class WmsInboundConfirm implements Serializable {
 
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public String getExtPoType() {
+        return extPoType;
+    }
+
+    public void setExtPoType(String extPoType) {
+        this.extPoType = extPoType;
+    }
+
+    public List<WmsInboundLineConfirm> getWmsInBoundConfirmLines() {
+        return wmsInBoundConfirmLines;
+    }
+
+    public void setWmsInBoundConfirmLines(List<WmsInboundLineConfirm> wmsInBoundConfirmLines) {
+        this.wmsInBoundConfirmLines = wmsInBoundConfirmLines;
     }
 
 }

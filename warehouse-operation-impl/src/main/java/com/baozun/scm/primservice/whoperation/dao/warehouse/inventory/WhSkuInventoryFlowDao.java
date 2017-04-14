@@ -27,6 +27,7 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow;
 
 public interface WhSkuInventoryFlowDao extends BaseDao<WhSkuInventoryFlow, Long> {
@@ -50,6 +51,6 @@ public interface WhSkuInventoryFlowDao extends BaseDao<WhSkuInventoryFlow, Long>
      * 
      * @return
      */
-    List<WhSkuInventoryFlow> findWhSkuInventoryFlowByCreateTime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid);
+    List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid);
 
 }

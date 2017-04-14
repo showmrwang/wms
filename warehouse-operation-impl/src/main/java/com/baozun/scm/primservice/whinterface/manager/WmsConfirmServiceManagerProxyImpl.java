@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
@@ -30,7 +31,6 @@ import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundI
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
@@ -86,18 +86,13 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (log.isDebugEnabled()) {
             log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " customerCode: " + customerCode);
         }
-        List<WmsSkuInventoryFlow> flow = new ArrayList<WmsSkuInventoryFlow>();
         // 获取对应时间段+仓库的库存流水信息
-        List<WhSkuInventoryFlow> whSkuInventoryFlows = whSkuInventoryFlowManager.findWhSkuInventoryFlowByCreateTime(begin, end, w.getId());
-        for (WhSkuInventoryFlow whSkuInventoryFlow : whSkuInventoryFlows) {
-            // 有数据生成同步数据
-            WmsSkuInventoryFlow f = new WmsSkuInventoryFlow();
-            BeanUtils.copyProperties(whSkuInventoryFlow, f);
-            f.setWhCode(whCode);
-            flow.add(f);
+        List<WmsSkuInventoryFlow> wmsSkuInventoryFlows = whSkuInventoryFlowManager.findWmsSkuInventoryFlowByCreateTime(begin, end, w.getId());
+        for (WmsSkuInventoryFlow wmsSkuInventoryFlow : wmsSkuInventoryFlows) {
+            wmsSkuInventoryFlow.setWhCode(whCode);
         }
         log.info("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow end!");
-        return flow;
+        return wmsSkuInventoryFlows;
     }
 
     /**
@@ -134,19 +129,15 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode);
+            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
         }
-        List<WmsOutBoundStatusConfirm> wobsc = new ArrayList<WmsOutBoundStatusConfirm>();
-        List<WhOdoStatusConfirm> whOdoStatusConfirms = whOdoStatusConfirmManager.findWhOdoStatusConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
-        for (WhOdoStatusConfirm whOdoStatusConfirm : whOdoStatusConfirms) {
-            WmsOutBoundStatusConfirm o = new WmsOutBoundStatusConfirm();
+        List<WmsOutBoundStatusConfirm> whOutboundStatusConfirms = whOdoStatusConfirmManager.findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
+        for (WmsOutBoundStatusConfirm wmsOutBoundStatusConfirm : whOutboundStatusConfirms) {
             // 有数据生成同步数据
-            BeanUtils.copyProperties(whOdoStatusConfirm, o);
-            o.setWhCode(whCode);
-            wobsc.add(o);
+            wmsOutBoundStatusConfirm.setWhCode(whCode);
         }
         log.info("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm end!");
-        return wobsc;
+        return whOutboundStatusConfirms;
     }
 
     /**
@@ -183,7 +174,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode);
+            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
         }
         List<WmsOutboundConfirm> wobc = new ArrayList<WmsOutboundConfirm>();
         // 获取出库单反馈数据
@@ -269,7 +260,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode);
+            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
         }
         List<WmsInvoiceConfirm> invoiceConfirms = new ArrayList<WmsInvoiceConfirm>();
         List<WhInvoiceConfirm> invoiceConfirmList = whInvoiceConfirmManager.findWhInvoiceConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
@@ -281,5 +272,36 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         log.info("WmsConfirmServiceManagerProxy.wmsInvoiceConfirm end!");
         return invoiceConfirms;
+    }
+
+    /**
+     * 入库单信息反馈 bin.hu
+     * 
+     * @param beginTime not null 数据开始时间
+     * @param endTime not null 数据结束时间
+     * @param dataSource not null 数据来源 区分上位系统
+     * @return
+     */
+    @Override
+    public List<WmsInboundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource) {
+        log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm begin!");
+        // 判断传入值是否为空
+        if (null == beginTime) {
+            throw new BusinessException("beginTime is null error");
+        }
+        if (null == endTime) {
+            throw new BusinessException("endTime is null error");
+        }
+        if (StringUtil.isEmpty(dataSource)) {
+            throw new BusinessException("dataSource is null error");
+        }
+        // 格式化时间
+        String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
+        String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
+        if (log.isDebugEnabled()) {
+            log.debug("WmsConfirmServiceManagerProxy.wmsInBoundConfirm beginTime: " + begin + " endTime: " + end + " dataSource: " + dataSource);
+        }
+        log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm end!");
+        return null;
     }
 }
