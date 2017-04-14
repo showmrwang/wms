@@ -24,8 +24,6 @@ import com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirm
 import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager;
-import com.baozun.scm.primservice.whoperation.model.confirm.WhInvoiceConfirm;
-import com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm;
@@ -262,16 +260,13 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (log.isDebugEnabled()) {
             log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
         }
-        List<WmsInvoiceConfirm> invoiceConfirms = new ArrayList<WmsInvoiceConfirm>();
-        List<WhInvoiceConfirm> invoiceConfirmList = whInvoiceConfirmManager.findWhInvoiceConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
-        for (WhInvoiceConfirm whInvoiceConfirm : invoiceConfirmList) {
+        List<WmsInvoiceConfirm> invoiceConfirmList = whInvoiceConfirmManager.findWmsInvoiceConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
+        for (WmsInvoiceConfirm wmsInvoiceConfirm : invoiceConfirmList) {
             // 有数据生成同步数据
-            WmsInvoiceConfirm inv = new WmsInvoiceConfirm();
-            BeanUtils.copyProperties(whInvoiceConfirm, inv);
-            invoiceConfirms.add(inv);
+            wmsInvoiceConfirm.setWhCode(whCode);
         }
         log.info("WmsConfirmServiceManagerProxy.wmsInvoiceConfirm end!");
-        return invoiceConfirms;
+        return invoiceConfirmList;
     }
 
     /**
