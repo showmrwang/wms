@@ -27,6 +27,7 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm;
 
 public interface WhOdoStatusConfirmDao extends BaseDao<WhOdoStatusConfirm, Long> {
@@ -48,6 +49,6 @@ public interface WhOdoStatusConfirmDao extends BaseDao<WhOdoStatusConfirm, Long>
     /**
      * 通过创建时间段+仓库ID+数据来源获取对应出库单状态反馈数据
      */
-    List<WhOdoStatusConfirm> findWhOdoStatusConfirmByCreateTimeAndDataSource(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid, @Param("dataSource") String dataSource);
+    List<WmsOutBoundStatusConfirm> findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid, @Param("dataSource") String dataSource);
 
 }

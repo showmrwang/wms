@@ -2,8 +2,8 @@ package com.baozun.scm.primservice.whoperation.manager.confirm;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.confirm.WhOdoStatusConfirm;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 
 public interface WhOdoStatusConfirmManager extends BaseManager {
@@ -25,6 +25,6 @@ public interface WhOdoStatusConfirmManager extends BaseManager {
      * @param dataSource
      * @return
      */
-    List<WhOdoStatusConfirm> findWhOdoStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource);
+    List<WmsOutBoundStatusConfirm> findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource);
 
 }

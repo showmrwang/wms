@@ -16,8 +16,8 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 
 public interface WhSkuInventoryFlowManager extends BaseManager {
@@ -34,5 +34,5 @@ public interface WhSkuInventoryFlowManager extends BaseManager {
      * 
      * @return
      */
-    List<WhSkuInventoryFlow> findWhSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid);
+    List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid);
 }
