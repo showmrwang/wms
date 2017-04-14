@@ -1253,7 +1253,20 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 2.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-
+        
+        // 4.判断暂存库位,没有就释放
+        if (destinationType == Constants.SEEDING_WALL) {
+            int count = whSeedingCollectionDao.checkCountInDestination(recCommand.getBatch(), Constants.TEMPORARY_STORAGE_LOCATION, ouId);
+            if (count == 0) {
+                List<WhTemporaryStorageLocation> storageLocationList = whTemporaryStorageLocationDao.findTsLocationByBatch(recCommand.getBatch(), ouId);
+                for (WhTemporaryStorageLocation ts : storageLocationList) {
+                    ts.setBatch(null);
+                    ts.setStatus(1);
+                    whTemporaryStorageLocationDao.saveOrUpdateByVersion(ts);
+                }
+            }
+        }
+        
         // 3.清理缓存
         List<WhFacilityRecPathCommand> recPathList = null;
         if (null != isManual && isManual) {
@@ -1365,5 +1378,14 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         }
 
+    }
+
+    @Override
+    public boolean checkBatchInTemporaryStorageLocation(String batch, Long ouId) {
+        int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
+        if (count - 1 == 0) {
+            return true;
+        }
+        return false;
     }
 }

@@ -232,7 +232,12 @@ public interface PdaConcentrationManager extends BaseManager {
      * @return
      */
     Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long userId, Long ouId);
-
-
+    
+    /**
+     * 检测此批次在暂存库位上是否还有容器
+     * @author kai.zhu
+     * @version 2017年4月14日
+     */
+    boolean checkBatchInTemporaryStorageLocation(String batch, Long ouId);
 
 }

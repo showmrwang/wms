@@ -191,7 +191,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="destinationType != null and destinationType == 3">
 				and s.location_id is not null
 			</if>
-			and s.collection_status = 1
+			and ifnull(s.collection_status, 0) != 10
 			and s.ou_id = #{ouId}
 	</select>
 
