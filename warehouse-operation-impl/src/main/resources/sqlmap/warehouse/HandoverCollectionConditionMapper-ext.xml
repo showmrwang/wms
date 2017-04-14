@@ -16,8 +16,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	rule.chr_id as chrId,
 	        	rule.rule_condition_id as ruleConditionId,
 	        	rule.ou_id as ouId,
-				cond.column_name as ruleConditionName
-	    ]]>
+				cond.column_name as ruleConditionName,
+				cond.column_code as ruleCondtionCode
+	    ]]>							 
 	</sql>
 	
 	<sql id="handoverCollectionConditionDynamicWhereExt">
@@ -46,9 +47,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			select <include refid="handoverCollectionConditionColumnsExt" />
 		    <![CDATA[
 			   from t_wh_handover_collection_condition rule 
-			left join t_wh_recommend_rule_condition cond on rule.chr_id =cond.id
+			left join t_wh_recommend_rule_condition cond on rule.rule_condition_id =cond.id
 		        where 
-		        rule.rule_condition_id = #{ruleConditionId} 
+		        rule.chr_id = #{ruleConditionId} 
 		        and  rule.ou_id = #{ouId}
 		    ]]>
 		</select>	
@@ -57,14 +58,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         select count(1)
         from t_wh_handover_collection_condition
         where
-            rule_condition_id = #{ruleConditionId}
+            chr_id = #{ruleConditionId}
             and ou_id = #{ouId}
     </select>
 
     <delete id="deleteByRuleId">
         delete from t_wh_handover_collection_condition
         where
-            rule_condition_id = #{ruleConditionId}
+            chr_id = #{ruleConditionId}
             and ou_id = #{ouId}
     </delete>
+    
+    <select id="findConditionListByRuleIdAndouId"  resultMap="HandoverCollectionConditionCommandResultExt" >
+			select <include refid="handoverCollectionConditionColumnsExt" />
+		    <![CDATA[
+			   from t_wh_handover_collection_rule hcr 
+			left join 
+			   t_wh_handover_collection_condition rule  on hcr.id = rule.chr_id
+			left join 
+			    t_wh_recommend_rule_condition cond on rule.rule_condition_id =cond.id
+		    where 
+		        rule.chr_id = #{chrId} 
+		        and  rule.ou_id = #{ouId}
+		    order by rule.rule_condition_id  
+		    ]]>
+	</select>	
 </mapper>

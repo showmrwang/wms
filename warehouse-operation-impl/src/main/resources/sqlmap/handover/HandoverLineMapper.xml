@@ -4,28 +4,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
 
 
-<mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao">
-	<resultMap id="HandoverCollectionResult" type="com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection">
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.HandoverLineDao">
+	<resultMap id="HandoverLineResult" type="com.baozun.scm.primservice.whoperation.model.handover.HandoverLine">
 	</resultMap>
-	<resultMap id="HandoverCollectionPaginationResult" type="lark.common.dao.Pagination">
-    	<collection property="items" javaType="ArrayList" resultMap="HandoverCollectionResult"/>
+	<resultMap id="HandoverLinePaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="HandoverLineResult"/>
 	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
-	<sql id="handoverCollectionColumns">
+	<sql id="handoverLineColumns">
 	    <![CDATA[
 	        	id as id,
+	        	handover_id as handoverId,
 	        	outboundbox_id as outboundboxId,
 	        	outboundbox_code as outboundboxCode,
-	        	handover_station_id as handoverStationId,
-	        	HANDOVER_STATION_TYPE as handoverStationType,
-	        	handover_batch as handoverBatch,
-	        	handover_status as handoverStatus,
-	        	group_condition as groupCondition,
+	        	wh_outboundbox_id as whOutboundboxId,
 	        	ou_id as ouId
 	    ]]>
 	</sql>
-	<sql id="handoverCollectionConditionWhereExt">
+	<sql id="handoverLineConditionWhereExt">
 		<where>
 			<if test="likeEqualsMap != null">
 				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
@@ -97,29 +94,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<!-- 如果有自增字段 -->
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection" 
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.handover.HandoverLine" 
+				
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
-		        t_wh_handover_collection (
-		       		 id,
+		        t_wh_handover_line (
+		        id,
+		        	handover_id ,
 		        	outboundbox_id ,
 		        	outboundbox_code ,
-		        	handover_station_id ,
-		        	HANDOVER_STATION_TYPE ,
-		        	handover_batch ,
-		        	handover_status ,
-		        	group_condition ,
+		        	wh_outboundbox_id ,
 		        	ou_id 
 		        ) VALUES (
-		      	    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{handoverId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{handoverStationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{handoverStationType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{handoverBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{handoverStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{whOutboundboxId,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
@@ -127,68 +119,70 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</insert>
 		
 		
-		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection">
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.handover.HandoverLine">
 	    <![CDATA[
-	        UPDATE t_wh_handover_collection SET
+	        UPDATE t_wh_handover_line SET
+		        handover_id = #{handoverId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        handover_station_id = #{handoverStationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        HANDOVER_STATION_TYPE = #{handoverStationType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        handover_batch = #{handoverBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        handover_status = #{handoverStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        group_condition = #{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        wh_outboundbox_id = #{whOutboundboxId,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
 		</update>
 		<update id="batchUpdate">
-	        UPDATE t_wh_handover_collection SET
+	        UPDATE t_wh_handover_line SET
 	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
 	        		${key} = #{value}
 	        	</foreach>
-	        	<include refid="handoverCollectionConditionWhereExt"/>
+	        	<include refid="handoverLineConditionWhereExt"/>
 		</update>
 		
 	   <delete id="delete" parameterType="java.lang.Long">
 	    <![CDATA[
-	        delete from t_wh_handover_collection where
+	        delete from t_wh_handover_line where
 		        id = #{id} 
 	    ]]>
 	    </delete> 
 	    
 	     <delete id="deleteByIds" parameterType="list">
 	    
-	        delete from t_wh_handover_collection 
+	        delete from t_wh_handover_line 
 	        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 #{item}				</foreach>	
 	  
 	    </delete>  
 	    <update id="batchDelete">
-	        delete from t_wh_handover_collection <include refid="handoverCollectionConditionWhereExt"/>
+	        delete from t_wh_handover_line <include refid="handoverLineConditionWhereExt"/>
 		</update>
 	         
-	    <select id="findById" parameterType="java.lang.Long" resultMap="HandoverCollectionResult" flushCache="false">
-			select <include refid="handoverCollectionColumns" />
+	    <select id="findById" parameterType="java.lang.Long" resultMap="HandoverLineResult" flushCache="false">
+			select <include refid="handoverLineColumns" />
 		    <![CDATA[
-			    from t_wh_handover_collection 
+			    from t_wh_handover_line 
 		        where 
 		        id = #{id} 
 		    ]]>
 		</select>	
-		<select id="getByIds" parameterType="list"  resultMap="HandoverCollectionResult" flushCache="false">
-			select <include refid="handoverCollectionColumns" />
-			    from t_wh_handover_collection 
+		<select id="getByIds" parameterType="list"  resultMap="HandoverLineResult" flushCache="false">
+			select <include refid="handoverLineColumns" />
+			    from t_wh_handover_line 
 		        where id in
 				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
 #{item}				</foreach>					
 		</select>	
-	<sql id="handoverCollectionDynamicWhere">
+	<sql id="handoverLineDynamicWhere">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
 	       
 				<if test="id!=null">
 					and id = #{id}
+				</if>
+	       
+				<if test="handoverId!=null">
+					and handover_id = #{handoverId}
 				</if>
 	       
 				<if test="outboundboxId!=null">
@@ -200,28 +194,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and outboundbox_code = #{outboundboxCode}
 				</if>
 	       
-				<if test="handoverStationId!=null">
-					and handover_station_id = #{handoverStationId}
-				</if>
 	       
-	       
-		       <if test="handoverStationType!=null and handoverStationType!=''">
-					and HANDOVER_STATION_TYPE = #{handoverStationType}
-				</if>
-	       
-	       
-		       <if test="handoverBatch!=null and handoverBatch!=''">
-					and handover_batch = #{handoverBatch}
-				</if>
-	       
-	       
-		       <if test="handoverStatus!=null and handoverStatus!=''">
-					and handover_status = #{handoverStatus}
-				</if>
-	       
-	       
-		       <if test="groupCondition!=null and groupCondition!=''">
-					and group_condition = #{groupCondition}
+		       <if test="whOutboundboxId!=null and whOutboundboxId!=''">
+					and wh_outboundbox_id = #{whOutboundboxId}
 				</if>
 	       
 				<if test="ouId!=null">
@@ -232,60 +207,53 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 
 	<select id="getCount" resultType="long">
-        select count(*) from t_wh_handover_collection 
+        select count(*) from t_wh_handover_line 
     </select>
     <select id="findListCountByQueryMap" resultType="long">
-        select count(*) from t_wh_handover_collection 
-		<include refid="handoverCollectionDynamicWhere"/>    
+        select count(*) from t_wh_handover_line 
+		<include refid="handoverLineDynamicWhere"/>    
     </select>
     
     <select id="findListCountByParam" resultType="long">
-        select count(*) from t_wh_handover_collection 
-		<include refid="handoverCollectionDynamicWhere"/>    
+        select count(*) from t_wh_handover_line 
+		<include refid="handoverLineDynamicWhere"/>    
     </select>
     
     <!--
     	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
     	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
     -->
-    <select id="findListByQueryMapWithPage" resultMap="HandoverCollectionResult">
-    	select <include refid="handoverCollectionColumns" />
-	    from t_wh_handover_collection 
-		<include refid="handoverCollectionDynamicWhere"/>
+    <select id="findListByQueryMapWithPage" resultMap="HandoverLineResult">
+    	select <include refid="handoverLineColumns" />
+	    from t_wh_handover_line 
+		<include refid="handoverLineDynamicWhere"/>
 		
     </select>
     
-    <select id="findListByQueryMap" resultMap="HandoverCollectionResult">
-    	select <include refid="handoverCollectionColumns" />
-	    from t_wh_handover_collection 
-		<include refid="handoverCollectionDynamicWhere"/>
+    <select id="findListByQueryMap" resultMap="HandoverLineResult">
+    	select <include refid="handoverLineColumns" />
+	    from t_wh_handover_line 
+		<include refid="handoverLineDynamicWhere"/>
 		
     </select>
     
-    <select id="findListByParam" resultMap="HandoverCollectionResult">
-    	select <include refid="handoverCollectionColumns" />
-	    from t_wh_handover_collection 
-		<include refid="handoverCollectionDynamicWhere"/>
+    <select id="findListByParam" resultMap="HandoverLineResult">
+    	select <include refid="handoverLineColumns" />
+	    from t_wh_handover_line 
+		<include refid="handoverLineDynamicWhere"/>
 		
     </select>
     
-    <select id="query" resultMap="HandoverCollectionResult">
-		select <include refid="handoverCollectionColumns" />
-	    from t_wh_handover_collection  
-		<include refid="handoverCollectionConditionWhereExt"/>
+    <select id="query" resultMap="HandoverLineResult">
+		select <include refid="handoverLineColumns" />
+	    from t_wh_handover_line  
+		<include refid="handoverLineConditionWhereExt"/>
     </select>
     
     <select id="queryCount" resultType="long">
-		select count(*) from t_wh_handover_collection  
-		<include refid="handoverCollectionConditionWhereExt"/>
+		select count(*) from t_wh_handover_line  
+		<include refid="handoverLineConditionWhereExt"/>
     </select>
 
-
-    <select id="findHandoverCollectionByBatchAndStatus" resultType="long">
-		select count(*) from t_wh_handover_collection  
-		where 
-		handover_batch =#{handoverBatch}
-		and 
-		handover_status=#{status}
-    </select>
+	
 </mapper>

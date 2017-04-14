@@ -19,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
+import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseMgmtDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -47,6 +49,8 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
 
     @Autowired
     private WarehouseMgmtDao warehouseMgmtDao;
+    @Autowired
+    private HandoverCollectionDao handoverCollectionDao;
 
     /**
      * 验证仓库名称/编码是否存在
@@ -304,6 +308,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
 
     /**
      * [业务方法] 通过仓库id获取仓库参数
+     * 
      * @param ouId
      * @return
      */
@@ -311,5 +316,29 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WarehouseMgmt findWhMgmtByOuId(Long ouId) {
         return warehouseMgmtDao.findByOuId(ouId);
+    }
+
+    /**
+     * 获取该交接工位信息
+     * 
+     * @param recommandHandoverStationCode
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhHandoverStationCommand findhandoverStationByCode(String recommandHandoverStationCode) {
+        // 根据交接工位编码找出 当前交接批次 出库箱上限 当前出库箱数量
+        WhHandoverStationCommand whHandoverStationCommand = handoverCollectionDao.findStationByCode(recommandHandoverStationCode);
+        // 当前出库箱数
+        Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
+        whHandoverStationCommand.setCapacity(capacity);
+        // 当前交接批次
+        String batch = handoverCollectionDao.findBatchByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
+        whHandoverStationCommand.setHandover_batch(batch);
+        // 状态
+        String status = handoverCollectionDao.findStatusByHandoverStationIdAndStatus(whHandoverStationCommand.getId());
+        whHandoverStationCommand.setStatus(status);
+
+        return whHandoverStationCommand;
     }
 }

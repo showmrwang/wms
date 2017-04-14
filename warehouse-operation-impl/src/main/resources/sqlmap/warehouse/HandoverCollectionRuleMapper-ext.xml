@@ -181,7 +181,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         ${handoverCollectionRuleSql}
     </select>
     
-    <select id="findAllHandoverCollectionRules" resultMap="HandoverCollectionRuleResultExt">
+    <select id="findAllHandoverCollectionRules" resultMap="HandoverCollectionRuleCommandExt">
     	select
     		<include refid="handoverCollectionRuleColumnsExt"/>
     	from 

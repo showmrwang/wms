@@ -202,7 +202,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	hs.modified_id as modifiedId
 	           from t_wh_handover_station hs
 	           left join t_wh_handover_collection hc on hs.id = hc.handover_station_id
-	           where (hc.handover_status != 1 or hc.handover_status ！=5 or hc.handover_status ！=20)
+	           where (hc.handover_status != 1 	or hc.handover_status != 5 OR hc.handover_status != 20)
 	           and hs.lifecycle = 1
 	           and hs.facility_group_id is null
 	           and hs.ou_id = #{ouId}

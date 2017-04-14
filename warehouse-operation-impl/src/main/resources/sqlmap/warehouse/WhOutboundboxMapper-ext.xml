@@ -150,5 +150,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	   		 odo_id = #{odoid}
 	   		 and ou_id = #{ouid}
     </select>
-	
+    
+	<select id="getwhOutboundboxCommandByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand">
+    	select 
+    		<include refid="whOutboundboxColumnsExt" />
+	   		 from  t_wh_outboundbox 
+	   		 where
+	   		 outboundbox_code = #{outboundBoxCode}
+	   		 and ou_id = #{ouId}
+    </select>
+    
+    
+    	<select id="findunhandoverBoxByOdoId" resultType="Integer">
+    	select 
+    		 count(1)
+	   		 from  t_wh_outboundbox 
+	   		 where
+	   		 odo_id != #{odoId}
+	   		 and ou_id = #{ouId}
+    </select>
 </mapper>

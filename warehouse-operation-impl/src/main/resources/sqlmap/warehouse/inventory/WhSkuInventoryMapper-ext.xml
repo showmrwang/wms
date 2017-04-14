@@ -3980,6 +3980,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.inside_container_id = #{containerId} and inv.ou_id = #{ouId}
 		group by inv.uuid 
     </select>
+    <delete id="deleteWhSkuInventoryByOutboundboxCode" >
+	        delete from t_wh_sku_inventory where
+		        outboundbox_code = #{outboundboxCode} and ou_id = #{ouId}
+		</delete>
+		
+    	<select id="findSkuInvByoutboundboxCode" resultMap="WhSkuInventoryResultExt">
+		select <include refid="whSkuInventoryColumnsExt" />
+		from
+			t_wh_sku_inventory 
+		where
+			 outboundbox_code = #{outboundboxCode} and
+			 ou_id =#{ouId}
+	</select>
     
     
     <select id="findToBefilledCountsByInsideContainerId" resultType="Integer">

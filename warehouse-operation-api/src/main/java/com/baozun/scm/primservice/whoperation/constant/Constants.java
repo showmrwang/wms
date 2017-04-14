@@ -734,7 +734,7 @@ public final class Constants {
 
     /** 调编码生成器 出库箱推荐标识 */
     public static final String OUTBOUND_BOX_BATCH = "WMS_OUTBOUND_BOX_BATCH";
-
+    
     public static final String HANDOVER_BATCH = "WMS_HANDOVER_BATCH";
 
     /** 对接系统系数来源 */
@@ -750,7 +750,7 @@ public final class Constants {
 
     /**数据来源=WMS*/
     public static final String WMS_DATA_SOURCE = "WMS";
-
+    
     public static final int COLLECTION_PATTERN_PICKING = 1;
     public static final int COLLECTION_PATTERN_OUTBOUND = 2;
     public static final int COLLECTION_PATTERN_MANUAL = 3;
@@ -789,4 +789,14 @@ public final class Constants {
     /** 按单复核方式:出库箱流程*/
     public static final int CHECKING_BY_ODO_WAY_OUTBOUND_BOX = 6;
 
+    /** 交接集货状态已创建/新建 */
+    public static final Integer HANDOVER_COLLECTION_NEW = 1;
+    /** 交接集货状态待交接 */
+    public static final Integer HANDOVER_COLLECTION_TO_HANDOVER = 5;
+    /** 交接集货状态交接完成 */
+    public static final Integer HANDOVER_COLLECTION_FINISH = 10;
+    /** 交接集货状态已取消 */
+    public static final Integer HANDOVER_COLLECTION_CANCEL = 17;
+    /** 交接集货状态 异常 */
+    public static final Integer HANDOVER_COLLECTION_ERROR = 20;
 }

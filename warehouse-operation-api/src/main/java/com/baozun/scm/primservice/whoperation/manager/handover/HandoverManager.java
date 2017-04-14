@@ -1,0 +1,70 @@
+package com.baozun.scm.primservice.whoperation.manager.handover;
+
+import java.util.List;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
+import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
+
+public interface HandoverManager extends BaseManager {
+    /**
+     * 出库箱放入交接库中
+     * 
+     * @param whOutboundbox 出库箱
+     * @param findhandoverStationByCode 交接工位编码
+     */
+
+    void insertHandoverCollection(WhOutboundbox whOutboundbox, WhHandoverStationCommand findhandoverStationByCode);
+
+    /**
+     * 查询批次号
+     * 
+     * @param handoverStationId 交接工位id
+     * @param status 状态
+     */
+    String findBatchByHandoverStationIdAndStatus(Long handoverStationId, Integer status, Long ouId);
+
+    /**
+     * 查询批次号
+     * 
+     * @param handoverStationId 交接工位id
+     * @param status 状态
+     */
+    List<HandoverCollection> findByHandoverStation(Long id, Long ouId);
+
+    /**
+     * 保存或更新集货交接
+     * 
+     * @param HandoverCollection 集货交接
+     */
+    void saveOrUpdateHandoverCollection(HandoverCollection hc);
+
+    /**
+     * 交接出库
+     * 
+     * @param hcList 该库位下的所有出库箱信息
+     * @param ouId
+     * @param userId
+     */
+    void handover(List<HandoverCollection> hcList, Long ouId, Long userId);
+
+    void print(List<HandoverCollection> hcList);
+
+    /**
+     * 查看是否都交接完成
+     * 
+     * @param hcList 该库位下的所有出库箱信息
+     * @return
+     */
+    Long check(List<HandoverCollection> hcList);
+
+    /**
+     * 打印销售清单
+     * 
+     * @param userId 用户Id
+     * @param ouId 仓库Id
+     */
+    // void printSalesList(List<Long> facilityIdsList, Long userId, Long ouId);
+    //
+}

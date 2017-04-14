@@ -17,11 +17,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.warehouse.HandoverCollectionRuleCommand;
-import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollectionRule;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -29,6 +24,11 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.HandoverCollectionRuleCommand;
+import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollectionRule;
 
 
 public interface HandoverCollectionRuleDao extends BaseDao<HandoverCollectionRule, Long> {
@@ -86,8 +86,8 @@ public interface HandoverCollectionRuleDao extends BaseDao<HandoverCollectionRul
      * @return
      */
     List<Long> executeRuleSql(@Param("handoverCollectionRuleSql") String handoverCollectionRuleSql, @Param("ouId") Long ouId);
-    
-    
+
+
     /**
      * 查找仓库下所有可用的规则
      * 
@@ -96,6 +96,7 @@ public interface HandoverCollectionRuleDao extends BaseDao<HandoverCollectionRul
      * @return
      */
     List<HandoverCollectionRuleCommand> findAllHandoverCollectionRules(@Param("ouId") Long ouId);
+
 
 
 }

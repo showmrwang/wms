@@ -22,6 +22,7 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -55,8 +56,11 @@ public interface WarehouseManager extends BaseManager {
 
     /**
      * [业务方法] 通过仓库id获取仓库参数
+     * 
      * @param ouId
      * @return
      */
     WarehouseMgmt findWhMgmtByOuId(Long ouId);
+
+    WhHandoverStationCommand findhandoverStationByCode(String recommandHandoverStation);
 }

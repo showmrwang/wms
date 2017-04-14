@@ -104,7 +104,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	   	where
 			outboundbox_code = #{outboundboxCode}
 			and print_type = #{checkingPrint}
-	   		and ou_id = #{ouid}
+	   		and ou_id = #{ouId}
     </select>
 	
 </mapper>

@@ -525,71 +525,71 @@ public class ErrorCodes {
     // 60001-70000 xiemingwei
 
     /** [{0}]存在SN商品,请更换收货功能 */
-    public static final int CASELEVEL_SKU_SN_EXIST= 60002;
+    public static final int CASELEVEL_SKU_SN_EXIST = 60002;
     /** [{0}]存在SN商品,请更换收货功能 */
-    public static final int CASELEVEL_CONTAINER_NULL= 60003;
+    public static final int CASELEVEL_CONTAINER_NULL = 60003;
     /** 容器[{0}]不可用或已完成收货 */
     public static final int CASELEVEL_CONTAINER_UNAVAILABLE = 60004;
     /** 容器[{0}]已被[{1}]操作 */
-    public static final int CASELEVEL_CONTAINER_OCCUPIED= 60005;
+    public static final int CASELEVEL_CONTAINER_OCCUPIED = 60005;
     /** [{0}]无caseLevel装箱信息 */
-    public static final int CASELEVEL_NULL= 60006;
+    public static final int CASELEVEL_NULL = 60006;
     /** 属性未维护,请更换收货功能 */
-    public static final int CASELEVEL_SKU_ATTR_NULL= 60007;
+    public static final int CASELEVEL_SKU_ATTR_NULL = 60007;
     /** 已过保质期且不收过期商品,无法收货 */
-    public static final int CASELEVEL_SKU_EXPIRED= 60008;
+    public static final int CASELEVEL_SKU_EXPIRED = 60008;
     /** 有效天数达不到系统要求,无法收货 */
-    public static final int CASELEVEL_SKU_VALID_LT= 60009;
+    public static final int CASELEVEL_SKU_VALID_LT = 60009;
     /** 有效天数大于系统要求,无法收货 */
-    public static final int CASELEVEL_SKU_VALID_GT= 60010;
+    public static final int CASELEVEL_SKU_VALID_GT = 60010;
     /** 库存类型不一致,请更换收货功能 */
-    public static final int CASELEVEL_SKU_INV_TYPE_DIFF= 60011;
+    public static final int CASELEVEL_SKU_INV_TYPE_DIFF = 60011;
     /** 库存状态不一致,请更换收货功能 */
-    public static final int CASELEVEL_SKU_INV_STATUS_DIFF= 60012;
+    public static final int CASELEVEL_SKU_INV_STATUS_DIFF = 60012;
     /** 需要录入残次信息,请更换收货功能 */
-    public static final int CASELEVEL_SKU_IS_DEFECTIVE= 60013;
+    public static final int CASELEVEL_SKU_IS_DEFECTIVE = 60013;
     /** 商品[{0}]不在货箱内 */
     public static final int CASELEVEL_SKU_NOT_IN_CARTON_ERROR = 60014;
     /** 商品[{0}]不可用 */
-    public static final int CASELEVEL_SKU_UNAVAILABLE= 60015;
+    public static final int CASELEVEL_SKU_UNAVAILABLE = 60015;
     /** 商品属性录入失败 */
-    public static final int CASELEVEL_SKU_ATTR_INPUT_NULL= 60016;
+    public static final int CASELEVEL_SKU_ATTR_INPUT_NULL = 60016;
     /** 缓存key错误 */
-    public static final int CASELEVEL_CACHE_KEY_ERROR= 60017;
+    public static final int CASELEVEL_CACHE_KEY_ERROR = 60017;
     /** 容器占用失败 */
     public static final int CASELEVEL_CONTAINER_OCCUPIED_FAILED = 60018;
     /** 日期解析异常 */
-    public static final int CASELEVEL_PARSE_DATE_ERROR= 60019;
+    public static final int CASELEVEL_PARSE_DATE_ERROR = 60019;
     /** 收货功能信息为空 */
     public static final int CASELEVEL_RCVD_FUN_NULL = 60020;
     /** 序列化异常 */
-    public static final int CASELEVEL_SERIALIZE_ERROR= 60021;
+    public static final int CASELEVEL_SERIALIZE_ERROR = 60021;
     /** 收货数错误 */
-    public static final int CASELEVEL_SKU_QTY_ERROR= 60022;
+    public static final int CASELEVEL_SKU_QTY_ERROR = 60022;
     /** 请求错误,属性扫描已结束 */
-    public static final int CASELEVEL_REQUEST_ERROR= 60023;
+    public static final int CASELEVEL_REQUEST_ERROR = 60023;
     /** 不存在该属性的装箱记录 */
-    public static final int CASELEVEL_SKU_ATTR_ERROR= 60024;
+    public static final int CASELEVEL_SKU_ATTR_ERROR = 60024;
     /** 扫描序列错误 */
-    public static final int CASELEVEL_SCAN_SQE_ERROR= 60025;
+    public static final int CASELEVEL_SCAN_SQE_ERROR = 60025;
     /** 目标不在列表中 */
-    public static final int CASELEVEL_TARGET_NOT_EXIST= 60026;
+    public static final int CASELEVEL_TARGET_NOT_EXIST = 60026;
     /** SN号[{0}]已收入 */
-    public static final int CASELEVEL_SN_EXIST_ERROR= 60027;
+    public static final int CASELEVEL_SN_EXIST_ERROR = 60027;
     /** SN号[{0}]不在此货箱中 */
-    public static final int CASELEVEL_SN_NOT_EXIST_ERROR= 60028;
+    public static final int CASELEVEL_SN_NOT_EXIST_ERROR = 60028;
     /** 残次条码创建失败 */
-    public static final int CASELEVEL_SN_DEFECT_WARE_BARCODE_ERROR= 60029;
+    public static final int CASELEVEL_SN_DEFECT_WARE_BARCODE_ERROR = 60029;
     /** SN缓存操作失败 */
-    public static final int CASELEVEL_SN_CACHE_ERROR= 60030;
+    public static final int CASELEVEL_SN_CACHE_ERROR = 60030;
     /** UUID获取失败 */
-    public static final int CASELEVEL_UUID_ERROR= 60031;
+    public static final int CASELEVEL_UUID_ERROR = 60031;
     /** 缓存商品失败 */
-    public static final int CASELEVEL_SKU_CACHE_ERROR= 60032;
+    public static final int CASELEVEL_SKU_CACHE_ERROR = 60032;
     /** 无匹配的计划收货信息 */
-    public static final int CASELEVEL_SKU_MATCH_ERROR= 60033;
+    public static final int CASELEVEL_SKU_MATCH_ERROR = 60033;
     /** 缓存读取失败 */
-    public static final int CASELEVEL_GET_CACHE_ERROR= 60034;
+    public static final int CASELEVEL_GET_CACHE_ERROR = 60034;
     /** 商品[{0}]存在差异 */
     public static final int CASELEVEL_RCVD_SKU_DIFF_ERROR = 60035;
     /** 收货存在差异 */
@@ -688,15 +688,14 @@ public class ErrorCodes {
     // 70001-80000 tangming
     /** 所选商品已绑定出库箱 */
     public static final int EXIST_SKU_BOUND_BOX = 70010;
-    /** 当前容器状态不允许上架*/
+    /** 当前容器状态不允许上架 */
     public static final int COMMON_CONTAINER__NOT_PUTWAY = 70015;
-    /***该商品容器中不存在*/
+    /*** 该商品容器中不存在 */
     public static final int SKU_IS_NOT_EXIST = 70016;
-    /***该商品不是当前库位绑定的商品*/
+    /*** 该商品不是当前库位绑定的商品 */
     public static final int LOCATION_SKU_IS_NOT_EXISTS = 70017;
-    /***内部容器不在托盘内*/
+    /*** 内部容器不在托盘内 */
     public static final int INSIDECONTAINER_NOT_EXISTS_OUTCONTAINER = 70020;
-   
 
 
 
@@ -730,66 +729,66 @@ public class ErrorCodes {
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX = 70034;
     /** 库位已有SKU属性数+容器内SKU属性数已超过库位最大混放SKU属性数，不能整托、整箱上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_ATT_OVER_MAX = 70035;
-    
+
     /** 未找到外部容器对应的内部容器id */
     public static final int CONTAINER_NOT_FOUND_INSIDE_CONTAINER_ID = 70036;
     /** 库位为静态库位，没有绑定对应的sku商品，不能上架 */
     public static final int PDA_MAN_MADE_PUTAWAY_STATICLOCATION_NOT_SKU = 70037;
-    /** 库位不允许混放 上架sku商品和库位上的商品不同,不能上架到对应库位*/
+    /** 库位不允许混放 上架sku商品和库位上的商品不同,不能上架到对应库位 */
     public static final int PDA_LOC_NO_MAX_SKUATT_NO_SAME = 70038;
-    /** 扫描sn或者残次信息数量大于输入数值*/
+    /** 扫描sn或者残次信息数量大于输入数值 */
     public static final int SCAN_SKU_SN_QTY_ERROR = 70039;
-    /**没有找到对应的SKU库存属性相同的记录*/
-    public static final int  NO_FOUND_SKU_SAME_INV_ATTR = 70040;
-    /**扫描的跟踪容器不在库位上*/
-    public static final int  TRACK_CONTAINER_NO_LOCATION = 70041;
-    /**没有待上架库存*/
-    public static final int  NO_SHEVLES_PUTWAY_INVENTORY = 70042;
-    /**商品库存信息不存在*/
-    public static final int  NO_SKU_INVENTORY = 70043;
-    
-    
-    /**推荐小车不能为空*/
-    public static final int  OUT_CONTAINER_IS_NO_NULL = 70044;
-    /**推荐出库箱不能为空*/
-    public static final int  OUT_BOUNX_BOX_IS_NO_NULL = 70045;
-    /**推荐周转箱不能为空*/
-    public static final int  TURNOVER_BOX_IS_NO_NULL = 70046;
-    /**推荐出库箱状态不可用*/
+    /** 没有找到对应的SKU库存属性相同的记录 */
+    public static final int NO_FOUND_SKU_SAME_INV_ATTR = 70040;
+    /** 扫描的跟踪容器不在库位上 */
+    public static final int TRACK_CONTAINER_NO_LOCATION = 70041;
+    /** 没有待上架库存 */
+    public static final int NO_SHEVLES_PUTWAY_INVENTORY = 70042;
+    /** 商品库存信息不存在 */
+    public static final int NO_SKU_INVENTORY = 70043;
+
+
+    /** 推荐小车不能为空 */
+    public static final int OUT_CONTAINER_IS_NO_NULL = 70044;
+    /** 推荐出库箱不能为空 */
+    public static final int OUT_BOUNX_BOX_IS_NO_NULL = 70045;
+    /** 推荐周转箱不能为空 */
+    public static final int TURNOVER_BOX_IS_NO_NULL = 70046;
+    /** 推荐出库箱状态不可用 */
     public static final int OUT_BOUNDBOX_IS_NOT_NORMAL = 70048;
-    /**推荐出库箱不正确*/
-    public static final int  OUT_BOUNX_BOX_IS_STATUS_NO= 70049;
-    /**库位库存不存在*/
+    /** 推荐出库箱不正确 */
+    public static final int OUT_BOUNX_BOX_IS_STATUS_NO = 70049;
+    /** 库位库存不存在 */
     public static final int LOCATION_INVENTORY_IS_NO = 70050;
-    /**校验作业执行明细*/
+    /** 校验作业执行明细 */
     public static final int CHECK_OPERTAION_EXEC_LINE_DIFF = 70062;
-    /**作业执行明细不存在*/
-    public static final int OPERATION_EXEC_LINE_NO_EXIST= 70051;
-    /**工作不存在*/
-    public static final int WORK_NO_EXIST= 70052;
-    /**库位条码不正确*/
-    public static final int LOCATION_BARCODE_IS_ERROR=70053;
-    /**库位编码不正确*/
-    public static final int LOCATION_CODE_IS_EEROR=70054;
-    /**作业不存在*/
-    public static final int OPATION_NO_EXIST= 70055;
-    /**提示库位失败*/
-    public static final int TIP_LOCATION_FAIL= 70056;
-    /**提示周转箱失败*/
-    public static final int TIP_CONTAINER_FAIL=70057;
-    /**缓存失败*/
-    public static final int CHECK_INVENTORY_IS_ERROR=70058;
-    
-    /**分配库存不存在*/
-    public static final int ALLOCATE_INVENTORY_NO_EXIST=70059;
-    /**补货工作结束*/
-    public static final int REPLE_WORK_ISEND=70060;
-    /**校验容器/出库箱库存*/
+    /** 作业执行明细不存在 */
+    public static final int OPERATION_EXEC_LINE_NO_EXIST = 70051;
+    /** 工作不存在 */
+    public static final int WORK_NO_EXIST = 70052;
+    /** 库位条码不正确 */
+    public static final int LOCATION_BARCODE_IS_ERROR = 70053;
+    /** 库位编码不正确 */
+    public static final int LOCATION_CODE_IS_EEROR = 70054;
+    /** 作业不存在 */
+    public static final int OPATION_NO_EXIST = 70055;
+    /** 提示库位失败 */
+    public static final int TIP_LOCATION_FAIL = 70056;
+    /** 提示周转箱失败 */
+    public static final int TIP_CONTAINER_FAIL = 70057;
+    /** 缓存失败 */
+    public static final int CHECK_INVENTORY_IS_ERROR = 70058;
+
+    /** 分配库存不存在 */
+    public static final int ALLOCATE_INVENTORY_NO_EXIST = 70059;
+    /** 补货工作结束 */
+    public static final int REPLE_WORK_ISEND = 70060;
+    /** 校验容器/出库箱库存 */
     public static final int CHECK_CONTAINER_INVENTORY_IS_ERROR = 70061;
-    
+
     // 70001-80000 tangming
-    
-	// 80001-90000 zhukai
+
+    // 80001-90000 zhukai
     /** 容器[{0}]无集货数据 */
     public static final int COLLECTION_CONTAINER_DATA_NULL_ERROR = 80001;
     /** 容器[{0}]不在暂存库位上 */
@@ -818,8 +817,8 @@ public class ErrorCodes {
     public static final int COLLECTION_RECOMMEND_PATH_ERROR = 80014;
     /** 波次[{}]中出库单集合含有不同的发票信息 */
     public static final int WAVE_ODOLIST_INVOICE_DIFFERENCE = 80011;
-	// 80001-90000 zhukai
-    
+    // 80001-90000 zhukai
+
     // 100001-110000 liuqiming
     /** 波次头信息为空 */
     public static final int WHWAVE_IS_NULL = 100001;
@@ -838,4 +837,31 @@ public class ErrorCodes {
     /** 工作明细信息列表 */
     public static final int WORK_LINE_IS_NULL = 100006;
     // 100001-110000 liuqiming
+    // 110000-120000 xuhui
+    /** 交货交接规则为空 */
+    public static final int HAND_OVER_COLLECTION_RULE_IS_NULL = 110001;
+    /** 出库箱为空 */
+    public static final int OUT_BOUNX_BOX_IS_NULL = 110002;
+    /** 推荐的库位为空 请重试 */
+    public static final int RECOMMEND_OUTBOUND_ERROR = 110003;
+    /** 推荐失败，请联系管理员 */
+    public static final int RECOMMEND_OUTBOUND_IS_NULL = 110004;
+    /** 推荐的交接工位信息不完整，无上限信息 */
+    public static final int HANDOVER_STATION_IS_NULL = 110005;
+    /** 该批次已交接 */
+    public static final int HANDOVER_EXISTS = 110006;
+    /** 交接集货信息为空 */
+    public static final int HANDOVER_COLLECTION_IS_NULL = 110007;
+    /** 插入交接表失败 */
+    public static final int HANDOVER_INSERT_ERRPR = 110008;
+    /** 库存删除失败或无该库存 */
+    public static final int SKUINVENTORY_DELETE_ERROR = 110009;
+    /** 修改出库单状态出错 */
+    public static final int ODO_SAVEORUPDATEBYVERSION_ERROR = 110010;
+    /** 修改出库明细单状态出错 */
+    public static final int ODOLINE_SAVEORUPDATEBYVERSION_ERROR = 110011;
+    /** 出库箱对应库存为空 */
+    public static final int SKUINVENTORY_IS_NULL = 110012;
+    /** 出库单下的出库箱并没有全都完成交接 */
+    public static final int ODO_OUTBOUNDBOX_NOT_HANDOVER_ALL = 110013;
 }

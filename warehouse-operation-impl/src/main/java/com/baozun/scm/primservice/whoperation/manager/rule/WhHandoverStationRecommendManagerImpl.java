@@ -32,19 +32,24 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacili
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.HandoverApplyType;
+import com.baozun.scm.primservice.whoperation.constant.HandoverCollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.HandoverGroupCondition;
 import com.baozun.scm.primservice.whoperation.constant.HandoverStationType;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.handover.WhHandoverStationDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.HandoverCollectionConditionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.DistributionTargetDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget;
 
 /**
  * @author lichuan
@@ -67,8 +72,10 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
     private WhOutboundFacilityDao whOutboundFacilityDao;
     @Autowired
     private CodeManager codeManager;
-
-
+    @Autowired
+    private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
+    @Autowired
+    private DistributionTargetDao distributionTargetDao;
 
     /**
      * @author lichuan
@@ -88,11 +95,11 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
         }
         if (null == ruleList || 0 == ruleList.size()) {
             log.error("handoverCollectionRule is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            throw new BusinessException(ErrorCodes.HAND_OVER_COLLECTION_RULE_IS_NULL);
         }
         if (null == outboundboxCommand) {
             log.error("outboundboxCommand is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NULL);
         }
         Long odoId = outboundboxCommand.getOdoId();
         if (null == odoId) {
@@ -170,33 +177,40 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                     }
                 }
                 if (HandoverGroupCondition.LINE_INFO.equals(condtion.getRuleCondtionCode())) {
+                    WhOdoTransportMgmt whOdoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
+                    DistributionTarget distributionTarget = distributionTargetDao.findDistributionTargetByCode(whOdoTransportMgmt.getOutboundTarget());
                     if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
-                            groupCondition += outboundboxCommand.getTimeEffectCode();
+                        // 线路信息
+
+                        if (null != distributionTarget && !StringUtils.isEmpty(distributionTarget.getLineInfo()))
+                            groupCondition += distributionTarget.getLineInfo();
                         else
                             continue;
                     } else {
-                        groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
+                        groupCondition += "_" + distributionTarget.getLineInfo();
                     }
                 }
-                if (HandoverGroupCondition.TRANSPORT_VAS.equals(condtion.getRuleCondtionCode())) {
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
-                            groupCondition += outboundboxCommand.getTimeEffectCode();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
-                    }
-                }
+                // if (HandoverGroupCondition.TRANSPORT_VAS.equals(condtion.getRuleCondtionCode()))
+                // {
+                // if (StringUtils.isEmpty(groupCondition)) {
+                // if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
+                // groupCondition += outboundboxCommand.getTimeEffectCode();
+                // else
+                // continue;
+                // } else {
+                // groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
+                // }
+                // }
                 if (HandoverGroupCondition.TRANSPORT_MODE.equals(condtion.getRuleCondtionCode())) {
+                    WhOdoTransportMgmt whOdoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
                     if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
-                            groupCondition += outboundboxCommand.getTimeEffectCode();
+                        // 运输服务
+                        if (null != whOdoTransportMgmt && !StringUtils.isEmpty(whOdoTransportMgmt.getModeOfTransport()))
+                            groupCondition += whOdoTransportMgmt.getModeOfTransport();
                         else
                             continue;
                     } else {
-                        groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
+                        groupCondition += "_" + whOdoTransportMgmt.getModeOfTransport();
                     }
                 }
                 if (HandoverGroupCondition.WAVE_CODE.equals(condtion.getRuleCondtionCode())) {
@@ -231,7 +245,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                         WhOutboundFacilityCommand cf = whOutboundFacilityDao.findByIdExt(checkingFacilityId, ouId);
                         if (null == cf) {
                             log.error("checking facility is null error, logId is:[{}]", logId);
-                            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                            throw new BusinessException(ErrorCodes.RECOMMEND_OUTBOUND_ERROR);
                         }
                         Long fgId = cf.getFacilityGroup();
                         // 找复核台组下一个可用交接工位
@@ -272,12 +286,12 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
         if (null == handoverStationId) {
             // 推荐交接工位失败
             log.error("handover station recommend fail, outboundbox is:[{}], logId is:[{}]", outboundboxCommand.getOutboundboxCode(), logId);
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            throw new BusinessException(ErrorCodes.RECOMMEND_OUTBOUND_IS_NULL);
         }
         WhHandoverStation handoverStation = whHandoverStationDao.findById(handoverStationId);
         if (null == handoverStation) {
             log.error("handover station is not exists error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            throw new BusinessException(ErrorCodes.RECOMMEND_OUTBOUND_ERROR);
         }
         // 更新交接集货表
         HandoverCollection handoverCollection = handoverCollectionDao.findByOutboundboxCode(outboundboxCommand.getOutboundboxCode(), ouId);
@@ -287,20 +301,20 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
             handoverCollection.setHandoverBatch("");
             handoverCollection.setHandoverStationId(handoverStationId);
             handoverCollection.setHandoverStationType(handoverStationType);
-            handoverCollection.setHandoverStatus("5");// 交接状态
+            handoverCollection.setHandoverStatus(HandoverCollectionStatus.TO_HANDOVER);// 交接状态
             handoverCollection.setOuId(ouId);
             handoverCollection.setOutboundboxCode(outboundboxCommand.getOutboundboxCode());
             handoverCollection.setOutboundboxId(outboundboxCommand.getOutboundboxId());
             handoverCollectionDao.insert(handoverCollection);
         } else {
-            handoverCollection.setHandoverStatus("5");// 交接状态
+            handoverCollection.setHandoverStatus(HandoverCollectionStatus.TO_HANDOVER);// 交接状态
             handoverCollectionDao.saveOrUpdate(handoverCollection);
         }
         // 计算交接工位上限
         Integer upperCapacity = handoverStation.getUpperCapacity();
         if (null == upperCapacity) {
             log.error("handover station upperCapacity is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            throw new BusinessException(ErrorCodes.HANDOVER_STATION_IS_NULL);
         }
         // 获取当前交接工位上的所有集货交接信息
         List<HandoverCollection> hcList = handoverCollectionDao.findByHandoverStation(handoverStation.getId(), ouId);
@@ -314,10 +328,12 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                     handoverCollectionDao.saveOrUpdate(hc);
                 }
                 // 提示可以执行交接
+                handoverStationCommand.setCode(handoverStation.getCode());
                 handoverStationCommand.setTipHandover(true);
                 handoverStationCommand.setHandover_batch(handoverBatch);
                 handoverStationCommand.setId(handoverStationId);
             } else {
+                handoverStationCommand.setCode(handoverStation.getCode());
                 handoverStationCommand.setTipHandover(false);
                 handoverStationCommand.setId(handoverStationId);
             }

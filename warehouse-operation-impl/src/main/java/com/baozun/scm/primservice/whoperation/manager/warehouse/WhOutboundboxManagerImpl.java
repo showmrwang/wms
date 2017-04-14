@@ -14,6 +14,8 @@
 
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,22 +29,34 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 
 @Service("whOutboundboxManager")
 public class WhOutboundboxManagerImpl extends BaseManagerImpl implements WhOutboundboxManager {
-    
+
     public static final Logger log = LoggerFactory.getLogger(WhOutboundboxManagerImpl.class);
-    
+
     @Autowired
     private WhOutboundboxDao whOutboundboxDao;
 
     @Override
     public void saveOrUpdate(WhOutboundboxCommand whOutboundboxCommand) {
         WhOutboundbox whOutboundbox = new WhOutboundbox();
-        //复制数据        
+        // 复制数据
         BeanUtils.copyProperties(whOutboundboxCommand, whOutboundbox);
-        if(null != whOutboundboxCommand.getId() ){
+        if (null != whOutboundboxCommand.getId()) {
             whOutboundboxDao.saveOrUpdate(whOutboundbox);
-        }else{
+        } else {
             whOutboundboxDao.insert(whOutboundbox);
         }
     }
-    
+
+    @Override
+    public List<WhOutboundbox> getwhOutboundboxByCode(String outboundBoxCode) {
+        WhOutboundbox whOutboundbox = new WhOutboundbox();
+        whOutboundbox.setOutboundboxCode(outboundBoxCode);
+        return whOutboundboxDao.findListByParam(whOutboundbox);
+    }
+
+    @Override
+    public WhOutboundboxCommand getwhOutboundboxCommandByCode(String outboundBoxCode, Long ouId) {
+        return whOutboundboxDao.getwhOutboundboxCommandByCode(outboundBoxCode, ouId);
+    }
+
 }

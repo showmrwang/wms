@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ma.DistributionTargetDao">
+    <resultMap id="DistributionTargetResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget">
+    </resultMap>
+    <resultMap id="DistributionTargetPaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="DistributionTargetResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="distributionTargetColumns">
+        <![CDATA[
+                id as id,
+                type as type,
+                code as code,
+                name as name,
+                mobile_phone as mobilePhone,
+                telephone as telephone,
+                country as country,
+                province as province,
+                city as city,
+                district as district,
+                villages_towns as villagesTowns,
+                address as address,
+                email as email,
+                zip as zip,
+                line_info as lineInfo,
+                sequence as sequence,
+                lifecycle as lifecycle,
+                create_id as createId,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+    <sql id="distributionTargetConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_ma_distribution_target (
+                    id,
+                    type ,
+                    code ,
+                    name ,
+                    mobile_phone ,
+                    telephone ,
+                    country ,
+                    province ,
+                    city ,
+                    district ,
+                    villages_towns ,
+                    address ,
+                    email ,
+                    zip ,
+                    line_info ,
+                    sequence ,
+                    lifecycle ,
+                    create_id ,
+                    create_time ,
+                    last_modify_time ,
+                    modified_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{mobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{telephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{country,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{province,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{city,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{district,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{villagesTowns,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{zip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{lineInfo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{sequence,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                    #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget">
+        <![CDATA[
+            UPDATE t_ma_distribution_target SET
+                type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                mobile_phone = #{mobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                telephone = #{telephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                country = #{country,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                province = #{province,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                city = #{city,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                district = #{district,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                villages_towns = #{villagesTowns,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                zip = #{zip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                line_info = #{lineInfo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sequence = #{sequence,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_ma_distribution_target SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="distributionTargetConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_ma_distribution_target where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_ma_distribution_target
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_ma_distribution_target
+        <include refid="distributionTargetConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="DistributionTargetResult" flushCache="false">
+        select
+        <include refid="distributionTargetColumns"/>
+        <![CDATA[
+                from t_ma_distribution_target 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="DistributionTargetResult" flushCache="false">
+        select
+        <include refid="distributionTargetColumns"/>
+        from t_ma_distribution_target
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="distributionTargetDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="type!=null and type!=''">
+                and type = #{type}
+            </if>
+
+            <if test="code!=null and code!=''">
+                and code = #{code}
+            </if>
+
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+
+            <if test="mobilePhone!=null and mobilePhone!=''">
+                and mobile_phone = #{mobilePhone}
+            </if>
+
+            <if test="telephone!=null and telephone!=''">
+                and telephone = #{telephone}
+            </if>
+
+            <if test="country!=null">
+                and country = #{country}
+            </if>
+
+            <if test="province!=null">
+                and province = #{province}
+            </if>
+
+            <if test="city!=null">
+                and city = #{city}
+            </if>
+
+            <if test="district!=null">
+                and district = #{district}
+            </if>
+
+            <if test="villagesTowns!=null">
+                and villages_towns = #{villagesTowns}
+            </if>
+
+            <if test="address!=null and address!=''">
+                and address = #{address}
+            </if>
+
+            <if test="email!=null and email!=''">
+                and email = #{email}
+            </if>
+
+            <if test="zip!=null and zip!=''">
+                and zip = #{zip}
+            </if>
+
+            <if test="lineInfo!=null and lineInfo!=''">
+                and line_info = #{lineInfo}
+            </if>
+
+            <if test="sequence!=null">
+                and sequence = #{sequence}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+
+            <if test="createId!=null">
+                and create_id = #{createId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_ma_distribution_target
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_ma_distribution_target
+        <include refid="distributionTargetDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_ma_distribution_target
+        <include refid="distributionTargetDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="DistributionTargetResult">
+        select
+        <include refid="distributionTargetColumns"/>
+        from t_ma_distribution_target
+        <include refid="distributionTargetDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="DistributionTargetResult">
+        select
+        <include refid="distributionTargetColumns"/>
+        from t_ma_distribution_target
+        <include refid="distributionTargetDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="DistributionTargetResult">
+        select
+        <include refid="distributionTargetColumns"/>
+        from t_ma_distribution_target
+        <include refid="distributionTargetDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="DistributionTargetResult">
+        select
+        <include refid="distributionTargetColumns"/>
+        from t_ma_distribution_target
+        <include refid="distributionTargetConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_ma_distribution_target
+        <include refid="distributionTargetConditionWhereExt"/>
+    </select>
+
+</mapper>

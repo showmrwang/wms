@@ -15,6 +15,7 @@ public class OdoStatus implements Serializable {
     public static final String ODO_MERGE = "5";// 已合并
     public static final String ODO_WAVE = "8";// 波次中
     public static final String ODO_OUTSTOCK_FINISH = "10";// 全部出库
+    public static final String ODO_HANDOVER_FINISH = "16";// 已交接
     public static final String ODO_CANCEL = "17";// 取消
     public static final String ODO_TOBECREATED = "99";// 待创建
     /** ODO */

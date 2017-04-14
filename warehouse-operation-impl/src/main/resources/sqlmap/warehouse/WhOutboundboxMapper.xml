@@ -109,7 +109,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        time_effect_code = #{timeEffectCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        time_effect_name = #{timeEffectName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        status = #{status,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,

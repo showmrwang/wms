@@ -25,26 +25,24 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.model.handover.Handover;
+import com.baozun.scm.primservice.whoperation.model.handover.HandoverLine;
 
 
-public interface HandoverDao extends BaseDao<Handover, Long> {
+public interface HandoverLineDao extends BaseDao<HandoverLine, Long> {
+
 
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<Handover> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+    Pagination<HandoverLine> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
 
-    Pagination<Handover> query(Page page, Sort[] sorts, QueryCondition cond);
+    @QueryPage("queryCount")
+    Pagination<HandoverLine> query(Page page, Sort[] sorts, QueryCondition cond);
 
-    List<Handover> query(QueryCondition cond);
+    List<HandoverLine> query(QueryCondition cond);
 
     Long queryCount(QueryCondition cond);
 
     @CommonQuery
-    int saveOrUpdate(Handover o);
-
-    Handover findByBatch(@Param("batch") String handoverBatch);
+    int saveOrUpdate(HandoverLine o);
 
 }

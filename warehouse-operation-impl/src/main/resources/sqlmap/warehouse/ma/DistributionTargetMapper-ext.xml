@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.ma.DistributionTargetDao">
+    <resultMap id="DistributionTargetResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget">
+    </resultMap>
+
+    <resultMap id="DistributionTargetCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.ma.DistributionTargetCommand">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="distributionTargetColumnsExt">
+        <![CDATA[
+            id as id,
+            type as type,
+            code as code,
+            name as name,
+            mobile_phone as mobilePhone,
+            telephone as telephone,
+            country as country,
+            province as province,
+            city as city,
+            district as district,
+            villages_towns as villagesTowns,
+            address as address,
+            email as email,
+            zip as zip,
+            line_info as lineInfo,
+            sequence as sequence,
+            lifecycle as lifecycle,
+            create_id as createId,
+            create_time as createTime,
+            last_modify_time as lastModifyTime,
+            modified_id as modifiedId
+        ]]>
+    </sql>
+
+    <sql id="distributionTargetDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="type!=null and type!=''">
+                and type = #{type}
+            </if>
+
+            <if test="code!=null and code!=''">
+                and code = #{code}
+            </if>
+
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+
+            <if test="mobilePhone!=null and mobilePhone!=''">
+                and mobile_phone = #{mobilePhone}
+            </if>
+
+            <if test="telephone!=null and telephone!=''">
+                and telephone = #{telephone}
+            </if>
+
+            <if test="country!=null">
+                and country = #{country}
+            </if>
+
+            <if test="province!=null">
+                and province = #{province}
+            </if>
+
+            <if test="city!=null">
+                and city = #{city}
+            </if>
+
+            <if test="district!=null">
+                and district = #{district}
+            </if>
+
+            <if test="villagesTowns!=null">
+                and villages_towns = #{villagesTowns}
+            </if>
+
+            <if test="address!=null and address!=''">
+                and address = #{address}
+            </if>
+
+            <if test="email!=null and email!=''">
+                and email = #{email}
+            </if>
+
+            <if test="zip!=null and zip!=''">
+                and zip = #{zip}
+            </if>
+
+            <if test="lineInfo!=null and lineInfo!=''">
+                and line_info = #{lineInfo}
+            </if>
+
+            <if test="sequence!=null">
+                and sequence = #{sequence}
+            </if>
+
+            <if test="lifecycle!=null">
+                and lifecycle = #{lifecycle}
+            </if>
+
+            <if test="createId!=null">
+                and create_id = #{createId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="distributionTargetDynamicWhereLikeExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and target.id = #{id}
+            </if>
+
+            <if test="type!=null and type!=''">
+                and target.type = #{type}
+            </if>
+
+            <if test="code!=null and code!=''">
+                and target.code like #{code}
+            </if>
+
+            <if test="codeByCriteriasData!=null and codeByCriteriasData!=''">
+                and target.code like #{codeByCriteriasData}
+            </if>
+
+            <if test="name!=null and name!=''">
+                and target.name like #{name}
+            </if>
+
+            <if test="nameCodeByCriteriasData!=null and nameCodeByCriteriasData!=''">
+                and target.name like #{nameCodeByCriteriasData}
+            </if>
+
+            <if test="mobilePhone!=null and mobilePhone!=''">
+                and target.mobile_phone like #{mobilePhone}
+            </if>
+
+            <if test="telephone!=null and telephone!=''">
+                and target.telephone like #{telephone}
+            </if>
+
+            <if test="country!=null">
+                and target.country = #{country}
+            </if>
+
+            <if test="province!=null">
+                and target.province = #{province}
+            </if>
+
+            <if test="city!=null">
+                and target.city = #{city}
+            </if>
+
+            <if test="district!=null">
+                and target.district = #{district}
+            </if>
+
+            <if test="villagesTowns!=null">
+                and target.villages_towns = #{villagesTowns}
+            </if>
+
+            <if test="address!=null and address!=''">
+                and target.address like #{address}
+            </if>
+
+            <if test="email!=null and email!=''">
+                and target.email like #{email}
+            </if>
+
+            <if test="zip!=null and zip!=''">
+                and target.zip like #{zip}
+            </if>
+
+            <if test="lineInfo!=null and lineInfo!=''">
+                and target.line_info like #{lineInfo}
+            </if>
+
+            <if test="sequence!=null">
+                and target.sequence = #{sequence}
+            </if>
+
+            <if test="lifecycle!=null">
+                and target.lifecycle = #{lifecycle}
+            </if>
+
+            <if test="createId!=null">
+                and target.create_id = #{createId}
+            </if>
+
+            <if test="createTime!=null">
+                and target.create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and target.last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and target.modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findListCountByQueryMapExt" resultType="long">
+        select
+            count(1)
+        from t_ma_distribution_target as target
+            <include refid="distributionTargetDynamicWhereLikeExt"/>
+    </select>
+
+    <select id="findListByQueryMapWithPageExt" resultMap="DistributionTargetCommand">
+        select
+            target.id as id,
+            target.type as type,
+            target.code as code,
+            target.name as name,
+            target.mobile_phone as mobilePhone,
+            target.telephone as telephone,
+            target.country as country,
+            target.province as province,
+            target.city as city,
+            target.district as district,
+            target.villages_towns as villagesTowns,
+            target.address as address,
+            target.email as email,
+            target.zip as zip,
+            target.line_info as lineInfo,
+            target.sequence as sequence,
+            target.lifecycle as lifecycle,
+            target.create_id as createId,
+            target.create_time as createTime,
+            target.last_modify_time as lastModifyTime,
+            target.modified_id as modifiedId,
+            countryRegion.region_name as countryName,
+            provinceRegion.region_name as provinceName,
+            cityRegion.region_name as cityName,
+            districtRegion.region_name as districtName,
+            villagesTownsRegion.region_name as villagesTownsName
+        from t_ma_distribution_target as target
+        left join t_bi_region as countryRegion on target.country = countryRegion.id
+        left join t_bi_region as provinceRegion on target.province = provinceRegion.id
+        left join t_bi_region as cityRegion on target.city = cityRegion.id
+        left join t_bi_region as districtRegion on target.district = districtRegion.id
+        left join t_bi_region as villagesTownsRegion on target.villages_towns = villagesTownsRegion.id
+            <include refid="distributionTargetDynamicWhereLikeExt"/>
+    </select>
+
+    <select id="findCommandById" resultMap="DistributionTargetCommand">
+        select
+            <include refid="distributionTargetColumnsExt"/>
+        from
+            t_ma_distribution_target
+        where
+            id = #{id}
+    </select>
+
+    <select id="checkUnique" resultType="int">
+        select count(1) from t_ma_distribution_target
+        <where>
+            <if test="id!=null">
+                and id != #{id}
+            </if>
+            <if test="(name!=null and name!='')
+                    or (code!=null and code!='')
+                    or (sequence!=null and sequence!='')">
+                and (
+                <trim prefix="" prefixOverrides="or">
+                    <if test="name!=null and name!=''">
+                        or name = #{name}
+                    </if>
+                    <if test="code!=null and code!=''">
+                        or code = #{code}
+                    </if>
+                    <if test="sequence!=null and sequence!=''">
+                        or sequence = #{sequence}
+                    </if>
+                </trim>
+                )
+            </if>
+        </where>
+    </select>
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget">
+
+        <![CDATA[
+            UPDATE t_ma_distribution_target SET
+                type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                mobile_phone = #{mobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                telephone = #{telephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                country = #{country,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                province = #{province,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                city = #{city,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                district = #{district,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                villages_towns = #{villagesTowns,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                zip = #{zip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                line_info = #{lineInfo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{globalLastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
+            WHERE
+                id = #{id}
+                and last_modify_time =  #{lastModifyTime}
+        ]]>
+
+    </update>
+
+
+ 	<select id="findDistributionTargetByCode" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget">
+        select
+            <include refid="distributionTargetColumnsExt"/>
+        from
+            t_ma_distribution_target
+        where
+            code = #{code}
+    </select>
+</mapper>

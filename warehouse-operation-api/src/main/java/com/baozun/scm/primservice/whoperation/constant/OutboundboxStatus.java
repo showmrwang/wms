@@ -8,11 +8,13 @@ public class OutboundboxStatus implements Serializable {
      * 
      */
     private static final long serialVersionUID = 1804358862162683985L;
-    
+
     /** 已创建/新建 */
     public static final String NEW = "1";
     /** 已完成 */
     public static final String FINISH = "10";
+    /** 交接完成 */
+    public static final String HANDOVER_FINISH = "16";
     /** 已取消 */
     public static final String CANCEL = "17";
     /** 异常 */

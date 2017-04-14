@@ -69,6 +69,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
+		
+	<select id="findByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	       select id as id,
+	        	type as type,
+	        	serial_number as serialNumber,
+	        	code as code,
+	        	facility_group_id as facilityGroupId,
+	        	ou_id as ouId,
+	        	upper_capacity as upperCapacity,
+	        	automatic_warehouse_crossing as automaticWarehouseCrossing,
+	        	chr_id as chrId,
+	        	lifecycle as lifecycle,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	              from t_wh_handover_station  
+	              where code=#{code}
+	</select>
 	
 	<select id="findByGroupCondition" resultMap="HandoverCollectionResultExt">
 		select <include refid="handoverCollectionColumnsExt" />
@@ -113,4 +132,50 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
     </select>
+	<select id="findCountByHandoverStationIdAndStatus" resultType="integer">
+			       SELECT
+			count(1)
+			FROM
+				t_wh_handover_collection
+			WHERE
+				handover_station_id = #{HandoverStationCode}
+			AND handover_status = #{status}
+    </select>
+	<select id="findBatchByHandoverStationIdAndStatus" resultType="String">
+			     	SELECT
+			DISTINCT(handover_batch)
+				FROM
+					t_wh_handover_collection
+				WHERE
+					handover_station_id = #{HandoverStationCode}
+			AND handover_status = #{status}
+			limit 1
+			
+    </select>
+	<select id="findStatusByHandoverStationIdAndStatus" resultType="String">
+			     	SELECT
+			DISTINCT(handover_status)
+				FROM
+					t_wh_handover_collection
+				WHERE
+					handover_station_id = #{HandoverStationCode}
+    </select>
+    <select id="findStationByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	       select id as id,
+	        	type as type,
+	        	serial_number as serialNumber,
+	        	code as code,
+	        	facility_group_id as facilityGroupId,
+	        	ou_id as ouId,
+	        	upper_capacity as upperCapacity,
+	        	automatic_warehouse_crossing as automaticWarehouseCrossing,
+	        	chr_id as chrId,
+	        	lifecycle as lifecycle,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	              from t_wh_handover_station  
+	              where code=#{code}
+	</select>
 </mapper>
