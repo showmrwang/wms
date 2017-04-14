@@ -191,6 +191,24 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     WhOdo findOdoByCodeAndOuId(@Param("odoCode") String odoCode, @Param("ouId") Long ouId);
 
     /**
+     * [通用方法] 根据平台订单号和组织获取出库单
+     * gianni
+     * @param odoCode
+     * @param ouId
+     * @return
+     */
+    WhOdo findOdoByEcOrderCodeAndOuId(@Param("ecOrderCode") String ecOrderCode, @Param("ouId") Long ouId);
+
+    /**
+     * [通用方法] 根据外部对接编码和组织获取出库单
+     * gianni
+     * @param odoCode
+     * @param ouId
+     * @return
+     */
+    WhOdo findOdoByExtCodeAndOuId(@Param("extCode") String extCode, @Param("ouId") Long ouId);
+
+    /**
      * 根据提供波次ID查找当中有波次明细未分配规则的出库单ID
      */
     List<OdoCommand> getNoRuleOdoIdList(@Param("waveIdList") List<Long> waveIdList, @Param("ouId") Long ouId);

@@ -17,6 +17,7 @@ package com.baozun.scm.primservice.whoperation.command.warehouse;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 
 
 public class WhCheckingCommand extends BaseCommand {
@@ -74,6 +75,23 @@ public class WhCheckingCommand extends BaseCommand {
     /** 复核头集合 */
     private List<WhCheckingLineCommand> checkingLineCommandLst;
     
+
+    // ========== 按箱复核 ==========
+    /** 外部容器，小车编码*/
+    private String outerContainerCode;
+    /** 播种墙编码*/
+    private String seedingWallCode;
+    /** 输入 */
+    private String input;
+    /** 提示 */
+    private String tip;
+    /** 出库单id*/
+    private Long odoId;
+    /** 按单复核方式*/
+    private Integer oDCheckWay;
+    /** 页面缓存复核明细*/
+    private List<WhCheckingLine> checkingLineList;
+
     public Long getId() {
         return id;
     }
@@ -274,4 +292,61 @@ public class WhCheckingCommand extends BaseCommand {
         this.checkingLineCommandLst = checkingLineCommandLst;
     }
     
+
+    public String getOuterContainerCode() {
+        return outerContainerCode;
+    }
+
+    public void setOuterContainerCode(String outerContainerCode) {
+        this.outerContainerCode = outerContainerCode;
+    }
+
+    public String getSeedingWallCode() {
+        return seedingWallCode;
+    }
+
+    public void setSeedingWallCode(String seedingWallCode) {
+        this.seedingWallCode = seedingWallCode;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
+        this.input = input;
+    }
+
+    public String getTip() {
+        return tip;
+    }
+
+    public void setTip(String tip) {
+        this.tip = tip;
+    }
+
+    public List<WhCheckingLine> getCheckingLineList() {
+        return checkingLineList;
+    }
+
+    public void setCheckingLineList(List<WhCheckingLine> checkingLineList) {
+        this.checkingLineList = checkingLineList;
+    }
+
+    public Long getOdoId() {
+        return odoId;
+    }
+
+    public void setOdoId(Long odoId) {
+        this.odoId = odoId;
+    }
+
+    public Integer getoDCheckWay() {
+        return oDCheckWay;
+    }
+
+    public void setoDCheckWay(Integer oDCheckWay) {
+        this.oDCheckWay = oDCheckWay;
+    }
+
 }

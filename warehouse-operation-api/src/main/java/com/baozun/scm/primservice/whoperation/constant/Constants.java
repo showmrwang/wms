@@ -734,7 +734,7 @@ public final class Constants {
 
     /** 调编码生成器 出库箱推荐标识 */
     public static final String OUTBOUND_BOX_BATCH = "WMS_OUTBOUND_BOX_BATCH";
-    
+
     public static final String HANDOVER_BATCH = "WMS_HANDOVER_BATCH";
 
     /** 对接系统系数来源 */
@@ -750,9 +750,43 @@ public final class Constants {
 
     /**数据来源=WMS*/
     public static final String WMS_DATA_SOURCE = "WMS";
-    
+
     public static final int COLLECTION_PATTERN_PICKING = 1;
     public static final int COLLECTION_PATTERN_OUTBOUND = 2;
     public static final int COLLECTION_PATTERN_MANUAL = 3;
+
+    /** 按单复核:提示扫描小车*/
+    public static final String TIP_OUTER_CONTAINER = "OUTER_CONTAINER";
+    /** 按单复核:提示扫描播种墙*/
+    public static final String TIP_SEEDING_WALL = "SEEDING_WALL";
+    /** 按单复核:提示扫描货格*/
+    public static final String TIP_CONTAINER_LATTICE_NO = "CONTAINER_LATTICE_NO";
+    /** 按单复核:提示扫描出库箱*/
+    public static final String TIP_OUTBOUND_BOX = "OUTBOUND_BOX";
+    /** 按单复核:提示扫描周转箱*/
+    public static final String TIP_CONTAINER = "CONTAINER";
+    /** 按单复核:提示扫描设施*/
+    public static final String TIP_FACILITY = "FACILITY";
+    /** 按单复核:提示扫描编码不存在*/
+    public static final String TIP_CODE_ERROR = "CODE_ERROR";
+    /** 按单复核:开始复核*/
+    public static final String TIP_SUCCESS = "SUCCESS";
+    /** 按单复核:提示扫描出库箱或货格号*/
+    public static final String TIP_OUTBOUND_BOX_OR_NO = "OUTBOUND_BOX_OR_NO";
+    /** 按单复核:提示已经完成复核*/
+    public static final String TIP_FINISH = "FINISH";
+
+    /** 按单复核方式:小车出库箱流程*/
+    public static final int CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX = 1;
+    /** 按单复核方式:小车货格流程*/
+    public static final int CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO = 2;
+    /** 按单复核方式:播种墙出库箱流程*/
+    public static final int CHECKING_BY_ODO_WAY_SEEDING_WALL_OUTBOUND_BOX = 3;
+    /** 按单复核方式:播种墙货格流程*/
+    public static final int CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO = 4;
+    /** 按单复核方式:周转箱流程*/
+    public static final int CHECKING_BY_ODO_WAY_CONTAINER = 5;
+    /** 按单复核方式:出库箱流程*/
+    public static final int CHECKING_BY_ODO_WAY_OUTBOUND_BOX = 6;
 
 }
