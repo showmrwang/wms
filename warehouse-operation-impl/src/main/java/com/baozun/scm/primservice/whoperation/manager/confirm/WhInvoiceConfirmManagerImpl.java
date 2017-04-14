@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.confirm.WhInvoiceConfirmDao;
-import com.baozun.scm.primservice.whoperation.model.confirm.WhInvoiceConfirm;
 
 @Service("whInvoiceConfirmManager")
 @Transactional
@@ -34,8 +34,8 @@ public class WhInvoiceConfirmManagerImpl implements WhInvoiceConfirmManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhInvoiceConfirm> findWhInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
-        return whInvoiceConfirmDao.findWhInvoiceConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
+    public List<WmsInvoiceConfirm> findWmsInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
+        return whInvoiceConfirmDao.findWmsInvoiceConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
     }
 
 }

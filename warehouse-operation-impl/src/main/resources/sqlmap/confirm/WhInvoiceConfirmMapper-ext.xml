@@ -65,8 +65,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	<select id="findWhInvoiceConfirmByCreateTimeAndDataSource" resultMap="WhInvoiceConfirmResultExt">
-		select <include refid="whInvoiceConfirmColumnsExt" />
+		<sql id="wmsInvoiceConfirmColumnsExt">
+	    <![CDATA[
+	        	invoice_code as invoiceCode,
+	        	invoice_no as invoiceNo,
+	        	transport_service_providers as transportServiceProviders,
+	        	tracking_number as trackingNumber,
+	        	data_source as dataSource
+	    ]]>
+	</sql>
+	
+	<resultMap id="WmsInvoiceConfirmResultExt" type="com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm">
+	</resultMap>
+	
+	<select id="findWmsInvoiceConfirmByCreateTimeAndDataSource" resultMap="WmsInvoiceConfirmResultExt">
+		select <include refid="wmsInvoiceConfirmColumnsExt" />
 		from t_wh_invoice_confirm 
 		where 
 		create_time &gt; #{beginTime} 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.confirm.WhOdoStatusConfirmDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -78,7 +79,7 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhOdoStatusConfirm> findWhOdoStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
-        return whOdoStatusConfirmDao.findWhOdoStatusConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
+    public List<WmsOutBoundStatusConfirm> findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
+        return whOdoStatusConfirmDao.findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
     }
 }

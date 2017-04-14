@@ -2,8 +2,8 @@ package com.baozun.scm.primservice.whoperation.manager.confirm;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.confirm.WhInvoiceConfirm;
 
 public interface WhInvoiceConfirmManager extends BaseManager {
 
@@ -16,6 +16,6 @@ public interface WhInvoiceConfirmManager extends BaseManager {
      * @param dataSource
      * @return
      */
-    List<WhInvoiceConfirm> findWhInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource);
+    List<WmsInvoiceConfirm> findWmsInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource);
 
 }

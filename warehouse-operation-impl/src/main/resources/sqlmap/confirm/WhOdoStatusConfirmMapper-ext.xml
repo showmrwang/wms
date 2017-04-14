@@ -70,8 +70,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	<select id="findWhOdoStatusConfirmByCreateTimeAndDataSource" resultMap="WhOdoStatusConfirmResultExt">
-		select <include refid="whOdoStatusConfirmColumnsExt" />
+		<sql id="wmsOutBoundStatusConfirmColumnsExt">
+	    <![CDATA[
+	        	ext_odo_code as extOdoCode,
+	        	wms_odo_code as wmsOdoCode,
+	        	wms_odo_status as wmsOdoStatus,
+	        	customer_code as customerCode,
+	        	store_code as storeCode,
+	        	data_source as dataSource
+	    ]]>
+	</sql>
+	
+		<resultMap id="WmsOutBoundStatusResultExt" type="com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm">
+	</resultMap>
+	
+	<select id="findWmsOutBoundStatusConfirmByCreateTimeAndDataSource" resultMap="WmsOutBoundStatusResultExt">
+		select <include refid="wmsOutBoundStatusConfirmColumnsExt" />
 		from t_wh_odo_status_confirm 
 		where 
 		create_time &gt; #{beginTime} 

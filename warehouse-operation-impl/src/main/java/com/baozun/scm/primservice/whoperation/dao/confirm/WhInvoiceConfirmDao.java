@@ -27,6 +27,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.WhInvoiceConfirm;
 
 public interface WhInvoiceConfirmDao extends BaseDao<WhInvoiceConfirm, Long> {
@@ -48,6 +49,6 @@ public interface WhInvoiceConfirmDao extends BaseDao<WhInvoiceConfirm, Long> {
     /**
      * 通过创建时间段+仓库ID+数据来源获取对应发票反馈数据
      */
-    List<WhInvoiceConfirm> findWhInvoiceConfirmByCreateTimeAndDataSource(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid, @Param("dataSource") String dataSource);
+    List<WmsInvoiceConfirm> findWmsInvoiceConfirmByCreateTimeAndDataSource(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid, @Param("dataSource") String dataSource);
 
 }

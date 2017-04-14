@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -97,7 +98,7 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventoryFlow> findWhSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid) {
-        return whSkuInventoryFlowDao.findWhSkuInventoryFlowByCreateTime(beginTime, endTime, ouid);
+    public List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid) {
+        return whSkuInventoryFlowDao.findWmsSkuInventoryFlowByCreateTime(beginTime, endTime, ouid);
     }
 }

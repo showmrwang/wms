@@ -14,19 +14,19 @@
  */
 package com.baozun.scm.primservice.whinterface.model.inventory;
 
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import java.io.Serializable;
 
 /**
  * 发票反馈数据
  *
  */
-public class WmsInvoiceConfirm extends BaseModel {
+public class WmsInvoiceConfirm implements Serializable{
+
 
     /**
      * 
      */
-    private static final long serialVersionUID = 1440976056393267263L;
-
+    private static final long serialVersionUID = 7058225815473180618L;
     /** 发票编码 */
     private String invoiceCode;
     /** 发票号 */
