@@ -125,10 +125,10 @@
                 batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 temporary_storage_location_id = #{temporaryStorageLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                is_rec = #{isRec,javaType=java.lang.Boolean,jdbcType=BIT} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                is_rec = #{isRec,javaType=java.lang.Boolean,jdbcType=BIT}
             WHERE 
                 id = #{id} 
+                and ou_id = #{ouId}
         ]]>
     </update>
     <update id="batchUpdate">

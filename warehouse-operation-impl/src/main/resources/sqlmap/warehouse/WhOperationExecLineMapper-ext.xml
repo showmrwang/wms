@@ -652,6 +652,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 			ou_id = #{ouId}
 			and operation_id = #{operationId}
+			<if test="outerContainerId!=null and outerContainerId!=''">
+					and from_outer_container_id = #{outerContainerId}
+			</if>
+			<if test="insideContainerId!=null and insideContainerId!=''">
+					and from_inside_container_id=#{insideContainerId}
+			</if>
 	</select>
 	
 	<select id="checkContainerInventory" resultMap="WhOperationExecLineResultExt">

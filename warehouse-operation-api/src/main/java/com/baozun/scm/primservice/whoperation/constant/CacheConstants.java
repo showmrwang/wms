@@ -55,6 +55,8 @@ public final class CacheConstants {
     /** 缓存库位推荐队列 */
     public static final String LOCATION_RECOMMEND = "LOCATION_RECOMMEND";
 
+    public static final String SCAN_SKU_QUEUE_SN = "SCAN_SKU_QUEUE_SN";
+    
     /** 人工上架:扫sn */
     public static final String PDA_MAN_MANDE_SCAN_SKU_SN = "MAN_MANDE_SCAN_SKU_SN";
     /** 人工上架:扫sn/残次 */

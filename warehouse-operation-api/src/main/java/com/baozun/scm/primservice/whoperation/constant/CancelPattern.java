@@ -44,6 +44,8 @@ public class CancelPattern implements Serializable {
 
     public static final int PUTAWAY_SKU_SN_CANCEL = 9; //
     
+    public static final int PUTAWAY_SKU_DETAIL_CANCEL = 10;
+    
     /**拣货流程*/
     
     public static final int PICKING_TIP_CAR_CANCEL = 1; //提示小车取消

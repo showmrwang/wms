@@ -402,7 +402,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param insideContainerid
      * @return
      */
+    int findToBefilledCountsByInsideContainerId(@Param("ouId") Long ouid, @Param("insideContainerId") Long insideContainerId);
+    
+    /**
+     * 根据内容容器获取库存总记录数(待移入)
+     * @param ouid
+     * @param insideContainerid
+     * @return
+     */
     int findAllInventoryCountsByInsideContainerId(@Param("ouId") Long ouid, @Param("insideContainerId") Long insideContainerId);
+    
 
     /**
      * 根据内部容器获取收货库存数量(外部容器不为空)
@@ -814,5 +823,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOperationId(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
+    
+    
+    /***
+     * 查询容器库存(按单复合)
+     * @param ouId
+     * @param operationId
+     * @return
+     */
+    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOdo(@Param("odoLineId") Long odoLineId,@Param("odoId") Long odoId,@Param("ouId") Long ouId, @Param("outerContainerId") Long containerId,@Param("containerLatticeNo") Integer containerLatticeNo,@Param("outboundbox") String outboundbox,
+        @Param("turnoverBoxCode") String turnoverBoxCode,@Param("seedingWallCode") String seedingWallCode);
     
 }
