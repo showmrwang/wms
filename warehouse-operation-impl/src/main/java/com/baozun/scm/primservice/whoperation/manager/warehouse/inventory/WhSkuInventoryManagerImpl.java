@@ -7125,7 +7125,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     	inboundConfirm.setQtyRcvd(po.getQtyRcvd());
     	inboundConfirm.setCtnPlanned(po.getCtnPlanned());
     	inboundConfirm.setCtnRcvd(po.getCtnRcvd());
-    	inboundConfirm.setDataSource(Constants.DATA_SOURCE_HUB);
+    	inboundConfirm.setDataSource(po.getDataSource());
     	inboundConfirm.setStatus(1);
     	inboundConfirm.setErrorCount(0);
     	inboundConfirm.setCreateTime(new Date());

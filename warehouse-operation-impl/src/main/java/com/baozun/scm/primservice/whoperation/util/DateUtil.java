@@ -25,6 +25,9 @@ public class DateUtil {
     public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     /** yyyy年MM月dd日 */
     public static final String CN_DATE_FORMAT = "yyyy年MM月dd日";
+    /** yyyyMMddHHmmss */
+    public static final String DEFAULT_DATE_TIME_FORMAT_NEW = "yyyyMMddHHmmss";
+
 
     /**
      * <p>
