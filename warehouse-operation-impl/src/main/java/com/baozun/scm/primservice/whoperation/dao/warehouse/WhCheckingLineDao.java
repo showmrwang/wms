@@ -45,6 +45,8 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhCheckingLine o);
+    @CommonQuery
+    int saveOrUpdateByVersion(WhCheckingLine o);
 
     /**
      * 根据复核ID查询复核明细
@@ -53,6 +55,9 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
      * @return
      */
     List<WhCheckingLineCommand> getCheckingLineByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
+    
+    
+    public WhCheckingLineCommand findCheckingLineById(@Param("id") Long id, @Param("ouId") Long ouId);
 
 
 }

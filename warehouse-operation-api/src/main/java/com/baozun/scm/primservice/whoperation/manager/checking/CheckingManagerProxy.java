@@ -1,6 +1,10 @@
 package com.baozun.scm.primservice.whoperation.manager.checking;
 
 
+import java.util.List;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
@@ -50,5 +54,21 @@ public interface CheckingManagerProxy extends BaseManager {
      * @return
      */
     Boolean packageWeightCalculation(WhCheckingResultCommand whCheckingResultCommand);
+    
+    /**
+     * tangming
+     * 按单复合
+     * @param checkingLineList
+     */
+    public void checkingByOdo(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId,Long ouId);
+    
+//    /**
+//     * tangming
+//     * 按单复合打印
+//     * @param outBoudBoxCode
+//     * @param 
+//     * @param 
+//     */
+//    public Boolean printDefectByOdo(String outBoudBoxCode,Long ouId,Long functionId);
     
 }

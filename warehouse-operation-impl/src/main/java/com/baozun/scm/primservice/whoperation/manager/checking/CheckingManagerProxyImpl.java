@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
@@ -59,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -180,13 +182,15 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 whCheckingCommand.setStatus(CheckingStatus.FINISH);
                 whCheckingManager.saveOrUpdate(whCheckingCommand);
                 List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
-                for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
+                for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){//疑问1
                     whCheckingLineManager.saveOrUpdate(whCheckingLineCommand);
                 }
             }
         }
         return isSuccess;
     }
+    
+    //按单复合更新复合明细数据
     
     /**
      * 生成出库箱库存与箱数据
@@ -195,7 +199,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * @param whCheckingResultCommand
      */
     @Override
-    public Boolean createOutboundbox(WhCheckingResultCommand whCheckingResultCommand) {
+    public Boolean createOutboundbox(WhCheckingResultCommand whCheckingResultCommand) {//疑问2
         Boolean isSuccess = true;
         for(WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()){
             List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineManager.getCheckingLineByCheckingId(whCheckingCommand.getId(), whCheckingCommand.getOuId());
@@ -239,7 +243,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
     /**
-     * 更新出库单状态
+     * 更新出库单状态(按单复合只更新一个出库单，按单复合更新多个
+     * )
      * 
      * @author qiming.liu
      * @param whCheckingResultCommand
@@ -256,7 +261,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 //复制数据        
                 BeanUtils.copyProperties(odoCommand, whOdo);
                 // TODO,据说明天讨论               
-                whOdo.setOdoStatus(odoCommand.getOdoStatus());
+                whOdo.setOdoStatus(odoCommand.getOdoStatus());  
                 odoManager.updateByVersion(whOdo);
             }
         }
@@ -419,4 +424,38 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundboxLineSnCommand.setSysDate(String.valueOf(month));
         whOutboundboxLineSnManager.saveOrUpdate(whOutboundboxLineSnCommand);
     }
+    
+    /**
+     * tangming
+     * 按单复合更新复合表
+     * @param checkingLineList
+     */
+    private void updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList,Long ouId){
+        for(WhCheckingLineCommand cmd:checkingLineList){
+            Long id = cmd.getId();  //复合明细id
+            Long checkingQty = cmd.getCheckingQty();  //复合明细数量
+            WhCheckingLineCommand lineCmd =  whCheckingLineManager.getCheckingLineById(id, ouId);
+            WhCheckingLine line = new WhCheckingLine();
+            BeanUtils.copyProperties(lineCmd, line);
+            line.setCheckingQty(checkingQty);
+            whCheckingLineManager.saveOrUpdateByVersion(line);
+        }
+    }
+    
+    /**
+     * tangming
+     * 按单复合
+     * @param checkingLineList
+     */
+    public void checkingByOdo(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId,Long ouId){
+        List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
+        //更新复合明细表
+        this.updateCheckingByOdo(checkingLineList, ouId);
+        //生成出库箱库存
+        whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
+        //更新出库单状态
+        //算包裹计重
+    }
+    
+    
 }

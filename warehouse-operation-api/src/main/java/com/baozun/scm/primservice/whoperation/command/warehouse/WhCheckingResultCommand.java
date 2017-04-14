@@ -40,6 +40,7 @@ public class WhCheckingResultCommand extends BaseModel {
     //columns END
     
     
+    
     public Long getFunctionId() {
         return functionId;
     }
