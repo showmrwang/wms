@@ -14,20 +14,21 @@
  */
 package com.baozun.scm.primservice.whoperation.model.confirm;
 
-import java.io.Serializable;
 import java.util.Date;
+
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
  * 发票反馈数据
  *
  */
-public class WhInvoiceConfirm implements Serializable {
+public class WhInvoiceConfirm extends BaseModel {
 
 
     /**
      * 
      */
-    private static final long serialVersionUID = 1052952229749439129L;
+    private static final long serialVersionUID = -483211864360964171L;
     /** 发票编码 */
     private String invoiceCode;
     /** 发票号 */

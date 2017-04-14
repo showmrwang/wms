@@ -165,7 +165,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
-	<select id="findWmsSkuInventoryFlowByCreateTime" resultMap="com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow">
+	<resultMap id="WmsSkuInventoryFlowResultExt" type="com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow">
+	</resultMap>
+	
+	<select id="findWmsSkuInventoryFlowByCreateTime" resultMap="WmsSkuInventoryFlowResultExt">
 		select <include refid="findWmsSkuInventoryFlowColumnsExt" />
 		from t_wh_sku_inventory_flow 
 		where 

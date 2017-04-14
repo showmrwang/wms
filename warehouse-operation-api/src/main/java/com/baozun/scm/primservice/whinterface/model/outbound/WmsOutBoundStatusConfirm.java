@@ -14,23 +14,21 @@
  */
 package com.baozun.scm.primservice.whinterface.model.outbound;
 
+import java.io.Serializable;
 import java.util.Date;
-
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
  * 出库单状态反馈
  * 
  *
  */
-public class WmsOutBoundStatusConfirm extends BaseModel {
-
+public class WmsOutBoundStatusConfirm implements Serializable {
 
 
     /**
      * 
      */
-    private static final long serialVersionUID = 8335217566158955109L;
+    private static final long serialVersionUID = 2102537735573192315L;
     /** 上位系统出库单号 */
     private String extOdoCode;
     /** wms出库单号 */
