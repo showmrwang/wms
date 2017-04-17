@@ -166,7 +166,7 @@
 	
 	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsInboundServiceManagerProxy" ref="wmsInboundServiceManagerProxy" />
 	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsOutboundServiceManagerProxy" ref="wmsOutboundServiceManagerProxy" />
-	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsConfirmServiceManagerProxy" ref="WmsConfirmServiceManagerProxy" />
+	<dubbo:service interface="com.baozun.scm.primservice.whinterface.manager.WmsConfirmServiceManagerProxy" ref="wmsConfirmServiceManagerProxy" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.handover.HandoverManager" ref="handoverManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManager" ref="whPrintInfoManager" />
 	
@@ -177,4 +177,6 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager" ref="whInvoiceConfirmManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.inbound.WhInboundConfirmManager" ref="whInboundConfirmManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.HandoverCollectionRuleManager" ref="handoverCollectionRuleManager" />
+	<!-- 按单复核 -->
+	<!--<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager" ref="whCheckingManager" />-->
 </beans>

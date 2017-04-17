@@ -24,7 +24,7 @@ import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundLineConf
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager;
-import com.baozun.scm.primservice.whoperation.manager.confirm.inbound.WhInboundConfirmManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.confirm.inbound.WhInboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager;
@@ -56,7 +56,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
     @Autowired
     private WhInvoiceConfirmManager whInvoiceConfirmManager;
     @Autowired
-    private WhInboundConfirmManagerImpl whInboundConfirmManagerImpl;
+    private WhInboundConfirmManager whInboundConfirmManager;
 
     /**
      * 同步库存流水 bin.hu
@@ -308,7 +308,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         List<WmsInboundConfirm> wmsInboundConfirms = new ArrayList<WmsInboundConfirm>();
         // 获取入库单反馈相关数据
-        List<WhInboundConfirm> whInboundConfirms = whInboundConfirmManagerImpl.findWhInboundConfirmByCreateTimeAndDataSource(begin, end, dataSource);
+        List<WhInboundConfirm> whInboundConfirms = whInboundConfirmManager.findWhInboundConfirmByCreateTimeAndDataSource(begin, end, dataSource);
         for (WhInboundConfirm whInboundConfirm : whInboundConfirms) {
             WmsInboundConfirm inbound = new WmsInboundConfirm();
             BeanUtils.copyProperties(whInboundConfirm, inbound);
