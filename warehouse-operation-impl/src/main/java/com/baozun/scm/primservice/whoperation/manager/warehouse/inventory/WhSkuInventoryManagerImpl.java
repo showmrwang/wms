@@ -5435,7 +5435,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                                 }
                                 break;  //跳出当前循环
-                            }
+                        }
             }
             List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId,outerContainerId,insideContainerId);
             if(null== operationExecLineList || operationExecLineList.size()==0) {
@@ -5457,12 +5457,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if(invlist.size() != execlist.size()){
             throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR);
         }
+        Boolean result = false;
         for(WhOperationExecLine execLine:execlist) {
             String execLineAttr = "┊"+execLine.getFromOuterContainerId()+execLine.getFromInsideContainerId()+execLine.getQty()+execLine.getFromLocationId()+"┊";
             for(WhOperationExecLine line:invlist){
                 String lineAttr = "┊"+line.getFromOuterContainerId()+line.getFromInsideContainerId()+line.getQty()+line.getFromLocationId()+"┊";
-                if(!execLineAttr.equals(lineAttr)) {
-                    throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+                if(execLineAttr.equals(lineAttr)) {
+                    result = true;
+                    break;
+                }else{
+                    result = false;
                 }
             }
         }
@@ -5471,10 +5475,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             String lineAttr = "┊"+line.getFromOuterContainerId()+line.getFromInsideContainerId()+line.getQty()+line.getFromLocationId()+"┊";
             for(WhOperationExecLine execLine:execlist){
                 String execLineAttr = "┊"+execLine.getFromOuterContainerId()+execLine.getFromInsideContainerId()+execLine.getQty()+execLine.getFromLocationId()+"┊";
-                if(!lineAttr.equals(execLineAttr)) {
-                    throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+                if(lineAttr.equals(execLineAttr)) {
+                    result = true;
+                    break;
+                }else{
+                    result = false;
                 }
             }
+        }
+        if(!result) {
+            throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
         }
     }
     
