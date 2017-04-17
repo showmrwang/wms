@@ -5451,10 +5451,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }
         //校验容器/出库箱库存与删除的拣货库位库存时否一致
-        List<WhOperationExecLine> list  = whOperationExecLineDao.checkContainerInventory(invSkuIds, ouId, execLineIds);
-        if(null != list && list.size() !=0){
-            throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR);
-        }
+        List<WhOperationExecLine> invlist  = whOperationExecLineDao.checkContainerInventory(invSkuIds, ouId);
+        //
+        List<WhOperationExecLine> execlist  = whOperationExecLineDao.getOperationExecLineByIds(ouId,execLineIds);
+//        if(invlist.size() != execlist.size()){
+//            throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR);
+//        }
+//        for(WhOperationExecLine exec:execlist){
+//            if(!invlist.contains(exec)){
+//                throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR); 
+//            }
+//        }
     }
     
     /***
@@ -6347,7 +6354,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         cacheContainerIds = cacheContainerCmd.getTipInsideContainerIds();
                     }
                     boolean isAllTip = isCacheAllExists(cacheInsideContainerIds, cacheContainerIds);
-                    if (true == isAllTip) {
+                    //判断有没有容器库存没有上的
+                   int outCount =  whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, outerContainerCmd.getId());
+                    if (true == isAllTip && outCount == 0) {
                         boolean isUpdateOuterStatusUsable = true;
 //                        boolean isUpdateOuterStatusCanPutaway = false;
                         for (Long icId : cacheInsideContainerIds) {
