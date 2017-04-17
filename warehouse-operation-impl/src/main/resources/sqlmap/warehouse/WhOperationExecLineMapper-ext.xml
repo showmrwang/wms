@@ -567,6 +567,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			WHERE
 			operationLine.operation_id = #{operationId}
 			and operationLine.ou_id = #{ouId}
+			and operationLine.complete_qty != 0
 			GROUP BY
 			operationLine.from_location_id,
 			operationLine.from_outer_container_id,

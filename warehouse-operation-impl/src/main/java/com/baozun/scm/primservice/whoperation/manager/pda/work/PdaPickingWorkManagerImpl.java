@@ -1735,9 +1735,23 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
         }
         for(WhOperationExecLine execLine:execlineList) {
-//            if(!lineList.contains(execLine)){
-//                throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
-//            }
+            String execLineAttr = "┊"+execLine.getFromOuterContainerId()+execLine.getFromInsideContainerId()+execLine.getQty()+execLine.getFromLocationId()+"┊";
+            for(WhOperationExecLine line:lineList){
+                String lineAttr = "┊"+line.getFromOuterContainerId()+line.getFromInsideContainerId()+line.getQty()+line.getFromLocationId()+"┊";
+                if(!execLineAttr.equals(lineAttr)) {
+                    throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+                }
+            }
+        }
+        
+        for(WhOperationExecLine line:lineList) {
+            String lineAttr = "┊"+line.getFromOuterContainerId()+line.getFromInsideContainerId()+line.getQty()+line.getFromLocationId()+"┊";
+            for(WhOperationExecLine execLine:execlineList){
+                String execLineAttr = "┊"+execLine.getFromOuterContainerId()+execLine.getFromInsideContainerId()+execLine.getQty()+execLine.getFromLocationId()+"┊";
+                if(!lineAttr.equals(execLineAttr)) {
+                    throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+                }
+            }
         }
         log.info("PdaPickingWorkManagerImpl addPickingOperationExecLine is end");
         

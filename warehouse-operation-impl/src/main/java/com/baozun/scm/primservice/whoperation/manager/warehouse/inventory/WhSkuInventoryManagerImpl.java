@@ -5454,14 +5454,28 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         List<WhOperationExecLine> invlist  = whOperationExecLineDao.checkContainerInventory(invSkuIds, ouId);
         //
         List<WhOperationExecLine> execlist  = whOperationExecLineDao.getOperationExecLineByIds(ouId,execLineIds);
-//        if(invlist.size() != execlist.size()){
-//            throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR);
-//        }
-//        for(WhOperationExecLine exec:execlist){
-//            if(!invlist.contains(exec)){
-//                throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR); 
-//            }
-//        }
+        if(invlist.size() != execlist.size()){
+            throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR);
+        }
+        for(WhOperationExecLine execLine:execlist) {
+            String execLineAttr = "┊"+execLine.getFromOuterContainerId()+execLine.getFromInsideContainerId()+execLine.getQty()+execLine.getFromLocationId()+"┊";
+            for(WhOperationExecLine line:invlist){
+                String lineAttr = "┊"+line.getFromOuterContainerId()+line.getFromInsideContainerId()+line.getQty()+line.getFromLocationId()+"┊";
+                if(!execLineAttr.equals(lineAttr)) {
+                    throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+                }
+            }
+        }
+        
+        for(WhOperationExecLine line:invlist) {
+            String lineAttr = "┊"+line.getFromOuterContainerId()+line.getFromInsideContainerId()+line.getQty()+line.getFromLocationId()+"┊";
+            for(WhOperationExecLine execLine:execlist){
+                String execLineAttr = "┊"+execLine.getFromOuterContainerId()+execLine.getFromInsideContainerId()+execLine.getQty()+execLine.getFromLocationId()+"┊";
+                if(!lineAttr.equals(execLineAttr)) {
+                    throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+                }
+            }
+        }
     }
     
     /***
