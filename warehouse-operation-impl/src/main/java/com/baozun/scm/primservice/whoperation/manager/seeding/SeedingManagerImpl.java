@@ -198,15 +198,15 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
         WhOutboundFacility outboundFacility = new WhOutboundFacility();
         BeanUtils.copyProperties(facilityCommand, outboundFacility);
         outboundFacility.setStatus(Constants.WH_FACILITY_STATUS_5);
-        //TODO 测试 不更新播种墙状态
+        // TODO 测试 不更新播种墙状态
         whOutboundFacilityDao.saveOrUpdateByVersion(outboundFacility);
 
 
         List<WhSeedingCollectionCommand> allSeedingCollection = whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId);
-        for(WhSeedingCollectionCommand orgSeedingCollection : allSeedingCollection){
-            if(!CollectionStatus.FINISH.equals(orgSeedingCollection.getCollectionStatus())) {
-                //非完成状态的周转箱状态改为异常
-                //周转箱
+        for (WhSeedingCollectionCommand orgSeedingCollection : allSeedingCollection) {
+            if (!CollectionStatus.FINISH.equals(orgSeedingCollection.getCollectionStatus())) {
+                // 非完成状态的周转箱状态改为异常
+                // 周转箱
                 WhSeedingCollection seedingCollection = new WhSeedingCollection();
                 BeanUtils.copyProperties(orgSeedingCollection, seedingCollection);
                 seedingCollection.setCollectionStatus(CollectionStatus.ERROR);
@@ -218,9 +218,9 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void batchFinishedSeeding(Long facilityId ,List<WhSeedingWallLattice> facilitySeedingOdoList,  List<WhSkuInventory> facilitySeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
+    public void batchFinishedSeeding(Long facilityId, String batchNo, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
         // 删除原有库存
-        for(WhSeedingWallLattice seedingWallLattice : facilitySeedingOdoList) {
+        for (WhSeedingWallLattice seedingWallLattice : facilitySeedingOdoList) {
             whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
         }
 

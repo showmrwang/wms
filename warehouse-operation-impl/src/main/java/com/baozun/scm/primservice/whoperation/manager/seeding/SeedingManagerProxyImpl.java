@@ -101,7 +101,7 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
             }
         }
         if (isStartSeeding) {
-            //TODO 测试，前面已清除缓存，此处需要初始化缓存
+            // TODO 测试，前面已清除缓存，此处需要初始化缓存
             return;
         }
         // 仓库信息
@@ -228,11 +228,11 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
             }
         }
         // TODO 测试 设置功能参数
-        //function = new WhFunctionSeedingWall();
-        //function.setScanPattern(2);
-        //function.setIsScanGoodsLattice(true);
-        //function.setSeedingWallPattern(2);
-        //function.setShowCode("3");
+        // function = new WhFunctionSeedingWall();
+        // function.setScanPattern(2);
+        // function.setIsScanGoodsLattice(true);
+        // function.setSeedingWallPattern(2);
+        // function.setShowCode("3");
 
         return function;
     }
@@ -415,7 +415,7 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
                 SeedingLattice seedingLattice = latticeSeedingLineMapEntry.getKey();
                 List<WhSeedingCollectionLineCommand> latticeSeedingLineList = latticeSeedingLineMapEntry.getValue();
                 for (WhSeedingCollectionLineCommand line : latticeSeedingLineList) {
-                    if(line.getSeedingQty() > 0) {
+                    if (line.getSeedingQty() > 0) {
                         WhSkuInventory skuInventory = this.createWhSkuInventory(line, ouId, logId);
                         facilitySeedingSkuInventoryList.add(skuInventory);
                     }
@@ -429,7 +429,7 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
                     String outboundBoxCode = boxSeedingLineMapEntry.getKey();
                     List<WhSeedingCollectionLineCommand> boxSeedingLineList = boxSeedingLineMapEntry.getValue();
                     for (WhSeedingCollectionLineCommand line : boxSeedingLineList) {
-                        if(line.getSeedingQty() > 0) {
+                        if (line.getSeedingQty() > 0) {
                             WhSkuInventory skuInventory = this.createWhSkuInventory(line, ouId, logId);
                             facilitySeedingSkuInventoryList.add(skuInventory);
                         }
@@ -438,8 +438,8 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
             }
         }
         try {
-            //TODO 测试 不保存库存
-            seedingManager.batchFinishedSeeding(facilityId, facilitySeedingOdoList, facilitySeedingSkuInventoryList, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
+            // TODO 测试 不保存库存
+            seedingManager.batchFinishedSeeding(facilityId, facilityCommand.getBatch(), facilitySeedingOdoList, facilitySeedingSkuInventoryList, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
 
             // 清除缓存
             this.releaseFacilityBatchRedis(facilityId, facilityCommand.getBatch(), ouId, logId);
@@ -495,7 +495,7 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
         return skuInventory;
     }
 
-    public void releaseFacilityBatchRedis(Long facilityId, String batchNo, Long ouId, String logId){
+    public void releaseFacilityBatchRedis(Long facilityId, String batchNo, Long ouId, String logId) {
         WhOutboundFacilityCommand facilityCommand = seedingManager.getOutboundFacilityById(facilityId, ouId);
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCommand.getFacilityCode() + "-" + batchNo + "-*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");

@@ -92,5 +92,5 @@ public interface SeedingManager extends BaseManager {
 
     public void batchFinishedSeedingWithException(Long facilityId, Long ouId);
 
-    public void batchFinishedSeeding(Long facilityId, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList,  Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public void batchFinishedSeeding(Long facilityId, String batchNo, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 }
