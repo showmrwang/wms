@@ -59,4 +59,9 @@ public class WhOutboundboxManagerImpl extends BaseManagerImpl implements WhOutbo
         return whOutboundboxDao.getwhOutboundboxCommandByCode(outboundBoxCode, ouId);
     }
 
+
+    @Override
+    public WhOutboundboxCommand findByOutboundBoxCode(String outboundBoxCode, Long ouId) {
+        return whOutboundboxDao.findByOutboundBoxCode(outboundBoxCode, ouId);
+    }
 }

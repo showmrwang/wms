@@ -1711,8 +1711,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        delete from t_wh_sku_inventory where
 		        id = #{id} and ou_id = #{ouid}
 		</delete>
-		
-		<select id="getUniqueSkuAttrFromWhSkuInventory" resultMap="RcvdContainerCacheCommand">
+
+    <delete id="deleteByOccupationCode">
+        delete from t_wh_inventory
+        where
+            occupation_code = #{occupationCode}
+            and ou_id = #{ouId}
+    </delete>
+
+    <select id="getUniqueSkuAttrFromWhSkuInventory" resultMap="RcvdContainerCacheCommand">
 			SELECT
 				INV.inside_container_id as insideContainerId,
 				INV.ou_id as ouId,

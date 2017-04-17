@@ -799,4 +799,12 @@ public final class Constants {
     public static final Integer HANDOVER_COLLECTION_CANCEL = 17;
     /** 交接集货状态 异常 */
     public static final Integer HANDOVER_COLLECTION_ERROR = 20;
+    /** 出库单号 */
+    public static final String SHOW_CODE_ODO_CODE = "1";
+    /** 平台订单号 */
+    public static final String SHOW_CODE_EC_ORDER_CODE = "2";
+    /** 外部对接码 */
+    public static final String SHOW_CODE_EXT_CODE = "3";
+
+
 }

@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -23,6 +24,9 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 
 
@@ -35,5 +39,7 @@ public interface WhSeedingCollectionLineDao extends BaseDao<WhSeedingCollectionL
 
     @CommonQuery
     int saveOrUpdate(WhSeedingCollectionLine o);
+
+    public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollection(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
 
 }

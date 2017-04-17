@@ -31,6 +31,7 @@ public class WhSeedingCollectionLineCommand extends BaseCommand {
      */
     private static final long serialVersionUID = 8416678397575967292L;
     // columns START
+    private Long Id;
     /** 集货ID */
     private Long seedingCollectionId;
     /** 商品编码 */
@@ -89,6 +90,24 @@ public class WhSeedingCollectionLineCommand extends BaseCommand {
     private Long storeId;
     /** skuId*/
     private Long skuId;
+
+    /** =============================================================== */
+    /** 出库单编码 */
+    private String odoCode;
+    /** 播种墙编码 */
+    private String facilityCode;
+    /** 播种墙货格号 */
+    private int latticeNo;
+    /** 出库箱编码 */
+    private String outboundBoxCode;
+
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
 
     public Long getSeedingCollectionId() {
         return seedingCollectionId;
@@ -322,4 +341,35 @@ public class WhSeedingCollectionLineCommand extends BaseCommand {
         this.skuId = skuId;
     }
 
+    public String getOdoCode() {
+        return odoCode;
+    }
+
+    public void setOdoCode(String odoCode) {
+        this.odoCode = odoCode;
+    }
+
+    public String getFacilityCode() {
+        return facilityCode;
+    }
+
+    public void setFacilityCode(String facilityCode) {
+        this.facilityCode = facilityCode;
+    }
+
+    public int getLatticeNo() {
+        return latticeNo;
+    }
+
+    public void setLatticeNo(int latticeNo) {
+        this.latticeNo = latticeNo;
+    }
+
+    public String getOutboundBoxCode() {
+        return outboundBoxCode;
+    }
+
+    public void setOutboundBoxCode(String outboundBoxCode) {
+        this.outboundBoxCode = outboundBoxCode;
+    }
 }

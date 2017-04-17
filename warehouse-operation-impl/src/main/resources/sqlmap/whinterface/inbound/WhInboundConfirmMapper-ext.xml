@@ -177,4 +177,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and last_modify_time	<=  #{lastModifyTime}    
 	    ]]>
 	</update>
+	
+	<select id="findWhInboundConfirmByCreateTimeAndDataSource" resultMap="WhInboundConfirmResultExt">
+		select <include refid="whInboundConfirmColumnsExt" />
+		from t_wh_inbound_confirm 
+		where 
+		create_time &gt; #{beginTime} 
+		and create_time &lt; #{endTime} 
+		and data_source = #{dataSource}
+	</select>
 </mapper>

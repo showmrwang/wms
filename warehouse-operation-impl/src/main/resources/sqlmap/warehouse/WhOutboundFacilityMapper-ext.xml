@@ -254,6 +254,7 @@
 			f.lifecycle as lifecycle,
 			f.ou_id as ouId,
 			f.status as status,
+			f.batch as batch,
 			sys.dic_label as facilityTypeName,
 			t.name as outboundboxTypeName,
 			g.facility_group_name as facilityGroupName,

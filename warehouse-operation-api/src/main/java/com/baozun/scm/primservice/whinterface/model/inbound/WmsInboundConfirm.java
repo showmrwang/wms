@@ -15,7 +15,6 @@
 package com.baozun.scm.primservice.whinterface.model.inbound;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +44,7 @@ public class WmsInboundConfirm implements Serializable {
     /** 目的地 */
     private String toLocation;
     /** 实际到货时间格式：年（4位）月（2位）日（2位）时（2位）分（2位）秒（2位） */
-    private Date deliveryTime;
+    private String deliveryTimeStr;
     /** 仓库编码 */
     private String whCode;
     /** 单据状态 */
@@ -126,13 +125,13 @@ public class WmsInboundConfirm implements Serializable {
     public void setToLocation(String toLocation) {
         this.toLocation = toLocation;
     }
-
-    public Date getDeliveryTime() {
-        return deliveryTime;
+    
+    public String getDeliveryTimeStr() {
+        return deliveryTimeStr;
     }
 
-    public void setDeliveryTime(Date deliveryTime) {
-        this.deliveryTime = deliveryTime;
+    public void setDeliveryTimeStr(String deliveryTimeStr) {
+        this.deliveryTimeStr = deliveryTimeStr;
     }
 
     public String getWhCode() {

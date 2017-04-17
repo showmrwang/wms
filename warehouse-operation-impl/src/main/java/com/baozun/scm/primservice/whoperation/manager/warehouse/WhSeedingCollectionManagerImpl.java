@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionD
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 
 @Transactional
 @Service("whSeedingCollectionManager")
@@ -66,12 +67,38 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(Long facilityId, Long ouId) {
-        return whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId);
+        List<WhSeedingCollectionCommand> seedingCollList = whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId);
+
+        return seedingCollList;
     }
 
 
+
+
+    /**
+     * 获取播种的周转箱信息
+     *
+     * @param facilityId
+     * @param ouId
+     * @param turnoverBoxCode
+     * @return
+     */
     @Override
-    public List<String> getFacilityBindBatch(Long facilityId, Long ouId) {
-        return whSeedingCollectionDao.getFacilityBindBatch(facilityId, ouId);
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSeedingCollectionCommand getSeedingCollectionByTurnoverBox(Long facilityId, String turnoverBoxCode, Long ouId){
+        return whSeedingCollectionDao.getSeedingCollectionByTurnoverBox(facilityId, turnoverBoxCode, ouId);
+    }
+
+
+    /**
+     * 获取播种的周转箱信息
+     *
+     * @param seedingCollection
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void updateByVersion(WhSeedingCollection seedingCollection){
+         whSeedingCollectionDao.saveOrUpdateByVersion(seedingCollection);
     }
 }

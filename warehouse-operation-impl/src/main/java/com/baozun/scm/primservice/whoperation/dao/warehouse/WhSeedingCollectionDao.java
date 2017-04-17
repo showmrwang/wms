@@ -104,9 +104,12 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
      *
      * @param facilityId
      * @param ouId
+     * @param turnoverBoxCode
      * @return
      */
     public List<String> getFacilityBindBatch(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 
     public WhSeedingCollection findSeedingCollectionByContainerId(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
+    
+    public WhSeedingCollectionCommand getSeedingCollectionByTurnoverBox(@Param("facilityId") Long facilityId, @Param("turnoverBoxCode") String turnoverBoxCode, @Param("ouId") Long ouId);
 }

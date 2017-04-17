@@ -12,34 +12,48 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whinterface.dao.inbound;
+package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
 import java.util.List;
 import java.util.Map;
-
-import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundInvLineConfirm;
 
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
+import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
-public interface WhInboundInvLineConfirmDao extends BaseDao<WhInboundInvLineConfirm, Long> {
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
+
+public interface WhFunctionSeedingWallDao extends BaseDao<WhFunctionSeedingWall, Long> {
+
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<WhInboundInvLineConfirm> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+    Pagination<WhFunctionSeedingWall> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    @QueryPage("queryCount")
+    Pagination<WhFunctionSeedingWall> query(Page page, Sort[] sorts, QueryCondition cond);
+
+    List<WhFunctionSeedingWall> query(QueryCondition cond);
+
+    Long queryCount(QueryCondition cond);
 
     @CommonQuery
-    int saveOrUpdate(WhInboundInvLineConfirm o);
+    int saveOrUpdate(WhFunctionSeedingWall o);
 
     /**
-     * 通过入库单反馈明细ID获取对应数据
+     * 查询播种-操作台信息
      * 
-     * @param id
+     * @param ouId
+     * @param functionId
      * @return
      */
-    List<WhInboundInvLineConfirm> findWhInboundInvLineConfirmByInboundLineId(Long id);
+    WhFunctionSeedingWall findByFunctionIdExt(@Param("ouId") Long ouId, @Param("functionId") Long functionId);
+
+    void deleteByFunctionId(@Param("functionId") Long functionId, @Param("ouId") Long ou_id);
 
 }

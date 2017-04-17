@@ -78,4 +78,6 @@ public interface WhOutboundboxDao extends BaseDao<WhOutboundbox, Long> {
      */
     int findunhandoverBoxByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
+    public WhOutboundboxCommand findByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
+
 }

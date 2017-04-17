@@ -822,6 +822,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOperationId(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
+
+    /**
+     * 按照占用码删除库存，转换库存时使用
+     *
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    int deleteByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
     
     
     /***

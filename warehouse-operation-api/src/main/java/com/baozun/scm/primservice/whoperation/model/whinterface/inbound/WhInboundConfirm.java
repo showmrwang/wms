@@ -1,22 +1,21 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.model.whinterface.inbound;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
@@ -27,236 +26,243 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  */
 public class WhInboundConfirm extends BaseModel {
 
-	private static final long serialVersionUID = -7664223466760764046L;
-	
-	// columns START
-	/** 数据唯一标识 */
-	private String uuid;
-	/** 入库单据编码 */
-	private String extPoCode;
-	/** 上位系统原始单号 */
-	private String extCode;
-	/** 客户编码 */
-	private String customerCode;
-	/** 店铺编码 */
-	private String storeCode;
-	/** 来源地 */
-	private String fromLocation;
-	/** 目的地 */
-	private String toLocation;
-	/** 实际到货时间格式：年（4位）月（2位）日（2位）时（2位）分（2位）秒（2位） */
-	private Date deliveryTime;
-	/** 仓库编码 */
-	private String whCode;
-	/** 单据状态 */
-	private String poStatus;
-	/** 单据类型 */
-	private String poType;
-	/** 是否质检 默认否 */
-	private Boolean isIqc;
-	/** 计划数量 */
-	private Double qtyPlanned;
-	/** 实际到货数量 */
-	private Double qtyRcvd;
-	/** 计划箱数 */
-	private Integer ctnPlanned;
-	/** 实际到货箱数 */
-	private Integer ctnRcvd;
-	/** 扩展字段信息 */
-	private String extMemo;
-	/** 数据来源 区分上位系统 */
-	private String dataSource;
-	/** 状态 */
-	private Integer status;
-	/** 失败次数 */
-	private Integer errorCount;
-	/** 创建时间 */
-	private Date createTime;
-	/** 最后修改时间 */
-	private Date lastModifyTime;
-	// columns END
+    private static final long serialVersionUID = -7664223466760764046L;
 
-	public WhInboundConfirm() {
-	}
+    /** 数据唯一标识 */
+    private String uuid;
+    /** 入库单据编码 */
+    private String extPoCode;
+    /** 上位系统原始单号 */
+    private String extCode;
+    /** 客户编码 */
+    private String customerCode;
+    /** 店铺编码 */
+    private String storeCode;
+    /** 来源地 */
+    private String fromLocation;
+    /** 目的地 */
+    private String toLocation;
+    /** 实际到货时间格式：年（4位）月（2位）日（2位）时（2位）分（2位）秒（2位） */
+    private Date deliveryTime;
+    /** 仓库编码 */
+    private String whCode;
+    /** 单据状态 */
+    private String poStatus;
+    /** 单据类型 */
+    private String poType;
+    /** 是否质检 默认否 */
+    private Boolean isIqc;
+    /** 计划数量 */
+    private Double qtyPlanned;
+    /** 实际到货数量 */
+    private Double qtyRcvd;
+    /** 计划箱数 */
+    private Integer ctnPlanned;
+    /** 实际到货箱数 */
+    private Integer ctnRcvd;
+    /** 扩展字段信息 */
+    private String extMemo;
+    /** 数据来源 区分上位系统 */
+    private String dataSource;
+    /** 状态 */
+    private Integer status;
+    /** 失败次数 */
+    private Integer errorCount;
+    /** 创建时间 */
+    private Date createTime;
+    /** 最后修改时间 */
+    private Date lastModifyTime;
+    /** 入库单明细信息 */
+    private List<WhInboundLineConfirm> whInboundLineConfirms;
 
-	public WhInboundConfirm(Long id) {
-		this.id = id;
-	}
+    public WhInboundConfirm() {}
 
-	public String getUuid() {
-		return uuid;
-	}
+    public WhInboundConfirm(Long id) {
+        this.id = id;
+    }
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+    public String getUuid() {
+        return uuid;
+    }
 
-	public String getExtPoCode() {
-		return extPoCode;
-	}
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
-	public void setExtPoCode(String extPoCode) {
-		this.extPoCode = extPoCode;
-	}
+    public String getExtPoCode() {
+        return extPoCode;
+    }
 
-	public String getExtCode() {
-		return extCode;
-	}
+    public void setExtPoCode(String extPoCode) {
+        this.extPoCode = extPoCode;
+    }
 
-	public void setExtCode(String extCode) {
-		this.extCode = extCode;
-	}
+    public String getExtCode() {
+        return extCode;
+    }
 
-	public String getCustomerCode() {
-		return customerCode;
-	}
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
+    }
 
-	public void setCustomerCode(String customerCode) {
-		this.customerCode = customerCode;
-	}
+    public String getCustomerCode() {
+        return customerCode;
+    }
 
-	public String getStoreCode() {
-		return storeCode;
-	}
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
+    }
 
-	public void setStoreCode(String storeCode) {
-		this.storeCode = storeCode;
-	}
+    public String getStoreCode() {
+        return storeCode;
+    }
 
-	public String getFromLocation() {
-		return fromLocation;
-	}
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
+    }
 
-	public void setFromLocation(String fromLocation) {
-		this.fromLocation = fromLocation;
-	}
+    public String getFromLocation() {
+        return fromLocation;
+    }
 
-	public String getToLocation() {
-		return toLocation;
-	}
+    public void setFromLocation(String fromLocation) {
+        this.fromLocation = fromLocation;
+    }
 
-	public void setToLocation(String toLocation) {
-		this.toLocation = toLocation;
-	}
+    public String getToLocation() {
+        return toLocation;
+    }
 
-	public Date getDeliveryTime() {
-		return deliveryTime;
-	}
+    public void setToLocation(String toLocation) {
+        this.toLocation = toLocation;
+    }
 
-	public void setDeliveryTime(Date deliveryTime) {
-		this.deliveryTime = deliveryTime;
-	}
+    public Date getDeliveryTime() {
+        return deliveryTime;
+    }
 
-	public String getWhCode() {
-		return whCode;
-	}
+    public void setDeliveryTime(Date deliveryTime) {
+        this.deliveryTime = deliveryTime;
+    }
 
-	public void setWhCode(String whCode) {
-		this.whCode = whCode;
-	}
+    public String getWhCode() {
+        return whCode;
+    }
 
-	public String getPoStatus() {
-		return poStatus;
-	}
+    public void setWhCode(String whCode) {
+        this.whCode = whCode;
+    }
 
-	public void setPoStatus(String poStatus) {
-		this.poStatus = poStatus;
-	}
+    public String getPoStatus() {
+        return poStatus;
+    }
 
-	public String getPoType() {
-		return poType;
-	}
+    public void setPoStatus(String poStatus) {
+        this.poStatus = poStatus;
+    }
 
-	public void setPoType(String poType) {
-		this.poType = poType;
-	}
+    public String getPoType() {
+        return poType;
+    }
 
-	public Boolean getIsIqc() {
-		return isIqc;
-	}
+    public void setPoType(String poType) {
+        this.poType = poType;
+    }
 
-	public void setIsIqc(Boolean isIqc) {
-		this.isIqc = isIqc;
-	}
+    public Boolean getIsIqc() {
+        return isIqc;
+    }
 
-	public Double getQtyPlanned() {
-		return qtyPlanned;
-	}
+    public void setIsIqc(Boolean isIqc) {
+        this.isIqc = isIqc;
+    }
 
-	public void setQtyPlanned(Double qtyPlanned) {
-		this.qtyPlanned = qtyPlanned;
-	}
+    public Double getQtyPlanned() {
+        return qtyPlanned;
+    }
 
-	public Double getQtyRcvd() {
-		return qtyRcvd;
-	}
+    public void setQtyPlanned(Double qtyPlanned) {
+        this.qtyPlanned = qtyPlanned;
+    }
 
-	public void setQtyRcvd(Double qtyRcvd) {
-		this.qtyRcvd = qtyRcvd;
-	}
+    public Double getQtyRcvd() {
+        return qtyRcvd;
+    }
 
-	public Integer getCtnPlanned() {
-		return ctnPlanned;
-	}
+    public void setQtyRcvd(Double qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
+    }
 
-	public void setCtnPlanned(Integer ctnPlanned) {
-		this.ctnPlanned = ctnPlanned;
-	}
+    public Integer getCtnPlanned() {
+        return ctnPlanned;
+    }
 
-	public Integer getCtnRcvd() {
-		return ctnRcvd;
-	}
+    public void setCtnPlanned(Integer ctnPlanned) {
+        this.ctnPlanned = ctnPlanned;
+    }
 
-	public void setCtnRcvd(Integer ctnRcvd) {
-		this.ctnRcvd = ctnRcvd;
-	}
+    public Integer getCtnRcvd() {
+        return ctnRcvd;
+    }
 
-	public String getExtMemo() {
-		return extMemo;
-	}
+    public void setCtnRcvd(Integer ctnRcvd) {
+        this.ctnRcvd = ctnRcvd;
+    }
 
-	public void setExtMemo(String extMemo) {
-		this.extMemo = extMemo;
-	}
+    public String getExtMemo() {
+        return extMemo;
+    }
 
-	public String getDataSource() {
-		return dataSource;
-	}
+    public void setExtMemo(String extMemo) {
+        this.extMemo = extMemo;
+    }
 
-	public void setDataSource(String dataSource) {
-		this.dataSource = dataSource;
-	}
+    public String getDataSource() {
+        return dataSource;
+    }
 
-	public Integer getStatus() {
-		return status;
-	}
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
 
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
+    public Integer getStatus() {
+        return status;
+    }
 
-	public Integer getErrorCount() {
-		return errorCount;
-	}
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-	public void setErrorCount(Integer errorCount) {
-		this.errorCount = errorCount;
-	}
+    public Integer getErrorCount() {
+        return errorCount;
+    }
 
-	public Date getCreateTime() {
-		return createTime;
-	}
+    public void setErrorCount(Integer errorCount) {
+        this.errorCount = errorCount;
+    }
 
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
+    public Date getCreateTime() {
+        return createTime;
+    }
 
-	public Date getLastModifyTime() {
-		return lastModifyTime;
-	}
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
-	public void setLastModifyTime(Date lastModifyTime) {
-		this.lastModifyTime = lastModifyTime;
-	}
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public List<WhInboundLineConfirm> getWhInboundLineConfirms() {
+        return whInboundLineConfirms;
+    }
+
+    public void setWhInboundLineConfirms(List<WhInboundLineConfirm> whInboundLineConfirms) {
+        this.whInboundLineConfirms = whInboundLineConfirms;
+    }
 
 }

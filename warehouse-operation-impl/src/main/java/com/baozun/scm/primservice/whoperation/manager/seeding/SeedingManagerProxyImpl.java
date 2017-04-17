@@ -14,6 +14,8 @@
 
 package com.baozun.scm.primservice.whoperation.manager.seeding;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,21 +26,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.redis.manager.CacheManager;
-import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
+import com.baozun.scm.primservice.whoperation.model.seeding.SeedingLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
-import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
-import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeObb;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 @Service("seedingManagerProxy")
 public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingManagerProxy {
@@ -52,7 +56,6 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
 
     @Autowired
     private CacheManager cacheManager;
-
 
     @Autowired
     private WhWorkManager whWorkManager;
@@ -72,433 +75,438 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
      * @param userId
      * @param logId
      */
-    public void initFacilityRedis(Long facilityId, String batchNo, Long ouId, Long userId, String logId) {
+    public void initFacilityRedis(Long functionId, Long facilityId, Long ouId, Long userId, String logId) {
 
         // 播种设施
         WhOutboundFacilityCommand facilityCommand = seedingManager.getOutboundFacilityById(facilityId, ouId);
+        if (null == facilityCommand) {
+            throw new BusinessException("播种墙不存在");
+        }
+        if (null == facilityCommand.getBatch()) {
+            throw new BusinessException("播种墙不存在");
+        }
+
+        WhFunctionSeedingWall function = this.getFunctionFromCache(functionId, facilityId, facilityCommand.getBatch(), ouId, logId);
 
         // 集货信息
         List<WhSeedingCollectionCommand> seedingCollectionList = whSeedingCollectionManager.getSeedingCollectionByFacilityId(facilityId, ouId);
         if (null == seedingCollectionList || seedingCollectionList.isEmpty()) {
             throw new BusinessException("播种墙集货信息不存在");
         }
-        // TODO 保存集货表的周转箱列表缓存
-        this.saveSeedingBatchTurnoverBoxListCache(seedingCollectionList, facilityCommand.getFacilityCode(), batchNo, ouId, logId);
-
+        boolean isStartSeeding = false;
+        for (WhSeedingCollectionCommand seedingCollection : seedingCollectionList) {
+            if (!CollectionStatus.TO_SEED.equals(seedingCollection.getCollectionStatus())) {
+                isStartSeeding = true;
+                break;
+            }
+        }
+        if (isStartSeeding) {
+            //TODO 测试，前面已清除缓存，此处需要初始化缓存
+            return;
+        }
         // 仓库信息
         WarehouseMgmt warehouseMgmt = warehouseManager.findWhMgmtByOuId(ouId);
-        // 出库单信息
-        List<WhSeedingWallLattice> seedingBatchOdoInfoList = whWorkManager.getSeedingBatchOdoInfo(batchNo, ouId);
-        if(seedingBatchOdoInfoList.size() > warehouseMgmt.getSeedingOdoQty()){
+
+        // 批次下的出库单信息
+        List<WhSeedingWallLattice> seedingBatchOdoInfoList = whWorkManager.getSeedingBatchOdoInfo(facilityCommand.getBatch(), ouId);
+        if (seedingBatchOdoInfoList.size() > warehouseMgmt.getSeedingOdoQty()) {
             throw new BusinessException("批次出库单数大于播种墙货格数");
         }
-        for (int i = 0; i < seedingBatchOdoInfoList.size(); i++) {
-            WhSeedingWallLattice whSeedingWallLattice = seedingBatchOdoInfoList.get(i);
-            // TODO 货格绑定出库单
-            this.saveSeedingOdoBindGridToCache(whSeedingWallLattice, facilityCommand.getFacilityCode(), batchNo, ouId, String.valueOf(i), logId);
+        Map<Long, SeedingLattice> latticeMap = new HashMap<>();
 
-            List<WhSeedingWallLatticeLine> seedingBatchOdoLineInfoList = seedingManager.getSeedingOdoLineInfo(whSeedingWallLattice.getOdoId(), ouId);
-            Map<String, WhSeedingWallLatticeLine> odoLineMap = new HashMap<>();
-            for(WhSeedingWallLatticeLine seedingWallLatticeLine : seedingBatchOdoLineInfoList){
-                //odoLineMap.put(seedingWallLatticeLine.getSkuId() + "_" + seedingWallLatticeLine.getUuid(), seedingWallLatticeLine);
+        for (Long index = 0L; index < seedingBatchOdoInfoList.size(); index++) {
+            Long latticeNo = index + 1;
+            // 货格号
+            WhSeedingWallLattice whSeedingWallLattice = seedingBatchOdoInfoList.get(index.intValue());
+
+            SeedingLattice seedingLattice = new SeedingLattice();
+            seedingLattice.setLatticeNo(latticeNo);
+            seedingLattice.setSeedQty(0);
+            seedingLattice.setOdoId(whSeedingWallLattice.getOdoId());
+
+            switch (function.getShowCode()) {
+                case Constants.SHOW_CODE_ODO_CODE:
+                    seedingLattice.setShowCode(whSeedingWallLattice.getOdoCode());
+                    break;
+                case Constants.SHOW_CODE_EC_ORDER_CODE:
+                    seedingLattice.setShowCode(whSeedingWallLattice.getEcOrderCode());
+                    break;
+                case Constants.SHOW_CODE_EXT_CODE:
+                    seedingLattice.setShowCode(whSeedingWallLattice.getExtCode());
+                    break;
+                default:
+                    throw new BusinessException("功能显示单据号类型错误");
             }
-            //TODO 保存出库单明细缓存
-            this.saveSeedingWallLatticeLineToCache(facilityCommand.getFacilityCode(), batchNo, String.valueOf(i), whSeedingWallLattice.getOdoCode(), odoLineMap, ouId, logId);
-        }
-        /**
-         * 扫描周转箱，得到周转箱的集货信息getTurnoverBoxInfoFromCache
-         * 扫描sku，得到skuId
-         * 获取周转箱集货信息的keySet，拆分key，得到周转箱内的skuId，判断相同的skuId得到对应的uuId
-         * 通过skuId判断商品是否在周转箱内，得到商品uuid
-         * 根据uuid判断哪些出库单需要该商品，提示放入哪个货格
-         *
-         * 出库单明细如果占用了多个库存记录，无法知道拣货时各个uuid的库存拣了多少
-         * // TODO 绑定出库箱逻辑
-         * 
-         */
+            latticeMap.put(latticeNo, seedingLattice);
 
-
-
-
-    }
-
-    /**
-     * 保存集货表的周转箱列表缓存
-     *
-     * @param seedingCollectionList
-     * @param facilityCode
-     * @param batchNo
-     * @param ouId
-     * @param logId
-     */
-    public void saveSeedingBatchTurnoverBoxListCache(List<WhSeedingCollectionCommand> seedingCollectionList, String facilityCode, String batchNo, Long ouId, String logId) {
-        // Key：SEEDING-COLLECTION-仓库ID-播种墙CODE-批次号
-        // Value：List<WhSeedingCollectionCommand>
-        String cacheKey = CacheConstants.CACHE_SEEDING_COLLECTION + "-" + ouId + "-" + facilityCode + "-" + batchNo;
-        cacheManager.setObject(cacheKey, seedingCollectionList, CacheConstants.CACHE_ONE_WEEK);
-    }
-
-    /**
-     * 获取集货表的周转箱列表缓存
-     *
-     * @param facilityCode
-     * @param batchNo
-     * @param ouId
-     * @param logId
-     * @return
-     */
-    public List<WhSeedingCollectionCommand> getSeedingBatchTurnoverBoxListFromCache(String facilityCode, String batchNo, Long ouId, String logId) {
-        // Key：SEEDING-COLLECTION-仓库ID-播种墙CODE-批次号
-        // Value：List<WhSeedingCollectionCommand>
-        String cacheKey = CacheConstants.CACHE_SEEDING_COLLECTION + "-" + ouId + "-" + facilityCode + "-" + batchNo;
-        return cacheManager.getObject(cacheKey);
-    }
-
-
-    /**
-     * 周转箱缓存在周转箱移动到播种墙区域的时候就已保存， 在扫描播种墙时通过该方法获取周转箱的缓存信息，
-     * 如果移动到播种墙时没有保存，此时再重新保存一次
-     * 
-     * @param facilityCode
-     * @param batchNo
-     * @param containerCode
-     * @param ouId
-     * @param logId
-     * @return
-     */
-    public Map<String, WhSeedingCollectionLine> getTurnoverBoxInfoFromCache(String facilityCode, String batchNo, String containerCode, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-周转箱CODE
-        // Value：Map<skuId,WhSeedingCollectionLine>
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + containerCode;
-        Map<String, WhSeedingCollectionLine> boxSkuMap = boxSkuMap = cacheManager.getObject(cacheKey);
-
-        if (null == boxSkuMap || boxSkuMap.isEmpty()) {
-            ContainerCommand containerCommand = seedingManager.getContainerByCode(containerCode, ouId);
-            // 查找容器库存
-            List<WhSeedingCollectionLine> dataList = seedingManager.findSeedingDataByContainerId(containerCommand.getId(), ouId);
-            if (null != dataList && !dataList.isEmpty()) {
-                // 封装集货sku数据
-                Map<String, WhSeedingCollectionLine> seedingDataMap = new HashMap<>();
-                for (WhSeedingCollectionLine data : dataList) {
-                    String mapKey = data.getSkuId() + "_" + data.getUuid();
-                    seedingDataMap.put(mapKey, data);
-                }
-                cacheManager.setObject(cacheKey, seedingDataMap, CacheConstants.CACHE_ONE_WEEK);
-            }
-
-            boxSkuMap = cacheManager.getObject(cacheKey);
-
+            // 货格绑定出库单
+            this.saveSeedingOdoBindLatticeToCache(whSeedingWallLattice, facilityCommand.getId(), facilityCommand.getBatch(), ouId, latticeNo, logId);
         }
 
-        if (null == boxSkuMap || boxSkuMap.isEmpty()) {
-            throw new BusinessException("周转箱缓存数据为空");
-        }
-        return boxSkuMap;
-    }
+        // 保存货格信息，用于刷新显示播种货格
+        this.saveLatticeMapToCache(facilityId, facilityCommand.getBatch(), ouId, latticeMap, logId);
 
+    }
 
     /**
      * 货格对应出库单信息
      *
      * @param seedingWallLattice
-     * @param facilityCode
+     * @param facilityId
      * @param batchNo
      * @param ouId
-     * @param gridNo
+     * @param latticeNo
      * @param logId
      */
-    public void saveSeedingOdoBindGridToCache(WhSeedingWallLattice seedingWallLattice, String facilityCode, String batchNo, Long ouId, String gridNo, String logId){
-        //Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号
-        //Value：WhSeedingWallLattice
+    public void saveSeedingOdoBindLatticeToCache(WhSeedingWallLattice seedingWallLattice, Long facilityId, String batchNo, Long ouId, Long latticeNo, String logId) {
+        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号
+        // Value：WhSeedingWallLattice
 
-        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_BIND_GRID + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridNo;
+        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
         cacheManager.setObject(cacheKey, seedingWallLattice, CacheConstants.CACHE_ONE_WEEK);
     }
 
     /**
      * 货格对应出库单信息
      *
-     * @param facilityCode
+     * @param facilityId
      * @param batchNo
      * @param ouId
-     * @param gridNo
+     * @param latticeNo
      * @param logId
      */
-    public WhSeedingWallLattice getSeedingOdoBindGridFromCache(String facilityCode, String batchNo, Long ouId, String gridNo, String logId){
-        //Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号
-        //Value：WhSeedingWallLattice
+    public WhSeedingWallLattice getSeedingOdoBindLatticeFromCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String logId) {
+        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号
+        // Value：WhSeedingWallLattice
 
-        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_BIND_GRID + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridNo;
-        return  cacheManager.getObject(cacheKey);
+        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
+        return cacheManager.getObject(cacheKey);
+    }
+
+
+    public List<WhSeedingWallLattice> getFacilityBatchOdoCache(Long facilityId, String batchNo, Long ouId, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo;
+        // 所有货格对于的出库单的缓存key
+        List<String> cacheKeyList = cacheManager.Keys(cacheKey + "-*");
+        List<WhSeedingWallLattice> seedingWallLatticeList = new ArrayList<>();
+        for (String key : cacheKeyList) {
+            WhSeedingWallLattice seedingWallLattice = cacheManager.getObject(key.substring(key.indexOf(CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE)));
+            if (null == seedingWallLattice) {
+                throw new BusinessException("出库单信息缓存错误");
+            }
+            seedingWallLatticeList.add(seedingWallLattice);
+        }
+
+        return seedingWallLatticeList;
     }
 
 
 
-
     /**
-     * 将小批次下的出库单绑定货格，保存出库单的明细信息，扫描播种墙进入操作台之后，初始化方法中调用，完成出库单明细和货格的绑定
-     *
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
-     * @param latticeLineMap
+     * 
+     * @param functionId
      * @param ouId
      * @param logId
      */
-    public void saveSeedingWallLatticeLineToCache(String facilityCode, String batchNo, String gridCode, String odoCode, Map<String, WhSeedingWallLatticeLine> latticeLineMap, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE【WMS出库单号】
-        // Value：Map<skuid_uuid,WhSeedingWallLatticeLine>
+    public WhFunctionSeedingWall getFunctionFromCache(Long functionId, Long facilityId, String batchNo, Long ouId, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_FUNCTION + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + functionId;
+        WhFunctionSeedingWall function = null;
+        try {
+            function = cacheManager.getObject(cacheKey);
+        } catch (Exception e) {
+            log.error("get function cache error, functionId is:[{}], ouId is:[{}], logId is:[{}], ex is:[{}]", functionId, ouId, logId, e);
+        }
+        if (null == function) {
+            function = seedingManager.findFunctionById(functionId, ouId);
 
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode;
-        cacheManager.setObject(cacheKey, latticeLineMap, CacheConstants.CACHE_ONE_WEEK);
+            if (null != function) {
+                try {
+                    cacheManager.setObject(cacheKey, function, CacheConstants.CACHE_ONE_WEEK);
+                } catch (Exception e) {
+                    log.error("save function cache error, functionId is:[{}], ouId is:[{}], logId is:[{}], ex is:[{}]", functionId, ouId, logId, e);
+                }
+            }
+        }
+        // TODO 测试 设置功能参数
+        //function = new WhFunctionSeedingWall();
+        //function.setScanPattern(2);
+        //function.setIsScanGoodsLattice(true);
+        //function.setSeedingWallPattern(2);
+        //function.setShowCode("3");
+
+        return function;
+    }
+
+
+
+    public void saveLatticeMapToCache(Long facilityId, String batchNo, Long ouId, Map<Long, SeedingLattice> latticeMap, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo;
+
+        cacheManager.setObject(cacheKey, latticeMap, CacheConstants.CACHE_ONE_WEEK);
     }
 
 
     /**
-     * 小批次下的出库单明细绑定了货格，扫描货格之后先拿到出库单头信息，再通过该方法获得出库单明细信息
+     * 获取播种货格信息用于显示
      *
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
+     * @param facilityId
      * @param ouId
      * @param logId
      * @return
      */
-    public Map<String, WhSeedingWallLatticeLine> getSeedingWallLatticeLineFromCache(String facilityCode, String batchNo, String gridCode, String odoCode, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE【WMS出库单号】
-        // Value：Map<skuid_uuid,WhSeedingWallLatticeLine>
+    public Map<Long, SeedingLattice> getLatticeMapFromCache(Long facilityId, String batchNo, Long ouId, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo;
 
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode;
-        Map<String, WhSeedingWallLatticeLine> latticeLineMap = cacheManager.getObject(cacheKey);
-        return latticeLineMap;
-    }
-
-
-    /**
-     * 如果播种墙设置了出库箱，一个出库单可能使用多个出库箱，记录每个出库箱分别装了哪些商品，点击出库箱已满的时候调用该方法
-     *
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
-     * @param outboundBoxCode
-     * @param seedingWallLatticeObbMap
-     * @param ouId
-     * @param logId
-     */
-    public void saveSeedingWallLatticeObbToCache(String facilityCode, String batchNo, String gridCode, String odoCode, String outboundBoxCode, Map<String, WhSeedingWallLatticeObb> seedingWallLatticeObbMap, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE-出库箱CODE
-        // Value：Map<skuid_uuid,WhSeedingWallLatticeObb>
-
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode + "-" + outboundBoxCode;
-        cacheManager.setObject(cacheKey, seedingWallLatticeObbMap, CacheConstants.CACHE_ONE_WEEK);
-    }
-
-    /**
-     * 如果播种墙设置了出库箱，一个出库单可能使用多个出库箱，通过此方法获取指定出库箱的已装入的商品信息
-     *
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
-     * @param outboundBoxCode
-     * @param ouId
-     * @param logId
-     * @return
-     */
-    public Map<String, WhSeedingWallLatticeObb> getSeedingWallLatticeObbFromCache(String facilityCode, String batchNo, String gridCode, String odoCode, String outboundBoxCode, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE-出库箱CODE
-        // Value：Map<skuid_uuid,WhSeedingWallLatticeObb>
-
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode + "-" + outboundBoxCode;
         return cacheManager.getObject(cacheKey);
     }
 
 
 
+    @Override
+    public void saveLatticeCurrentSeedingOutboundBoxCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String outboundBoxCode, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE_CURRENT_BIND_OUTBOUNDBOX + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
+        cacheManager.setObject(cacheKey, outboundBoxCode, CacheConstants.CACHE_ONE_WEEK);
+    }
+
+    @Override
+    public String getLatticeCurrentSeedingOutboundBoxCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE_CURRENT_BIND_OUTBOUNDBOX + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
+        return cacheManager.getObject(cacheKey);
+    }
 
 
+    @Override
+    public void saveLatticeSeedingOutboundBoxCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String outboundBoxCode, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE_BIND_OUTBOUNDBOX_BOTH + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo + "-" + outboundBoxCode;
+        cacheManager.setObject(cacheKey, outboundBoxCode, CacheConstants.CACHE_ONE_WEEK);
+    }
 
+    @Override
+    public List<String> getLatticeSeedingOutboundBoxCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE_BIND_OUTBOUNDBOX_BOTH + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
+        List<String> cacheKeyList = cacheManager.Keys(cacheKey + "-" + "*");
+        List<String> outboundBoxCodeList = new ArrayList<>();
+        for (String key : cacheKeyList) {
+            String outboundBoxCode = cacheManager.getObject(key.substring(key.indexOf(CacheConstants.CACHE_SEEDING_LATTICE_BIND_OUTBOUNDBOX_BOTH)));
+            if (null != outboundBoxCode) {
+                outboundBoxCodeList.add(outboundBoxCode);
+            }
+        }
 
+        // 当前播种的出库箱
+        String currentOutboundBoxCode = this.getLatticeCurrentSeedingOutboundBoxCache(facilityId, batchNo, ouId, latticeNo, logId);
+        outboundBoxCodeList.add(currentOutboundBoxCode);
 
+        return outboundBoxCodeList;
+    }
 
+    public List<String> getFacilityCurrentSeedingOutboundBoxCode(Long facilityId, String batchNo, Long ouId, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE_CURRENT_BIND_OUTBOUNDBOX + "-" + ouId + "-" + facilityId + "-" + batchNo;
 
+        List<String> cacheKeyList = cacheManager.Keys(cacheKey + "-" + "*");
+        List<String> outboundBoxCodeList = new ArrayList<>();
+        for (String key : cacheKeyList) {
+            String outboundBoxCode = cacheManager.getObject(key.substring(key.indexOf(CacheConstants.CACHE_SEEDING_LATTICE_CURRENT_BIND_OUTBOUNDBOX)));
+            if (null != outboundBoxCode) {
+                outboundBoxCodeList.add(outboundBoxCode);
+            }
+        }
+        return outboundBoxCodeList;
+    }
 
+    @Override
+    public void saveOutboundBoxCollectionLineCache(Long facilityId, String batchNo, Long ouId, String outboundBoxCode, Map<Long, WhSeedingCollectionLineCommand> collectionLineMap, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_OUTBOUNDBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + outboundBoxCode;
+        cacheManager.setObject(cacheKey, collectionLineMap, CacheConstants.CACHE_ONE_WEEK);
+    }
 
+    @Override
+    public Map<Long, WhSeedingCollectionLineCommand> getOutboundBoxCollectionLineCache(Long facilityId, String batchNo, Long ouId, String outboundBoxCode, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_OUTBOUNDBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + outboundBoxCode;
+        return cacheManager.getObject(cacheKey);
+    }
 
+    @Override
+    public void saveLatticeCollectionLineCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, Map<Long, WhSeedingCollectionLineCommand> collectionLineMap, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
+        cacheManager.setObject(cacheKey, collectionLineMap, CacheConstants.CACHE_ONE_WEEK);
+    }
 
-
+    @Override
+    public Map<Long, WhSeedingCollectionLineCommand> getLatticeCollectionLineCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_LATTICE_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
+        return cacheManager.getObject(cacheKey);
+    }
 
     /**
-     * 分别记录周转箱中每个商品已播种数量，扫描sku放入货格后，通过该方法记录周转箱中该sku的播种总数
-     * 
-     * @param facilityCode
-     * @param batchNo
-     * @param containerCode
-     * @param skuId
-     * @param uuid
+     * @param seedingCollectionId
      * @param ouId
-     * @param count
-     * @param logId
      * @return
      */
-    public Long saveBoxSkuSownCountToCache(String facilityCode, String batchNo, String containerCode, Long skuId, String uuid, Long ouId, Long count, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-周转箱CODE-SKUID-UUID
-        // Value：数量
+    @Override
+    public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollectionFromCache(Long facilityId, String batchNo, Long ouId, Long seedingCollectionId, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_TURNOVERBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + seedingCollectionId;
 
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + containerCode + "-" + skuId + "-" + uuid;
-        cacheManager.incrBy(cacheKey, count.intValue());
-
-        Long sownSkuCount = cacheManager.getObject(cacheKey);
-        if (null == sownSkuCount || sownSkuCount < 0) {
-            throw new BusinessException("商品已播种数缓存异常");
+        // cacheManager.remonKeys(cacheKey);
+        List<WhSeedingCollectionLineCommand> seedingCollectionLineCommandList = null;
+        try {
+            seedingCollectionLineCommandList = cacheManager.getObject(cacheKey);
+        } catch (Exception e) {
+            log.error("getSeedingCollectionLineByCollectionFromCache error, facilityId is:[{}], batchNo is:[{}], ouId is:[{}], seedingCollectionId is:[{}], logId is:[{}], ex is:[{}]", facilityId, batchNo, ouId, seedingCollectionId, logId, e);
         }
-        return sownSkuCount;
+        if (null == seedingCollectionLineCommandList || seedingCollectionLineCommandList.isEmpty()) {
+            seedingCollectionLineCommandList = seedingManager.getSeedingCollectionLineByCollection(seedingCollectionId, ouId);
+
+            if (null != seedingCollectionLineCommandList) {
+                try {
+                    cacheManager.setObject(cacheKey, seedingCollectionLineCommandList, CacheConstants.CACHE_ONE_WEEK);
+                } catch (Exception e) {
+                    log.error("save SeedingCollectionLineByCollection error, facilityId is:[{}], batchNo is:[{}], ouId is:[{}], seedingCollectionId is:[{}], logId is:[{}], ex is:[{}]", facilityId, batchNo, ouId, seedingCollectionId, logId, e);
+                }
+            }
+        }
+        return seedingCollectionLineCommandList;
     }
 
     /**
-     * 分别记录周转箱中每个商品已播种数量，用于判断sku待播种数量
      *
-     * @param facilityCode
-     * @param batchNo
-     * @param containerCode
-     * @param skuId
-     * @param uuid
+     * @param seedingCollectionId
      * @param ouId
-     * @param logId
      * @return
      */
-    public Long getBoxSkuSownCountFromCache(String facilityCode, String batchNo, String containerCode, Long skuId, String uuid, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-周转箱CODE-SKUID-UUID
-        // Value：数量
+    @Override
+    public void saveSeedingCollectionLineByCollectionToCache(Long facilityId, String batchNo, Long ouId, Long seedingCollectionId, List<WhSeedingCollectionLineCommand> collectionLineList, String logId) {
+        String cacheKey = CacheConstants.CACHE_SEEDING_TURNOVERBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + seedingCollectionId;
 
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + containerCode + "-" + skuId + "-" + uuid;
-        Long sownSkuCount = cacheManager.getObject(cacheKey);
-        if (null == sownSkuCount || sownSkuCount < 0) {
-            throw new BusinessException("商品已播种数缓存异常");
-        }
-        return sownSkuCount;
+        cacheManager.setObject(cacheKey, collectionLineList, CacheConstants.CACHE_ONE_WEEK);
     }
 
+    @Override
+    public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByOdoFromCache(Long facilityId, String batchNo, Long ouId, Long odoId, String logId) {
+        List<WhSeedingCollectionLineCommand> odoLineList = new ArrayList<>();
 
+        List<WhSeedingCollectionCommand> facilitySeedingCollectionList = whSeedingCollectionManager.getSeedingCollectionByFacilityId(facilityId, ouId);
 
-
-    /**
-     * 分别记录出库单中不同属性的sku播种数，扫描sku放入货格后，调用此方法记录对应出库单sku的播种数量
-     *
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
-     * @param skuId
-     * @param uuid
-     * @param count
-     * @param ouId
-     * @param logId
-     */
-    public void saveOdoSkuSownCountToCache(String facilityCode, String batchNo, String gridCode, String odoCode, Long skuId, String uuid, Long count, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE-SKUID-UUID
-        // Value：数量
-
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode + "-" + skuId + "-" + uuid;
-        cacheManager.incrBy(cacheKey, count.intValue());
-        Long sownSkuCount = cacheManager.getObject(cacheKey);
-        if (null == sownSkuCount || sownSkuCount < 0) {
-            throw new BusinessException("odo商品已播种数缓存异常");
+        for (WhSeedingCollectionCommand seedingCollection : facilitySeedingCollectionList) {
+            List<WhSeedingCollectionLineCommand> collectionLineList = this.getSeedingCollectionLineByCollectionFromCache(facilityId, batchNo, ouId, seedingCollection.getId(), logId);
+            for (WhSeedingCollectionLineCommand line : collectionLineList) {
+                if (odoId.equals(line.getOdoId())) {
+                    odoLineList.add(line);
+                }
+            }
         }
+        return odoLineList;
     }
 
-    /**
-     * 获取出库单sku已播种数量缓存
-     *
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
-     * @param skuId
-     * @param uuid
-     * @param ouId
-     * @param logId
-     * @return
-     */
-    public Long getOdoSkuSownCountFromCache(String facilityCode, String batchNo, String gridCode, String odoCode, Long skuId, String uuid, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE-SKUID-UUID
-        // Value：数量
+    public void facilityBatchFinishedSeeding(Long facilityId, Map<SeedingLattice, List<WhSeedingCollectionLineCommand>> latticeSeedingLineMap, Map<SeedingLattice, Map<String, List<WhSeedingCollectionLineCommand>>> latticeOutboundBoxSeedingLineMap,
+            Long userId, Long ouId, String logId) {
+        WhOutboundFacilityCommand facilityCommand = seedingManager.getOutboundFacilityById(facilityId, ouId);
+        // 仓库信息
+        WarehouseMgmt warehouseMgmt = warehouseManager.findWhMgmtByOuId(ouId);
+        warehouseMgmt.getIsTabbInvTotal();
 
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode + "-" + skuId + "-" + uuid;
-        Long sownSkuCount = cacheManager.getObject(cacheKey);
-        return sownSkuCount;
-    }
+        List<WhSeedingWallLattice> facilitySeedingOdoList = this.getFacilityBatchOdoCache(facilityId, facilityCommand.getBatch(), ouId, logId);
 
+        // 播种墙的所有容器库存
+        List<WhSkuInventory> facilitySeedingSkuInventoryList = new ArrayList<>();
 
-
-    /**
-     * 播种墙一个货格对应一个出库单，一个货格可能会需要使用多个出库箱 该缓存分别记录各个出库箱的某个商品数量，扫描sku放入货格后调用此方法，记录出库箱中sku的数量
-     * 
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
-     * @param outboundBoxCode
-     * @param skuId
-     * @param uuid
-     * @param count
-     * @param ouId
-     * @param logId
-     */
-    public void saveOdoSkuOutbountBoxSownCountToCache(String facilityCode, String batchNo, String gridCode, String odoCode, String outboundBoxCode, Long skuId, String uuid, Long count, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE-出库箱CODE-SKUID-UUID
-        // Value：数量
-
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode + "-" + outboundBoxCode + "-" + skuId + "-" + uuid;
-        Long sownSkuCount = cacheManager.getObject(cacheKey);
-        // 已播种商品数
-        if (null == sownSkuCount) {
-            sownSkuCount = count;
-        } else {
-            sownSkuCount = sownSkuCount + count;
+        if (null != latticeSeedingLineMap) {
+            for (Map.Entry<SeedingLattice, List<WhSeedingCollectionLineCommand>> latticeSeedingLineMapEntry : latticeSeedingLineMap.entrySet()) {
+                SeedingLattice seedingLattice = latticeSeedingLineMapEntry.getKey();
+                List<WhSeedingCollectionLineCommand> latticeSeedingLineList = latticeSeedingLineMapEntry.getValue();
+                for (WhSeedingCollectionLineCommand line : latticeSeedingLineList) {
+                    if(line.getSeedingQty() > 0) {
+                        WhSkuInventory skuInventory = this.createWhSkuInventory(line, ouId, logId);
+                        facilitySeedingSkuInventoryList.add(skuInventory);
+                    }
+                }
+            }
+        } else if (null != latticeOutboundBoxSeedingLineMap) {
+            for (Map.Entry<SeedingLattice, Map<String, List<WhSeedingCollectionLineCommand>>> latticeBoxMapEntry : latticeOutboundBoxSeedingLineMap.entrySet()) {
+                SeedingLattice seedingLattice = latticeBoxMapEntry.getKey();
+                Map<String, List<WhSeedingCollectionLineCommand>> boxSeedingLineMap = latticeBoxMapEntry.getValue();
+                for (Map.Entry<String, List<WhSeedingCollectionLineCommand>> boxSeedingLineMapEntry : boxSeedingLineMap.entrySet()) {
+                    String outboundBoxCode = boxSeedingLineMapEntry.getKey();
+                    List<WhSeedingCollectionLineCommand> boxSeedingLineList = boxSeedingLineMapEntry.getValue();
+                    for (WhSeedingCollectionLineCommand line : boxSeedingLineList) {
+                        if(line.getSeedingQty() > 0) {
+                            WhSkuInventory skuInventory = this.createWhSkuInventory(line, ouId, logId);
+                            facilitySeedingSkuInventoryList.add(skuInventory);
+                        }
+                    }
+                }
+            }
         }
-        cacheManager.setObject(cacheKey, sownSkuCount, CacheConstants.CACHE_ONE_WEEK);
+        try {
+            //TODO 测试 不保存库存
+            seedingManager.batchFinishedSeeding(facilityId, facilitySeedingOdoList, facilitySeedingSkuInventoryList, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
 
-        sownSkuCount = cacheManager.getObject(cacheKey);
-        if (null == sownSkuCount || sownSkuCount < 0) {
-            throw new BusinessException("odo商品已播种数缓存异常");
+            // 清除缓存
+            this.releaseFacilityBatchRedis(facilityId, facilityCommand.getBatch(), ouId, logId);
+
+        } catch (Exception e) {
+            log.error(
+                    "SeedingManagerProxyImpl facilityBatchFinishedSeeding error, facilityId is:[{}], facilitySeedingOdoList is:[{}], facilitySeedingSkuInventoryList is:[{}], IsTabbInvTotal is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}], ex is:[{}]",
+                    facilityId, facilitySeedingOdoList, facilitySeedingSkuInventoryList, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId, e);
         }
     }
 
-    /**
-     * 播种墙一个货格对应一个出库单，一个货格可能会需要使用多个出库箱 该缓存分别记录各个出库箱的某个商品数量，通过该方法获取出库箱中sku的数量
-     *
-     * @param facilityCode
-     * @param batchNo
-     * @param gridCode
-     * @param odoCode
-     * @param outboundBoxCode
-     * @param skuId
-     * @param uuid
-     * @param ouId
-     * @param logId
-     * @return
-     */
-    public Long getOdoSkuOutbountBoxSownCountFromCache(String facilityCode, String batchNo, String gridCode, String odoCode, String outboundBoxCode, Long skuId, String uuid, Long ouId, String logId) {
-        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE-出库箱CODE-SKUID-UUID
-        // Value：数量
+    private WhSkuInventory createWhSkuInventory(WhSeedingCollectionLineCommand collectionSeedingLine, Long ouId, String logId) {
+        WhSkuInventory skuInventory = new WhSkuInventory();
+        skuInventory.setSkuId(collectionSeedingLine.getSkuId());
+        skuInventory.setCustomerId(collectionSeedingLine.getCustomerId());
+        skuInventory.setStoreId(collectionSeedingLine.getStoreId());
+        // 占用编码是内部编码
+        skuInventory.setOccupationCode(collectionSeedingLine.getOdoCode());
+        skuInventory.setOccupationLineId(collectionSeedingLine.getOdoLineId());
+        skuInventory.setSeedingWallCode(collectionSeedingLine.getFacilityCode());
+        skuInventory.setContainerLatticeNo(collectionSeedingLine.getLatticeNo());
+        skuInventory.setOutboundboxCode(collectionSeedingLine.getOutboundBoxCode());
+        skuInventory.setOnHandQty(collectionSeedingLine.getSeedingQty().doubleValue());
+        skuInventory.setAllocatedQty(0d);
+        skuInventory.setToBeFilledQty(0d);
+        skuInventory.setFrozenQty(0d);
+        skuInventory.setInvStatus(Long.valueOf(collectionSeedingLine.getInvStatus()));
+        skuInventory.setInvType(collectionSeedingLine.getInvType());
+        skuInventory.setBatchNumber(collectionSeedingLine.getBatchNumber());
+        skuInventory.setMfgDate(collectionSeedingLine.getMfgDate());
+        skuInventory.setExpDate(collectionSeedingLine.getExpDate());
+        skuInventory.setCountryOfOrigin(collectionSeedingLine.getCountryOfOrigin());
+        skuInventory.setInvAttr1(collectionSeedingLine.getInvAttr1());
+        skuInventory.setInvAttr2(collectionSeedingLine.getInvAttr2());
+        skuInventory.setInvAttr3(collectionSeedingLine.getInvAttr3());
+        skuInventory.setInvAttr4(collectionSeedingLine.getInvAttr4());
+        skuInventory.setInvAttr5(collectionSeedingLine.getInvAttr5());
+        // TODO 不重新计算UUID，无法确认inventory_sn表的对应
+        String uuid = null;
+        // try {
+        // uuid = SkuInventoryUuid.invUuid(skuInventory);
+        // } catch (Exception e) {
+        // log.error("caseLevelReceivingCompleted createWhSkuInventory error, throw NoSuchAlgorithmException, skuInventory is:[{}], logId is:[{}]",
+        // skuInventory, logId);
+        // throw new BusinessException(ErrorCodes.CASELEVEL_UUID_ERROR);
+        // }
+        skuInventory.setUuid(collectionSeedingLine.getUuid());
+        skuInventory.setIsLocked(false);
+        skuInventory.setOuId(collectionSeedingLine.getOuId());
+        skuInventory.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ODO);
+        skuInventory.setLastModifyTime(new Date());
 
-        String cacheKey = CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCode + "-" + batchNo + "-" + gridCode + "-" + odoCode + "-" + outboundBoxCode + "-" + skuId + "-" + uuid;
-        Long sownSkuCount = cacheManager.getObject(cacheKey);
-        return sownSkuCount;
+        return skuInventory;
     }
 
+    public void releaseFacilityBatchRedis(Long facilityId, String batchNo, Long ouId, String logId){
+        WhOutboundFacilityCommand facilityCommand = seedingManager.getOutboundFacilityById(facilityId, ouId);
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCommand.getFacilityCode() + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_FUNCTION + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE_CURRENT_BIND_OUTBOUNDBOX + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE_BIND_OUTBOUNDBOX_BOTH + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_OUTBOUNDBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_TURNOVERBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
 
-    // TODO 3、播种墙正在进行播种显示Redis数据
+    }
 
-    // TODO 4 当出库单分成多个出库箱时，按照货格记录总数量
-
-    // TODO 5、播种墙货格绑定出库单单号Redis
-
-    // TODO 6、播种墙货格对应正在使用的出库箱Redis数据
-
-    // TODO 7、播种墙对应批次正常结束所有播种后，调整对应的库存记录，直接删除所有对应的Redis数据
 }

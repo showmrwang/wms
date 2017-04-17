@@ -16,6 +16,7 @@ public class CollectionStatus implements Serializable {
     public static final Integer TEMPORARY_STORAGE = 3; // 暂存状态
     public static final Integer TO_SEED = 4; // 待播种
     public static final Integer SEEDING = 5; // 播种中
+    public static final Integer SEEDING_EXECUTING = 6; // 播种执行中
     public static final Integer FINISH = 10; // 已完成
     public static final Integer ERROR = 20; // 异常
 

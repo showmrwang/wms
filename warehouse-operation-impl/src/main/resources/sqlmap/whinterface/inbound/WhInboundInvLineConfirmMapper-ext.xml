@@ -110,4 +110,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhInboundInvLineConfirmByInboundLineId" resultMap="WhInboundInvLineConfirmResultExt">
+		select <include refid="whInboundInvLineConfirmColumnsExt" />
+		from t_wh_inbound_inv_line_confirm 
+		where 
+		inbound_confirm_line_id = #{id}
+	</select>
+	
 </mapper>
