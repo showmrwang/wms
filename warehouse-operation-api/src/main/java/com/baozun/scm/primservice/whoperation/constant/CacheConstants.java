@@ -105,14 +105,28 @@ public final class CacheConstants {
     /** 缓存作业执行明细统计信息 */
     public static final String CACHE_OPERATION_EXEC_LINE = "CACHE_OPERATION_EXEC_LINE";
 
+    /************************************* 播种缓存 ***********************************/
+
     /** 播种商品数据缓存 */
     public static final String CACHE_SEEDING = "SEEDING";
-
-    /************************************* 播种缓存 ***********************************/
-    /** 播种集货信息周转箱列表缓存 */
-    public static final String CACHE_SEEDING_COLLECTION = "SEEDING-COLLECTION";
     /** odo出库单绑定货格 */
-    public static final String CACHE_SEEDING_ODO_BIND_GRID = "SEEDING-ODO-BIND-GRID";
+    public static final String CACHE_SEEDING_ODO_BIND_LATTICE = "SEEDING-ODO-BIND-LATTICE";
+    /** 播种功能缓存 */
+    public static final String CACHE_SEEDING_FUNCTION = "SEEDING-FUNCTION";
+    /** 播种货格信息 */
+    public static final String CACHE_SEEDING_LATTICE = "SEEDING-LATTICE";
+    /** 货格绑定出库箱缓存 */
+    public static final String CACHE_SEEDING_LATTICE_CURRENT_BIND_OUTBOUNDBOX = "SEEDING-LATTICE-CURRENT-BING-OUTBOUNDBOX";
+    /** 货格绑定的所有出库箱 */
+    public static final String CACHE_SEEDING_LATTICE_BIND_OUTBOUNDBOX_BOTH = "SEEDING-LATTICE-BING-OUTBOUNDBOX-BOTH";
+    /** 出库箱装入的明细 */
+    public static final String CACHE_SEEDING_OUTBOUNDBOX_COLLECTION_LINE = "SEEDING-LATTICE-OUTBOUNDBOX-COLLECTION-LINE";
+    /** 货格装入的明细 */
+    public static final String CACHE_SEEDING_LATTICE_COLLECTION_LINE = "SEEDING-LATTICE-LATTICE-COLLECTION-LINE";
+    /** 周转箱中的明细 */
+    public static final String CACHE_SEEDING_TURNOVERBOX_COLLECTION_LINE = "SEEDING-TURNOVERBOX-COLLECTION-LINE";
+
+
 
     // --------------------------------------------集货缓存--------------------------------------------
     /** 集货推荐结果缓存:前缀+USERID */

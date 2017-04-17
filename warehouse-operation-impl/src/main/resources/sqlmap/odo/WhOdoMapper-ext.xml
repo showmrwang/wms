@@ -3320,7 +3320,7 @@
     <select id="getSeedingOdoLineInfo" resultType="com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine">
         SELECT
             sku.id as skuId,
-            sku.`code` AS skuCode,
+            sku.code AS skuCode,
             sku.ext_code AS skuExtCode,
             odoLine.sku_bar_code AS skuBarCode,
             odoLine.sku_name AS skuName,
@@ -3331,7 +3331,7 @@
             store.id as storeId,
             store.store_code AS storeCode,
             store.store_name AS storeName,
-            invStatus.`name` AS invStatus,
+            invStatus.name AS invStatus,
             invTypeSys.dic_label AS invType,
             odoLine.batch_number AS batchNumber,
             date_format(odoLine.mfg_date,'%Y-%m-%d') AS mfgDate,

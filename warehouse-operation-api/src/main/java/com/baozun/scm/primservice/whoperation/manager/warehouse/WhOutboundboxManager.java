@@ -19,4 +19,7 @@ public interface WhOutboundboxManager extends BaseManager {
 
     WhOutboundboxCommand getwhOutboundboxCommandByCode(String outboundBoxCode, Long ouId);
 
+
+    public WhOutboundboxCommand findByOutboundBoxCode(String outboundBoxCode, Long ouId);
+
 }

@@ -56,4 +56,7 @@ public final class InvTransactionType {
     /** 库内加工 */
     public static final String INTRA_WH_MACHINING = "16";
 
+    /** 播种 */
+    public static final String SEEDING = "17";
+
 }

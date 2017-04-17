@@ -7,6 +7,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionLineDao">
 	<resultMap id="WhSeedingCollectionLineResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine">
 	</resultMap>
+
+    <resultMap id="WhSeedingCollectionLineCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand">
+    </resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSeedingCollectionLineColumnsExt">
@@ -177,5 +180,48 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
-	
+
+    <select id="getSeedingCollectionLineByCollection" resultMap="WhSeedingCollectionLineCommand">
+        select
+            collectionLine.id as id,
+            collectionLine.seeding_collection_id as seedingCollectionId,
+            collectionLine.sku_code as skuCode,
+            collectionLine.sku_ext_code as skuExtCode,
+            collectionLine.sku_bar_code as skuBarCode,
+            collectionLine.sku_name as skuName,
+            collectionLine.qty as qty,
+            collectionLine.seeding_qty as seedingQty,
+            collectionLine.customer_code as customerCode,
+            collectionLine.customer_name as customerName,
+            collectionLine.store_code as storeCode,
+            collectionLine.store_name as storeName,
+            collectionLine.inv_status as invStatus,
+            collectionLine.inv_type as invType,
+            collectionLine.batch_number as batchNumber,
+            collectionLine.mfg_date as mfgDate,
+            collectionLine.exp_date as expDate,
+            collectionLine.country_of_origin as countryOfOrigin,
+            collectionLine.inv_attr1 as invAttr1,
+            collectionLine.inv_attr2 as invAttr2,
+            collectionLine.inv_attr3 as invAttr3,
+            collectionLine.inv_attr4 as invAttr4,
+            collectionLine.inv_attr5 as invAttr5,
+            collectionLine.uuid as uuid,
+            collectionLine.ou_id as ouId,
+            collectionLine.odo_id as odoId,
+            collectionLine.odo_line_id as odoLineId,
+            collectionLine.sku_id as skuId,
+            store.id as storeId,
+            customer.id as customerId
+        from
+            t_wh_seeding_collection_line as collectionLine
+            left join t_bi_customer as customer
+              on customer.customer_code = collectionLine.customer_code and customer.customer_name = collectionLine.customer_name
+            left join t_bi_store as store
+              on store.store_code = collectionLine.store_code and store.store_name = collectionLine.store_name
+        where
+            collectionLine.seeding_collection_id = #{seedingCollectionId}
+            and collectionLine.ou_id = #{ouId}
+    </select>
+
 </mapper>

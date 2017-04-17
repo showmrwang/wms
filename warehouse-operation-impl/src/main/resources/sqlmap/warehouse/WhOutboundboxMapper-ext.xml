@@ -7,6 +7,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao">
 	<resultMap id="WhOutboundboxResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox">
 	</resultMap>
+
+    <resultMap id="WhOutboundboxCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand">
+    </resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whOutboundboxColumnsExt">
@@ -169,4 +172,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	   		 odo_id != #{odoId}
 	   		 and ou_id = #{ouId}
     </select>
+
+    <select id="findByOutboundBoxCode" resultMap="WhOutboundboxCommand">
+        select
+            <include refid="whOutboundboxColumnsExt" />
+        from
+            t_wh_outboundbox
+        where
+            ou_id = #{ouId}
+            and outboundbox_code = #{outboundBoxCode}
+    </select>
+
 </mapper>

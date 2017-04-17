@@ -6,9 +6,13 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface SeedingManager extends BaseManager {
 
@@ -62,9 +66,31 @@ public interface SeedingManager extends BaseManager {
 
     /**
      * 根据id 和ouId 获取出库箱类型
+     * 
      * @param id
      * @param ouId
      * @return
      */
-    public OutInvBoxTypeCommand findOutInventoryBoxType(Long id,Long ouId);
+    public OutInvBoxTypeCommand findOutInventoryBoxType(Long id, Long ouId);
+
+    /**
+     * 查询播种墙功能配置
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    public WhFunctionSeedingWall findFunctionById(Long id, Long ouId);
+
+    /**
+     *
+     * @param seedingCollectionId
+     * @param ouId
+     * @return
+     */
+    public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollection(Long seedingCollectionId, Long ouId);
+
+    public void batchFinishedSeedingWithException(Long facilityId, Long ouId);
+
+    public void batchFinishedSeeding(Long facilityId, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList,  Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 }

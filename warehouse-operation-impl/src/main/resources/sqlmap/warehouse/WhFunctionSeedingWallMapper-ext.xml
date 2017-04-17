@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionSeedingWallDao">
+    <resultMap id="WhFunctionSeedingWallResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall">
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whFunctionSeedingWallColumnsExt">
+        <![CDATA[
+                id as id,
+                function_id as functionId,
+                scan_pattern as scanPattern,
+                seeding_wall_pattern as seedingWallPattern,
+                is_scan_goods_lattice as isScanGoodsLattice,
+                show_code as showCode,
+                ou_id as ouId
+        ]]>
+    </sql>
+
+    <sql id="whFunctionSeedingWallDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="functionId!=null">
+                and function_id = #{functionId}
+            </if>
+
+            <if test="scanPattern!=null">
+                and scan_pattern = #{scanPattern}
+            </if>
+
+            <if test="seedingWallPattern!=null">
+                and seeding_wall_pattern = #{seedingWallPattern}
+            </if>
+
+            <if test="isScanGoodsLattice!=null">
+                and is_scan_goods_lattice = #{isScanGoodsLattice}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findByFunctionIdExt" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall">
+        select
+        <include refid="whFunctionSeedingWallColumnsExt"/>
+        from t_wh_function_seedingwall
+        where function_id=#{functionId} and ou_id=#{ouId}
+    </select>
+
+    <delete id="deleteByFunctionId">
+        <![CDATA[
+            delete from t_wh_function_seedingwall  where
+                function_id = #{functionId}  and ou_id = #{ouId}
+        ]]>
+    </delete>
+
+</mapper>

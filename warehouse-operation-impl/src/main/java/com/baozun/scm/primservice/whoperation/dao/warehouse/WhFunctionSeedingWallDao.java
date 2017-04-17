@@ -21,25 +21,39 @@ import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
+import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 
-
-
-public interface WhSeedingCollectionLineDao extends BaseDao<WhSeedingCollectionLine, Long> {
+public interface WhFunctionSeedingWallDao extends BaseDao<WhFunctionSeedingWall, Long> {
 
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<WhSeedingCollectionLine> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+    Pagination<WhFunctionSeedingWall> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    @QueryPage("queryCount")
+    Pagination<WhFunctionSeedingWall> query(Page page, Sort[] sorts, QueryCondition cond);
+
+    List<WhFunctionSeedingWall> query(QueryCondition cond);
+
+    Long queryCount(QueryCondition cond);
 
     @CommonQuery
-    int saveOrUpdate(WhSeedingCollectionLine o);
+    int saveOrUpdate(WhFunctionSeedingWall o);
 
-    public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollection(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
+    /**
+     * 查询播种-操作台信息
+     * 
+     * @param ouId
+     * @param functionId
+     * @return
+     */
+    WhFunctionSeedingWall findByFunctionIdExt(@Param("ouId") Long ouId, @Param("functionId") Long functionId);
+
+    void deleteByFunctionId(@Param("functionId") Long functionId, @Param("ouId") Long ou_id);
 
 }
