@@ -168,7 +168,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @param insideContainerCmd
      * @param outerContainerCmd
      */
-     public void pdaPickingRemoveAllCache(Long operationId,Boolean isAfterScanLocation,Long locationId,Long insideContianerId);
+     public void pdaPickingRemoveAllCache(Long operationId,Boolean isAfterScanLocation,Long locationId);
      
      
      /***

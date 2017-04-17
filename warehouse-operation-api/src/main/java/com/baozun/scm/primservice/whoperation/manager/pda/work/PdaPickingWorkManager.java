@@ -243,4 +243,10 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param ouId
      */
     public void replenishCancelPattern(String outerContainerCode,String insideContainerCode, int cancelPattern,int replenishWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
+    
+    /**
+     * 拣货完成
+     * @param operationId
+     */
+    public void shortPickingEnd(Long operationId,Long ouId,Long userId,String outBoundBoxCode,Long turnoverBoxId,Long outBoundBoxId,Long outerContainerId,Long insideContainerId);
 }

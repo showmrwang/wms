@@ -3334,7 +3334,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * @param insideContainerCmd
        * @param outerContainerCmd
        */
-       public void pdaPickingRemoveAllCache(Long operationId,Boolean isAfterScanLocation,Long locationId,Long insideContianerId){
+       public void pdaPickingRemoveAllCache(Long operationId,Boolean isAfterScanLocation,Long locationId){
            log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is start");
                OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
                if(null == operatorLine) {
