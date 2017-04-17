@@ -568,7 +568,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                            }
                       }
                 }else{//散装
-                      if(tipSkuId.longValue() == skuCmd.getSkuId().longValue() && locationId.equals(skuCmd.getLocationId())) {
+                      if(null == skuCmd.getInsideContainerId() && tipSkuId.longValue() == skuCmd.getSkuId().longValue() && locationId.equals(skuCmd.getLocationId())) {
                           skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
                           skuAttrId = this.concatSkuAttrIdSn(skuAttrId, tipScanSkuCmd, locskuAttrIdsSnDefect, insideSkuAttrIdsSnDefect, insideContainerId, locationId);
                           if(StringUtils.isEmpty(skuAttrId)) {
@@ -588,7 +588,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       //拼装skuAttrId ，sn(如果没有sn,直接返回唯一sku)
       private String concatSkuAttrIdSn(String skuAttrId,ScanTipSkuCacheCommand tipScanSkuCmd,Map<Long, Map<String, Set<String>>> locskuAttrIdsSnDefect,Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect,Long insideContainerId,Long locationId){
                Map<String, Set<String>>  skuAttrIdSnSet = new HashMap<String, Set<String>>();
-               if(null != insideSkuAttrIdsSnDefect) {
+               if(null != insideSkuAttrIdsSnDefect && insideSkuAttrIdsSnDefect.size() != 0) {
                    skuAttrIdSnSet = insideSkuAttrIdsSnDefect.get(insideContainerId);  //有货箱情况,唯一sku对应的sn/残次信息
                }else{
                    skuAttrIdSnSet = locskuAttrIdsSnDefect.get(locationId);

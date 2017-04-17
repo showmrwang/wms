@@ -1073,7 +1073,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             boolean isExists = false;
             for (SysDictionary sd : invTypeList) {
                 if (sd.getDicValue().equals(skuInvType)) {
-                    srCmd.setSkuInvType(sd.getDicValue());
+                    srCmd.setSkuInvType(sd.getDicLabel());
                     isExists = true;
                     break;
                 }
@@ -1092,7 +1092,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             boolean isExists = false;
             for (InventoryStatus is : invStatusList) {
                 if (is.getId().toString().equals(skuInvStatus)) {
-                    srCmd.setSkuInvStatus(is.getId());
+                    srCmd.setSkuInvStatusName(is.getName());
                     isExists = true;
                     break;
                 }
@@ -1140,10 +1140,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             boolean isExists = false;
             for (SysDictionary sd : list) {
                 if (sd.getDicValue().equals(skuInvAttr1)) {
-                    srCmd.setSkuInvAttr1(sd.getDicValue());
+                    srCmd.setSkuInvAttr1(sd.getDicLabel());
                     isExists = true;
                     break;
                 }
+            }
+            if (false == isExists) {
+                log.error("inv attr4 is not found error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_INV_ATTR_NOT_FOUND_ERROR);
             }
         } else {
             srCmd.setSkuInvAttr1("");
@@ -1155,7 +1159,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             boolean isExists = false;
             for (SysDictionary sd : list) {
                 if (sd.getDicValue().equals(skuInvAttr2)) {
-                    srCmd.setSkuInvAttr2(sd.getDicValue());
+                    srCmd.setSkuInvAttr2(sd.getDicLabel());
                     isExists = true;
                     break;
                 }
@@ -1174,7 +1178,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             boolean isExists = false;
             for (SysDictionary sd : list) {
                 if (sd.getDicValue().equals(skuInvAttr3)) {
-                    srCmd.setSkuInvAttr3(sd.getDicValue());
+                    srCmd.setSkuInvAttr3(sd.getDicLabel());
                     isExists = true;
                     break;
                 }
@@ -1193,7 +1197,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             boolean isExists = false;
             for (SysDictionary sd : list) {
                 if (sd.getDicValue().equals(skuInvAttr4)) {
-                    srCmd.setSkuInvAttr4(sd.getDicValue());
+                    srCmd.setSkuInvAttr4(sd.getDicLabel());
                     isExists = true;
                     break;
                 }
@@ -1212,7 +1216,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             boolean isExists = false;
             for (SysDictionary sd : list) {
                 if (sd.getDicValue().equals(skuInvAttr5)) {
-                    srCmd.setSkuInvAttr5(sd.getDicValue());
+                    srCmd.setSkuInvAttr5(sd.getDicLabel());
                     isExists = true;
                     break;
                 }
@@ -1310,7 +1314,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         WhSkuInventoryCommand invSkuCmd = new WhSkuInventoryCommand();
         invSkuCmd.setSkuId(command.getSkuId());
-        invSkuCmd.setInvType(command.getSkuInvType());
+//        invSkuCmd.setInvType(command.getSkuInvType());
         invSkuCmd.setBatchNumber(command.getBatchNumber());
         try {
             if (!StringUtils.isEmpty(command.getSkuMfgDate())) {
@@ -1328,12 +1332,61 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             e.printStackTrace();
         }
         invSkuCmd.setCountryOfOrigin(command.getSkuOrigin());
-        invSkuCmd.setInvAttr1(command.getSkuInvAttr1());
-        invSkuCmd.setInvAttr2(command.getSkuInvAttr2());
-        invSkuCmd.setInvAttr3(command.getSkuInvAttr3());
-        invSkuCmd.setInvAttr4(command.getSkuInvAttr4());
-        invSkuCmd.setInvAttr5(command.getSkuInvAttr5());
-        invSkuCmd.setInvStatus(command.getSkuInvStatus());
+//        invSkuCmd.setInvAttr1(command.getSkuInvAttr1());
+//        invSkuCmd.setInvAttr2(command.getSkuInvAttr2());
+//        invSkuCmd.setInvAttr3(command.getSkuInvAttr3());
+//        invSkuCmd.setInvAttr4(command.getSkuInvAttr4());
+//        invSkuCmd.setInvAttr5(command.getSkuInvAttr5());
+//        invSkuCmd.setInvStatus(command.getSkuInvStatus());
+          List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroup(Constants.INVENTORY_TYPE, BaseModel.LIFECYCLE_NORMAL);
+          for (SysDictionary sd : invTypeList) {
+               if (sd.getDicValue().equals(command.getSkuInvType())) {
+                    invSkuCmd.setInvType(sd.getDicLabel());
+                    break;
+               }
+           }
+                List<InventoryStatus> invStatusList = inventoryStatusManager.findAllInventoryStatus();
+                for (InventoryStatus is : invStatusList) {
+                    if (is.getName().toString().equals(command.getSkuInvStatusName())) {
+                        invSkuCmd.setInvStatus(is.getId());
+                        break;
+                    }
+                }
+                List<SysDictionary> list1 = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_1, BaseModel.LIFECYCLE_NORMAL);
+                for (SysDictionary sd : list1) {
+                    if (sd.getDicLabel().equals(command.getSkuInvAttr1())) {
+                        invSkuCmd.setInvAttr1(sd.getDicValue());
+                        break;
+                    }
+                }
+                List<SysDictionary> list2 = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_2, BaseModel.LIFECYCLE_NORMAL);
+                for (SysDictionary sd : list2) {
+                    if (sd.getDicLabel().equals(command.getSkuInvAttr2())) {
+                        invSkuCmd.setInvAttr2(sd.getDicValue());
+                        break;
+                    }
+                }
+                List<SysDictionary> list3 = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_3, BaseModel.LIFECYCLE_NORMAL);
+                for (SysDictionary sd : list3) {
+                    if (sd.getDicLabel().equals(command.getSkuInvAttr3())) {
+                        invSkuCmd.setInvAttr3(sd.getDicValue());
+                        break;
+                    }
+                }
+                List<SysDictionary> list4 = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_4, BaseModel.LIFECYCLE_NORMAL);
+                for (SysDictionary sd : list4) {
+                    if (sd.getDicLabel().equals(command.getSkuInvAttr4())) {
+                        invSkuCmd.setInvAttr4(sd.getDicValue());
+                        break;
+                    }
+                }
+                List<SysDictionary> list5 = sysDictionaryManager.getListByGroup(Constants.INVENTORY_ATTR_5, BaseModel.LIFECYCLE_NORMAL);
+                for (SysDictionary sd : list5) {
+                    if (sd.getDicLabel().equals(command.getSkuInvAttr5())) {
+                        invSkuCmd.setInvAttr5(sd.getDicValue());
+                        break;
+                    }
+                }
         String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd); // 没有sn/残次信息
         pdaPickingWorkCacheManager.cacheSkuAttrIdNoSn(locationId, skuAttrIds, insideContainerId);
         String skuAttrIdsSn = SkuCategoryProvider.concatSkuAttrId(skuAttrIds, command.getSkuSn(), command.getSkuDefect()); // 拼接sn/残次信息
