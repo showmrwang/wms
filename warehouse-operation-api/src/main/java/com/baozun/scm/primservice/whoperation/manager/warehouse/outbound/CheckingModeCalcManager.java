@@ -21,6 +21,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 /**
  * @author lichuan
@@ -39,5 +40,18 @@ public interface CheckingModeCalcManager extends BaseManager {
      * @param logId
      */
     void generateCheckingDataByCollection(WhWorkCommand workCmd, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, String logId);
+    
+    
+    /**
+     * 播种完成生产待复核数据
+     * @author lichuan
+     * @param facilityId
+     * @param batchNo
+     * @param facilitySeedingSkuInventoryList
+     * @param userId
+     * @param ouId
+     * @param logId
+     */
+    void generateCheckingDataBySeeding(Long facilityId, String batchNo, List<WhSkuInventory> facilitySeedingSkuInventoryList, Long userId, Long ouId, String logId);
 
 }

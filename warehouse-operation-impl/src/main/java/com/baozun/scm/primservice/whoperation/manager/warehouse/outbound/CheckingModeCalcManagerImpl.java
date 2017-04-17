@@ -34,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.constant.PickingMode;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -42,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 
@@ -64,6 +66,8 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
     private SkuRedisManager skuRedisManager;
     @Autowired
     private WhOdoDao whOdoDao;
+    @Autowired
+    private WhSeedingCollectionDao whSeedingCollectionDao;
 
     /**
      * 复核台集货完成生产待复核数据
@@ -258,5 +262,208 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
         }
         return isExists;
     }
+
+    /**
+     * 播种完成生产待复核数据
+     * 
+     * @author lichuan
+     * @param facilityId
+     * @param batchNo
+     * @param facilitySeedingSkuInventoryList
+     * @param userId
+     * @param ouId
+     * @param logId
+     */
+    @Override
+    public void generateCheckingDataBySeeding(Long facilityId, String batchNo, List<WhSkuInventory> facilitySeedingSkuInventoryList, Long userId, Long ouId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("generateCheckingData by seedingCollection start, batchNo is:[{}], logId is:[{}]", batchNo, logId);
+        }
+        // 计算复核模式(一期首单复核和副品复核归到按单复核流程)
+        WhSeedingCollection scParams = new WhSeedingCollection();
+        scParams.setBatch(batchNo);
+        scParams.setOuId(ouId);
+        List<WhSeedingCollection> scList = whSeedingCollectionDao.findListByParam(scParams);
+        String distributionMode = "";
+        String pickingMode = "";
+        String checkingMode = "";
+        if (null != scList && !scList.isEmpty()) {
+            for (WhSeedingCollection sc : scList) {
+                if (null != sc) {
+                    // 取到三个模式
+
+                }
+            }
+        }
+        if (DistributionMode.DISTRIBUTION_SECKILL.equals(distributionMode)) {
+            // 秒杀配货模式可以选择按单复核或首单复核
+            if (CheckingMode.CHECK_FIRST_ODO.equals(checkingMode)) {
+                checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+            } else {
+                if (!CheckingMode.CHECK_BY_ODO.equals(checkingMode)) {
+                    checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+                }
+            }
+        } else if (DistributionMode.DISTRIBUTION_TWOSKUSUIT.equals(distributionMode)) {
+            // 主副品配货模式可以选择副品复核和按单复核
+            if (CheckingMode.CHECK_ACCESSORY.equals(checkingMode)) {
+                checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+            } else {
+                if (!CheckingMode.CHECK_BY_ODO.equals(checkingMode)) {
+                    checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+                }
+            }
+        } else if (DistributionMode.DISTRIBUTION_SUITS.equals(distributionMode)) {
+            // 套装配货模式可以选择按单复核或首单复核
+            if (CheckingMode.CHECK_FIRST_ODO.equals(checkingMode)) {
+                checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+            } else {
+                if (!CheckingMode.CHECK_BY_ODO.equals(checkingMode)) {
+                    checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+                }
+            }
+        } else {
+            if (PickingMode.PICKING_SINGLE.equals(pickingMode)) {
+                // 按批摘果（单品单件）拣货模式只能选择按单复核
+                if (!CheckingMode.CHECK_BY_ODO.equals(checkingMode)) {
+                    checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+                }
+            } else if (PickingMode.PICKING.equals(pickingMode)) {
+                // 摘果拣货模式可以选择按单复核或者按箱复核
+                if (!(CheckingMode.CHECK_BY_ODO.equals(checkingMode) || CheckingMode.CHECK_BY_CONTAINER.equals(checkingMode))) {
+                    checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+                }
+            } else if (PickingMode.PICKING_SEED.equals(pickingMode)) {
+                // 播种拣货模式可以选择按单复核或者按箱复核
+                if (!(CheckingMode.CHECK_BY_ODO.equals(checkingMode) || CheckingMode.CHECK_BY_CONTAINER.equals(checkingMode))) {
+                    checkingMode = CheckingMode.CHECK_BY_ODO;// 复核模式转换为按单复核
+                }
+            }
+        }
+        // 播种结果明细分组
+        List<WhSkuInventory> seedingSkuInventoryListGroup = new ArrayList<WhSkuInventory>();
+        if (null != facilitySeedingSkuInventoryList && !facilitySeedingSkuInventoryList.isEmpty()) {
+            for (WhSkuInventory seedingInv : facilitySeedingSkuInventoryList) {
+                String line = ParamsUtil.concatParam((""), (null == seedingInv.getContainerLatticeNo() ? "" : seedingInv.getContainerLatticeNo().toString()), seedingInv.getOutboundboxCode());
+                boolean isExists = isExistsSeedingSkuInventoryLineGroup(seedingSkuInventoryListGroup, line);
+                if (false == isExists) {
+                    seedingSkuInventoryListGroup.add(seedingInv);
+                }
+            }
+        }
+        String batch = "";// 小批次
+        String waveCode = "";
+        if (null != seedingSkuInventoryListGroup && !seedingSkuInventoryListGroup.isEmpty()) {
+            // 每组数据分别生成待复核数据
+            for (WhSkuInventory groupLine : seedingSkuInventoryListGroup) {
+                Long outerContainerId = groupLine.getOuterContainerId();
+                Integer containerLatticeNo = groupLine.getContainerLatticeNo();
+                Long insideContainerId = groupLine.getInsideContainerId();
+                String outboundBoxCode = groupLine.getOutboundboxCode();
+                // Long outboundBoxId = groupLine.getOutboundBoxId();
+                // 根据条件查询所有库存数据
+                WhSkuInventory params = new WhSkuInventory();
+                params.setOuterContainerId(outerContainerId);
+                params.setContainerLatticeNo(containerLatticeNo);
+                params.setInsideContainerId(insideContainerId);
+                params.setOutboundboxCode(outboundBoxCode);
+                List<WhSkuInventory> invList = whSkuInventoryDao.getSkuInvListGroupUuid(params);
+                if (null != invList && invList.size() > 0) {
+                    // 生成复核头
+                    WhChecking checking = new WhChecking();
+                    checking.setBatch(batch);
+                    checking.setCheckingMode(checkingMode);
+                    checking.setContainerId(insideContainerId);
+                    checking.setContainerLatticeNo(containerLatticeNo);
+                    checking.setCustomerCode("");
+                    checking.setCustomerName("");
+                    checking.setDistributionMode(distributionMode);
+                    checking.setFacilityId(null);
+                    checking.setOuId(ouId);
+                    checking.setOutboundboxCode(outboundBoxCode);
+                    // checking.setOutboundboxId(outboundBoxId);
+                    checking.setOuterContainerId(outerContainerId);
+                    checking.setPickingMode(pickingMode);
+                    checking.setProductCode("");
+                    checking.setProductName("");
+                    checking.setStatus(CheckingStatus.NEW);
+                    checking.setStoreCode("");
+                    checking.setStoreName("");
+                    checking.setTimeEffectCode("");
+                    checking.setTimeEffectName("");
+                    checking.setTransportCode("");
+                    checking.setTransportName("");
+                    checking.setWaveCode(waveCode);
+                    whCheckingDao.insert(checking);
+                    // 生成复核明细
+                    for (WhSkuInventory inv : invList) {
+                        if (null != inv) {
+                            WhCheckingLine line = new WhCheckingLine();
+                            line.setBatchNumber(batch);
+                            line.setCheckingId(checking.getId());
+                            line.setCheckingQty(0L);
+                            line.setCountryOfOrigin(inv.getCountryOfOrigin());
+                            line.setCustomerCode("");
+                            line.setCustomerName("");
+                            line.setExpDate(inv.getExpDate());
+                            line.setInvAttr1(inv.getInvAttr1());
+                            line.setInvAttr2(inv.getInvAttr2());
+                            line.setInvAttr3(inv.getInvAttr3());
+                            line.setInvAttr4(inv.getInvAttr4());
+                            line.setInvAttr5(inv.getInvAttr5());
+                            line.setInvStatus(null == inv.getInvStatus() ? "" : inv.getInvStatus().toString());
+                            line.setInvType(inv.getInvType());
+                            line.setMfgDate(inv.getMfgDate());
+                            WhOdo odo = whOdoDao.findOdoByCodeAndOuId(inv.getOccupationCode(), ouId);
+                            if (null == odo) {
+                                log.error("odo is null error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
+                            }
+                            line.setOdoId(odo.getId());
+                            line.setOdoLineId(inv.getOccupationLineId());
+                            line.setOuId(ouId);
+                            line.setQty(null == inv.getOnHandQty() ? 0L : inv.getOnHandQty().longValue());
+                            SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(inv.getSkuId(), ouId, logId);
+                            if (null == cacheSku) {
+                                log.error("sku is not found error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+                            }
+                            Sku sku = cacheSku.getSku();
+                            if (null == sku) {
+                                log.error("sku is not found error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+                            }
+                            line.setSkuBarCode(sku.getBarCode());
+                            line.setSkuCode(sku.getCode());
+                            line.setSkuExtCode(sku.getExtCode());
+                            line.setSkuName(sku.getName());
+                            line.setStoreCode("");
+                            line.setStoreName("");
+                            line.setUuid(inv.getUuid());
+                            WhCheckingLineDao.insert(line);
+                        }
+                    }
+                }
+            }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("generateCheckingData by seedingCollection end, batchNo is:[{}], logId is:[{}]", batchNo, logId);
+        }
+    }
+
+    private boolean isExistsSeedingSkuInventoryLineGroup(List<WhSkuInventory> seedingSkuInventoryListGroup, String execLine) {
+        boolean isExists = false;
+        if (null != seedingSkuInventoryListGroup && !seedingSkuInventoryListGroup.isEmpty()) {
+            for (WhSkuInventory cmd : seedingSkuInventoryListGroup) {
+                String line = ParamsUtil.concatParam((""), (null == cmd.getContainerLatticeNo() ? "" : cmd.getContainerLatticeNo().toString()), cmd.getOutboundboxCode());
+                if (line.equals(execLine)) {
+                    isExists = true;
+                    break;
+                }
+            }
+        }
+        return isExists;
+    }
+
 
 }
