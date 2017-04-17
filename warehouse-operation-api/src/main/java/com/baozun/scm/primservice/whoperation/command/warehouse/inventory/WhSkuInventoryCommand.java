@@ -284,6 +284,9 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 容器序号*/
     private String containerQty;
 
+    /** 库位拣货顺序 */
+    private String pickSort;
+
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
     }
@@ -1108,6 +1111,12 @@ public class WhSkuInventoryCommand extends BaseCommand {
         this.replenishmentRuleId = replenishmentRuleId;
     }
 
-    
-    
+
+    public String getPickSort() {
+        return pickSort;
+    }
+
+    public void setPickSort(String pickSort) {
+        this.pickSort = pickSort;
+    }
 }

@@ -7,6 +7,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao">
 	<resultMap id="WhSkuInventoryTobefilledResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled">
 	</resultMap>
+
+    <resultMap id="WhSkuInventoryCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
+    </resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryTobefilledColumnsExt">
@@ -301,5 +304,83 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
 	</select>
-	
+
+
+    <select id="findListByOccupationCode" resultMap="WhSkuInventoryCommandResultExt">
+        SELECT
+            skuInvToBeFilled.id AS id,
+            skuInvToBeFilled.sku_id AS skuId,
+            skuInvToBeFilled.location_id AS locationId,
+            skuInvToBeFilled.outer_container_id AS outerContainerId,
+            skuInvToBeFilled.inside_container_id AS insideContainerId,
+            skuInvToBeFilled.customer_id AS customerId,
+            skuInvToBeFilled.store_id AS storeId,
+            skuInvToBeFilled.occupation_code AS occupationCode,
+            skuInvToBeFilled.occupation_line_id AS occupationLineId,
+            skuInvToBeFilled.qty AS onHandQty,
+            skuInvToBeFilled.inv_status AS invStatus,
+            skuInvToBeFilled.inv_type AS invType,
+            skuInvToBeFilled.batch_number AS batchNumber,
+            skuInvToBeFilled.mfg_date AS mfgDate,
+            skuInvToBeFilled.exp_date AS expDate,
+            skuInvToBeFilled.country_of_origin AS countryOfOrigin,
+            skuInvToBeFilled.inv_attr1 AS invAttr1,
+            skuInvToBeFilled.inv_attr2 AS invAttr2,
+            skuInvToBeFilled.inv_attr3 AS invAttr3,
+            skuInvToBeFilled.inv_attr4 AS invAttr4,
+            skuInvToBeFilled.inv_attr5 AS invAttr5,
+            skuInvToBeFilled.uuid AS uuid,
+            skuInvToBeFilled.ou_id AS ouId,
+            skuInvToBeFilled.occupation_code_source AS occupationCodeSource
+        FROM
+          t_wh_sku_inventory_tobefilled AS skuInvToBeFilled
+        WHERE
+          skuInvToBeFilled.occupation_code = #{occupationCode}
+          AND skuInvToBeFilled.ou_id = #{ouId}
+    </select>
+
+    <select id="findListByOccLineIdListOrderByPickingSort" resultMap="WhSkuInventoryCommandResultExt">
+
+        SELECT
+            skuInvToBeFilled.id AS id,
+            skuInvToBeFilled.sku_id AS skuId,
+            skuInvToBeFilled.location_id AS locationId,
+            skuInvToBeFilled.outer_container_id AS outerContainerId,
+            skuInvToBeFilled.inside_container_id AS insideContainerId,
+            skuInvToBeFilled.customer_id AS customerId,
+            skuInvToBeFilled.store_id AS storeId,
+            skuInvToBeFilled.occupation_code AS occupationCode,
+            skuInvToBeFilled.occupation_line_id AS occupationLineId,
+            skuInvToBeFilled.qty AS onHandQty,
+            skuInvToBeFilled.inv_status AS invStatus,
+            skuInvToBeFilled.inv_type AS invType,
+            skuInvToBeFilled.batch_number AS batchNumber,
+            skuInvToBeFilled.mfg_date AS mfgDate,
+            skuInvToBeFilled.exp_date AS expDate,
+            skuInvToBeFilled.country_of_origin AS countryOfOrigin,
+            skuInvToBeFilled.inv_attr1 AS invAttr1,
+            skuInvToBeFilled.inv_attr2 AS invAttr2,
+            skuInvToBeFilled.inv_attr3 AS invAttr3,
+            skuInvToBeFilled.inv_attr4 AS invAttr4,
+            skuInvToBeFilled.inv_attr5 AS invAttr5,
+            skuInvToBeFilled.uuid AS uuid,
+            skuInvToBeFilled.ou_id AS ouId,
+            skuInvToBeFilled.occupation_code_source AS occupationCodeSource,
+            location.pick_sort as pickSort
+        FROM
+            t_wh_sku_inventory_tobefilled AS skuInvToBeFilled
+            LEFT JOIN t_wh_odo AS odo ON skuInvToBeFilled.occupation_code = odo_code
+            LEFT JOIN t_wh_odo_line AS odoLine ON skuInvToBeFilled.occupation_line_id = odoLine.id
+            LEFT JOIN t_wh_location AS location ON location.allocate_area_id = skuInvToBeFilled.location_id
+            LEFT JOIN t_wh_sku AS sku ON sku.id = skuInvToBeFilled.sku_id
+            LEFT JOIN t_wh_sku_mgmt AS skuMgmt ON skuMgmt.sku_id = sku.id
+        WHERE
+            skuInvToBeFilled.occupation_line_id in
+            <foreach item="item" index="index" collection="occLineIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            AND skuInvToBeFilled.ou_id = #{ouId}
+
+
+    </select>
 </mapper>

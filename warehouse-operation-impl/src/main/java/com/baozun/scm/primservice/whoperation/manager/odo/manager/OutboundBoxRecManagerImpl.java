@@ -14,7 +14,10 @@
 
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutInventoryboxRelationshipDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
@@ -89,6 +93,9 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
 
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
+
+    @Autowired
+    private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
 
 
     /**
@@ -328,7 +335,13 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
      * @return
      */
     public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId){
-        return whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
+        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
+        List<WhSkuInventoryCommand> skuInvToBeFillList = whSkuInventoryTobefilledDao.findListByOccupationCode(occupationCode, ouId);
+        List<WhSkuInventoryCommand> allSkuInvList = new ArrayList<>();
+        allSkuInvList.addAll(skuInvList);
+        allSkuInvList.addAll(skuInvToBeFillList);
+
+        return allSkuInvList;
     }
 
     /**
@@ -342,6 +355,28 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId){
-        return whSkuInventoryDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
+        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
+        List<WhSkuInventoryCommand> skuInvToBeFillList = whSkuInventoryTobefilledDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
+        List<WhSkuInventoryCommand> allSkuInvList = new ArrayList<>();
+        allSkuInvList.addAll(skuInvList);
+        allSkuInvList.addAll(skuInvToBeFillList);
+
+        Collections.sort(allSkuInvList, new Comparator<WhSkuInventoryCommand>() {
+            @Override
+            public int compare(WhSkuInventoryCommand skuInventoryCommand, WhSkuInventoryCommand t1) {
+                if(null == skuInventoryCommand.getPickSort() && null == t1.getPickSort()){
+                    return 0;
+                }
+                if(null == skuInventoryCommand.getPickSort()){
+                    return 1;
+                }
+                if(null == t1.getPickSort()){
+                    return -1;
+                }
+                return skuInventoryCommand.getPickSort().compareTo(t1.getPickSort());
+            }
+        });
+
+        return allSkuInvList;
     }
 }

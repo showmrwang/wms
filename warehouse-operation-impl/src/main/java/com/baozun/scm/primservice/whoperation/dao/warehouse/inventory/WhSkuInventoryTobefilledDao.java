@@ -30,6 +30,7 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobefilled,Long>{
@@ -113,5 +114,26 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @return
      */
     Double skuInventoryTobefilledQty (WhSkuInventoryTobefilled whSkuInventoryTobefilled);
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
+
+
+    /**
+     *根据占用码查询库存
+     *
+     * @author mingwei.xie
+     * @param occLineIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(@Param("occLineIdList") List<Long> occLineIdList, @Param("ouId") Long ouId);
 	
 }

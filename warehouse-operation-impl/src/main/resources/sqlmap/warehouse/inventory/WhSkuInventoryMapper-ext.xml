@@ -3463,126 +3463,48 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             WHERE
                 skuInv.occupation_code = #{occupationCode}
                 AND skuInv.ou_id = #{ouId}
-        UNION
-            SELECT
-                skuInvToBeFilled.id AS id,
-                skuInvToBeFilled.sku_id AS skuId,
-                skuInvToBeFilled.location_id AS locationId,
-                skuInvToBeFilled.outer_container_id AS outerContainerId,
-                skuInvToBeFilled.inside_container_id AS insideContainerId,
-                skuInvToBeFilled.customer_id AS customerId,
-                skuInvToBeFilled.store_id AS storeId,
-                skuInvToBeFilled.occupation_code AS occupationCode,
-                skuInvToBeFilled.occupation_line_id AS occupationLineId,
-                skuInvToBeFilled.qty AS onHandQty,
-                skuInvToBeFilled.inv_status AS invStatus,
-                skuInvToBeFilled.inv_type AS invType,
-                skuInvToBeFilled.batch_number AS batchNumber,
-                skuInvToBeFilled.mfg_date AS mfgDate,
-                skuInvToBeFilled.exp_date AS expDate,
-                skuInvToBeFilled.country_of_origin AS countryOfOrigin,
-                skuInvToBeFilled.inv_attr1 AS invAttr1,
-                skuInvToBeFilled.inv_attr2 AS invAttr2,
-                skuInvToBeFilled.inv_attr3 AS invAttr3,
-                skuInvToBeFilled.inv_attr4 AS invAttr4,
-                skuInvToBeFilled.inv_attr5 AS invAttr5,
-                skuInvToBeFilled.uuid AS uuid,
-                skuInvToBeFilled.ou_id AS ouId,
-                skuInvToBeFilled.occupation_code_source AS occupationCodeSource
-            FROM
-                t_wh_sku_inventory_tobefilled AS skuInvToBeFilled
-            WHERE
-                skuInvToBeFilled.occupation_code = #{occupationCode}
-                AND skuInvToBeFilled.ou_id = #{ouId}
     </select>
 
     <select id="findListByOccLineIdListOrderByPickingSort" resultMap="WhSkuInventoryCommandResultExt">
-        SELECT
-            temp.*
-        FROM
-        (
-                SELECT
-                    skuInv.id AS id,
-                    skuInv.sku_id AS skuId,
-                    skuInv.location_id AS locationId,
-                    skuInv.outer_container_id AS outerContainerId,
-                    skuInv.inside_container_id AS insideContainerId,
-                    skuInv.customer_id AS customerId,
-                    skuInv.store_id AS storeId,
-                    skuInv.occupation_code AS occupationCode,
-                    skuInv.occupation_line_id AS occupationLineId,
-                    skuInv.on_hand_qty AS onHandQty,
-                    skuInv.inv_status AS invStatus,
-                    skuInv.inv_type AS invType,
-                    skuInv.batch_number AS batchNumber,
-                    skuInv.mfg_date AS mfgDate,
-                    skuInv.exp_date AS expDate,
-                    skuInv.country_of_origin AS countryOfOrigin,
-                    skuInv.inv_attr1 AS invAttr1,
-                    skuInv.inv_attr2 AS invAttr2,
-                    skuInv.inv_attr3 AS invAttr3,
-                    skuInv.inv_attr4 AS invAttr4,
-                    skuInv.inv_attr5 AS invAttr5,
-                    skuInv.uuid AS uuid,
-                    skuInv.ou_id AS ouId,
-                    skuInv.occupation_code_source AS occupationCodeSource,
-                    location.pick_sort
-                FROM
-                    t_wh_sku_inventory AS skuInv
-                    LEFT JOIN t_wh_odo AS odo ON skuInv.occupation_code = odo_code
-                    LEFT JOIN t_wh_odo_line AS odoLine ON skuInv.occupation_line_id = odoLine.id
-                    LEFT JOIN t_wh_location AS location ON location.allocate_area_id = skuInv.location_id
-                    LEFT JOIN t_wh_sku AS sku ON sku.id = skuInv.sku_id
-                    LEFT JOIN t_wh_sku_mgmt AS skuMgmt ON skuMgmt.sku_id = sku.id
-                WHERE
-                    skuInv.occupation_line_id in
-                        <foreach item="item" index="index" collection="occLineIdList" open="(" separator="," close=")">
-                            #{item}
-                        </foreach>
-                    AND skuInv.ou_id = #{ouId}
-            UNION
-                SELECT
-                    skuInvToBeFilled.id AS id,
-                    skuInvToBeFilled.sku_id AS skuId,
-                    skuInvToBeFilled.location_id AS locationId,
-                    skuInvToBeFilled.outer_container_id AS outerContainerId,
-                    skuInvToBeFilled.inside_container_id AS insideContainerId,
-                    skuInvToBeFilled.customer_id AS customerId,
-                    skuInvToBeFilled.store_id AS storeId,
-                    skuInvToBeFilled.occupation_code AS occupationCode,
-                    skuInvToBeFilled.occupation_line_id AS occupationLineId,
-                    skuInvToBeFilled.qty AS onHandQty,
-                    skuInvToBeFilled.inv_status AS invStatus,
-                    skuInvToBeFilled.inv_type AS invType,
-                    skuInvToBeFilled.batch_number AS batchNumber,
-                    skuInvToBeFilled.mfg_date AS mfgDate,
-                    skuInvToBeFilled.exp_date AS expDate,
-                    skuInvToBeFilled.country_of_origin AS countryOfOrigin,
-                    skuInvToBeFilled.inv_attr1 AS invAttr1,
-                    skuInvToBeFilled.inv_attr2 AS invAttr2,
-                    skuInvToBeFilled.inv_attr3 AS invAttr3,
-                    skuInvToBeFilled.inv_attr4 AS invAttr4,
-                    skuInvToBeFilled.inv_attr5 AS invAttr5,
-                    skuInvToBeFilled.uuid AS uuid,
-                    skuInvToBeFilled.ou_id AS ouId,
-                    skuInvToBeFilled.occupation_code_source AS occupationCodeSource,
-                    location.pick_sort
-                FROM
-                    t_wh_sku_inventory_tobefilled AS skuInvToBeFilled
-                    LEFT JOIN t_wh_odo AS odo ON skuInvToBeFilled.occupation_code = odo_code
-                    LEFT JOIN t_wh_odo_line AS odoLine ON skuInvToBeFilled.occupation_line_id = odoLine.id
-                    LEFT JOIN t_wh_location AS location ON location.allocate_area_id = skuInvToBeFilled.location_id
-                    LEFT JOIN t_wh_sku AS sku ON sku.id = skuInvToBeFilled.sku_id
-                    LEFT JOIN t_wh_sku_mgmt AS skuMgmt ON skuMgmt.sku_id = sku.id
-                    WHERE
-                    skuInvToBeFilled.occupation_line_id in
+            SELECT
+                skuInv.id AS id,
+                skuInv.sku_id AS skuId,
+                skuInv.location_id AS locationId,
+                skuInv.outer_container_id AS outerContainerId,
+                skuInv.inside_container_id AS insideContainerId,
+                skuInv.customer_id AS customerId,
+                skuInv.store_id AS storeId,
+                skuInv.occupation_code AS occupationCode,
+                skuInv.occupation_line_id AS occupationLineId,
+                skuInv.on_hand_qty AS onHandQty,
+                skuInv.inv_status AS invStatus,
+                skuInv.inv_type AS invType,
+                skuInv.batch_number AS batchNumber,
+                skuInv.mfg_date AS mfgDate,
+                skuInv.exp_date AS expDate,
+                skuInv.country_of_origin AS countryOfOrigin,
+                skuInv.inv_attr1 AS invAttr1,
+                skuInv.inv_attr2 AS invAttr2,
+                skuInv.inv_attr3 AS invAttr3,
+                skuInv.inv_attr4 AS invAttr4,
+                skuInv.inv_attr5 AS invAttr5,
+                skuInv.uuid AS uuid,
+                skuInv.ou_id AS ouId,
+                skuInv.occupation_code_source AS occupationCodeSource,
+                location.pick_sort as pickSort
+            FROM
+                t_wh_sku_inventory AS skuInv
+                LEFT JOIN t_wh_odo AS odo ON skuInv.occupation_code = odo_code
+                LEFT JOIN t_wh_odo_line AS odoLine ON skuInv.occupation_line_id = odoLine.id
+                LEFT JOIN t_wh_location AS location ON location.allocate_area_id = skuInv.location_id
+                LEFT JOIN t_wh_sku AS sku ON sku.id = skuInv.sku_id
+                LEFT JOIN t_wh_sku_mgmt AS skuMgmt ON skuMgmt.sku_id = sku.id
+            WHERE
+                skuInv.occupation_line_id in
                     <foreach item="item" index="index" collection="occLineIdList" open="(" separator="," close=")">
                         #{item}
                     </foreach>
-                    AND skuInvToBeFilled.ou_id = #{ouId}
-                ) AS temp
-        ORDER BY
-            temp.pick_sort
+                AND skuInv.ou_id = #{ouId}
 
     </select>
 
