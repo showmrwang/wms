@@ -1762,7 +1762,40 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   if (0 == skuId.compareTo(sId)) {
                       skuExists = true;
                       Long icSkuQty = insideContainerSkuIdsQty.get(skuId);
-                      if (WhScanPatternType.ONE_BY_ONE_SCAN == scanPattern) {  //逐件扫描
+                      if(true== isSnLine) {
+                          long snCount =  cacheManager.incr(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
+                          if(snCount < skuQty) {
+                              ScanTipSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
+                              if(null == tipScanSkuCmd) {
+                                   tipScanSkuCmd = new ScanTipSkuCacheCommand();
+                              }
+                              // 继续复核
+                              String tipSkuAttrId = null;
+                              if (false == isSnLine){ //没有sn/残次
+                                  tipSkuAttrId = skuAttrId;
+                              }else{  //存在sn/残次信息
+                                  Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
+                                  Set<String> snDefects = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
+                                  ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
+                                  if(null == skuAttrIdsSn){
+                                      skuAttrIdsSn = new ArrayDeque<String>();
+                                  }
+                                  for(String snDe:snDefects) {
+                                      String tipSkuAttrIdSnDefect = SkuCategoryProvider.concatSkuAttrId(skuAttrId,snDe);
+                                      if(skuAttrIdsSn.contains(tipSkuAttrIdSnDefect)) {
+                                          continue;
+                                      }else{
+                                          tipSkuAttrId =tipSkuAttrIdSnDefect;
+                                          break;
+                                      }
+                                  }
+                              }
+                              cssrCmd.setIsNeedScanSkuSn(true);
+                              cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+                              return cssrCmd;
+                          }
+                      }
+//                      if (WhScanPatternType.ONE_BY_ONE_SCAN == scanPattern) {  //逐件扫描
                           ScanTipSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
                           ArrayDeque<Long> oneByOneScanSkuIds = null;
                           if (null != tipScanSkuCmd) {
@@ -1799,7 +1832,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               }
                               long cacheValue = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
                               if (cacheValue == icSkuQty.longValue()) {
-//                                  ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
+                                  cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
                                   ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
@@ -1933,6 +1966,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   }
                                   break;
                               } else if (cacheValue < icSkuQty.longValue()) {
+                                  cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
                                   // 继续复核
                                   cssrCmd.setIsNeedScanSku(true);
                                   cssrCmd.setTipSkuAttrId(skuAttrId);
@@ -1974,7 +2008,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
                               long cacheValue = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
                               if (cacheValue == icSkuQty.longValue()) {
-//                                  ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
+                                  cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
                                   ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
@@ -1989,7 +2023,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       }
                                       // 继续复核
                                       cssrCmd.setIsNeedScanSku(true);
-//                                      cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                       if(isSnLine) {//有sn/残次信息
                                           //有sn的
                                           Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
@@ -2105,6 +2138,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   }
                                   break;
                               } else if (cacheValue < icSkuQty.longValue()) {
+                                  cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
                                   // 继续复核
                                   cssrCmd.setIsNeedScanSku(true);
 //                                  cssrCmd.setTipSkuAttrId(skuAttrId);
@@ -2135,341 +2169,341 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
                               }
                           }
-                      }else{//批量扫描
-                          if (skuQty.longValue() == icSkuQty.longValue()) {
-                              ScanTipSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
-                            ArrayDeque<Long> scanSkuIds = null;
-                            if (null != tipScanSkuCmd) {
-                                scanSkuIds = tipScanSkuCmd.getScanSkuIds();// 取到已扫描商品队列
-                            }
-                            //先扫描sn/残次信息
-                            if(isSnLine) {//有sn/残次信息
-                                //有sn的
-                                Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-                                Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
-                                ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-                                Boolean result = false;
-                                for(String sn:snDefect) {
-                                        String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
-                                        if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-                                            cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-                                            result = true;
-                                            break;
-                                        }
-                                }
-                                if(result) {
-                                    cssrCmd.setIsNeedScanSkuSn(true);  //数量扫描时，继续扫描sn
-                                    return cssrCmd;  //返回页面继续扫sn/残次信息
-                                }
-                            }
-                            if (null != scanSkuIds && !scanSkuIds.isEmpty()) {
-                                boolean isExists = false;
-                                Iterator<Long> iter = scanSkuIds.iterator();
-                                while (iter.hasNext()) {
-                                    Long value = iter.next();
-                                    if (null == value) value = -1L;
-                                    if (0 == skuId.compareTo(new Long(value))) {
-                                        isExists = true;
-                                        break;
-                                    }
-                                }
-                                if (false == isExists) {
-                                    scanSkuIds.addFirst(skuId);// 加入队列
-                                    tipScanSkuCmd.setScanSkuIds(scanSkuIds);
+//                      }else{//批量扫描
+//                          if (skuQty.longValue() == icSkuQty.longValue()) {
+//                              ScanTipSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
+//                            ArrayDeque<Long> scanSkuIds = null;
+//                            if (null != tipScanSkuCmd) {
+//                                scanSkuIds = tipScanSkuCmd.getScanSkuIds();// 取到已扫描商品队列
+//                            }
+//                            //先扫描sn/残次信息
+//                            if(isSnLine) {//有sn/残次信息
+//                                //有sn的
+//                                Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
+//                                Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
+//                                ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
+//                                Boolean result = false;
+//                                for(String sn:snDefect) {
+//                                        String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
+//                                        if(!skuAttrIdsSn.contains(skuAttrIdSn)){
+//                                            cssrCmd.setTipSkuAttrId(skuAttrIdSn);
+//                                            result = true;
+//                                            break;
+//                                        }
+//                                }
+//                                if(result) {
+//                                    cssrCmd.setIsNeedScanSkuSn(true);  //数量扫描时，继续扫描sn
+//                                    return cssrCmd;  //返回页面继续扫sn/残次信息
+//                                }
+//                            }
+//                            if (null != scanSkuIds && !scanSkuIds.isEmpty()) {
+//                                boolean isExists = false;
+//                                Iterator<Long> iter = scanSkuIds.iterator();
+//                                while (iter.hasNext()) {
+//                                    Long value = iter.next();
+//                                    if (null == value) value = -1L;
+//                                    if (0 == skuId.compareTo(new Long(value))) {
+//                                        isExists = true;
+//                                        break;
+//                                    }
+//                                }
+//                                if (false == isExists) {
+//                                    scanSkuIds.addFirst(skuId);// 加入队列
+//                                    tipScanSkuCmd.setScanSkuIds(scanSkuIds);
+////                                    cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+//                                    ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
+//                                    ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
+//                                    Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
+//                                    Set<String> skuAttrIds = skuAttrIdQty.keySet();
+//                                    String tipSkuAttrId = null;
+//                                    if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+//                                        //同一种sku有不同的库存属性
+//                                        for(String skuAttr:skuAttrIds){
+//                                             if(!scanSkuAttrIds.contains(skuAttr)) {
+//                                                 tipSkuAttrId = skuAttr;
+//                                                 break;
+//                                             }
+//                                        }
+//                                        // 继续复核
+//                                        cssrCmd.setIsNeedScanSku(true);
+////                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+//                                        if(isSnLine) {//有sn/残次信息
+//                                            //有sn的
+//                                            Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
+//                                            Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
+//                                            ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
+//                                            Boolean result = false;
+//                                            for(String sn:snDefect) {
+//                                                    String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
+//                                                    if(!skuAttrIdsSn.contains(skuAttrIdSn)){
+//                                                        cssrCmd.setTipSkuAttrId(skuAttrIdSn);
+//                                                        result = true;
+//                                                        break;
+//                                                    }
+//                                            }
+//                                            if(!result) {
+//                                                log.error("tip container is not in cache server error, logId is[{}]", logId);
+//                                                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                                            }
+//                                            return cssrCmd;
+//                                        }
+//                                    }else{
+//                                        ArrayDeque<Long> cacheSkuIds = new ArrayDeque<Long>();
+//                                        cacheSkuIds.addFirst(skuId);
+//                                        tipScanSkuCmd.setScanSkuIds(cacheSkuIds);
+////                                        cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+//                                        if (isCacheAllExists(iSkuIds, cacheSkuIds)) {
+//                                            //判断库位上是否还有货箱没有扫描
+//                                            if (isCacheAllExists(insideContainerIds, cacheInsideContainerIds)) {  //返回true ,两者相同
+//                                                if(null != locSkuIds) {
+//                                                    //判断库位上是否有直接放的sku商品
+//                                                    Set<Long> skuIds = locSkuIds.get(locationId);
+//                                                    if(null != skuIds){
+//                                                        CheckScanResultCommand cmd =   this.pdaPickingTipSku(operationWay,skuIds, operationId, locationId, ouId, null, skuAttrIdsSnDefect, insideSkuAttrIdsSnDefect);
+//                                                        if(cmd.getIsNeedScanSku()) {//存在散装sku
+//                                                            tipSkuAttrId = cmd.getTipSkuAttrId();
+//                                                            cssrCmd.setIsNeedScanSku(true);
+//                                                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+//                                                            cssrCmd.setIsHaveInsideContainer(false);
+//                                                            //缓存上一个托盘内最后扫描的一个内部容器
+//                                                            this.cacheInsideContainerCode(locationId, insideContainerId, null);
+//                                                        }
+//                                                    }else{
+//                                                        cssrCmd.setIsPicking(true);
+//                                                    }
+//                                                    
+//                                                }else{
+//                                                    cssrCmd.setIsPicking(true);
+//                                                }
+//                                                if(cssrCmd.getIsPicking()){
+//                                                    //获取下一个库位
+//                                                    Long tipLocId = null;
+//                                                    for(Long lId:locationIds){
+//                                                          if(!cacheLocaitionIds.contains(lId)){
+//                                                              tipLocId  = lId;
+//                                                          }
+//                                                    }
+//                                                    if(null != tipLocId){
+//                                                          cssrCmd.setIsNeedTipLoc(true);
+//                                                          cssrCmd.setIsPicking(false);
+//                                                          cssrCmd.setTipLocationId(tipLocId);
+//                                                          //缓存上一个托盘内最后扫描的一个内部容器
+//                                                          this.cacheInsideContainerCode(locationId, insideContainerId, null);
+//                                                    }
+//                                                } 
+//                                            } else {
+//                                                //提示下一个货箱
+//                                                Long icId = null;
+//                                                for(Long insideId:insideContainerIds) {
+//                                                    if(!cacheInsideContainerIds.contains(insideId)){
+//                                                        icId = insideId;
+//                                                        break;
+//                                                    }
+//                                                }
+//                                                cssrCmd.setIsNeedTipInsideContainer(true);  //提示下一个内部容器
+//                                                cssrCmd.setTipiInsideContainerId(icId);
+//                                                //缓存上一个托盘内最后扫描的一个内部容器
+//                                                this.cacheInsideContainerCode(locationId, insideContainerId, null);
+//                                            }
+//                                        } else {
+//                                            // 继续复核,货箱内不容种类的sku
+////                                            cssrCmd.setIsNeedTipInsideContainer(true);
+//                                            Long icsId = null;
+//                                            for(Long icSkuId:iSkuIds){
+//                                                if(!scanSkuAttrIds.contains(icSkuId)) {
+//                                                    icsId = icSkuId;
+//                                                    break;
+//                                                }
+//                                            }
+//                                            Map<String, Long> skuAttrIdQty1 =  skuAttrIdsQty.get(icsId);
+//                                            Set<String> skuAttrIds1 = skuAttrIdQty1.keySet();
+//                                            for(String skuAttrId1:skuAttrIds1){
+//                                                if(!scanSkuAttrIds.contains(skuAttrId1)){
+//                                                    tipSkuAttrId =  skuAttrId1;  
+//                                                }
+//                                            }
+//                                            cssrCmd.setIsNeedScanSku(true);
+////                                            cssrCmd.setTipSkuAttrId(skuAttrId);
+//                                            if(isSnLine) {//有sn/残次信息
+//                                                //有sn的
+//                                                Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
+//                                                Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
+//                                                ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
+//                                                Boolean result = false;
+//                                                for(String sn:snDefect) {
+//                                                        String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
+//                                                        if(!skuAttrIdsSn.contains(skuAttrIdSn)){
+//                                                            cssrCmd.setTipSkuAttrId(skuAttrIdSn);
+//                                                            result = true;
+//                                                            break;
+//                                                        }
+//                                                }
+//                                                if(!result) {
+//                                                    log.error("tip container is not in cache server error, logId is[{}]", logId);
+//                                                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                                                }
+//                                                return cssrCmd;  //返回页面继续扫sn/残次信息
+//                                            }
+//                                        }
+//                                    }
 //                                    cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                                    ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
-                                    ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
-                                    Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
-                                    Set<String> skuAttrIds = skuAttrIdQty.keySet();
-                                    String tipSkuAttrId = null;
-                                    if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
-                                        //同一种sku有不同的库存属性
-                                        for(String skuAttr:skuAttrIds){
-                                             if(!scanSkuAttrIds.contains(skuAttr)) {
-                                                 tipSkuAttrId = skuAttr;
-                                                 break;
-                                             }
-                                        }
-                                        // 继续复核
-                                        cssrCmd.setIsNeedScanSku(true);
-//                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                                        if(isSnLine) {//有sn/残次信息
-                                            //有sn的
-                                            Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-                                            Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-                                            ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-                                            Boolean result = false;
-                                            for(String sn:snDefect) {
-                                                    String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-                                                    if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-                                                        cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-                                                        result = true;
-                                                        break;
-                                                    }
-                                            }
-                                            if(!result) {
-                                                log.error("tip container is not in cache server error, logId is[{}]", logId);
-                                                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-                                            }
-                                            return cssrCmd;
-                                        }
-                                    }else{
-                                        ArrayDeque<Long> cacheSkuIds = new ArrayDeque<Long>();
-                                        cacheSkuIds.addFirst(skuId);
-                                        tipScanSkuCmd.setScanSkuIds(cacheSkuIds);
-//                                        cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                                        if (isCacheAllExists(iSkuIds, cacheSkuIds)) {
-                                            //判断库位上是否还有货箱没有扫描
-                                            if (isCacheAllExists(insideContainerIds, cacheInsideContainerIds)) {  //返回true ,两者相同
-                                                if(null != locSkuIds) {
-                                                    //判断库位上是否有直接放的sku商品
-                                                    Set<Long> skuIds = locSkuIds.get(locationId);
-                                                    if(null != skuIds){
-                                                        CheckScanResultCommand cmd =   this.pdaPickingTipSku(operationWay,skuIds, operationId, locationId, ouId, null, skuAttrIdsSnDefect, insideSkuAttrIdsSnDefect);
-                                                        if(cmd.getIsNeedScanSku()) {//存在散装sku
-                                                            tipSkuAttrId = cmd.getTipSkuAttrId();
-                                                            cssrCmd.setIsNeedScanSku(true);
-                                                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                                                            cssrCmd.setIsHaveInsideContainer(false);
-                                                            //缓存上一个托盘内最后扫描的一个内部容器
-                                                            this.cacheInsideContainerCode(locationId, insideContainerId, null);
-                                                        }
-                                                    }else{
-                                                        cssrCmd.setIsPicking(true);
-                                                    }
-                                                    
-                                                }else{
-                                                    cssrCmd.setIsPicking(true);
-                                                }
-                                                if(cssrCmd.getIsPicking()){
-                                                    //获取下一个库位
-                                                    Long tipLocId = null;
-                                                    for(Long lId:locationIds){
-                                                          if(!cacheLocaitionIds.contains(lId)){
-                                                              tipLocId  = lId;
-                                                          }
-                                                    }
-                                                    if(null != tipLocId){
-                                                          cssrCmd.setIsNeedTipLoc(true);
-                                                          cssrCmd.setIsPicking(false);
-                                                          cssrCmd.setTipLocationId(tipLocId);
-                                                          //缓存上一个托盘内最后扫描的一个内部容器
-                                                          this.cacheInsideContainerCode(locationId, insideContainerId, null);
-                                                    }
-                                                } 
-                                            } else {
-                                                //提示下一个货箱
-                                                Long icId = null;
-                                                for(Long insideId:insideContainerIds) {
-                                                    if(!cacheInsideContainerIds.contains(insideId)){
-                                                        icId = insideId;
-                                                        break;
-                                                    }
-                                                }
-                                                cssrCmd.setIsNeedTipInsideContainer(true);  //提示下一个内部容器
-                                                cssrCmd.setTipiInsideContainerId(icId);
-                                                //缓存上一个托盘内最后扫描的一个内部容器
-                                                this.cacheInsideContainerCode(locationId, insideContainerId, null);
-                                            }
-                                        } else {
-                                            // 继续复核,货箱内不容种类的sku
-//                                            cssrCmd.setIsNeedTipInsideContainer(true);
-                                            Long icsId = null;
-                                            for(Long icSkuId:iSkuIds){
-                                                if(!scanSkuAttrIds.contains(icSkuId)) {
-                                                    icsId = icSkuId;
-                                                    break;
-                                                }
-                                            }
-                                            Map<String, Long> skuAttrIdQty1 =  skuAttrIdsQty.get(icsId);
-                                            Set<String> skuAttrIds1 = skuAttrIdQty1.keySet();
-                                            for(String skuAttrId1:skuAttrIds1){
-                                                if(!scanSkuAttrIds.contains(skuAttrId1)){
-                                                    tipSkuAttrId =  skuAttrId1;  
-                                                }
-                                            }
-                                            cssrCmd.setIsNeedScanSku(true);
-//                                            cssrCmd.setTipSkuAttrId(skuAttrId);
-                                            if(isSnLine) {//有sn/残次信息
-                                                //有sn的
-                                                Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-                                                Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-                                                ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-                                                Boolean result = false;
-                                                for(String sn:snDefect) {
-                                                        String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-                                                        if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-                                                            cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-                                                            result = true;
-                                                            break;
-                                                        }
-                                                }
-                                                if(!result) {
-                                                    log.error("tip container is not in cache server error, logId is[{}]", logId);
-                                                    throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-                                                }
-                                                return cssrCmd;  //返回页面继续扫sn/残次信息
-                                            }
-                                        }
-                                    }
-                                    cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                                    break;
-                                } else {
-                                    log.error("scan sku has already checked,  icId is:[{}], scanSkuId is:[{}], logId is:[{}]", insideContainerId, skuId, logId);
-                                    throw new BusinessException(ErrorCodes.CONTAINER_SKU_HAS_ALREADY_SCANNED, new Object[] {insideContainerCmd.getCode()});
-                                }
-                            } else {
-//                                ScanTipSkuCacheCommand cacheSkuCmd = new ScanTipSkuCacheCommand();
-                                tipScanSkuCmd.setInsideContainerId(insideContainerCmd.getId());
-                                tipScanSkuCmd.setInsideContainerCode(insideContainerCmd.getCode());
-                                ArrayDeque<Long> cacheSkuIds1 = new ArrayDeque<Long>();
-                                cacheSkuIds1.addFirst(skuId);
-                                tipScanSkuCmd.setScanSkuIds(cacheSkuIds1);
-                                cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(),tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
-//                                ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
-                                ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
-                                Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
-                                Set<String> skuAttrIds = skuAttrIdQty.keySet();
-                                String tipSkuAttrId = null;
-                                if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
-                                    //同一种sku有不同的库存属性
-                                    for(String skuAttr:skuAttrIds){
-                                         if(!scanSkuAttrIdsNoSn.contains(skuAttr)) {
-                                             tipSkuAttrId = skuAttr;
-                                             break;
-                                         }
-                                    }
-                                    // 继续复核
-                                    cssrCmd.setIsNeedScanSku(true);
-//                                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                                    if(isSnLine) {//有sn/残次信息
-                                        //有sn的
-                                        Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-                                        Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-                                        ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-                                        Boolean result = false;
-                                        for(String sn:snDefect) {
-                                                String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-                                                if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-                                                    cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-                                                    result = true;
-                                                    break;
-                                                }
-                                        }
-                                        if(!result) {
-                                            log.error("tip container is not in cache server error, logId is[{}]", logId);
-                                            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-                                        }
-                                        cssrCmd.setIsNeedScanSkuSn(true);  //数量扫描时，继续扫描sn
-                                        return cssrCmd;
-                                    }
-                                }else{
-                                    ArrayDeque<Long> cacheSkuIds = new ArrayDeque<Long>();
-                                    cacheSkuIds.addFirst(skuId);
-                                    tipScanSkuCmd.setScanSkuIds(cacheSkuIds);
-                                    cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                                    if (isCacheAllExists(iSkuIds, cacheSkuIds)) {
-                                        //判断库位上是否还有货箱没有扫描
-                                        if (isCacheAllExists(insideContainerIds, cacheInsideContainerIds)) {  //返回true ,两者相同
-                                            //判断库位上是否有直接放的sku商品
-                                            if(null != locSkuIds) {
-                                                Set<Long> skuIds = locSkuIds.get(locationId);
-                                                if(null != skuIds){
-                                                    CheckScanResultCommand cmd =   this.pdaPickingTipSku(operationWay,skuIds, operationId, locationId, ouId, null, skuAttrIdsSnDefect, insideSkuAttrIdsSnDefect);
-                                                    if(cmd.getIsNeedScanSku()) {//存在散装sku
-                                                        tipSkuAttrId = cmd.getTipSkuAttrId();
-                                                        cssrCmd.setIsNeedScanSku(true);
-                                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                                                        cssrCmd.setIsHaveInsideContainer(false);
-                                                        //缓存上一个托盘内最后扫描的一个内部容器
-                                                        this.cacheInsideContainerCode(locationId, insideContainerId, null);
-                                                    }
-                                                }else{
-                                                    cssrCmd.setIsPicking(true);
-                                                }
-                                            }else{
-                                                cssrCmd.setIsPicking(true);
-                                            }
-                                            if(cssrCmd.getIsPicking()){
-                                                //获取下一个库位
-                                                Long tipLocId = null;
-                                                for(Long lId:locationIds){
-                                                      if(!cacheLocaitionIds.contains(lId)){
-                                                          tipLocId  = lId;
-                                                      }
-                                                }
-                                                if(null != tipLocId){
-                                                      cssrCmd.setIsNeedTipLoc(true);
-                                                      cssrCmd.setIsPicking(false);
-                                                      cssrCmd.setTipLocationId(tipLocId);
-                                                      //缓存上一个托盘内最后扫描的一个内部容器
-                                                      this.cacheInsideContainerCode(locationId, insideContainerId, null);
-                                                }
-                                            }
-                                        } else {
-                                            //提示下一个货箱
-                                            Long icId = null;
-                                            for(Long insideId:insideContainerIds) {
-                                                if(!cacheInsideContainerIds.contains(insideId)){
-                                                    icId = insideId;
-                                                    break;
-                                                }
-                                            }
-                                            cssrCmd.setIsNeedTipInsideContainer(true);  //提示下一个内部容器
-                                            cssrCmd.setTipiInsideContainerId(icId);
-                                            //缓存上一个托盘内最后扫描的一个内部容器
-                                            this.cacheInsideContainerCode(locationId, insideContainerId, null);
-                                        }
-                                    } else {
-                                        // 继续复核，货箱内不同种类的sku
-//                                        cssrCmd.setIsNeedTipInsideContainer(true);
-                                        Long icsId = null;
-                                        for(Long icSkuId:iSkuIds){
-                                            if(!scanSkuAttrIdsNoSn.contains(icSkuId)) {
-                                                icsId = icSkuId;
-                                                break;
-                                            }
-                                        }
-                                        Map<String, Long> skuAttrIdQty1 =  skuAttrIdsQty.get(icsId);
-                                        Set<String> skuAttrIds1 = skuAttrIdQty1.keySet();
-                                        for(String skuAttrId1:skuAttrIds1){
-                                            if(!scanSkuAttrIdsNoSn.contains(skuAttrId1)){
-                                                tipSkuAttrId =  skuAttrId1;  
-                                            }
-                                        }
-                                        cssrCmd.setIsNeedScanSku(true);
-//                                        cssrCmd.setTipSkuAttrId(skuAttrId);
-                                        if(isSnLine) {//有sn/残次信息
-                                            //有sn的
-                                            Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-                                            Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-                                            ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-                                            Boolean result = false;
-                                            for(String sn:snDefect) {
-                                                    String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-                                                    if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-                                                        cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-                                                        result = true;
-                                                        break;
-                                                    }
-                                            }
-                                            if(!result) {
-                                                log.error("tip container is not in cache server error, logId is[{}]", logId);
-                                                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-                                            }
-                                            cssrCmd.setIsNeedScanSkuSn(true);  //数量扫描时，继续扫描sn
-                                            return cssrCmd;  //返回页面继续扫sn/残次信息
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                        } 
-                     else {
-                            log.error("scan sku qty is not equal with rcvd inv qty,  icId is:[{}], scanSkuId is:[{}], logId is:[{}]", insideContainerId, skuId, logId);
-                            throw new BusinessException(ErrorCodes.CONTAINER_SKU_QTY_NOT_EQUAL_SCAN_SKU_QTY_ERROR, new Object[] {insideContainerCmd.getCode()});
-                        }
-                      }
+//                                    break;
+//                                } else {
+//                                    log.error("scan sku has already checked,  icId is:[{}], scanSkuId is:[{}], logId is:[{}]", insideContainerId, skuId, logId);
+//                                    throw new BusinessException(ErrorCodes.CONTAINER_SKU_HAS_ALREADY_SCANNED, new Object[] {insideContainerCmd.getCode()});
+//                                }
+//                            } else {
+////                                ScanTipSkuCacheCommand cacheSkuCmd = new ScanTipSkuCacheCommand();
+//                                tipScanSkuCmd.setInsideContainerId(insideContainerCmd.getId());
+//                                tipScanSkuCmd.setInsideContainerCode(insideContainerCmd.getCode());
+//                                ArrayDeque<Long> cacheSkuIds1 = new ArrayDeque<Long>();
+//                                cacheSkuIds1.addFirst(skuId);
+//                                tipScanSkuCmd.setScanSkuIds(cacheSkuIds1);
+//                                cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(),tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+////                                ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
+//                                ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
+//                                Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
+//                                Set<String> skuAttrIds = skuAttrIdQty.keySet();
+//                                String tipSkuAttrId = null;
+//                                if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+//                                    //同一种sku有不同的库存属性
+//                                    for(String skuAttr:skuAttrIds){
+//                                         if(!scanSkuAttrIdsNoSn.contains(skuAttr)) {
+//                                             tipSkuAttrId = skuAttr;
+//                                             break;
+//                                         }
+//                                    }
+//                                    // 继续复核
+//                                    cssrCmd.setIsNeedScanSku(true);
+////                                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+//                                    if(isSnLine) {//有sn/残次信息
+//                                        //有sn的
+//                                        Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
+//                                        Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
+//                                        ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
+//                                        Boolean result = false;
+//                                        for(String sn:snDefect) {
+//                                                String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
+//                                                if(!skuAttrIdsSn.contains(skuAttrIdSn)){
+//                                                    cssrCmd.setTipSkuAttrId(skuAttrIdSn);
+//                                                    result = true;
+//                                                    break;
+//                                                }
+//                                        }
+//                                        if(!result) {
+//                                            log.error("tip container is not in cache server error, logId is[{}]", logId);
+//                                            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                                        }
+//                                        cssrCmd.setIsNeedScanSkuSn(true);  //数量扫描时，继续扫描sn
+//                                        return cssrCmd;
+//                                    }
+//                                }else{
+//                                    ArrayDeque<Long> cacheSkuIds = new ArrayDeque<Long>();
+//                                    cacheSkuIds.addFirst(skuId);
+//                                    tipScanSkuCmd.setScanSkuIds(cacheSkuIds);
+//                                    cacheManager.setObject(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+//                                    if (isCacheAllExists(iSkuIds, cacheSkuIds)) {
+//                                        //判断库位上是否还有货箱没有扫描
+//                                        if (isCacheAllExists(insideContainerIds, cacheInsideContainerIds)) {  //返回true ,两者相同
+//                                            //判断库位上是否有直接放的sku商品
+//                                            if(null != locSkuIds) {
+//                                                Set<Long> skuIds = locSkuIds.get(locationId);
+//                                                if(null != skuIds){
+//                                                    CheckScanResultCommand cmd =   this.pdaPickingTipSku(operationWay,skuIds, operationId, locationId, ouId, null, skuAttrIdsSnDefect, insideSkuAttrIdsSnDefect);
+//                                                    if(cmd.getIsNeedScanSku()) {//存在散装sku
+//                                                        tipSkuAttrId = cmd.getTipSkuAttrId();
+//                                                        cssrCmd.setIsNeedScanSku(true);
+//                                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+//                                                        cssrCmd.setIsHaveInsideContainer(false);
+//                                                        //缓存上一个托盘内最后扫描的一个内部容器
+//                                                        this.cacheInsideContainerCode(locationId, insideContainerId, null);
+//                                                    }
+//                                                }else{
+//                                                    cssrCmd.setIsPicking(true);
+//                                                }
+//                                            }else{
+//                                                cssrCmd.setIsPicking(true);
+//                                            }
+//                                            if(cssrCmd.getIsPicking()){
+//                                                //获取下一个库位
+//                                                Long tipLocId = null;
+//                                                for(Long lId:locationIds){
+//                                                      if(!cacheLocaitionIds.contains(lId)){
+//                                                          tipLocId  = lId;
+//                                                      }
+//                                                }
+//                                                if(null != tipLocId){
+//                                                      cssrCmd.setIsNeedTipLoc(true);
+//                                                      cssrCmd.setIsPicking(false);
+//                                                      cssrCmd.setTipLocationId(tipLocId);
+//                                                      //缓存上一个托盘内最后扫描的一个内部容器
+//                                                      this.cacheInsideContainerCode(locationId, insideContainerId, null);
+//                                                }
+//                                            }
+//                                        } else {
+//                                            //提示下一个货箱
+//                                            Long icId = null;
+//                                            for(Long insideId:insideContainerIds) {
+//                                                if(!cacheInsideContainerIds.contains(insideId)){
+//                                                    icId = insideId;
+//                                                    break;
+//                                                }
+//                                            }
+//                                            cssrCmd.setIsNeedTipInsideContainer(true);  //提示下一个内部容器
+//                                            cssrCmd.setTipiInsideContainerId(icId);
+//                                            //缓存上一个托盘内最后扫描的一个内部容器
+//                                            this.cacheInsideContainerCode(locationId, insideContainerId, null);
+//                                        }
+//                                    } else {
+//                                        // 继续复核，货箱内不同种类的sku
+////                                        cssrCmd.setIsNeedTipInsideContainer(true);
+//                                        Long icsId = null;
+//                                        for(Long icSkuId:iSkuIds){
+//                                            if(!scanSkuAttrIdsNoSn.contains(icSkuId)) {
+//                                                icsId = icSkuId;
+//                                                break;
+//                                            }
+//                                        }
+//                                        Map<String, Long> skuAttrIdQty1 =  skuAttrIdsQty.get(icsId);
+//                                        Set<String> skuAttrIds1 = skuAttrIdQty1.keySet();
+//                                        for(String skuAttrId1:skuAttrIds1){
+//                                            if(!scanSkuAttrIdsNoSn.contains(skuAttrId1)){
+//                                                tipSkuAttrId =  skuAttrId1;  
+//                                            }
+//                                        }
+//                                        cssrCmd.setIsNeedScanSku(true);
+////                                        cssrCmd.setTipSkuAttrId(skuAttrId);
+//                                        if(isSnLine) {//有sn/残次信息
+//                                            //有sn的
+//                                            Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
+//                                            Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
+//                                            ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
+//                                            Boolean result = false;
+//                                            for(String sn:snDefect) {
+//                                                    String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
+//                                                    if(!skuAttrIdsSn.contains(skuAttrIdSn)){
+//                                                        cssrCmd.setTipSkuAttrId(skuAttrIdSn);
+//                                                        result = true;
+//                                                        break;
+//                                                    }
+//                                            }
+//                                            if(!result) {
+//                                                log.error("tip container is not in cache server error, logId is[{}]", logId);
+//                                                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//                                            }
+//                                            cssrCmd.setIsNeedScanSkuSn(true);  //数量扫描时，继续扫描sn
+//                                            return cssrCmd;  //返回页面继续扫sn/残次信息
+//                                        }
+//                                    }
+//                                }
+//                                break;
+//                            }
+//                        } 
+//                     else {
+//                            log.error("scan sku qty is not equal with rcvd inv qty,  icId is:[{}], scanSkuId is:[{}], logId is:[{}]", insideContainerId, skuId, logId);
+//                            throw new BusinessException(ErrorCodes.CONTAINER_SKU_QTY_NOT_EQUAL_SCAN_SKU_QTY_ERROR, new Object[] {insideContainerCmd.getCode()});
+//                        }
+//                      }
                   }
               }
               if (false == skuExists) {
@@ -3321,6 +3355,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                            for(Long insideId:insideIds) {
                                Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
                                for(Long skuId:skuIds){
+                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideId.toString() + skuId.toString());
                                    cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
                                }
                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString());
@@ -3336,6 +3371,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                        for(Long insideId:insideIds) {
                            Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
                            for(Long skuId:skuIds){
+                               cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideId.toString() + skuId.toString());
                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
                            }
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString());
@@ -3348,6 +3384,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                    Set<Long> locSkuIds = operSkuIds.get(locationId); 
                    if(null != locSkuIds) {
                        for(Long skuId:locSkuIds) {
+                           cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + skuId.toString());
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE+ locationId.toString());
                        }
@@ -3690,9 +3727,22 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                  if(null != insideContainerId) {
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString()+tipSkuId.toString());
+                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + tipSkuId.toString());
                  }else{
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString());
                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
+                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + tipSkuId.toString());
+                 }
+             }
+             if(CancelPattern.PICKING_SCAN_SKU_DETAIL== cancelPattern){ //提示货箱取消流程){
+                 if(null != insideContainerId) {
+                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString());
+                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString()+tipSkuId.toString());
+                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + tipSkuId.toString());
+                 }else{
+                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString());
+                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString()+tipSkuId.toString());
+                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + tipSkuId.toString());
                  }
              }
              if(CancelPattern.PICKING_SCAN_OUT_BOUNX_BOX == cancelPattern){

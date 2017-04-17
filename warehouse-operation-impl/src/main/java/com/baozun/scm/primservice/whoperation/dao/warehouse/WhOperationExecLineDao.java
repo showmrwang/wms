@@ -62,12 +62,21 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
     List<WhOperationExecLineCommand> findCommandByBatchAndContainer(@Param("batch") String batch, @Param("containerId") Long containerId, @Param("ouId") Long ouId);
 
     /****
-     * 校验作业执行明细
+     * 获得作业执行明细
      * @param operationId
      * @param ouId
      * @return
      */
-    public List<WhOperationExecLine> checkOperationExecLine(@Param("ouId") Long ouId, @Param("operExecLineId") List<Long> operExecLineId, @Param("operLineId") List<Long> operLineId,@Param("scanPattern") Boolean scanPattern);
+    public List<WhOperationExecLine> checkOperationExecLine(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
+    
+    
+    /****
+     * 获得作业明细
+     * @param operationId
+     * @param ouId
+     * @return
+     */
+    public List<WhOperationExecLine> checkOperationLine(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
 
 
     public WhOperationExecLine findOperationExecLine(@Param("ouId") Long ouId, @Param("id") Long id);
@@ -82,14 +91,25 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
 
 
     /***
-     * /校验容器/出库箱库存与删除的拣货库位库存时否一致
+     * 得到容器库存信息
      * @param operationId
      * @param ouId
      * @param insideIdList
      * @param containerLatticeNoList
      * @return
      */
-    public List<WhOperationExecLine> checkContainerInventory(@Param("invSkuIds") Set<Long> invSkuIds, @Param("ouId") Long ouId, @Param("execLineIds") Set<Long> execLineIds);
+    public List<WhOperationExecLine> checkContainerInventory(@Param("invSkuIds") Set<Long> invSkuIds, @Param("ouId") Long ouId);
+    
+    
+    /***
+     *得到执行明细信息
+     * @param operationId
+     * @param ouId
+     * @param insideIdList
+     * @param containerLatticeNoList
+     * @return
+     */
+    public List<WhOperationExecLine> getOperationExecLineByIds(@Param("ouId") Long ouId, @Param("execLineIds") Set<Long> execLineIds);
 
     Long getWorkIdByUseContainerId(@Param("batch") String batch, @Param("scanContainerId") Long scanContainerId, @Param("ouId") Long ouId);
 
