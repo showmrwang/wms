@@ -7,6 +7,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
@@ -18,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 
 public interface SelectPoAsnManagerProxy extends BaseManager {
@@ -115,6 +117,8 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     List<WhAsnLine> findWhAsnLineByAsnId(Long asnId, Long ouId);
+
+    List<WhAsnLineCommand> findWhAsnLineCommandListByAsnId(Long asnId, Long ouId);
 
     /**
      * [业务方法]ASN的分页查询
@@ -327,5 +331,31 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     List<BiPoLine> findBiPoLineByBiPoIdAndLineNums(Long id, List<Integer> extLinenum);
+
+    /**
+     * [业务方法] 查找新建的，单据类型为消费者退货入库的ASN单据
+     * 
+     * @param originalEcOrderCode
+     * @param ouId
+     * @return
+     */
+    List<WhAsnCommand> findNewReturnsAsn(String originalEcOrderCode, Long ouId);
+
+    /**
+     * 
+     * @param lineId
+     * @param ouId
+     * @return
+     */
+    List<WhAsnSn> findWhAsnSnByAsnLineId(Long lineId, Long ouId);
+
+    /**
+     * 查找ASN单对应的原始出库单归档数据
+     * 
+     * @param asnId
+     * @param ouId
+     * @return
+     */
+    List<WhOdoArchivLineIndexCommand> findOrginalByAsnId(Long asnId, Long ouId);
 
 }

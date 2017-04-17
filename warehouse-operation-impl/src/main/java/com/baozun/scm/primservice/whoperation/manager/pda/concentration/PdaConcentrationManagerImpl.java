@@ -136,6 +136,28 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
         }
     }
+    
+    /**
+     * @author lichuan
+     * @param batch
+     * @param execLineCommandList
+     * @param ouId
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertIntoSeedingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId) {
+        if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
+            for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
+                WhSeedingCollection seedingCollection = new WhSeedingCollection();
+                seedingCollection.setBatch(batch);
+                seedingCollection.setContainerId(execLineCommand.getUseContainerId());
+                seedingCollection.setOuId(ouId);
+                seedingCollection.setCollectionStatus(CollectionStatus.NEW);
+                this.whSeedingCollectionDao.insert(seedingCollection);
+                insertIntoSeedingCollectionLine(seedingCollection);
+            }
+        }
+    }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -155,6 +177,33 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
             }
         }
+    }
+    
+    /**
+     * @author lichuan
+     * @param batch
+     * @param execLineCommandList
+     * @param ouId
+     * @param work
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertIntoWorkingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work) {
+        if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
+            for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
+                WhCheckingCollection whCheckingCollection = new WhCheckingCollection();
+                whCheckingCollection.setBatch(batch);
+                whCheckingCollection.setContainerId(execLineCommand.getUseContainerId());
+                whCheckingCollection.setOuId(ouId);
+                whCheckingCollection.setPickingMode(work.getPickingMode());
+                whCheckingCollection.setDistributionMode(work.getDistributionMode());
+                whCheckingCollection.setCheckingMode(work.getCheckingMode());
+                whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
+                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
+                this.whCheckingCollectionDao.insert(whCheckingCollection);
+            }
+        }
+
     }
 
     @Override

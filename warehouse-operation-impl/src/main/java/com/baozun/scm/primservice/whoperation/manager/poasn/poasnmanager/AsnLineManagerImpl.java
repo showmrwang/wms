@@ -1,7 +1,11 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
@@ -10,22 +14,29 @@ import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.utilities.DateUtil;
 
 @Service("asnLineManager")
 @Transactional
@@ -39,6 +50,8 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     private WhPoLineDao whPoLineDao;
     @Autowired
     private WhAsnDao whAsnDao;
+    @Autowired
+    private InventoryStatusDao inventoryStatusDao;
 
     // TODO 更新POLINE 时系统日志需要增加PO的CODE 卢义敏
     // TODO 更新ASNLINE 时系统日志需要增加ASN的CODE 卢义敏
@@ -267,6 +280,118 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhAsnLine> findWhAsnLineByAsnIdOuIdToShard(Long asnId, Long ouId) {
         return this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asnId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhAsnLineCommand> findWhAsnLineCommandListByAsnIdOuIdToShard(Long asnId, Long ouId) {
+        List<WhAsnLine> lineList= this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asnId, ouId);
+        if(lineList==null||lineList.size()==0){
+            return null;
+        }
+        // 库存状态
+        InventoryStatus status = new InventoryStatus();
+        // status.setLifecycle(1);
+        List<InventoryStatus> invStatusList = this.inventoryStatusDao.findListByParam(status);
+        Map<Long, String> invStatusMap = new HashMap<Long, String>();
+        for (InventoryStatus s : invStatusList) {
+            invStatusMap.put(s.getId(), s.getName());
+        }
+        Set<String> dic2 = new HashSet<String>();// 库存类型
+        Set<String> dic3 = new HashSet<String>();//库存属性1
+        Set<String> dic4 = new HashSet<String>();//库存属性2
+        Set<String> dic5 = new HashSet<String>();//库存属性3
+        Set<String> dic6 = new HashSet<String>();//库存属性4
+        Set<String> dic7 = new HashSet<String>();//库存属性5
+        
+        for(WhAsnLine line:lineList){
+            if(StringUtils.hasText(line.getInvType())){
+                dic2.add(line.getInvType());
+            }
+            if (StringUtils.hasText(line.getInvAttr1())) {
+                dic3.add(line.getInvAttr1());
+            }
+            if (StringUtils.hasText(line.getInvAttr2())) {
+                dic4.add(line.getInvAttr2());
+            }
+            if (StringUtils.hasText(line.getInvAttr3())) {
+                dic5.add(line.getInvAttr3());
+            }
+            if (StringUtils.hasText(line.getInvAttr4())) {
+                dic6.add(line.getInvAttr4());
+            }
+            if (StringUtils.hasText(line.getInvAttr5())) {
+                dic7.add(line.getInvAttr5());
+            }
+        }
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        map.put(Constants.INV_TYPE, new ArrayList<String>(dic2));
+        map.put(Constants.INV_ATTR1, new ArrayList<String>(dic3));
+        map.put(Constants.INV_ATTR2, new ArrayList<String>(dic3));
+        map.put(Constants.INV_ATTR3, new ArrayList<String>(dic3));
+        map.put(Constants.INV_ATTR4, new ArrayList<String>(dic3));
+        map.put(Constants.INV_ATTR5, new ArrayList<String>(dic3));
+        Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+
+        List<WhAsnLineCommand> commandLineList=new ArrayList<WhAsnLineCommand>();
+        for (WhAsnLine line : lineList) {
+            WhAsnLineCommand lineCommand = new WhAsnLineCommand();
+            BeanUtils.copyProperties(line, lineCommand);
+
+            if (null != line.getInvStatus()) {
+                lineCommand.setInvName(invStatusMap.get(line.getInvStatus()));
+            }
+
+            if (StringUtils.hasText(line.getInvType())) {
+                SysDictionary sys = dicMap.get(Constants.INV_TYPE + "_" + line.getInvType());
+                lineCommand.setInvTypeLabel(sys == null ? line.getInvType() : sys.getDicLabel());
+            } else {
+                lineCommand.setInvTypeLabel("");
+            }
+            if (StringUtils.hasText(line.getInvAttr1())) {
+                SysDictionary sys = dicMap.get(Constants.INV_ATTR1 + "_" + line.getInvAttr1());
+                lineCommand.setInv1Str(sys == null ? line.getInvAttr1() : sys.getDicLabel());
+            } else {
+                lineCommand.setInv1Str("");
+            }
+            if (StringUtils.hasText(line.getInvAttr2())) {
+                SysDictionary sys = dicMap.get(Constants.INV_ATTR2 + "_" + line.getInvAttr2());
+                lineCommand.setInv2Str(sys == null ? line.getInvAttr2() : sys.getDicLabel());
+            } else {
+                lineCommand.setInv2Str("");
+            }
+            if (StringUtils.hasText(line.getInvAttr3())) {
+                SysDictionary sys = dicMap.get(Constants.INV_ATTR3 + "_" + line.getInvAttr3());
+                lineCommand.setInv3Str(sys == null ? line.getInvAttr3() : sys.getDicLabel());
+            } else {
+                lineCommand.setInv3Str("");
+            }
+            if (StringUtils.hasText(line.getInvAttr4())) {
+                SysDictionary sys = dicMap.get(Constants.INV_ATTR4 + "_" + line.getInvAttr4());
+                lineCommand.setInv4Str(sys == null ? line.getInvAttr4() : sys.getDicLabel());
+            } else {
+                lineCommand.setInv4Str("");
+            }
+            if (StringUtils.hasText(line.getInvAttr5())) {
+                SysDictionary sys = dicMap.get(Constants.INV_ATTR5 + "_" + line.getInvAttr5());
+                lineCommand.setInv5Str(sys == null ? line.getInvAttr5() : sys.getDicLabel());
+            } else {
+                lineCommand.setInv5Str("");
+            }
+            if (line.getMfgDate() != null) {
+                lineCommand.setMfgDateStr(DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD));
+            } else {
+                lineCommand.setMfgDateStr("");
+            }
+            if (line.getExpDate() != null) {
+                lineCommand.setExpDateStr(DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD));
+            } else {
+                lineCommand.setExpDateStr("");
+            }
+            commandLineList.add(lineCommand);
+
+        }
+        return commandLineList;
     }
 
     @Override

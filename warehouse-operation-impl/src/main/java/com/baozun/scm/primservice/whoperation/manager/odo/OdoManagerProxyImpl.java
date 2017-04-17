@@ -323,11 +323,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (StringUtils.isEmpty(odo.getOdoStatus())) {
                 odo.setOdoStatus(OdoStatus.ODO_NEW);
             }
+            // @mender yimin.lu 2017/4/11 领先、滞后出库单状态
             if (StringUtils.isEmpty(odo.getHeadStartOdoStatus())) {
-                odo.setHeadStartOdoStatus(OdoStatus.HEADSTARTODOSTATUS_NEW);
+                odo.setHeadStartOdoStatus(OdoStatus.ODO_NEW);
             }
             if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
-                odo.setLagOdoStatus(OdoStatus.LAGODOSTATUS_NEW);
+                odo.setLagOdoStatus(OdoStatus.ODO_NEW);
             }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码

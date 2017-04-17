@@ -170,6 +170,8 @@ public interface AsnLineManager extends BaseManager {
      */
     List<WhAsnLine> findWhAsnLineByAsnIdOuIdToShard(Long asnId, Long ouId);
 
+    List<WhAsnLineCommand> findWhAsnLineCommandListByAsnIdOuIdToShard(Long asnId, Long ouId);
+
     /**
      * TODO lei.zhang
      * @param occupationCode

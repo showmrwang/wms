@@ -1,7 +1,10 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.pda.collection.WorkCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
@@ -26,6 +29,16 @@ public interface PdaConcentrationManager extends BaseManager {
     void insertIntoSeedingCollection(String batch, Long workId, Long ouId);
 
     /**
+     * [业务方法] 插入集货表
+     * 
+     * @author lichuan
+     * @param batch
+     * @param execLineCommandList
+     * @param ouId
+     */
+    void insertIntoSeedingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId);
+
+    /**
      * [业务方法] 插入集货明细表
      * 
      * @param whSeedingCollection
@@ -40,6 +53,18 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param ouId
      */
     void insertIntoWorkingCollection(String batch, Long workId, Long ouId, WhWorkCommand work);
+
+    /**
+     * [业务方法] 插入复核台集货表
+     * 
+     * @author lichuan
+     * @param batch
+     * @param execLineCommandList
+     * @param ouId
+     * @param work
+     */
+    void insertIntoWorkingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work);
+
 
     /**
      * [通用方法] 批次号, 组织id, 是否是最后一个拣货容器

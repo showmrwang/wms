@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.OperationLineCach
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
@@ -1621,14 +1622,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             throw new BusinessException("no work found");
         }
         command.setBatch(work.getBatch());
+        List<WhOperationExecLineCommand> execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(work.getId(), ouId);
         if (Constants.WH_PICKING_MODE.equals(work.getPickingMode())) {
             // 拣货模式为播种
-            this.pdaConcentrationManager.insertIntoSeedingCollection(command.getBatch(), work.getId(), ouId);
+            this.pdaConcentrationManager.insertIntoSeedingCollection(command.getBatch(), execLineCommandList, ouId);
             // this.pdaConcentrationManager.insertIntoSeedingCollectionLine(command.getBatch(),
             // work.getId(), ouId);
         } else {
             // 拣货模式为非播种
-            this.pdaConcentrationManager.insertIntoWorkingCollection(command.getBatch(), work.getId(), ouId, work);
+            this.pdaConcentrationManager.insertIntoWorkingCollection(command.getBatch(), execLineCommandList, ouId, work);
         }
         return work.getPickingMode();
     }

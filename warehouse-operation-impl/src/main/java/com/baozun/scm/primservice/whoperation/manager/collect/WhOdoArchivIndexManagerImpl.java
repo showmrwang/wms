@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.collect.WhOdoArchivIndexDao;
+import com.baozun.scm.primservice.whoperation.dao.collect.WhOdoArchivLineIndexDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
@@ -30,6 +31,8 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
 
     @Autowired
     private WhOdoArchivIndexDao whOdoArchivIndexDao;
+    @Autowired
+    private WhOdoArchivLineIndexDao whOdoArchivLineIndexDao;
     @Autowired
     private OdoArchivDao odoArchivDao;
     
@@ -158,4 +161,13 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
         }
 	    return true;
 	}
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
+    public List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexListByAsnId(Long asnId, Long ouId) {
+        WhOdoArchivLineIndex search = new WhOdoArchivLineIndex();
+        search.setAsnId(asnId);
+        search.setOuId(ouId);
+        return this.whOdoArchivLineIndexDao.findListByParam(search);
+    }
 }

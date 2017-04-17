@@ -754,4 +754,101 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and exists (select 1 from t_wh_asn_line l where l.asn_id=a.id and l.ou_id=a.ou_id and l.status in('1','2','10') )  
 		and not exists (select 1 from t_wh_asn_line l where l.asn_id=a.id and l.ou_id=a.ou_id and l.status in('1','2') )   
 	</select>
+	
+	
+	<select id="findReturns" resultMap="whAsnCommand">
+		SELECT
+ 			asn.id as id,
+			asn.asn_code as asnCode,
+			asn.asn_ext_code as asnExtCode,
+			asn.po_id as poId,
+			asn.ou_id as ouId,
+			asn.customer_id as customerId,
+			asn.store_id as storeId,
+			asn.po_date as poDate,
+			asn.eta as eta,
+			asn.delivery_time as deliveryTime,
+			asn.qty_planned as qtyPlanned,
+			asn.qty_rcvd as qtyRcvd,
+			asn.ctn_planned as ctnPlanned,
+			asn.ctn_rcvd as ctnRcvd,
+			asn.supplier_id as supplierId,
+			asn.logistics_provider as logisticsProvider,
+			asn.asn_type as asnType,
+			asn.status as status,
+			asn.is_iqc as isIqc,
+			asn.start_time as startTime,
+			asn.stop_time as stopTime,
+			asn.inbound_time as inboundTime,
+			asn.create_time as createTime,
+			asn.created_id as createdId,
+			asn.last_modify_time as lastModifyTime,
+			asn.modified_id as modifiedId,
+			asn.po_ou_id as poOuId,
+			asn.ext_code as extCode,
+			asn.urgent_status as urgentStatus,
+			asn.uuid as uuid,
+			asn.overchage_rate as overChageRate,
+			asn.is_auto_close as isAutoClose
+ 		
+ 		
+		from t_wh_asn asn
+		
+		inner join t_wh_asn_transport_mgmt trans on trans.asn_id=asn.id
+		
+		inner join t_wh_po  po on po.id=asn.po_id
+		
+		where 
+		
+		asn.ou_id=#{ouId} and asn.asn_type=#{asnType}
+		
+		<if test="status!=null">
+   			 and asn.status = #{status}
+		</if>
+		 		
+ 		<if test="originalEcOrderCode!=null and originalEcOrderCode!=''">
+			and asn.original_ec_order_code like #{originalEcOrderCode}
+		</if>
+		
+ 		<if test="trackingNumber!=null and trackingNumber!=''">
+			and trans.tracking_number  like #{trackingNumber}
+		</if>
+		
+ 		<if test="originalExtOdoCode!=null and originalExtOdoCode!=''">
+			and asn.original_ext_odo_code  like #{originalExtOdoCode}
+		</if>
+		
+ 		<if test="extCode!=null and extCode!=''">
+			and asn.ext_code  like #{extCode}
+		</if>
+		
+ 		<if test="senderTargetName!=null and senderTargetName!=''">
+			and trans.sender_target_name  like #{senderTargetName}
+		</if>
+		
+ 		<if test="phoneNumber!=null and phoneNumber!=''">
+			and (trans.sender_target_mobile_phone like  #{phoneNumber} or trans.sender_target_telephone like  #{phoneNumber})
+		</if>
+		
+		<if test="senderTargetAddress!=null and senderTargetAddress!=''">
+			and trans.sender_target_address like  #{senderTargetAddress}
+		</if>
+		
+		<if test="customerId!=null">
+   			and asn.customer_id = #{customerId}
+		</if>
+		
+		<if test="storeId!=null">
+   			and asn.store_id = #{storeId}
+		</if>
+		
+		<if test="createTimeStart!=null and createTimeStart!=''">
+			and DATE_FORMAT(po.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+		</if>
+		<if test="createTimeEnd!=null and createTimeEnd!=''">
+			and DATE_FORMAT(po.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+		</if>
+	</select>
+	
+	
 </mapper>

@@ -18,17 +18,18 @@ package com.baozun.scm.primservice.whoperation.command.collect;
 
 import java.util.Date;
 
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 /**
  * 
  * @author larkark
  *
  */
-public class WhOdoArchivLineIndexCommand extends BaseModel {
+public class WhOdoArchivLineIndexCommand extends BaseCommand {
 
     private static final long serialVersionUID = 241134293595577437L;
     
+    private Long id;
     /** asn_id */
 	private Long asnId;
 	/** 仓库数据收集库对应数据来源表名 */
@@ -84,7 +85,39 @@ public class WhOdoArchivLineIndexCommand extends BaseModel {
     /** 出库箱明细id */
     private Long whOutboundboxLineId;
     
-	public WhOdoArchivLineIndexCommand() {}
+    /** 生产日期 */
+    private String mfgDateStr;
+    /** 失效日期 */
+    private String expDateStr;
+    /** 已收数量 */
+    private Integer qtyRcvd;
+
+
+    public Integer getQtyRcvd() {
+        return qtyRcvd;
+    }
+
+    public void setQtyRcvd(Integer qtyRcvd) {
+        this.qtyRcvd = qtyRcvd;
+    }
+
+    public String getMfgDateStr() {
+        return mfgDateStr;
+    }
+
+    public void setMfgDateStr(String mfgDateStr) {
+        this.mfgDateStr = mfgDateStr;
+    }
+
+    public String getExpDateStr() {
+        return expDateStr;
+    }
+
+    public void setExpDateStr(String expDateStr) {
+        this.expDateStr = expDateStr;
+    }
+
+    public WhOdoArchivLineIndexCommand() {}
 
 	public WhOdoArchivLineIndexCommand(Long id) {
 		this.id = id;
@@ -305,4 +338,13 @@ public class WhOdoArchivLineIndexCommand extends BaseModel {
     public void setWhOutboundboxLineId(Long whOutboundboxLineId) {
         this.whOutboundboxLineId = whOutboundboxLineId;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }

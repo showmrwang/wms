@@ -36,8 +36,4 @@ public class OdoStatus implements Serializable {
     public static final String ODOLINE_CANCEL = "17";// 取消
     /** ODO_LINE */
 
-    /** 领先出库单状态 */
-    public static final String HEADSTARTODOSTATUS_NEW = "1";// 新建
-    /** 滞后出库单状态 */
-    public static final String LAGODOSTATUS_NEW = "1";// 新建
 }
