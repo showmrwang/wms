@@ -118,6 +118,7 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isNeedScanSkuInvStatus = false;
     /** 提示商品库存状态 */
     private Long skuInvStatus;
+    private String skuInvStatusName;
     /** 是否需要扫描批次号 */
     private Boolean isNeedScanBatchNumber = false;
     /** 批次号 */
@@ -1124,6 +1125,14 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsLastWork(Boolean isLastWork) {
         this.isLastWork = isLastWork;
+    }
+
+    public String getSkuInvStatusName() {
+        return skuInvStatusName;
+    }
+
+    public void setSkuInvStatusName(String skuInvStatusName) {
+        this.skuInvStatusName = skuInvStatusName;
     }
 
    
