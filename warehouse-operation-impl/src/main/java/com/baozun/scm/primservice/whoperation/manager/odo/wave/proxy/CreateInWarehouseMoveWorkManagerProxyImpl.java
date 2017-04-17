@@ -94,8 +94,6 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
     private Boolean systemCheck() {
         Boolean isSuccess = true;
         try {
-            // 1.客户：用户勾选库存库存必须同客户
-            // 2.库存数量：用户选择的库存记录行必须是未分配的非冻结且非待移入的库存
             // 3.库位管理属性：库位允许混放，需判断混放sku数与最大混放属性数库位不允许混放，库存属性必须保持一致静态库位，只能移动绑定的sku
             // 4.商品管理属性：不允许混放，只能放到存在当前sku的库位或空库位
             // 5.目标库位体积重量计算
