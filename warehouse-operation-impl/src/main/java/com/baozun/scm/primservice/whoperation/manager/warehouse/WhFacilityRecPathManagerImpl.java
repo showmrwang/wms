@@ -19,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityPathDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityQueueDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityGroupDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhTemporaryStorageLocationDao;
@@ -27,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityQueue;
@@ -55,6 +57,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
     private WhWorkingStorageSectionDao whWorkingStorageSectionDao;
     @Autowired
     private AreaDao areaDao;
+    @Autowired
+    private WhLocationDao whLocationDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -195,7 +199,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
 
 
         // 查询中转库位
-        WhTemporaryStorageLocation transitLocation = new WhTemporaryStorageLocation();
+        Location transitLocation = new Location();
         WhFacilityPath facilityPathSearch = new WhFacilityPath();
         facilityPathSearch.setOuId(ouId);
         facilityPathSearch.setFromAreaCode(fromArea.getAreaCode());
@@ -204,10 +208,10 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         facilityPathSearch.setToAreaCode(facilityGroup.getFacilityGroupCode());
         List<WhFacilityPath> facilityPathList = this.whFacilityPathDao.findListByParam(facilityPathSearch);
         if (facilityPathList != null && facilityPathList.size() > 0) {
-            WhTemporaryStorageLocation search = new WhTemporaryStorageLocation();
+            Location search = new Location();
             search.setOuId(ouId);
-            search.setTemporaryStorageCode(facilityPathList.get(0).getTransitLocationCode());
-            List<WhTemporaryStorageLocation> locationList = this.whTemporaryStorageLocationDao.findListByParam(search);
+            search.setCode(facilityPathList.get(0).getTransitLocationCode());
+            List<Location> locationList = this.whLocationDao.findListByParam(search);
             if (locationList == null || locationList.size() == 0) {
 
             } else {
@@ -225,7 +229,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         return recPath;
     }
 
-    private WhFacilityRecPath insertByPickingMode(RecFacilityPathCommand recFacilityPath, WhOutboundFacility facility, WhTemporaryStorageLocation transitLocation, WhTemporaryStorageLocation toLocation, Long ouId) {
+    private WhFacilityRecPath insertByPickingMode(RecFacilityPathCommand recFacilityPath, WhOutboundFacility facility, Location transitLocation, WhTemporaryStorageLocation toLocation, Long ouId) {
         WhFacilityRecPath recPath = new WhFacilityRecPath();
         // #推荐成功 插入推荐成功路径表，并且保存对应的设施队列列表信息
         recPath = new WhFacilityRecPath();
@@ -246,8 +250,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
 
         recPath.setTemporaryStorageLocationCheckCode(toLocation.getCheckCode());
         recPath.setTemporaryStorageLocationCode(toLocation.getTemporaryStorageCode());
-        recPath.setTransitLocationCheckCode(transitLocation.getCheckCode());
-        recPath.setTransitLocationCode(transitLocation.getTemporaryStorageCode());
+        recPath.setTransitLocationCheckCode(transitLocation.getBarCode());
+        recPath.setTransitLocationCode(transitLocation.getCode());
         recPath.setOuId(ouId);
         // @Gianni 修改状态为新建 2017-04-10
         recPath.setStatus(1);
