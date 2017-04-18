@@ -297,4 +297,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             LEFT JOIN t_bi_customer AS customer ON odo.customer_id = customer.id
             LEFT JOIN t_bi_store AS store ON odo.store_id = store.id
     </select>
+    
+     <select id="findWorkById" resultMap="WhWorkResultExt">
+        select
+        <include refid="whWorkColumnsExt" />
+        from t_wh_work
+        <where>
+            id = #{workId}
+            and ou_id = #{ouId}
+        </where>
+    </select>
+    
 </mapper>

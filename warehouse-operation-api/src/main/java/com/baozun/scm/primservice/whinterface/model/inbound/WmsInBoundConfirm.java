@@ -21,7 +21,7 @@ import java.util.List;
  * 入库单反馈
  *
  */
-public class WmsInboundConfirm implements Serializable {
+public class WmsInBoundConfirm implements Serializable {
 
 
     /**
@@ -68,7 +68,7 @@ public class WmsInboundConfirm implements Serializable {
     /** 数据来源 区分上位系统 */
     private String dataSource;
     /** 入库单反馈明细 */
-    private List<WmsInboundLineConfirm> wmsInBoundConfirmLines;
+    private List<WmsInBoundLineConfirm> wmsInBoundConfirmLines;
 
     public String getUuid() {
         return uuid;
@@ -222,11 +222,11 @@ public class WmsInboundConfirm implements Serializable {
         this.extPoType = extPoType;
     }
 
-    public List<WmsInboundLineConfirm> getWmsInBoundConfirmLines() {
+    public List<WmsInBoundLineConfirm> getWmsInBoundConfirmLines() {
         return wmsInBoundConfirmLines;
     }
 
-    public void setWmsInBoundConfirmLines(List<WmsInboundLineConfirm> wmsInBoundConfirmLines) {
+    public void setWmsInBoundConfirmLines(List<WmsInBoundLineConfirm> wmsInBoundConfirmLines) {
         this.wmsInBoundConfirmLines = wmsInBoundConfirmLines;
     }
 

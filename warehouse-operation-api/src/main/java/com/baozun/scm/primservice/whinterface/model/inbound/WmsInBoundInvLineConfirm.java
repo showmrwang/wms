@@ -24,7 +24,7 @@ import java.util.List;
  * @author larkark
  *
  */
-public class WmsInboundInvLineConfirm implements Serializable {
+public class WmsInBoundInvLineConfirm implements Serializable {
 
     /**
      * 
@@ -59,7 +59,7 @@ public class WmsInboundInvLineConfirm implements Serializable {
     /** 是否质检 默认否 */
     private Boolean isIqc;
     /** 入库单明细SN信息 */
-    private List<WmsInboundSnLineConfirm> wmsInBoundSnConfirmLines;
+    private List<WmsInBoundSnLineConfirm> wmsInBoundSnConfirmLines;
 
     public Double getQtyRcvd() {
         return qtyRcvd;
@@ -173,11 +173,11 @@ public class WmsInboundInvLineConfirm implements Serializable {
         this.isIqc = isIqc;
     }
 
-    public List<WmsInboundSnLineConfirm> getWmsInBoundSnConfirmLines() {
+    public List<WmsInBoundSnLineConfirm> getWmsInBoundSnConfirmLines() {
         return wmsInBoundSnConfirmLines;
     }
 
-    public void setWmsInBoundSnConfirmLines(List<WmsInboundSnLineConfirm> wmsInBoundSnConfirmLines) {
+    public void setWmsInBoundSnConfirmLines(List<WmsInBoundSnLineConfirm> wmsInBoundSnConfirmLines) {
         this.wmsInBoundSnConfirmLines = wmsInBoundSnConfirmLines;
     }
 

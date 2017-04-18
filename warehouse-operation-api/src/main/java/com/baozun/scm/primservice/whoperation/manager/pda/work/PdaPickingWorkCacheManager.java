@@ -122,7 +122,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param operatorId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipSku(String operationWay,Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId,Map<Long, Map<String, Set<String>>> locskuAttrIdsSnDefect,Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect);
+      public CheckScanResultCommand pdaPickingTipSku(Long outerContainerId,String operationWay,Set<Long> skuIds,Long operatorId,Long locationId,Long ouId,Long insideContainerId,Map<Long, Map<String, Set<String>>> locskuAttrIdsSnDefect,Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect);
       
       /***
        *  @tangming

@@ -59,13 +59,12 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
     /****
      * 确定补货方式和占用模型
      * 
-     * @author qiming.liu
      * @param  whWork
      * @param  ouId
      * @return
      */
     @Override
-    public PickingScanResultCommand getReplenishmentForGroup(WhWork whWork, Long ouId) {
+    public PickingScanResultCommand getInWarehouseMoveForGroup(WhWork whWork, Long ouId) {
         // 根据工作id获取作业信息        
         WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWork.getId(), ouId);
         // 统计分析工作及明细并缓存
@@ -78,11 +77,11 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
         psRCmd.setOperationId(whOperationCommand.getId());
         // 捡货方式           
         if(whOperationCommand.getIsWholeCase() == false){
-            psRCmd.setReplenishWay(Constants.REPLENISH_WAY_ONE);
+            psRCmd.setInWarehouseMoveWay(Constants.REPLENISH_WAY_ONE);
         }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getPallets().size() > 0){
-            psRCmd.setReplenishWay(Constants.REPLENISH_WAY_TWO);
+            psRCmd.setInWarehouseMoveWay(Constants.REPLENISH_WAY_TWO);
         }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 0 && statisticsCommand.getPallets().size() > 0){
-            psRCmd.setReplenishWay(Constants.REPLENISH_WAY_THREE);
+            psRCmd.setInWarehouseMoveWay(Constants.REPLENISH_WAY_THREE);
         }
         // 库存占用模型
         if(statisticsCommand.getOuterContainerIds().size() > 0 && statisticsCommand.getInsideContainerIds().size() == 0 && statisticsCommand.getInsideSkuIds().size() == 0){
@@ -103,11 +102,12 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
 
     /***
      * 提示拣货库位
-     * @author tangming
+     * @param functionId
      * @param operationId
+     * @param ouId
      * @return
      */
-    public PickingScanResultCommand replenishmentTipLocation(Long functionId,Long operationId,Long ouId){
+    public PickingScanResultCommand inWarehouseMoveTipLocation(Long functionId,Long operationId,Long ouId){
            PickingScanResultCommand psRCmd = new PickingScanResultCommand();
            OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
            if(null == operatorLine) {
@@ -137,6 +137,8 @@ public class PdaInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implement
            psRCmd.setIsScanInvAttr(inventoryMove.getIsScanInvAttr()); //是否扫描sku属性
            psRCmd.setIsTipInvAttr(inventoryMove.getIsTipInvAttr()); //是否提示sku库存属性
            psRCmd.setScanPattern(inventoryMove.getScanPattern()); //扫描模式 
+           psRCmd.setPalletPickingMode(inventoryMove.getPalletPickingMode()); //整拖拣货模式
+           psRCmd.setContainerPickingMode(inventoryMove.getContainerPickingMode()); //整箱拣货模式
            return psRCmd;
     }
 

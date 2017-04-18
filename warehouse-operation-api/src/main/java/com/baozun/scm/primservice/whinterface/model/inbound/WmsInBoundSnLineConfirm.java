@@ -22,7 +22,7 @@ import java.io.Serializable;
  * @author larkark
  *
  */
-public class WmsInboundSnLineConfirm implements Serializable {
+public class WmsInBoundSnLineConfirm implements Serializable {
 
     /**
      * 

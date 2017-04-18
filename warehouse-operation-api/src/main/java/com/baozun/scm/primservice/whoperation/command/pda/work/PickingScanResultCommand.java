@@ -202,7 +202,9 @@ public class PickingScanResultCommand extends BaseCommand {
 
     private Boolean isNeedTipLoc;
 
-    private Boolean isScanOutBoundBox = false; // 是否已经扫描出库箱 isPicking= 2时使用
+    private Boolean isScanOutBoundBox = false; // 是否已经扫描出库箱
+    
+    private Boolean scanOutBoundBox = false; // 是否已经扫描出库箱 isPicking= 2时使用
 
     private Double scanSkuQty; // 扫描数量
     /** 是否继续扫描sn明细 */
@@ -237,7 +239,11 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isSkuSn;
     /** 判断是否占用SN/残次条码 */
     private Boolean isSkuSnOccupation;
-
+    
+    /** 库内移动方式 */
+    private Integer inWarehouseMoveWay;
+    /** 取消模式 */
+    private Integer cancelPattern;
     /************************************************** 整托整箱结束 **************************************************/
 
     /************************************************** pda补货开始 **************************************************/
@@ -1135,6 +1141,28 @@ public class PickingScanResultCommand extends BaseCommand {
         this.skuInvStatusName = skuInvStatusName;
     }
 
-   
-    
+    public Boolean getScanOutBoundBox() {
+        return scanOutBoundBox;
+    }
+
+    public void setScanOutBoundBox(Boolean scanOutBoundBox) {
+        this.scanOutBoundBox = scanOutBoundBox;
+    }
+
+    public Integer getInWarehouseMoveWay() {
+        return inWarehouseMoveWay;
+    }
+
+    public void setInWarehouseMoveWay(Integer inWarehouseMoveWay) {
+        this.inWarehouseMoveWay = inWarehouseMoveWay;
+    }
+
+    public Integer getCancelPattern() {
+        return cancelPattern;
+    }
+
+    public void setCancelPattern(Integer cancelPattern) {
+        this.cancelPattern = cancelPattern;
+    }
+
 }

@@ -23,7 +23,7 @@ import java.util.List;
  * @author larkark
  *
  */
-public class WmsInboundLineConfirm implements Serializable {
+public class WmsInBoundLineConfirm implements Serializable {
 
     /**
      * 
@@ -45,7 +45,7 @@ public class WmsInboundLineConfirm implements Serializable {
     /** 箱号 */
     private String cartonNo;
     /** 入库单明细库存信息 */
-    private List<WmsInboundInvLineConfirm> wmsInBoundInvLineConfirms;
+    private List<WmsInBoundInvLineConfirm> wmsInBoundInvLineConfirms;
 
     public String getUpc() {
         return upc;
@@ -103,11 +103,11 @@ public class WmsInboundLineConfirm implements Serializable {
         this.cartonNo = cartonNo;
     }
 
-    public List<WmsInboundInvLineConfirm> getWmsInBoundInvLineConfirms() {
+    public List<WmsInBoundInvLineConfirm> getWmsInBoundInvLineConfirms() {
         return wmsInBoundInvLineConfirms;
     }
 
-    public void setWmsInBoundInvLineConfirms(List<WmsInboundInvLineConfirm> wmsInBoundInvLineConfirms) {
+    public void setWmsInBoundInvLineConfirms(List<WmsInBoundInvLineConfirm> wmsInBoundInvLineConfirms) {
         this.wmsInBoundInvLineConfirms = wmsInBoundInvLineConfirms;
     }
 

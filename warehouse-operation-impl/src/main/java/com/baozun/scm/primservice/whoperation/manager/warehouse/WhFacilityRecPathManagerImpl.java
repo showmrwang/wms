@@ -96,15 +96,17 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
 
         // 最后一箱逻辑
         if (recFacilityPath.isLastContainer()) {
-            this.triggerForLastContainer(recFacilityPath, ouId);
+            this.triggerForLastContainer(recFacilityPath, wh);
         }
 
     }
 
 
-    private void triggerForLastContainer(RecFacilityPathCommand recFacilityPath, Long ouId) {
+    private void triggerForLastContainer(RecFacilityPathCommand recFacilityPath, Warehouse wh) {
+        Long ouId = wh.getId();
         String batch = recFacilityPath.getBatch();
-        String pickingMode = recFacilityPath.getPickingMode();
+        // @mender yimin.lu 2017/4/18
+        // String pickingMode = recFacilityPath.getPickingMode();
 
         WhFacilityRecPath search = new WhFacilityRecPath();
         search.setOuId(ouId);
@@ -133,7 +135,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         for (int i = 0; i < WhFacilityRecPathList.size(); i++) {
             WhFacilityRecPath rec = WhFacilityRecPathList.get(i);
             // 边拣货边播种
-            if (Constants.SEEDING_MODE_1.equals(pickingMode) && isReleaseLocation) {
+            // @mender yimin.lu 2017/4/18 判断逻辑字段在仓库上
+            if (Constants.SEEDING_MODE_1.equals(wh.getSeedingMode()) && isReleaseLocation) {
                 WhTemporaryStorageLocation tslocation = this.whTemporaryStorageLocationDao.findByCodeAndOuId(rec.getTemporaryStorageLocationCode(), ouId);
                 tslocation.setStatus(Constants.WH_GLOBAL_STATUS_1);
                 tslocation.setBatch(null);
@@ -203,8 +206,9 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         WhFacilityPath facilityPathSearch = new WhFacilityPath();
         facilityPathSearch.setOuId(ouId);
         facilityPathSearch.setFromAreaCode(fromArea.getAreaCode());
-        facilityPathSearch.setFromAreaType(fromArea.getAreaType());
-        facilityPathSearch.setToAreaType(facilityGroup.getFacilityGroupType());
+        // @mender yimin.lu 2017/4/18 取消区域类型的查询条件
+        // facilityPathSearch.setFromAreaType(fromArea.getAreaType());
+        // facilityPathSearch.setToAreaType(facilityGroup.getFacilityGroupType());
         facilityPathSearch.setToAreaCode(facilityGroup.getFacilityGroupCode());
         List<WhFacilityPath> facilityPathList = this.whFacilityPathDao.findListByParam(facilityPathSearch);
         if (facilityPathList != null && facilityPathList.size() > 0) {

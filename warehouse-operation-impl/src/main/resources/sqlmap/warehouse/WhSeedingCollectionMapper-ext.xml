@@ -19,8 +19,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	location_id as locationId,
 	        	container_id as containerId,
 	        	batch as batch,
+	        	wave_code as waveCode,
 	        	collection_status as collectionStatus,
-	        	ou_id as ouId
+	        	ou_id as ouId,
+	        	outer_container_id as outerContainerId,
+	        	container_lattice_no as containerLatticeNo,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	distribution_mode as distributionMode,
+	        	picking_mode as pickingMode,
+	        	checking_mode as checkingMode
 	    ]]>
 	</sql>
 	
@@ -48,17 +56,55 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and container_id = #{containerId}
 				</if>
 	       
-				<if test="collectionStatus!=null">
-					and collection_status = #{collectionStatus}
-				</if>
-	       
 	       
 		       <if test="batch!=null and batch!=''">
 					and batch = #{batch}
 				</if>
 	       
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+	       
+	       
+		       <if test="collectionStatus!=null and collectionStatus!=''">
+					and collection_status = #{collectionStatus}
+				</if>
+	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+				<if test="containerLatticeNo!=null">
+					and container_lattice_no = #{containerLatticeNo}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+	       
+		       <if test="distributionMode!=null and distributionMode!=''">
+					and distribution_mode = #{distributionMode}
+				</if>
+	       
+	       
+		       <if test="pickingMode!=null and pickingMode!=''">
+					and picking_mode = #{pickingMode}
+				</if>
+	       
+	       
+		       <if test="checkingMode!=null and checkingMode!=''">
+					and checking_mode = #{checkingMode}
 				</if>
 		</where>
 	</sql>
@@ -67,12 +113,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <![CDATA[
             UPDATE t_wh_seeding_collection SET
                 facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                temporary_location_id = #{temporaryLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                collection_status = #{collectionStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR}
-            WHERE
+		        temporary_location_id = #{temporaryLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        collection_status = #{collectionStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        WHERE
                 id = #{id}
                 and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT}
         ]]>
@@ -128,6 +182,42 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
       
 		<if test="ouId!=null">
 			and sc.ou_id = #{ouId}
+		</if>
+		
+		 <if test="waveCode!=null and waveCode!=''">
+			and sc.wave_code = #{waveCode}
+		</if>
+		
+		<if test="outerContainerId!=null">
+			and sc.outer_container_id = #{outerContainerId}
+		</if>
+      
+		<if test="containerLatticeNo!=null">
+			and sc.container_lattice_no = #{containerLatticeNo}
+		</if>
+      
+		<if test="outboundboxId!=null">
+			and sc.outboundbox_id = #{outboundboxId}
+		</if>
+      
+      
+       <if test="outboundboxCode!=null and outboundboxCode!=''">
+			and sc.outboundbox_code = #{outboundboxCode}
+		</if>
+      
+      
+       <if test="distributionMode!=null and distributionMode!=''">
+			and sc.distribution_mode = #{distributionMode}
+		</if>
+      
+      
+       <if test="pickingMode!=null and pickingMode!=''">
+			and sc.picking_mode = #{pickingMode}
+		</if>
+      
+      
+       <if test="checkingMode!=null and checkingMode!=''">
+			and sc.checking_mode = #{checkingMode}
 		</if>
     </select>
     

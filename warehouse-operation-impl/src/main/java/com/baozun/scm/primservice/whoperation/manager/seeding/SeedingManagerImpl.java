@@ -209,7 +209,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
                 // 周转箱
                 WhSeedingCollection seedingCollection = new WhSeedingCollection();
                 BeanUtils.copyProperties(orgSeedingCollection, seedingCollection);
-                seedingCollection.setCollectionStatus(CollectionStatus.ERROR);
+                seedingCollection.setCollectionStatus(CollectionStatus.ERROR.toString());
                 whSeedingCollectionDao.saveOrUpdateByVersion(seedingCollection);
             }
         }

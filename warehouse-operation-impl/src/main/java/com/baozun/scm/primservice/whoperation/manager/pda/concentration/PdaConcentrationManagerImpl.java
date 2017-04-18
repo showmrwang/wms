@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
@@ -57,6 +58,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
@@ -64,6 +66,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
@@ -81,6 +84,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhSeedingCollectionLineDao whSeedingCollectionLineDao;
+    @Autowired
+    private WhCheckingCollectionLineDao whCheckingCollectionLineDao;
 
     @Autowired
     private WhCheckingCollectionDao whCheckingCollectionDao;
@@ -130,13 +135,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 seedingCollection.setBatch(batch);
                 seedingCollection.setContainerId(execLineCommand.getUseContainerId());
                 seedingCollection.setOuId(ouId);
-                seedingCollection.setCollectionStatus(CollectionStatus.NEW);
+                seedingCollection.setCollectionStatus(CollectionStatus.NEW.toString());
                 this.whSeedingCollectionDao.insert(seedingCollection);
                 insertIntoSeedingCollectionLine(seedingCollection);
             }
         }
     }
-    
+
     /**
      * @author lichuan
      * @param batch
@@ -145,16 +150,22 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void insertIntoSeedingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId) {
-        if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
-            for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
-                WhSeedingCollection seedingCollection = new WhSeedingCollection();
-                seedingCollection.setBatch(batch);
-                seedingCollection.setContainerId(execLineCommand.getUseContainerId());
-                seedingCollection.setOuId(ouId);
-                seedingCollection.setCollectionStatus(CollectionStatus.NEW);
-                this.whSeedingCollectionDao.insert(seedingCollection);
-                insertIntoSeedingCollectionLine(seedingCollection);
+    public void insertIntoSeedingCollection(String batch, Long workId, List<WhOperationExecLineCommand> execLineCommandList, Long ouId) {
+        WhWork work = this.whWorkDao.findWorkById(workId, ouId);
+        if (null != work) {
+            if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
+                for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
+                    WhSeedingCollection seedingCollection = new WhSeedingCollection();
+                    seedingCollection.setBatch(batch);
+                    seedingCollection.setContainerId(execLineCommand.getUseContainerId());
+                    seedingCollection.setOuId(ouId);
+                    seedingCollection.setCollectionStatus(CollectionStatus.NEW.toString());
+                    seedingCollection.setPickingMode(work.getPickingMode());
+                    seedingCollection.setCheckingMode(work.getCheckingMode());
+                    seedingCollection.setDistributionMode(work.getDistributionMode());
+                    this.whSeedingCollectionDao.insert(seedingCollection);
+                    insertIntoSeedingCollectionLine(seedingCollection);
+                }
             }
         }
     }
@@ -173,12 +184,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setDistributionMode(work.getDistributionMode());
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
-                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
+                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_1);
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
             }
         }
     }
-    
+
     /**
      * @author lichuan
      * @param batch
@@ -201,6 +212,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
                 whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
+                insertIntoCheckingCollectionLine(whCheckingCollection);
             }
         }
 
@@ -543,7 +555,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             whSeedingCollection.setBatch(workCollectionCommand.getBatch());
             whSeedingCollection.setOuId(ouId);
             // whSeedingCollection.setCollectionStatus(CollectionStatus.SEEDING);
-            whSeedingCollection.setCollectionStatus(CollectionStatus.NEW);
+            whSeedingCollection.setCollectionStatus(CollectionStatus.NEW.toString());
             whSeedingCollection.setContainerId(containerId);
             List<WhSeedingCollection> scList = whSeedingCollectionDao.findListByParam(whSeedingCollection);
             if (null == scList || scList.isEmpty()) {
@@ -853,7 +865,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             collection.setFacilityId(facilityId);
             collection.setTemporaryLocationId(null);
             collection.setLocationId(null);
-            collection.setCollectionStatus(CollectionStatus.TO_SEED);
+            collection.setCollectionStatus(CollectionStatus.TO_SEED.toString());
             // 路径推荐结果状态修改为完成
             whFacilityRecPathDao.updateStatusToFinish(batch, containerCode, ouId);
         } else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
@@ -865,7 +877,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             collection.setFacilityId(null);
             collection.setTemporaryLocationId(temporaryStorageLocationId);
             collection.setLocationId(null);
-            collection.setCollectionStatus(CollectionStatus.TEMPORARY_STORAGE);
+            collection.setCollectionStatus(CollectionStatus.TEMPORARY_STORAGE.toString());
         } else if (destinationType == Constants.TRANSIT_LOCATION) {
             // 目标移到中转库位
             Long transitLocationId = rec.getTransitLocationId();
@@ -875,7 +887,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             collection.setFacilityId(null);
             collection.setTemporaryLocationId(null);
             collection.setLocationId(transitLocationId);
-            collection.setCollectionStatus(CollectionStatus.TRANSFER);
+            collection.setCollectionStatus(CollectionStatus.TRANSFER.toString());
         }
         int updateCount = whSeedingCollectionDao.saveOrUpdate(collection);
         if (updateCount != 1) {
@@ -1119,9 +1131,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 recCommand.setSeedingwallCode(destinationCode);
                 recCommand.setSeedingwallCheckCode(facility.getCheckCode());
                 recCommand.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
-                WhFacilityRecPath rec = new WhFacilityRecPath();
-                BeanUtils.copyProperties(recCommand, rec);
-                whFacilityRecPathDao.saveOrUpdate(rec);
+                whFacilityRecPathDao.updateSeedingwallByBatch(facility.getFacilityCode(), facility.getCheckCode(), facility.getFacilityUpperLimit(), batch, ouId);
             } else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION && StringUtils.isEmpty(recCommand.getTemporaryStorageLocationCode())) {
                 storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
                 if (null == storageLocation) {
@@ -1130,20 +1140,16 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 recCommand.setTemporaryStorageLocationId(storageLocation.getId());
                 recCommand.setTemporaryStorageLocationCheckCode(storageLocation.getCheckCode());
                 recCommand.setTemporaryStorageLocationCode(storageLocation.getTemporaryStorageCode());
-                WhFacilityRecPath rec = new WhFacilityRecPath();
-                BeanUtils.copyProperties(recCommand, rec);
-                whFacilityRecPathDao.saveOrUpdate(rec);
+                whFacilityRecPathDao.updateTemporaryStorageLocationByBatch(storageLocation.getTemporaryStorageCode(), storageLocation.getCheckCode(), batch, ouId);
             } else if (destinationType == Constants.TRANSIT_LOCATION && StringUtils.isEmpty(recCommand.getTransitLocationCode())) {
                 location = whLocationDao.findLocationByCode(destinationCode, ouId);
                 if (null == location) {
                     throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
                 }
                 recCommand.setTransitLocationId(location.getId());
-                recCommand.setTransitLocationCheckCode(location.getReplenishmentBarcode());
+                recCommand.setTransitLocationCheckCode(location.getBarCode());
                 recCommand.setTransitLocationCode(location.getCode());
-                WhFacilityRecPath rec = new WhFacilityRecPath();
-                BeanUtils.copyProperties(recCommand, rec);
-                whFacilityRecPathDao.saveOrUpdate(rec);
+                whFacilityRecPathDao.updateTransitLocationByBatch(location.getCode(), location.getBarCode(), batch, ouId);
             }
         }
 
@@ -1302,7 +1308,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 2.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-        
+
         // 4.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
             int count = whSeedingCollectionDao.checkCountInDestination(recCommand.getBatch(), Constants.TEMPORARY_STORAGE_LOCATION, ouId);
@@ -1315,7 +1321,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 }
             }
         }
-        
+
         // 3.清理缓存
         List<WhFacilityRecPathCommand> recPathList = null;
         if (null != isManual && isManual) {
@@ -1426,6 +1432,41 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
 
         }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertIntoCheckingCollectionLine(WhCheckingCollection whCheckingCollection) {
+        // 按外部容器 内部容器 货格号去库存中找
+        Long containerId = whCheckingCollection.getContainerId();
+        Long outerContainerId = whCheckingCollection.getOuterContainerId();
+        Integer containerLatticeNo = whCheckingCollection.getContainerLatticeNo();
+        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, whCheckingCollection.getOuId());
+        if (null != invList && !invList.isEmpty()) {
+            for (WhCheckingCollectionLine inv : invList) {
+                if (null != inv.getStoreId()) {
+                    Store store = this.getStoreByRedis(inv.getStoreId());
+                    if (null != store) {
+                        inv.setStoreCode(store.getStoreCode());
+                        inv.setStoreName(store.getStoreName());
+                    }
+                }
+                if (null != inv.getCustomerId()) {
+                    Customer customer = this.getCustomerByRedis(inv.getCustomerId());
+                    if (null != customer) {
+                        inv.setCustomerCode(customer.getCustomerCode());
+                        inv.setCustomerName(customer.getCustomerName());
+                    }
+                }
+                WhCheckingCollectionLine line = new WhCheckingCollectionLine();
+                BeanUtils.copyProperties(inv, line);
+                line.setCheckingCollectionId(whCheckingCollection.getId());
+                line.setSeedingQty(0L);
+                this.whCheckingCollectionLineDao.insert(line);
+            }
+        }
+
 
     }
 

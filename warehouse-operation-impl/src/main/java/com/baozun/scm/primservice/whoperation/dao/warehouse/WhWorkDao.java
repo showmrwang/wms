@@ -63,7 +63,7 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
     @QueryPage("findListCountByQueryMapForPda")
     Pagination<WhWorkCommand> findListByQueryMapWithPageForPda(Page page, Sort[] sorts, Map<String, Object> params);
 
-	List<Long> getOdoIdListByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+    List<Long> getOdoIdListByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
 
     /**
      * 获取批次下的所有工作
@@ -82,4 +82,12 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
      * @return
      */
     List<WhSeedingWallLattice> getSeedingBatchOdoInfo(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 通过工作id查找工作
+     * @param workId
+     * @param ouId
+     * @return
+     */
+    WhWork findWorkById(@Param("workId") Long workId, @Param("ouId") Long ouId);
 }
