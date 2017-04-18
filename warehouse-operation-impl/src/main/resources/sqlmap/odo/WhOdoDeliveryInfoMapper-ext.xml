@@ -105,4 +105,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhOdodeliveryInfoByOdoId" resultMap="OdoDeliveryInfoResultExt">
+        select <include refid="odoDeliveryInfoColumnsExt"/>
+        from t_wh_odo_delivery_info
+       	where 
+       	odo_id = #{id} 
+       	and ou_id = #{ouid}
+    </select>
+	
 </mapper>

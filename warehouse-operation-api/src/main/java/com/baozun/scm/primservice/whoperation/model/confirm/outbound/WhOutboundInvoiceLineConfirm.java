@@ -33,11 +33,11 @@ public class WhOutboundInvoiceLineConfirm extends BaseModel {
     /** 行号 */
     private String linenum;
     /** 数量 */
-    private Long qty;
+    private Double qty;
     /** 单价 */
-    private Long unitPrice;
+    private Double unitPrice;
     /** 总金额 */
-    private Long amt;
+    private Double amt;
     /** 类别 */
     private String item;
     /** 仓库组织ID */
@@ -59,27 +59,27 @@ public class WhOutboundInvoiceLineConfirm extends BaseModel {
         this.linenum = linenum;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
-    public Long getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(Long unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
-    public Long getAmt() {
+    public Double getAmt() {
         return amt;
     }
 
-    public void setAmt(Long amt) {
+    public void setAmt(Double amt) {
         this.amt = amt;
     }
 

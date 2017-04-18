@@ -384,4 +384,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and m.ou_id = #{ouId} 
 	</select>
 	
+	<select id="findWhSkuById" resultMap="WhSkuResultExt">
+		select
+		<include refid="whSkuColumnsExt" />
+		from t_wh_sku 
+		where 
+		id = #{id}
+		and ou_id = #{ouid}
+	</select>
+	
 </mapper>
