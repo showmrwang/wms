@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,7 +75,7 @@ public class InventoryStatisticResultCommand extends BaseCommand {
     Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();
     /** 内部容器唯一sku总件数 */
     Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
-    /** 内部容器sku对应所有唯一sku*/
+    /** 内部容器sku对应所有唯一sku */
     Map<Long, Map<Long, Set<String>>> insideContainerSkuAndSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();
     /** 内部容器唯一sku对应所有残次条码 */
     Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
@@ -82,27 +83,30 @@ public class InventoryStatisticResultCommand extends BaseCommand {
     Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();
     /** 内部容器推荐库位对应唯一sku总件数 */
     Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();
+    /** 内部容器所有排序的库位 */
+    Map<Long, List<Long>> insideContainerLocSort = new HashMap<Long, List<Long>>();
     /** 内部容器所有店铺 */
     Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();
-    
-    private Double outerContainerWeight;
-    
-    private Double outerContainerVolume;
-    
-    private Map<Long, Double> insideContainerWeight;
-    
-    private Map<Long, Double> insideContainerVolume;
-    
-    private Map<String, Double> lenUomConversionRate;
-    
-    private Map<String, Double> weightUomConversionRate;
-    
-    private Map<Long, ContainerAssist> insideContainerAsists;
-    
-    
-//    private Map<Long,Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
 
-    private Map<Long,Map<String,Long>> cSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
+    private Double outerContainerWeight;
+
+    private Double outerContainerVolume;
+
+    private Map<Long, Double> insideContainerWeight;
+
+    private Map<Long, Double> insideContainerVolume;
+
+    private Map<String, Double> lenUomConversionRate;
+
+    private Map<String, Double> weightUomConversionRate;
+
+    private Map<Long, ContainerAssist> insideContainerAsists;
+
+
+    // private Map<Long,Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
+
+    private Map<Long, Map<String, Long>> cSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
+
     public int getPutawayPatternType() {
         return putawayPatternType;
     }
@@ -278,7 +282,7 @@ public class InventoryStatisticResultCommand extends BaseCommand {
     public void setInsideContainerSkuAttrIdsQty(Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty) {
         this.insideContainerSkuAttrIdsQty = insideContainerSkuAttrIdsQty;
     }
-    
+
     public Map<Long, Map<Long, Set<String>>> getInsideContainerSkuAndSkuAttrIds() {
         return insideContainerSkuAndSkuAttrIds;
     }
@@ -302,13 +306,21 @@ public class InventoryStatisticResultCommand extends BaseCommand {
     public void setInsideContainerLocSkuAttrIds(Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds) {
         this.insideContainerLocSkuAttrIds = insideContainerLocSkuAttrIds;
     }
-    
+
     public Map<Long, Map<Long, Map<String, Long>>> getInsideContainerLocSkuAttrIdsQty() {
         return insideContainerLocSkuAttrIdsQty;
     }
 
     public void setInsideContainerLocSkuAttrIdsQty(Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty) {
         this.insideContainerLocSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty;
+    }
+
+    public Map<Long, List<Long>> getInsideContainerLocSort() {
+        return insideContainerLocSort;
+    }
+
+    public void setInsideContainerLocSort(Map<Long, List<Long>> insideContainerLocSort) {
+        this.insideContainerLocSort = insideContainerLocSort;
     }
 
     public Map<Long, Set<Long>> getInsideContainerStoreIds() {
@@ -376,13 +388,13 @@ public class InventoryStatisticResultCommand extends BaseCommand {
         this.insideContainerAsists = insideContainerAsists;
     }
 
-//    public Map<Long, Set<String>> getLocSkuAttrIds() {
-//        return locSkuAttrIds;
-//    }
-//
-//    public void setLocSkuAttrIds(Map<Long, Set<String>> locSkuAttrIds) {
-//        this.locSkuAttrIds = locSkuAttrIds;
-//    }
+    // public Map<Long, Set<String>> getLocSkuAttrIds() {
+    // return locSkuAttrIds;
+    // }
+    //
+    // public void setLocSkuAttrIds(Map<Long, Set<String>> locSkuAttrIds) {
+    // this.locSkuAttrIds = locSkuAttrIds;
+    // }
 
     public Map<Long, Map<String, Long>> getcSkuAttrIdsQty() {
         return cSkuAttrIdsQty;
@@ -392,6 +404,6 @@ public class InventoryStatisticResultCommand extends BaseCommand {
         this.cSkuAttrIdsQty = cSkuAttrIdsQty;
     }
 
-    
+
 
 }

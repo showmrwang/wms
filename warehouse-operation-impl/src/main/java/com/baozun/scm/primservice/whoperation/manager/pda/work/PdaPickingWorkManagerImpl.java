@@ -64,6 +64,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineM
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CheckingModeCalcManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
@@ -135,6 +136,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private PdaConcentrationManager pdaConcentrationManager;
     @Autowired
     private WhOperationLineDao whOperationLineDao;
+    @Autowired
+    private CheckingModeCalcManager checkingModeCalcManager;
 
 
     /**
@@ -1705,6 +1708,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         } else {
             // 拣货模式为非播种
             this.pdaConcentrationManager.insertIntoWorkingCollection(command.getBatch(), execLineCommandList, ouId, work);
+            try {
+                checkingModeCalcManager.generateCheckingDataByCollection(work, execLineCommandList, ouId, logId);
+            } catch (Exception e) {
+                log.error("generateCheckingDataByCollection error", e);
+            }
         }
         return work.getPickingMode();
     }

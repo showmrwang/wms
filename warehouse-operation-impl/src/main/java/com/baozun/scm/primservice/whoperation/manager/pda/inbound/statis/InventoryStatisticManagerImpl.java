@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.statis;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +51,7 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
@@ -56,6 +59,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.LocationShelfSorter;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
@@ -69,6 +73,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ContainerAssist;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
@@ -108,6 +113,8 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
     private UomDao uomDao;
     @Autowired
     private WhSkuDao whSkuDao;
+    @Autowired
+    private WhLocationDao locationDao;
     
     /**
      * @author lichuan
@@ -140,6 +147,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();// 内部容器唯一sku对应所有残次条码
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();// 内部容器推荐库位对应唯一sku及残次条码
         Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();// 内部容器推荐库位对应唯一sku总件数
+        Map<Long, List<Long>> insideContainerLocSort = new HashMap<Long, List<Long>>();// 内部容器所有排序后库位
         Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();// 内部容器所有店铺
         for (WhSkuInventoryCommand invCmd : invList) {
             Long ocId = invCmd.getOuterContainerId();
@@ -364,6 +372,24 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                         insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
                     }
                 }
+                List<Location> sortLocs = new ArrayList<Location>();
+                List<Long> sortLocationIds = new ArrayList<Long>();
+                Map<Long, Set<String>> allLocSkuAttrs = insideContainerLocSkuAttrIds.get(icId);
+                if (null != allLocSkuAttrs && !allLocSkuAttrs.isEmpty()) {
+                    for (Long lId : allLocSkuAttrs.keySet()) {
+                        Location loc = locationDao.findByIdExt(lId, ouId);
+                        if (null == loc) {
+                            log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
+                            throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                        }
+                        sortLocs.add(loc);
+                    }
+                    Collections.sort(sortLocs, new LocationShelfSorter());
+                    for (Location sortLoc : sortLocs) {
+                        sortLocationIds.add(sortLoc.getId());
+                    }
+                    insideContainerLocSort.put(icId, sortLocationIds);
+                }
             }
             if (null != insideContainerStoreIds.get(icId)) {
                 Set<Long> icStores = insideContainerStoreIds.get(icId);
@@ -392,6 +418,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         isCmd.setInsideContainerSkuAttrIdsSnDefect(insideContainerSkuAttrIdsSnDefect);
         isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
+        isCmd.setInsideContainerLocSort(insideContainerLocSort);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);
         return isCmd;
     }
@@ -430,6 +457,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();// 内部容器唯一sku对应所有残次条码
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();// 内部容器推荐库位对应唯一sku及残次条码
         Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();// 内部容器推荐库位对应唯一sku总件数
+        Map<Long, List<Long>> insideContainerLocSort = new HashMap<Long, List<Long>>();// 内部容器所有排序后库位
         Map<Long, Double> insideContainerWeight = new HashMap<Long, Double>();// 内部容器重量
         Map<Long, Double> insideContainerVolume = new HashMap<Long, Double>();// 内部容器体积
         Map<Long, ContainerAssist> insideContainerAsists = new HashMap<Long, ContainerAssist>();
@@ -901,6 +929,24 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
                         }
                     }
+                    List<Location> sortLocs = new ArrayList<Location>();
+                    List<Long> sortLocationIds = new ArrayList<Long>();
+                    Map<Long, Set<String>> allLocSkuAttrs = insideContainerLocSkuAttrIds.get(icId);
+                    if (null != allLocSkuAttrs && !allLocSkuAttrs.isEmpty()) {
+                        for (Long lId : allLocSkuAttrs.keySet()) {
+                            Location loc = locationDao.findByIdExt(lId, ouId);
+                            if (null == loc) {
+                                log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
+                                throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                            }
+                            sortLocs.add(loc);
+                        }
+                        Collections.sort(sortLocs, new LocationShelfSorter());
+                        for (Location sortLoc : sortLocs) {
+                            sortLocationIds.add(sortLoc.getId());
+                        }
+                        insideContainerLocSort.put(icId, sortLocationIds);
+                    }
                 }
                 if (null == insideContainerAsists.get(icId)) {
                     ContainerAssist containerAssist = new ContainerAssist();
@@ -940,6 +986,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         isCmd.setInsideContainerSkuAttrIdsSnDefect(insideContainerSkuAttrIdsSnDefect);
         isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
+        isCmd.setInsideContainerLocSort(insideContainerLocSort);
         isCmd.setInsideContainerVolume(insideContainerVolume);
         isCmd.setInsideContainerWeight(insideContainerWeight);
         isCmd.setInsideContainerAsists(insideContainerAsists);

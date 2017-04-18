@@ -107,7 +107,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param ouId
      * @param ouId
      */
-    WhFacilityRecPathCommand checkContainerHaveRecommendResult(String containerCode, String batch, Long userId, Long ouId);
+    WhFacilityRecPathCommand checkContainerHaveRecommendResult(String cacheKey, String containerCode, String batch, Long userId, Long ouId);
 
     /**
      * 判断是否达到可携带容量数量限制且小于播种墙容器上限
