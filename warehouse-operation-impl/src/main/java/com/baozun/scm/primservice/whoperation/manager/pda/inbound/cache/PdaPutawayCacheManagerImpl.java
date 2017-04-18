@@ -4136,9 +4136,13 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                }
                            }else{
+                               boolean isLocAllCache = true;
+                               Set<Long> allLocIds = new HashSet<Long>();
                                // 判断是否需要提示下一个库位
-                               Set<Long> allLocIds = locSkuAttrIds.keySet();
-                               boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
+                               if(isRecommendFail == false) { //推荐库位
+                                   allLocIds = locSkuAttrIds.keySet();
+                                   isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
+                               }
                                //判断哪些对应
                                if (false == isLocAllCache) {
                                    // 提示下一个库位

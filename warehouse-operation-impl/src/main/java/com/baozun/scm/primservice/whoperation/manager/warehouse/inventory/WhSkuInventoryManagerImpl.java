@@ -5896,25 +5896,24 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                              if(invCmd.getUuid().equals(snCmd.getUuid())) {
                                  WhSkuInventorySn sn = new WhSkuInventorySn();
                                  BeanUtils.copyProperties(snCmd, sn);
-                                 sn.setId(null);
                                  sn.setUuid(inv.getUuid());
-                                 whSkuInventorySnDao.insert(sn);
+                                 whSkuInventorySnDao.saveOrUpdate(sn);
                                  insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
                                  // 记录SN日志
-//                                 insertSkuInventorySnLog(sn.getId(), ouId);
+                                 insertSkuInventorySnLog(sn.getId(), ouId);
                                  if(scanSkuQty.equals(count)) {
                                      break;
                                  }
                                  count++;
                              }
                          }
-                         //删除之前的sn/残次条码
-                         for (WhSkuInventorySnCommand cSnCmd : snList) {
-                             WhSkuInventorySn sn = new WhSkuInventorySn();
-                             BeanUtils.copyProperties(cSnCmd, sn);
-                             whSkuInventorySnDao.delete(sn.getId());
-                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
-                         }
+//                         //删除之前的sn/残次条码
+//                         for (WhSkuInventorySnCommand cSnCmd : snList) {
+//                             WhSkuInventorySn sn = new WhSkuInventorySn();
+//                             BeanUtils.copyProperties(cSnCmd, sn);
+//                             whSkuInventorySnDao.delete(sn.getId());
+//                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
+//                         }
                       }
                      
                      

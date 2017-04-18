@@ -2979,7 +2979,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   whSkuInventoryManager.execPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
                   //拆箱清除缓存
                   this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
-                  srCmd = this.splitPutWayNoLocation(isCmd, ouId, userId, srCmd, funcId, icCmd, invList,putawayPatternDetailType,warehouse);
+                  srCmd.setRecommendFail(true);  //推荐失败
+//                  srCmd = this.splitPutWayNoLocation(isCmd, ouId, userId, srCmd, funcId, icCmd, invList,putawayPatternDetailType,warehouse);   //只推荐一次，一个货箱如果推荐一次不成功剩下的全部人为
 //                  this.splitCacheScanSku(insideContainerId, locationId, tipSkuAttrId);   //  缓存
               }else if(isNotUser){
 //                  String skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuCmd.getId(), skuCmd.getInvType(), skuCmd.getInvStatus(), skuCmd.getInvBatchNumber(),skuCmd.getInvCountryOfOrigin(),skuCmd.getInvMfgDate(), skuCmd.getInvExpDate(), skuCmd.getInvAttr1(), skuCmd.getInvAttr2(), skuCmd.getInvAttr3(),
