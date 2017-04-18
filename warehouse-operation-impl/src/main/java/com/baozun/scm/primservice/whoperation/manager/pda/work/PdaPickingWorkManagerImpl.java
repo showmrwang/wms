@@ -1842,9 +1842,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 }
             }
         }
-        if(lineList.size() == 0 && execlineList.size() ==0){
-            result = true;
-        }
         if(!result) {
             throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
         }
