@@ -7,7 +7,7 @@ import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
-import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundConfirm;
 
 /**
  * WMS数据反馈接口
@@ -46,7 +46,7 @@ public interface WmsConfirmServiceManagerProxy {
      * @param dataSource not null 数据来源 区分上位系统
      * @return
      */
-    List<WmsOutboundConfirm> wmsOutBoundConfirm(Date beginTime, Date endTime, String whCode, String dataSource);
+    List<WmsOutBoundConfirm> wmsOutBoundConfirm(Date beginTime, Date endTime, String whCode, String dataSource);
 
     /**
      * 发票信息反馈 bin.hu
