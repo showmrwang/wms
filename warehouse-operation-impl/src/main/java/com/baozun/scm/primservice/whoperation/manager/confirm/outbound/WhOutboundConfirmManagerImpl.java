@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundAttrConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceLineConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundLineConfirmDao;
+import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundAttrConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm;
@@ -35,6 +37,8 @@ public class WhOutboundConfirmManagerImpl implements WhOutboundConfirmManager {
     private WhOutboundInvoiceConfirmDao whOutboundInvoiceConfirmDao;
     @Autowired
     private WhOutboundInvoiceLineConfirmDao whOutboundInvoiceLineConfirmDao;
+    @Autowired
+    private WhOutboundAttrConfirmDao whOutboundAttrConfirmDao;
 
 
     /**
@@ -58,6 +62,9 @@ public class WhOutboundConfirmManagerImpl implements WhOutboundConfirmManager {
         // 获取出库单反馈数据
         List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmDao.findWhOutboundConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
         for (WhOutboundConfirm whOutboundConfirm : whOutboundConfirms) {
+            // 获取出库单附加属性数据
+            WhOutboundAttrConfirm whOutboundAttrConfirm = whOutboundAttrConfirmDao.findWhOutboundAttrConfirmByOutBoundId(whOutboundConfirm.getId(), ouid);
+            whOutboundConfirm.setWhOutboundAttrConfirm(whOutboundAttrConfirm);
             // 获取出库单明细数据
             List<WhOutboundLineConfirm> whOutboundLineConfirms = whOutboundLineConfirmDao.findWhOutboundLineConfirmByOutBoundId(whOutboundConfirm.getId(), ouid);
             whOutboundConfirm.setWhOutBoundLineConfirm(whOutboundLineConfirms);
