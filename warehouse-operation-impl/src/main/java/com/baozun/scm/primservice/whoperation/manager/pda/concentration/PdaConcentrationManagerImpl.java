@@ -759,7 +759,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      * 判断当前容器是否有推荐结果
      */
     @Override
-    public WhFacilityRecPathCommand checkContainerHaveRecommendResult(String containerCode, String batch, Long userId, Long ouId) {
+    public WhFacilityRecPathCommand checkContainerHaveRecommendResult(String cacheKey, String containerCode, String batch, Long userId, Long ouId) {
         // cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(),
         // batch);
         if (StringUtils.isEmpty(containerCode)) {
@@ -773,7 +773,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == rec) {
             throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_PATH_ERROR);
         }
-        List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
+        List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(cacheKey + userId.toString(), batch);
         if (null == recPathList) {
             recPathList = new ArrayList<WhFacilityRecPathCommand>();
         }
@@ -788,7 +788,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
         }
         recPathList.add(0, rec);
-        cacheManager.setMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
+        cacheManager.setMapObject(cacheKey + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
         return rec;
     }
 
@@ -855,6 +855,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == containerId || StringUtils.isEmpty(batch) || StringUtils.isEmpty(containerCode)) {
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
+        // whFacilityRecPathDao.findWhFacilityRecPathByBatchAndContainer(batch, containerCode, ouId)
         WhSeedingCollection collection = whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, batch, ouId);
         if (destinationType == Constants.SEEDING_WALL) {
             // 目标移到播种墙
