@@ -36,7 +36,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param execLineCommandList
      * @param ouId
      */
-    void insertIntoSeedingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId);
+    void insertIntoSeedingCollection(String batch, Long workId, List<WhOperationExecLineCommand> execLineCommandList, Long ouId);
 
     /**
      * [业务方法] 插入集货明细表
@@ -257,7 +257,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @return
      */
     Integer checkDestinationByRecommendResult(WhFacilityRecPathCommand rec, Long userId, Long ouId);
-    
+
     /**
      * 检测此批次在暂存库位上是否还有容器
      * @author kai.zhu

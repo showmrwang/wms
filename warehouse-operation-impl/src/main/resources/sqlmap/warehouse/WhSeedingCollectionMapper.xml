@@ -18,7 +18,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	container_id as containerId,
 	        	batch as batch,
 	        	collection_status as collectionStatus,
-	        	ou_id as ouId
+	        	ou_id as ouId,
+	        	wave_code as waveCode,
+	        	outer_container_id as outerContainerId,
+	        	container_lattice_no as containerLatticeNo,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	distribution_mode as distributionMode,
+	        	picking_mode as pickingMode,
+	        	checking_mode as checkingMode
 	    ]]>
 	</sql>
 	
@@ -38,7 +46,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	container_id ,
 		        	batch ,
 		        	collection_status ,
-		        	ou_id 
+		        	ou_id,
+		        	wave_code,
+		        	outer_container_id,
+		        	container_lattice_no,
+		        	outboundbox_id,
+		        	outboundbox_code,
+		        	distribution_mode,
+		        	picking_mode,
+		        	checking_mode 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -46,8 +62,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{collectionStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{collectionStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT},
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} , 
+		        	#{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		    ]]>
 
@@ -61,8 +85,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        temporary_location_id = #{temporaryLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        collection_status = #{collectionStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        collection_status = #{collectionStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
@@ -127,13 +159,51 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="batch!=null and batch!=''">
 					and batch = #{batch}
 				</if>
-				
-				<if test="collectionStatus!=null">
+	       
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+	       
+	       
+		       <if test="collectionStatus!=null and collectionStatus!=''">
 					and collection_status = #{collectionStatus}
 				</if>
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+				<if test="containerLatticeNo!=null">
+					and container_lattice_no = #{containerLatticeNo}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+	       
+		       <if test="distributionMode!=null and distributionMode!=''">
+					and distribution_mode = #{distributionMode}
+				</if>
+	       
+	       
+		       <if test="pickingMode!=null and pickingMode!=''">
+					and picking_mode = #{pickingMode}
+				</if>
+	       
+	       
+		       <if test="checkingMode!=null and checkingMode!=''">
+					and checking_mode = #{checkingMode}
 				</if>
 		</where>
 	</sql>

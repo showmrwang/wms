@@ -1693,7 +1693,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         List<WhOperationExecLineCommand> execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(work.getId(), ouId);
         if (Constants.WH_PICKING_MODE.equals(work.getPickingMode())) {
             // 拣货模式为播种
-            this.pdaConcentrationManager.insertIntoSeedingCollection(command.getBatch(), execLineCommandList, ouId);
+            this.pdaConcentrationManager.insertIntoSeedingCollection(command.getBatch(), work.getId(),execLineCommandList, ouId);
             // this.pdaConcentrationManager.insertIntoSeedingCollectionLine(command.getBatch(),
             // work.getId(), ouId);
         } else {
