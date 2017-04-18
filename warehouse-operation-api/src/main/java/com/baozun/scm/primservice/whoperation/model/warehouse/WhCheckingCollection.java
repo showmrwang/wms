@@ -30,6 +30,12 @@ public class WhCheckingCollection extends BaseModel {
      */
     private static final long serialVersionUID = -4141071444187444104L;
 
+    // /** 暂存库位ID */
+    // private Long temporaryLocationId;
+    // /** 中转库位ID */
+    // private Long locationId;
+    // /** 耗材ID */
+    // private Long outboundboxId;
     // columns START
     /** 播种墙ID */
     private Long facilityId;
@@ -43,6 +49,8 @@ public class WhCheckingCollection extends BaseModel {
     private String batch;
     /** 集货状态 */
     private String collectionStatus;
+    /** 波次号 */
+    private String waveCode;
     /** 对应组织ID */
     private Long ouId;
     /** 外部容器，小车 */
@@ -63,6 +71,14 @@ public class WhCheckingCollection extends BaseModel {
     // columns END
     public Long getFacilityId() {
         return facilityId;
+    }
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
     }
 
     public void setFacilityId(Long facilityId) {

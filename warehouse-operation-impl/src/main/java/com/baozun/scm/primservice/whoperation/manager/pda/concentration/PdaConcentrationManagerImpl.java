@@ -172,7 +172,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void insertIntoWorkingCollection(String batch, Long workId, Long ouId, WhWorkCommand work) {
+    public void insertIntoCheckingCollection(String batch, Long workId, Long ouId, WhWorkCommand work) {
         List<WhOperationExecLineCommand> execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(workId, ouId);
         if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
             for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
@@ -180,11 +180,14 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setBatch(batch);
                 whCheckingCollection.setContainerId(execLineCommand.getUseContainerId());
                 whCheckingCollection.setOuId(ouId);
+                whCheckingCollection.setOutboundboxCode(execLineCommand.getUseOutboundboxCode());
+                whCheckingCollection.setContainerLatticeNo(execLineCommand.getUseContainerLatticeNo());
+                whCheckingCollection.setWaveCode(work.getWaveCode());
                 whCheckingCollection.setPickingMode(work.getPickingMode());
                 whCheckingCollection.setDistributionMode(work.getDistributionMode());
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
-                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_1);
+                whCheckingCollection.setCollectionStatus(CollectionStatus.NEW.toString());
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
             }
         }
@@ -199,20 +202,22 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void insertIntoWorkingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work) {
+    public void insertIntoCheckingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work) {
         if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
             for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
                 WhCheckingCollection whCheckingCollection = new WhCheckingCollection();
                 whCheckingCollection.setBatch(batch);
                 whCheckingCollection.setContainerId(execLineCommand.getUseContainerId());
                 whCheckingCollection.setOuId(ouId);
+                whCheckingCollection.setOutboundboxCode(execLineCommand.getUseOutboundboxCode());
+                whCheckingCollection.setContainerLatticeNo(execLineCommand.getUseContainerLatticeNo());
+                whCheckingCollection.setWaveCode(work.getWaveCode());
                 whCheckingCollection.setPickingMode(work.getPickingMode());
                 whCheckingCollection.setDistributionMode(work.getDistributionMode());
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
-                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
+                whCheckingCollection.setCollectionStatus(CollectionStatus.NEW.toString());
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
-                insertIntoCheckingCollectionLine(whCheckingCollection);
             }
         }
 
@@ -788,7 +793,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
         }
         recPathList.add(0, rec);
-        cacheManager.setMapObject(cacheKey + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
+        cacheManager.setMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
         return rec;
     }
 
@@ -855,7 +860,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == containerId || StringUtils.isEmpty(batch) || StringUtils.isEmpty(containerCode)) {
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
-        // whFacilityRecPathDao.findWhFacilityRecPathByBatchAndContainer(batch, containerCode, ouId)
         WhSeedingCollection collection = whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, batch, ouId);
         if (destinationType == Constants.SEEDING_WALL) {
             // 目标移到播种墙

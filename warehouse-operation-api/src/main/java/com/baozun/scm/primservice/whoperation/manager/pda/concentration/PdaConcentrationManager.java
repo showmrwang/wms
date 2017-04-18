@@ -60,7 +60,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param workId
      * @param ouId
      */
-    void insertIntoWorkingCollection(String batch, Long workId, Long ouId, WhWorkCommand work);
+    void insertIntoCheckingCollection(String batch, Long workId, Long ouId, WhWorkCommand work);
 
     /**
      * [业务方法] 插入复核台集货表
@@ -71,7 +71,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param ouId
      * @param work
      */
-    void insertIntoWorkingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work);
+    void insertIntoCheckingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work);
 
 
     /**
