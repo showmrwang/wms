@@ -3,7 +3,7 @@ package com.baozun.scm.primservice.whinterface.manager;
 import java.util.Date;
 import java.util.List;
 
-import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundConfirm;
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
@@ -67,5 +67,5 @@ public interface WmsConfirmServiceManagerProxy {
      * @param dataSource not null 数据来源 区分上位系统
      * @return
      */
-    List<WmsInboundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource);
+    List<WmsInBoundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource);
 }

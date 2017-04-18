@@ -10,7 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundConfirm;
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundConfirm;
 import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundInvLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundSnLineConfirm;
@@ -288,7 +288,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * @return
      */
     @Override
-    public List<WmsInboundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource) {
+    public List<WmsInBoundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource) {
         log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -306,11 +306,11 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (log.isDebugEnabled()) {
             log.debug("WmsConfirmServiceManagerProxy.wmsInBoundConfirm beginTime: " + begin + " endTime: " + end + " dataSource: " + dataSource);
         }
-        List<WmsInboundConfirm> wmsInboundConfirms = new ArrayList<WmsInboundConfirm>();
+        List<WmsInBoundConfirm> wmsInboundConfirms = new ArrayList<WmsInBoundConfirm>();
         // 获取入库单反馈相关数据
         List<WhInboundConfirm> whInboundConfirms = whInboundConfirmManager.findWhInboundConfirmByCreateTimeAndDataSource(begin, end, dataSource);
         for (WhInboundConfirm whInboundConfirm : whInboundConfirms) {
-            WmsInboundConfirm inbound = new WmsInboundConfirm();
+            WmsInBoundConfirm inbound = new WmsInBoundConfirm();
             BeanUtils.copyProperties(whInboundConfirm, inbound);
             inbound.setDeliveryTimeStr(DateUtil.formatDate(whInboundConfirm.getDeliveryTime(), DateUtil.DEFAULT_DATE_TIME_FORMAT_NEW));
             // 获取入库单反馈明细数据
