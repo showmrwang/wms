@@ -5,6 +5,7 @@ import java.util.List;
 
 import lark.common.annotation.MoreDB;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -366,36 +367,45 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         // 查找暂存库位-》暂存区域-》暂存区域对应的播种墙组-》按照优先级找到空闲的播种墙
         Long ouId = queue.getOuId();
         String batch = queue.getBatch();
-        WhTemporaryStorageLocation storageLocation = this.whTemporaryStorageLocationDao.findByIdAndOuId(queue.getTemporaryStorageLocationId(), ouId);// 暂存库位
-        WhOutboundFacilityGroup whOutboundFacilityGroup = new WhOutboundFacilityGroup();
-        whOutboundFacilityGroup.setOuId(ouId);
-        whOutboundFacilityGroup.setLifecycle(Constants.LIFECYCLE_START);
-        whOutboundFacilityGroup.setWorkingStorageSectionId(storageLocation.getWorkingStorageSectionId());
-        whOutboundFacilityGroup.setFacilityGroupType(Constants.FACILITY_GROUP_TYPE_SEEDINGWALL);
-        List<WhOutboundFacilityGroup> groupList = this.whOutboundFacilityGroupDao.findListByParam(whOutboundFacilityGroup);
-        if (groupList == null || groupList.size() == 0) {
-            return;
-        }
-        WhOutboundFacilityGroup facilityGroup = groupList.get(0);// 暂存区域对应的播种墙组
-
-        WhOutboundFacility facility = this.getTopFreeOutBoundFacility(facilityGroup.getId(), batch, ouId);// 寻找优先级最高的空闲的播种墙
-        if (facility == null) {
-            return;
-        }
-
-        // 更新推荐路径
+        // @mender yimin.lu 2017/4/18 批次已有播种墙，则不需要推荐
         List<WhFacilityRecPath> recPathList = this.whFacilityRecPathDao.findWhFacilityRecPathByBatch(batch, ouId);
-        if (recPathList != null && recPathList.size() > 0) {
-            for (WhFacilityRecPath recPath : recPathList) {
-                recPath.setSeedingwallCheckCode(facility.getCheckCode());
-                recPath.setSeedingwallCode(facility.getFacilityCode());
-                recPath.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
-                int updateCount = this.whFacilityRecPathDao.saveOrUpdate(recPath);
-                if (updateCount <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        if (recPathList == null || recPathList.size() == 0) {
+            return;
+        }
+        // 校验已有播种墙[人为集货],已有播种墙不需要推荐播种墙
+        WhFacilityRecPath checkPath = recPathList.get(0);
+        if (StringUtils.isEmpty(checkPath.getSeedingwallCode())) {
+            WhTemporaryStorageLocation storageLocation = this.whTemporaryStorageLocationDao.findByIdAndOuId(queue.getTemporaryStorageLocationId(), ouId);// 暂存库位
+            WhOutboundFacilityGroup whOutboundFacilityGroup = new WhOutboundFacilityGroup();
+            whOutboundFacilityGroup.setOuId(ouId);
+            whOutboundFacilityGroup.setLifecycle(Constants.LIFECYCLE_START);
+            whOutboundFacilityGroup.setWorkingStorageSectionId(storageLocation.getWorkingStorageSectionId());
+            whOutboundFacilityGroup.setFacilityGroupType(Constants.FACILITY_GROUP_TYPE_SEEDINGWALL);
+            List<WhOutboundFacilityGroup> groupList = this.whOutboundFacilityGroupDao.findListByParam(whOutboundFacilityGroup);
+            if (groupList == null || groupList.size() == 0) {
+                return;
+            }
+            WhOutboundFacilityGroup facilityGroup = groupList.get(0);// 暂存区域对应的播种墙组
+
+            WhOutboundFacility facility = this.getTopFreeOutBoundFacility(facilityGroup.getId(), batch, ouId);// 寻找优先级最高的空闲的播种墙
+            if (facility == null) {
+                return;
+            }
+
+            // 更新推荐路径
+            if (recPathList != null && recPathList.size() > 0) {
+                for (WhFacilityRecPath recPath : recPathList) {
+                    recPath.setSeedingwallCheckCode(facility.getCheckCode());
+                    recPath.setSeedingwallCode(facility.getFacilityCode());
+                    recPath.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
+                    int updateCount = this.whFacilityRecPathDao.saveOrUpdate(recPath);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
                 }
             }
         }
+
         // 删除对应的推荐播种墙队列数据
         int delCount = this.whFacilityQueueDao.deleteExt(queue.getId(), queue.getOuId());
         if (delCount <= 0) {
