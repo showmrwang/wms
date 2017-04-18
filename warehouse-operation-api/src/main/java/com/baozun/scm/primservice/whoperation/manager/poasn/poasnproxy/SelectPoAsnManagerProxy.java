@@ -358,4 +358,12 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     List<WhOdoArchivLineIndexCommand> findOrginalByAsnId(Long asnId, Long ouId);
 
+    /**
+     * 操作台退换货数据查询
+     * 
+     * @param command
+     * @return
+     */
+    List<WhAsnCommand> findReturnsForOp(WhAsnCommand command);
+
 }

@@ -66,6 +66,18 @@ public class RcvdCacheCommand implements Serializable{
     /** 占用单据号来源 */
     private String occupationCodeSource;
 
+    /** 运单号 */
+    private String expressNum;
+
+
+    public String getExpressNum() {
+        return expressNum;
+    }
+
+    public void setExpressNum(String expressNum) {
+        this.expressNum = expressNum;
+    }
+
     public String getOccupationCodeSource() {
         return occupationCodeSource;
     }

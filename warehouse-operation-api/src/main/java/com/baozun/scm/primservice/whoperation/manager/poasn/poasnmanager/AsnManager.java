@@ -255,4 +255,12 @@ public interface AsnManager extends BaseManager {
      */
 	void createAsnByVmi(WhPo po, List<WhPoLine> whPoLines);
 
+    /**
+     * 查询退换货数据
+     * 
+     * @param command
+     * @return
+     */
+    List<WhAsnCommand> findReturns(WhAsnCommand command);
+
 }

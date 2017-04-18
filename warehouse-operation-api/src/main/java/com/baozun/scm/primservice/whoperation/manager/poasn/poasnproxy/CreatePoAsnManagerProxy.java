@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
@@ -159,5 +160,15 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
 	 * @param whPoTm 
 	 */
 	void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId);
+
+    /**
+     * 构建退换货库存
+     * 
+     * @param rcvdList
+     * @param logId
+     * @param userId
+     * @param ouId
+     */
+    void constructReturnsSkuInventory(List<RcvdCacheCommand> rcvdList, Long ouId, Long userId, String logId);
 
 }
