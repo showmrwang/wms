@@ -21,7 +21,7 @@ import java.util.List;
  * 出库单反馈信息
  *
  */
-public class WmsOutboundConfirm implements Serializable {
+public class WmsOutBoundConfirm implements Serializable {
 
 
     /**
@@ -49,9 +49,9 @@ public class WmsOutboundConfirm implements Serializable {
     /** 是否整单出库完成 默认是 */
     private Boolean isOutboundFinish;
     /** 出库单反馈明细 */
-    private List<WmsOutboundLineConfirm> wmsOutBoundLineConfirm;
+    private List<WmsOutBoundLineConfirm> wmsOutBoundLineConfirm;
     /** 出库单发票信息 */
-    private List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceConfirm;
+    private List<WmsOutBoundInvoiceConfirm> wmsOutBoundInvoiceConfirm;
 
     public String getExtOdoCode() {
         return extOdoCode;
@@ -133,19 +133,19 @@ public class WmsOutboundConfirm implements Serializable {
         this.isOutboundFinish = isOutboundFinish;
     }
 
-    public List<WmsOutboundLineConfirm> getWmsOutBoundLineConfirm() {
+    public List<WmsOutBoundLineConfirm> getWmsOutBoundLineConfirm() {
         return wmsOutBoundLineConfirm;
     }
 
-    public void setWmsOutBoundLineConfirm(List<WmsOutboundLineConfirm> wmsOutBoundLineConfirm) {
+    public void setWmsOutBoundLineConfirm(List<WmsOutBoundLineConfirm> wmsOutBoundLineConfirm) {
         this.wmsOutBoundLineConfirm = wmsOutBoundLineConfirm;
     }
 
-    public List<WmsOutboundInvoiceConfirm> getWmsOutBoundInvoiceConfirm() {
+    public List<WmsOutBoundInvoiceConfirm> getWmsOutBoundInvoiceConfirm() {
         return wmsOutBoundInvoiceConfirm;
     }
 
-    public void setWmsOutBoundInvoiceConfirm(List<WmsOutboundInvoiceConfirm> wmsOutBoundInvoiceConfirm) {
+    public void setWmsOutBoundInvoiceConfirm(List<WmsOutBoundInvoiceConfirm> wmsOutBoundInvoiceConfirm) {
         this.wmsOutBoundInvoiceConfirm = wmsOutBoundInvoiceConfirm;
     }
 

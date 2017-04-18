@@ -20,7 +20,7 @@ import java.io.Serializable;
  * 出库单发票明细信息
  *
  */
-public class WmsOutboundInvoiceLineConfirm implements Serializable {
+public class WmsOutBoundInvoiceLineConfirm implements Serializable {
 
 
     /**
