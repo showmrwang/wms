@@ -33,6 +33,7 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
 
     /**
      * 查询商品列表
+     * 
      * @author shenlijun
      * @param page
      * @param sorts
@@ -45,6 +46,7 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
 
     /**
      * 查询商品扩展信息
+     * 
      * @param params
      * @return
      */
@@ -52,6 +54,7 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
 
     /**
      * 获取商品信息
+     * 
      * @author lichuan
      * @param id
      * @param ouId
@@ -61,6 +64,7 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
 
     /**
      * 根据条码获取商品信息
+     * 
      * @author lichuan
      * @param id
      * @param ouId
@@ -69,7 +73,8 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
     WhSkuCommand findWhSkuByBarcodeExt(@Param("barcode") String barcode, @Param("ouId") Long ouId);
 
     /**
-     * 根据商品id和组织id获取商品所有相关属性 
+     * 根据商品id和组织id获取商品所有相关属性
+     * 
      * @param id
      * @param ouId
      * @return
@@ -78,10 +83,20 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
 
     /**
      * 判断商品是否为保质期商品
+     * 
      * @param skuId
      * @param ouId
      * @return
      */
-	Boolean checkIsExpirationSku(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
+    Boolean checkIsExpirationSku(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
+    /**
+     * 根据ID查询商品信息
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    WhSku findWhSkuById(@Param("id") Long id, @Param("ouid") Long ouid);
 
 }

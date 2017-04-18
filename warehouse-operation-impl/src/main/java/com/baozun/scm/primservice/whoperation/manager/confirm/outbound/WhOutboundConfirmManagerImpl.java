@@ -24,6 +24,8 @@ import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundLin
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -36,6 +38,8 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 
 @Service("whOutboundConfirmManager")
 @Transactional
@@ -59,6 +63,10 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
     private WhOdoAttrDao whOdoAttrDao;
     @Autowired
     private WhOdoLineDao whOdoLineDao;
+    @Autowired
+    private InventoryStatusDao inventoryStatusDao;
+    @Autowired
+    private WhSkuDao whSkuDao;
 
 
     /**
@@ -91,6 +99,13 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 }
                 transportServiceProvider = tsp.substring(0, tsp.length() - 1);
             }
+            // 封装库存状态Map
+            Map<Long, String> invMap = new HashMap<Long, String>();
+            // 查询全部的库存状态
+            List<InventoryStatus> inventoryStatus = inventoryStatusDao.findInventoryStatus();
+            for (InventoryStatus inv : inventoryStatus) {
+                invMap.put(inv.getId(), inv.getName());
+            }
             // 封装出库单反馈头信息
             WhOutboundConfirm ob = new WhOutboundConfirm();
             ob.setExtOdoCode(whOdo.getExtCode());
@@ -112,7 +127,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             // 封装出库单附加信息
             saveWhOutboundAttrConfirm(whOdo.getId(), ouid, ob.getId());
             // 封装出库单明细信息
-            saveWhOutboundLineConfirm(whOdo, ouid, ob.getId(), tspMap);
+            saveWhOutboundLineConfirm(whOdo, ouid, ob.getId(), tspMap, invMap);
         }
         log.info("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm end!");
     }
@@ -145,7 +160,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
      * @param ouid
      * @param outboundid
      */
-    private void saveWhOutboundLineConfirm(WhOdo whOdo, Long ouid, Long outboundid, Map<String, String> tspMap) {
+    private void saveWhOutboundLineConfirm(WhOdo whOdo, Long ouid, Long outboundid, Map<String, String> tspMap, Map<Long, String> invMap) {
         if (whOdo.getOdoStatus().equals(OdoStatus.ODO_NEW)) {
             // 新建状态 出库单反馈明细直接用odoLine数据
             List<WhOdoLine> whOdoLines = whOdoLineDao.findOdoLineListByOdoIdOuId(whOdo.getId(), ouid);
@@ -156,6 +171,18 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 line.setWmsOdoCode(whOdo.getOdoCode());
                 line.setExtLineNum(whOdoLine.getExtLinenum());
                 line.setQty(whOdoLine.getPlanQty());
+                line.setActualQty(whOdoLine.getActualQty());
+                line.setInvStatus(invMap.get(whOdoLine.getInvStatus()));
+                WhSku sku = whSkuDao.findWhSkuById(whOdoLine.getSkuId(), ouid);
+                line.setUpc(sku.getExtCode());
+                line.setColor(sku.getColor());
+                line.setStyle(sku.getStyle());
+                line.setSize(sku.getSize());
+                Long lineCount = whOutboundLineConfirmDao.insert(line);
+                if (lineCount.intValue() == 0) {
+                    log.error("WhOutboundConfirmManagerImpl.saveWhOutboundLineConfirm error");
+                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                }
             }
         }
         if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {

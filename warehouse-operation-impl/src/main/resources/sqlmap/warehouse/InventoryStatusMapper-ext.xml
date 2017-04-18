@@ -58,4 +58,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findInventoryStatusById" resultMap="InventoryStatusResultExt">
+		select <include refid="inventoryStatusColumnsExt" />
+		from t_wh_inventory_status 
+		where 
+		id = #{id} 
+	</select>
+	
+	<select id="findInventoryStatus" resultMap="InventoryStatusResultExt">
+		select <include refid="inventoryStatusColumnsExt" />
+		from t_wh_inventory_status 
+	</select>
+	
 </mapper>
