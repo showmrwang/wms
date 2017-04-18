@@ -584,7 +584,7 @@ public final class Constants {
     public static final Integer WH_GLOBAL_STATUS_1 = 1;// 空闲
     public static final Integer WH_GLOBAL_STATUS_2 = 2;// 占用
 
-    /** 拣货模式:播种*/
+    /** 拣货模式:播种 */
     public static final String WH_PICKING_MODE = "2";
 
     /** 播种模式 */
@@ -653,7 +653,7 @@ public final class Constants {
     public static final String PRINT_ORDER_TYPE_6 = "QCNo";
     /** 残次标签 */
     public static final String PRINT_ORDER_TYPE_7 = "DefectiveLabel";
-    /** PO单*/
+    /** PO单 */
     public static final String PRINT_ORDER_TYPE_8 = "PO";
     /** ASN单 */
     public static final String PRINT_ORDER_TYPE_9 = "ASN";
@@ -661,7 +661,7 @@ public final class Constants {
     public static final String PRINT_ORDER_TYPE_10 = "QC";
     /** 预收货交接清单 */
     public static final String PRINT_ORDER_TYPE_11 = "PreReceipt";
-    /** PO收货差异清单*/
+    /** PO收货差异清单 */
     public static final String PRINT_ORDER_TYPE_12 = "PoDifferenceReceipt";
     /** 销售清单 */
     public static final String PRINT_ORDER_TYPE_13 = "Sales";
@@ -671,11 +671,11 @@ public final class Constants {
     public static final String PRINT_ORDER_TYPE_15 = "Logistics";
     /** 装箱清单 */
     public static final String PRINT_ORDER_TYPE_16 = "Packing";
-    /** 拣货单*/
+    /** 拣货单 */
     public static final String PRINT_ORDER_TYPE_17 = "Picking";
     /** 出库交接清单 */
     public static final String PRINT_ORDER_TYPE_18 = "OutboundTransfer";
-    /** 工作条码*/
+    /** 工作条码 */
     public static final String PRINT_ORDER_TYPE_19 = "WorkBarCode";
     /** 工作标签 */
     public static final String PRINT_ORDER_TYPE_20 = "WorkLabel";
@@ -683,7 +683,7 @@ public final class Constants {
     public static final String PRINT_ORDER_TYPE_21 = "WorkList";
     /** 库位条码 */
     public static final String PRINT_ORDER_TYPE_22 = "LocationBarCode";
-    /** 库位校验码*/
+    /** 库位校验码 */
     public static final String PRINT_ORDER_TYPE_23 = "LocationCheckCode";
     /** 库位标签 */
     public static final String PRINT_ORDER_TYPE_24 = "LocationLabel";
@@ -691,7 +691,7 @@ public final class Constants {
     public static final String PRINT_ORDER_TYPE_25 = "ContainerBarCode";
     /** 出库箱条码 */
     public static final String PRINT_ORDER_TYPE_26 = "OutBoundBoxBarCode";
-    /** 盘点表*/
+    /** 盘点表 */
     public static final String PRINT_ORDER_TYPE_27 = "Check";
     /** 商品条码 */
     public static final String PRINT_ORDER_TYPE_28 = "SkuBarCode";
@@ -734,7 +734,7 @@ public final class Constants {
 
     /** 调编码生成器 出库箱推荐标识 */
     public static final String OUTBOUND_BOX_BATCH = "WMS_OUTBOUND_BOX_BATCH";
-    
+
     public static final String HANDOVER_BATCH = "WMS_HANDOVER_BATCH";
 
     /** 对接系统系数来源 */
@@ -742,51 +742,52 @@ public final class Constants {
     public static final String DATA_SOURCE_PAC = "pac";
     public static final String DATA_SOURCE_HUB = "hub";
     public static final String COLLECTION_STATUS_10 = "10";
+    public static final String COLLECTION_STATUS_1 = "1";
 
     /** 拣货操作库存 */
     public static final String PICKING_INVENTORY = "PICKING_INVENTORY";
     /** 补货中的拣货操作库存 */
     public static final String REPLENISHMENT_PICKING_INVENTORY = "REPLENISHMENT_PICKING_INVENTORY";
 
-    /**数据来源=WMS*/
+    /** 数据来源=WMS */
     public static final String WMS_DATA_SOURCE = "WMS";
-    
+
     public static final int COLLECTION_PATTERN_PICKING = 1;
     public static final int COLLECTION_PATTERN_OUTBOUND = 2;
     public static final int COLLECTION_PATTERN_MANUAL = 3;
 
-    /** 按单复核:提示扫描小车*/
+    /** 按单复核:提示扫描小车 */
     public static final String TIP_OUTER_CONTAINER = "OUTER_CONTAINER";
-    /** 按单复核:提示扫描播种墙*/
+    /** 按单复核:提示扫描播种墙 */
     public static final String TIP_SEEDING_WALL = "SEEDING_WALL";
-    /** 按单复核:提示扫描货格*/
+    /** 按单复核:提示扫描货格 */
     public static final String TIP_CONTAINER_LATTICE_NO = "CONTAINER_LATTICE_NO";
-    /** 按单复核:提示扫描出库箱*/
+    /** 按单复核:提示扫描出库箱 */
     public static final String TIP_OUTBOUND_BOX = "OUTBOUND_BOX";
-    /** 按单复核:提示扫描周转箱*/
+    /** 按单复核:提示扫描周转箱 */
     public static final String TIP_CONTAINER = "CONTAINER";
-    /** 按单复核:提示扫描设施*/
+    /** 按单复核:提示扫描设施 */
     public static final String TIP_FACILITY = "FACILITY";
-    /** 按单复核:提示扫描编码不存在*/
+    /** 按单复核:提示扫描编码不存在 */
     public static final String TIP_CODE_ERROR = "CODE_ERROR";
-    /** 按单复核:开始复核*/
+    /** 按单复核:开始复核 */
     public static final String TIP_SUCCESS = "SUCCESS";
-    /** 按单复核:提示扫描出库箱或货格号*/
+    /** 按单复核:提示扫描出库箱或货格号 */
     public static final String TIP_OUTBOUND_BOX_OR_NO = "OUTBOUND_BOX_OR_NO";
-    /** 按单复核:提示已经完成复核*/
+    /** 按单复核:提示已经完成复核 */
     public static final String TIP_FINISH = "FINISH";
 
-    /** 按单复核方式:小车出库箱流程*/
+    /** 按单复核方式:小车出库箱流程 */
     public static final int CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX = 1;
-    /** 按单复核方式:小车货格流程*/
+    /** 按单复核方式:小车货格流程 */
     public static final int CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO = 2;
-    /** 按单复核方式:播种墙出库箱流程*/
+    /** 按单复核方式:播种墙出库箱流程 */
     public static final int CHECKING_BY_ODO_WAY_SEEDING_WALL_OUTBOUND_BOX = 3;
-    /** 按单复核方式:播种墙货格流程*/
+    /** 按单复核方式:播种墙货格流程 */
     public static final int CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO = 4;
-    /** 按单复核方式:周转箱流程*/
+    /** 按单复核方式:周转箱流程 */
     public static final int CHECKING_BY_ODO_WAY_CONTAINER = 5;
-    /** 按单复核方式:出库箱流程*/
+    /** 按单复核方式:出库箱流程 */
     public static final int CHECKING_BY_ODO_WAY_OUTBOUND_BOX = 6;
 
     /** 交接集货状态已创建/新建 */

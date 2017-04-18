@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityRecPathDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
@@ -57,6 +58,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
@@ -82,6 +84,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhSeedingCollectionLineDao whSeedingCollectionLineDao;
+    @Autowired
+    private WhCheckingCollectionLineDao whCheckingCollectionLineDao;
 
     @Autowired
     private WhCheckingCollectionDao whCheckingCollectionDao;
@@ -180,7 +184,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setDistributionMode(work.getDistributionMode());
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
-                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
+                whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_1);
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
             }
         }
@@ -208,6 +212,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
                 whCheckingCollection.setCollectionStatus(Constants.COLLECTION_STATUS_10);
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
+                insertIntoCheckingCollectionLine(whCheckingCollection);
             }
         }
 
@@ -1427,6 +1432,41 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
 
         }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertIntoCheckingCollectionLine(WhCheckingCollection whCheckingCollection) {
+        // 按外部容器 内部容器 货格号去库存中找
+        Long containerId = whCheckingCollection.getContainerId();
+        Long outerContainerId = whCheckingCollection.getOuterContainerId();
+        Integer containerLatticeNo = whCheckingCollection.getContainerLatticeNo();
+        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, whCheckingCollection.getOuId());
+        if (null != invList && !invList.isEmpty()) {
+            for (WhCheckingCollectionLine inv : invList) {
+                if (null != inv.getStoreId()) {
+                    Store store = this.getStoreByRedis(inv.getStoreId());
+                    if (null != store) {
+                        inv.setStoreCode(store.getStoreCode());
+                        inv.setStoreName(store.getStoreName());
+                    }
+                }
+                if (null != inv.getCustomerId()) {
+                    Customer customer = this.getCustomerByRedis(inv.getCustomerId());
+                    if (null != customer) {
+                        inv.setCustomerCode(customer.getCustomerCode());
+                        inv.setCustomerName(customer.getCustomerName());
+                    }
+                }
+                WhCheckingCollectionLine line = new WhCheckingCollectionLine();
+                BeanUtils.copyProperties(inv, line);
+                line.setCheckingCollectionId(whCheckingCollection.getId());
+                line.setSeedingQty(0L);
+                this.whCheckingCollectionLineDao.insert(line);
+            }
+        }
+
 
     }
 

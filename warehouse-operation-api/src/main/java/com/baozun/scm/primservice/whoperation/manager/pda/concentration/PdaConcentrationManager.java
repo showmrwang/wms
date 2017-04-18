@@ -9,6 +9,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollect
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhTemporaryStorageLocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 
 /**
@@ -44,6 +45,13 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param whSeedingCollection
      */
     void insertIntoSeedingCollectionLine(WhSeedingCollection whSeedingCollection);
+
+    /**
+     * [业务方法] 插入复核集货明细表
+     * 
+     * @param whCheckingCollection
+     */
+    void insertIntoCheckingCollectionLine(WhCheckingCollection whCheckingCollection);
 
     /**
      * [业务方法] 插入复核台集货表
@@ -252,7 +260,8 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 通过推荐结果判断容器去哪
-     * @param ouId 
+     * 
+     * @param ouId
      * 
      * @return
      */
@@ -260,6 +269,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * 检测此批次在暂存库位上是否还有容器
+     * 
      * @author kai.zhu
      * @version 2017年4月14日
      */
