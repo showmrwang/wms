@@ -10,17 +10,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundConfirm;
-import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundInvLineConfirm;
-import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundLineConfirm;
-import com.baozun.scm.primservice.whinterface.model.inbound.WmsInboundSnLineConfirm;
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundConfirm;
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundInvLineConfirm;
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundLineConfirm;
+import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundSnLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundInvoiceConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundInvoiceLineConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
-import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundConfirm;
-import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundInvoiceConfirm;
-import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundInvoiceLineConfirm;
-import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutboundLineConfirm;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager;
@@ -158,7 +158,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * @return
      */
     @Override
-    public List<WmsOutboundConfirm> wmsOutBoundConfirm(Date beginTime, Date endTime, String whCode, String dataSource) {
+    public List<WmsOutBoundConfirm> wmsOutBoundConfirm(Date beginTime, Date endTime, String whCode, String dataSource) {
         log.info("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -184,11 +184,11 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (log.isDebugEnabled()) {
             log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
         }
-        List<WmsOutboundConfirm> wobc = new ArrayList<WmsOutboundConfirm>();
+        List<WmsOutBoundConfirm> wobc = new ArrayList<WmsOutBoundConfirm>();
         // 获取出库单反馈数据
         List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmManager.findWhOutboundConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
         for (WhOutboundConfirm whOutboundConfirm : whOutboundConfirms) {
-            WmsOutboundConfirm o = new WmsOutboundConfirm();
+            WmsOutBoundConfirm o = new WmsOutBoundConfirm();
             // 有数据生成同步数据
             BeanUtils.copyProperties(whOutboundConfirm, o);
             o.setWhCode(whCode);
@@ -202,26 +202,26 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
                 }
                 o.setTransportServiceProviders(tspList);
             }
-            List<WmsOutboundLineConfirm> lineConfirms = new ArrayList<WmsOutboundLineConfirm>();
+            List<WmsOutBoundLineConfirm> lineConfirms = new ArrayList<WmsOutBoundLineConfirm>();
             // 出库单明细信息
             List<WhOutboundLineConfirm> whOutboundLineConfirms = whOutboundConfirm.getWhOutBoundLineConfirm();
             for (WhOutboundLineConfirm line : whOutboundLineConfirms) {
-                WmsOutboundLineConfirm wmsOutboundLineConfirm = new WmsOutboundLineConfirm();
+                WmsOutBoundLineConfirm wmsOutboundLineConfirm = new WmsOutBoundLineConfirm();
                 BeanUtils.copyProperties(line, wmsOutboundLineConfirm);
                 lineConfirms.add(wmsOutboundLineConfirm);
             }
             o.setWmsOutBoundLineConfirm(lineConfirms);
-            List<WmsOutboundInvoiceConfirm> invoiceConfirms = new ArrayList<WmsOutboundInvoiceConfirm>();
+            List<WmsOutBoundInvoiceConfirm> invoiceConfirms = new ArrayList<WmsOutBoundInvoiceConfirm>();
             // 出库单发票信息
             List<WhOutboundInvoiceConfirm> invoice = whOutboundConfirm.getWhOutBoundInvoiceConfirm();
             for (WhOutboundInvoiceConfirm inv : invoice) {
-                WmsOutboundInvoiceConfirm i = new WmsOutboundInvoiceConfirm();
+                WmsOutBoundInvoiceConfirm i = new WmsOutBoundInvoiceConfirm();
                 BeanUtils.copyProperties(inv, i);
-                List<WmsOutboundInvoiceLineConfirm> invoiceLine = new ArrayList<WmsOutboundInvoiceLineConfirm>();
+                List<WmsOutBoundInvoiceLineConfirm> invoiceLine = new ArrayList<WmsOutBoundInvoiceLineConfirm>();
                 // 出库单发票明细信息
                 List<WhOutboundInvoiceLineConfirm> invoiceLineConfirms = inv.getWhOutBoundConfirmInvoiceLines();
                 for (WhOutboundInvoiceLineConfirm invLine : invoiceLineConfirms) {
-                    WmsOutboundInvoiceLineConfirm line = new WmsOutboundInvoiceLineConfirm();
+                    WmsOutBoundInvoiceLineConfirm line = new WmsOutBoundInvoiceLineConfirm();
                     BeanUtils.copyProperties(invLine, line);
                     invoiceLine.add(line);
                 }
@@ -288,7 +288,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * @return
      */
     @Override
-    public List<WmsInboundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource) {
+    public List<WmsInBoundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource) {
         log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -306,30 +306,30 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (log.isDebugEnabled()) {
             log.debug("WmsConfirmServiceManagerProxy.wmsInBoundConfirm beginTime: " + begin + " endTime: " + end + " dataSource: " + dataSource);
         }
-        List<WmsInboundConfirm> wmsInboundConfirms = new ArrayList<WmsInboundConfirm>();
+        List<WmsInBoundConfirm> wmsInboundConfirms = new ArrayList<WmsInBoundConfirm>();
         // 获取入库单反馈相关数据
         List<WhInboundConfirm> whInboundConfirms = whInboundConfirmManager.findWhInboundConfirmByCreateTimeAndDataSource(begin, end, dataSource);
         for (WhInboundConfirm whInboundConfirm : whInboundConfirms) {
-            WmsInboundConfirm inbound = new WmsInboundConfirm();
+            WmsInBoundConfirm inbound = new WmsInBoundConfirm();
             BeanUtils.copyProperties(whInboundConfirm, inbound);
             inbound.setDeliveryTimeStr(DateUtil.formatDate(whInboundConfirm.getDeliveryTime(), DateUtil.DEFAULT_DATE_TIME_FORMAT_NEW));
             // 获取入库单反馈明细数据
-            List<WmsInboundLineConfirm> wmsInboundLineConfirms = new ArrayList<WmsInboundLineConfirm>();
+            List<WmsInBoundLineConfirm> wmsInboundLineConfirms = new ArrayList<WmsInBoundLineConfirm>();
             List<WhInboundLineConfirm> whInboundLineConfirms = whInboundConfirm.getWhInboundLineConfirms();
             for (WhInboundLineConfirm inboundLine : whInboundLineConfirms) {
-                WmsInboundLineConfirm line = new WmsInboundLineConfirm();
+                WmsInBoundLineConfirm line = new WmsInBoundLineConfirm();
                 BeanUtils.copyProperties(inboundLine, line);
                 // 获取入库单库存反馈明细数据
-                List<WmsInboundInvLineConfirm> inboundInvLine = new ArrayList<WmsInboundInvLineConfirm>();
+                List<WmsInBoundInvLineConfirm> inboundInvLine = new ArrayList<WmsInBoundInvLineConfirm>();
                 List<WhInboundInvLineConfirm> whInboundInvLineConfirms = inboundLine.getWhInboundInvLineConfirms();
                 for (WhInboundInvLineConfirm invLine : whInboundInvLineConfirms) {
-                    WmsInboundInvLineConfirm inv = new WmsInboundInvLineConfirm();
+                    WmsInBoundInvLineConfirm inv = new WmsInBoundInvLineConfirm();
                     BeanUtils.copyProperties(inboundLine, inv);
                     // 获取入库单反馈明细SN/残次信息
-                    List<WmsInboundSnLineConfirm> wmsSnLineConfirms = new ArrayList<WmsInboundSnLineConfirm>();
+                    List<WmsInBoundSnLineConfirm> wmsSnLineConfirms = new ArrayList<WmsInBoundSnLineConfirm>();
                     List<WhInboundSnLineConfirm> snLineConfirms = invLine.getWhInboundSnLineConfirms();
                     for (WhInboundSnLineConfirm whInboundSnLineConfirm : snLineConfirms) {
-                        WmsInboundSnLineConfirm sn = new WmsInboundSnLineConfirm();
+                        WmsInBoundSnLineConfirm sn = new WmsInBoundSnLineConfirm();
                         BeanUtils.copyProperties(whInboundSnLineConfirm, sn);
                         wmsSnLineConfirms.add(sn);
                     }
