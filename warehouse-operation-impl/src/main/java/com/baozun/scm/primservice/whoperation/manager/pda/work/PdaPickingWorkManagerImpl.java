@@ -1365,8 +1365,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // invSkuCmd.setInvStatus(command.getSkuInvStatus());
         List<SysDictionary> invTypeList = sysDictionaryManager.getListByGroup(Constants.INVENTORY_TYPE, BaseModel.LIFECYCLE_NORMAL);
         for (SysDictionary sd : invTypeList) {
-            if (sd.getDicValue().equals(command.getSkuInvType())) {
-                invSkuCmd.setInvType(sd.getDicLabel());
+            if (sd.getDicLabel().equals(command.getSkuInvType())) {
+                invSkuCmd.setInvType(sd.getDicValue());
                 break;
             }
         }
