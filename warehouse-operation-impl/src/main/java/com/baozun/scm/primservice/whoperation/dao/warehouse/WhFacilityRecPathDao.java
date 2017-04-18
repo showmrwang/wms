@@ -104,4 +104,10 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
 
     int updateStatusToFinish(@Param("batch") String batch, @Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 
+    int updateSeedingwallByBatch(@Param("facilityCode") String facilityCode, @Param("checkCode") String checkCode, @Param("facilityUpperLimit") Integer facilityUpperLimit, @Param("batch") String batch, @Param("ouId") Long ouId);
+    
+    int updateTemporaryStorageLocationByBatch(@Param("tsCode") String tsCode, @Param("tsCheckCode") String tsCheckCode, @Param("batch") String batch, @Param("ouId") Long ouId);
+    
+    int updateTransitLocationByBatch(@Param("locationCode") String locationCode, @Param("locationCheckCode") String locationCheckCode, @Param("batch") String batch, @Param("ouId") Long ouId);
+
 }
