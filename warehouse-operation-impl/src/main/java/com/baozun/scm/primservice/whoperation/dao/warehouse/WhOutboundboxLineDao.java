@@ -48,4 +48,13 @@ public interface WhOutboundboxLineDao extends BaseDao<WhOutboundboxLine, Long> {
      */
     List<WhOutboundboxLine> findWhOutboundboxLineByOdoId(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
 
+    /**
+     * 根据boxid查询对应数据
+     * 
+     * @param boxid
+     * @param ouid
+     * @return
+     */
+    List<WhOutboundboxLine> findWhOutboundboxLineByBoxId(@Param("boxid") Long boxid, @Param("ouid") Long ouid);
+
 }
