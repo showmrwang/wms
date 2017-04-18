@@ -1,0 +1,348 @@
+package com.baozun.scm.primservice.whoperation.model.warehouse;
+
+import java.util.Date;
+
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
+
+public class WhCheckingCollectionLine extends BaseModel {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2263439913063420467L;
+    // columns START
+    /** 集货ID */
+    private Long checkingCollectionId;
+    /** 商品编码 */
+    private String skuCode;
+    /** 商品外部编码 */
+    private String skuExtCode;
+    /** 商品条码 */
+    private String skuBarCode;
+    /** 商品名称 */
+    private String skuName;
+    /** 计划数量 */
+    private Long qty;
+    /** 已播种数量 */
+    private Long seedingQty;
+    /** 客户CODE */
+    private String customerCode;
+    /** 客户名称 */
+    private String customerName;
+    /** 店铺CODE */
+    private String storeCode;
+    /** 店铺名称 */
+    private String storeName;
+    /** 库存状态 */
+    private String invStatus;
+    /** 库存类型 */
+    private String invType;
+    /** 批次号 */
+    private String batchNumber;
+    /** 生产日期 */
+    private Date mfgDate;
+    /** 失效日期 */
+    private Date expDate;
+    /** 原产地 */
+    private String countryOfOrigin;
+    /** 库存属性1 */
+    private String invAttr1;
+    /** 库存属性2 */
+    private String invAttr2;
+    /** 库存属性3 */
+    private String invAttr3;
+    /** 库存属性4 */
+    private String invAttr4;
+    /** 库存属性5 */
+    private String invAttr5;
+    /** 内部对接码 */
+    private String uuid;
+    /** 仓库组织ID */
+    private Long ouId;
+    /** 出库单ID */
+    private Long odoId;
+    /** 出库单明细ID */
+    private Long odoLineId;
+    /** 客户id */
+    private Long customerId;
+    /** 店铺id */
+    private Long storeId;
+    /** skuId */
+    private Long skuId;
+
+    /** =============================================================== */
+    /** 出库单编码 */
+    private String odoCode;
+    /** 播种墙编码 */
+    private String facilityCode;
+    /** 播种墙货格号 */
+    private int latticeNo;
+    /** 出库箱编码 */
+    private String outboundBoxCode;
+
+    // columns END
+    public Long getCheckingCollectionId() {
+        return checkingCollectionId;
+    }
+
+    public void setCheckingCollectionId(Long checkingCollectionId) {
+        this.checkingCollectionId = checkingCollectionId;
+    }
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuExtCode() {
+        return skuExtCode;
+    }
+
+    public void setSkuExtCode(String skuExtCode) {
+        this.skuExtCode = skuExtCode;
+    }
+
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
+
+    public Long getQty() {
+        return qty;
+    }
+
+    public void setQty(Long qty) {
+        this.qty = qty;
+    }
+
+    public Long getSeedingQty() {
+        return seedingQty;
+    }
+
+    public void setSeedingQty(Long seedingQty) {
+        this.seedingQty = seedingQty;
+    }
+
+    public String getCustomerCode() {
+        return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getStoreCode() {
+        return storeCode;
+    }
+
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public String getInvStatus() {
+        return invStatus;
+    }
+
+    public void setInvStatus(String invStatus) {
+        this.invStatus = invStatus;
+    }
+
+    public String getInvType() {
+        return invType;
+    }
+
+    public void setInvType(String invType) {
+        this.invType = invType;
+    }
+
+    public String getBatchNumber() {
+        return batchNumber;
+    }
+
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
+    }
+
+    public Date getMfgDate() {
+        return mfgDate;
+    }
+
+    public void setMfgDate(Date mfgDate) {
+        this.mfgDate = mfgDate;
+    }
+
+    public Date getExpDate() {
+        return expDate;
+    }
+
+    public void setExpDate(Date expDate) {
+        this.expDate = expDate;
+    }
+
+    public String getCountryOfOrigin() {
+        return countryOfOrigin;
+    }
+
+    public void setCountryOfOrigin(String countryOfOrigin) {
+        this.countryOfOrigin = countryOfOrigin;
+    }
+
+    public String getInvAttr1() {
+        return invAttr1;
+    }
+
+    public void setInvAttr1(String invAttr1) {
+        this.invAttr1 = invAttr1;
+    }
+
+    public String getInvAttr2() {
+        return invAttr2;
+    }
+
+    public void setInvAttr2(String invAttr2) {
+        this.invAttr2 = invAttr2;
+    }
+
+    public String getInvAttr3() {
+        return invAttr3;
+    }
+
+    public void setInvAttr3(String invAttr3) {
+        this.invAttr3 = invAttr3;
+    }
+
+    public String getInvAttr4() {
+        return invAttr4;
+    }
+
+    public void setInvAttr4(String invAttr4) {
+        this.invAttr4 = invAttr4;
+    }
+
+    public String getInvAttr5() {
+        return invAttr5;
+    }
+
+    public void setInvAttr5(String invAttr5) {
+        this.invAttr5 = invAttr5;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public Long getOuId() {
+        return ouId;
+    }
+
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+
+    public Long getOdoId() {
+        return odoId;
+    }
+
+    public void setOdoId(Long odoId) {
+        this.odoId = odoId;
+    }
+
+    public Long getOdoLineId() {
+        return odoLineId;
+    }
+
+    public void setOdoLineId(Long odoLineId) {
+        this.odoLineId = odoLineId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+    public String getOdoCode() {
+        return odoCode;
+    }
+
+    public void setOdoCode(String odoCode) {
+        this.odoCode = odoCode;
+    }
+
+    public String getFacilityCode() {
+        return facilityCode;
+    }
+
+    public void setFacilityCode(String facilityCode) {
+        this.facilityCode = facilityCode;
+    }
+
+    public int getLatticeNo() {
+        return latticeNo;
+    }
+
+    public void setLatticeNo(int latticeNo) {
+        this.latticeNo = latticeNo;
+    }
+
+    public String getOutboundBoxCode() {
+        return outboundBoxCode;
+    }
+
+    public void setOutboundBoxCode(String outboundBoxCode) {
+        this.outboundBoxCode = outboundBoxCode;
+    }
+
+}

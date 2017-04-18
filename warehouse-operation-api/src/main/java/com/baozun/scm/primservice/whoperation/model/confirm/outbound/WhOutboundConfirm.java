@@ -57,6 +57,8 @@ public class WhOutboundConfirm extends BaseModel {
     private List<WhOutboundLineConfirm> whOutBoundLineConfirm;
     /** 出库单发票信息 */
     private List<WhOutboundInvoiceConfirm> whOutBoundInvoiceConfirm;
+    /** 出库单附加属性信息 */
+    private WhOutboundAttrConfirm whOutboundAttrConfirm;
 
     public String getExtOdoCode() {
         return extOdoCode;
@@ -160,6 +162,14 @@ public class WhOutboundConfirm extends BaseModel {
 
     public void setWhOutBoundInvoiceConfirm(List<WhOutboundInvoiceConfirm> whOutBoundInvoiceConfirm) {
         this.whOutBoundInvoiceConfirm = whOutBoundInvoiceConfirm;
+    }
+
+    public WhOutboundAttrConfirm getWhOutboundAttrConfirm() {
+        return whOutboundAttrConfirm;
+    }
+
+    public void setWhOutboundAttrConfirm(WhOutboundAttrConfirm whOutboundAttrConfirm) {
+        this.whOutboundAttrConfirm = whOutboundAttrConfirm;
     }
 
 

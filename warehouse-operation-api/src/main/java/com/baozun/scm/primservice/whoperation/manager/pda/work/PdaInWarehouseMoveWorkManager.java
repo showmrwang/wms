@@ -17,7 +17,7 @@ public interface PdaInWarehouseMoveWorkManager extends BaseManager {
      * @param ouId
      * @return
      */
-    PickingScanResultCommand getReplenishmentForGroup(WhWork whWork, Long ouId);
+    PickingScanResultCommand getInWarehouseMoveForGroup(WhWork whWork, Long ouId);
     
     /***
      * 提示拣货库位
@@ -25,13 +25,7 @@ public interface PdaInWarehouseMoveWorkManager extends BaseManager {
      * @param operationId
      * @return
      */
-    public PickingScanResultCommand replenishmentTipLocation(Long functionId,Long operationId,Long ouId);
-    
-//    /***
-//     * 拣货完成
-//     * @param command
-//     */
-//    public void pdaPickingFinish(PickingScanResultCommand  command,Boolean isTabbInvTotal);
+    public PickingScanResultCommand inWarehouseMoveTipLocation(Long functionId,Long operationId,Long ouId);
     
     /***
      * 缓存库位

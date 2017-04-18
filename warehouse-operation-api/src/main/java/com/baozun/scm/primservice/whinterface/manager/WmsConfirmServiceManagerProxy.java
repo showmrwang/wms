@@ -6,8 +6,8 @@ import java.util.List;
 import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
-import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 
 /**
  * WMS数据反馈接口

@@ -401,7 +401,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         Set<String> useOutboundboxCodeSet = new HashSet<String>();
                         useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
                         onlySkuUseOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
-                        skuAttrIdsSnDefect.put(operationLine.getFromLocationId(), onlySkuUseOutboundboxMap);
+                        skuAttrIdsContainerLattice.put(operationLine.getFromLocationId(), onlySkuUseOutboundboxMap);
                     }
                 }
             }
@@ -469,7 +469,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 内部容器每个唯一sku对应的所有sn及残次条码
                 if (null != operationLine.getFromInsideContainerId() && null != onlySku && null != insideSkuAttrIdsSnDefect.get(operationLine.getFromInsideContainerId())) {
                     Map<String, Set<String>> onlySkuSnMap = new HashMap<String, Set<String>>();
-                    onlySkuSnMap = insideSkuAttrIdsSnDefect.get(operationLine.getFromLocationId());
+                    onlySkuSnMap = insideSkuAttrIdsSnDefect.get(operationLine.getFromInsideContainerId());
                     if (null != onlySkuSnMap.get(onlySku)) {
                         Set<String> snDefectWareBarcodeSet = new HashSet<String>();
                         snDefectWareBarcodeSet = onlySkuSnMap.get(onlySku);
@@ -521,7 +521,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         Set<String> useOutboundboxCodeSet = new HashSet<String>();
                         useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
                         onlySkuOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
-                        skuAttrIdsSnDefect.put(operationLine.getFromInsideContainerId(), onlySkuOutboundboxMap);
+                        skuAttrIdsContainerLattice.put(operationLine.getFromInsideContainerId(), onlySkuOutboundboxMap);
                     }
                 }
             }
@@ -1693,7 +1693,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         List<WhOperationExecLineCommand> execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(work.getId(), ouId);
         if (Constants.WH_PICKING_MODE.equals(work.getPickingMode())) {
             // 拣货模式为播种
-            this.pdaConcentrationManager.insertIntoSeedingCollection(command.getBatch(), execLineCommandList, ouId);
+            this.pdaConcentrationManager.insertIntoSeedingCollection(command.getBatch(), work.getId(),execLineCommandList, ouId);
             // this.pdaConcentrationManager.insertIntoSeedingCollectionLine(command.getBatch(),
             // work.getId(), ouId);
         } else {

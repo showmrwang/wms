@@ -16,11 +16,12 @@ import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundLineConfir
 import com.baozun.scm.primservice.whinterface.model.inbound.WmsInBoundSnLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlow;
-import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundAttrConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundInvoiceLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundLineConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager;
@@ -28,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.manager.confirm.inbound.WhInboundC
 import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryFlowManager;
+import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundAttrConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm;
@@ -202,6 +204,14 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
                 }
                 o.setTransportServiceProviders(tspList);
             }
+            // 出库单附加信息
+            WmsOutBoundAttrConfirm attr = null;
+            WhOutboundAttrConfirm attrConfirm = whOutboundConfirm.getWhOutboundAttrConfirm();
+            if (null != attrConfirm) {
+                attr = new WmsOutBoundAttrConfirm();
+                BeanUtils.copyProperties(attrConfirm, attr);
+            }
+            o.setWmsOutBoundAttrConfirm(attr);
             List<WmsOutBoundLineConfirm> lineConfirms = new ArrayList<WmsOutBoundLineConfirm>();
             // 出库单明细信息
             List<WhOutboundLineConfirm> whOutboundLineConfirms = whOutboundConfirm.getWhOutBoundLineConfirm();

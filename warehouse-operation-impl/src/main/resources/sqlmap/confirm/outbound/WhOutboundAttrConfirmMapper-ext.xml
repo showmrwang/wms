@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundAttrConfirmDao">
+	<resultMap id="WhOutboundAttrConfirmResultExt" type="com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundAttrConfirm">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundAttrConfirmColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	outbound_id as outboundId,
+	        	odo_attr1 as odoAttr1,
+	        	odo_attr2 as odoAttr2,
+	        	odo_attr3 as odoAttr3,
+	        	odo_attr4 as odoAttr4,
+	        	odo_attr5 as odoAttr5,
+	        	odo_attr6 as odoAttr6,
+	        	odo_attr7 as odoAttr7,
+	        	odo_attr8 as odoAttr8,
+	        	odo_attr9 as odoAttr9,
+	        	odo_attr10 as odoAttr10,
+	        	odo_attr11 as odoAttr11,
+	        	odo_attr12 as odoAttr12,
+	        	odo_attr13 as odoAttr13,
+	        	odo_attr14 as odoAttr14,
+	        	odo_attr15 as odoAttr15,
+	        	odo_attr16 as odoAttr16,
+	        	odo_attr17 as odoAttr17,
+	        	odo_attr18 as odoAttr18,
+	        	odo_attr19 as odoAttr19,
+	        	odo_attr20 as odoAttr20,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whOutboundAttrConfirmDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="outboundId!=null">
+					and outbound_id = #{outboundId}
+				</if>
+	       
+	       
+		       <if test="odoAttr1!=null and odoAttr1!=''">
+					and odo_attr1 = #{odoAttr1}
+				</if>
+	       
+	       
+		       <if test="odoAttr2!=null and odoAttr2!=''">
+					and odo_attr2 = #{odoAttr2}
+				</if>
+	       
+	       
+		       <if test="odoAttr3!=null and odoAttr3!=''">
+					and odo_attr3 = #{odoAttr3}
+				</if>
+	       
+	       
+		       <if test="odoAttr4!=null and odoAttr4!=''">
+					and odo_attr4 = #{odoAttr4}
+				</if>
+	       
+	       
+		       <if test="odoAttr5!=null and odoAttr5!=''">
+					and odo_attr5 = #{odoAttr5}
+				</if>
+	       
+	       
+		       <if test="odoAttr6!=null and odoAttr6!=''">
+					and odo_attr6 = #{odoAttr6}
+				</if>
+	       
+	       
+		       <if test="odoAttr7!=null and odoAttr7!=''">
+					and odo_attr7 = #{odoAttr7}
+				</if>
+	       
+	       
+		       <if test="odoAttr8!=null and odoAttr8!=''">
+					and odo_attr8 = #{odoAttr8}
+				</if>
+	       
+	       
+		       <if test="odoAttr9!=null and odoAttr9!=''">
+					and odo_attr9 = #{odoAttr9}
+				</if>
+	       
+	       
+		       <if test="odoAttr10!=null and odoAttr10!=''">
+					and odo_attr10 = #{odoAttr10}
+				</if>
+	       
+	       
+		       <if test="odoAttr11!=null and odoAttr11!=''">
+					and odo_attr11 = #{odoAttr11}
+				</if>
+	       
+	       
+		       <if test="odoAttr12!=null and odoAttr12!=''">
+					and odo_attr12 = #{odoAttr12}
+				</if>
+	       
+	       
+		       <if test="odoAttr13!=null and odoAttr13!=''">
+					and odo_attr13 = #{odoAttr13}
+				</if>
+	       
+	       
+		       <if test="odoAttr14!=null and odoAttr14!=''">
+					and odo_attr14 = #{odoAttr14}
+				</if>
+	       
+	       
+		       <if test="odoAttr15!=null and odoAttr15!=''">
+					and odo_attr15 = #{odoAttr15}
+				</if>
+	       
+	       
+		       <if test="odoAttr16!=null and odoAttr16!=''">
+					and odo_attr16 = #{odoAttr16}
+				</if>
+	       
+	       
+		       <if test="odoAttr17!=null and odoAttr17!=''">
+					and odo_attr17 = #{odoAttr17}
+				</if>
+	       
+	       
+		       <if test="odoAttr18!=null and odoAttr18!=''">
+					and odo_attr18 = #{odoAttr18}
+				</if>
+	       
+	       
+		       <if test="odoAttr19!=null and odoAttr19!=''">
+					and odo_attr19 = #{odoAttr19}
+				</if>
+	       
+	       
+		       <if test="odoAttr20!=null and odoAttr20!=''">
+					and odo_attr20 = #{odoAttr20}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findWhOutboundAttrConfirmByOutBoundId" resultMap="WhOutboundAttrConfirmResultExt">
+		select <include refid="whOutboundAttrConfirmColumnsExt" />
+		from t_wh_outbound_attr_confirm 
+		where 
+		outbound_id = #{id} 
+		and ou_id = #{ouid}
+	</select>
+	
+</mapper>

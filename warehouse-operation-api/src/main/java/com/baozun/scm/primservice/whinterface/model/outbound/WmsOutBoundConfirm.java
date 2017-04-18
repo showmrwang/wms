@@ -52,6 +52,8 @@ public class WmsOutBoundConfirm implements Serializable {
     private List<WmsOutBoundLineConfirm> wmsOutBoundLineConfirm;
     /** 出库单发票信息 */
     private List<WmsOutBoundInvoiceConfirm> wmsOutBoundInvoiceConfirm;
+    /** 出库单附加数据 */
+    private WmsOutBoundAttrConfirm wmsOutBoundAttrConfirm;
 
     public String getExtOdoCode() {
         return extOdoCode;
@@ -147,6 +149,14 @@ public class WmsOutBoundConfirm implements Serializable {
 
     public void setWmsOutBoundInvoiceConfirm(List<WmsOutBoundInvoiceConfirm> wmsOutBoundInvoiceConfirm) {
         this.wmsOutBoundInvoiceConfirm = wmsOutBoundInvoiceConfirm;
+    }
+
+    public WmsOutBoundAttrConfirm getWmsOutBoundAttrConfirm() {
+        return wmsOutBoundAttrConfirm;
+    }
+
+    public void setWmsOutBoundAttrConfirm(WmsOutBoundAttrConfirm wmsOutBoundAttrConfirm) {
+        this.wmsOutBoundAttrConfirm = wmsOutBoundAttrConfirm;
     }
 
 

@@ -236,4 +236,41 @@
 			and p.container_code = #{containerCode}
 			and p.ou_id = #{ouId}
 	</update>
+	
+	<update id="updateSeedingwallByBatch">
+		update
+			t_wh_facility_rec_path p
+		set 
+			p.seedingwall_code = #{facilityCode},
+            p.seedingwall_upper_limit = #{facilityUpperLimit},
+            p.seedingwall_check_code = #{checkCode}
+		where 
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+	</update>
+	
+	<update id="updateTemporaryStorageLocationByBatch">
+		update
+			t_wh_facility_rec_path p
+		set 
+			p.temporary_storage_location_code = #{tsCode},
+            p.temporary_storage_location_check_code = #{tsCheckCode}
+		where 
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+	</update>
+	
+	<update id="updateTransitLocationByBatch">
+		update
+			t_wh_facility_rec_path p
+		set 
+			p.transit_location_code = #{locationCode},
+            p.transit_location_check_code = #{locationCheckCode}
+		where 
+			p.batch = #{batch}
+			and p.status = 1
+			and p.ou_id = #{ouId}
+	</update>
 </mapper>

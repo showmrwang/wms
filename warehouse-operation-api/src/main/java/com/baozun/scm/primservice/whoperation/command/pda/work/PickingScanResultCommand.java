@@ -239,7 +239,11 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isSkuSn;
     /** 判断是否占用SN/残次条码 */
     private Boolean isSkuSnOccupation;
-
+    
+    /** 库内移动方式 */
+    private Integer inWarehouseMoveWay;
+    /** 取消模式 */
+    private Integer cancelPattern;
     /************************************************** 整托整箱结束 **************************************************/
 
     /************************************************** pda补货开始 **************************************************/
@@ -1145,6 +1149,20 @@ public class PickingScanResultCommand extends BaseCommand {
         this.scanOutBoundBox = scanOutBoundBox;
     }
 
-    
-    
+    public Integer getInWarehouseMoveWay() {
+        return inWarehouseMoveWay;
+    }
+
+    public void setInWarehouseMoveWay(Integer inWarehouseMoveWay) {
+        this.inWarehouseMoveWay = inWarehouseMoveWay;
+    }
+
+    public Integer getCancelPattern() {
+        return cancelPattern;
+    }
+
+    public void setCancelPattern(Integer cancelPattern) {
+        this.cancelPattern = cancelPattern;
+    }
+
 }
