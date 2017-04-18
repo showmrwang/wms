@@ -1240,4 +1240,10 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         }
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhAsnCommand> findReturns(WhAsnCommand command) {
+        return this.whAsnDao.findReturns(command);
+    }
+
 }

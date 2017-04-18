@@ -529,4 +529,11 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         }
         return lineCommandList;
     }
+
+    @Override
+    public List<WhAsnCommand> findReturnsForOp(WhAsnCommand command) {
+        command.setAsnType(PoAsnType.POTYPE_2);
+        command.setStatus(PoAsnStatus.ASN_NEW);
+        return this.asnManager.findReturns(command);
+    }
 }
