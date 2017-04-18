@@ -1,11 +1,15 @@
 package com.baozun.scm.primservice.whoperation.manager.confirm.outbound;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,18 +21,25 @@ import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundCon
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceLineConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundLineConfirmDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundAttrConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 
 @Service("whOutboundConfirmManager")
 @Transactional
-public class WhOutboundConfirmManagerImpl implements WhOutboundConfirmManager {
+public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhOutboundConfirmManager {
 
     public static final Logger log = LoggerFactory.getLogger(WhOutboundConfirmManagerImpl.class);
 
@@ -42,6 +53,12 @@ public class WhOutboundConfirmManagerImpl implements WhOutboundConfirmManager {
     private WhOutboundInvoiceLineConfirmDao whOutboundInvoiceLineConfirmDao;
     @Autowired
     private WhOutboundAttrConfirmDao whOutboundAttrConfirmDao;
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
+    @Autowired
+    private WhOdoAttrDao whOdoAttrDao;
+    @Autowired
+    private WhOdoLineDao whOdoLineDao;
 
 
     /**
@@ -53,16 +70,97 @@ public class WhOutboundConfirmManagerImpl implements WhOutboundConfirmManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveWhOutboundConfirm(WhOdo whOdo) {
         log.info("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm begin!");
-        Long count = 0L;
         if (null == whOdo) {
             log.warn("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm whOdo is null");
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"whOdo"});
         }
+        Long ouid = whOdo.getOuId();
         // 只有出库单状态为新建/出库完成才需要生成反馈数据
         if (whOdo.getOdoStatus().equals(OdoStatus.ODO_NEW) || whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
-
+            // 运输服务商-快递单号
+            String transportServiceProvider = null;
+            Map<String, String> tspMap = new HashMap<String, String>();
+            // 如果是出库完成状态 需要封装运输服务商-快递单号信息
+            if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+                String tsp = "";
+                List<WhOdodeliveryInfo> whOdodeliveryInfos = whOdoDeliveryInfoDao.findWhOdodeliveryInfoByOdoId(whOdo.getId(), ouid);
+                for (WhOdodeliveryInfo whOdodeliveryInfo : whOdodeliveryInfos) {
+                    // 封装对应数据格式Map<出库箱号,运输服务商编码-运单号>
+                    tspMap.put(whOdodeliveryInfo.getOutboundboxCode(), whOdodeliveryInfo.getTransportCode() + "-" + whOdodeliveryInfo.getWaybillCode());
+                    tsp += whOdodeliveryInfo.getTransportCode() + "-" + whOdodeliveryInfo.getWaybillCode() + ",";
+                }
+                transportServiceProvider = tsp.substring(0, tsp.length() - 1);
+            }
+            // 封装出库单反馈头信息
+            WhOutboundConfirm ob = new WhOutboundConfirm();
+            ob.setExtOdoCode(whOdo.getExtCode());
+            ob.setWmsOdoCode(whOdo.getOdoCode());
+            ob.setExtOdoType(whOdo.getExtOdoType());
+            ob.setTransportServiceProvider(transportServiceProvider);
+            ob.setWmsOdoStatus(Integer.parseInt(whOdo.getOdoStatus()));
+            ob.setCustomerCode(getCustomerByRedis(whOdo.getCustomerId()).getCustomerCode());
+            ob.setStoreCode(getStoreByRedis(whOdo.getStoreId()).getStoreCode());
+            ob.setOuId(ouid);
+            ob.setDataSource(whOdo.getDataSource());
+            // TODO 后续增加是否整单出库完成逻辑
+            ob.setCreateTime(new Date());
+            Long obcount = whOutboundConfirmDao.insert(ob);
+            if (obcount.intValue() == 0) {
+                log.error("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm error");
+                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            }
+            // 封装出库单附加信息
+            saveWhOutboundAttrConfirm(whOdo.getId(), ouid, ob.getId());
+            // 封装出库单明细信息
+            saveWhOutboundLineConfirm(whOdo, ouid, ob.getId(), tspMap);
         }
         log.info("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm end!");
+    }
+
+    /**
+     * 封装出库单附加信息
+     * 
+     * @param whOdo
+     * @param ob
+     */
+    private void saveWhOutboundAttrConfirm(Long odoid, Long ouid, Long outboundid) {
+        WhOdoAttr attr = whOdoAttrDao.findWhOdoAttrByOdoId(odoid, ouid);
+        if (null != attr) {
+            // 有对应数据进行封装
+            WhOutboundAttrConfirm attrConfirm = new WhOutboundAttrConfirm();
+            BeanUtils.copyProperties(attr, attrConfirm);
+            attrConfirm.setOutboundId(outboundid);
+            Long attrCount = whOutboundAttrConfirmDao.insert(attrConfirm);
+            if (attrCount.intValue() == 0) {
+                log.error("WhOutboundConfirmManagerImpl.saveWhOutboundAttrConfirm error");
+                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            }
+        }
+    }
+
+    /**
+     * 封装出库单明细信息
+     * 
+     * @param whOdo
+     * @param ouid
+     * @param outboundid
+     */
+    private void saveWhOutboundLineConfirm(WhOdo whOdo, Long ouid, Long outboundid, Map<String, String> tspMap) {
+        if (whOdo.getOdoStatus().equals(OdoStatus.ODO_NEW)) {
+            // 新建状态 出库单反馈明细直接用odoLine数据
+            List<WhOdoLine> whOdoLines = whOdoLineDao.findOdoLineListByOdoIdOuId(whOdo.getId(), ouid);
+            for (WhOdoLine whOdoLine : whOdoLines) {
+                WhOutboundLineConfirm line = new WhOutboundLineConfirm();
+                BeanUtils.copyProperties(whOdoLine, line);
+                line.setOutbouncConfirmId(outboundid);
+                line.setWmsOdoCode(whOdo.getOdoCode());
+                line.setExtLineNum(whOdoLine.getExtLinenum());
+                line.setQty(whOdoLine.getPlanQty());
+            }
+        }
+        if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+            // 出库完成状态 出库单反馈明细需要查询出库箱等数据表
+        }
     }
 
     /**

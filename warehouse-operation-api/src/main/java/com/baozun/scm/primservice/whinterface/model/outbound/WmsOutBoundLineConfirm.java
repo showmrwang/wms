@@ -48,9 +48,9 @@ public class WmsOutBoundLineConfirm implements Serializable {
     /** 尺码 */
     private String size;
     /** 计划商品数量 */
-    private Long qty;
+    private Double qty;
     /** 实际出库数量 */
-    private Long actualQty;
+    private Double actualQty;
     /** 库存状态 */
     private String invStatus;
     /** 库存类型 */
@@ -147,19 +147,19 @@ public class WmsOutBoundLineConfirm implements Serializable {
         this.size = size;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
     }
 
-    public Long getActualQty() {
+    public Double getActualQty() {
         return actualQty;
     }
 
-    public void setActualQty(Long actualQty) {
+    public void setActualQty(Double actualQty) {
         this.actualQty = actualQty;
     }
 
