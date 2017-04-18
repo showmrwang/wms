@@ -1649,22 +1649,20 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         ouId, skuCmd.getScanSkuQty());
                 // 添加容器库存
                 whSkuInventoryManager.pickingAddContainerInventory(containerId,locationId,skuAttrIds,operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(),skuCmd.getScanSkuQty(),outBoundBoxCode,turnoverBoxId,outerContainerId,insideContainerId,isShortPikcing,useContainerLatticeNo,null);
-                if(Constants.PICKING_WAY_FOUR == pickingWay){
-                    //判断是拣完在播，是否是最后一箱
-                    List<WhWorkCommand> list =  workManager.findWorkByBatch(work.getBatch(), ouId);
-                    int count = 0;
-                    for(WhWorkCommand cmd:list) {
-                        if(!(WorkStatus.FINISH.equals(cmd.getStatus()) ||  WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))){
+                //判断是拣完在播，是否是最后一箱
+                List<WhWorkCommand> list =  workManager.findWorkByBatch(work.getBatch(), ouId);
+                int count = 0;
+                for(WhWorkCommand cmd:list) {
+                    if(!(WorkStatus.FINISH.equals(cmd.getStatus()) ||  WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))){
                                      count++;
-                        }
                     }
-                    if(count == 1) {//当前工作是最后一个
-                        command.setIsLastWork(true); //当前工作是一个小批次下的最后一个工作
-                    }
-                    // 插入集货表
-                    String pickingMode = this.insertIntoCollection(command, ouId);
-                    command.setPickingMode(pickingMode);
                 }
+                if(count == 1) {//当前工作是最后一个
+                     command.setIsLastWork(true); //当前工作是一个小批次下的最后一个工作
+                }
+                // 插入集货表
+                String pickingMode = this.insertIntoCollection(command, ouId);
+                command.setPickingMode(pickingMode);
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
                 // 清除缓存
@@ -1835,6 +1833,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     result = false;
                 }
             }
+        }
+        if(lineList.size() == 0 && execlineList.size() ==0){
+            result = true;
         }
         if(!result) {
             throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
