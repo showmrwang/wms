@@ -11,11 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundAttrConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceLineConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundLineConfirmDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundAttrConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
@@ -50,6 +53,15 @@ public class WhOutboundConfirmManagerImpl implements WhOutboundConfirmManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveWhOutboundConfirm(WhOdo whOdo) {
         log.info("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm begin!");
+        Long count = 0L;
+        if (null == whOdo) {
+            log.warn("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm whOdo is null");
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"whOdo"});
+        }
+        // 只有出库单状态为新建/出库完成才需要生成反馈数据
+        if (whOdo.getOdoStatus().equals(OdoStatus.ODO_NEW) || whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+
+        }
         log.info("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm end!");
     }
 
