@@ -375,7 +375,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
             return;
         }
         WhFacilityRecPath checkRecPath = recPathList.get(0);
-        if (StringUtils.isNotEmpty(checkRecPath.getSeedingwallCode())) {
+        // @mender return
+        if (StringUtils.isEmpty(checkRecPath.getSeedingwallCode())) {
             WhTemporaryStorageLocation storageLocation = this.whTemporaryStorageLocationDao.findByIdAndOuId(queue.getTemporaryStorageLocationId(), ouId);// 暂存库位
             WhOutboundFacilityGroup whOutboundFacilityGroup = new WhOutboundFacilityGroup();
             whOutboundFacilityGroup.setOuId(ouId);
