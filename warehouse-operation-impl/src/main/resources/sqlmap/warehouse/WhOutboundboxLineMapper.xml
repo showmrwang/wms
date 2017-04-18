@@ -49,7 +49,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_outboundbox_line (
-		        id,
+		        	id,
 		        	wh_outboundbox_id ,
 		        	sku_code ,
 		        	sku_ext_code ,
@@ -76,13 +76,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	odo_id ,
 		        	odo_line_id 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{whOutboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{skuExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{qty,javaType=Double,jdbcType=DECIMAL} ,
 		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -116,7 +116,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        sku_ext_code = #{skuExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
 		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,

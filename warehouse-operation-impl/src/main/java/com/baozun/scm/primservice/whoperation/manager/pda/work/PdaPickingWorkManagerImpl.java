@@ -1266,7 +1266,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long locationId = command.getLocationId();
         String outBoundBoxCode = command.getOutBounxBoxCode();
         Long userId = command.getUserId();
-        Integer pickingWay = command.getPickingWay();
+        Integer pickingWay = null;
+        if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货(库位库存变成容器库存)
+            pickingWay = command.getPickingWay();
+        }
+        if(Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)){
+            pickingWay = command.getReplenishWay();
+        }
         Long ouId = command.getOuId();
         Long skuId = command.getSkuId();
         String skuBarCode = command.getSkuBarCode();
@@ -1643,22 +1649,24 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         ouId, skuCmd.getScanSkuQty());
                 // 添加容器库存
                 whSkuInventoryManager.pickingAddContainerInventory(containerId,locationId,skuAttrIds,operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(),skuCmd.getScanSkuQty(),outBoundBoxCode,turnoverBoxId,outerContainerId,insideContainerId,isShortPikcing,useContainerLatticeNo,null);
-                //判断是拣完在播，是否是最后一箱
-                List<WhWorkCommand> list =  workManager.findWorkByBatch(work.getBatch(), ouId);
-                int count = 0;
-                for(WhWorkCommand cmd:list) {
-                    if(!(WorkStatus.FINISH.equals(cmd.getStatus()) ||  WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))){
-                                 count++;
+                if(Constants.PICKING_WAY_FOUR == pickingWay){
+                    //判断是拣完在播，是否是最后一箱
+                    List<WhWorkCommand> list =  workManager.findWorkByBatch(work.getBatch(), ouId);
+                    int count = 0;
+                    for(WhWorkCommand cmd:list) {
+                        if(!(WorkStatus.FINISH.equals(cmd.getStatus()) ||  WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))){
+                                     count++;
+                        }
                     }
-                }
-                if(count == 1) {//当前工作是最后一个
-                    command.setIsLastWork(true); //当前工作是一个小批次下的最后一个工作
+                    if(count == 1) {//当前工作是最后一个
+                        command.setIsLastWork(true); //当前工作是一个小批次下的最后一个工作
+                    }
+                    // 插入集货表
+                    String pickingMode = this.insertIntoCollection(command, ouId);
+                    command.setPickingMode(pickingMode);
                 }
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
-                // 插入集货表
-                String pickingMode = this.insertIntoCollection(command, ouId);
-                command.setPickingMode(pickingMode);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
             }

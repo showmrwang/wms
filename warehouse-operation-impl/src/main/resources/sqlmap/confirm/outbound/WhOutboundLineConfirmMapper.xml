@@ -119,7 +119,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_outbound_line_confirm (
-		        id,
+		        	id,
 		        	outbounc_confirm_id ,
 		        	store_code ,
 		        	wms_odo_code ,
@@ -145,7 +145,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	inv_attr5 ,
 		        	ou_id 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outbouncConfirmId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{wmsOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -156,8 +156,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
-		        	#{actualQty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{actualQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -189,8 +189,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        style = #{style,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        color = #{color,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        size = #{size,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
-		        actual_qty = #{actualQty,javaType=Long,jdbcType=DECIMAL} ,
+		        qty = #{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        actual_qty = #{actualQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        inv_status = #{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,

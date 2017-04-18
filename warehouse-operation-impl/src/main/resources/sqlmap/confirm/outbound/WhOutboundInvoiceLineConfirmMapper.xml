@@ -102,7 +102,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_outbound_invoice_line_confirm (
-		        id,
+		       		id,
 		        	outbound_invoice_confirm_id ,
 		        	linenum ,
 		        	qty ,
@@ -111,12 +111,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	item ,
 		        	ou_id 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundInvoiceConfirmId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{linenum,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
-		        	#{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
-		        	#{amt,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{unitPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{amt,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
@@ -130,9 +130,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        UPDATE t_wh_outbound_invoice_line_confirm SET
 		        outbound_invoice_confirm_id = #{outboundInvoiceConfirmId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        linenum = #{linenum,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
-		        unit_price = #{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
-		        amt = #{amt,javaType=Long,jdbcType=DECIMAL} ,
+		        qty = #{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        unit_price = #{unitPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        amt = #{amt,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        item = #{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 

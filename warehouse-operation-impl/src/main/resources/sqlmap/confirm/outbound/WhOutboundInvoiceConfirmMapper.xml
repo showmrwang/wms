@@ -109,7 +109,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_outbound_invoice_confirm (
-		        id,
+		       		id,
 		        	outbound_confirm_id ,
 		        	invoice_code ,
 		        	invoice_date ,
@@ -125,7 +125,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	company ,
 		        	ou_id 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundConfirmId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -133,8 +133,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{payer,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        	#{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
-		        	#{amt,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{unitPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{amt,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{memo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{payee,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{drawer,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -156,8 +156,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        payer = #{payer,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        item = #{item,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        qty = #{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        unit_price = #{unitPrice,javaType=Long,jdbcType=DECIMAL} ,
-		        amt = #{amt,javaType=Long,jdbcType=DECIMAL} ,
+		        unit_price = #{unitPrice,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        amt = #{amt,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        memo = #{memo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        payee = #{payee,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        drawer = #{drawer,javaType=java.lang.String,jdbcType=VARCHAR} ,

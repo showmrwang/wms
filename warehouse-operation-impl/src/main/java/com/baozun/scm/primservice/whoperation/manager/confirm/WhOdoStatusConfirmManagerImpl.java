@@ -63,7 +63,7 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
         count = whOdoStatusConfirmDao.insert(odo);
         if (count.intValue() == 0) {
             log.error("WhOdoStatusConfirmManagerImpl saveWhOdoStatusConfirm error");
-            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
         log.info("WhOdoStatusConfirmManagerImpl.saveWhOdoStatusConfirm end!");
     }
