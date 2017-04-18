@@ -25,6 +25,8 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -39,7 +41,10 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 @Service("whOutboundConfirmManager")
 @Transactional
@@ -67,6 +72,10 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
     private InventoryStatusDao inventoryStatusDao;
     @Autowired
     private WhSkuDao whSkuDao;
+    @Autowired
+    private WhOutboundboxDao whOutboundboxDao;
+    @Autowired
+    private WhOutboundboxLineDao whOutboundboxLineDao;
 
 
     /**
@@ -187,6 +196,27 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
         }
         if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
             // 出库完成状态 出库单反馈明细需要查询出库箱等数据表
+            // 获取出库箱装箱信息
+            List<WhOutboundbox> outboundboxs = whOutboundboxDao.findWhOutboundboxByOdoId(whOdo.getId(), ouid);
+            for (WhOutboundbox whOutboundbox : outboundboxs) {
+                // 获取出库箱装箱明细信息
+                List<WhOutboundboxLine> outboundboxLines = whOutboundboxLineDao.findWhOutboundboxLineByBoxId(whOutboundbox.getId(), ouid);
+                for (WhOutboundboxLine boxLine : outboundboxLines) {
+                    WhOutboundLineConfirm line = new WhOutboundLineConfirm();
+                    BeanUtils.copyProperties(boxLine, line);
+                    line.setOutbouncConfirmId(outboundid);
+                    line.setWmsOdoCode(whOdo.getOdoCode());
+                    line.setOutboundBoxCode(whOutboundbox.getOutboundboxCode());
+                    String trackNumber = tspMap.get(whOutboundbox.getOutboundboxCode());
+                    if (!StringUtil.isEmpty(trackNumber)) {
+                        line.setTrackingNumber(trackNumber.split("-")[1]);
+                    }
+                    // 获取出库单明细信息
+                    WhOdoLine odoLine = whOdoLineDao.findOdoLineById(boxLine.getOdoLineId(), ouid);
+                    line.setQty(odoLine.getPlanQty());
+                    line.setActualQty(boxLine.getQty());
+                }
+            }
         }
     }
 
