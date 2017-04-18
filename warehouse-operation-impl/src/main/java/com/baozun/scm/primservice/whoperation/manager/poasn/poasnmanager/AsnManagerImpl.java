@@ -730,7 +730,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
 		carton.setInvAttr3(al.getInvAttr3());
 		carton.setInvAttr4(al.getInvAttr4());
 		carton.setInvAttr5(al.getInvAttr5());
-		carton.setIsCaselevel(false);// 是否caselevel
+		carton.setIsCaselevel(true);// 是否caselevel
 		carton.setCreatedId(userId);
 		carton.setModifiedId(userId);
 		carton.setCreateTime(new Date());

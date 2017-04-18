@@ -1126,9 +1126,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 recCommand.setSeedingwallCode(destinationCode);
                 recCommand.setSeedingwallCheckCode(facility.getCheckCode());
                 recCommand.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
-                WhFacilityRecPath rec = new WhFacilityRecPath();
-                BeanUtils.copyProperties(recCommand, rec);
-                whFacilityRecPathDao.saveOrUpdate(rec);
+                whFacilityRecPathDao.updateSeedingwallByBatch(facility.getFacilityCode(), facility.getCheckCode(), facility.getFacilityUpperLimit(), batch, ouId);
             } else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION && StringUtils.isEmpty(recCommand.getTemporaryStorageLocationCode())) {
                 storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
                 if (null == storageLocation) {
@@ -1137,20 +1135,16 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 recCommand.setTemporaryStorageLocationId(storageLocation.getId());
                 recCommand.setTemporaryStorageLocationCheckCode(storageLocation.getCheckCode());
                 recCommand.setTemporaryStorageLocationCode(storageLocation.getTemporaryStorageCode());
-                WhFacilityRecPath rec = new WhFacilityRecPath();
-                BeanUtils.copyProperties(recCommand, rec);
-                whFacilityRecPathDao.saveOrUpdate(rec);
+                whFacilityRecPathDao.updateTemporaryStorageLocationByBatch(storageLocation.getTemporaryStorageCode(), storageLocation.getCheckCode(), batch, ouId);
             } else if (destinationType == Constants.TRANSIT_LOCATION && StringUtils.isEmpty(recCommand.getTransitLocationCode())) {
                 location = whLocationDao.findLocationByCode(destinationCode, ouId);
                 if (null == location) {
                     throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
                 }
                 recCommand.setTransitLocationId(location.getId());
-                recCommand.setTransitLocationCheckCode(location.getReplenishmentBarcode());
+                recCommand.setTransitLocationCheckCode(location.getBarCode());
                 recCommand.setTransitLocationCode(location.getCode());
-                WhFacilityRecPath rec = new WhFacilityRecPath();
-                BeanUtils.copyProperties(recCommand, rec);
-                whFacilityRecPathDao.saveOrUpdate(rec);
+                whFacilityRecPathDao.updateTransitLocationByBatch(location.getCode(), location.getBarCode(), batch, ouId);
             }
         }
 

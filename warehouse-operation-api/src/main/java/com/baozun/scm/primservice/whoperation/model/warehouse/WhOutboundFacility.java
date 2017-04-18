@@ -63,108 +63,104 @@ public class WhOutboundFacility extends BaseModel {
     /** 占用batch */
     private String batch;
 	//columns END
-	
-	public String getFacilityCode() {
-		return facilityCode;
-	}
-
+    
+    public String getFacilityCode() {
+        return facilityCode;
+    }
+    public void setFacilityCode(String facilityCode) {
+        this.facilityCode = facilityCode;
+    }
+    public String getFacilityName() {
+        return facilityName;
+    }
+    public void setFacilityName(String facilityName) {
+        this.facilityName = facilityName;
+    }
+    public String getFacilityType() {
+        return facilityType;
+    }
+    public void setFacilityType(String facilityType) {
+        this.facilityType = facilityType;
+    }
+    public Long getOutboundboxTypeId() {
+        return outboundboxTypeId;
+    }
+    public void setOutboundboxTypeId(Long outboundboxTypeId) {
+        this.outboundboxTypeId = outboundboxTypeId;
+    }
+    public Integer getCapacity() {
+        return capacity;
+    }
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+    public Integer getFacilityLowerLimit() {
+        return facilityLowerLimit;
+    }
+    public void setFacilityLowerLimit(Integer facilityLowerLimit) {
+        this.facilityLowerLimit = facilityLowerLimit;
+    }
+    public Integer getFacilityUpperLimit() {
+        return facilityUpperLimit;
+    }
+    public void setFacilityUpperLimit(Integer facilityUpperLimit) {
+        this.facilityUpperLimit = facilityUpperLimit;
+    }
+    public Long getFacilityGroup() {
+        return facilityGroup;
+    }
+    public void setFacilityGroup(Long facilityGroup) {
+        this.facilityGroup = facilityGroup;
+    }
+    public String getCheckCode() {
+        return checkCode;
+    }
+    public void setCheckCode(String checkCode) {
+        this.checkCode = checkCode;
+    }
+    public Date getCreateTime() {
+        return createTime;
+    }
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+    public Long getOperatorId() {
+        return operatorId;
+    }
+    public void setOperatorId(Long operatorId) {
+        this.operatorId = operatorId;
+    }
+    public Integer getLifecycle() {
+        return lifecycle;
+    }
+    public void setLifecycle(Integer lifecycle) {
+        this.lifecycle = lifecycle;
+    }
+    public Long getOuId() {
+        return ouId;
+    }
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
     public Integer getStatus() {
         return status;
     }
-
     public void setStatus(Integer status) {
         this.status = status;
     }
-
-    public void setFacilityCode(String facilityCode) {
-		this.facilityCode = facilityCode;
-	}
-	public String getFacilityName() {
-		return facilityName;
-	}
-	public void setFacilityName(String facilityName) {
-		this.facilityName = facilityName;
-	}
-	public String getFacilityType() {
-		return facilityType;
-	}
-	public void setFacilityType(String facilityType) {
-		this.facilityType = facilityType;
-	}
-	public Long getOutboundboxTypeId() {
-		return outboundboxTypeId;
-	}
-	public void setOutboundboxTypeId(Long outboundboxTypeId) {
-		this.outboundboxTypeId = outboundboxTypeId;
-	}
-	public Long getFacilityGroup() {
-		return facilityGroup;
-	}
-	public void setFacilityGroup(Long facilityGroup) {
-		this.facilityGroup = facilityGroup;
-	}
-	public Date getCreateTime() {
-		return createTime;
-	}
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-	public Date getLastModifyTime() {
-		return lastModifyTime;
-	}
-	public void setLastModifyTime(Date lastModifyTime) {
-		this.lastModifyTime = lastModifyTime;
-	}
-	public Long getOperatorId() {
-		return operatorId;
-	}
-	public void setOperatorId(Long operatorId) {
-		this.operatorId = operatorId;
-	}
-	public Integer getLifecycle() {
-		return lifecycle;
-	}
-	public void setLifecycle(Integer lifecycle) {
-		this.lifecycle = lifecycle;
-	}
-	public Long getOuId() {
-		return ouId;
-	}
-	public void setOuId(Long ouId) {
-		this.ouId = ouId;
-	}
-	public Integer getCapacity() {
-		return capacity;
-	}
-	public void setCapacity(Integer capacity) {
-		this.capacity = capacity;
-	}
-	public Integer getFacilityLowerLimit() {
-		return facilityLowerLimit;
-	}
-	public void setFacilityLowerLimit(Integer facilityLowerLimit) {
-		this.facilityLowerLimit = facilityLowerLimit;
-	}
-	public Integer getFacilityUpperLimit() {
-		return facilityUpperLimit;
-	}
-	public void setFacilityUpperLimit(Integer facilityUpperLimit) {
-		this.facilityUpperLimit = facilityUpperLimit;
-	}
-	public String getCheckCode() {
-		return checkCode;
-	}
-	public void setCheckCode(String checkCode) {
-		this.checkCode = checkCode;
-	}
-
-	public String getBatch() {
-		return batch;
-	}
-
-	public void setBatch(String batch) {
-		this.batch = batch;
-	}
+    public String getBatch() {
+        return batch;
+    }
+    public void setBatch(String batch) {
+        this.batch = batch;
+    }
+	
 
 }
 
