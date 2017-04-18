@@ -12,26 +12,45 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whinterface.model.inbound;
+package com.baozun.scm.primservice.whinterface.model.outbound;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
- * 入库单明细库存信息
- * 
- * @author larkark
+ * 出库单反馈明细信息
  *
  */
-public class WmsInBoundInvLineConfirm implements Serializable {
+public class WmsOutBoundLineConfirm implements Serializable {
+
 
     /**
      * 
      */
-    private static final long serialVersionUID = -4490472191642328879L;
-    /** 实际数量 */
-    private Double qtyRcvd;
+    private static final long serialVersionUID = 2236879453181216006L;
+
+    /** 店铺CODE */
+    private String storeCode;
+    /** WMS出库单号 */
+    private String wmsOdoCode;
+    /** 快递单号 */
+    private String trackingNumber;
+    /** 出库箱号 */
+    private String outboundBoxCode;
+    /** 外部单据行号 */
+    private Integer extLineNum;
+    /** 商品唯一编码 */
+    private String upc;
+    /** 款式 */
+    private String style;
+    /** 颜色 */
+    private String color;
+    /** 尺码 */
+    private String size;
+    /** 计划商品数量 */
+    private Long qty;
+    /** 实际出库数量 */
+    private Long actualQty;
     /** 库存状态 */
     private String invStatus;
     /** 库存类型 */
@@ -54,19 +73,94 @@ public class WmsInBoundInvLineConfirm implements Serializable {
     private String invAttr4;
     /** 库存属性5 */
     private String invAttr5;
-    /** 扩展字段信息 */
-    private String extMemo;
-    /** 是否质检 默认否 */
-    private Boolean isIqc;
-    /** 入库单明细SN信息 */
-    private List<WmsInBoundSnLineConfirm> wmsInBoundSnConfirmLines;
 
-    public Double getQtyRcvd() {
-        return qtyRcvd;
+
+    public String getStoreCode() {
+        return storeCode;
     }
 
-    public void setQtyRcvd(Double qtyRcvd) {
-        this.qtyRcvd = qtyRcvd;
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
+    }
+
+    public String getWmsOdoCode() {
+        return wmsOdoCode;
+    }
+
+    public void setWmsOdoCode(String wmsOdoCode) {
+        this.wmsOdoCode = wmsOdoCode;
+    }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
+    }
+
+    public String getOutboundBoxCode() {
+        return outboundBoxCode;
+    }
+
+    public void setOutboundBoxCode(String outboundBoxCode) {
+        this.outboundBoxCode = outboundBoxCode;
+    }
+
+    public Integer getExtLineNum() {
+        return extLineNum;
+    }
+
+    public void setExtLineNum(Integer extLineNum) {
+        this.extLineNum = extLineNum;
+    }
+
+    public String getUpc() {
+        return upc;
+    }
+
+    public void setUpc(String upc) {
+        this.upc = upc;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public Long getQty() {
+        return qty;
+    }
+
+    public void setQty(Long qty) {
+        this.qty = qty;
+    }
+
+    public Long getActualQty() {
+        return actualQty;
+    }
+
+    public void setActualQty(Long actualQty) {
+        this.actualQty = actualQty;
     }
 
     public String getInvStatus() {
@@ -157,28 +251,6 @@ public class WmsInBoundInvLineConfirm implements Serializable {
         this.invAttr5 = invAttr5;
     }
 
-    public String getExtMemo() {
-        return extMemo;
-    }
 
-    public void setExtMemo(String extMemo) {
-        this.extMemo = extMemo;
-    }
-
-    public Boolean getIsIqc() {
-        return isIqc;
-    }
-
-    public void setIsIqc(Boolean isIqc) {
-        this.isIqc = isIqc;
-    }
-
-    public List<WmsInBoundSnLineConfirm> getWmsInBoundSnConfirmLines() {
-        return wmsInBoundSnConfirmLines;
-    }
-
-    public void setWmsInBoundSnConfirmLines(List<WmsInBoundSnLineConfirm> wmsInBoundSnConfirmLines) {
-        this.wmsInBoundSnConfirmLines = wmsInBoundSnConfirmLines;
-    }
 
 }

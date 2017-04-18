@@ -21,7 +21,7 @@ import java.util.List;
  * 出库单反馈发票信息
  *
  */
-public class WmsOutboundInvoiceConfirm implements Serializable {
+public class WmsOutBoundInvoiceConfirm implements Serializable {
 
 
     /**
@@ -53,7 +53,7 @@ public class WmsOutboundInvoiceConfirm implements Serializable {
     /** 公司 */
     private String company;
     /** 出库单发票反馈明细 */
-    private List<WmsOutboundInvoiceLineConfirm> wmsOutBoundConfirmInvoiceLines;
+    private List<WmsOutBoundInvoiceLineConfirm> wmsOutBoundConfirmInvoiceLines;
 
 
     public String getInvoiceCode() {
@@ -152,11 +152,11 @@ public class WmsOutboundInvoiceConfirm implements Serializable {
         this.company = company;
     }
 
-    public List<WmsOutboundInvoiceLineConfirm> getWmsOutBoundConfirmInvoiceLines() {
+    public List<WmsOutBoundInvoiceLineConfirm> getWmsOutBoundConfirmInvoiceLines() {
         return wmsOutBoundConfirmInvoiceLines;
     }
 
-    public void setWmsOutBoundConfirmInvoiceLines(List<WmsOutboundInvoiceLineConfirm> wmsOutBoundConfirmInvoiceLines) {
+    public void setWmsOutBoundConfirmInvoiceLines(List<WmsOutBoundInvoiceLineConfirm> wmsOutBoundConfirmInvoiceLines) {
         this.wmsOutBoundConfirmInvoiceLines = wmsOutBoundConfirmInvoiceLines;
     }
 

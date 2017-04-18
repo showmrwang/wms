@@ -21,7 +21,7 @@ import java.util.Date;
  * 出库单反馈明细信息
  *
  */
-public class WmsOutboundLineConfirm implements Serializable {
+public class WmsOutBoundLineConfirm implements Serializable {
 
 
     /**
