@@ -10,16 +10,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="HandoverPaginationResult" type="lark.common.dao.Pagination">
     	<collection property="items" javaType="ArrayList" resultMap="HandoverResult"/>
 	</resultMap>
-	
-	<!-- 用于select查询公用抽取的列 -->
+	 <!-- 用于select查询公用抽取的列 -->
 	<sql id="handoverColumns">
 	    <![CDATA[
 	        	id as id,
 	        	handover_station_id as handoverStationId,
-	        	HANDOVER_STATION_TYPE as handoverStationType,
+	        	handover_station_type as handoverStationType,
 	        	handover_batch as handoverBatch,
 	        	group_condition as groupCondition,
-	        	ou_id as ouId
+	        	total_box as totalBox,
+	        	customer_code as customerCode,
+	        	customer_name as customerName,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	transport_code as transportCode,
+	        	transport_name as transportName,
+	        	total_calc_weight as totalCalcWeight,
+	        	total_actual_weight as totalActualWeight,
+	        	ou_id as ouId,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
 	    ]]>
 	</sql>
 	<sql id="handoverConditionWhereExt">
@@ -95,23 +107,50 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.handover.Handover" 
+				
 			 flushCache="true">
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_handover (
-		        	id,
+		        id,
 		        	handover_station_id ,
-		        	HANDOVER_STATION_TYPE ,
+		        	handover_station_type ,
 		        	handover_batch ,
 		        	group_condition ,
-		        	ou_id 
+		        	total_box ,
+		        	customer_code ,
+		        	customer_name ,
+		        	store_code ,
+		        	store_name ,
+		        	transport_code ,
+		        	transport_name ,
+		        	total_calc_weight ,
+		        	total_actual_weight ,
+		        	ou_id ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{handoverStationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{handoverStationType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{handoverBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{totalBox,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{totalCalcWeight,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{totalActualWeight,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
 
@@ -122,10 +161,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    <![CDATA[
 	        UPDATE t_wh_handover SET
 		        handover_station_id = #{handoverStationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        HANDOVER_STATION_TYPE = #{handoverStationType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        handover_station_type = #{handoverStationType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        handover_batch = #{handoverBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        group_condition = #{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        total_box = #{totalBox,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_name = #{transportName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        total_calc_weight = #{totalCalcWeight,javaType=Long,jdbcType=DECIMAL} ,
+		        total_actual_weight = #{totalActualWeight,javaType=Long,jdbcType=DECIMAL} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -184,9 +236,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and handover_station_id = #{handoverStationId}
 				</if>
 	       
-	       
-		       <if test="handoverStationType!=null and handoverStationType!=''">
-					and HANDOVER_STATION_TYPE = #{handoverStationType}
+				<if test="handoverStationType!=null">
+					and handover_station_type = #{handoverStationType}
 				</if>
 	       
 	       
@@ -199,8 +250,66 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and group_condition = #{groupCondition}
 				</if>
 	       
+				<if test="totalBox!=null">
+					and total_box = #{totalBox}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="customerName!=null and customerName!=''">
+					and customer_name = #{customerName}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and store_name = #{storeName}
+				</if>
+	       
+	       
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
+				</if>
+	       
+	       
+		       <if test="transportName!=null and transportName!=''">
+					and transport_name = #{transportName}
+				</if>
+	       
+				<if test="totalCalcWeight!=null">
+					and total_calc_weight = #{totalCalcWeight}
+				</if>
+	       
+				<if test="totalActualWeight!=null">
+					and total_actual_weight = #{totalActualWeight}
+				</if>
+	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
 				</if>
 		</where>
 	</sql>
@@ -254,6 +363,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select count(*) from t_wh_handover  
 		<include refid="handoverConditionWhereExt"/>
     </select>
-
+	 
 	
 </mapper>

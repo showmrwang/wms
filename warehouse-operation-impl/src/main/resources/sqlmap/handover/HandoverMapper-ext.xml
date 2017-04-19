@@ -11,12 +11,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="handoverColumnsExt">
 	    <![CDATA[
-	        	id as id,
+	      	id as id,
 	        	handover_station_id as handoverStationId,
-	        	HANDOVER_STATION_TYPE as handoverStationType,
+	        	handover_station_type as handoverStationType,
 	        	handover_batch as handoverBatch,
 	        	group_condition as groupCondition,
-	        	ou_id as ouId
+	        	total_box as totalBox,
+	        	customer_code as customerCode,
+	        	customer_name as customerName,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	transport_code as transportCode,
+	        	transport_name as transportName,
+	        	total_calc_weight as totalCalcWeight,
+	        	total_actual_weight as totalActualWeight,
+	        	ou_id as ouId,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
 	    ]]>
 	</sql>
 	
@@ -32,9 +45,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and handover_station_id = #{handoverStationId}
 				</if>
 	       
-	       
-		       <if test="handoverStationType!=null and handoverStationType!=''">
-					and HANDOVER_STATION_TYPE = #{handoverStationType}
+				<if test="handoverStationType!=null">
+					and handover_station_type = #{handoverStationType}
 				</if>
 	       
 	       
@@ -47,8 +59,66 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and group_condition = #{groupCondition}
 				</if>
 	       
+				<if test="totalBox!=null">
+					and total_box = #{totalBox}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="customerName!=null and customerName!=''">
+					and customer_name = #{customerName}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and store_name = #{storeName}
+				</if>
+	       
+	       
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
+				</if>
+	       
+	       
+		       <if test="transportName!=null and transportName!=''">
+					and transport_name = #{transportName}
+				</if>
+	       
+				<if test="totalCalcWeight!=null">
+					and total_calc_weight = #{totalCalcWeight}
+				</if>
+	       
+				<if test="totalActualWeight!=null">
+					and total_actual_weight = #{totalActualWeight}
+				</if>
+	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
 				</if>
 		</where>
 	</sql>
