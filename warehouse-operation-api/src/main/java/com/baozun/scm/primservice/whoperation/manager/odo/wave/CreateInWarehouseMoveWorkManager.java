@@ -17,12 +17,11 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.InWarehouseMoveWorkCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 public interface CreateInWarehouseMoveWorkManager extends BaseManager {
-    
+
     /**
      * [业务方法] 波次中创建补货工作和作业
      * @param whSkuInventoryCommandLst
@@ -30,21 +29,29 @@ public interface CreateInWarehouseMoveWorkManager extends BaseManager {
      * @return
      */
     public InWarehouseMoveWorkCommand saveAllocatedAndTobefilled(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, List<WhSkuInventoryCommand> whSkuInventoryCommandLst);
-    
+
     /**
      * [业务方法] 波次中创建补货工作和作业
      * @param whSkuInventoryCommandLst
      * @param userId
      * @return
      */
-    public void createInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, Long ouId, Long userId);
-    
+    public String createInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, Long ouId, Long userId);
+
     /**
      * [业务方法] 库内移动工作执行
      * @param 
      * @param 
      * @return
      */
-    public void executeInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, Long ouId, Long userId);
-    
+    public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId);
+
+    /**
+     * [业务方法] 判断目标库位体积和重量
+     * @param 
+     * @param 
+     * @return
+     */
+    public Boolean calculateVolumeAndWeight(Long toLocationId, Long ouId);
+
 }
