@@ -46,6 +46,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.Locati
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ManMadeContainerStatisticCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipContainerCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioExecLineStatisticsCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.work.ScanTipSkuCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentStrategyCommand;
@@ -5334,7 +5335,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param operationId
      * @param ouId
      */
-    public void pickingAddContainerInventory(Long containerId,Long locationId,String skuAttrIds,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,Integer pickingWay,Integer scanPattern,Double scanSkuQty,String outBoundBox,
+    public void pickingAddContainerInventory(List<String> snDefectList,Long containerId,Long locationId,String skuAttrIds,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,Integer pickingWay,Integer scanPattern,Double scanSkuQty,String outBoundBox,
                                              Long turnoverBoxId,Long outerContainerId,Long insideContainerId,Boolean isShortPicking,Integer useContainerLatticeNo,Set<Long> insideContainerIds){
         
         Set<Long> skuInvCmdList = new HashSet<Long>();
@@ -5351,7 +5352,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             Long  invSkuId =  this.addLocInventory(skuInvCmd, skuInvCmd.getOnHandQty(), isTabbInvTotal, ouId, userId,isShortPicking);
                             invSkuIds.add(invSkuId);
                        }else{
-                            Long  invSkuId =  this.addContianerInventory(pickingWay,skuInvCmd, skuInvCmd.getOnHandQty(), isTabbInvTotal, ouId, userId, null, outerContainerId, null, null,insideContainerId);  //整托整箱模式
+                            Long  invSkuId =  this.addContianerInventory(snDefectList,pickingWay,skuInvCmd, skuInvCmd.getOnHandQty(), isTabbInvTotal, ouId, userId, null, outerContainerId, null, null,insideContainerId);  //整托整箱模式
                             invSkuIds.add(invSkuId);
                       }
              }
@@ -5372,7 +5373,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             for(WhSkuInventoryCommand skuInvCmd:allSkuInvList){
                 //整托情况
                 for(Long icId:insideContainerIds){
-                 Long  invSkuId =  this.addContianerInventory(pickingWay,skuInvCmd, skuInvCmd.getOnHandQty(), isTabbInvTotal, ouId, userId, null, outerContainerId, null, null,icId); 
+                 Long  invSkuId =  this.addContianerInventory(snDefectList,pickingWay,skuInvCmd, skuInvCmd.getOnHandQty(), isTabbInvTotal, ouId, userId, null, outerContainerId, null, null,icId); 
                  invSkuIds.add(invSkuId);
                 }
             }
@@ -5400,7 +5401,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                                Long invSkuId =     this.addLocInventory(skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId,isShortPicking);
                                                invSkuIds.add(invSkuId);
                                          }
-                                         Long invSkuId =   this.addContianerInventory(pickingWay,skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId, outBoundBox, null, null, null,null);  //出库箱模式,添加容器库存
+                                         Long invSkuId =   this.addContianerInventory(snDefectList,pickingWay,skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId, outBoundBox, null, null, null,null);  //出库箱模式,添加容器库存
                                          invSkuIds.add(invSkuId);
                                }
                                if(Constants.PICKING_WAY_FOUR == pickingWay){   //周转箱
@@ -5409,7 +5410,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                              Long invSkuId =     this.addLocInventory(skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId,isShortPicking);
                                              invSkuIds.add(invSkuId);
                                         }
-                                        Long invSkuId =  this.addContianerInventory(pickingWay,skuInvCmd,scanSkuQty, isTabbInvTotal, ouId, userId, null, null, null, turnoverBoxId,null);  //出库箱模式,添加容器库存
+                                        Long invSkuId =  this.addContianerInventory(snDefectList,pickingWay,skuInvCmd,scanSkuQty, isTabbInvTotal, ouId, userId, null, null, null, turnoverBoxId,null);  //出库箱模式,添加容器库存
                                         invSkuIds.add(invSkuId);
                                }
                                 if(null != containerId){ //使用小车(小车加出库箱)
@@ -5419,10 +5420,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                             this.addLocInventory(skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId,isShortPicking);
                                       }
                                       if(Constants.PICKING_WAY_ONE == pickingWay){  //小车
-                                            invSkuId =  this.addContianerInventory(pickingWay,skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId,  null, containerId, useContainerLatticeNo, null,null);  //出库箱模式,添加容器库存
+                                            invSkuId =  this.addContianerInventory(snDefectList,pickingWay,skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId,  null, containerId, useContainerLatticeNo, null,null);  //出库箱模式,添加容器库存
                                       }
                                       if(Constants.PICKING_WAY_TWO == pickingWay){
-                                            invSkuId =  this.addContianerInventory(pickingWay,skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId, outBoundBox, containerId, useContainerLatticeNo, null,null);  //出库箱模式,添加容器库存
+                                            invSkuId =  this.addContianerInventory(snDefectList,pickingWay,skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId, outBoundBox, containerId, useContainerLatticeNo, null,null);  //出库箱模式,添加容器库存
                                       }
                                       invSkuIds.add(invSkuId);
                                  }
@@ -5595,7 +5596,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     * @param containerLatticeNo
     * @param turnoverBoxId
     */
-    private Long addContianerInventory(Integer pickingWay,WhSkuInventoryCommand skuInvCmd,Double qty,Boolean isTabbInvTotal,Long ouId,Long userId,String outBoundBoxCode,Long outerContainerId,Integer containerLatticeNo,Long turnoverBoxId,Long insideContainerId) {
+    private Long addContianerInventory(List<String> snDefectList,Integer pickingWay,WhSkuInventoryCommand skuInvCmd,Double qty,Boolean isTabbInvTotal,Long ouId,Long userId,String outBoundBoxCode,Long outerContainerId,Integer containerLatticeNo,Long turnoverBoxId,Long insideContainerId) {
         log.info("WhSkuInventoryManagerImpl addContianerInventory is start");
         Long invSkuId = null;
         List<WhSkuInventorySnCommand> snList = skuInvCmd.getWhSkuInventorySnCommandList();
@@ -5669,6 +5670,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if(Constants.PICKING_WAY_ONE == pickingWay){
                 inv.setOuterContainerId(outerContainerId);     //小车 
                 inv.setInsideContainerId(null);
+                inv.setContainerLatticeNo(containerLatticeNo);
             }
             if(Constants.PICKING_WAY_TWO == pickingWay){
                 inv.setOuterContainerId(outerContainerId);  //小车加出库箱模式
@@ -5719,17 +5721,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 // uuid发生变更,重新插入sn
                 long count = 0;
                 for (WhSkuInventorySnCommand cSnCmd : snList) {
-                    if(cSnCmd.getUuid().equals(skuInvCmd.getUuid())){
-                        count++;
-                        WhSkuInventorySn sn = new WhSkuInventorySn();
-                        BeanUtils.copyProperties(cSnCmd, sn);
-                        sn.setUuid(inv.getUuid());
-                        whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
-                        insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
-                        if(count >= qty) {
-                            break;
+                    String snDef = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getDefectWareBarcode()); // 拼接sn/残次信息
+                    for(String snDefect:snDefectList) {
+                        if(snDef.equals(snDefect)){
+                            count++;
+                            WhSkuInventorySn sn = new WhSkuInventorySn();
+                            BeanUtils.copyProperties(cSnCmd, sn);
+                            sn.setUuid(inv.getUuid());
+                            whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                            if(count >= qty) {
+                                break;
+                            }
                         }
                     }
+                    
                 }
                 insertSkuInventorySnLog(inv.getUuid(), ouId); // 记录sn日志
             }

@@ -54,6 +54,7 @@ public class WhSkuInventory extends BaseModel {
     private String seedingWallCode;
     /**货格号*/
     private Integer containerLatticeNo;
+    
     /**出库箱号*/
     private String outboundboxCode;
     /** 在库可用库存 */

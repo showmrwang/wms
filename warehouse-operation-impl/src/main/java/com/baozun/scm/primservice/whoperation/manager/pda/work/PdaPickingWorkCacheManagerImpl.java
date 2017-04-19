@@ -2581,6 +2581,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         whOperation.setStatus(WorkStatus.FINISH);
         whOperation.setLastModifyTime(new Date());
         whOperation.setModifiedId(userId);
+        whOperationDao.saveOrUpdateByVersion(whOperation);
         //修改拣货工作头状态
         WhWorkCommand whWorkCommand = whWorkDao.findWorkByWorkCode(workCode, ouId);
         if(null == whWorkCommand) {
