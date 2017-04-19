@@ -25,6 +25,8 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
@@ -41,6 +43,8 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
@@ -76,6 +80,10 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
     private WhOutboundboxDao whOutboundboxDao;
     @Autowired
     private WhOutboundboxLineDao whOutboundboxLineDao;
+    @Autowired
+    private WhInvoiceDao whInvoiceDao;
+    @Autowired
+    private WhInvoiceLineDao whInvoiceLineDao;
 
 
     /**
@@ -102,8 +110,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 String tsp = "";
                 List<WhOdodeliveryInfo> whOdodeliveryInfos = whOdoDeliveryInfoDao.findWhOdodeliveryInfoByOdoId(whOdo.getId(), ouid);
                 for (WhOdodeliveryInfo whOdodeliveryInfo : whOdodeliveryInfos) {
-                    // 封装对应数据格式Map<出库箱号,运输服务商编码-运单号>
-                    tspMap.put(whOdodeliveryInfo.getOutboundboxCode(), whOdodeliveryInfo.getTransportCode() + "-" + whOdodeliveryInfo.getWaybillCode());
+                    // 封装对应数据格式Map<出库箱号,运单号>
+                    tspMap.put(whOdodeliveryInfo.getOutboundboxCode(), whOdodeliveryInfo.getWaybillCode());
                     tsp += whOdodeliveryInfo.getTransportCode() + "-" + whOdodeliveryInfo.getWaybillCode() + ",";
                 }
                 transportServiceProvider = tsp.substring(0, tsp.length() - 1);
@@ -133,10 +141,13 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 log.error("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm error");
                 throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
             }
+            Long obid = ob.getId();
             // 封装出库单附加信息
-            saveWhOutboundAttrConfirm(whOdo.getId(), ouid, ob.getId());
+            saveWhOutboundAttrConfirm(whOdo.getId(), ouid, obid);
             // 封装出库单明细信息
-            saveWhOutboundLineConfirm(whOdo, ouid, ob.getId(), tspMap, invMap);
+            saveWhOutboundLineConfirm(whOdo, ouid, obid, tspMap, invMap);
+            // 封装出库单发票信息
+            saveWhOutboundInvoiceConfirm(whOdo.getOdoCode(), ouid, obid);
         }
         log.info("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm end!");
     }
@@ -209,12 +220,56 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                     line.setOutboundBoxCode(whOutboundbox.getOutboundboxCode());
                     String trackNumber = tspMap.get(whOutboundbox.getOutboundboxCode());
                     if (!StringUtil.isEmpty(trackNumber)) {
-                        line.setTrackingNumber(trackNumber.split("-")[1]);
+                        line.setTrackingNumber(trackNumber);
                     }
                     // 获取出库单明细信息
                     WhOdoLine odoLine = whOdoLineDao.findOdoLineById(boxLine.getOdoLineId(), ouid);
                     line.setQty(odoLine.getPlanQty());
                     line.setActualQty(boxLine.getQty());
+                    WhSku sku = whSkuDao.findWhSkuById(odoLine.getSkuId(), ouid);
+                    line.setUpc(sku.getExtCode());
+                    line.setColor(sku.getColor());
+                    line.setStyle(sku.getStyle());
+                    line.setSize(sku.getSize());
+                    Long lineCount = whOutboundLineConfirmDao.insert(line);
+                    if (lineCount.intValue() == 0) {
+                        log.error("WhOutboundConfirmManagerImpl.saveWhOutboundLineConfirm error");
+                        throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 封装出库单发票信息
+     * 
+     * @param odoid
+     * @param ouid
+     * @param outboundid
+     */
+    private void saveWhOutboundInvoiceConfirm(String odoCode, Long ouid, Long outboundid) {
+        // 获取出库单发票信息
+        WhInvoice whInvoice = whInvoiceDao.findWhInvoiceByOdoId(odoCode, ouid);
+        if (null != whInvoice) {
+            WhOutboundInvoiceConfirm w = new WhOutboundInvoiceConfirm();
+            BeanUtils.copyProperties(whInvoice, w);
+            w.setOutboundConfirmId(outboundid);
+            Long invCount = whOutboundInvoiceConfirmDao.insert(w);
+            if (invCount.intValue() == 0) {
+                log.error("WhOutboundConfirmManagerImpl.saveWhOutboundInvoiceConfirm error");
+                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            }
+            // 获取出库单发票明细信息
+            List<WhInvoiceLine> whInvoiceLines = whInvoiceLineDao.findWhInvoiceLineByInvoiceId(whInvoice.getId(), ouid);
+            for (WhInvoiceLine whInvoiceLine : whInvoiceLines) {
+                WhOutboundInvoiceLineConfirm line = new WhOutboundInvoiceLineConfirm();
+                BeanUtils.copyProperties(whInvoiceLine, line);
+                line.setOutboundInvoiceConfirmId(w.getId());
+                Long lineCount = whOutboundInvoiceLineConfirmDao.insert(line);
+                if (lineCount.intValue() == 0) {
+                    log.error("WhOutboundConfirmManagerImpl.saveWhOutboundInvoiceConfirm error");
+                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                 }
             }
         }

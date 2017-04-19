@@ -16,14 +16,16 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
 import java.util.Map;
 
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
 
 public interface WhInvoiceDao extends BaseDao<WhInvoice, Long> {
 
@@ -35,5 +37,14 @@ public interface WhInvoiceDao extends BaseDao<WhInvoice, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhInvoice o);
+
+    /**
+     * 通过出库单编码查找对应数据
+     * 
+     * @param code
+     * @param ouid
+     * @return
+     */
+    WhInvoice findWhInvoiceByOdoId(@Param("code") String code, @Param("ouid") Long ouid);
 
 }

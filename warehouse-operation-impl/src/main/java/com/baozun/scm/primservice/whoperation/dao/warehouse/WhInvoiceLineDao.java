@@ -14,7 +14,10 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine;
 
@@ -32,5 +35,10 @@ public interface WhInvoiceLineDao extends BaseDao<WhInvoiceLine, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhInvoiceLine o);
+
+    /**
+     * 通过出库单发票ID查询对应数据
+     */
+    List<WhInvoiceLine> findWhInvoiceLineByInvoiceId(@Param("id") Long id, @Param("ouid") Long ouid);
 
 }

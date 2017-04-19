@@ -31,7 +31,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_invoice_line (
-		        id,
+		        	id,
 		        	wh_invoice_id ,
 		        	linenum ,
 		        	qty ,
@@ -40,7 +40,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	item ,
 		        	ou_id 
 		        ) VALUES (
-		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{whInvoiceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{linenum,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{qty,javaType=java.lang.Integer,jdbcType=INTEGER} ,

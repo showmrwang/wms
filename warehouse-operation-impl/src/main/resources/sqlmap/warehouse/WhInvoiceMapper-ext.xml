@@ -206,4 +206,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</update>
 	
+	<select id="findWhInvoiceByOdoId" resultMap="WhInvoiceResultExt">
+		select <include refid="whInvoiceColumnsExt"></include> 
+			from t_wh_invoice 
+			where 
+			odo_code = #{code}
+			and ou_id = #{ouid}
+	</select>
+	
 </mapper>

@@ -62,4 +62,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhInvoiceLineByInvoiceId" resultMap="WhInvoiceLineResultExt">
+		select <include refid="whInvoiceLineColumnsExt"></include> 
+			from t_wh_invoice_line 
+			where 
+			wh_invoice_id = #{id}
+			and ou_id = #{ouid}
+	</select>
+	
 </mapper>
