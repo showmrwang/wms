@@ -220,7 +220,7 @@ public interface OdoManagerProxy extends BaseManager {
     OdoWaveGroupResultCommand findOdoSummaryForWave(OdoWaveGroupSearchCommand command);
 
     /**
-     * [业务方法]出库单创建波次
+     * [业务方法]出库单创建波次 @author yimin.lu 创建完整的波次数据
      * 
      * @param command
      * @return 返回波次号
@@ -228,12 +228,19 @@ public interface OdoManagerProxy extends BaseManager {
     String createOdoWave(OdoGroupSearchCommand command);
 
     /**
-     * [业务方法]出库单创建波次【新】
+     * [业务方法]出库单创建波次【新】@author yimin.lu 创建波次头数据，并将出库单打标，稍后由定时任务创建波次明细
+     * @mender yimin.lu 2017/4/19 调整接口，统一创波次流程【自定义，波次主档，定时】，不再负责封装出库单集合
+     * @return
+     */
+    String createOdoWaveNew(Long waveMasterId, Long ouId, Long userId, List<Long> odoIdList, String logId);
+
+    /**
+     * [业务方法]订单池一览，自定义创建波次的出库单数据集合
      * 
      * @param command
-     * @return 返回波次号
+     * @return
      */
-    String createOdoWaveNew(OdoGroupSearchCommand command);
+    List<Long> findOdoIdListForWaveByCustom(OdoGroupSearchCommand command);
 
     /**
      * [业务方法]波次一览
@@ -368,6 +375,7 @@ public interface OdoManagerProxy extends BaseManager {
     void finishCreateWave(WhWave wave);
 
     WhOdo findByExtCodeStoreIdOuId(String extOdoCode, Long storeId, Long ouId);
+
 
 
 
