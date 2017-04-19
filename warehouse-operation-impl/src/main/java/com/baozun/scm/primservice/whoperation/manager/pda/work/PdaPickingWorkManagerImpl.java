@@ -2,7 +2,6 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +25,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCo
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationLineCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
-import com.baozun.scm.primservice.whoperation.command.pda.work.ScanTipSkuCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
@@ -1702,9 +1700,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (count == 1) {// 当前工作是最后一个
                     command.setIsLastWork(true); // 当前工作是一个小批次下的最后一个工作
                 }
-                // 插入集货表
-                String pickingMode = this.insertIntoCollection(command, ouId);
-                command.setPickingMode(pickingMode);
+                    // 插入集货表
+                    String pickingMode = this.insertIntoCollection(command, ouId);
+                    command.setPickingMode(pickingMode);
+               
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
                 // 清除缓存

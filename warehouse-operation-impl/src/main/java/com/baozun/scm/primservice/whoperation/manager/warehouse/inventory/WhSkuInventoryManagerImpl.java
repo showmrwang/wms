@@ -5506,9 +5506,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(skuInvCmd, inv);
             inv.setLocationId(skuInvCmd.getLocationId());
-            if(isShortPicking){
-                inv.setOccupationCode(null);
-            }
+//            if(isShortPicking){
+//                inv.setOccupationCode(null);
+//            }
             inv.setInboundTime(new Date());
             inv.setOnHandQty(qty); 
             inv.setId(null);
@@ -5539,9 +5539,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(skuInvCmd, inv);
             inv.setLocationId(skuInvCmd.getLocationId());
-            if(isShortPicking){
-                inv.setOccupationCode(null);
-            }
+//            if(isShortPicking){
+//                inv.setOccupationCode(null);
+//            }
             inv.setInboundTime(new Date());
             inv.setOnHandQty(qty); 
             inv.setId(null);
@@ -5663,7 +5663,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(skuInvCmd, inv);
             inv.setLocationId(null);
-            inv.setOccupationCode(null);
             inv.setInboundTime(new Date()); 
             inv.setOnHandQty(Double.valueOf(qty));
             inv.setId(null);
