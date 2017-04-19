@@ -33,7 +33,8 @@
             create_id as createId,
             create_time as createTime,
             last_modify_time as lastModifyTime,
-            modified_id as modifiedId
+            modified_id as modifiedId,
+            distribution_target_group as distributionTargetGroup
         ]]>
     </sql>
 
@@ -255,6 +256,7 @@
             target.create_time as createTime,
             target.last_modify_time as lastModifyTime,
             target.modified_id as modifiedId,
+            target.distribution_target_group as distributionTargetGroup,
             countryRegion.region_name as countryName,
             provinceRegion.region_name as provinceName,
             cityRegion.region_name as cityName,
@@ -326,6 +328,7 @@
                 create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 last_modify_time = #{globalLastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                distribution_target_group = #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
             WHERE
                 id = #{id}
