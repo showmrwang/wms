@@ -1854,16 +1854,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
                     whOperationExecLineDao.insert(whOperationExecLine);
                     useContainerLatticeNo = whOperationExecLine.getUseContainerLatticeNo(); // 非整箱整托返回货格号
+                    if (null != operationLineId) {
+                        WhOperationLine line = new WhOperationLine();
+                        BeanUtils.copyProperties(oLCmd, line);
+                        Double sumQty = qty + oLCmd.getCompleteQty();
+                        line.setCompleteQty(sumQty);
+                        line.setLastModifyTime(new Date());
+                        whOperationLineDao.saveOrUpdateByVersion(line);
+                    }
+                    break;
                 }
-                if (null != operationLineId) {
-                    WhOperationLine line = new WhOperationLine();
-                    BeanUtils.copyProperties(oLCmd, line);
-                    Double sumQty = qty + oLCmd.getCompleteQty();
-                    line.setCompleteQty(sumQty);
-                    line.setLastModifyTime(new Date());
-                    whOperationLineDao.saveOrUpdateByVersion(line);
-                }
-                break;
             }
             if (isShortPickingEnd) { // 拣货完成
                 operationLineId = oLCmd.getId(); // 获取当前作业明细id
