@@ -1268,21 +1268,28 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         List<WhAsnRcvdLogCommand> saveInvLogList = new ArrayList<WhAsnRcvdLogCommand>();
         List<WhAsnLine> saveAsnLineList = new ArrayList<WhAsnLine>();
         List<WhCarton> saveWhCartonList = new ArrayList<WhCarton>();
-        WhAsn asn = new WhAsn();
         List<WhPoLine> savePoLineList = new ArrayList<WhPoLine>();
-        WhPo po = new WhPo();
         Map<Long, String> storeDeReasonMap = new HashMap<Long, String>();
         Map<Long, String> whDeReasonMap = new HashMap<Long, String>();
 
 
         Long asnId = commandList.get(0).getOccupationId();// ASN头ID
-        String insideContainerCode = commandList.get(0).getInsideContainerCode();
-        Long insideContainerId = commandList.get(0).getInsideContainerId();// 容器ID
+        // String insideContainerCode = commandList.get(0).getInsideContainerCode();
+        // Long insideContainerId = commandList.get(0).getInsideContainerId();// 容器ID
+        // @mender yimin.lu 多容器收货
+        Map<Long, String> insideContainerMap = new HashMap<Long, String>();
 
         // 获取ASN
-        asn = this.asnManager.findWhAsnByIdToShard(asnId, ouId);
+        WhAsn asn = this.asnManager.findWhAsnByIdToShard(asnId, ouId);
         if (null == asn) {
             throw new BusinessException(ErrorCodes.OCCUPATION_RCVD_GET_ERROR);
+        }
+
+        // 更新Po数据集合
+        Long poId = asn.getPoId();
+        WhPo po = this.poManager.findWhPoByIdToShard(poId, ouId);
+        if (null == po) {
+            throw new BusinessException(ErrorCodes.PO_RCVD_GET_ERROR);
         }
         Store store = this.getReturnedStore(asn.getStoreId());
         if (store == null) {
@@ -1298,6 +1305,9 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         // 1.保存库存
         // 2.筛选ASN明细数据集合
         for (RcvdCacheCommand cacheInv : commandList) {
+            if (!insideContainerMap.containsKey(cacheInv.getInsideContainerId())) {
+                insideContainerMap.put(cacheInv.getInsideContainerId(), cacheInv.getInsideContainerCode());
+            }
             List<WhAsnRcvdSnLog> saveSnLogList = new ArrayList<WhAsnRcvdSnLog>();
             String occupationCode = cacheInv.getOccupationCode();
             Long lineId = cacheInv.getLineId();
@@ -1423,7 +1433,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 
 
             }
-            String asnRcvdLogMaoKey = lineId + uuid;
+            // @mender yimin.lu 2017/4/19 key值记录更多的信息【容器ID】
+            String asnRcvdLogMaoKey = lineId + "$" + uuid + "$" + cacheInv.getInsideContainerId();
             WhAsnRcvdLogCommand asnRcvdLog = new WhAsnRcvdLogCommand();
             if (rcvdLogMap.containsKey(asnRcvdLogMaoKey)) {
                 asnRcvdLog = rcvdLogMap.get(asnRcvdLogMaoKey);
@@ -1522,11 +1533,13 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 whCarton = whCartonMap.get(asnRcvdLogMaoKey);
                 whCarton.setQtyRcvd(whCarton.getQtyRcvd() + cacheInv.getSkuBatchCount().longValue());
             } else {
+                String[] keyArray = asnRcvdLogMaoKey.split("$");
+                Long _insideContainerId = Long.parseLong(keyArray[3]);
                 whCarton.setAsnId(asnId);
                 whCarton.setAsnLineId(lineId);
                 whCarton.setSkuId(cacheInv.getSkuId());
-                whCarton.setContainerId(insideContainerId);
-                whCarton.setExtContainerCode(insideContainerCode);
+                whCarton.setContainerId(_insideContainerId);
+                whCarton.setExtContainerCode(insideContainerMap.get(_insideContainerId));
                 whCarton.setQuantity(cacheInv.getSkuBatchCount().doubleValue());
                 whCarton.setQtyRcvd(cacheInv.getSkuBatchCount().doubleValue());
                 whCarton.setMfgDate(cacheInv.getMfgDate());
@@ -1609,7 +1622,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             asn.setStartTime(new Date());
         }
         Iterator<Entry<Long, Double>> poIt = polineMap.entrySet().iterator();
-        Long poId = null;
         // 更新PO明细数据集合
         while (poIt.hasNext()) {
             Entry<Long, Double> entry = poIt.next();
@@ -1626,11 +1638,6 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 poId = poline.getPoId();
             }
         }
-        // 更新Po数据集合
-        po = this.poManager.findWhPoByIdToShard(poId, ouId);
-        if (null == po) {
-            throw new BusinessException(ErrorCodes.PO_RCVD_GET_ERROR);
-        }
         po.setModifiedId(userId);
         po.setQtyRcvd(po.getQtyRcvd() + asnCount);
         if (null == po.getDeliveryTime()) {
@@ -1641,16 +1648,22 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
         // po.setStopTime(new Date());
         // 更新容器
-        Container container = null;
-        container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
-        if (null == container) {
-            throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
+        List<Container> containerList = new ArrayList<Container>();
+
+        Iterator<Entry<Long, String>> containerIt = insideContainerMap.entrySet().iterator();
+        while (containerIt.hasNext()) {
+            Entry<Long, String> entry = containerIt.next();
+            Container container = this.generalRcvdManager.findContainerByIdToShard(entry.getKey(), ouId);
+            if (null == container) {
+                throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
+            }
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            container.setOperatorId(userId);
+            containerList.add(container);
         }
-        container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
-        container.setOperatorId(userId);
 
         try {
-            this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, container, saveWhCartonList, wh);
+            this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, containerList, saveWhCartonList, wh);
             WhPo shardPo = this.poManager.findWhPoByIdToShard(po.getId(), ouId);
             // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
             WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(po.getExtCode(), po.getStoreId(), ouId);

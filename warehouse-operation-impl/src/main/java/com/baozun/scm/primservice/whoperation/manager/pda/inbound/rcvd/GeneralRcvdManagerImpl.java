@@ -222,7 +222,7 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn, List<WhPoLine> savePoLineList, WhPo po,
-            Container container, List<WhCarton> saveWhCartonList, Warehouse wh) {
+            List<Container> containerList, List<WhCarton> saveWhCartonList, Warehouse wh) {
         try {
             Long userId = po.getModifiedId();
             Long ouId = po.getOuId();
@@ -314,13 +314,15 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             // 更新容器
-            if (container != null) {
-                int updateContainerCount = this.containerDao.saveOrUpdateByVersion(container);
-                if (updateContainerCount <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            if (containerList != null && containerList.size() > 0) {
+                for (Container container : containerList) {
+                    int updateContainerCount = this.containerDao.saveOrUpdateByVersion(container);
+                    if (updateContainerCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                    // 更新容器辅助表 TODO
+                    this.updateContainerAssistByVersion(container.getId(), container.getOuId());
                 }
-                // 更新容器辅助表 TODO
-                this.updateContainerAssistByVersion(container.getId(), container.getOuId());
             }
 
             // @mender yimin.lu 2017/3/7
