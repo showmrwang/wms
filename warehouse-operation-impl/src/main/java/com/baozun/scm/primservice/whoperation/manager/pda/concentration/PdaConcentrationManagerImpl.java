@@ -803,6 +803,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == rec) {
             throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_PATH_ERROR);
         }
+//        cacheManager.remonKeys(cacheKey + userId.toString());
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(cacheKey + userId.toString(), batch);
         if (null == recPathList) {
             recPathList = new ArrayList<WhFacilityRecPathCommand>();
@@ -1516,7 +1517,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             if (index > (rfpList.size() - 1)) {
                 throw new BusinessException("redis error");
             }
-            if (rfpList.remove(index)) {
+            if (rfpList.remove(rfpList.get(index))) {
                 cacheManager.setMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId, batch, rfpList, CacheConstants.CACHE_ONE_YEAR);
             }
             if (0 == rfpList.size()) {
