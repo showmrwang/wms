@@ -2426,6 +2426,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                            for(Long insideId:insideIds) {
                                Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
                                for(Long skuId:skuIds){
+                                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + insideId.toString()+skuId);
                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideId.toString() + skuId.toString());
                                    cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
                                }
@@ -2442,6 +2443,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                        for(Long insideId:insideIds) {
                            Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
                            for(Long skuId:skuIds){
+                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + insideId.toString()+skuId);
                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideId.toString() + skuId.toString());
                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
                            }
@@ -2455,6 +2457,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                    Set<Long> locSkuIds = operSkuIds.get(locationId); 
                    if(null != locSkuIds) {
                        for(Long skuId:locSkuIds) {
+                           cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + locationId.toString()+skuId);
                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + skuId.toString());
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE+ locationId.toString());
