@@ -810,5 +810,9 @@ public final class Constants {
     /** 外部对接码 */
     public static final String SHOW_CODE_EXT_CODE = "3";
 
+    /** 消费者退货入收货店铺 */
+    public static final String STORE_RETURNEDPURCHASESTORE_INBOUND = "inbound";
+    public static final String STORE_RETURNEDPURCHASESTORE_OUTBOUND = "outbound";
+
 
 }

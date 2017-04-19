@@ -24,6 +24,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	seeding_qty as seedingQty,
 	        	customer_code as customerCode,
 	        	customer_name as customerName,
+	        	wave_code as waveCode,
 	        	store_code as storeCode,
 	        	store_name as storeName,
 	        	inv_status as invStatus,
@@ -131,6 +132,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	seeding_qty ,
 		        	customer_code ,
 		        	customer_name ,
+		        	wave_code ,
 		        	store_code ,
 		        	store_name ,
 		        	inv_status ,
@@ -159,6 +161,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{seedingQty,javaType=Long,jdbcType=DECIMAL} ,
 		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -196,6 +199,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_code =#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR}
 		        inv_status = #{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -306,7 +310,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="customerName!=null and customerName!=''">
 					and customer_name = #{customerName}
 				</if>
-	       
+				
+	       	   <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
 	       
 		       <if test="storeCode!=null and storeCode!=''">
 					and store_code = #{storeCode}

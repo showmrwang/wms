@@ -148,10 +148,20 @@ public class WhAsnCommand extends BaseCommand {
 
     private String createTimeEnd;
 
+    private String isSearch;// 是否检索
+
     // -----------------------------------------------------------------------
 
     public Boolean getIsAutoClose() {
         return isAutoClose;
+    }
+
+    public String getIsSearch() {
+        return isSearch;
+    }
+
+    public void setIsSearch(String isSearch) {
+        this.isSearch = isSearch;
     }
 
     public String getTrackingNumber() {

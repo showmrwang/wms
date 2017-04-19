@@ -26,12 +26,17 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
@@ -42,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager;
 import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.GeneralRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
@@ -50,12 +56,12 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineM
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -64,9 +70,21 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
+import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
+import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
+import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
+import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 /**
@@ -106,6 +124,12 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     private SkuRedisManager skuRedisManager;
     @Autowired
     private OdoArchivManager odoArchivManager;
+    @Autowired
+    private GeneralRcvdManager generalRcvdManager;
+    @Autowired
+    private WarehouseManager warehouseManager;
+    @Autowired
+    private InventoryStatusManager inventoryStatusManager;
 
     /**
      * 验证po单数据是否完整
@@ -1223,6 +1247,452 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
         // 创建Po的逻辑
         this.createPoDefault(whPo, whPoTm, whPoLines, whOdoArchivLineIndexList, ouId);
+    }
+
+    @Override
+    public void constructReturnsSkuInventory(List<RcvdCacheCommand> commandList, Long ouId, Long userId, String logId) {
+        if (commandList == null || commandList.size() == 0) {
+            throw new BusinessException(ErrorCodes.RCVD_CONTAINER_FINISH_ERROR);
+        }
+        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        List<InventoryStatus> invStatusList = this.inventoryStatusManager.findAllInventoryStatus();
+        Map<Long, String> invStatusMap = new HashMap<Long, String>();
+        if (invStatusList != null && invStatusList.size() > 0) {
+            for (InventoryStatus invStatus : invStatusList) {
+                invStatusMap.put(invStatus.getId(), invStatus.getName());
+            }
+        }
+
+        List<WhSkuInventorySnCommand> saveSnList = new ArrayList<WhSkuInventorySnCommand>();
+        List<WhSkuInventory> saveInvList = new ArrayList<WhSkuInventory>();
+        List<WhAsnRcvdLogCommand> saveInvLogList = new ArrayList<WhAsnRcvdLogCommand>();
+        List<WhAsnLine> saveAsnLineList = new ArrayList<WhAsnLine>();
+        List<WhCarton> saveWhCartonList = new ArrayList<WhCarton>();
+        WhAsn asn = new WhAsn();
+        List<WhPoLine> savePoLineList = new ArrayList<WhPoLine>();
+        WhPo po = new WhPo();
+        Map<Long, String> storeDeReasonMap = new HashMap<Long, String>();
+        Map<Long, String> whDeReasonMap = new HashMap<Long, String>();
+
+
+        Long asnId = commandList.get(0).getOccupationId();// ASN头ID
+        String insideContainerCode = commandList.get(0).getInsideContainerCode();
+        Long insideContainerId = commandList.get(0).getInsideContainerId();// 容器ID
+
+        // 获取ASN
+        asn = this.asnManager.findWhAsnByIdToShard(asnId, ouId);
+        if (null == asn) {
+            throw new BusinessException(ErrorCodes.OCCUPATION_RCVD_GET_ERROR);
+        }
+        Store store = this.getReturnedStore(asn.getStoreId());
+        if (store == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        Long storeId = store.getId();
+        // 将数据按照明细ID筛选，统计数目，放到MAP集合中
+        Map<Long, Double> lineMap = new HashMap<Long, Double>();
+        Map<String, WhAsnRcvdLogCommand> rcvdLogMap = new HashMap<String, WhAsnRcvdLogCommand>();
+        Map<String, WhSkuInventory> skuInvMap = new HashMap<String, WhSkuInventory>();
+        Map<String, WhCarton> whCartonMap = new HashMap<String, WhCarton>();
+
+        // 1.保存库存
+        // 2.筛选ASN明细数据集合
+        for (RcvdCacheCommand cacheInv : commandList) {
+            List<WhAsnRcvdSnLog> saveSnLogList = new ArrayList<WhAsnRcvdSnLog>();
+            String occupationCode = cacheInv.getOccupationCode();
+            Long lineId = cacheInv.getLineId();
+            if (lineMap.containsKey(lineId)) {
+                lineMap.put(cacheInv.getLineId(), lineMap.get(lineId) + cacheInv.getSkuBatchCount());
+            } else {
+                lineMap.put(cacheInv.getLineId(), cacheInv.getSkuBatchCount().doubleValue());
+            }
+            WhSkuInventory skuInv = new WhSkuInventory();
+            BeanUtils.copyProperties(cacheInv, skuInv);
+
+            skuInv.setCustomerId(asn.getCustomerId());
+            skuInv.setStoreId(storeId);
+            skuInv.setOuId(cacheInv.getOuId());
+            String uuid = "";
+
+            // 测试用
+            // skuInv.setId((long) Math.random() * 1000000);
+            try {
+                uuid = SkuInventoryUuid.invUuid(skuInv);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (skuInvMap.containsKey(uuid)) {
+                skuInv = skuInvMap.get(uuid);
+                skuInv.setOnHandQty(skuInv.getOnHandQty() + cacheInv.getSkuBatchCount().longValue());
+            } else {
+                skuInv.setUuid(uuid);
+                skuInv.setAllocatedQty(Constants.DEFAULT_DOUBLE);
+                skuInv.setToBeFilledQty(Constants.DEFAULT_DOUBLE);
+                skuInv.setFrozenQty(Constants.DEFAULT_DOUBLE);
+                skuInv.setOnHandQty(cacheInv.getSkuBatchCount().doubleValue());
+            }
+            skuInvMap.put(uuid, skuInv);
+
+            // SN或残次商品
+            if (null != cacheInv.getSnList()) {
+                List<RcvdSnCacheCommand> rcvdCacheSnList = cacheInv.getSnList();
+                if (rcvdCacheSnList != null && rcvdCacheSnList.size() > 0) {
+                    RcvdSnCacheCommand sc = rcvdCacheSnList.get(0);
+                    // @mender yimin.lu 2016/10/31 一件商品对应一条SN收货记录
+                    // @mender yimin.lu 2016/10/28 序列号商品 则会有多条数据；残次品非序列号商品只有一条数据
+                    for (int i = 0; i < rcvdCacheSnList.size(); i++) {
+                        RcvdSnCacheCommand rcvdSn = rcvdCacheSnList.get(i);
+
+                        if (rcvdSn.getDefectTypeId() != null) {
+
+                            // 插入日志表
+                            WhAsnRcvdSnLog whAsnRcvdSnLog = new WhAsnRcvdSnLog();
+                            whAsnRcvdSnLog.setSn(rcvdSn.getSn());
+                            whAsnRcvdSnLog.setDefectWareBarcode(rcvdSn.getDefectWareBarCode());
+                            whAsnRcvdSnLog.setOuId(ouId);
+                            // #取得残次类型残次原因的名称。
+                            if (Constants.SKU_SN_DEFECT_SOURCE_STORE.equals(rcvdSn.getDefectSource())) {
+                                StoreDefectType storeDefectType = this.generalRcvdManager.findStoreDefectTypeByIdToGlobal(rcvdSn.getDefectTypeId());
+                                if (storeDefectType != null) {
+                                    whAsnRcvdSnLog.setDefectType(storeDefectType.getName());
+                                    if (storeDeReasonMap.containsKey(rcvdSn.getDefectReasonsId())) {
+                                        whAsnRcvdSnLog.setDefectReasons(storeDeReasonMap.get(rcvdSn.getDefectReasonsId()));
+                                    } else {
+                                        StoreDefectReasons storeDefectReasons = this.generalRcvdManager.findStoreDefectReasonsByIdToGlobal(rcvdSn.getDefectReasonsId());
+                                        if (storeDefectReasons != null) {
+                                            whAsnRcvdSnLog.setDefectReasons(storeDefectReasons.getName());
+                                            storeDeReasonMap.put(rcvdSn.getDefectReasonsId(), storeDefectReasons.getName());
+                                        }
+                                    }
+                                }
+
+                            } else if (Constants.SKU_SN_DEFECT_SOURCE_WH.equals(rcvdSn.getDefectSource())) {
+                                WarehouseDefectType warehouseDefectType = this.generalRcvdManager.findWarehouseDefectTypeByIdToShard(rcvdSn.getDefectTypeId(), ouId);
+                                if (warehouseDefectType != null) {
+                                    whAsnRcvdSnLog.setDefectType(warehouseDefectType.getName());
+                                    if (whDeReasonMap.containsKey(rcvdSn.getDefectReasonsId())) {
+                                        whAsnRcvdSnLog.setDefectReasons(storeDeReasonMap.get(rcvdSn.getDefectReasonsId()));
+                                    } else {
+                                        WarehouseDefectReasons warehouseDefectReasons = this.generalRcvdManager.findWarehouseDefectReasonsByIdToShard(rcvdSn.getDefectReasonsId(), ouId);
+                                        if (warehouseDefectReasons != null) {
+                                            whAsnRcvdSnLog.setDefectReasons(warehouseDefectReasons.getName());
+                                            whDeReasonMap.put(rcvdSn.getDefectReasonsId(), warehouseDefectReasons.getName());
+                                        }
+                                    }
+                                }
+                            }
+                            saveSnLogList.add(whAsnRcvdSnLog);
+
+                            WhSkuInventorySnCommand skuInvSn = new WhSkuInventorySnCommand();
+                            if (Constants.SERIAL_NUMBER_TYPE_ALL.equals(sc.getSerialNumberType())) {
+                                skuInvSn.setSn(rcvdSn.getSn());
+                                skuInvSn.setSerialNumberType(rcvdSn.getSerialNumberType());
+                            }
+                            skuInvSn.setDefectTypeId(rcvdSn.getDefectTypeId());
+                            skuInvSn.setDefectReasonsId(rcvdSn.getDefectReasonsId());
+                            skuInvSn.setOccupationCode(occupationCode);
+                            skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
+                            skuInvSn.setDefectWareBarcode(rcvdSn.getDefectWareBarCode());
+                            skuInvSn.setOuId(ouId);
+                            skuInvSn.setUuid(uuid);
+                            skuInvSn.setDefectReasonsName(whAsnRcvdSnLog.getDefectReasons());
+                            skuInvSn.setDefectTypeName(whAsnRcvdSnLog.getDefectType());
+                            skuInvSn.setDefectSource(rcvdSn.getDefectSource());
+                            saveSnList.add(skuInvSn);
+                        } else {
+                            // 插入收货记录表
+                            WhAsnRcvdSnLog whAsnRcvdSnLog = new WhAsnRcvdSnLog();
+                            whAsnRcvdSnLog.setSn(rcvdSn.getSn());
+                            whAsnRcvdSnLog.setOuId(ouId);
+                            saveSnLogList.add(whAsnRcvdSnLog);
+
+                            if (Constants.SERIAL_NUMBER_TYPE_ALL.equals(sc.getSerialNumberType())) {
+                                WhSkuInventorySnCommand skuInvSn = new WhSkuInventorySnCommand();
+                                skuInvSn.setSn(rcvdSn.getSn());
+                                skuInvSn.setSerialNumberType(rcvdSn.getSerialNumberType());
+                                skuInvSn.setOccupationCode(occupationCode);
+                                skuInvSn.setStatus(Constants.INVENTORY_SN_STATUS_ONHAND);
+                                skuInvSn.setOuId(ouId);
+                                skuInvSn.setUuid(uuid);
+                                saveSnList.add(skuInvSn);
+                            }
+                        }
+
+                    }
+                }
+
+
+            }
+            String asnRcvdLogMaoKey = lineId + uuid;
+            WhAsnRcvdLogCommand asnRcvdLog = new WhAsnRcvdLogCommand();
+            if (rcvdLogMap.containsKey(asnRcvdLogMaoKey)) {
+                asnRcvdLog = rcvdLogMap.get(asnRcvdLogMaoKey);
+                asnRcvdLog.setQuantity(asnRcvdLog.getQuantity() + cacheInv.getSkuBatchCount().longValue());
+                asnRcvdLog.setQtyRcvd(asnRcvdLog.getQtyRcvd() + cacheInv.getSkuBatchCount().doubleValue());
+                if (saveSnLogList.size() > Constants.DEFAULT_INTEGER) {
+                    if (null == asnRcvdLog.getWhAsnRcvdSnLogList()) {
+                        asnRcvdLog.setWhAsnRcvdSnLogList(saveSnLogList);
+                    } else {
+                        asnRcvdLog.getWhAsnRcvdSnLogList().addAll(saveSnLogList);
+                    }
+                }
+            } else {
+                asnRcvdLog.setAsnId(cacheInv.getOccupationId());
+                asnRcvdLog.setAsnLineId(cacheInv.getLineId());
+                asnRcvdLog.setAsnCode(cacheInv.getOccupationCode());
+                Sku sku = this.generalRcvdManager.findSkuByIdToShard(cacheInv.getSkuId(), ouId);
+                asnRcvdLog.setSkuCode(sku.getCode());
+                asnRcvdLog.setSkuName(sku.getName());
+                asnRcvdLog.setQuantity(cacheInv.getSkuBatchCount().longValue());
+                // @mender yimin.lu 实际收货数量
+                asnRcvdLog.setQtyRcvd(cacheInv.getSkuBatchCount().doubleValue());
+                Container container = this.generalRcvdManager.findContainerByIdToShard(cacheInv.getInsideContainerId(), ouId);
+                asnRcvdLog.setContainerCode(container.getCode());
+                asnRcvdLog.setContainerName(container.getName());
+                asnRcvdLog.setMfgDate(cacheInv.getMfgDate());
+                asnRcvdLog.setExpDate(cacheInv.getExpDate());
+                asnRcvdLog.setBatchNo(cacheInv.getBatchNumber());
+                asnRcvdLog.setCountryOfOrigin(cacheInv.getCountryOfOrigin());
+                if (cacheInv.getInvStatus() != null) {
+                    asnRcvdLog.setInvStatus(invStatusMap.get(cacheInv.getInvStatus()));
+                }
+                // 字典表转换
+                Map<String, List<String>> sysDictionaryList = new HashMap<String, List<String>>();
+                if (StringUtils.hasText(cacheInv.getInvAttr1())) {
+
+                    sysDictionaryList.put(Constants.INVENTORY_ATTR_1, Arrays.asList(cacheInv.getInvAttr1()));
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr2())) {
+
+                    sysDictionaryList.put(Constants.INVENTORY_ATTR_2, Arrays.asList(cacheInv.getInvAttr2()));
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr3())) {
+
+                    sysDictionaryList.put(Constants.INVENTORY_ATTR_3, Arrays.asList(cacheInv.getInvAttr3()));
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr4())) {
+
+                    sysDictionaryList.put(Constants.INVENTORY_ATTR_4, Arrays.asList(cacheInv.getInvAttr4()));
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr5())) {
+
+                    sysDictionaryList.put(Constants.INVENTORY_ATTR_5, Arrays.asList(cacheInv.getInvAttr5()));
+                }
+                if (StringUtils.hasText(cacheInv.getInvType())) {
+
+                    sysDictionaryList.put(Constants.INVENTORY_TYPE, Arrays.asList(cacheInv.getInvType()));
+                }
+                Map<String, SysDictionary> dicMap = this.generalRcvdManager.findSysDictionaryByRedisExt(sysDictionaryList);
+                if (StringUtils.hasText(cacheInv.getInvType())) {
+                    SysDictionary dic = dicMap.get(Constants.INVENTORY_TYPE + "_" + cacheInv.getInvType());
+                    asnRcvdLog.setInvType(dic == null ? cacheInv.getInvType() : dic.getDicLabel());
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr1())) {
+                    SysDictionary dic = dicMap.get(Constants.INVENTORY_ATTR_1 + "_" + cacheInv.getInvAttr1());
+                    asnRcvdLog.setInvAttr1(dic == null ? cacheInv.getInvAttr1() : dic.getDicLabel());
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr2())) {
+                    SysDictionary dic = dicMap.get(Constants.INVENTORY_ATTR_2 + "_" + cacheInv.getInvAttr2());
+                    asnRcvdLog.setInvAttr2(dic == null ? cacheInv.getInvAttr1() : dic.getDicLabel());
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr3())) {
+                    SysDictionary dic = dicMap.get(Constants.INVENTORY_ATTR_3 + "_" + cacheInv.getInvAttr3());
+                    asnRcvdLog.setInvAttr3(dic == null ? cacheInv.getInvAttr3() : dic.getDicLabel());
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr4())) {
+                    SysDictionary dic = dicMap.get(Constants.INVENTORY_ATTR_4 + "_" + cacheInv.getInvAttr4());
+                    asnRcvdLog.setInvAttr4(dic == null ? cacheInv.getInvAttr4() : dic.getDicLabel());
+                }
+                if (StringUtils.hasText(cacheInv.getInvAttr1())) {
+                    SysDictionary dic = dicMap.get(Constants.INVENTORY_ATTR_5 + "_" + cacheInv.getInvAttr5());
+                    asnRcvdLog.setInvAttr5(dic == null ? cacheInv.getInvAttr5() : dic.getDicLabel());
+                }
+                asnRcvdLog.setOuId(ouId);
+                asnRcvdLog.setCreateTime(new Date());
+                asnRcvdLog.setLastModifyTime(new Date());
+                asnRcvdLog.setOperatorId(userId);
+                if (saveSnLogList.size() > Constants.DEFAULT_INTEGER) {
+                    asnRcvdLog.setWhAsnRcvdSnLogList(saveSnLogList);
+                }
+            }
+            rcvdLogMap.put(asnRcvdLogMaoKey, asnRcvdLog);
+            // 插入装箱信息表
+            WhCarton whCarton = new WhCarton();
+            if (whCartonMap.containsKey(asnRcvdLogMaoKey)) {
+                whCarton = whCartonMap.get(asnRcvdLogMaoKey);
+                whCarton.setQtyRcvd(whCarton.getQtyRcvd() + cacheInv.getSkuBatchCount().longValue());
+            } else {
+                whCarton.setAsnId(asnId);
+                whCarton.setAsnLineId(lineId);
+                whCarton.setSkuId(cacheInv.getSkuId());
+                whCarton.setContainerId(insideContainerId);
+                whCarton.setExtContainerCode(insideContainerCode);
+                whCarton.setQuantity(cacheInv.getSkuBatchCount().doubleValue());
+                whCarton.setQtyRcvd(cacheInv.getSkuBatchCount().doubleValue());
+                whCarton.setMfgDate(cacheInv.getMfgDate());
+                whCarton.setExpDate(cacheInv.getExpDate());
+                whCarton.setBatchNo(cacheInv.getBatchNumber());
+                whCarton.setCountryOfOrigin(cacheInv.getCountryOfOrigin());
+                whCarton.setInvStatus(cacheInv.getInvStatus());
+                whCarton.setInvAttr1(cacheInv.getInvAttr1());
+                whCarton.setInvAttr2(cacheInv.getInvAttr2());
+                whCarton.setInvAttr3(cacheInv.getInvAttr3());
+                whCarton.setInvAttr4(cacheInv.getInvAttr4());
+                whCarton.setInvAttr5(cacheInv.getInvAttr5());
+                whCarton.setInvType(cacheInv.getInvType());
+                whCarton.setOuId(ouId);
+                whCarton.setIsCaselevel(false);
+                whCarton.setCreateTime(new Date());
+                whCarton.setCreatedId(userId);
+                whCarton.setLastModifyTime(new Date());
+                whCarton.setModifiedId(userId);
+            }
+            whCartonMap.put(asnRcvdLogMaoKey, whCarton);
+        }
+        // 更新库存表
+        Iterator<WhSkuInventory> skuInvMapIt = skuInvMap.values().iterator();
+        while (skuInvMapIt.hasNext()) {
+            WhSkuInventory s = skuInvMapIt.next();
+            saveInvList.add(s);
+        }
+        // 更新收货日志表
+        Iterator<WhAsnRcvdLogCommand> rcvdLogMapIt = rcvdLogMap.values().iterator();
+        while (rcvdLogMapIt.hasNext()) {
+            WhAsnRcvdLogCommand whAsnRcvdLogCommand = rcvdLogMapIt.next();
+            saveInvLogList.add(whAsnRcvdLogCommand);
+        }
+        // 更新装箱信息
+        Iterator<WhCarton> whCartonIt = whCartonMap.values().iterator();
+        while (whCartonIt.hasNext()) {
+            WhCarton whCarton = whCartonIt.next();
+            saveWhCartonList.add(whCarton);
+        }
+        // 更新ASN明细
+        Iterator<Entry<Long, Double>> it = lineMap.entrySet().iterator();
+        Double asnCount = Constants.DEFAULT_DOUBLE;
+        Map<Long, Double> polineMap = new HashMap<Long, Double>();
+        while (it.hasNext()) {
+            Entry<Long, Double> entry = it.next();
+            WhAsnLine asnLine = this.asnLineManager.findWhAsnLineByIdToShard(entry.getKey(), ouId);
+            if (null == asnLine) {
+                throw new BusinessException("1");
+            }
+            asnLine.setQtyRcvd(asnLine.getQtyRcvd() + entry.getValue());
+            asnLine.setModifiedId(userId);
+            if (asnLine.getQtyRcvd() >= asnLine.getQtyPlanned()) {
+                asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD_FINISH);
+            } else {
+                asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
+            }
+            saveAsnLineList.add(asnLine);
+            if (polineMap.containsKey(asnLine.getPoLineId())) {
+                polineMap.put(asnLine.getPoLineId(), lineMap.get(asnLine.getPoLineId()) + entry.getValue());
+            } else {
+                polineMap.put(asnLine.getPoLineId(), entry.getValue());
+            }
+            asnCount += entry.getValue();
+        }
+        // 1.更新ASN明细
+        // 2.筛选PO明细数据集合
+        asn.setQtyRcvd(asn.getQtyRcvd() + asnCount);
+        // mender yimin.lu 设置完成与关闭节点，在内层方法体封装
+        /*
+         * if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
+         * asn.setStatus(PoAsnStatus.ASN_RCVD_FINISH); } else { asn.setStatus(PoAsnStatus.ASN_RCVD);
+         * } asn.setStopTime(new Date());
+         */
+        asn.setModifiedId(userId);
+        if (asn.getDeliveryTime() == null) {
+            asn.setDeliveryTime(new Date());
+        }
+        if (asn.getStartTime() == null) {
+            asn.setStartTime(new Date());
+        }
+        Iterator<Entry<Long, Double>> poIt = polineMap.entrySet().iterator();
+        Long poId = null;
+        // 更新PO明细数据集合
+        while (poIt.hasNext()) {
+            Entry<Long, Double> entry = poIt.next();
+            WhPoLine poline = this.poLineManager.findWhPoLineByIdOuIdToShard(entry.getKey(), ouId);
+            poline.setQtyRcvd(poline.getQtyRcvd() + entry.getValue());
+            if (poline.getQtyRcvd() >= poline.getQtyPlanned()) {
+                poline.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
+            } else {
+                poline.setStatus(PoAsnStatus.POLINE_RCVD);
+            }
+            poline.setModifiedId(userId);
+            savePoLineList.add(poline);
+            if (null == poId) {
+                poId = poline.getPoId();
+            }
+        }
+        // 更新Po数据集合
+        po = this.poManager.findWhPoByIdToShard(poId, ouId);
+        if (null == po) {
+            throw new BusinessException(ErrorCodes.PO_RCVD_GET_ERROR);
+        }
+        po.setModifiedId(userId);
+        po.setQtyRcvd(po.getQtyRcvd() + asnCount);
+        if (null == po.getDeliveryTime()) {
+            po.setDeliveryTime(new Date());
+        }
+        if (null == po.getStartTime()) {
+            po.setStartTime(new Date());
+        }
+        // po.setStopTime(new Date());
+        // 更新容器
+        Container container = null;
+        container = this.generalRcvdManager.findContainerByIdToShard(insideContainerId, ouId);
+        if (null == container) {
+            throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
+        }
+        container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+        container.setOperatorId(userId);
+
+        try {
+            this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, container, saveWhCartonList, wh);
+            WhPo shardPo = this.poManager.findWhPoByIdToShard(po.getId(), ouId);
+            // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
+            WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(po.getExtCode(), po.getStoreId(), ouId);
+            if (PoAsnStatus.PO_CLOSE == shardPo.getStatus()) {
+                infoPo.setStopTime(shardPo.getStopTime());
+                this.poManager.snycPoToInfo("CLOSE", infoPo, savePoLineList);
+            } else if (PoAsnStatus.PO_RCVD == shardPo.getStatus()) {
+                infoPo.setStartTime(shardPo.getStartTime());
+                this.poManager.snycPoToInfo("RCVD", infoPo, savePoLineList);
+            } else if (PoAsnStatus.PO_RCVD_FINISH == shardPo.getStatus()) {
+                infoPo.setStopTime(shardPo.getStopTime());
+                this.poManager.snycPoToInfo("RCVD_FINISH", infoPo, savePoLineList);
+            }
+
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception ex) {
+            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        }
+    }
+
+    private Store getReturnedStore(Long storeId) {
+        Store store = this.storeManager.findStoreById(storeId);
+        if (store == null) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (store.getIsReturnedPurchaseOriginalInvAttr() != null && store.getIsReturnedPurchaseOriginalInvAttr()) {
+
+            if (Constants.STORE_RETURNEDPURCHASESTORE_INBOUND.equals(store.getReturnedPurchaseStore())) {
+                return store;
+            } else {
+                // #TODO
+                Store returnedStore = this.storeManager.findStoreByCode(store.getReturnedPurchaseStore());
+                if (returnedStore == null) {
+                    throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                }
+                return returnedStore;
+            }
+        } else {
+            return store;
+        }
+
     }
 
 }

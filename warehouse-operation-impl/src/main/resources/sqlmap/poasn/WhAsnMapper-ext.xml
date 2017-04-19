@@ -794,9 +794,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
  		
 		from t_wh_asn asn
 		
-		inner join t_wh_asn_transport_mgmt trans on trans.asn_id=asn.id
-		
 		inner join t_wh_po  po on po.id=asn.po_id
+		
+		LEFT join t_wh_asn_transport_mgmt trans on trans.asn_id=asn.id
 		
 		where 
 		

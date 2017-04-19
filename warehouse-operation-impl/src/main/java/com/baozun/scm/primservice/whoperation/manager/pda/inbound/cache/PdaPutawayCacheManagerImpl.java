@@ -1051,6 +1051,31 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         }
         return allExists;
     }
+    
+    private boolean isCacheAllExists(List<Long> ids, ArrayDeque<Long> cacheKeys) {
+        boolean allExists = true;
+        if (null != cacheKeys && !cacheKeys.isEmpty()) {
+            for (Long id : ids) {
+                Long cId = id;
+                boolean isExists = false;
+                Iterator<Long> iter = cacheKeys.iterator();
+                while (iter.hasNext()) {
+                    Long value = iter.next();
+                    if (null == value) value = -1L;
+                    if (0 == value.compareTo(cId)) {
+                        isExists = true;
+                        break;
+                    }
+                }
+                if (false == isExists) {
+                    allExists = false;
+                }
+            }
+        } else {
+            allExists = false;
+        }
+        return allExists;
+    }
 
     /**
      * @author lichuan
@@ -2367,7 +2392,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
      * @return
      */
     @Override
-    public Long sysGuideSplitContainerPutawayTipLocation0(ContainerCommand insideContainerCmd, Set<Long> locationIds, String logId) {
+    public Long sysGuideSplitContainerPutawayTipLocation0(ContainerCommand insideContainerCmd, List<Long> locationIds, String logId) {
         Long containerId = insideContainerCmd.getId();
         Long tipLocationId = null;
         TipLocationCacheCommand tipLocCmd = cacheManager.getObject(CacheConstants.SCAN_LOCATION_QUEUE + containerId.toString());
@@ -2379,8 +2404,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Long id = cacheLocIds.peekFirst();
             tipLocationId = id;
         } else {
-            // 随机提示一个
-            // TODO 这里需要计算上架顺序，包括后续的提示库位过程均需要计算
+            // 根据上架顺序提示库位
             for (Long id : locationIds) {
                 Long locId = id;
                 if (null != locId) {
@@ -2929,8 +2953,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
      */
     @Override
     public CheckScanSkuResultCommand sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
-            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds, Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty, Long locationId,
-            WhSkuCommand skuCmd, Integer scanPattern, String logId) {
+            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds, Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty,
+            Map<Long, List<Long>> insideContainerLocSort, Long locationId, WhSkuCommand skuCmd, Integer scanPattern, String logId) {
         CheckScanSkuResultCommand cssrCmd = new CheckScanSkuResultCommand();
         Long ocId = null;
         Long icId = icCmd.getId();
@@ -2946,10 +2970,12 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             log.error("tip container is not in cache server error, logId is[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-//        Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);// 当前内部容器中所有唯一sku
+        // Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);//
+        // 当前内部容器中所有唯一sku
         Map<String, Set<String>> skuAttrIdsSnDefect = insideContainerSkuAttrIdsSnDefect.get(icId);// 唯一sku对应的所有sn残次信息
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icId);// 库位对应的所有唯一sku及Sn残次条码
         Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(icId);// 库位对应的所有唯一sku总件数
+        List<Long> sortLocationIds = insideContainerLocSort.get(icId);// 内部容器所有排序后的库位
         if (null != ocCmd) {
             ocId = ocCmd.getId();
             // 1.当前的内部容器是不是提示容器队列的第一个
@@ -3157,7 +3183,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 return cssrCmd;
             } else {
                 // 判断是否需要提示下一个库位
-                Set<Long> allLocIds = locSkuAttrIds.keySet();
+                // Set<Long> allLocIds = locSkuAttrIds.keySet();
+                List<Long> allLocIds = sortLocationIds;
                 boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
                 if (false == isLocAllCache) {
                     // 提示下一个库位
@@ -3400,7 +3427,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 return cssrCmd;
             } else {
                 // 判断是否需要提示下一个库位
-                Set<Long> allLocIds = locSkuAttrIds.keySet();
+                // Set<Long> allLocIds = locSkuAttrIds.keySet();
+                List<Long> allLocIds = sortLocationIds;
                 boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
                 if (false == isLocAllCache) {
                     // 提示下一个库位
@@ -4942,6 +4970,12 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     }
                     insideContainerLocSkuAttrIdsQty.put(insideContainerCmd.getId(), locSkuAttrIdsQty);
                     isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
+                    Map<Long, List<Long>> insideContainerLocSort = isCmd.getInsideContainerLocSort();
+                    List<Long> sortLoctionIds = insideContainerLocSort.get(insideContainerCmd.getId());
+                    if (null != sortLoctionIds) {
+                        sortLoctionIds.remove(locationId);
+                    }
+                    insideContainerLocSort.put(insideContainerCmd.getId(), sortLoctionIds);
                     isCmd.setLocationIds(locIds);
                     cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString(), isCmd, CacheConstants.CACHE_ONE_DAY);
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, value.toString());

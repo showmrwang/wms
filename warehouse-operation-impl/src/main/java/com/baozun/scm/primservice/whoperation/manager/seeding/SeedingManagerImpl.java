@@ -43,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionL
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryLogDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CheckingModeCalcManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
@@ -81,6 +82,8 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Autowired
     private WhSkuInventoryLogDao whSkuInventoryLogDao;
+    @Autowired
+    private CheckingModeCalcManager checkingModeCalcManager;
 
     /**
      * 根据容器编码查找容器
@@ -225,6 +228,11 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
         }
 
         this.saveWhSkuInventoryToDB(facilitySeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
+        try {
+            checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, facilitySeedingSkuInventoryList, userId, ouId, logId);
+        } catch (Exception e) {
+            log.error("generateCheckingDataBySeeding error", e);
+        }
     }
 
     /**

@@ -79,6 +79,9 @@
                     <value>com.baozun.scm.primservice.whoperation.model.confirm.WhInvoiceConfirm</value>
                     <value>com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection</value>
                     <value>com.baozun.scm.primservice.whoperation.model.handover.Handover</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollectionLine</value>
 				</list>
 			</property>
 			

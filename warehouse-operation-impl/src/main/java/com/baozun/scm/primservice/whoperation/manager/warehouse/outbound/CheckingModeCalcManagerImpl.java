@@ -291,7 +291,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
             for (WhSeedingCollection sc : scList) {
                 if (null != sc) {
                     // 取到三个模式
-
+                    distributionMode = sc.getDistributionMode();
+                    pickingMode = sc.getPickingMode();
+                    checkingMode = sc.getCheckingMode();
+                    break;
                 }
             }
         }

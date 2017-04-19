@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +50,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ShelveRecommendR
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -98,7 +98,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
-import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
@@ -2486,6 +2485,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = invStatisticCmd.getInsideContainerSkuAttrIdsQty();// 内部容器唯一sku总件数
         //Map<Long, Map<Long, Set<String>>> insideContainerSkuAndSkuAttrIds = invStatisticCmd.getInsideContainerSkuAndSkuAttrIds();// 内部容器sku对应所有唯一sku
         Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = invStatisticCmd.getInsideContainerSkuAttrIdsSnDefect();// 内部容器唯一sku对应所有残次条码
+        Map<Long, List<Long>> insideContainerLocSort = invStatisticCmd.getInsideContainerLocSort();// 内部容器所有排序后库位
         Map<Long, Set<Long>> insideContainerStoreIds = invStatisticCmd.getInsideContainerStoreIds();// 内部容器所有店铺
         Map<Long, Double> insideContainerWeight = invStatisticCmd.getInsideContainerWeight();// 内部容器重量
         //Map<Long, Double> insideContainerVolume = invStatisticCmd.getInsideContainerVolume();// 内部容器体积
@@ -2506,7 +2506,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         if (0 < locationIds.size()) {
             srCmd.setRecommendLocation(true);// 已推荐库位
-            Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
+            List<Long> sortLocIds = insideContainerLocSort.get(insideContainerCmd.getId());
+            Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, sortLocIds, logId);
             Location loc = locationDao.findByIdExt(locId, ouId);
             if (null == loc) {
                 log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
@@ -2684,6 +2685,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Map<Long, Map<String, Long>> locSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();
         Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();
+        List<Long> sortLocationIds = new ArrayList<Long>(); // 所有排序后库位
         for (LocationRecommendResultCommand lrrCmd : lrrList) {
             Long locationId = lrrCmd.getLocationId();
             if (null != locationId) {
@@ -2716,6 +2718,21 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             invRecommendLocId.put(lrrCmd.getSkuAttrId(), locationId);
             invRecommendLocCode.put(lrrCmd.getSkuAttrId(), locationCode);
         }
+        List<Location> sortLocs = new ArrayList<Location>();
+        if (null != locSkuAttrIds && !locSkuAttrIds.isEmpty()) {
+            for (Long lId : locSkuAttrIds.keySet()) {
+                Location loc = locationDao.findByIdExt(lId, ouId);
+                if (null == loc) {
+                    log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
+                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                }
+                sortLocs.add(loc);
+            }
+            Collections.sort(sortLocs, new LocationShelfSorter());
+            for (Location sortLoc : sortLocs) {
+                sortLocationIds.add(sortLoc.getId());
+            }
+        }
         if (0 == locSkuAttrIds.size()) {
             // 弹出排队队列
             pdaPutawayCacheManager.sysGuidePutawayLocRecommendPopQueue(insideContainerId, logId);
@@ -2724,6 +2741,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         } else {
             insideContainerLocSkuAttrIds.put(insideContainerId, locSkuAttrIds);
             insideContainerLocSkuAttrIdsQty.put(insideContainerId, locSkuAttrIdsQty);
+            insideContainerLocSort.put(insideContainerId, sortLocationIds);
         }
         // 9.缓存容器库存统计信息
         InventoryStatisticResultCommand isCmd = new InventoryStatisticResultCommand();
@@ -2747,6 +2765,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         isCmd.setInsideContainerSkuAttrIdsSnDefect(insideContainerSkuAttrIdsSnDefect);
         isCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
+        isCmd.setInsideContainerLocSort(insideContainerLocSort);
         isCmd.setInsideContainerStoreIds(insideContainerStoreIds);
         isCmd.setInsideContainerAsists(insideContainerAsists);
         // cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC,
@@ -2966,18 +2985,19 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 11.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
-        Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
+        /*Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
         Location loc = locationDao.findByIdExt(locId, ouId);
         if (null == loc) {
             log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
-        }
+        }*/
+        Location loc = sortLocs.get(0);// 取到排序后第一个上架库位
         srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
         srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
-        if(null != warehouse){
-            if(true == warehouse.getIsInboundLocationBarcode()){
+        if (null != warehouse) {
+            if (true == warehouse.getIsInboundLocationBarcode()) {
                 srCmd.setValidateLocation(true);
-            }else{
+            } else {
                 srCmd.setValidateLocation(false);
             }
         }
@@ -4269,6 +4289,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icCmd.getId());
         Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = isCmd.getInsideContainerLocSkuAttrIdsQty();
         Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(icCmd.getId());
+        Map<Long, List<Long>> insideContainerLocSort = isCmd.getInsideContainerLocSort();
         Set<Long> locationIds = locSkuAttrIds.keySet();
         // Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icCmd.getId());
         Location loc = locationDao.findLocationByCode(locationCode, ouId);
@@ -4339,7 +4360,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         sku.setSkuSn(StringUtils.isEmpty(skuCmd.getSkuSn()) ? "" : skuCmd.getSkuSn());
         sku.setSkuDefect(StringUtils.isEmpty(skuCmd.getSkuDefect()) ? "" : skuCmd.getSkuDefect());
         CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerLocSkuAttrIds,
-                insideContainerLocSkuAttrIdsQty, loc.getId(), sku, scanPattern, logId);
+                insideContainerLocSkuAttrIdsQty, insideContainerLocSort, loc.getId(), sku, scanPattern, logId);
         if (cssrCmd.isNeedTipSkuSn()) {
             // 当前商品还未扫描，继续扫sn残次信息
             srCmd.setNeedScanSkuSn(true);// 继续扫sn
