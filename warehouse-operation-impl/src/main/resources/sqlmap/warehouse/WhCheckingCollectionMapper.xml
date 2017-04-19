@@ -145,7 +145,7 @@
                     #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{collectionStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{collectionStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -168,7 +168,7 @@
                 container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 wave_code =#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR}
-                collection_status = #{collectionStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                collection_status = #{collectionStatus,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
