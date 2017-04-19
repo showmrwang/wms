@@ -168,7 +168,8 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @param logId
      * @param userId
      * @param ouId
+     * @param isReturns
      */
-    void constructReturnsSkuInventory(List<RcvdCacheCommand> rcvdList, Long ouId, Long userId, String logId);
+    void constructReturnsSkuInventory(List<RcvdCacheCommand> rcvdList, Long ouId, Long userId, String logId, Boolean isReturns);
 
 }

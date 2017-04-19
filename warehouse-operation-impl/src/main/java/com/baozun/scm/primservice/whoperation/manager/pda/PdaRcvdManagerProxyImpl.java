@@ -241,7 +241,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         if (commandList == null || commandList.size() == 0) {
             throw new BusinessException(ErrorCodes.RCVD_CONTAINER_FINISH_ERROR);
         }
-        this.createPoAsnManagerProxy.constructReturnsSkuInventory(commandList, ouId, userId, logId);
+        this.createPoAsnManagerProxy.constructReturnsSkuInventory(commandList, ouId, userId, logId, false);
         // 释放容器缓存:如果外部容器为空，则释放缓存；否则不释放
         Long outerContainerId = commandList.get(0).getOuterContainerId();// 托盘ID
         // #TODO @mender yimin.lu 支持多容器收货
