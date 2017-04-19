@@ -1533,8 +1533,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 whCarton = whCartonMap.get(asnRcvdLogMaoKey);
                 whCarton.setQtyRcvd(whCarton.getQtyRcvd() + cacheInv.getSkuBatchCount().longValue());
             } else {
-                String[] keyArray = asnRcvdLogMaoKey.split("$");
-                Long _insideContainerId = Long.parseLong(keyArray[3]);
+                String[] keyArray = asnRcvdLogMaoKey.split("\\$");
+                Long _insideContainerId = Long.parseLong(keyArray[2]);
                 whCarton.setAsnId(asnId);
                 whCarton.setAsnLineId(lineId);
                 whCarton.setSkuId(cacheInv.getSkuId());
