@@ -900,7 +900,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param ouId
      * @return
      */
-    List<WhCheckingCollectionLine> findWhCheckingCollectionListByContainerId(Long insideContainerId, Long outerContainerId, Integer containerLatticeNo, Long ouId);
+    List<WhCheckingCollectionLine> findWhCheckingCollectionListByContainerId(@Param("insideContainerId") Long insideContainerId, @Param("outerContainerId") Long outerContainerId, @Param("containerLatticeNo") Integer containerLatticeNo,
+            @Param("ouId") Long ouId);
 
 
 }
