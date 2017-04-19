@@ -823,7 +823,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == rec) {
             throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_PATH_ERROR);
         }
-        // cacheManager.remonKeys(cacheKey + userId.toString());
+        cacheManager.remonKeys(cacheKey + userId.toString());
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(cacheKey + userId.toString(), batch);
         if (null == recPathList) {
             recPathList = new ArrayList<WhFacilityRecPathCommand>();
