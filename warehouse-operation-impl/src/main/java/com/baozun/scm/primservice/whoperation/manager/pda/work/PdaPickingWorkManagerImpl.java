@@ -1768,11 +1768,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         } else {
             // 拣货模式为非播种
             this.pdaConcentrationManager.insertIntoCheckingCollection(command.getBatch(), execLineCommandList, ouId, work);
-            try {
                 checkingModeCalcManager.generateCheckingDataByCollection(work, execLineCommandList, ouId, logId);
-            } catch (Exception e) {
-                log.error("generateCheckingDataByCollection error", e);
-            }
         }
         return work.getPickingMode();
     }
