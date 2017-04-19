@@ -20,6 +20,7 @@
                 location_id as locationId,
                 container_id as containerId,
                 batch as batch,
+                wave_code as waveCode,
                 collection_status as collectionStatus,
                 ou_id as ouId,
                 outer_container_id as outerContainerId,
@@ -126,6 +127,7 @@
                     location_id ,
                     container_id ,
                     batch ,
+                    wave_code ,
                     collection_status ,
                     ou_id ,
                     outer_container_id ,
@@ -142,6 +144,7 @@
                     #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{collectionStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -164,6 +167,7 @@
                 location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                wave_code =#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR}
                 collection_status = #{collectionStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -257,7 +261,11 @@
             <if test="batch!=null and batch!=''">
                 and batch = #{batch}
             </if>
-
+            
+ 			<if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+			</if>
+			
             <if test="collectionStatus!=null and collectionStatus!=''">
                 and collection_status = #{collectionStatus}
             </if>

@@ -21,7 +21,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	seeding_qty as seedingQty,
 	        	customer_code as customerCode,
 	        	customer_name as customerName,
-	        	wave_code as waveCode,
 	        	store_code as storeCode,
 	        	store_name as storeName,
 	        	inv_status as invStatus,
@@ -92,9 +91,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and customer_name = #{customerName}
 				</if>
 				
-	           <if test="waveCode!=null and waveCode!=''">
-					and wave_code = #{waveCode}
-				</if>
 	       
 		       <if test="storeCode!=null and storeCode!=''">
 					and store_code = #{storeCode}
