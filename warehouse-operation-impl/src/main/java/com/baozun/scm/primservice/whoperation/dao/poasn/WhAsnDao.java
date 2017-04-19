@@ -224,4 +224,12 @@ public interface WhAsnDao extends BaseDao<WhAsn, Long> {
      */
     List<WhAsn> findWhAsnByPoIdOuId(@Param("poId") Long poId, @Param("ouId") Long ouId);
 
+    /**
+     * 查询退换货数据
+     * 
+     * @param command
+     * @return
+     */
+    List<WhAsnCommand> findReturns(WhAsnCommand command);
+
 }
