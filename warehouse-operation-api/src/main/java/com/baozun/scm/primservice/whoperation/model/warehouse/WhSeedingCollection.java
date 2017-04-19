@@ -43,7 +43,7 @@ public class WhSeedingCollection extends BaseModel {
     /** 波次号 */
     private String waveCode;
     /** 集货状态 */
-    private String collectionStatus;
+    private Integer collectionStatus;
     /** 对应组织ID */
     private Long ouId;
     /** 外部容器，小车 */
@@ -183,11 +183,11 @@ public class WhSeedingCollection extends BaseModel {
         this.checkingMode = checkingMode;
     }
 
-    public String getCollectionStatus() {
+    public Integer getCollectionStatus() {
         return collectionStatus;
     }
 
-    public void setCollectionStatus(String collectionStatus) {
+    public void setCollectionStatus(Integer collectionStatus) {
         this.collectionStatus = collectionStatus;
     }
 
