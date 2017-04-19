@@ -180,9 +180,10 @@ public interface PdaConcentrationManager extends BaseManager {
      * [业务方法] 获取目标位置
      * 
      * @param command
+     * @param cacheKey
      * @return
      */
-    String findTargetPos(WorkCollectionCommand command);
+    String findTargetPos(WorkCollectionCommand command, String cacheKey);
 
     /**
      * [业务方法] 校验并且移动容器
@@ -190,7 +191,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param workCollectionCommand
      * @return targetPos$containerCode
      */
-    Boolean checkAndMoveContainer(WorkCollectionCommand workCollectionCommand);
+    Boolean checkAndMoveContainer(WorkCollectionCommand workCollectionCommand, String cacheKey);
 
     /**
      * [业务方法] 校验并且记录库存
@@ -198,7 +199,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param workCollectionCommand
      * @return targetPos$containerCode
      */
-    Boolean checkAndRecordInventory(WorkCollectionCommand workCollectionCommand);
+    Boolean checkAndRecordInventory(WorkCollectionCommand workCollectionCommand, String cacheKey);
 
     /**
      * [通用方法] 清理缓存: cache+userId, batch
@@ -274,5 +275,13 @@ public interface PdaConcentrationManager extends BaseManager {
      * @version 2017年4月14日
      */
     boolean checkBatchInTemporaryStorageLocation(String batch, Long ouId);
+
+    /**
+     * [业务方法] 根据索引剔除缓存数据
+     * @param index
+     * @param userId
+     * @param batch
+     */
+    boolean popCacheByIndex(Integer index, Long userId, String batch);
 
 }
