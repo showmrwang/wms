@@ -152,12 +152,18 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void insertIntoSeedingCollection(String batch, Long workId, List<WhOperationExecLineCommand> execLineCommandList, Long ouId) {
         WhWork work = this.whWorkDao.findWorkById(workId, ouId);
+        Set<Long> containerIds = new HashSet<Long>();
         if (null != work) {
             if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
                 for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
+                    containerIds.add(execLineCommand.getUseContainerId());
+                }
+            }
+            if (null != containerIds && !containerIds.isEmpty()) {
+                for (Long containerId : containerIds) {
                     WhSeedingCollection seedingCollection = new WhSeedingCollection();
                     seedingCollection.setBatch(batch);
-                    seedingCollection.setContainerId(execLineCommand.getUseContainerId());
+                    seedingCollection.setContainerId(containerId);
                     seedingCollection.setOuId(ouId);
                     seedingCollection.setCollectionStatus(CollectionStatus.NEW);
                     seedingCollection.setPickingMode(work.getPickingMode());
@@ -803,7 +809,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == rec) {
             throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_PATH_ERROR);
         }
-//        cacheManager.remonKeys(cacheKey + userId.toString());
+        // cacheManager.remonKeys(cacheKey + userId.toString());
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(cacheKey + userId.toString(), batch);
         if (null == recPathList) {
             recPathList = new ArrayList<WhFacilityRecPathCommand>();
