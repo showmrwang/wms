@@ -12,7 +12,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="whInvoiceColumnsExt">
 	    <![CDATA[
 	        	id as id,
+	        	code as code,
 	        	odo_code as odoCode,
+	        	index as index,
 	        	store_code as storeCode,
 	        	invoice_code as invoiceCode,
 	        	invoice_date as invoiceDate,
@@ -29,12 +31,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	export_batch as exportBatch,
 	        	company as company,
 	        	is_freight_invoice_sunder as isFreightInvoiceSunder,
-	        	data_source as dataSource,
 	        	ou_id as ouId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
-	        	is_export as isExport
+	        	data_source as dataSource,
+	        	is_export as isExport,
+	        	last_export_time as lastExportTime
 	    ]]>
 	</sql>
 	
@@ -47,8 +50,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 	       
 	       
+		       <if test="code!=null and code!=''">
+					and code = #{code}
+				</if>
+	       
+	       
 		       <if test="odoCode!=null and odoCode!=''">
 					and odo_code = #{odoCode}
+				</if>
+	       
+	       
+		       <if test="index!=null and index!=''">
+					and index = #{index}
 				</if>
 	       
 	       
@@ -125,14 +138,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="isFreightInvoiceSunder!=null">
 					and is_freight_invoice_sunder = #{isFreightInvoiceSunder}
 				</if>
-				
-				<if test="isExport!=null">
-					and is_export = #{isExport}
-				</if>
-	       
-				<if test="dataSource!=null">
-					and data_source = #{dataSource}
-				</if>
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
@@ -149,6 +154,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="operatorId!=null">
 					and operator_id = #{operatorId}
 				</if>
+	       
+	       
+		       <if test="dataSource!=null and dataSource!=''">
+					and data_source = #{dataSource}
+				</if>
+	       
+				<if test="isExport!=null">
+					and is_export = #{isExport}
+				</if>
+	       
+				<if test="lastExportTime!=null">
+					and last_export_time = #{lastExportTime}
+				</if>
 		</where>
 	</sql>
 	
@@ -156,7 +174,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice">
 		    <![CDATA[
 		        UPDATE t_wh_invoice SET
+			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        index = #{index,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        invoice_code = #{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        invoice_date = #{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -173,15 +193,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        export_batch = #{exportBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        company = #{company,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        is_export = #{isExport,javaType=java.lang.Boolean,jdbcType=BIT} 
+			        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_export = #{isExport,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        last_export_time = #{lastExportTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}
-			        and last_modify_time	<=  #{lastModifyTime}    
+			        and last_modify_time	<=  #{lastModifyTime}  
 		    ]]>
 		</update>
 	

@@ -42,6 +42,9 @@ public final class Constants {
 
     /** 调编码生成器Asn预约实体标识 */
     public static final String ASN_RESERVE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve";
+    
+    /** 调编码生成器 发票实体标识 */
+    public static final String INVOICE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoice";
 
     /** 波次明细 */
     public static final String WAVE_LINE_URL = "com.baozun.scm.primservice.whinfo.model.odo.wave.WhWaveLine";

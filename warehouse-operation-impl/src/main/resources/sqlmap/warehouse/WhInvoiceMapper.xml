@@ -12,7 +12,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="whInvoiceColumns">
 	    <![CDATA[
 	        	id as id,
+	        	code as code,
 	        	odo_code as odoCode,
+	        	index as index,
 	        	store_code as storeCode,
 	        	invoice_code as invoiceCode,
 	        	invoice_date as invoiceDate,
@@ -29,12 +31,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	export_batch as exportBatch,
 	        	company as company,
 	        	is_freight_invoice_sunder as isFreightInvoiceSunder,
-	        	data_source as dataSource,
 	        	ou_id as ouId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
-	        	is_export as isExport
+	        	data_source as dataSource,
+	        	is_export as isExport,
+	        	last_export_time as lastExportTime
 	    ]]>
 	</sql>
 	
@@ -48,7 +51,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        INSERT INTO
 		        t_wh_invoice (
 		        id,
+		        	code ,
 		        	odo_code ,
+		        	`index` ,
 		        	store_code ,
 		        	invoice_code ,
 		        	invoice_date ,
@@ -65,15 +70,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	export_batch ,
 		        	company ,
 		        	is_freight_invoice_sunder ,
-		        	data_source,
 		        	ou_id ,
 		        	create_time ,
 		        	last_modify_time ,
 		        	operator_id ,
-		        	is_export
+		        	data_source ,
+		        	is_export ,
+		        	last_export_time 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{index,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -90,12 +98,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{exportBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{company,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{isExport,javaType=java.lang.Boolean,jdbcType=BIT}
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isExport,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{lastExportTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 		        )
 		    ]]>
 
@@ -105,7 +114,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice">
 	    <![CDATA[
 	        UPDATE t_wh_invoice SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        index = #{index,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        invoice_code = #{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        invoice_date = #{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -122,13 +133,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        export_batch = #{exportBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        company = #{company,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = now() ,
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        is_export = #{isExport,javaType=java.lang.Boolean,jdbcType=BIT}
+		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_export = #{isExport,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        last_export_time = #{lastExportTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 	        WHERE 
-		        id = #{id} 
+		        id = #{id}  
 		        and ou_id = #{ouId}
 	    ]]>
 		</update>

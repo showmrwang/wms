@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
@@ -127,6 +128,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhInvoiceAddressDao whInvoiceAddressDao;
     @Autowired
     private WhInvoiceLineDao whInvoiceLineDao;
+    @Autowired
+    private CodeManager codeManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -387,8 +390,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 this.whOdoInvoiceDao.insert(invoice);
 
                 Store store = this.getStoreByRedis(odo.getStoreId());
+                // 生成发票流水号
+                String invoiceCode = codeManager.generateCode(Constants.WMS, Constants.INVOICE_MODEL_URL, null, null, null);
+                if (StringUtils.isEmpty(invoiceCode)) {
+                    throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                }
                 // 复制odo发票信息到发票信息表中
                 WhInvoice whInvoice = new WhInvoice();
+                whInvoice.setCode(invoiceCode);
                 whInvoice.setOdoCode(odo.getOdoCode());
                 whInvoice.setStoreCode(store.getStoreCode());
                 whInvoice.setInvoiceCode(invoice.getInvoiceCode());
