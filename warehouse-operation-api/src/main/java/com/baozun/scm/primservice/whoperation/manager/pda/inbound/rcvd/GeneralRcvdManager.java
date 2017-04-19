@@ -109,7 +109,7 @@ public interface GeneralRcvdManager extends BaseManager {
      * @param wh
      */
     void saveScanedSkuWhenGeneralRcvdForPda(List<WhSkuInventorySnCommand> saveSnList, List<WhSkuInventory> saveInvList, List<WhAsnRcvdLogCommand> saveInvLogList, List<WhAsnLine> saveAsnLineList, WhAsn asn, List<WhPoLine> savePoLineList, WhPo po,
-            Container container, List<WhCarton> saveWhCartonList, Warehouse wh);
+            List<Container> containerList, List<WhCarton> saveWhCartonList, Warehouse wh);
 
     /**
      * version更新容器

@@ -624,21 +624,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         try {
 
             if (operateType.equals("EIDT_HEAD")) {
-                this.saveOrUpdateByVersionToInfo(infoPo);
-                BiPo bipo = this.biPoDao.findBiPoByExtCodeStoreId(infoPo.getExtCode(), infoPo.getStoreId());
-                if (bipo == null) {
-                    log.error("pomanager.snycPoToInfo  EDIT_HEAD find no bipo by storeId:{} and extCode:{}", infoPo.getStoreId(), infoPo.getExtCode());
-                    throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
-                }
-                if (infoPo.getIsAutoClose() != null && !infoPo.getIsAutoClose()) {
-
-                    bipo.setIsAutoClose(false);
-                    int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
-                    if (updateCount <= 0) {
-                        log.error("pomanager.snycPoToInfo  EDIT_HEAD update bipo:{} by version error", bipo);
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
+                this.snycPoToInfoWhenEditHead(infoPo);
             } else if (operateType.equals("RCVD")) {
                 this.snycPoToInfoWhenRcvd(infoPo, lineList);
             } else if (operateType.equals("CLOSE")) {
@@ -652,6 +638,30 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             log.error("" + e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
+    }
+
+    /**
+     * 仓库下编辑头信息
+     * 
+     * @param infoPo
+     */
+    private void snycPoToInfoWhenEditHead(WhPo infoPo) {
+        this.saveOrUpdateByVersionToInfo(infoPo);
+        BiPo bipo = this.biPoDao.findBiPoByExtCodeStoreId(infoPo.getExtCode(), infoPo.getStoreId());
+        if (bipo == null) {
+            log.error("pomanager.snycPoToInfo  EDIT_HEAD find no bipo by storeId:{} and extCode:{}", infoPo.getStoreId(), infoPo.getExtCode());
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        if (infoPo.getIsAutoClose() != null && !infoPo.getIsAutoClose()) {
+
+            bipo.setIsAutoClose(false);
+            int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
+            if (updateCount <= 0) {
+                log.error("pomanager.snycPoToInfo  EDIT_HEAD update bipo:{} by version error", bipo);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+
     }
 
     private void snycPoToInfoWhenClosed(WhPo infoPo, List<WhPoLine> lineList) {
