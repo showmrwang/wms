@@ -1250,7 +1250,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     }
 
     @Override
-    public void constructReturnsSkuInventory(List<RcvdCacheCommand> commandList, Long ouId, Long userId, String logId) {
+    public void constructReturnsSkuInventory(List<RcvdCacheCommand> commandList, Long ouId, Long userId, String logId, Boolean isReturns) {
         if (commandList == null || commandList.size() == 0) {
             throw new BusinessException(ErrorCodes.RCVD_CONTAINER_FINISH_ERROR);
         }
@@ -1291,7 +1291,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         if (null == po) {
             throw new BusinessException(ErrorCodes.PO_RCVD_GET_ERROR);
         }
-        Store store = this.getReturnedStore(asn.getStoreId());
+        Store store = this.getReturnedStore(asn.getStoreId(), isReturns);
         if (store == null) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -1533,8 +1533,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 whCarton = whCartonMap.get(asnRcvdLogMaoKey);
                 whCarton.setQtyRcvd(whCarton.getQtyRcvd() + cacheInv.getSkuBatchCount().longValue());
             } else {
-                String[] keyArray = asnRcvdLogMaoKey.split("$");
-                Long _insideContainerId = Long.parseLong(keyArray[3]);
+                String[] keyArray = asnRcvdLogMaoKey.split("\\$");
+                Long _insideContainerId = Long.parseLong(keyArray[2]);
                 whCarton.setAsnId(asnId);
                 whCarton.setAsnLineId(lineId);
                 whCarton.setSkuId(cacheInv.getSkuId());
@@ -1685,26 +1685,27 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
     }
 
-    private Store getReturnedStore(Long storeId) {
+    private Store getReturnedStore(Long storeId, Boolean isReturns) {
         Store store = this.storeManager.findStoreById(storeId);
         if (store == null) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        if (store.getIsReturnedPurchaseOriginalInvAttr() != null && store.getIsReturnedPurchaseOriginalInvAttr()) {
+        if (isReturns != null && isReturns) {
+            if (store.getIsReturnedPurchaseOriginalInvAttr() != null && store.getIsReturnedPurchaseOriginalInvAttr()) {
 
-            if (Constants.STORE_RETURNEDPURCHASESTORE_INBOUND.equals(store.getReturnedPurchaseStore())) {
-                return store;
-            } else {
-                // #TODO
-                Store returnedStore = this.storeManager.findStoreByCode(store.getReturnedPurchaseStore());
-                if (returnedStore == null) {
-                    throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                if (Constants.STORE_RETURNEDPURCHASESTORE_INBOUND.equals(store.getReturnedPurchaseStore())) {
+                    return store;
+                } else {
+                    // #TODO
+                    Store returnedStore = this.storeManager.findStoreByCode(store.getReturnedPurchaseStore());
+                    if (returnedStore == null) {
+                        throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                    }
+                    return returnedStore;
                 }
-                return returnedStore;
             }
-        } else {
-            return store;
         }
+        return store;
 
     }
 
