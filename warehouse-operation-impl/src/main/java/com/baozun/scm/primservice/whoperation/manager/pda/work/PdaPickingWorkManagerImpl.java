@@ -258,7 +258,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     outbounxBoxs.add(operationLine.getUseOutboundboxCode());
                 }
                 // 小车货格与出库箱对应关系
-                if (null != operationLine.getUseContainerLatticeNo() && null != operationLine.getUseOutboundboxCode()) {
+                if (null != operationLine.getUseContainerLatticeNo()) {
                     carStockToOutgoingBox.put(operationLine.getUseContainerLatticeNo(), operationLine.getUseOutboundboxCode());
                 }
                 // 所有周转箱
