@@ -1117,7 +1117,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 WhTemporaryStorageLocation storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
                 if (StringUtils.isEmpty(storageLocation.getBatch())) {
                     storageLocation.setBatch(batch);
-                    storageLocation.setStatus(2);
+                    storageLocation.setStatus(Constants.WH_FACILITY_STATUS_2);
                     whTemporaryStorageLocationDao.saveOrUpdateByVersion(storageLocation);
                     return true;
                 }
@@ -1130,7 +1130,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     }
 
     @Override
-    public boolean manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId) {
+    public int manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId) {
+        // 判断推荐结果表中当前容器对应的小批次是否关联当前目的地
+        boolean flag = this.checkContainerAssociatedWithDestination(containerCode, destinationCode, destinationType, userId, ouId);
+        if (!flag) {
+            return 2;
+        }
         if (StringUtils.isEmpty(containerCode) || StringUtils.isEmpty(destinationCode) || null == destinationType) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -1245,9 +1250,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         cacheManager.setObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId, containerCodeDeque, CacheConstants.CACHE_ONE_DAY);
         // 判断是否全部完成
         if (containerCodeDeque.isEmpty()) {
-            return true;
+            return 1;
         }
-        return false;
+        return 0;
     }
 
     @Override
@@ -1507,7 +1512,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         Long containerId = whCheckingCollection.getContainerId();
         Long outerContainerId = whCheckingCollection.getOuterContainerId();
         Integer containerLatticeNo = whCheckingCollection.getContainerLatticeNo();
-        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, whCheckingCollection.getOuId());
+        String outboundboxCode = whCheckingCollection.getOutboundboxCode();
+        if (null == containerId && null == outboundboxCode && null == outerContainerId && null == containerLatticeNo) {
+            throw new BusinessException("外部容器、内部容器、货格号、出库箱编码为空");
+        }
+
+        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, outboundboxCode, whCheckingCollection.getOuId());
         if (null != invList && !invList.isEmpty()) {
             for (WhCheckingCollectionLine inv : invList) {
                 if (null != inv.getStoreId()) {
