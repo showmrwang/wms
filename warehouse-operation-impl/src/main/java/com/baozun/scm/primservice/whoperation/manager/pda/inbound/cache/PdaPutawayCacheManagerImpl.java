@@ -3057,13 +3057,13 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         cacheManager.setObject(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId, tipScanSkuSnCmd, CacheConstants.CACHE_ONE_DAY);
                     }
                     if (true == isSnLine) {
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId, 1);
+                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId, 1);
                         if (cacheValue == scanSkuQty.longValue()) {
                             // sn商品逐件扫描提交及执行部分上架，数量扫描需要计数达到绑定数量才能执行部分上架
                             cssrCmd.setPartlyPutaway(true);
                         }
                     } else {
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
+                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
                         if (cacheValue == scanSkuQty.longValue()) {
                             // 非sn商品不管是数量扫描还是逐件扫描，每次提交均要执行部分上架
                             cssrCmd.setPartlyPutaway(true);
