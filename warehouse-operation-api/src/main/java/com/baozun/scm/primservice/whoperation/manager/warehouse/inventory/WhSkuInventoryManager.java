@@ -122,6 +122,23 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param logId
      */
     void execPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, WhSkuCommand skuCmd, List<String> skuAttrIds, Double scanQty, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 上架完成执行
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param locationCode
+     * @param skuCmd
+     * @param skuAttrIds
+     * @param scanQty
+     * @param warehouse
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void execFinishPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, WhSkuCommand skuCmd, List<String> skuAttrIds, Double scanQty, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
     /**
      * 执行上架（已分配容器库存出库及待移入库位库存入库）
