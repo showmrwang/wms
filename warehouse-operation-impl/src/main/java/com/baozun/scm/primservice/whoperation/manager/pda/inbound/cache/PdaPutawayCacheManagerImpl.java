@@ -3979,7 +3979,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
      * @return
      */
     @Override
-    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(List<Long> locationIds,Long tipLocationId,Boolean isCancel,Boolean isRecommendFail,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Map<String,Long> lskuAttrIdsQty,List<Long> locationIds,Long tipLocationId,Boolean isCancel,Boolean isRecommendFail,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
             Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds,  WhSkuCommand skuCmd, String logId) {
         CheckScanSkuResultCommand cssrCmd = new CheckScanSkuResultCommand();
         Long ocId = null;
@@ -4084,15 +4084,20 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
             }
            long skuQty = 0L;
-            if(isRecommendFail == false) { //使用推荐库位
-                skuQty  = (long)skuAttrIds.size();
-            }else{//人工流程
-                if(true == isSnLine) {//存在sn/残次信息
-                    skuQty  =  skuAttrIdsQty.get(skuAttrIdNoSn);
-                  }else{//不存在sn/残次信息
-                    skuQty  =  skuAttrIdsQty.get(skuAttrId);
-                }
-            }
+           if(isRecommendFail == false){
+               if(true == isSnLine) {//存在sn/残次信息
+                   skuQty  =  lskuAttrIdsQty.get(skuAttrIdNoSn);
+                 }else{//不存在sn/残次信息
+                   skuQty  =  lskuAttrIdsQty.get(skuAttrId);
+               }
+           }else{
+               if(true == isSnLine) {//存在sn/残次信息
+                   skuQty  =  skuAttrIdsQty.get(skuAttrIdNoSn);
+                 }else{//不存在sn/残次信息
+                   skuQty  =  skuAttrIdsQty.get(skuAttrId);
+               }
+           }
+            
             if(true== isSnLine) {
                          ScanSkuCacheCommand scanSkuCmd = cacheManager.getObject(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + icId.toString() + tipLocationId.toString()+skuId.toString());
                          if(null == scanSkuCmd) {
@@ -4156,15 +4161,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                 } else {
                                     allIsExists = true;
                                     tipSkuAttrId = sId;
-//                                    if(!(isRecommendFail == false)){ 
-//                                        if (false == isSnLine){ //没有sn/残次
-//                                            cskuAttrIdsQty.put(skuAttrId,cacheValue);
-//                                        }else{
-//                                            cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
-//                                        }
-//                                        containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
-//                                        isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
-//                                    }
                                     break;
                                 }
                             }
@@ -4262,15 +4258,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                           }
                           cssrCmd.setNeedTipSku(true);
                           cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                          if(!(isRecommendFail == false)){ 
-//                              if (false == isSnLine){ //没有sn/残次
-//                                  cskuAttrIdsQty.put(skuAttrId,cacheValue);
-//                              }else{
-//                                  cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
-//                              }
-//                              containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
-//                              isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
-//                          }
                       } else {
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
@@ -4331,7 +4318,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             Double scanSkuQty  = skuCmd.getScanSkuQty();
             long skuQty = 0L;
             if(isRecommendFail == false) { //使用推荐库位
-                skuQty  = (long)skuAttrIds.size();
+                if(true == isSnLine) {//存在sn/残次信息
+                    skuQty  =  lskuAttrIdsQty.get(skuAttrIdNoSn);
+                  }else{//不存在sn/残次信息
+                    skuQty  =  lskuAttrIdsQty.get(skuAttrId);
+                }
             }else{//人工流程
                 if(true == isSnLine) {//存在sn/残次信息
                     skuQty  =  skuAttrIdsQty.get(skuAttrIdNoSn);
@@ -4401,15 +4392,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                              } else {
                                  allIsExists = true;
                                  tipSkuAttrId = sId;
-//                                 if(!(isRecommendFail == false)){ 
-//                                     if (false == isSnLine){ //没有sn/残次
-//                                         cskuAttrIdsQty.put(skuAttrId,cacheValue);
-//                                     }else{
-//                                         cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
-//                                     }
-//                                     containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
-//                                     isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
-//                                 }
                                  break;
                              }
                          }
@@ -4478,15 +4460,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                         cssrCmd.setNeedTipSku(true);
                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                       if(!(isRecommendFail == false)){ 
-//                           if (false == isSnLine){ //没有sn/残次
-//                               cskuAttrIdsQty.put(skuAttrId,cacheValue);
-//                           }else{
-//                               cskuAttrIdsQty.put(skuAttrIdNoSn,cacheValue);
-//                           }
-//                           containerSkuAttrIdsQty.put(icId, cskuAttrIdsQty);
-//                           isCmd.setcSkuAttrIdsQty(containerSkuAttrIdsQty);
-//                       }
                     } else {
                         log.error("sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, scanSkuQty, logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_RCVD_QTY);
