@@ -3,8 +3,10 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
@@ -31,12 +34,14 @@ import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WorkTypeDao;
@@ -54,6 +59,7 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
@@ -64,6 +70,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("createInWarehouseMoveWorkManager")
 @Transactional
@@ -111,6 +119,12 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     private WhLocationInvVolumeWieghtManager whLocationInvVolumeWieghtManager;
     @Autowired
     private UomDao uomDao;
+    @Autowired
+    private Container2ndCategoryDao container2ndCategoryDao;
+    @Autowired
+    private WhSkuDao whSkuDao;
+    @Autowired
+    private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
     
     
     /**
@@ -854,47 +868,6 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             operationExecLine.setIsUseNew(false);
             whOperationExecLineDao.insert(operationExecLine);    
         }
-    }
-    
-    /**
-     * [业务方法] 判断目标库位体积和重量
-     * @param 
-     * @param 
-     * @return
-     */
-    @Override
-    public Boolean calculateVolumeAndWeight(Long toLocationId, Long ouId) {
-        Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();   //长度，度量单位转换率
-        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();  //重量，度量单位转换率
-        List<UomCommand> lenUomCmds = null;   //长度度量单位
-        List<UomCommand> weightUomCmds = null;   //重量度量单位
-        lenUomCmds = uomDao.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
-        for (UomCommand lenUom : lenUomCmds) {
-            String uomCode = "";
-            Double uomRate = 0.0;
-            if (null != lenUom) {
-                uomCode = lenUom.getUomCode();
-                uomRate = lenUom.getConversionRate();
-                lenUomConversionRate.put(uomCode, uomRate);
-            }
-        }
-        weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
-        for (UomCommand lenUom : weightUomCmds) {
-            String uomCode = "";
-            Double uomRate = 0.0;
-            if (null != lenUom) {
-                uomCode = lenUom.getUomCode();
-                uomRate = lenUom.getConversionRate();
-                weightUomConversionRate.put(uomCode, uomRate);
-            }
-        }
-        Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
-        uomMap.put(WhUomType.LENGTH_UOM, lenUomConversionRate);
-        uomMap.put(WhUomType.WEIGHT_UOM, weightUomConversionRate);
-        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(toLocationId, ouId, uomMap, logId);
-        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
-        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
-        return true;
     }
     
 }

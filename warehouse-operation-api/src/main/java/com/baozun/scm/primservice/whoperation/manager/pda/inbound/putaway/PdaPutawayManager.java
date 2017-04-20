@@ -15,7 +15,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
@@ -180,5 +179,20 @@ public interface PdaPutawayManager extends BaseManager {
      * @return
      */
     ScanResultCommand sysGuidePutawayCancel(String containerCode, String insideContainerCode, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Integer cancelPattern, Long ouId, Long userId, String logId);
+    
+    /**
+     * 上架完成
+     * @author lichuan
+     * @param containerCode
+     * @param insideContainerCode
+     * @param locationCode
+     * @param funcId
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @return
+     */
+    ScanResultCommand sysGuideFinishPutaway(String containerCode, String insideContainerCode, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
 }
