@@ -5343,7 +5343,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         Set<Long> invSkuIds = new HashSet<Long>();
         if(Constants.PICKING_WAY_SIX == pickingWay){   //整箱拣货
             //到库存表中查询
-            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId,outerContainerId,insideContainerId);
+            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
             if(null == allSkuInvList || allSkuInvList.size() == 0){
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
             }
@@ -5366,7 +5366,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }else if(Constants.PICKING_WAY_FIVE == pickingWay){  //整托拣货
             //到库存表中查询
-            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId,outerContainerId,null);
+            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId,outerContainerId,null);
             if(null == allSkuInvList || allSkuInvList.size() == 0){
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
             }
@@ -5387,7 +5387,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }else{//非整托整箱
             //到库存表中查询
-            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId,outerContainerId,insideContainerId);
+            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
             if(null == allSkuInvList || allSkuInvList.size() == 0){
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
             }  
@@ -5506,9 +5506,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(skuInvCmd, inv);
             inv.setLocationId(skuInvCmd.getLocationId());
-            if(isShortPicking){
-                inv.setOccupationCode(null);
-            }
+//            if(isShortPicking){
+//                inv.setOccupationCode(null);
+//            }
             inv.setInboundTime(new Date());
             inv.setOnHandQty(qty); 
             inv.setId(null);
@@ -5539,9 +5539,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(skuInvCmd, inv);
             inv.setLocationId(skuInvCmd.getLocationId());
-            if(isShortPicking){
-                inv.setOccupationCode(null);
-            }
+//            if(isShortPicking){
+//                inv.setOccupationCode(null);
+//            }
             inv.setInboundTime(new Date());
             inv.setOnHandQty(qty); 
             inv.setId(null);
@@ -5663,7 +5663,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(skuInvCmd, inv);
             inv.setLocationId(null);
-            inv.setOccupationCode(null);
             inv.setInboundTime(new Date()); 
             inv.setOnHandQty(Double.valueOf(qty));
             inv.setId(null);

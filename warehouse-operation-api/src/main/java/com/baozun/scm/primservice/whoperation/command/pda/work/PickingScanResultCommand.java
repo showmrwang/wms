@@ -189,6 +189,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否需要出库箱编码 */
     private Boolean isNeedScanOutBounxBox = false; // ispicking = 3,4是为true
 
+    private Boolean isNeedScanLatticeNo = false;// 是否要扫描货格
     /** 货格号 */
     private Integer useContainerLatticeNo;
     /** 是否短拣 */
@@ -1165,4 +1166,13 @@ public class PickingScanResultCommand extends BaseCommand {
         this.cancelPattern = cancelPattern;
     }
 
+    public Boolean getIsNeedScanLatticeNo() {
+        return isNeedScanLatticeNo;
+    }
+
+    public void setIsNeedScanLatticeNo(Boolean isNeedScanLatticeNo) {
+        this.isNeedScanLatticeNo = isNeedScanLatticeNo;
+    }
+
+    
 }

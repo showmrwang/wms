@@ -422,6 +422,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
             line.setPlanQty(lineCommand.getQty());
+            // @mender yimin.lu 2017/4/20 QTY
+            line.setQty(lineCommand.getQty());
             line.setLinePrice(lineCommand.getLinePrice());
             line.setLineAmt(lineCommand.getLineAmt());
         } else {
