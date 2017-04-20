@@ -534,7 +534,7 @@ public interface PdaPutawayCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(Long tipLocationId,Boolean isCancel,Map<Long, Map<String, Long>>  containerSkuAttrIdsQty,Boolean isRecommendFail,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
+    public CheckScanSkuResultCommand sysSuggestSplitContainerPutawayTipSkuOrContainer(List<Long> locationIds,Long tipLocationId,Boolean isCancel,Boolean isRecommendFail,Map<Long, Set<String>> locSkuAttrIds,Integer scanPattern,ContainerCommand ocCmd, ContainerCommand icCmd, Set<Long> insideContainerIds, Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty,
                                                                                            Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, Map<Long, Set<String>> insideContainerSkuAttrIds,  WhSkuCommand skuCmd, String logId);
 
     /***

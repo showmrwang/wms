@@ -61,6 +61,8 @@ public final class CacheConstants {
 
     public static final String SCAN_SKU_QUEUE_SN = "SCAN_SKU_QUEUE_SN";
     
+    public static final String SUGGEST_SCAN_SKU_QUEUE_SN = "SUGGEST_SCAN_SKU_QUEUE_SN";
+    
     /***
      *  缓存sku,sn
      */

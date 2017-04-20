@@ -735,17 +735,30 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         this.closePoToInfo(infoPo.getId(), infoPo.getOuId(), infoPo.getModifiedId());
         //关闭集团下的po单
         if (PoAsnStatus.BIPO_CLOSE == bipo.getStatus()) {
-            List<BiPoLine> bipoLineList = this.biPoLineDao.findBiPoLineByPoIdAndUuid(bipo.getId(), null);
-            if (bipoLineList != null && bipoLineList.size() > 0) {
-                for (BiPoLine line : bipoLineList) {
-                    line.setStatus(PoAsnStatus.BIPOLINE_CLOSE);
-                    int count=this.biPoLineDao.saveOrUpdateByVersion(line);
-                    if(count<=0){
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
+            this.closeBiPo(bipo.getId());
+        }
+    }
+
+    // TODO
+    // @author yimin.lu 2017/4/20 关闭集团下PO单 方法单元
+    private void closeBiPo(Long bipoId) {
+        BiPo biPo = this.biPoDao.findById(bipoId);
+        biPo.setStatus(PoAsnStatus.BIPO_CLOSE);
+        int updateCount = this.biPoDao.saveOrUpdateByVersion(biPo);
+        if (updateCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        List<BiPoLine> bipoLineList = this.biPoLineDao.findBiPoLineByPoIdAndUuid(bipoId, null);
+        if (bipoLineList != null && bipoLineList.size() > 0) {
+            for (BiPoLine line : bipoLineList) {
+                line.setStatus(PoAsnStatus.BIPOLINE_CLOSE);
+                int count = this.biPoLineDao.saveOrUpdateByVersion(line);
+                if (count <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
             }
         }
+
     }
 
     private void snycPoToInfoWhenRcvdFinished(WhPo infoPo, List<WhPoLine> lineList) {
