@@ -42,7 +42,9 @@ public class WhCheckingCollection extends BaseModel {
     /** 小批次 */
     private String batch;
     /** 集货状态 */
-    private String collectionStatus;
+    private Integer collectionStatus;
+    /** 波次号 */
+    private String waveCode;
     /** 对应组织ID */
     private Long ouId;
     /** 外部容器，小车 */
@@ -63,6 +65,14 @@ public class WhCheckingCollection extends BaseModel {
     // columns END
     public Long getFacilityId() {
         return facilityId;
+    }
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
     }
 
     public void setFacilityId(Long facilityId) {
@@ -101,11 +111,11 @@ public class WhCheckingCollection extends BaseModel {
         this.batch = batch;
     }
 
-    public String getCollectionStatus() {
+    public Integer getCollectionStatus() {
         return collectionStatus;
     }
 
-    public void setCollectionStatus(String collectionStatus) {
+    public void setCollectionStatus(Integer collectionStatus) {
         this.collectionStatus = collectionStatus;
     }
 

@@ -33,7 +33,7 @@ public class WhCheckingCollectionCommand extends BaseCommand {
     /** 小批次 */
     private String batch;
     /** 集货状态 */
-    private String collectionStatus;
+    private Integer collectionStatus;
     /** 对应组织ID */
     private Long ouId;
     /** 外部容器，小车 */
@@ -99,11 +99,11 @@ public class WhCheckingCollectionCommand extends BaseCommand {
         this.batch = batch;
     }
 
-    public String getCollectionStatus() {
+    public Integer getCollectionStatus() {
         return collectionStatus;
     }
 
-    public void setCollectionStatus(String collectionStatus) {
+    public void setCollectionStatus(Integer collectionStatus) {
         this.collectionStatus = collectionStatus;
     }
 

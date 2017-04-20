@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationInvVolumeWeightCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.InWarehouseMoveWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
@@ -25,12 +27,15 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
+import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
@@ -41,10 +46,16 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.rule.WhLocationInvVolumeWieghtManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
@@ -88,6 +99,18 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     private AreaDao areaDao;
     @Autowired
     private WhLocationDao locationDao;
+    @Autowired
+    private WhWorkLineManager whWorkLineManager;
+    @Autowired
+    private WhOperationManager whOperationManager;
+    @Autowired
+    private WhOperationLineManager whOperationLineManager;
+    @Autowired
+    private WhOperationExecLineDao whOperationExecLineDao;
+    @Autowired
+    private WhLocationInvVolumeWieghtManager whLocationInvVolumeWieghtManager;
+    @Autowired
+    private UomDao uomDao;
     
     
     /**
@@ -200,12 +223,13 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @return
      */
     @Override
-    public void createInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, Long ouId, Long userId) {
+    public String createInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, Long ouId, Long userId) {
+        String inWarehouseMoveWorkCode = "";
         try {
             WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand = inWarehouseMoveWorkCommand.getWhSkuInventoryAllocatedCommandLst().get(0);
             Long toLocationId = inWarehouseMoveWorkCommand.getToLocationId();
             // 6.创建库内移动工作头
-            String inWarehouseMoveWorkCode = this.saveInWarehouseMoveWork(whSkuInventoryAllocatedCommand, ouId, userId);
+            inWarehouseMoveWorkCode = this.saveInWarehouseMoveWork(whSkuInventoryAllocatedCommand, ouId, userId);
             // 7.创建库内移动工作明细
             for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : inWarehouseMoveWorkCommand.getWhSkuInventoryAllocatedCommandLst()){
                 this.saveInWarehouseMoveWorkLine(inWarehouseMoveWorkCode, skuInventoryAllocatedCommand, toLocationId, userId);
@@ -217,7 +241,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             this.saveInWarehouseMoveWorkOperationLine(inWarehouseMoveWorkCode, inWarehouseMoveWorkOperationCode, whSkuInventoryAllocatedCommand);
         } catch (Exception e) {
             log.error("", e);
-        }    
+        }
+        return inWarehouseMoveWorkCode;    
     }
     
     /**
@@ -814,8 +839,63 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @return
      */
     @Override
-    public void executeInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, Long ouId, Long userId) {
-        // TODO Auto-generated method stub
+    public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId) {
+        // 获取工作头信息        
+        WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(inWarehouseMoveWorkCode, ouId);
+        WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWorkCommand.getId(), ouId);
+        List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), ouId);
+        for(WhOperationLineCommand operationLineCommand : whOperationLineCommandLst){
+            WhOperationExecLine operationExecLine = new WhOperationExecLine();
+            // 将operationLineCommand基本信息复制到operationExecLine中
+            BeanUtils.copyProperties(operationLineCommand, operationExecLine);
+            // 是否短拣
+            operationExecLine.setIsShortPicking(false);
+            // 是否使用新的出库箱/周转箱
+            operationExecLine.setIsUseNew(false);
+            whOperationExecLineDao.insert(operationExecLine);    
+        }
     }
+    
+    /**
+     * [业务方法] 判断目标库位体积和重量
+     * @param 
+     * @param 
+     * @return
+     */
+    @Override
+    public Boolean calculateVolumeAndWeight(Long toLocationId, Long ouId) {
+        Map<String, Double> lenUomConversionRate = new HashMap<String, Double>();   //长度，度量单位转换率
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();  //重量，度量单位转换率
+        List<UomCommand> lenUomCmds = null;   //长度度量单位
+        List<UomCommand> weightUomCmds = null;   //重量度量单位
+        lenUomCmds = uomDao.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : lenUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                lenUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
+        uomMap.put(WhUomType.LENGTH_UOM, lenUomConversionRate);
+        uomMap.put(WhUomType.WEIGHT_UOM, weightUomConversionRate);
+        LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(toLocationId, ouId, uomMap, logId);
+        Double livwVolume = livw.getVolume();// 库位上已有货物总体积
+        Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+        return true;
+    }
+    
 }
 

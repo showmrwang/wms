@@ -90,7 +90,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="customerName!=null and customerName!=''">
 					and customer_name = #{customerName}
 				</if>
-	       
+				
 	       
 		       <if test="storeCode!=null and storeCode!=''">
 					and store_code = #{storeCode}

@@ -26,7 +26,7 @@ public class WhSeedingCollectionCommand extends BaseCommand {
     private static final long serialVersionUID = 8610455402243874039L;
 
     // columns START
-    /** id */
+    /** id*/
     private Long id;
     /** 播种墙ID */
     private Long facilityId;
@@ -38,10 +38,26 @@ public class WhSeedingCollectionCommand extends BaseCommand {
     private Long containerId;
     /** 小批次 */
     private String batch;
-    /** 播种状态*/
+    /** 波次号 */
+    private String waveCode;
+    /** 集货状态 */
     private Integer collectionStatus;
     /** 对应组织ID */
     private Long ouId;
+    /** 外部容器，小车 */
+    private Long outerContainerId;
+    /** 货格编码数 */
+    private Integer containerLatticeNo;
+    /** 耗材ID */
+    private Long outboundboxId;
+    /** 出库箱编码 */
+    private String outboundboxCode;
+    /** 配货模式 */
+    private String distributionMode;
+    /** 拣货模式 */
+    private String pickingMode;
+    /** 复核模式 */
+    private String checkingMode;
 
     // ===============自定义字段===============
     /** 播种墙编码*/
@@ -51,11 +67,6 @@ public class WhSeedingCollectionCommand extends BaseCommand {
 
     // columns END
 
-    public WhSeedingCollectionCommand() {}
-
-    public WhSeedingCollectionCommand(Long id) {
-        this.id = id;
-    }
 
     public Long getId() {
         return id;
@@ -136,4 +147,69 @@ public class WhSeedingCollectionCommand extends BaseCommand {
     public void setContainerCode(String containerCode) {
         this.containerCode = containerCode;
     }
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
+    }
+
+    public Long getOuterContainerId() {
+        return outerContainerId;
+    }
+
+    public void setOuterContainerId(Long outerContainerId) {
+        this.outerContainerId = outerContainerId;
+    }
+
+    public Integer getContainerLatticeNo() {
+        return containerLatticeNo;
+    }
+
+    public void setContainerLatticeNo(Integer containerLatticeNo) {
+        this.containerLatticeNo = containerLatticeNo;
+    }
+
+    public Long getOutboundboxId() {
+        return outboundboxId;
+    }
+
+    public void setOutboundboxId(Long outboundboxId) {
+        this.outboundboxId = outboundboxId;
+    }
+
+    public String getOutboundboxCode() {
+        return outboundboxCode;
+    }
+
+    public void setOutboundboxCode(String outboundboxCode) {
+        this.outboundboxCode = outboundboxCode;
+    }
+
+    public String getDistributionMode() {
+        return distributionMode;
+    }
+
+    public void setDistributionMode(String distributionMode) {
+        this.distributionMode = distributionMode;
+    }
+
+    public String getPickingMode() {
+        return pickingMode;
+    }
+
+    public void setPickingMode(String pickingMode) {
+        this.pickingMode = pickingMode;
+    }
+
+    public String getCheckingMode() {
+        return checkingMode;
+    }
+
+    public void setCheckingMode(String checkingMode) {
+        this.checkingMode = checkingMode;
+    }
+
 }

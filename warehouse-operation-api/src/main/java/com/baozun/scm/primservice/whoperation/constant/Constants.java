@@ -42,6 +42,9 @@ public final class Constants {
 
     /** 调编码生成器Asn预约实体标识 */
     public static final String ASN_RESERVE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve";
+    
+    /** 调编码生成器 发票实体标识 */
+    public static final String INVOICE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoice";
 
     /** 波次明细 */
     public static final String WAVE_LINE_URL = "com.baozun.scm.primservice.whinfo.model.odo.wave.WhWaveLine";
@@ -776,6 +779,8 @@ public final class Constants {
     public static final String TIP_OUTBOUND_BOX_OR_NO = "OUTBOUND_BOX_OR_NO";
     /** 按单复核:提示已经完成复核 */
     public static final String TIP_FINISH = "FINISH";
+    /** 按单复核:提示扫描批次号*/
+    public static final String TIP_BATCH = "BATCH";
 
     /** 按单复核方式:小车出库箱流程 */
     public static final int CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX = 1;
@@ -806,6 +811,12 @@ public final class Constants {
     public static final String SHOW_CODE_EC_ORDER_CODE = "2";
     /** 外部对接码 */
     public static final String SHOW_CODE_EXT_CODE = "3";
+
+    /** 消费者退货入收货店铺 */
+    public static final String STORE_RETURNEDPURCHASESTORE_INBOUND = "inbound";
+    public static final String STORE_RETURNEDPURCHASESTORE_OUTBOUND = "outbound";
+    /** 拣货功能页面*/
+    public static final String PICKING_WORK_PAGE = "PICKING_WORK_PAGE";
 
 
 }

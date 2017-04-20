@@ -634,6 +634,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <delete id="deleteOdoOutBoundBoxLineSn" parameterType="map">
 			delete from t_wh_outboundbox_line_sn where wh_outboundbox_line_id in (select id from t_wh_outboundbox_line where odo_id = #{odoid} and ou_id = #{ouid}) and ou_id = #{ouid}
 	 </delete>
+	 <delete id="deleteOdoDeliveryInfo" parameterType="map">
+			delete from t_wh_odo_delivery_info where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
 	 
 	 	<insert id="saveOdoArchivIndex" parameterType="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex" 
 				useGeneratedKeys="true" keyProperty="id" 
@@ -868,6 +871,48 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
+		</insert>
+		
+		<insert id="archivWhOdodeliveryInfo" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo" 			
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_odo_delivery_info_archiv${sysDate} (
+		        	id,
+		        	odo_id ,
+		        	transport_code ,
+		        	waybill_code ,
+		        	transport_service_type ,
+		        	time_effect_type ,
+		        	delivery_info_id ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	status ,
+		        	ou_id ,
+		        	lifecycle ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportServiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{timeEffectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{deliveryInfoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
 		</insert>
 		
 		<select id="findOdoByCodeAndSysDate" resultMap="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao.WhOdoResult">

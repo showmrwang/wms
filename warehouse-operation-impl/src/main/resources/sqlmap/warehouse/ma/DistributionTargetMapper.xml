@@ -33,7 +33,8 @@
                 create_id as createId,
                 create_time as createTime,
                 last_modify_time as lastModifyTime,
-                modified_id as modifiedId
+            	modified_id as modifiedId,
+            	distribution_target_group as distributionTargetGroup
         ]]>
     </sql>
     <sql id="distributionTargetConditionWhereExt">
@@ -134,7 +135,8 @@
                     create_id ,
                     create_time ,
                     last_modify_time ,
-                    modified_id 
+                    modified_id ,
+                    distribution_target_group
                 ) VALUES (
                 #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -156,7 +158,8 @@
                     #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR}
                 )
             ]]>
 
@@ -184,7 +187,8 @@
                 create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                 last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                distribution_target_group = #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR}
             WHERE 
                 id = #{id} 
         ]]>

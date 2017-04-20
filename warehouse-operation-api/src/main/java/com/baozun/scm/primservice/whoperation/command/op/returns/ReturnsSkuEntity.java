@@ -15,9 +15,20 @@ public class ReturnsSkuEntity implements Serializable {
 
     private String skuOptUrl;
 
+    private String serialNumberType;
+
     private List<ReturnsSnEntity> snEntityList = new ArrayList<ReturnsSnEntity>();
 
     private List<Long> lineIdList = new ArrayList<Long>();
+
+
+    public String getSerialNumberType() {
+        return serialNumberType;
+    }
+
+    public void setSerialNumberType(String serialNumberType) {
+        this.serialNumberType = serialNumberType;
+    }
 
     public String getSkuId() {
         return skuId;

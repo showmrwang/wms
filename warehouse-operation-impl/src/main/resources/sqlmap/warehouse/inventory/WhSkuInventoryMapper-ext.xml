@@ -3141,6 +3141,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     and odo.odo_code = inv.occupation_code
                     and inv.occupation_code IS NOT NULL
                     and inv.ou_id = #{ouId}
+                    and inv.location_id = #{locationId}
                     and operLine.operation_id = #{operationId}
                    <if test="outerContainerId!=null and outerContainerId!=''">
 					 and inv.outer_container_id = #{outerContainerId}
@@ -3969,7 +3970,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t_wh_sku_inventory inv  
 			left join t_wh_sku sku on inv.sku_id = sku.id 
 			left join t_wh_odo odo on inv.occupation_code = odo.odo_code
-		where 
+		<where> 
 				<if test="outerContainerId!=null">
 					and inv.outer_container_id = #{outerContainerId}
 				</if>
@@ -3983,6 +3984,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and inv.ou_id = #{ouId}
 				</if>
+		</where>
 		group by inv.uuid 
     </select>
 </mapper>

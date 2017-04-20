@@ -71,6 +71,8 @@ public class DistributionTarget extends BaseModel {
     private Long modifiedId;
     /** 用于全局表最后修改时间统一 */
     private Date globalLastModifyTime;
+    /** 配送对象分组 */
+    private String distributionTargetGroup;
 
     public String getType() {
         return type;
@@ -239,4 +241,13 @@ public class DistributionTarget extends BaseModel {
     public void setGlobalLastModifyTime(Date globalLastModifyTime) {
         this.globalLastModifyTime = globalLastModifyTime;
     }
+
+    public String getDistributionTargetGroup() {
+        return distributionTargetGroup;
+    }
+
+    public void setDistributionTargetGroup(String distributionTargetGroup) {
+        this.distributionTargetGroup = distributionTargetGroup;
+    }
+
 }

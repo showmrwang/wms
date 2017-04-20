@@ -10,7 +10,6 @@ public class WhOdodeliveryInfo extends BaseModel {
      * 
      */
     private static final long serialVersionUID = 163233353819006528L;
-    // columns START
     /** 出库单ID */
     private Long odoId;
     /** 物流商编码 */
@@ -42,7 +41,9 @@ public class WhOdodeliveryInfo extends BaseModel {
     /** 修改人ID */
     private Long modifiedId;
 
-    // columns END
+    /** 当前月份 用于归档 */
+    private String sysDate;
+
     public Long getOdoId() {
         return odoId;
     }
@@ -162,4 +163,13 @@ public class WhOdodeliveryInfo extends BaseModel {
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
     }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
 }

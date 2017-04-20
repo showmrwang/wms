@@ -61,6 +61,11 @@ public final class CacheConstants {
 
     public static final String SCAN_SKU_QUEUE_SN = "SCAN_SKU_QUEUE_SN";
     
+    /***
+     *  缓存sku,sn
+     */
+    public static final String PDA_PICKING_SCAN_SKU_SN = "PDA_PICKING_SCAN_SKU_SN";
+
     /** 人工上架:扫sn */
     public static final String PDA_MAN_MANDE_SCAN_SKU_SN = "MAN_MANDE_SCAN_SKU_SN";
     /** 人工上架:扫sn/残次 */
@@ -141,6 +146,8 @@ public final class CacheConstants {
     public static final String PDA_CACHE_COLLECTION_REC_FAIL = "CACHE_COLLECTION_REC_FAIL";
     /** 人为集货-集货推荐结果缓存 */
     public static final String PDA_CACHE_MANUAL_COLLECTION_REC = "CACHE_MANUAL_COLLECTION_REC";
+    /** 拣货集货推荐路径缓存: 前缀+USERID*/
+    public static final String PDA_CACHE_PICKING_COLLECTION_REC = "CACHE_PICKING_COLLECTION_REC";
 
 
 }

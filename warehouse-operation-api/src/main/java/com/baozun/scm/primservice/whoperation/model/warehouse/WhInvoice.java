@@ -20,19 +20,23 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
  * t_wh_invoice
+ * 
  * @author larkark
  *
  */
 public class WhInvoice extends BaseModel {
 
     private static final long serialVersionUID = 1867408384084341026L;
-    
-    // columns START
+
+    /** WMS发票流水号 */
+    private String code;
     /** 出库单编码 */
     private String odoCode;
+    /** 导出序列 */
+    private String index;
     /** 店铺编码 */
     private String storeCode;
-    /** 发票抬头 */
+    /** 上位系统发票流水号 */
     private String invoiceCode;
     /** 发票日期 */
     private String invoiceDate;
@@ -74,13 +78,9 @@ public class WhInvoice extends BaseModel {
     private Long operatorId;
     /** 是否导出 */
     private Boolean isExport;
-    // columns END
+    /** 最后导出时间 */
+    private Date lastExportTime;
 
-    public WhInvoice() {}
-
-    public WhInvoice(Long id) {
-        this.id = id;
-    }
 
     public void setOdoCode(String odoCode) {
         this.odoCode = odoCode;
@@ -265,5 +265,28 @@ public class WhInvoice extends BaseModel {
     public void setIsExport(Boolean isExport) {
         this.isExport = isExport;
     }
-}
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public Date getLastExportTime() {
+        return lastExportTime;
+    }
+
+    public void setLastExportTime(Date lastExportTime) {
+        this.lastExportTime = lastExportTime;
+    }
+}

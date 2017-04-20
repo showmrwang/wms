@@ -8,23 +8,24 @@ import java.util.Map;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
+
 /**
  * 作业明细统计
  * 
  * @author qiming.liu
  *
  */
-public class OperatioLineStatisticsCommand extends BaseCommand{
+public class OperatioLineStatisticsCommand extends BaseCommand {
 
     /**
      * 
      */
     private static final long serialVersionUID = -9131853146971418614L;
 
-    //columns START
+    // columns START
     /** 小批次*/
     private String batch;
-    //流程相关统计信息 
+    // 流程相关统计信息
     /** 是否整托整箱 */
     private Boolean isWholeCase;
     /** 所有小车 */
@@ -38,9 +39,9 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     /** 所有托盘 */
     private Set<Long> pallets = new HashSet<Long>();
     /** 所有货箱 */
-    private Set<Long> containers= new HashSet<Long>();
-    
-    // 库位商品统计信息 
+    private Set<Long> containers = new HashSet<Long>();
+
+    // 库位商品统计信息
     /** 所有库位 */
     private List<Long> locationIds = new ArrayList<Long>();
     /** 库位上所有外部容器 */
@@ -69,152 +70,278 @@ public class OperatioLineStatisticsCommand extends BaseCommand{
     private Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     /** 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车） */
     private Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
-    
-    //追加统计信息
-    
+
+    // 货格相关统计信息
+    /** 所有货格 */
+    private Set<Integer> lattices = new HashSet<Integer>();
+    /** 货格对应库位 */
+    private Map<Integer, Set<Long>> latticeToLocation = new HashMap<Integer, Set<Long>>();
+    /** 货格库位对应外部容器 */
+    private Map<String, Set<Long>> locationToOuterContainer = new HashMap<String, Set<Long>>();
+    /** 货格库位外部容器对应内部容器 */
+    private Map<String, Set<Long>> outerToInsideContainer = new HashMap<String, Set<Long>>();
+    /** 货格库位外部容器内部容器对应唯一sku和数量 */
+    private Map<String, Map<Long, Long>> outerAndInsideToOnlySku = new HashMap<String, Map<Long, Long>>();
+    /** 货格库位对应内部容器 */
+    private Map<String, Set<Long>> locationToInsideContainer = new HashMap<String, Set<Long>>();
+    /** 货格库位内部容器对应唯一sku和数量 */
+    private Map<String, Map<Long, Long>> insideToOnlySku = new HashMap<String, Map<Long, Long>>();
+    /** 货格库位对应唯一sku和数量 */
+    private Map<String, Map<Long, Long>> locationToOnlySku = new HashMap<String, Map<Long, Long>>();
+
+    // 追加统计信息
+
     /** 唯一sku与工作明细ID和uuid对应关系 */
     private Map<String, String> workLineIdToOnlySku = new HashMap<String, String>();
-    
-    //columns END
+
+    // columns END
 
     public Boolean getIsWholeCase() {
         return isWholeCase;
     }
+
     public void setIsWholeCase(Boolean isWholeCase) {
         this.isWholeCase = isWholeCase;
     }
+
     public Set<Long> getOuterContainers() {
         return outerContainers;
     }
+
     public void setOuterContainers(Set<Long> outerContainers) {
         this.outerContainers = outerContainers;
     }
+
     public Set<String> getOutbounxBoxs() {
         return outbounxBoxs;
     }
+
     public void setOutbounxBoxs(Set<String> outbounxBoxs) {
         this.outbounxBoxs = outbounxBoxs;
     }
+
     public Set<Long> getTurnoverBoxs() {
         return turnoverBoxs;
     }
+
     public void setTurnoverBoxs(Set<Long> turnoverBoxs) {
         this.turnoverBoxs = turnoverBoxs;
     }
+
     public Set<Long> getPallets() {
         return pallets;
     }
+
     public void setPallets(Set<Long> pallets) {
         this.pallets = pallets;
     }
+
     public Set<Long> getContainers() {
         return containers;
     }
+
     public void setContainers(Set<Long> containers) {
         this.containers = containers;
     }
+
     public Map<Long, Set<Long>> getOuterContainerIds() {
         return outerContainerIds;
     }
+
     public void setOuterContainerIds(Map<Long, Set<Long>> outerContainerIds) {
         this.outerContainerIds = outerContainerIds;
     }
+
     public Map<Long, Set<Long>> getInsideContainerIds() {
         return insideContainerIds;
     }
+
     public void setInsideContainerIds(Map<Long, Set<Long>> insideContainerIds) {
         this.insideContainerIds = insideContainerIds;
     }
+
     public Map<Long, Set<Long>> getSkuIds() {
         return skuIds;
     }
+
     public void setSkuIds(Map<Long, Set<Long>> skuIds) {
         this.skuIds = skuIds;
     }
+
     public Map<Long, Set<Long>> getOuterToInside() {
         return outerToInside;
     }
+
     public void setOuterToInside(Map<Long, Set<Long>> outerToInside) {
         this.outerToInside = outerToInside;
     }
+
     public Map<Long, Set<Long>> getInsideSkuIds() {
         return insideSkuIds;
     }
+
     public void setInsideSkuIds(Map<Long, Set<Long>> insideSkuIds) {
         this.insideSkuIds = insideSkuIds;
     }
+
     public Map<Integer, String> getCarStockToOutgoingBox() {
         return carStockToOutgoingBox;
     }
+
     public void setCarStockToOutgoingBox(Map<Integer, String> carStockToOutgoingBox) {
         this.carStockToOutgoingBox = carStockToOutgoingBox;
     }
+
     public List<Long> getLocationIds() {
         return locationIds;
     }
+
     public void setLocationIds(List<Long> locationIds) {
         this.locationIds = locationIds;
     }
+
     public Map<Long, Map<Long, Long>> getSkuQty() {
         return skuQty;
     }
+
     public void setSkuQty(Map<Long, Map<Long, Long>> skuQty) {
         this.skuQty = skuQty;
     }
+
     public Map<Long, Map<Long, Map<String, Long>>> getSkuAttrIds() {
         return skuAttrIds;
     }
+
     public void setSkuAttrIds(Map<Long, Map<Long, Map<String, Long>>> skuAttrIds) {
         this.skuAttrIds = skuAttrIds;
     }
+
     public Map<Long, Map<Long, Long>> getInsideSkuQty() {
         return insideSkuQty;
     }
+
     public void setInsideSkuQty(Map<Long, Map<Long, Long>> insideSkuQty) {
         this.insideSkuQty = insideSkuQty;
     }
+
     public Map<Long, Map<Long, Map<String, Long>>> getInsideSkuAttrIds() {
         return insideSkuAttrIds;
     }
+
     public void setInsideSkuAttrIds(Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds) {
         this.insideSkuAttrIds = insideSkuAttrIds;
     }
+
     public Map<Long, Map<String, Set<String>>> getSkuAttrIdsSnDefect() {
         return skuAttrIdsSnDefect;
     }
+
     public void setSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect) {
         this.skuAttrIdsSnDefect = skuAttrIdsSnDefect;
     }
+
     public Map<Long, Map<String, Set<String>>> getInsideSkuAttrIdsSnDefect() {
         return insideSkuAttrIdsSnDefect;
     }
+
     public void setInsideSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect) {
         this.insideSkuAttrIdsSnDefect = insideSkuAttrIdsSnDefect;
     }
+
     public Map<Long, Map<String, Set<String>>> getSkuAttrIdsContainerLattice() {
         return skuAttrIdsContainerLattice;
     }
+
     public void setSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<String>>> skuAttrIdsContainerLattice) {
         this.skuAttrIdsContainerLattice = skuAttrIdsContainerLattice;
     }
+
     public Map<Long, Map<String, Set<String>>> getInsideSkuAttrIdsContainerLattice() {
         return insideSkuAttrIdsContainerLattice;
     }
+
     public void setInsideSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice) {
         this.insideSkuAttrIdsContainerLattice = insideSkuAttrIdsContainerLattice;
     }
+
     public Map<String, String> getWorkLineIdToOnlySku() {
         return workLineIdToOnlySku;
     }
+
     public void setWorkLineIdToOnlySku(Map<String, String> workLineIdToOnlySku) {
         this.workLineIdToOnlySku = workLineIdToOnlySku;
     }
+
     public String getBatch() {
         return batch;
     }
+
     public void setBatch(String batch) {
         this.batch = batch;
     }
-    
-    
+
+    public Set<Integer> getLattices() {
+        return lattices;
+    }
+
+    public void setLattices(Set<Integer> lattices) {
+        this.lattices = lattices;
+    }
+
+    public Map<Integer, Set<Long>> getLatticeToLocation() {
+        return latticeToLocation;
+    }
+
+    public void setLatticeToLocation(Map<Integer, Set<Long>> latticeToLocation) {
+        this.latticeToLocation = latticeToLocation;
+    }
+
+    public Map<String, Set<Long>> getLocationToOuterContainer() {
+        return locationToOuterContainer;
+    }
+
+    public void setLocationToOuterContainer(Map<String, Set<Long>> locationToOuterContainer) {
+        this.locationToOuterContainer = locationToOuterContainer;
+    }
+
+    public Map<String, Set<Long>> getOuterToInsideContainer() {
+        return outerToInsideContainer;
+    }
+
+    public void setOuterToInsideContainer(Map<String, Set<Long>> outerToInsideContainer) {
+        this.outerToInsideContainer = outerToInsideContainer;
+    }
+
+    public Map<String, Map<Long, Long>> getOuterAndInsideToOnlySku() {
+        return outerAndInsideToOnlySku;
+    }
+
+    public void setOuterAndInsideToOnlySku(Map<String, Map<Long, Long>> outerAndInsideToOnlySku) {
+        this.outerAndInsideToOnlySku = outerAndInsideToOnlySku;
+    }
+
+    public Map<String, Set<Long>> getLocationToInsideContainer() {
+        return locationToInsideContainer;
+    }
+
+    public void setLocationToInsideContainer(Map<String, Set<Long>> locationToInsideContainer) {
+        this.locationToInsideContainer = locationToInsideContainer;
+    }
+
+    public Map<String, Map<Long, Long>> getInsideToOnlySku() {
+        return insideToOnlySku;
+    }
+
+    public void setInsideToOnlySku(Map<String, Map<Long, Long>> insideToOnlySku) {
+        this.insideToOnlySku = insideToOnlySku;
+    }
+
+    public Map<String, Map<Long, Long>> getLocationToOnlySku() {
+        return locationToOnlySku;
+    }
+
+    public void setLocationToOnlySku(Map<String, Map<Long, Long>> locationToOnlySku) {
+        this.locationToOnlySku = locationToOnlySku;
+    }
+
 }

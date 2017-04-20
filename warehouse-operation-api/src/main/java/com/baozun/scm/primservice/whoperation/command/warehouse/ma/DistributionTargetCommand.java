@@ -84,6 +84,8 @@ public class DistributionTargetCommand extends BaseCommand {
     private String districtName;
     /** 配送对象乡镇/街道 */
     private String villagesTownsName;
+    /** 配送对象分组 */
+    private String distributionTargetGroup;
 
     public Long getId() {
         return id;
@@ -300,4 +302,13 @@ public class DistributionTargetCommand extends BaseCommand {
     public void setVillagesTownsName(String villagesTownsName) {
         this.villagesTownsName = villagesTownsName;
     }
+
+    public String getDistributionTargetGroup() {
+        return distributionTargetGroup;
+    }
+
+    public void setDistributionTargetGroup(String distributionTargetGroup) {
+        this.distributionTargetGroup = distributionTargetGroup;
+    }
+
 }

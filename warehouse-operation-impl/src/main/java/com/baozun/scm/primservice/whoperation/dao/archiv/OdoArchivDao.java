@@ -33,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
@@ -104,6 +105,14 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     int archivWhOdoLineAttr(WhOdoLineAttr whOdoLineAttr);
+
+    /***
+     * 归档whOdodeliveryInfo
+     * 
+     * @param whOdodeliveryInfo
+     * @return
+     */
+    int archivWhOdodeliveryInfo(WhOdodeliveryInfo whOdodeliveryInfo);
 
     /**
      * 归档whOdoTransportMgmt
@@ -263,6 +272,15 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
     int deleteOdoOutBoundBoxLineSn(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
 
     /**
+     * 删除WhOutDeliveryInfo
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoDeliveryInfo(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
      * 保存出库单索引数据(仓库)
      * 
      * @param whOdoArchivIndex
@@ -293,9 +311,10 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @version 2017年3月31日
      */
     List<WhOutboundboxLineSn> findWhOutboundboxSnLineArchivByOutBoundLineId(@Param("boxLineId") Long boxLineId, @Param("ouId") Long ouId, @Param("sysDate") String sysDate);
-    
+
     /**
      * 查找归档的odo信息
+     * 
      * @author kai.zhu
      * @version 2017年3月31日
      * @return

@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineAttrDao;
@@ -46,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
@@ -92,6 +94,8 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     private WhOutboundboxLineDao whOutboundboxLineDao;
     @Autowired
     private WhOutboundboxLineSnDao whOutboundboxLineSnDao;
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
 
     /***
      * 归档仓库Odo信息
@@ -133,6 +137,8 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count = archivWhOdoOutBoundBox(odoid, ouid, sysDate, count);
             // 归档Odo outboundBoxLine+outboundBoxLindSn信息
             count = archivWhOdoOutBoundBoxLine(odoid, ouid, sysDate, count);
+            // 归档odoDeliveryInfo by odoid
+            count = archivWhDeliveryInfo(odoid, ouid, sysDate, count);
             // 保存出库单索引数据(仓库) 只限于出库单状态为完成&&数据来源!=WMS
             if (OdoStatus.ODO_OUTSTOCK_FINISH.equals(whOdo.getOdoStatus()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())) {
                 WhOdoArchivIndex oai = new WhOdoArchivIndex();
@@ -153,6 +159,27 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
         }
         return count;
     }
+
+    /***
+     * 归档odoDeliveryInfo by odoid
+     * 
+     * @param odoid
+     * @param ouid
+     * @param sysDate
+     * @param count
+     * @return
+     */
+    private int archivWhDeliveryInfo(Long odoid, Long ouid, String sysDate, int count) {
+        // 查询对应odoDeliveryInfo信息
+        List<WhOdodeliveryInfo> whOdodeliveryInfos = whOdoDeliveryInfoDao.findWhOdodeliveryInfoByOdoId(odoid, ouid);
+        for (WhOdodeliveryInfo whOdodeliveryInfo : whOdodeliveryInfos) {
+            whOdodeliveryInfo.setSysDate(sysDate);
+            int diCount = odoArchivDao.archivWhOdodeliveryInfo(whOdodeliveryInfo);
+            count += diCount;
+        }
+        return count;
+    }
+
 
     /**
      * 归档odoLine+odoLineSn+odoLineAttr
@@ -385,6 +412,8 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count += odoLine;
             int odoAddress = odoArchivDao.deleteOdoAddress(odoid, ouid);
             count += odoAddress;
+            int odoDeliveryInfo = odoArchivDao.deleteOdoDeliveryInfo(odoid, ouid);
+            count += odoDeliveryInfo;
             int odo = odoArchivDao.deleteOdo(odoid, ouid);
             count += odo;
         } catch (Exception e) {
