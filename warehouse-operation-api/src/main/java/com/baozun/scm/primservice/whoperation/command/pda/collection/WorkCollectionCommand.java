@@ -76,6 +76,8 @@ public class WorkCollectionCommand extends BaseCommand {
     private Long lastLocationId;
     /** 区域id*/
     private Long areaId;
+    /** 是否强制开始集货*/
+    private boolean isForce;
 
     public Long getOuId() {
         return ouId;
@@ -323,6 +325,14 @@ public class WorkCollectionCommand extends BaseCommand {
 
     public void setAreaId(Long areaId) {
         this.areaId = areaId;
+    }
+
+    public boolean getIsForce() {
+        return isForce;
+    }
+
+    public void setIsForce(boolean isForce) {
+        this.isForce = isForce;
     }
 
 }
