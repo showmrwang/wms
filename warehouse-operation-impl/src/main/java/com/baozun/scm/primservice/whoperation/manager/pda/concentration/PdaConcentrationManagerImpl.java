@@ -599,15 +599,19 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 switch (targetType) {
                     case Constants.SEEDING_WALL:
                         whSeedingCollection.setFacilityId(command.getFacilityId());
+                        whSeedingCollection.setLocationId(null);
+                        whSeedingCollection.setTemporaryLocationId(null);
                         whSeedingCollection.setCollectionStatus(CollectionStatus.TO_SEED);
                         updateRecPath(workCollectionCommand.getBatch(), workCollectionCommand.getContainerCode(), ouId);
                         break;
                     case Constants.TEMPORARY_STORAGE_LOCATION:
+                        whSeedingCollection.setLocationId(null);
                         whSeedingCollection.setTemporaryLocationId(command.getTemporaryStorageLocationId());
                         whSeedingCollection.setCollectionStatus(CollectionStatus.TEMPORARY_STORAGE);
                         break;
                     case Constants.TRANSIT_LOCATION:
                         // TODO 接口需要添加
+                        whSeedingCollection.setTemporaryLocationId(null);
                         whSeedingCollection.setLocationId(command.getTransitLocationId());
                         whSeedingCollection.setCollectionStatus(CollectionStatus.TRANSFER);
                         break;
@@ -618,6 +622,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 if (0 >= cnt) {
                     return false;
                 }
+                checkBatchIsAllIntoSeedingWall(whSeedingCollection.getBatch(), workCollectionCommand.getUserId(), ouId);
             } else {
                 throw new BusinessException("状态不符合");
             }
@@ -625,6 +630,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         return true;
     }
 
+    /**
+     * [业务方法] 更新推荐路径状态
+     * @param batch
+     * @param containerCode
+     * @param ouId
+     */
     private void updateRecPath(String batch, String containerCode, Long ouId) {
         WhFacilityRecPath path = this.whFacilityRecPathDao.findWhFacilityRecPathByBatchAndContainer(batch, containerCode, ouId);
         if (null != path) {
@@ -636,12 +647,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
     }
 
+
     /**
-     * [业务方法] 移动容器
-     * 
-     * @param workCollectionCommand
-     * @return
-     */
+            * [业务方法] 移动容器
+            * 
+            * @param workCollectionCommand
+            * @return
+            */
     private Boolean moveContainer(WorkCollectionCommand workCollectionCommand, String cacheKey) {
         WhFacilityRecPathCommand command = this.findRecFacilityPathCommandByIndex(workCollectionCommand, cacheKey);
         Integer targetType = workCollectionCommand.getTargetType();
@@ -656,11 +668,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     switch (targetType) {
                         case Constants.TEMPORARY_STORAGE_LOCATION:
                             isMove = true;
+                            inv.setLocationId(null);
                             inv.setTemporaryLocationId(command.getTemporaryStorageLocationId());
                             break;
                         case Constants.TRANSIT_LOCATION:
                             isMove = true;
                             // TODO 接口需要添加
+                            inv.setTemporaryLocationId(null);
                             inv.setLocationId(command.getTransitLocationId());
                             break;
                         default:
@@ -1498,7 +1512,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         Long containerId = whCheckingCollection.getContainerId();
         Long outerContainerId = whCheckingCollection.getOuterContainerId();
         Integer containerLatticeNo = whCheckingCollection.getContainerLatticeNo();
-        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, whCheckingCollection.getOuId());
+        String outboundboxCode = whCheckingCollection.getOutboundboxCode();
+        if (null == containerId && null == outboundboxCode && null == outerContainerId && null == containerLatticeNo) {
+            throw new BusinessException("外部容器、内部容器、货格号、出库箱编码为空");
+        }
+
+        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, outboundboxCode, whCheckingCollection.getOuId());
         if (null != invList && !invList.isEmpty()) {
             for (WhCheckingCollectionLine inv : invList) {
                 if (null != inv.getStoreId()) {
