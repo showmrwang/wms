@@ -178,4 +178,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	              from t_wh_handover_station  
 	              where code=#{code}
 	</select>
+	
+	<select id="isTheSameCodeAndName" resultType="Integer">
+			     select
+					count(1)
+				from (
+						select *
+					from  t_wh_outboundbox
+						where outboundbox_code IN (
+									select outboundbox_code
+										from t_wh_handover_collection
+										<where>
+									       		handover_status = 1 or handover_status = 5
+										       <if test="handoverStationId!=null and handoverStationId!=''">
+													and handover_station_id = #{handoverStationId}
+												</if>
+									       
+												<if test="ouId!=null">
+													and ou_id = #{ouId}
+												</if>
+										</where>
+													)
+						GROUP BY customer_code,customer_name,store_name,store_code,transport_name,transport_code
+				) as a
+    </select>
+	
 </mapper>

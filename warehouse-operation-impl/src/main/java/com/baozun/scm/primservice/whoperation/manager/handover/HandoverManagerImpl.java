@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.handover;
 
+import java.util.Date;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.HandoverCollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
@@ -18,8 +20,10 @@ import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverDao;
+import com.baozun.scm.primservice.whoperation.dao.handover.HandoverLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -30,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -43,6 +48,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     @Autowired
     private HandoverDao handoverDao;
     @Autowired
+    private HandoverLineDao handoverLineDao;
+    @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
     private WhOutboundboxDao whOutboundboxDao;
@@ -50,6 +57,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private WhOdoDao whOdoDao;
     @Autowired
     private WhOdoLineDao whOdoLineDao;
+    @Autowired
+    private WhOdoPackageInfoDao whOdoPackageInfoDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -113,9 +122,47 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         handover.setHandoverStationId(handoverCollectionrecord.getHandoverStationId());
         handover.setHandoverStationType(handoverCollectionrecord.getHandoverStationType());
         handover.setOuId(ouId);
+        // 总出库箱数
+        Integer totalBox = handoverCollectionDao.findCountByHandoverStationIdAndStatus(hcList.get(0).getHandoverStationId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
+        handover.setTotalBox(totalBox);
+        // 计重
+        Long totalCalcWeight = 0L;
+        // 称重
+        Long totalActualWeight = 0L;
+        for (HandoverCollection handoverCollection : hcList) {
+            WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(handoverCollection.getOutboundboxCode());
+            if (null != whOdoPackageInfo) {
+                totalCalcWeight += whOdoPackageInfo.getCalcWeight();
+                totalActualWeight += whOdoPackageInfo.getActualWeight();
+            }
+        }
+        handover.setTotalActualWeight(totalActualWeight);
+        handover.setTotalCalcWeight(totalActualWeight);
+        handover.setCreateTime(new Date());
+        handover.setCreateId(userId);
+        handover.setLastModifyTime(new Date());
+        handover.setModifiedId(userId);
+        Integer isTheSameCodeAndName = handoverCollectionDao.isTheSameCodeAndName(handoverCollectionrecord.getHandoverStationId(), ouId);
+        if (1 == isTheSameCodeAndName) {
+            // 店铺运输客户都一样 交接头中保存客户店铺运输
+            String outboundboxCode = hcList.get(0).getOutboundboxCode();
+            WhOutboundbox whOutboundbox = new WhOutboundbox();
+            whOutboundbox.setOutboundboxCode(outboundboxCode);
+            List<WhOutboundbox> WhOutboundboxList = whOutboundboxDao.findListByParam(whOutboundbox);
+            WhOutboundbox outboundbox = WhOutboundboxList.get(0);
+            handover.setCustomerCode(outboundbox.getCustomerCode());
+            handover.setCustomerName(outboundbox.getCustomerName());
+            handover.setStoreCode(outboundbox.getStoreCode());
+            handover.setStoreName(outboundbox.getStoreName());
+            handover.setTransportCode(outboundbox.getTransportCode());
+            handover.setTransportName(outboundbox.getTransportName());
+
+        }
+
+
         Handover handover2 = handoverDao.findByBatch(handoverCollectionrecord.getHandoverBatch());
         if (null != handover2) {
-            // 已有该交接信息
+            // 已有该交接头信息
             log.error("handover error handover already exist, handover2 is:[{}]", handover2);
             throw new BusinessException(ErrorCodes.HANDOVER_EXISTS);
         }
@@ -155,6 +202,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             List<WhOutboundbox> WhOutboundboxList = whOutboundboxDao.findListByParam(whOutboundbox);
             WhOutboundbox outboundbox = WhOutboundboxList.get(0);
             handoverLine.setWhOutboundboxId(outboundbox.getId() + "");
+            handoverLineDao.insert(handoverLine);
             // 4更新集货交接状态为已完成
             handoverCollection.setHandoverStatus(HandoverCollectionStatus.FINISH);
             handoverCollectionDao.saveOrUpdate(handoverCollection);
@@ -215,5 +263,10 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         // 判断交接批次下出库箱是否全部交接
         return handoverCollectionDao.findHandoverCollectionByBatchAndStatus(hcList.get(0).getHandoverBatch(), HandoverCollectionStatus.TO_HANDOVER);
 
+    }
+
+    @Override
+    public HandoverCollection findHandoverCollectionByOutboundboxCode(String outboundBoxCode, Long ouId) {
+        return handoverCollectionDao.findByOutboundboxCode(outboundBoxCode, ouId);
     }
 }

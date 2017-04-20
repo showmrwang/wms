@@ -60,6 +60,15 @@ public interface HandoverManager extends BaseManager {
     Long check(List<HandoverCollection> hcList);
 
     /**
+     * 根据出库箱编码找集货信息
+     * 
+     * @param outboundBoxCode
+     * @param ouId
+     * @return
+     */
+    HandoverCollection findHandoverCollectionByOutboundboxCode(String outboundBoxCode, Long ouId);
+
+    /**
      * 打印销售清单
      * 
      * @param userId 用户Id

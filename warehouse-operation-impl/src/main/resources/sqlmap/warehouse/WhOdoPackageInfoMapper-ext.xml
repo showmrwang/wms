@@ -108,5 +108,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 		</update>
+		
+		
+	<select id="findByOutboundBoxCode"  resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo" >
+			select <include refid="whOdoPackageInfoColumnsExt" />
+		    <![CDATA[
+			    from t_wh_odo_package_info 
+		        where 
+		        outboundbox_code = #{outboundboxCode} 
+		    ]]>
+		</select>	
 	
 </mapper>
