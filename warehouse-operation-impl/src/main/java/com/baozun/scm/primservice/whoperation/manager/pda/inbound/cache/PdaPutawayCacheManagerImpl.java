@@ -3108,7 +3108,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
                 if (false == isSkuChecked) {
                     // 提示相同商品的下一个sn明细
-                    cssrCmd.setNeedTipSkuSn(true);
+                    if(cssrCmd.isPartlyPutaway()){
+                        cssrCmd.setNeedTipSku(true); 
+                    }else{
+                        cssrCmd.setNeedTipSkuSn(true);
+                    }
                     cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                     return cssrCmd;
                 }
