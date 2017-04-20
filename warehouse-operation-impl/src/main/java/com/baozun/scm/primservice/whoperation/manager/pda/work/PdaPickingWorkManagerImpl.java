@@ -723,11 +723,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipOutBounxBoxCode(operatorLineList, operationId, carStockToOutgoingBox);
             if (cSRCmd.getIsNeedScanOutBounxBox()) {
                 command.setTipOutBounxBoxCode(cSRCmd.getOutBounxBoxCode()); // 出库箱id
-                command.setIsNeedScanOutBounxBox(true);
+                command.setIsNeedScanLatticeNo(true);
                 command.setUseContainerLatticeNo(cSRCmd.getUseContainerLatticeNo());
                 command.setOuterContainer(containerCode); // 外部容器号(小车，单个出库箱)
             } else {
-                command.setIsNeedScanOutBounxBox(false);
+                command.setIsNeedScanLatticeNo(false);
             }
             WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
             command.setIsScanLatticeNo(picking.getIsScanLatticeNo()); // 是否扫描货格
@@ -1032,7 +1032,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // operationWay);
         List<WhSkuInventoryCommand> list = null;
         if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货
-            list = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId, outerContainerId, insideContainerId);
+            list = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId, outerContainerId, insideContainerId);
         }
         if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {// 补货
             list = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId);
@@ -1700,8 +1700,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (count == 1) {// 当前工作是最后一个
                     command.setIsLastWork(true); // 当前工作是一个小批次下的最后一个工作
                 }
+                long startTime=System.currentTimeMillis();   //获取开始时间
+                log.info("collection run start time:"+startTime);
                     // 插入集货表
-                    String pickingMode = this.insertIntoCollection(command, ouId);
+                String pickingMode = this.insertIntoCollection(command, ouId);
+                long endTime=System.currentTimeMillis(); //获取结束时间
+                log.info("collection run end time:"+endTime);
+                log.info("collection run  time:"+(endTime-startTime));
                     command.setPickingMode(pickingMode);
                
                 // 更新工作及作业状态
@@ -2396,7 +2401,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if (!StringUtils.isEmpty(command.getSkuSn()) || !StringUtils.isEmpty(command.getSkuDefect())) { // 是sn残次信息
             // 判断是否占用sn/残次条码
             // 到库存表中查询
-            List<WhSkuInventoryCommand> whSkuInvCmdList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId, outerContainerId, insideContainerId);
+            List<WhSkuInventoryCommand> whSkuInvCmdList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId, outerContainerId, insideContainerId);
             if (null == whSkuInvCmdList || whSkuInvCmdList.size() == 0) {
                 throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
             }

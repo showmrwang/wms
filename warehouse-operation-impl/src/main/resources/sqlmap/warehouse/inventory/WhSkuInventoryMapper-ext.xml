@@ -3141,6 +3141,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     and odo.odo_code = inv.occupation_code
                     and inv.occupation_code IS NOT NULL
                     and inv.ou_id = #{ouId}
+                    and inv.location_id = #{locationId}
                     and operLine.operation_id = #{operationId}
                    <if test="outerContainerId!=null and outerContainerId!=''">
 					 and inv.outer_container_id = #{outerContainerId}

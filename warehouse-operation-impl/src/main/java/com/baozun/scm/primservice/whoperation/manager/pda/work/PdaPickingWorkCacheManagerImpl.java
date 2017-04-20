@@ -545,7 +545,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 //          List<WhSkuInventoryCommand> list = this.cacheLocationInventory(operationId, locationId, ouId,operationWay);
           List<WhSkuInventoryCommand> skuInvList  = null;
           if (Constants.PICKING_INVENTORY.equals(operationWay)) { //拣货
-              skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(ouId, operationId,outerContainerId,insideContainerId);
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
           }
           if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
               skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId);
