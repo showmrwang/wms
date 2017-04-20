@@ -122,7 +122,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
         // 获取目标库位信息
         Location location = whLocationDao.findByIdExt(toLocationId, ouId);
         // 获取目标库位库存信息
-        List<WhSkuInventoryCommand> toSkuInventoryCommandLst = whSkuInventoryDao.findWhSkuInvCmdByLocation(toLocationId, ouId);
+        List<WhSkuInventoryCommand> toSkuInventoryCommandLst = whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, toLocationId);
         if (null != toSkuInventoryCommandLst) {
             for (WhSkuInventoryCommand toSkuInventoryCommand : toSkuInventoryCommandLst) {
                 String onlySku = SkuCategoryProvider.getSkuAttrIdByInv(toSkuInventoryCommand);
