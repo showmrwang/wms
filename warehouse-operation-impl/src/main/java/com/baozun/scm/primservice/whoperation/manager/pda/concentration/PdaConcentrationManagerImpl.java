@@ -1507,7 +1507,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         Long containerId = whCheckingCollection.getContainerId();
         Long outerContainerId = whCheckingCollection.getOuterContainerId();
         Integer containerLatticeNo = whCheckingCollection.getContainerLatticeNo();
-        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, whCheckingCollection.getOuId());
+        String outboundboxCode = whCheckingCollection.getOutboundboxCode();
+        if (null == containerId && null == outboundboxCode && null == outerContainerId && null == containerLatticeNo) {
+            throw new BusinessException("外部容器、内部容器、货格号、出库箱编码为空");
+        }
+
+        List<WhCheckingCollectionLine> invList = this.whSkuInventoryDao.findWhCheckingCollectionListByContainerId(containerId, outerContainerId, containerLatticeNo, outboundboxCode, whCheckingCollection.getOuId());
         if (null != invList && !invList.isEmpty()) {
             for (WhCheckingCollectionLine inv : invList) {
                 if (null != inv.getStoreId()) {
