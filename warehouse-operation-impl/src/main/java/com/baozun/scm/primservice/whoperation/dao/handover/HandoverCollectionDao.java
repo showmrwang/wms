@@ -96,4 +96,14 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
      * @return
      */
     Long findHandoverCollectionByBatchAndStatus(@Param("handoverBatch") String handoverBatch, @Param("status") String status);
+
+    /***
+     * 
+     * 同批次的交接集货下的出库箱的客户店铺运输服务商codename是否相等 相等 结果为1
+     * 
+     * @param handoverStationId
+     * @param ouId
+     * @return
+     */
+    Integer isTheSameCodeAndName(@Param("handoverStationId") Long handoverStationId, @Param("ouId") Long ouId);
 }
