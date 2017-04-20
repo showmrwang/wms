@@ -258,7 +258,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 			s.batch = #{batch}
 			and (s.temporary_location_id is not null or s.location_id is not null)
-			and s.collection_status = 1
+			and s.collection_status in (1, 2, 3)
 			and s.ou_id = #{ouId}
 	</select>
 	

@@ -244,7 +244,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param destinationType 目的地类型 1:播种墙 2:暂存库位 3:中转库位
      * @return
      */
-    boolean manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
+    int manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
 
     void removeManualContainerCodeFromCache(Long userId);
 
