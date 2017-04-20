@@ -23,9 +23,8 @@ import java.util.Set;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
@@ -106,6 +105,23 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param logId
      */
     void execPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 部分执行上架（已分配容器库存出库及待移入库位库存入库）
+     * 
+     * @author lichuan
+     * @param containerCmd
+     * @param insideContainerCmd
+     * @param locationCode
+     * @param skuCmd
+     * @param scanQty
+     * @param warehouse
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    void execPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, WhSkuCommand skuCmd, List<String> skuAttrIds, Double scanQty, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
     /**
      * 执行上架（已分配容器库存出库及待移入库位库存入库）

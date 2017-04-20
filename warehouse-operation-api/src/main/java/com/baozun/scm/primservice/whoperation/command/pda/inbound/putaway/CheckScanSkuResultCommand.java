@@ -52,6 +52,8 @@ public class CheckScanSkuResultCommand extends BaseCommand {
     private boolean isNeedTipLoc;
     /** 提示库位id */
     private Long tipLocId;
+    /** 是否部分执行上架 */
+    private boolean isPartlyPutaway;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -165,6 +167,13 @@ public class CheckScanSkuResultCommand extends BaseCommand {
         this.tipLocId = tipLocId;
     }
 
+    public boolean isPartlyPutaway() {
+        return isPartlyPutaway;
+    }
+
+    public void setPartlyPutaway(boolean isPartlyPutaway) {
+        this.isPartlyPutaway = isPartlyPutaway;
+    }
 
 
 }

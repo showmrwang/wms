@@ -46,6 +46,10 @@ public final class CacheConstants {
     public static final String SCAN_CONTAINER_QUEUE = "SCAN_CONTAINER_QUEUE_";
     /** 已扫描的Sku队列 */
     public static final String SCAN_SKU_QUEUE = "SCAN_SKU_QUEUE_";
+    /** 已扫描的Skusn队列 */
+    public static final String SCAN_SKU_SN_QUEUE = "SCAN_SKU_SN_QUEUE_";
+    /** 已扫描Skusn计数器 */
+    public static final String SCAN_SKU_SN_COUNT = "SCAN_SKU_SN_COUNT_";
     /** 容器缓存 */
     public static final String CONTAINER = "CONTAINER";
     /** 容器统计缓存 */
