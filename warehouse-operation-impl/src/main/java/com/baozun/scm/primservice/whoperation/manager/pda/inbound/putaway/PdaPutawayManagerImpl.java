@@ -2986,13 +2986,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         // 11.提示库位
         srCmd.setRecommendLocation(true);// 已推荐库位
-        /*Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, locationIds, logId);
+        List<Long> sortLocIds = insideContainerLocSort.get(insideContainerCmd.getId());
+        Long locId = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation0(insideContainerCmd, sortLocIds, logId);
         Location loc = locationDao.findByIdExt(locId, ouId);
         if (null == loc) {
             log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
-        }*/
-        Location loc = sortLocs.get(0);// 取到排序后第一个上架库位
+        }
         srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
         srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
         if (null != warehouse) {
