@@ -1323,20 +1323,39 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Map<String, String> invRecommendLocCode = new HashMap<String, String>();
         Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();
+        /** 内部容器推荐库位对应唯一sku总件数 */
+        Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();
+        Map<Long, Map<String, Long>> locSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
+        Map<String, Long> skuAttrIdsQty = new HashMap<String, Long>();
         for (LocationRecommendResultCommand lrrCmd : lrrList) {
+            String skuAttrIds = SkuCategoryProvider.getSkuAttrId(lrrCmd.getSkuAttrId());
             Long locationId = lrrCmd.getLocationId();
             if (null != locationId) {
                 suggestLocationIds.add(locationId);
                 if (null != locSkuAttrIds.get(locationId)) {
                     Set<String> allSkuAttrIds = locSkuAttrIds.get(locationId);
+                    if(null == allSkuAttrIds){
+                        allSkuAttrIds = new HashSet<String>();
+                    }
                     allSkuAttrIds.add(lrrCmd.getSkuAttrId());
                     locSkuAttrIds.put(locationId, allSkuAttrIds);
+                    //统计唯一sku,对应的数量
+                    skuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+                    Long qty = skuAttrIdsQty.get(skuAttrIds);
+                    if(null != qty){
+                        qty += lrrCmd.getQty().longValue();
+                    }else{
+                        qty = lrrCmd.getQty().longValue();
+                    }
+                    skuAttrIdsQty.put(skuAttrIds, qty);
                 } else {
                     Set<String> allSkuAttrIds = new HashSet<String>();
                     allSkuAttrIds.add(lrrCmd.getSkuAttrId());
                     locSkuAttrIds.put(locationId, allSkuAttrIds);
+                    skuAttrIdsQty.put(skuAttrIds, lrrCmd.getQty().longValue());
                 }
             }
+            locSkuAttrIdsQty.put(locationId, skuAttrIdsQty);
             String locationCode = lrrCmd.getLocationCode();
             invRecommendLocId.put(lrrCmd.getSkuAttrId(), locationId);
             invRecommendLocCode.put(lrrCmd.getSkuAttrId(), locationCode);
@@ -1346,7 +1365,9 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             throw new BusinessException(ErrorCodes.COMMON_LOCATION_RECOMMEND_ERROR);
         } else {
             insideContainerLocSkuAttrIds.put(containerId, locSkuAttrIds);
+            insideContainerLocSkuAttrIdsQty.put(containerId, locSkuAttrIdsQty);
         }
+        isrCommand.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
         isrCommand.setLocationIds(suggestLocationIds);
         isrCommand.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
         Map<Long, List<Long>> insideContainerLocSort = new HashMap<Long, List<Long>>();// 内部容器所有排序后库位
@@ -2878,6 +2899,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();   //内部容器唯一sku总件数
           Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = isCmd.getInsideContainerSkuAttrIdsSnDefect();  //内部容器唯一sku对应所有残次条码
           Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();  // 内部容器推荐库位对应唯一sku及残次条码
+          Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = isCmd.getInsideContainerLocSkuAttrIdsQty();
           Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icCmd.getId());   //获取当前内部容器度一应sku和残次条码
           Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icCmd.getId());
           Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerSkuIds();
@@ -2885,6 +2907,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           Map<Long,Set<String>> insideContainerSkuAttrIds = isCmd.getInsideContainerSkuAttrIds();    //内部容器对应唯一sku
           Map<Long, List<Long>> insideContainerLocSort = isCmd.getInsideContainerLocSort();
           List<Long> locationIds = insideContainerLocSort.get(insideContainerId);
+          Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(insideContainerId); // 内部容器推荐库位对应唯一sku总件数
+          Map<String,Long> lskuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
 //          Map<Long, Map<String, Long>>  containerSkuAttrIdsQty = isCmd.getcSkuAttrIdsQty();    //货箱内已经上架的唯一sku对应的数量
           if (null != ocCmd) {
               insideContainerIds = csrCmd.getInsideContainerIds();
@@ -2969,7 +2993,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   srCmd.setIsNeedScanNewLocation(false);
               }
           }
-          CheckScanSkuResultCommand cssrCmd =  pdaPutawayCacheManager.sysSuggestSplitContainerPutawayTipSkuOrContainer(locationIds,tipLocationId,isCancel,isRecommendFail,locSkuAttrIds,scanPattern,ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerSkuAttrIds, skuCmd, logId);
+          CheckScanSkuResultCommand cssrCmd =  pdaPutawayCacheManager.sysSuggestSplitContainerPutawayTipSkuOrContainer(lskuAttrIdsQty,locationIds,tipLocationId,isCancel,isRecommendFail,locSkuAttrIds,scanPattern,ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerSkuAttrIds, skuCmd, logId);
           if (cssrCmd.isNeedTipSkuSn()) {
               // 当前商品还未扫描，继续扫sn残次信息
               String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
@@ -3109,8 +3133,10 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                        for(Long skuId:skuIds){
                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString()+skuId.toString());
                      }
-                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + sId.toString());
-                     cacheManager.remove(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + icId.toString() + locationId.toString()+sId.toString());
+                     if(null != sId){
+                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + sId.toString());
+                         cacheManager.remove(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + icId.toString() + locationId.toString()+sId.toString());
+                     }
                      cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString()+locationId.toString());
                      cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE+ocId.toString());
                      cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC , ocId.toString());

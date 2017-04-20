@@ -795,6 +795,34 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                     saq.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), currentSkuQty.longValue());
                     insideContainerSkuAttrIdsQty.put(icId, saq);
                 }
+                if (null != locationId) {
+                    if (null != insideContainerLocSkuAttrIdsQty.get(icId)) {
+                        Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(icId);
+                        Map<String, Long> allSkuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+                        if (null != allSkuAttrIdsQty) {
+                            if (null != allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd))) {
+                                Long qty = allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
+                                allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), qty + currentSkuQty.longValue());
+                            } else {
+                                allSkuAttrIdsQty = new HashMap<String, Long>();
+                                allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), currentSkuQty.longValue());
+                            }
+                            locSkuAttrIdsQty.put(locationId, allSkuAttrIdsQty);
+                            insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
+                        } else {
+                            allSkuAttrIdsQty = new HashMap<String, Long>();
+                            allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), currentSkuQty.longValue());
+                            locSkuAttrIdsQty.put(locationId, allSkuAttrIdsQty);
+                            insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
+                        }
+                    } else {
+                        Map<String, Long> allSkuAttrIdsQty = new HashMap<String, Long>();
+                        allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), currentSkuQty.longValue());
+                        Map<Long, Map<String, Long>> locSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
+                        locSkuAttrIdsQty.put(locationId, allSkuAttrIdsQty);
+                        insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
+                    }
+                }
                 if (null != insideContainerSkuAndSkuAttrIds.get(icId)) {
                     Map<Long, Set<String>> skuAndSkuAttrIds = insideContainerSkuAndSkuAttrIds.get(icId);
                     Set<String> icSkus = skuAndSkuAttrIds.get(skuId);
@@ -990,6 +1018,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
         isCmd.setInsideContainerVolume(insideContainerVolume);
         isCmd.setInsideContainerWeight(insideContainerWeight);
         isCmd.setInsideContainerAsists(insideContainerAsists);
+        isCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
         return isCmd;
     }
 
@@ -1081,7 +1110,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                 Map<Long, Set<String>> insideContainerSkuAttrIds = new HashMap<Long, Set<String>>();// 内部容器唯一sku(skuId|库存装填|库存类型|生产日期|失效日期|库存属性1|库存属性2|库存属性3|库存属性4|库存属性51|)
                 Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
                 Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();   /** 内部容器推荐库位对应唯一sku及残次条码 */
-//                Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
+                Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();// 内部容器推荐库位对应唯一sku总件数
                 /** 内部容器唯一sku对应所有残次条码 和sn*/
                 Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>(); //内部容器内唯一sku对应所有sn及残次条码
                 Double outerContainerWeight = 0.0;
