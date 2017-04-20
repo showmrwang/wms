@@ -1095,6 +1095,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                 Map<Long, ContainerAssist> insideContainerAsists = new HashMap<Long, ContainerAssist>();
                 SimpleCubeCalculator cubeCalculator = new SimpleCubeCalculator(lenUomConversionRate);
                 SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
+                Map<Long, List<Long>> insideContainerLocSort = new HashMap<Long, List<Long>>();// 内部容器所有排序后库位
                     lenUomCmds = uomDao.findUomByGroupCode(WhUomType.LENGTH_UOM, BaseModel.LIFECYCLE_NORMAL);
                     for (UomCommand lenUom : lenUomCmds) {
                         String uomCode = "";
@@ -1396,6 +1397,24 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             containerAssist.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
                             insideContainerAsists.put(icId, containerAssist);
                         }
+                        List<Location> sortLocs = new ArrayList<Location>();
+                        List<Long> sortLocationIds = new ArrayList<Long>();
+                        Map<Long, Set<String>> allLocSkuAttrs = insideContainerLocSkuAttrIds.get(icId);
+                        if (null != allLocSkuAttrs && !allLocSkuAttrs.isEmpty()) {
+                            for (Long lId : allLocSkuAttrs.keySet()) {
+                                Location loc = locationDao.findByIdExt(lId, ouId);
+                                if (null == loc) {
+                                    log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
+                                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                                }
+                                sortLocs.add(loc);
+                            }
+                            Collections.sort(sortLocs, new LocationShelfSorter());
+                            for (Location sortLoc : sortLocs) {
+                                sortLocationIds.add(sortLoc.getId());
+                            }
+                            insideContainerLocSort.put(icId, sortLocationIds);
+                        }
                         if(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {  //拆箱上架
                           //内部容器内唯一sku对应所有sn及残次条码
                             List<WhSkuInventorySnCommand> snCmdList = invCmd.getWhSkuInventorySnCommandList();
@@ -1465,6 +1484,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                         }
                         
                     }
+                    isrCmd.setInsideContainerLocSort(insideContainerLocSort);
                     isrCmd.setLenUomConversionRate(lenUomConversionRate);
                     isrCmd.setWeightUomConversionRate(weightUomConversionRate);
                     isrCmd.setPutawayPatternType(putawayPatternType);

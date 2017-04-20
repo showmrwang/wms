@@ -105,7 +105,7 @@ public class InventoryStatisticResultCommand extends BaseCommand {
 
     // private Map<Long,Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
 
-    private Map<Long, Map<String, Long>> cSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
+//    private Map<Long, Map<String, Long>> cSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -396,13 +396,13 @@ public class InventoryStatisticResultCommand extends BaseCommand {
     // this.locSkuAttrIds = locSkuAttrIds;
     // }
 
-    public Map<Long, Map<String, Long>> getcSkuAttrIdsQty() {
-        return cSkuAttrIdsQty;
-    }
-
-    public void setcSkuAttrIdsQty(Map<Long, Map<String, Long>> cSkuAttrIdsQty) {
-        this.cSkuAttrIdsQty = cSkuAttrIdsQty;
-    }
+//    public Map<Long, Map<String, Long>> getcSkuAttrIdsQty() {
+//        return cSkuAttrIdsQty;
+//    }
+//
+//    public void setcSkuAttrIdsQty(Map<Long, Map<String, Long>> cSkuAttrIdsQty) {
+//        this.cSkuAttrIdsQty = cSkuAttrIdsQty;
+//    }
 
 
 

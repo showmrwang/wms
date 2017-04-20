@@ -5750,7 +5750,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 String invCmdSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
                     //作业执行明细id
                             if(skuAttrIds.equals(invCmdSkuAttrIds) && skuInvCmd.getLocationId().longValue() == locationId.longValue()){
-                                if(Constants.PICKING_WAY_THREE == pickingWay) {   //使用出库箱(使用小车加出库箱和只使用出库箱的情况)
+                                if(Constants.PICKING_WAY_THREE == pickingWay) {   //使用出库箱
                                          skuInvCmdList.add(skuInvCmd.getId());
                                          if(isShortPicking) {  //短拣的商品生成库位库存
                                                Long invSkuId =     this.addLocInventory(skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId,isShortPicking);
@@ -6740,19 +6740,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                    int outCount =  whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, outerContainerCmd.getId());
                     if (true == isAllTip && outCount == 0) {
                         boolean isUpdateOuterStatusUsable = true;
-//                        boolean isUpdateOuterStatusCanPutaway = false;
                         for (Long icId : cacheInsideContainerIds) {
                             int toBeFilledCounts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByInsideContainerId(ouId, icId);
                             int rcvdCounts = whSkuInventoryDao.findRcvdInventoryCountsByInsideContainerId(ouId, icId);
                            if(0 < rcvdCounts || 0 < toBeFilledCounts){  //待移入库存或者容器库存没有全部上架
                                 isUpdateOuterStatusUsable = false;
-//                                isUpdateOuterStatusCanPutaway = true;
                                 break;
                             }
-//                           else if (0 < rcvdCounts && 0 < toBeFilledCounts) {
-//                                isUpdateOuterStatusUsable = false;
-//                                break;
-//                            }
                         }
                         Integer containerStatus = outerContainerCmd.getStatus();
                         if (true == isUpdateOuterStatusUsable) {
@@ -6765,18 +6759,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                             }
                         }
-//                        else {
-//                            if (true == isUpdateOuterStatusCanPutaway) {
-//                                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
-//                                    Container container = new Container();
-//                                    BeanUtils.copyProperties(outerContainerCmd, container);
-//                                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-//                                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
-//                                    containerDao.saveOrUpdateByVersion(container);
-//                                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
-//                                }
-//                            }
-//                        }
                     }
                 }
             }
