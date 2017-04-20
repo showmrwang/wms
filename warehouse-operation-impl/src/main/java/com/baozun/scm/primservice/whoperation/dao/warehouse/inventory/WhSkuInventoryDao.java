@@ -393,6 +393,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int findRcvdInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
+    
+    /**
+     * 根据外部容器获取库位库存记录数
+     * @author lichuan
+     * @param ouId
+     * @param outerContainerId
+     * @return
+     */
+    int findLocInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
 
     /**
      * 根据内部容器获取收货库存记录数
@@ -403,6 +412,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int findRcvdInventoryCountsByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
+    
+    /**
+     * 根据内部容器获取库位库存记录数
+     * @author lichuan
+     * @param ouId
+     * @param insideContainerId
+     * @return
+     */
+    int findLocInventoryCountsByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
 
     /**
      * 根据内容容器获取库存总记录数

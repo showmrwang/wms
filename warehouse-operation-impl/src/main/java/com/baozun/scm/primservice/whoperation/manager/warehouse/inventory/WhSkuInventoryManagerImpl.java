@@ -2375,7 +2375,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (null != insideContainer) {
                         // 获取容器状态
                         Integer iContainerStatus = insideContainer.getStatus();
-                        // 修改内部容器状态为：上架中，且占用中
+                        // 修改内部容器状态为：可用
                         if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
                             insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
                             insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
@@ -2418,7 +2418,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             containerDao.saveOrUpdateByVersion(container);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                         }
-                    } else {
+                    } else if (0 < rcvdCounts && 0 == toBeFilledCounts) {
                         if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
                             Container container = new Container();
                             BeanUtils.copyProperties(containerCmd, container);
@@ -2429,7 +2429,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                     }
                 }
-            }
+            } 
         } else {
             // 整托上架、整箱上架
             // 1.获取所有待移入库存
@@ -2641,31 +2641,31 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // TODO 
 
             // 4.上架成功后需要释放容器
-            // 修改内部容器状态(整托、整箱上架均修改内部容器状态为已上架且占用中)
-            for (Long icId : insideContainerIds) {
-                Container insideContainer = containerDao.findByIdExt(icId, ouId);
-                if (null != insideContainer) {
-                    // 获取容器状态
-                    Integer iContainerStatus = insideContainer.getStatus();
-                    // 修改内部容器状态为：上架中，且占用中
-                    if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
-                        insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-                        insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
-                        containerDao.saveOrUpdateByVersion(insideContainer);
-                        insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+            if(false == isTV){
+                // 修改内部容器状态(整托、整箱上架均修改内部容器状态为可用)
+                for (Long icId : insideContainerIds) {
+                    Container insideContainer = containerDao.findByIdExt(icId, ouId);
+                    if (null != insideContainer) {
+                        // 获取容器状态
+                        Integer iContainerStatus = insideContainer.getStatus();
+                        // 修改内部容器状态为：上架中，且占用中
+                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
+                            insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                            insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                            containerDao.saveOrUpdateByVersion(insideContainer);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+                        }
                     }
                 }
-            }
-            // 修改外部容器状态(整托上架不能修改外部容器状态)
-            if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
                 // 判断修改外部容器状态
                 // 拆箱上架需要判断所有内部容器全部都已上架才能释放外部容器
                 if (null != containerCmd) {
                     Integer containerStatus = containerCmd.getStatus();
-                    int toBeFilledCounts = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
-                    int rcvdCounts = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
-                    if (0 == rcvdCounts && 0 == toBeFilledCounts) {
-                        // 库位待移入库存已全部上架，无容器库存未上架
+                    int toBeFilledCounts1 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+                    int rcvdCounts1 = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+                    int locCounts1 = whSkuInventoryDao.findLocInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+                    if(0 == rcvdCounts1 && 0 == toBeFilledCounts1 && 0 == locCounts1){
+                        // 库位待移入库存已全部上架
                         if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
                             Container container = new Container();
                             BeanUtils.copyProperties(containerCmd, container);
@@ -2673,8 +2673,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
                             containerDao.saveOrUpdateByVersion(container);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        }   
+                    }else if (0 == rcvdCounts1 && 0 == toBeFilledCounts1 && 0 < locCounts1) {
+                        // 库位待移入库存已全部上架，无容器库存未上架
+                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                            Container container = new Container();
+                            BeanUtils.copyProperties(containerCmd, container);
+                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                         }
-                    } else {
+                    } else if (0 < rcvdCounts1 && 0 == toBeFilledCounts1) {
                         if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
                             Container container = new Container();
                             BeanUtils.copyProperties(containerCmd, container);
@@ -2685,18 +2695,52 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                     }
                 }
-            } else {
-                // 整托上架，外部容器状态修改为已上架且占用中
-                Integer containerStatus = containerCmd.getStatus();
-                if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
-                    Container container = new Container();
-                    BeanUtils.copyProperties(containerCmd, container);
-                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-                    container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
-                    containerDao.saveOrUpdateByVersion(container);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+            }else{
+                // 修改内部容器状态(整托、整箱上架均修改内部容器状态为已上架且占用中)
+                for (Long icId : insideContainerIds) {
+                    Container insideContainer = containerDao.findByIdExt(icId, ouId);
+                    if (null != insideContainer) {
+                        // 获取容器状态
+                        Integer iContainerStatus = insideContainer.getStatus();
+                        // 修改内部容器状态为：上架中，且占用中
+                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
+                            insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                            containerDao.saveOrUpdateByVersion(insideContainer);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, insideContainer, ouId, userId, null, null);
+                        }
+                    }
+                }
+                // 判断修改外部容器状态
+                // 拆箱上架需要判断所有内部容器全部都已上架才能释放外部容器
+                if (null != containerCmd) {
+                    Integer containerStatus = containerCmd.getStatus();
+                    int toBeFilledCounts1 = whSkuInventoryDao.findLocToBeFilledInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+                    int rcvdCounts1 = whSkuInventoryDao.findRcvdInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+                    int locCounts1 = whSkuInventoryDao.findLocInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+                    if (0 == rcvdCounts1 && 0 == toBeFilledCounts1 && 0 < locCounts1) {
+                        // 库位待移入库存已全部上架，无容器库存未上架
+                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                            Container container = new Container();
+                            BeanUtils.copyProperties(containerCmd, container);
+                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        }
+                    } else if (0 < rcvdCounts1 && 0 == toBeFilledCounts1) {
+                        if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
+                            Container container = new Container();
+                            BeanUtils.copyProperties(containerCmd, container);
+                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        }
+                    }
                 }
             }
+           
         }
     }
     
@@ -2965,7 +3009,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (null != insideContainer) {
                         // 获取容器状态
                         Integer iContainerStatus = insideContainer.getStatus();
-                        // 修改内部容器状态为：上架中，且占用中
+                        // 修改内部容器状态为：可用
                         if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == iContainerStatus) {
                             insideContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
                             insideContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
@@ -3008,7 +3052,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             containerDao.saveOrUpdateByVersion(container);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                         }
-                    } else {
+                    } else if (0 < rcvdCounts && 0 == toBeFilledCounts) {
                         if (ContainerStatus.CONTAINER_STATUS_PUTAWAY == containerStatus) {
                             Container container = new Container();
                             BeanUtils.copyProperties(containerCmd, container);
