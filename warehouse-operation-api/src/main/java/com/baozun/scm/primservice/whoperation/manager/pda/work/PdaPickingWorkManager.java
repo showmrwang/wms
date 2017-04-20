@@ -106,15 +106,6 @@ public interface PdaPickingWorkManager extends BaseManager {
     public void scanTrunkfulContainer(PickingScanResultCommand  command);
     
     /**
-     * 生成作业执行明细  
-     * 
-     * @author qiming.liu
-     * @param PickingScanResultCommand
-     * @return
-     */
-    void operatorExecutionLines(PickingScanResultCommand command);
-    
-    /**
      * 循环提示内部容器--整箱整托拣货
      * 
      * @author qiming.liu
@@ -124,24 +115,6 @@ public interface PdaPickingWorkManager extends BaseManager {
     PickingScanResultCommand wholeCaseForTipInsideContainer(PickingScanResultCommand command);
     
     /**
-     * 循环提示扫描商品--整箱整托拣货
-     * 
-     * @author qiming.liu
-     * @param PickingScanResultCommand
-     * @return PickingScanResultCommand
-     */
-    PickingScanResultCommand wholeCaseForTipSku(PickingScanResultCommand command);
-    
-    /**
-     * 循环扫描当前商品--整箱整托拣货
-     * 
-     * @author qiming.liu
-     * @param PickingScanResultCommand 
-     * @return PickingScanResultCommand
-     */
-    PickingScanResultCommand wholeCaseForTipCurrentSku(PickingScanResultCommand command);
-    
-    /**
      * 提示托盘--整箱整托拣货 
      * 
      * @author qiming.liu
@@ -149,15 +122,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     PickingScanResultCommand wholeCaseTipTray(PickingScanResultCommand command);
-    
-    /**
-     * 提示内部容器--整箱整托拣货 
-     * 
-     * @author qiming.liu
-     * @param PickingScanResultCommand
-     * @return
-     */
-    PickingScanResultCommand wholeCaseTipInsideContainer(PickingScanResultCommand command);
     
     /**
      * 判断是否是SN/残次商品--整箱整托拣货

@@ -3981,6 +3981,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="containerLatticeNo!=null">
 					and inv.container_lattice_no = #{containerLatticeNo}
 				</if>
+				<if test="outboundboxCode!=null">
+					and inv.outboundbox_code = #{outboundboxCode}
+				</if>
 				<if test="ouId!=null">
 					and inv.ou_id = #{ouId}
 				</if>
