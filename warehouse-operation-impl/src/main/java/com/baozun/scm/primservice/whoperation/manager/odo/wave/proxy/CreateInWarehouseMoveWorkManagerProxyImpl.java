@@ -122,7 +122,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
         // 获取目标库位信息
         Location location = whLocationDao.findByIdExt(toLocationId, ouId);
         // 获取目标库位库存信息
-        List<WhSkuInventoryCommand> toSkuInventoryCommandLst = whSkuInventoryDao.findWhSkuInvCmdByLocation(toLocationId, ouId);
+        List<WhSkuInventoryCommand> toSkuInventoryCommandLst = whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, toLocationId);
         if (null != toSkuInventoryCommandLst) {
             for (WhSkuInventoryCommand toSkuInventoryCommand : toSkuInventoryCommandLst) {
                 String onlySku = SkuCategoryProvider.getSkuAttrIdByInv(toSkuInventoryCommand);
@@ -140,11 +140,13 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             }
         }
         // 统计库内移动信息
+        List<WhSkuInventoryCommand> skuInventoryCommandLst = new ArrayList<WhSkuInventoryCommand>();
         for (int i = 0; i < ids.length; i++) {
             WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryManager.findWhSkuInventoryByIdAndUuidAndOuid(ids[i], uuids[i], ouId);
             String onlySku = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInventoryCommand);
             skus.add(whSkuInventoryCommand.getSkuId());
             onlySkus.add(onlySku);
+            skuInventoryCommandLst.add(whSkuInventoryCommand);
         }
         // 库位管理属性校验
         if (true == location.getIsMixStacking()) {
@@ -164,11 +166,6 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                     return false;
                 }
             }
-        }
-        // 目标库位体积重量计算
-        Boolean isSuccess = createInWarehouseMoveWorkManager.calculateVolumeAndWeight(toLocationId, ouId);
-        if (false == isSuccess) {
-            return false;
         }
         return true;
     }

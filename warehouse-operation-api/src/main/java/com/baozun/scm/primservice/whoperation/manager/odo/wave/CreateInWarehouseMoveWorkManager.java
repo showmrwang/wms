@@ -46,12 +46,4 @@ public interface CreateInWarehouseMoveWorkManager extends BaseManager {
      */
     public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId);
 
-    /**
-     * [业务方法] 判断目标库位体积和重量
-     * @param 
-     * @param 
-     * @return
-     */
-    public Boolean calculateVolumeAndWeight(Long toLocationId, Long ouId);
-
 }
