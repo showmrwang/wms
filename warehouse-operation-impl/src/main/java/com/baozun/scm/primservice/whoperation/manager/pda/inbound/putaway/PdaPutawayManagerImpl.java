@@ -6151,7 +6151,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {icCmd.getCode()});
         }
         skuCmd.setId(sId);
-        skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
+        if (null == scanQty) {
+            skuCmd.setScanSkuQty(null);// 未扫描
+        } else {
+            skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
+        }
         SkuRedisCommand cacheSkuCmd = skuRedisManager.findSkuMasterBySkuId(sId, ouId, logId);
         if (null == cacheSkuCmd) {
             log.error("sku is not found error, logId is:[{}]", logId);

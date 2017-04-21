@@ -3145,6 +3145,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     continue;
                 }
                 if (null == snList || 0 == snList.size()) {
+                    if (null == scanQty) {
+                        continue;
+                    }
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setId(null);
