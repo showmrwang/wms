@@ -325,12 +325,12 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             }
         }
         Map<String, List<String>> map = new HashMap<String, List<String>>();
-        map.put(Constants.INV_TYPE, new ArrayList<String>(dic2));
-        map.put(Constants.INV_ATTR1, new ArrayList<String>(dic3));
-        map.put(Constants.INV_ATTR2, new ArrayList<String>(dic3));
-        map.put(Constants.INV_ATTR3, new ArrayList<String>(dic3));
-        map.put(Constants.INV_ATTR4, new ArrayList<String>(dic3));
-        map.put(Constants.INV_ATTR5, new ArrayList<String>(dic3));
+        map.put(Constants.INVENTORY_TYPE, new ArrayList<String>(dic2));
+        map.put(Constants.INVENTORY_ATTR_1, new ArrayList<String>(dic3));
+        map.put(Constants.INVENTORY_ATTR_2, new ArrayList<String>(dic4));
+        map.put(Constants.INVENTORY_ATTR_3, new ArrayList<String>(dic5));
+        map.put(Constants.INVENTORY_ATTR_4, new ArrayList<String>(dic6));
+        map.put(Constants.INVENTORY_ATTR_5, new ArrayList<String>(dic7));
         Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
 
         List<WhAsnLineCommand> commandLineList=new ArrayList<WhAsnLineCommand>();
@@ -343,37 +343,37 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
             }
 
             if (StringUtils.hasText(line.getInvType())) {
-                SysDictionary sys = dicMap.get(Constants.INV_TYPE + "_" + line.getInvType());
+                SysDictionary sys = dicMap.get(Constants.INVENTORY_TYPE + "_" + line.getInvType());
                 lineCommand.setInvTypeLabel(sys == null ? line.getInvType() : sys.getDicLabel());
             } else {
                 lineCommand.setInvTypeLabel("");
             }
             if (StringUtils.hasText(line.getInvAttr1())) {
-                SysDictionary sys = dicMap.get(Constants.INV_ATTR1 + "_" + line.getInvAttr1());
+                SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_1 + "_" + line.getInvAttr1());
                 lineCommand.setInv1Str(sys == null ? line.getInvAttr1() : sys.getDicLabel());
             } else {
                 lineCommand.setInv1Str("");
             }
             if (StringUtils.hasText(line.getInvAttr2())) {
-                SysDictionary sys = dicMap.get(Constants.INV_ATTR2 + "_" + line.getInvAttr2());
+                SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_2 + "_" + line.getInvAttr2());
                 lineCommand.setInv2Str(sys == null ? line.getInvAttr2() : sys.getDicLabel());
             } else {
                 lineCommand.setInv2Str("");
             }
             if (StringUtils.hasText(line.getInvAttr3())) {
-                SysDictionary sys = dicMap.get(Constants.INV_ATTR3 + "_" + line.getInvAttr3());
+                SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_3 + "_" + line.getInvAttr3());
                 lineCommand.setInv3Str(sys == null ? line.getInvAttr3() : sys.getDicLabel());
             } else {
                 lineCommand.setInv3Str("");
             }
             if (StringUtils.hasText(line.getInvAttr4())) {
-                SysDictionary sys = dicMap.get(Constants.INV_ATTR4 + "_" + line.getInvAttr4());
+                SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_4 + "_" + line.getInvAttr4());
                 lineCommand.setInv4Str(sys == null ? line.getInvAttr4() : sys.getDicLabel());
             } else {
                 lineCommand.setInv4Str("");
             }
             if (StringUtils.hasText(line.getInvAttr5())) {
-                SysDictionary sys = dicMap.get(Constants.INV_ATTR5 + "_" + line.getInvAttr5());
+                SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_5 + "_" + line.getInvAttr5());
                 lineCommand.setInv5Str(sys == null ? line.getInvAttr5() : sys.getDicLabel());
             } else {
                 lineCommand.setInv5Str("");

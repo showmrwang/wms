@@ -99,6 +99,8 @@ public class OdoCommand extends BaseCommand {
     private String lagOdoStatus;
     /** 是否允许出库交接 默认是 */
     private Boolean isPermitOutBound = true;
+    /** 导出序列 */
+    private String odoIndex;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -641,6 +643,14 @@ public class OdoCommand extends BaseCommand {
 
     public void setIsPermitOutBound(Boolean isPermitOutBound) {
         this.isPermitOutBound = isPermitOutBound;
+    }
+
+    public String getOdoIndex() {
+        return odoIndex;
+    }
+
+    public void setOdoIndex(String odoIndex) {
+        this.odoIndex = odoIndex;
     }
 
 
