@@ -758,9 +758,10 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             packageUpdatePoData(command, shardPo);
             poManager.saveOrUpdateByVersionToShard(shardPo);
             // 同步到集团下
-            WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), command.getOuId());
-            packageUpdatePoData(command, infoPo);
-            poManager.snycPoToInfo("EDIT_HEAD", infoPo, null);
+            // WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(),
+            // shardPo.getStoreId(), command.getOuId());
+            // packageUpdatePoData(command, infoPo);
+            poManager.snycPoToInfo("EDIT_HEAD", shardPo, null);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");

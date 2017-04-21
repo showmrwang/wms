@@ -168,5 +168,13 @@ public interface BiPoLineDao extends BaseDao<BiPoLine,Long>{
     BiPoLineCommand findCommandbyId(@Param("id") Long id);
 
     List<BiPoLine> findBiPoLineByBiPoIdAndLineNums(@Param("poId") Long poId, @Param("extLinenumList") List<Integer> extLinenums);
+
+    /**
+     * 获取未收货完成的明细行
+     * 
+     * @param poId
+     * @return
+     */
+    List<BiPoLine> findNotRcvdFinshedLineList(@Param("poId") Long poId);
 	
 }
