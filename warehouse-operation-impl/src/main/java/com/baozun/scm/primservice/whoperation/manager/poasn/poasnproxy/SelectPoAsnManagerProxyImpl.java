@@ -536,4 +536,12 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         command.setStatus(PoAsnStatus.ASN_NEW);
         return this.asnManager.findReturns(command);
     }
+
+    @Override
+    public String getDefectBarCode() {
+
+        String code = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null);
+
+        return code;
+    }
 }
