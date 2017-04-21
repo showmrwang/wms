@@ -1693,11 +1693,11 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
             // @mender yimin.lu 同步接口调整
             if (PoAsnStatus.PO_CLOSE == shardPo.getStatus()) {
-                this.poManager.snycPoToInfo("CLOSE", shardPo, savePoLineList);
+                this.poManager.snycPoToInfo("CLOSE", shardPo, false, savePoLineList);
             } else if (PoAsnStatus.PO_RCVD == shardPo.getStatus()) {
-                this.poManager.snycPoToInfo("RCVD", shardPo, savePoLineList);
+                this.poManager.snycPoToInfo("RCVD", shardPo, false, savePoLineList);
             } else if (PoAsnStatus.PO_RCVD_FINISH == shardPo.getStatus()) {
-                this.poManager.snycPoToInfo("RCVD_FINISH", shardPo, savePoLineList);
+                this.poManager.snycPoToInfo("RCVD_FINISH", shardPo, false, savePoLineList);
             }
 
         } catch (BusinessException e) {

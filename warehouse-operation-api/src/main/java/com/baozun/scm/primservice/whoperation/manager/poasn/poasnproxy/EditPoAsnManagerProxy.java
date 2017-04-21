@@ -179,5 +179,12 @@ public interface EditPoAsnManagerProxy extends BaseManager {
      */
     void deleteBiPoLines(BiPoLineCommand command);
 
+    /**
+     * [业务方法]BIPO单审核
+     * 
+     * @param poCommand
+     */
+    void auditBiPo(BiPoCommand poCommand);
+
 
 }

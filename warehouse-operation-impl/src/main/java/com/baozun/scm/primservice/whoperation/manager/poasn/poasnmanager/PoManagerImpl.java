@@ -620,15 +620,14 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void snycPoToInfo(String operateType, WhPo shardPo, List<WhPoLine> lineList) {
+    public void snycPoToInfo(String operateType, WhPo shardPo, Boolean isPo, List<WhPoLine> lineList) {
         try {
-
             if (operateType.equals("EIDT_HEAD")) {
                 this.snycPoToInfoWhenEditHead(shardPo);
             } else if (operateType.equals("RCVD")) {
                 this.snycPoToInfoWhenRcvd(shardPo, lineList);
             } else if (operateType.equals("CLOSE")) {
-                this.snycPoToInfoWhenClosed(shardPo, lineList);
+                this.snycPoToInfoWhenClosed(shardPo, isPo, lineList);
             } else if (operateType.equals("RCVD_FINISH")) {
                 this.snycPoToInfoWhenRcvdFinished(shardPo, lineList);
             }
@@ -670,8 +669,11 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     }
 
-    private void snycPoToInfoWhenClosed(WhPo shardPo, List<WhPoLine> lineList) {
-        this.snycPoToInfoWhenRcvdFinished(shardPo, lineList);
+    private void snycPoToInfoWhenClosed(WhPo shardPo, Boolean isPo, List<WhPoLine> lineList) {
+        isPo = isPo == null ? true : isPo;
+        if (!isPo) {
+            this.snycPoToInfoWhenRcvdFinished(shardPo, lineList);
+        }
         WhPo infoPo = this.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), shardPo.getOuId());
         if (infoPo == null) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -696,7 +698,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     // TODO
     // @author yimin.lu 2017/4/20 关闭集团下PO单 方法单元
-    private void closeBiPo(Long bipoId) {
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void closeBiPo(Long bipoId) {
         BiPo biPo = this.biPoDao.findById(bipoId);
         biPo.setStatus(PoAsnStatus.BIPO_CLOSE);
         int updateCount = this.biPoDao.saveOrUpdateByVersion(biPo);

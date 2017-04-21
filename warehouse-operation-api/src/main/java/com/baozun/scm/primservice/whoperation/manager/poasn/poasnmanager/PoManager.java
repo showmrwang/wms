@@ -203,7 +203,10 @@ public interface PoManager extends BaseManager {
      * 
      * @param infoPo
      * @param operateType
+     * @param isPo
      */
-    void snycPoToInfo(String operateType, WhPo infoPo, List<WhPoLine> savePoLineList);
+    void snycPoToInfo(String operateType, WhPo infoPo, Boolean isPo, List<WhPoLine> savePoLineList);
+
+    public void closeBiPo(Long bipoId);
 
 }

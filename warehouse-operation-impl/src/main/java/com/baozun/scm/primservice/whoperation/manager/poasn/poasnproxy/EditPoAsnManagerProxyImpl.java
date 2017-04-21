@@ -291,10 +291,9 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                 }
             }
         }
-        // 修改PO单状态为关闭
         this.poManager.closePoToShard(whpo.getId(), ouId, userId);
-        WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(whpo.getExtCode(), whpo.getStoreId(), ouId);
-        this.poManager.closePoToInfo(infoPo.getId(), ouId, userId);
+        // 修改PO单状态为关闭 @mender yimin.lu 调用通用的接口方法
+        this.poManager.snycPoToInfo("CLOSE", whpo, true, null);
         log.info("EditPoAsnManager.auditPo end =======================");
     }
 
@@ -761,7 +760,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             // WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(),
             // shardPo.getStoreId(), command.getOuId());
             // packageUpdatePoData(command, infoPo);
-            poManager.snycPoToInfo("EDIT_HEAD", shardPo, null);
+            poManager.snycPoToInfo("EDIT_HEAD", shardPo, true, null);
         } catch (Exception e) {
             if (e instanceof BusinessException) {
                 log.error(e + "");
@@ -832,5 +831,34 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             this.biPoLineManager.deleteList(lineList);
         }
         log.info("EidtPoAsnManagerProxyImpl.deleteBiPoLines: end; delete " + lineList.size() + " rows====================== ");
+    }
+
+    @Override
+    public void auditBiPo(BiPoCommand poCommand) {
+        try {
+
+            BiPo biPo = this.biPoManager.findBiPoById(poCommand.getId());
+            // BIPO单状态校验
+            if (PoAsnStatus.BIPO_CLOSE == biPo.getStatus() || PoAsnStatus.BIPO_DELETE == biPo.getStatus() || PoAsnStatus.BIPO_TOBECREATED == biPo.getStatus() || PoAsnStatus.BIPO_CANCELED == biPo.getStatus()) {
+                throw new BusinessException(ErrorCodes.BIPO_AUDIT_STATUS_ERROR);
+            }
+            // 不存在子Po或者分配到仓库的子Po都关闭/取消 才可以审核成功
+            // #TODO 性能优化@mender yimin.lu 2017/4/21
+            List<WhPo> infoPoList = this.poManager.findWhPoByExtCodeStoreIdToInfo(biPo.getExtCode(), biPo.getStoreId());
+            if(infoPoList!=null&&infoPoList.size()>0){
+                for (WhPo po : infoPoList) {
+                    if (PoAsnStatus.ASN_DELETE == po.getStatus() || PoAsnStatus.ASN_CLOSE == po.getStatus() || PoAsnStatus.ASN_CANCELED == po.getStatus()) {
+
+                    } else {
+                        throw new BusinessException(ErrorCodes.BIPO_AUDIT_SUBSTATUS_ERROR);
+                    }
+                }
+            }
+            this.poManager.closeBiPo(biPo.getId());
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+        }
     }
 }
