@@ -6131,18 +6131,16 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 商品校验
         Long sId = null;
         String skuBarcode = skuCmd.getBarCode();
-        Double scanQty = skuCmd.getScanSkuQty();
+        Double scanQty = null;
         Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuBarcode, logId);
         Set<Long> icSkuIds = insideContainerSkuIds.get(icCmd.getId());
         boolean isSkuExists = false;
-        Integer cacheSkuQty = 1;
         for (Long cacheId : cacheSkuIdsQty.keySet()) {
             if (icSkuIds.contains(cacheId)) {
                 isSkuExists = true;
             }
             if (true == isSkuExists) {
                 sId = cacheId;
-                cacheSkuQty = (null == cacheSkuIdsQty.get(cacheId) ? 1 : cacheSkuIdsQty.get(cacheId));
                 break;
             }
         }
@@ -6151,11 +6149,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {icCmd.getCode()});
         }
         skuCmd.setId(sId);
-        if (null == scanQty) {
-            skuCmd.setScanSkuQty(null);// 未扫描
-        } else {
-            skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
-        }
         SkuRedisCommand cacheSkuCmd = skuRedisManager.findSkuMasterBySkuId(sId, ouId, logId);
         if (null == cacheSkuCmd) {
             log.error("sku is not found error, logId is:[{}]", logId);
@@ -6189,6 +6182,14 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             throw new BusinessException(ErrorCodes.COMMON_WAREHOUSE_NOT_FOUND_ERROR);
         }
         String saId = SkuCategoryProvider.getSkuAttrIdBySkuCmd(sku);
+        long value = 0;
+        String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_SN_COUNT + icCmd.toString() + loc.getId().toString() + saId);
+        if(!StringUtils.isEmpty(cacheQty)){
+            value = new Long(cacheQty).longValue();
+            scanQty = new Double(value);
+        }else{
+            scanQty = null;
+        }
         ScanSkuCacheCommand tipScanSkuSnCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_SN_QUEUE + icCmd.getId().toString() + loc.getId().toString() + saId);
         List<String> skuAttrIds = null;
         if (null != tipScanSkuSnCmd) {
