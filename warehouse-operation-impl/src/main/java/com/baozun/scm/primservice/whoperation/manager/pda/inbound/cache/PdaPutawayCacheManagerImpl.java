@@ -3078,6 +3078,19 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             // 4.判断当前商品是否扫描完毕
             boolean isSkuChecked = true;
             if (true == isSnLine) {
+                Map<String, Long> allSkuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+                Long locSkuQty = allSkuAttrIdsQty.get(saId);
+                long value = 0L;
+                // 取到扫描的数量
+                String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                if (!StringUtils.isEmpty(cacheQty)) {
+                    value = new Long(cacheQty).longValue();
+                }
+                if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                    throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                }
+                long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, 1);
                 // sn或残次商品
                 String snDefect = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
                 Set<String> allSnDefect = skuAttrIdsSnDefect.get(saId);// 唯一sku对应的所有sn残次信息
@@ -3107,6 +3120,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     }
                 }
                 if (false == isSkuChecked) {
+                    cssrCmd.setScanSkuQty(cacheValue);// 已扫描数量
                     // 提示相同商品的下一个sn明细
                     if(cssrCmd.isPartlyPutaway()){
                         cssrCmd.setNeedTipSku(true); 
@@ -3184,7 +3198,26 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                     }
                 } else {
-                    if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(locSkuQty))) {
+                    long value = 0L;
+                    // 取到扫描的数量
+                    String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                    if (!StringUtils.isEmpty(cacheQty)) {
+                        value = new Long(cacheQty).longValue();
+                    }
+                    if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                        log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                        throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                    }
+                    long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
+                    if (cacheValue < locSkuQty.longValue()) {
+                        // 提示相同商品
+                        cssrCmd.setScanSkuQty(cacheValue);// 已扫描数量
+                        cssrCmd.setNeedTipSku(true);
+                        cssrCmd.setTipSkuAttrId(saId);
+                        cssrCmd.setTipSameSkuAttrId(true);
+                        return cssrCmd;
+                    }
+                    /*if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(locSkuQty))) {
                         isSkuChecked = true;
                     } else {
                         isSkuChecked = false;
@@ -3192,7 +3225,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     if (false == isSkuChecked) {
                         log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                    }
+                    }*/
                 }
             }
             // 5.提示下一个商品
@@ -3353,6 +3386,19 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
             // 3.判断当前商品是否扫描完毕
             boolean isSkuChecked = true;
             if (true == isSnLine) {
+                Map<String, Long> allSkuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+                Long locSkuQty = allSkuAttrIdsQty.get(saId);
+                long value = 0L;
+                // 取到扫描的数量
+                String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                if (!StringUtils.isEmpty(cacheQty)) {
+                    value = new Long(cacheQty).longValue();
+                }
+                if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                    throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                }
+                long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, 1);
                 // sn或残次商品
                 String snDefect = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
                 Set<String> allSnDefect = skuAttrIdsSnDefect.get(saId);// 唯一sku对应的所有sn残次信息
@@ -3382,8 +3428,13 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     }
                 }
                 if (false == isSkuChecked) {
+                    cssrCmd.setScanSkuQty(cacheValue);// 已扫描数量
                     // 提示相同商品的下一个sn明细
-                    cssrCmd.setNeedTipSkuSn(true);
+                    if(cssrCmd.isPartlyPutaway()){
+                        cssrCmd.setNeedTipSku(true); 
+                    }else{
+                        cssrCmd.setNeedTipSkuSn(true);
+                    }
                     cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                     return cssrCmd;
                 }
@@ -3455,7 +3506,26 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                     }
                 } else {
-                    if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(locSkuQty))) {
+                    long value = 0L;
+                    // 取到扫描的数量
+                    String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                    if (!StringUtils.isEmpty(cacheQty)) {
+                        value = new Long(cacheQty).longValue();
+                    }
+                    if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                        log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                        throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                    }
+                    long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
+                    if (cacheValue < locSkuQty.longValue()) {
+                        // 提示相同商品
+                        cssrCmd.setScanSkuQty(cacheValue);// 已扫描数量
+                        cssrCmd.setNeedTipSku(true);
+                        cssrCmd.setTipSkuAttrId(saId);
+                        cssrCmd.setTipSameSkuAttrId(true);
+                        return cssrCmd;
+                    }
+                    /*if (null != scanSkuQty && (0 == new Long(scanSkuQty.longValue()).compareTo(locSkuQty))) {
                         isSkuChecked = true;
                     } else {
                         isSkuChecked = false;
@@ -3463,7 +3533,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     if (false == isSkuChecked) {
                         log.error("scan sku qty is not equals loc binding qty error, logId is:[{}]", logId);
                         throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                    }
+                    }*/
                 }
             }
             // 4.提示下一个商品

@@ -3374,6 +3374,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
 //        }
         srCmd.setScanPattern(scanPattern);
+        String saId = SkuCategoryProvider.getSkuAttrId(tipSkuAttrId);
+        long value = 0;
+        String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + containerId.toString() + loc.getId().toString() + saId);
+        if(!StringUtils.isEmpty(cacheQty)){
+            value = new Long(cacheQty).longValue();
+        }
+        srCmd.setScanSkuQty(value);
         tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
         srCmd.setNeedTipSku(true);
         srCmd.setTipSkuBarcode(sku.getBarCode());
@@ -3393,7 +3400,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if (WhScanPatternType.ONE_BY_ONE_SCAN == srCmd.getScanPattern()) {
             srCmd.setTipSkuQty(1);
         } else {
-            srCmd.setTipSkuQty(qty.intValue());
+            srCmd.setTipSkuQty(qty.intValue() - (null == srCmd.getScanSkuQty() ? 0 : srCmd.getScanSkuQty().intValue()));
         }
         if (true == isTipSkuDetail) {
             srCmd.setNeedTipSkuInvType(TipSkuDetailProvider.isTipSkuInvType(tipSkuAttrId));
@@ -4371,6 +4378,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             // 当前商品还未扫描，继续扫sn残次信息
             srCmd.setNeedScanSkuSn(true);// 继续扫sn
             srCmd.setScanPattern(scanPattern);
+            srCmd.setScanSkuQty(cssrCmd.getScanSkuQty());
             String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
             Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
             SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
@@ -4398,6 +4406,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             // 当前商品复核完毕，提示下一个商品
             srCmd.setNeedTipSku(true);// 提示下一个sku
             srCmd.setScanPattern(scanPattern);
+            srCmd.setScanSkuQty(cssrCmd.getScanSkuQty());
             String tipSkuAttrId = cssrCmd.getTipSkuAttrId();
             Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
             SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
