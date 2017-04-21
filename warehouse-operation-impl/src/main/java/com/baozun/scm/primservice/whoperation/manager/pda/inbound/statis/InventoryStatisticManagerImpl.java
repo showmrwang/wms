@@ -1411,6 +1411,34 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             saq.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
                             insideContainerSkuAttrIdsQty.put(icId, saq);
                         }
+                        if (null != locationId) {
+                            if (null != insideContainerLocSkuAttrIdsQty.get(icId)) {
+                                Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(icId);
+                                Map<String, Long> allSkuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+                                if (null != allSkuAttrIdsQty) {
+                                    if (null != allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd))) {
+                                        Long qty = allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
+                                        allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), qty + curerntSkuQty.longValue());
+                                    } else {
+                                        allSkuAttrIdsQty = new HashMap<String, Long>();
+                                        allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
+                                    }
+                                    locSkuAttrIdsQty.put(locationId, allSkuAttrIdsQty);
+                                    insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
+                                } else {
+                                    allSkuAttrIdsQty = new HashMap<String, Long>();
+                                    allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
+                                    locSkuAttrIdsQty.put(locationId, allSkuAttrIdsQty);
+                                    insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
+                                }
+                            } else {
+                                Map<String, Long> allSkuAttrIdsQty = new HashMap<String, Long>();
+                                allSkuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
+                                Map<Long, Map<String, Long>> locSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
+                                locSkuAttrIdsQty.put(locationId, allSkuAttrIdsQty);
+                                insideContainerLocSkuAttrIdsQty.put(icId, locSkuAttrIdsQty);
+                            }
+                        }
                         if (null == insideContainerAsists.get(icId)) {
                             ContainerAssist containerAssist = new ContainerAssist();
                             containerAssist.setContainerId(icId);
@@ -1425,24 +1453,6 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             containerAssist.setOuId(ouId);
                             containerAssist.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
                             insideContainerAsists.put(icId, containerAssist);
-                        }
-                        List<Location> sortLocs = new ArrayList<Location>();
-                        List<Long> sortLocationIds = new ArrayList<Long>();
-                        Map<Long, Set<String>> allLocSkuAttrs = insideContainerLocSkuAttrIds.get(icId);
-                        if (null != allLocSkuAttrs && !allLocSkuAttrs.isEmpty()) {
-                            for (Long lId : allLocSkuAttrs.keySet()) {
-                                Location loc = locationDao.findByIdExt(lId, ouId);
-                                if (null == loc) {
-                                    log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
-                                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
-                                }
-                                sortLocs.add(loc);
-                            }
-                            Collections.sort(sortLocs, new LocationShelfSorter());
-                            for (Location sortLoc : sortLocs) {
-                                sortLocationIds.add(sortLoc.getId());
-                            }
-                            insideContainerLocSort.put(icId, sortLocationIds);
                         }
                         if(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {  //拆箱上架
                           //内部容器内唯一sku对应所有sn及残次条码
@@ -1511,8 +1521,27 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             }
                             insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                         }
+                        List<Location> sortLocs = new ArrayList<Location>();
+                        List<Long> sortLocationIds = new ArrayList<Long>();
+                        Map<Long, Set<String>> allLocSkuAttrs = insideContainerLocSkuAttrIds.get(icId);
+                        if (null != allLocSkuAttrs && !allLocSkuAttrs.isEmpty()) {
+                            for (Long lId : allLocSkuAttrs.keySet()) {
+                                Location loc = locationDao.findByIdExt(lId, ouId);
+                                if (null == loc) {
+                                    log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
+                                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                                }
+                                sortLocs.add(loc);
+                            }
+                            Collections.sort(sortLocs, new LocationShelfSorter());
+                            for (Location sortLoc : sortLocs) {
+                                sortLocationIds.add(sortLoc.getId());
+                            }
+                            insideContainerLocSort.put(icId, sortLocationIds);
+                        }
                         
                     }
+                    isrCmd.setInsideContainerLocSkuAttrIdsQty(insideContainerLocSkuAttrIdsQty);
                     isrCmd.setInsideContainerLocSort(insideContainerLocSort);
                     isrCmd.setLenUomConversionRate(lenUomConversionRate);
                     isrCmd.setWeightUomConversionRate(weightUomConversionRate);

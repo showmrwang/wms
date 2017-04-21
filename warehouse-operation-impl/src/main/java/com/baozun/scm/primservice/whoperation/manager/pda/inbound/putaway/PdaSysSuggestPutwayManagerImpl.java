@@ -2907,9 +2907,11 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           Map<Long,Set<String>> insideContainerSkuAttrIds = isCmd.getInsideContainerSkuAttrIds();    //内部容器对应唯一sku
           Map<Long, List<Long>> insideContainerLocSort = isCmd.getInsideContainerLocSort();
           List<Long> locationIds = insideContainerLocSort.get(insideContainerId);
-          Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(insideContainerId); // 内部容器推荐库位对应唯一sku总件数
-          Map<String,Long> lskuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
-//          Map<Long, Map<String, Long>>  containerSkuAttrIdsQty = isCmd.getcSkuAttrIdsQty();    //货箱内已经上架的唯一sku对应的数量
+          Map<String,Long> lskuAttrIdsQty = new HashMap<String,Long>();
+          if(!isRecommendFail) {  //推荐成功或者推荐成功走人为分支
+              Map<Long, Map<String, Long>> locSkuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(insideContainerId); // 内部容器推荐库位对应唯一sku总件数
+              lskuAttrIdsQty = locSkuAttrIdsQty.get(tipLocationId);
+          }
           if (null != ocCmd) {
               insideContainerIds = csrCmd.getInsideContainerIds();
           }
