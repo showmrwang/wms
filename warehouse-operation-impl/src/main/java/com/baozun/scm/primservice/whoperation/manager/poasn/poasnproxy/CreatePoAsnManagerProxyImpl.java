@@ -34,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -59,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.carton.WhCartonManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
@@ -130,6 +132,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     private WarehouseManager warehouseManager;
     @Autowired
     private InventoryStatusManager inventoryStatusManager;
+    @Autowired
+    private WhCartonManager whCartonManager;
 
     /**
      * 验证po单数据是否完整
@@ -1580,10 +1584,26 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             WhCarton whCarton = whCartonIt.next();
             saveWhCartonList.add(whCarton);
         }
+
+        // 更新容器
+        List<Container> containerList = new ArrayList<Container>();
+        Iterator<Entry<Long, String>> containerIt = insideContainerMap.entrySet().iterator();
+        while (containerIt.hasNext()) {
+            Entry<Long, String> entry = containerIt.next();
+            Container container = this.generalRcvdManager.findContainerByIdToShard(entry.getKey(), ouId);
+            if (null == container) {
+                throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
+            }
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            container.setOperatorId(userId);
+            containerList.add(container);
+        }
+
         // 更新ASN明细
         Iterator<Entry<Long, Double>> it = lineMap.entrySet().iterator();
         Double asnCount = Constants.DEFAULT_DOUBLE;
         Map<Long, Double> polineMap = new HashMap<Long, Double>();
+        Map<Long, Integer> polineCtnMap = new HashMap<Long, Integer>();
         while (it.hasNext()) {
             Entry<Long, Double> entry = it.next();
             WhAsnLine asnLine = this.asnLineManager.findWhAsnLineByIdToShard(entry.getKey(), ouId);
@@ -1597,17 +1617,31 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             } else {
                 asnLine.setStatus(PoAsnStatus.ASNLINE_RCVD);
             }
+            // @mender yimin.lu 2017/4/21 更新实际收货的箱数
+            Integer asnLineCtnQty = this.getCtnQty(asnId, asnLine.getId(), ouId, containerList);
+            asnLine.setCtnRcvd((asnLine.getCtnRcvd() == null ? 0 : asnLine.getCtnRcvd()) + asnLineCtnQty);
             saveAsnLineList.add(asnLine);
             if (polineMap.containsKey(asnLine.getPoLineId())) {
                 polineMap.put(asnLine.getPoLineId(), lineMap.get(asnLine.getPoLineId()) + entry.getValue());
             } else {
                 polineMap.put(asnLine.getPoLineId(), entry.getValue());
             }
+
+            // 箱数统计 @mender yimin.lu 2017/4/21 可能会有误差
+            if (polineCtnMap.containsKey(asnLine.getPoLineId())) {
+                polineCtnMap.put(asnLine.getPoLineId(), polineCtnMap.get(asnLine.getPoLineId()) + asnLineCtnQty);
+            } else {
+                polineCtnMap.put(asnLine.getPoLineId(), asnLineCtnQty);
+            }
             asnCount += entry.getValue();
         }
         // 1.更新ASN明细
         // 2.筛选PO明细数据集合
         asn.setQtyRcvd(asn.getQtyRcvd() + asnCount);
+        // asn更新实际箱数 @mender yimin.lu 2017/4/21
+        // @mender yimin.lu 通用收货更新实际箱数
+        Integer ctnRcvd = this.getCtnQty(asnId, null, ouId, containerList);
+        asn.setCtnRcvd((asn.getCtnRcvd() == null ? 0 : asn.getCtnRcvd()) + ctnRcvd);
         // mender yimin.lu 设置完成与关闭节点，在内层方法体封装
         /*
          * if (asn.getQtyRcvd() >= asn.getQtyPlanned()) {
@@ -1632,6 +1666,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             } else {
                 poline.setStatus(PoAsnStatus.POLINE_RCVD);
             }
+            // 更新实际箱数
+            poline.setQtyRcvd((poline.getQtyRcvd() == null ? 0 : poline.getQtyRcvd()) + polineCtnMap.get(entry.getKey()));
             poline.setModifiedId(userId);
             savePoLineList.add(poline);
             if (null == poId) {
@@ -1640,6 +1676,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
         po.setModifiedId(userId);
         po.setQtyRcvd(po.getQtyRcvd() + asnCount);
+        // po更新实际箱数 @mender yimin.lu 2017/4/21 TODO 现在箱信息是到ASN维度，如果两个ASN用同一个容器收货，统计数据会有误
+        po.setCtnRcvd((po.getCtnRcvd() == null ? 0 : po.getCtnRcvd()) + ctnRcvd);
         if (null == po.getDeliveryTime()) {
             po.setDeliveryTime(new Date());
         }
@@ -1647,35 +1685,19 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             po.setStartTime(new Date());
         }
         // po.setStopTime(new Date());
-        // 更新容器
-        List<Container> containerList = new ArrayList<Container>();
-
-        Iterator<Entry<Long, String>> containerIt = insideContainerMap.entrySet().iterator();
-        while (containerIt.hasNext()) {
-            Entry<Long, String> entry = containerIt.next();
-            Container container = this.generalRcvdManager.findContainerByIdToShard(entry.getKey(), ouId);
-            if (null == container) {
-                throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
-            }
-            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
-            container.setOperatorId(userId);
-            containerList.add(container);
-        }
+        
 
         try {
             this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, containerList, saveWhCartonList, wh);
             WhPo shardPo = this.poManager.findWhPoByIdToShard(po.getId(), ouId);
             // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
-            WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(po.getExtCode(), po.getStoreId(), ouId);
+            // @mender yimin.lu 同步接口调整
             if (PoAsnStatus.PO_CLOSE == shardPo.getStatus()) {
-                infoPo.setStopTime(shardPo.getStopTime());
-                this.poManager.snycPoToInfo("CLOSE", infoPo, savePoLineList);
+                this.poManager.snycPoToInfo("CLOSE", shardPo, savePoLineList);
             } else if (PoAsnStatus.PO_RCVD == shardPo.getStatus()) {
-                infoPo.setStartTime(shardPo.getStartTime());
-                this.poManager.snycPoToInfo("RCVD", infoPo, savePoLineList);
+                this.poManager.snycPoToInfo("RCVD", shardPo, savePoLineList);
             } else if (PoAsnStatus.PO_RCVD_FINISH == shardPo.getStatus()) {
-                infoPo.setStopTime(shardPo.getStopTime());
-                this.poManager.snycPoToInfo("RCVD_FINISH", infoPo, savePoLineList);
+                this.poManager.snycPoToInfo("RCVD_FINISH", shardPo, savePoLineList);
             }
 
         } catch (BusinessException e) {
@@ -1707,6 +1729,24 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         }
         return store;
 
+    }
+
+    private Integer getCtnQty(Long asnId, Long asnLineId, Long ouId, List<Container> containerList) {
+        Integer ctnRcvd = 0;
+        // 查询 #TODO 优化
+        for (Container c : containerList) {
+            WhCartonCommand cartonCommand = new WhCartonCommand();
+            cartonCommand.setAsnId(asnId);
+            cartonCommand.setContainerId(c.getId());
+            cartonCommand.setAsnLineId(asnLineId);
+            cartonCommand.setOuId(ouId);
+            List<WhCartonCommand> cartonCheckList = this.whCartonManager.findWhCartonByParamExt(cartonCommand);
+            if (cartonCheckList == null || cartonCheckList.size() == 0) {
+                ctnRcvd++;
+            }
+
+        }
+        return ctnRcvd;
     }
 
 }

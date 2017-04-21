@@ -63,6 +63,9 @@ public class CheckScanResultCommand extends BaseCommand {
     
     private Boolean isHaveInsideContainer = true; //sku是否有内部容器
     
+    private Boolean isScanLatticeNo = false; // 是否扫描货格
+    
+    
     
     public int getPickingWay() {
         return pickingWay;
@@ -178,7 +181,11 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setIsNeedScanSkuSn(Boolean isNeedScanSkuSn) {
         this.isNeedScanSkuSn = isNeedScanSkuSn;
     }
-    
-    
+    public Boolean getIsScanLatticeNo() {
+        return isScanLatticeNo;
+    }
+    public void setIsScanLatticeNo(Boolean isScanLatticeNo) {
+        this.isScanLatticeNo = isScanLatticeNo;
+    }
     
 }

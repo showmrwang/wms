@@ -213,4 +213,12 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param operationId
      */
     public void shortPickingEnd(Long operationId,Long ouId,Long userId,String outBoundBoxCode,String turnoverBoxCode,Long outBoundBoxId);
+    
+    
+    /***
+     * 返回货格号
+     * @param command
+     * @param operationId
+     */
+    public Integer getLatticeNoBySkuAttrIds(PickingScanResultCommand  command,Long ouId);
 }
