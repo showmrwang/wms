@@ -366,4 +366,11 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      */
     List<WhAsnCommand> findReturnsForOp(WhAsnCommand command);
 
+    /**
+     * 获取残次条码
+     * 
+     * @return
+     */
+    String getDefectBarCode();
+
 }

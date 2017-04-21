@@ -57,7 +57,7 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
     /** 库位上每个唯一sku对应的所有sn及残次条码 (不在容器内，散装sku)*/
     private Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     /** 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内） */
-    private Map<Long, Map<String, Set<String>>> skuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
+    private Map<Long, Map<String, Set<Integer>>> skuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<Integer>>>();
     /** 外部容器对应所有内部容器 */
     private Map<Long, Set<Long>> outerToInside = new HashMap<Long, Set<Long>>();
     /** 内部容器对应所有sku*/
@@ -69,7 +69,7 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
     /** 内部容器每个唯一sku对应的所有sn及残次条码 */
     private Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     /** 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车） */
-    private Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
+    private Map<Long, Map<String, Set<Integer>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<Integer>>>();
 
     // 追加统计信息
 
@@ -230,19 +230,19 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
         this.insideSkuAttrIdsSnDefect = insideSkuAttrIdsSnDefect;
     }
 
-    public Map<Long, Map<String, Set<String>>> getSkuAttrIdsContainerLattice() {
+    public Map<Long, Map<String, Set<Integer>>> getSkuAttrIdsContainerLattice() {
         return skuAttrIdsContainerLattice;
     }
 
-    public void setSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<String>>> skuAttrIdsContainerLattice) {
+    public void setSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<Integer>>> skuAttrIdsContainerLattice) {
         this.skuAttrIdsContainerLattice = skuAttrIdsContainerLattice;
     }
 
-    public Map<Long, Map<String, Set<String>>> getInsideSkuAttrIdsContainerLattice() {
+    public Map<Long, Map<String, Set<Integer>>> getInsideSkuAttrIdsContainerLattice() {
         return insideSkuAttrIdsContainerLattice;
     }
 
-    public void setInsideSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice) {
+    public void setInsideSkuAttrIdsContainerLattice(Map<Long, Map<String, Set<Integer>>> insideSkuAttrIdsContainerLattice) {
         this.insideSkuAttrIdsContainerLattice = insideSkuAttrIdsContainerLattice;
     }
 

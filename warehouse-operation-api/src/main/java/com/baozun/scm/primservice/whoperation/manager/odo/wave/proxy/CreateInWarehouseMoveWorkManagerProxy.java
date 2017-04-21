@@ -32,4 +32,15 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      */
     List<WhSkuInventorySn> batchImport(String url, String fileName, Long userImportExcelId, Locale locale,Long ouId, Long userId, String logId);
     
+    /**
+     * [业务方法] 创库内移动工作校验
+     * @param ids
+     * @param uuids
+     * @param toLocationId
+     * @param moveQtys
+     * @param ouId
+     * @return
+     */
+    Integer systemCheck(Long[] ids, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId);
+    
 }

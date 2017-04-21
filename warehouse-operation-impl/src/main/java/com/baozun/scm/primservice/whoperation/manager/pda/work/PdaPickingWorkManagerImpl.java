@@ -220,7 +220,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 库位上每个唯一sku对应的所有sn及残次条码
         Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
         // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
-        Map<Long, Map<String, Set<String>>> skuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
+        Map<Long, Map<String, Set<Integer>>> skuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<Integer>>>();
         // 外部容器对应所有内部容器
         Map<Long, Set<Long>> outerToInside = new HashMap<Long, Set<Long>>();
         // 内部容器对应所有sku
@@ -232,7 +232,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 内部容器每个唯一sku对应的所有sn及残次条码
         Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
         // 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
-        Map<Long, Map<String, Set<String>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<String>>>();
+        Map<Long, Map<String, Set<Integer>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<Integer>>>();
         // 工作明细ID和唯一sku对应关系
         Map<String, String> workLineToOnlySku = new HashMap<String, String>();
 
@@ -388,25 +388,25 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
                 if (null != operationLine.getFromLocationId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false) {
                     if (null != skuAttrIdsContainerLattice.get(operationLine.getFromLocationId())) {
-                        Map<String, Set<String>> onlySkuUseOutboundboxMap = new HashMap<String, Set<String>>();
-                        onlySkuUseOutboundboxMap = skuAttrIdsContainerLattice.get(operationLine.getFromLocationId());
-                        if (null != onlySkuUseOutboundboxMap.get(onlySku)) {
-                            Set<String> useOutboundboxCodeSet = new HashSet<String>();
-                            useOutboundboxCodeSet = onlySkuUseOutboundboxMap.get(onlySku);
-                            useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
-                            onlySkuUseOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
+                        Map<String, Set<Integer>> onlySkuUseContainerLatticeNoMap = new HashMap<String, Set<Integer>>();
+                        onlySkuUseContainerLatticeNoMap = skuAttrIdsContainerLattice.get(operationLine.getFromLocationId());
+                        if (null != onlySkuUseContainerLatticeNoMap.get(onlySku)) {
+                            Set<Integer> useContainerLatticeNoSet = new HashSet<Integer>();
+                            useContainerLatticeNoSet = onlySkuUseContainerLatticeNoMap.get(onlySku);
+                            useContainerLatticeNoSet.add(operationLine.getUseContainerLatticeNo());
+                            onlySkuUseContainerLatticeNoMap.put(onlySku, useContainerLatticeNoSet);
                         } else {
-                            Set<String> useOutboundboxCodeSet = new HashSet<String>();
-                            useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
-                            onlySkuUseOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
+                            Set<Integer> useContainerLatticeNoSet = new HashSet<Integer>();
+                            useContainerLatticeNoSet.add(operationLine.getUseContainerLatticeNo());
+                            onlySkuUseContainerLatticeNoMap.put(onlySku, useContainerLatticeNoSet);
                         }
-                        skuAttrIdsContainerLattice.put(operationLine.getFromLocationId(), onlySkuUseOutboundboxMap);
+                        skuAttrIdsContainerLattice.put(operationLine.getFromLocationId(), onlySkuUseContainerLatticeNoMap);
                     } else {
-                        Map<String, Set<String>> onlySkuUseOutboundboxMap = new HashMap<String, Set<String>>();
-                        Set<String> useOutboundboxCodeSet = new HashSet<String>();
-                        useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
-                        onlySkuUseOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
-                        skuAttrIdsContainerLattice.put(operationLine.getFromLocationId(), onlySkuUseOutboundboxMap);
+                        Map<String, Set<Integer>> onlySkuUseContainerLatticeNoMap = new HashMap<String, Set<Integer>>();
+                        Set<Integer> useContainerLatticeNoSet = new HashSet<Integer>();
+                        useContainerLatticeNoSet.add(operationLine.getUseContainerLatticeNo());
+                        onlySkuUseContainerLatticeNoMap.put(onlySku, useContainerLatticeNoSet);
+                        skuAttrIdsContainerLattice.put(operationLine.getFromLocationId(), onlySkuUseContainerLatticeNoMap);
                     }
                 }
             }
@@ -508,25 +508,25 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
                 if (null != operationLine.getFromInsideContainerId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false) {
                     if (null != insideSkuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId())) {
-                        Map<String, Set<String>> onlySkuOutboundboxMap = new HashMap<String, Set<String>>();
-                        onlySkuOutboundboxMap = insideSkuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId());
-                        if (null != onlySkuOutboundboxMap.get(onlySku)) {
-                            Set<String> useOutboundboxCodeSet = new HashSet<String>();
-                            useOutboundboxCodeSet = onlySkuOutboundboxMap.get(onlySku);
-                            useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
-                            onlySkuOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
+                        Map<String, Set<Integer>> onlySkuUseContainerLatticeNoMap = new HashMap<String, Set<Integer>>();
+                        onlySkuUseContainerLatticeNoMap = insideSkuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId());
+                        if (null != onlySkuUseContainerLatticeNoMap.get(onlySku)) {
+                            Set<Integer> useContainerLatticeNoSet = new HashSet<Integer>();
+                            useContainerLatticeNoSet = onlySkuUseContainerLatticeNoMap.get(onlySku);
+                            useContainerLatticeNoSet.add(operationLine.getUseContainerLatticeNo());
+                            onlySkuUseContainerLatticeNoMap.put(onlySku, useContainerLatticeNoSet);
                         } else {
-                            Set<String> useOutboundboxCodeSet = new HashSet<String>();
-                            useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
-                            onlySkuOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
+                            Set<Integer> useContainerLatticeNoSet = new HashSet<Integer>();
+                            useContainerLatticeNoSet.add(operationLine.getUseContainerLatticeNo());
+                            onlySkuUseContainerLatticeNoMap.put(onlySku, useContainerLatticeNoSet);
                         }
-                        insideSkuAttrIdsContainerLattice.put(operationLine.getFromInsideContainerId(), onlySkuOutboundboxMap);
+                        insideSkuAttrIdsContainerLattice.put(operationLine.getFromInsideContainerId(), onlySkuUseContainerLatticeNoMap);
                     } else if (null != operationLine.getFromInsideContainerId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false && null == operationLine.getFromOuterContainerId()) {
-                        Map<String, Set<String>> onlySkuOutboundboxMap = new HashMap<String, Set<String>>();
-                        Set<String> useOutboundboxCodeSet = new HashSet<String>();
-                        useOutboundboxCodeSet.add(operationLine.getUseOutboundboxCode());
-                        onlySkuOutboundboxMap.put(onlySku, useOutboundboxCodeSet);
-                        insideSkuAttrIdsContainerLattice.put(operationLine.getFromInsideContainerId(), onlySkuOutboundboxMap);
+                        Map<String, Set<Integer>> onlySkuUseContainerLatticeNoMap = new HashMap<String, Set<Integer>>();
+                        Set<Integer> useContainerLatticeNoSet = new HashSet<Integer>();
+                        useContainerLatticeNoSet.add(operationLine.getUseContainerLatticeNo());
+                        onlySkuUseContainerLatticeNoMap.put(onlySku, useContainerLatticeNoSet);
+                        insideSkuAttrIdsContainerLattice.put(operationLine.getFromInsideContainerId(), onlySkuUseContainerLatticeNoMap);
                     }
                 }
             }

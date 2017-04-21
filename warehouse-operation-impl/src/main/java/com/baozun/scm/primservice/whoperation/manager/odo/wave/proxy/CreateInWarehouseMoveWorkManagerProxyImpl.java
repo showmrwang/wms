@@ -75,11 +75,6 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids, Double[] moveQtys, Long toLocationId, Boolean isExecute, Long ouId, Long userId) {
         Boolean isSuccess = true;
-        // 1.系统校验
-        Boolean systemCheck = this.systemCheck(ids, uuids, toLocationId, moveQtys, ouId);
-        if (false == systemCheck) {
-            return false;
-        }
         // 2.将库存行根据原始库位与目标库位进行分组
         InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(ids, uuids, moveQtys, ouId);
         inWarehouseMoveWorkCommand.setToLocationId(toLocationId);
@@ -109,12 +104,16 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
     }
 
     /**
-     * 系统校验
+     * 创库内移动工作校验
      * 
      * @param 
      * @return
      */
-    private Boolean systemCheck(Long[] ids, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId) {
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Integer systemCheck(Long[] ids, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId) {
+        // sku种类和数量
+        Set<Long> customerIds = new HashSet<Long>();
         // sku种类和数量
         Set<Long> skus = new HashSet<Long>();
         // sku属性和数量
@@ -128,6 +127,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 String onlySku = SkuCategoryProvider.getSkuAttrIdByInv(toSkuInventoryCommand);
                 skus.add(toSkuInventoryCommand.getSkuId());
                 onlySkus.add(onlySku);
+                customerIds.add(toSkuInventoryCommand.getCustomerId());
             }
         }
         // 获取目标库位待移入库存信息
@@ -137,6 +137,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 String onlySku = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(toSkuInventoryTobefilled);
                 skus.add(toSkuInventoryTobefilled.getSkuId());
                 onlySkus.add(onlySku);
+                customerIds.add(toSkuInventoryTobefilled.getCustomerId());
             }
         }
         // 统计库内移动信息
@@ -147,15 +148,23 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             skus.add(whSkuInventoryCommand.getSkuId());
             onlySkus.add(onlySku);
             skuInventoryCommandLst.add(whSkuInventoryCommand);
+            customerIds.add(whSkuInventoryCommand.getCustomerId());
+        }
+        // 客户唯一校验
+        if(null != customerIds && 1 < customerIds.size()){
+            return ErrorCodes.IN_WAREHOUSE_MOVE_CUSTOMER_ERROR;
         }
         // 库位管理属性校验
         if (true == location.getIsMixStacking()) {
-            if (location.getMixStackingNumber() < skus.size() || location.getMaxChaosSku() < onlySkus.size()) {
-                return false;
+            if (location.getMixStackingNumber() < skus.size()) {
+                return ErrorCodes.IN_WAREHOUSE_MOVE_MIX_STACKING_NUMBER_ERROR;
+            }
+            if(location.getMaxChaosSku() < onlySkus.size()){
+                return ErrorCodes.IN_WAREHOUSE_MOVE_MAX_CHAOS_SKU_ERROR;
             }
         } else {
             if (1 != skus.size() || 1 != onlySkus.size()) {
-                return false;
+                return ErrorCodes.IN_WAREHOUSE_MOVE_MIX_STACKING_ERROR;
             }
         }
         // 静态库位是否绑定商品
@@ -163,11 +172,11 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             for (Long skuId : skus) {
                 int isSuccess = whSkuLocationDao.findSkuCountInSkuLocation(ouId, toLocationId, skuId);
                 if (0 == isSuccess) {
-                    return false;
+                    return ErrorCodes.IN_WAREHOUSE_MOVE_ISSTATIC_ERROR;
                 }
             }
         }
-        return true;
+        return null;
     }
 
     /**
