@@ -836,6 +836,18 @@ public class ErrorCodes {
     public static final int DISTRIBUTION_PATTERN_RULE_IS_NULL = 100006;
     /** 工作明细信息列表 */
     public static final int WORK_LINE_IS_NULL = 100006;
+    /** 目标库位客户不唯一 */
+    public static final int IN_WAREHOUSE_MOVE_CUSTOMER_ERROR = 100007;
+    /** 超过最大混放SKU数 */
+    public static final int IN_WAREHOUSE_MOVE_MIX_STACKING_NUMBER_ERROR = 100008;
+    /** 超过最大混放SKU属性数 */
+    public static final int IN_WAREHOUSE_MOVE_MAX_CHAOS_SKU_ERROR = 100009;
+    /** 目标库位不允许混放 */
+    public static final int IN_WAREHOUSE_MOVE_MIX_STACKING_ERROR = 100010;
+    /** 静态库位必须摆放指定商品 */
+    public static final int IN_WAREHOUSE_MOVE_ISSTATIC_ERROR = 100011;
+    /** 创建库内移动工作失败 */
+    public static final int CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR = 1000012;
     // 100001-110000 liuqiming
     // 110000-120000 xuhui
     /** 交货交接规则为空 */
