@@ -115,6 +115,9 @@ public final class CacheConstants {
     public static final String CACHE_TURNOVERBOX_IDS = "CACHE_TURNOVERBOX_IDS";
     /** 缓存作业执行明细统计信息 */
     public static final String CACHE_OPERATION_EXEC_LINE = "CACHE_OPERATION_EXEC_LINE";
+    
+    /**缓存sn*/
+    public static final String CACHE_LATTICE_NO = "CACHE_LATTICE_NO_";
 
     /************************************* 播种缓存 ***********************************/
 
