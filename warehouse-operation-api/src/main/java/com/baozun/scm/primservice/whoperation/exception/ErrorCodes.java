@@ -407,6 +407,10 @@ public class ErrorCodes {
     public static final int ODO_EXTCODE_ISEXIST = 11081;
     /** 此状态下出库单不允许编辑 */
     public static final int ODO_EDIT_ERROR = 11082;
+    /** PO单所包含的子Po状态不全为【关闭】，PO单不允许审核成功 */
+    public static final int BIPO_AUDIT_SUBSTATUS_ERROR = 11083;
+    /** PO单状态不允许审核成功 */
+    public static final int BIPO_AUDIT_STATUS_ERROR = 11084;
     // 10001-20000 luyimin
 
 
