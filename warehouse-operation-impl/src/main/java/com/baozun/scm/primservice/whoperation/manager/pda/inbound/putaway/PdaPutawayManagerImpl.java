@@ -5934,7 +5934,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 sku.setSkuDefect(StringUtils.isEmpty(skuCmd.getSkuDefect()) ? "" : skuCmd.getSkuDefect());
                 pdaPutawayCacheManager.sysGuidePutawayCancel(containerCmd, insideContainerCmd, sku, loc.getId(), funcId, putawayPatternDetailType, cancelPattern, ouId, userId, logId);
                 // 提示下一个商品
-                TipScanSkuCacheCommand tipSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerCmd.toString() + loc.getId().toString());
+                TipScanSkuCacheCommand tipSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerCmd.getId().toString() + loc.getId().toString());
                 ArrayDeque<String> tipSkuAttrIds = null;
                 if (null != tipSkuCmd) {
                     tipSkuAttrIds = tipSkuCmd.getScanSkuAttrIds();
@@ -5958,6 +5958,13 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 }
                 srCmd.setScanPattern(scanPattern);
                 srCmd.setNeedTipSku(true);
+                String saId = SkuCategoryProvider.getSkuAttrId(tipSkuAttrId);
+                long value = 0;
+                String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + insideContainerCmd.getId().toString() + loc.getId().toString() + saId);
+                if(!StringUtils.isEmpty(cacheQty)){
+                    value = new Long(cacheQty).longValue();
+                }
+                srCmd.setScanSkuQty(value);
                 Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
                 SkuRedisCommand cacheSku = skuRedisManager.findSkuMasterBySkuId(skuId, ouId, logId);
                 if (null == cacheSku) {
