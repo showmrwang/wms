@@ -71,12 +71,13 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
     /** 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车） */
     private Map<Long, Map<String, Set<Integer>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<Integer>>>();
 
-    private Map<Integer,Long> latticeLoc = new HashMap<Integer,Long>();   //货格对应的库位号
-    
-    private  Map<String,Map<String,Long>> latticeSkuAttrIdsQty = new HashMap<String,Map<String,Long>>();   //货格+库位对应唯一sku对应的数量(散装的)
-    
-    private  Map<String,Map<Long,Map<String,Long>>> latticeInsideSkuAttrIdsQty = new HashMap<String,Map<Long,Map<String,Long>>>();   //货格+库位对应唯一sku对应的数量(有货箱的)
-    
+    /** 货格对应的库位号 */
+    private Map<Integer, Set<Long>> latticeLoc = new HashMap<Integer, Set<Long>>();
+    /** 货格+库位对应唯一sku对应的数量(散装的) */
+    private Map<String, Map<String, Long>> latticeSkuAttrIdsQty = new HashMap<String, Map<String, Long>>();
+    /** 货格+库位对应唯一sku对应的数量(有货箱的) */
+    private Map<String, Map<Long, Map<String, Long>>> latticeInsideSkuAttrIdsQty = new HashMap<String, Map<Long, Map<String, Long>>>();
+
     // 追加统计信息
 
     /** 唯一sku与工作明细ID和uuid对应关系 */
@@ -268,11 +269,11 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
         this.batch = batch;
     }
 
-    public Map<Integer, Long> getLatticeLoc() {
+    public Map<Integer, Set<Long>> getLatticeLoc() {
         return latticeLoc;
     }
 
-    public void setLatticeLoc(Map<Integer, Long> latticeLoc) {
+    public void setLatticeLoc(Map<Integer, Set<Long>> latticeLoc) {
         this.latticeLoc = latticeLoc;
     }
 
@@ -291,9 +292,5 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
     public void setLatticeInsideSkuAttrIdsQty(Map<String, Map<Long, Map<String, Long>>> latticeInsideSkuAttrIdsQty) {
         this.latticeInsideSkuAttrIdsQty = latticeInsideSkuAttrIdsQty;
     }
-
-    
-    
-    
 
 }
