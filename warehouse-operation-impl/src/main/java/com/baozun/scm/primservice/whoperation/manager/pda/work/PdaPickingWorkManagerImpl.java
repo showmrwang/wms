@@ -235,6 +235,12 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Map<Long, Map<String, Set<Integer>>> insideSkuAttrIdsContainerLattice = new HashMap<Long, Map<String, Set<Integer>>>();
         // 工作明细ID和唯一sku对应关系
         Map<String, String> workLineToOnlySku = new HashMap<String, String>();
+        // 货格对应的库位号
+        Map<Integer, Set<Long>> latticeLoc = new HashMap<Integer, Set<Long>>();
+        // 货格+库位对应唯一sku对应的数量(散装的)
+        Map<String, Map<String, Long>> latticeSkuAttrIdsQty = new HashMap<String, Map<String, Long>>();
+        // 货格+库位对应唯一sku对应的数量(有货箱的)
+        Map<String, Map<Long, Map<String, Long>>> latticeInsideSkuAttrIdsQty = new HashMap<String, Map<Long, Map<String, Long>>>();
 
         // 根据作业id获取作业明细信息
         List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), whOperationCommand.getOuId());
@@ -530,6 +536,66 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
                 }
             }
+            // 货格统计
+            if(null != operationLine.getUseContainerLatticeNo()){
+                if(null != operationLine.getFromLocationId()){
+                    // 货格对应库位
+                    if(null != latticeLoc.get(operationLine.getUseContainerLatticeNo())){
+                        Set<Long> fromLocationIds = new HashSet<Long>();
+                        fromLocationIds = latticeLoc.get(operationLine.getUseContainerLatticeNo());
+                        fromLocationIds.add(operationLine.getFromLocationId());
+                        latticeLoc.put(operationLine.getUseContainerLatticeNo(), fromLocationIds);
+                    }else{
+                        Set<Long> fromLocationIds = new HashSet<Long>();
+                        fromLocationIds.add(operationLine.getFromLocationId());
+                        latticeLoc.put(operationLine.getUseContainerLatticeNo(), fromLocationIds);
+                    }
+                    String key = operationLine.getUseContainerLatticeNo().toString() + operationLine.getFromLocationId().toString();
+                    if(null != operationLine.getFromInsideContainerId()){
+                        // 货格+库位对应唯一sku对应的数量(有货箱的)
+                        if(null != latticeInsideSkuAttrIdsQty.get(key)){
+                            Map<Long, Map<String, Long>> insideContainerMap = new HashMap<Long, Map<String, Long>>();
+                            insideContainerMap = latticeInsideSkuAttrIdsQty.get(key);
+                            if(null != insideContainerMap.get(operationLine.getFromInsideContainerId())){
+                                Map<String, Long> onlySkuAndQty = new HashMap<String, Long>();
+                                if(null != onlySkuAndQty.get(onlySku)){
+                                    onlySkuAndQty.put(onlySku, onlySkuAndQty.get(onlySku) + (long) (operationLine.getQty() - operationLine.getCompleteQty()));
+                                }else{
+                                    onlySkuAndQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty())); 
+                                }
+                                insideContainerMap.put(operationLine.getFromInsideContainerId(), onlySkuAndQty);
+                            }else{
+                                Map<String, Long> onlySkuAndQty = new HashMap<String, Long>();
+                                onlySkuAndQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
+                                insideContainerMap.put(operationLine.getFromInsideContainerId(), onlySkuAndQty);
+                            }
+                            latticeInsideSkuAttrIdsQty.put(key, insideContainerMap);
+                        }else{
+                            Map<Long, Map<String, Long>> insideContainerMap = new HashMap<Long, Map<String, Long>>();
+                            Map<String, Long> onlySkuAndQty = new HashMap<String, Long>();
+                            onlySkuAndQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
+                            insideContainerMap.put(operationLine.getFromInsideContainerId(), onlySkuAndQty);
+                            latticeInsideSkuAttrIdsQty.put(key, insideContainerMap);
+                        }
+                    }else{
+                        // 货格+库位对应唯一sku对应的数量(散装的)                          
+                        if(null != latticeSkuAttrIdsQty.get(key)){
+                            Map<String, Long> onlySkuAndQty = new HashMap<String, Long>();
+                            onlySkuAndQty = latticeSkuAttrIdsQty.get(key);
+                            if(null != onlySkuAndQty.get(onlySku)){
+                                onlySkuAndQty.put(onlySku, onlySkuAndQty.get(onlySku) + (long) (operationLine.getQty() - operationLine.getCompleteQty()));    
+                            }else{
+                                onlySkuAndQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
+                            }
+                            latticeSkuAttrIdsQty.put(key, onlySkuAndQty);
+                        }else{
+                            Map<String, Long> onlySkuAndQty = new HashMap<String, Long>();
+                            onlySkuAndQty.put(onlySku, (long) (operationLine.getQty() - operationLine.getCompleteQty()));
+                            latticeSkuAttrIdsQty.put(key, onlySkuAndQty);
+                        }
+                    }
+                }
+            }
         }
 
         // 载入统计分析信息
@@ -581,6 +647,12 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         statisticsCommand.setInsideSkuAttrIdsContainerLattice(insideSkuAttrIdsContainerLattice);
         // 工作明细ID和唯一sku对应关系
         statisticsCommand.setWorkLineIdToOnlySku(workLineToOnlySku);
+        // 货格对应的库位号
+        statisticsCommand.setLatticeLoc(latticeLoc);
+        // 货格+库位对应唯一sku对应的数量(散装的)
+        statisticsCommand.setLatticeSkuAttrIdsQty(latticeSkuAttrIdsQty);
+        // 货格+库位对应唯一sku对应的数量(有货箱的)
+        statisticsCommand.setLatticeInsideSkuAttrIdsQty(latticeInsideSkuAttrIdsQty);
 
         // 缓存统计分析结果
         pdaPickingWorkCacheManager.operatioLineStatisticsRedis(whOperationCommand.getId(), statisticsCommand);
