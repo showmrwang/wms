@@ -771,18 +771,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   cacheInsideContainerIds = new ArrayDeque<Long>();
               }
               cacheInsideContainerIds.add(insideContainerId);
-//              if (null != cacheInsideContainerIds && !cacheInsideContainerIds.isEmpty()) {
-//                  Long value = cacheInsideContainerIds.peekFirst();// 队列的第一个
-//                  if (null == value) value = -1L;
-//                  if (0 != value.compareTo(insideContainerId)) {
-//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                  }
-//              } else {
-//                  log.error("scan container queue is exception, logId is:[{}]", logId);
-//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//
-//              }
               OperationLineCacheCommand operLineCacheCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
               ArrayDeque<Long> cacheLocaitionIds = null;
               if (null != operLineCacheCmd) {
@@ -795,18 +783,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   cacheLocaitionIds = new  ArrayDeque<Long>();
               }
               cacheLocaitionIds.add(locationId);
-//              if (null != cacheLocaitionIds && !cacheLocaitionIds.isEmpty()) {
-//                  Long value = cacheLocaitionIds.peekFirst();// 判断当前库位是否是队列的第一个
-//                  if (null == value) value = -1L;
-//                  if (0 != value.compareTo(locationId)) {
-//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                  }
-//              } else {
-//                  log.error("scan container queue is exception, logId is:[{}]", logId);
-//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//
-//              }
               // 2.当前的外部容器是不是提示外部容器队列中的第一个
               ArrayDeque<Long> cacheOuterContainerIds = null;
               if(null != cacheContainerCmd) {
@@ -820,18 +796,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   cacheOuterContainerIds = new ArrayDeque<Long>();
               }
               cacheOuterContainerIds.add(outerContainerId);
-//              if (null != cacheOuterContainerIds && !cacheOuterContainerIds.isEmpty()) {
-//                  Long value = cacheOuterContainerIds.peekFirst();// 队列的第一个
-//                  if (null == value) value = -1L;
-//                  if (0 != value.compareTo(outerContainerId)) {
-//                      log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-//                      throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                  }
-//              } else {
-//                  log.error("scan container queue is exception, logId is:[{}]", logId);
-//                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//
-//              }
               Boolean isTipSkuSn = skuCmd.getIsNeedTipSkuSn();
               Boolean isTipSkuDefect = skuCmd.getIsNeedTipSkuDefect();
               boolean isSnLine = false;
@@ -1018,7 +982,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                       }
                                                   }
                                                   cssrCmd.setTipOuterContainerId(tipOcId);
-                                                  cssrCmd.setIsNeedTipOutContainer(true);
+                                                  cssrCmd.setIsNeedTipOutContainer(true);  //有托盘
                                                   //缓存上一个托盘内最后扫描的一个内部容器
                                                   this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
                                                   //缓存上一个托盘
@@ -1033,7 +997,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                        }
                                                        cssrCmd.setTipiInsideContainerId(tipicId);
                                                        cssrCmd.setIsNeedTipInsideContainer(true);
-                                                       cssrCmd.setIsHaveOuterContainer(false);
+                                                       cssrCmd.setIsHaveOuterContainer(false); //没有托盘
                                                         //缓存上一个托盘内最后扫描的一个内部容器
                                                        this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
                                                        //缓存上一个托盘
@@ -1048,7 +1012,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                                    tipSkuAttrId = cmd.getTipSkuAttrId();
                                                                    cssrCmd.setIsNeedScanSku(true);
                                                                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                                                                   cssrCmd.setIsHaveInsideContainer(false);
+                                                                   cssrCmd.setIsHaveInsideContainer(false);  //没有货箱
                                                                  //缓存上一个托盘内最后扫描的一个内部容器
                                                                    this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
                                                                    //缓存上一个托盘
@@ -1287,7 +1251,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                       }
                                                       cssrCmd.setTipiInsideContainerId(tipicId);
                                                       cssrCmd.setIsNeedTipInsideContainer(true);
-                                                      cssrCmd.setIsHaveOuterContainer(true);
+                                                      cssrCmd.setIsHaveOuterContainer(false);
                                                       //缓存上一个托盘内最后扫描的一个内部容器
                                                       this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
                                                       //缓存上一个托盘
