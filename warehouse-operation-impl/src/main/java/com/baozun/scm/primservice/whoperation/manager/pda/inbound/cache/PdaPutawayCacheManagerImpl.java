@@ -4189,6 +4189,16 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                if(isSnLine) { //存在sn
                                    if(isRecommendFail == false){  //库位推荐成功的skAttrIds是sn/残次信息加唯一sku,推荐不成功的只是唯一sku
                                        tempSkuAttrId = sId;
+                                       Set<String> tempSkuAttrIds = new HashSet<String>();
+                                       tempSkuAttrIds.add(tempSkuAttrId);
+                                       boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                       if (true == isExists) {
+                                           continue;
+                                       } else {
+                                           allIsExists = true;
+                                           tipSkuAttrId = sId;
+                                           break;
+                                       }
                                    }else{
 //                                       Set<String> snDefects = skuAttrIdsSnDefect.get(sId);   //获取当前唯一sku所有对应的sn/残次信息
 //                                       tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(sId, snDefect1);
@@ -4431,6 +4441,16 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             if(isSnLine) { //存在sn
                                 if(isRecommendFail == false){  //库位推荐成功的skAttrIds是sn/残次信息加唯一sku,推荐不成功的只是唯一sku
                                     tempSkuAttrId = sId;
+                                    Set<String> tempSkuAttrIds = new HashSet<String>();
+                                    tempSkuAttrIds.add(tempSkuAttrId);
+                                    boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                    if (true == isExists) {
+                                        continue;
+                                    } else {
+                                        allIsExists = true;
+                                        tipSkuAttrId = sId;
+                                        break;
+                                    }
                                 }else{
 //                                    tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(sId, snDefect2);
                                     for(String tipsIdSn:tipSkuAttrIds) {
@@ -4446,17 +4466,17 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                 }
                             }else{  //不存在sn
                                 tempSkuAttrId = sId;
+                                Set<String> tempSkuAttrIds = new HashSet<String>();
+                                tempSkuAttrIds.add(tempSkuAttrId);
+                                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                if (true == isExists) {
+                                    continue;
+                                } else {
+                                    allIsExists = true;
+                                    tipSkuAttrId = sId;
+                                    break;
+                                }
                             }
-                             Set<String> tempSkuAttrIds = new HashSet<String>();
-                             tempSkuAttrIds.add(tempSkuAttrId);
-                             boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
-                             if (true == isExists) {
-                                 continue;
-                             } else {
-                                 allIsExists = true;
-                                 tipSkuAttrId = sId;
-                                 break;
-                             }
                          }
                         if(allIsExists) {
                             if (true == isSnLine){
