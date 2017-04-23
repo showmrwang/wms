@@ -556,21 +556,19 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           String skuAttrId = null;
           for(WhSkuInventoryCommand skuCmd:skuInvList) {
                if(null != insideContainerId) { //有货箱
-                      if(insideContainerId.equals(skuCmd.getInsideContainerId()) && locationId.equals(skuCmd.getLocationId())) {
                           if(tipSkuId.longValue() == skuCmd.getSkuId().longValue()) {
                                  skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
-                                 skuAttrId = this.concatSkuAttrIdSn(skuAttrId, tipScanSkuCmd, locskuAttrIdsSnDefect, insideSkuAttrIdsSnDefect, insideContainerId, locationId);
+                                 skuAttrId = this.concatSkuAttrIdSn(skuAttrId, tipScanSkuCmd, null, insideSkuAttrIdsSnDefect, insideContainerId, locationId);
                                  if(StringUtils.isEmpty(skuAttrId)) {
                                      continue;
                                  }else{
                                      break;
                                  }
                            }
-                      }
                 }else{//散装
-                      if(null == skuCmd.getInsideContainerId() && tipSkuId.longValue() == skuCmd.getSkuId().longValue() && locationId.equals(skuCmd.getLocationId())) {
+                      if(tipSkuId.longValue() == skuCmd.getSkuId().longValue()) {
                           skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
-                          skuAttrId = this.concatSkuAttrIdSn(skuAttrId, tipScanSkuCmd, locskuAttrIdsSnDefect, insideSkuAttrIdsSnDefect, insideContainerId, locationId);
+                          skuAttrId = this.concatSkuAttrIdSn(skuAttrId, tipScanSkuCmd, locskuAttrIdsSnDefect, null, null, locationId);
                           if(StringUtils.isEmpty(skuAttrId)) {
                               continue;
                           }else{
@@ -588,7 +586,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       //拼装skuAttrId ，sn(如果没有sn,直接返回唯一sku)
       private String concatSkuAttrIdSn(String skuAttrId,ScanTipSkuCacheCommand tipScanSkuCmd,Map<Long, Map<String, Set<String>>> locskuAttrIdsSnDefect,Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect,Long insideContainerId,Long locationId){
                Map<String, Set<String>>  skuAttrIdSnSet = new HashMap<String, Set<String>>();
-               if(null != insideSkuAttrIdsSnDefect && insideSkuAttrIdsSnDefect.size() != 0) {
+               if(null != insideContainerId) {
                    skuAttrIdSnSet = insideSkuAttrIdsSnDefect.get(insideContainerId);  //有货箱情况,唯一sku对应的sn/残次信息
                }else{
                    skuAttrIdSnSet = locskuAttrIdsSnDefect.get(locationId);
@@ -2739,9 +2737,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + locationId.toString()+skuId);
                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + skuId.toString());
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
-                           cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE+ locationId.toString());
                        }
                    }
+                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE+ locationId.toString());
                }
                cacheManager.remove(CacheConstants.CACHE_LOC_INVENTORY+operationId.toString()+locationId.toString());    //单个库位的缓存
                cacheManager.remove(CacheConstants.CACHE_LOCATION+locationId.toString());

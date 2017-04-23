@@ -6433,7 +6433,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             invSkuId = inv.getId();
             insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
             insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.PICKING);
-        }else{
+        }else{//有sn,残次信息
             String uuid = "";
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(skuInvCmd, inv);
