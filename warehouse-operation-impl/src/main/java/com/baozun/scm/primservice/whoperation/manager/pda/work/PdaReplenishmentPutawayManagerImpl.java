@@ -173,14 +173,20 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         List<Long> locationIds = opExecLineCmd.getLocationIds();
         String turnoverBoxCode = command.getTurnoverBoxCode();
         ContainerCommand cmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+        if(null == cmd) {
+            throw new BusinessException(ErrorCodes.TIP_CONTAINER_FAIL);
+        }
+        Long turnoverBoxId = cmd.getId();
         //缓存上一个周转箱
-        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, cmd.getId());
+        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId);
         ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId);
         if(sRCmd.getIsNeedScanTurnoverBox()) {  //当前库位对应的周转箱扫描完毕
-            Long turnoverBoxId = sRCmd.getTurnoverBoxId();
-            String containerCode = this.judeContainer(turnoverBoxId, ouId);
+            Long tipTurnoverBoxId = sRCmd.getTurnoverBoxId();
+            String containerCode = this.judeContainer(tipTurnoverBoxId, ouId);
             command.setTipTurnoverBoxCode(containerCode);
             command.setIsNeedScanTurnoverBox(true);
+            //当前周转箱上架
+            whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
         }else{//继续扫描下一个库位
             ReplenishmentScanResultComamnd  rishSRCmd =  pdaReplenishmentPutawayCacheManager.tipLocation(locationIds, operationId);
             if(rishSRCmd.getIsNeedScanLocation()) { //还有库位没有扫描，继续扫描库位
@@ -195,9 +201,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 command.setTipLocationCode(location.getCode());
                 command.setLocationId(location.getId()); 
                 command.setIsNeedScanLocation(true);
-            }else{ //库位已经扫描完毕
+                //当前周转箱上架
+                whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
+            }else{ //周转箱上架完毕
                 command.setIsScanFinsh(true);
-                whSkuInventoryManager.replenishmentPutaway(operationId, ouId, isTabbInvTotal, userId, workCode);
+                whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
                 //更新工作及作业状态
                 this.updateStatus(operationId, workCode, ouId, userId);
                 //清除所有缓存

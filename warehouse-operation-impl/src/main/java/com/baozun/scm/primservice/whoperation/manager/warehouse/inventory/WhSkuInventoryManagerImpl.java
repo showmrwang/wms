@@ -7196,7 +7196,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param workCode
      */
     @Override
-    public void replenishmentPutaway(Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId,String workCode) {
+    public void replenishmentPutaway(Long locationId,Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId,String workCode,Long turnoverBoxId) {
         // TODO Auto-generated method stub
         //判断是否是怕波次内补货
         WhWorkCommand workCmd = whWorkDao.findWorkByWorkCode(workCode, ouId);
@@ -7262,6 +7262,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            if (false == isTV) {
                                inv.setOuterContainerId(null);
                                inv.setInsideContainerId(null);
+                           }else{
+                               inv.setInsideContainerId(turnoverBoxId);  //当前周转箱
                            } 
                            if (false == isBM) {
                                inv.setBatchNumber(null);
@@ -7330,7 +7332,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            if (false == isTV) {
                                inv.setOuterContainerId(null);
                                inv.setInsideContainerId(null);
-                           }
+                           }else{
+                               inv.setInsideContainerId(turnoverBoxId);  //当前周转箱
+                           } 
                            if (false == isBM) {
                                inv.setBatchNumber(null);
                            }
@@ -7428,7 +7432,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                        }
                        //
                    }
-                   List<WhSkuInventoryAllocatedCommand> allocatedList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(ouId, operationId);
+                   List<WhSkuInventoryAllocatedCommand> allocatedList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(locationId,ouId, operationId,null,null);
                    //删除库位库存表中的容器库存
                    for(WhSkuInventoryAllocatedCommand allocatedCmd:allocatedList) {
                        Long outerId = allocatedCmd.getOuterContainerId();
@@ -7466,14 +7470,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         List<Long> locationIds = opExecLineCmd.getLocationIds();
-        for(Long locationId:locationIds) {
+        for(Long id:locationIds) {
             //更新到工作明细
-            List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId);
+            List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(id, ouId);
             for(WhWorkLineCommand workLineCmd:workLineList) {
                      Long odoLineId = workLineCmd.getOdoLineId();
                      Long odoId = workLineCmd.getOdoId();
                      String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
-                     List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(ouId, locationId, odoLineId, odoId);
+                     List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(ouId, id, odoLineId, odoId);
                      for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
                             Long outerId = invCmd.getOuterContainerId();
                             Long insideId = invCmd.getInsideContainerId();
@@ -7540,13 +7544,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param insideContainerId
      * @param turnoverBoxId
      */
-    public void replenishmentContainerInventory(Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty){
+    public void replenishmentContainerInventory(Long locationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty){
         List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId,outerContainerId,insideContainerId);
         if(null== operationExecLineList || operationExecLineList.size()==0) {
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
         }
         //到已分配库存表中查询
-        List<WhSkuInventoryAllocatedCommand> skuInvCmdList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(ouId, operationId);
+        List<WhSkuInventoryAllocatedCommand> skuInvCmdList = whSkuInventoryAllocatedDao.getWhSkuInventoryCommandByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
         if(null == skuInvCmdList || skuInvCmdList.size() == 0){
                 throw new BusinessException(ErrorCodes.ALLOCATE_INVENTORY_NO_EXIST);  //分配库存不存在
         }
@@ -7555,16 +7559,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
         }
         for(WhSkuInventoryAllocatedCommand allocated:skuInvCmdList){
-            String icAllocatedIds = (allocated.getOuterContainerId()== null?"┊":allocated.getOuterContainerId()+"┊") + (allocated.getInsideContainerId()==null?"︴":allocated.getInsideContainerId()+"︴");
             String allocatedSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(allocated);
-            Long locationId = allocated.getLocationId();
             String suuid = allocated.getUuid();
             Long skuId = allocated.getSkuId();
             List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.getWhSkuInventoryCmdByuuid(locationId, skuId, suuid,ouId);
                     for(WhSkuInventoryCommand skuInvCmd:invList) {
                       String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                      String icInvCmdIds = (skuInvCmd.getOuterContainerId() == null?"┊":skuInvCmd.getOuterContainerId()+"┊") + (skuInvCmd.getInsideContainerId()==null?"︴":skuInvCmd.getInsideContainerId()+"︴");
-                        if(skuAttrId.equals(allocatedSkuAttrId) && icAllocatedIds.equals(icInvCmdIds) && locationId.equals(skuInvCmd.getLocationId())) {  //是同一条记录
+                        if(skuAttrId.equals(allocatedSkuAttrId)) {  //是同一条记录
                             if(null != skuInvCmd.getWhSkuInventorySnCommandList() && skuInvCmd.getWhSkuInventorySnCommandList().size() != 0) { //有sn/残次信息
                                 String uuid = "";
                                 WhSkuInventory skuInv = new WhSkuInventory();
@@ -7761,11 +7762,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
               }
         }
-//        //校验容器/出库箱库存与删除的拣货库位库存时否一致
-//        List<WhOperationExecLine> list  = whOperationExecLineDao.checkContainerInventory(invSkuIds, ouId, execLineIds);
-//        if(null != list && list.size() !=0){
-//            throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR);
-//        }
     }
     
     

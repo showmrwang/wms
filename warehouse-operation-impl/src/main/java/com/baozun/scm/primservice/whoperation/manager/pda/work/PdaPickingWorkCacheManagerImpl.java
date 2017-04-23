@@ -548,7 +548,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
               skuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
           }
           if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
-              skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId);
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId,locationId,outerContainerId,insideContainerId);
           }
           if(null == skuInvList || skuInvList.size() == 0){
                   throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
@@ -848,7 +848,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   if (0 == skuId.compareTo(sId)) {
                        skuExists = true;
                        Long icSkuQty  = 0L;
-                       if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){ //小车+小车出库箱
+                       if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){ //小车+小车出库箱
                                icSkuQty = latticeInsideSkuQty.get(skuAttrId);
                        }else{
                            Map<String, Long> skuAttrQty = skuAttrIdsQty.get(skuId);
@@ -1513,7 +1513,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   if (0 == skuId.compareTo(sId)) {
                       skuExists = true;
                       Long icSkuQty = null;
-                      if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){ //小车+小车出库箱
+                      if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){ //小车+小车出库箱
                               icSkuQty = latticeInsideSkuQty.get(skuAttrId);
                       }else{
                           Map<String, Long> skuAttrQty = skuAttrIdsQty.get(skuId);
@@ -2083,7 +2083,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                   if (0 == skuId.compareTo(sId)) {
                       skuExists = true;
                       Long icSkuQty = null;
-                      if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){ //小车+小车出库箱
+                      if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){ //小车+小车出库箱
                               icSkuQty = latticeSkuQty.get(skuAttrId);
                       }else{
                           Map<String, Long> skuAttrQty = skuAttrIdsQty.get(sId);
