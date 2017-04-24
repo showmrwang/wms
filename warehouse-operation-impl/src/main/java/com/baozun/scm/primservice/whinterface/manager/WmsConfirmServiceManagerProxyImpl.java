@@ -65,12 +65,14 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * 
      * @param beginTime not null 数据开始时间
      * @param endTime not null 数据结束时间
+     * @param start not null 开始记录数
+     * @param pageSize not null 每次多少条
      * @param whCode not null 仓库编码
      * @param customerCode not null 客户编码
      * @return
      */
     @Override
-    public List<WmsSkuInventoryFlow> wmsSkuInventoryFlow(Date beginTime, Date endTime, String whCode, String customerCode) {
+    public List<WmsSkuInventoryFlow> wmsSkuInventoryFlow(Date beginTime, Date endTime, Integer start, Integer pageSize, String whCode, String customerCode) {
         log.info("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -85,6 +87,12 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(customerCode)) {
             throw new BusinessException("customerCode is null error");
         }
+        if (null == start) {
+            throw new BusinessException("start is null error");
+        }
+        if (null == pageSize) {
+            throw new BusinessException("pageSize is null error");
+        }
         // 验证仓库是否存在
         Warehouse w = warehouseManager.findWarehouseByCode(whCode);
         if (null == w) {
@@ -97,7 +105,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " customerCode: " + customerCode);
         }
         // 获取对应时间段+仓库的库存流水信息
-        List<WmsSkuInventoryFlow> wmsSkuInventoryFlows = whSkuInventoryFlowManager.findWmsSkuInventoryFlowByCreateTime(begin, end, w.getId());
+        List<WmsSkuInventoryFlow> wmsSkuInventoryFlows = whSkuInventoryFlowManager.findWmsSkuInventoryFlowByCreateTime(begin, end, start, pageSize, w.getId());
         for (WmsSkuInventoryFlow wmsSkuInventoryFlow : wmsSkuInventoryFlows) {
             wmsSkuInventoryFlow.setWhCode(whCode);
         }
@@ -110,12 +118,14 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * 
      * @param beginTime not null 数据开始时间
      * @param endTime not null 数据结束时间
+     * @param start not null 开始记录数
+     * @param pageSize not null 每次多少条
      * @param whCode not null 仓库编码
      * @param dataSource not null 数据来源 区分上位系统
      * @return
      */
     @Override
-    public List<WmsOutBoundStatusConfirm> wmsOutBoundStatusConfirm(Date beginTime, Date endTime, String whCode, String dataSource) {
+    public List<WmsOutBoundStatusConfirm> wmsOutBoundStatusConfirm(Date beginTime, Date endTime, Integer start, Integer pageSize, String whCode, String dataSource) {
         log.info("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -130,6 +140,12 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(dataSource)) {
             throw new BusinessException("dataSource is null error");
         }
+        if (null == start) {
+            throw new BusinessException("start is null error");
+        }
+        if (null == pageSize) {
+            throw new BusinessException("pageSize is null error");
+        }
         // 验证仓库是否存在
         Warehouse w = warehouseManager.findWarehouseByCode(whCode);
         if (null == w) {
@@ -141,7 +157,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (log.isDebugEnabled()) {
             log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
         }
-        List<WmsOutBoundStatusConfirm> whOutboundStatusConfirms = whOdoStatusConfirmManager.findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
+        List<WmsOutBoundStatusConfirm> whOutboundStatusConfirms = whOdoStatusConfirmManager.findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(begin, end, start, pageSize, w.getId(), dataSource);
         for (WmsOutBoundStatusConfirm wmsOutBoundStatusConfirm : whOutboundStatusConfirms) {
             // 有数据生成同步数据
             wmsOutBoundStatusConfirm.setWhCode(whCode);
@@ -155,12 +171,14 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * 
      * @param beginTime not null 数据开始时间
      * @param endTime not null 数据结束时间
+     * @param start not null 开始记录数
+     * @param pageSize not null 每次多少条
      * @param whCode not null 仓库编码
      * @param dataSource not null 数据来源 区分上位系统
      * @return
      */
     @Override
-    public List<WmsOutBoundConfirm> wmsOutBoundConfirm(Date beginTime, Date endTime, String whCode, String dataSource) {
+    public List<WmsOutBoundConfirm> wmsOutBoundConfirm(Date beginTime, Date endTime, Integer start, Integer pageSize, String whCode, String dataSource) {
         log.info("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -175,6 +193,12 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(dataSource)) {
             throw new BusinessException("dataSource is null error");
         }
+        if (null == start) {
+            throw new BusinessException("start is null error");
+        }
+        if (null == pageSize) {
+            throw new BusinessException("pageSize is null error");
+        }
         // 验证仓库是否存在
         Warehouse w = warehouseManager.findWarehouseByCode(whCode);
         if (null == w) {
@@ -188,7 +212,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         List<WmsOutBoundConfirm> wobc = new ArrayList<WmsOutBoundConfirm>();
         // 获取出库单反馈数据
-        List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmManager.findWhOutboundConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
+        List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmManager.findWhOutboundConfirmByCreateTimeAndDataSource(begin, end, start, pageSize, w.getId(), dataSource);
         for (WhOutboundConfirm whOutboundConfirm : whOutboundConfirms) {
             WmsOutBoundConfirm o = new WmsOutBoundConfirm();
             // 有数据生成同步数据
@@ -249,12 +273,14 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * 
      * @param beginTime not null 数据开始时间
      * @param endTime not null 数据结束时间
+     * @param start not null 开始记录数
+     * @param pageSize not null 每次多少条
      * @param whCode not null 仓库编码
      * @param dataSource not null 数据来源 区分上位系统
      * @return
      */
     @Override
-    public List<WmsInvoiceConfirm> wmsInvoiceConfirm(Date beginTime, Date endTime, String whCode, String dataSource) {
+    public List<WmsInvoiceConfirm> wmsInvoiceConfirm(Date beginTime, Date endTime, Integer start, Integer pageSize, String whCode, String dataSource) {
         log.info("WmsConfirmServiceManagerProxy.wmsInvoiceConfirm begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -269,6 +295,12 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(dataSource)) {
             throw new BusinessException("dataSource is null error");
         }
+        if (null == start) {
+            throw new BusinessException("start is null error");
+        }
+        if (null == pageSize) {
+            throw new BusinessException("pageSize is null error");
+        }
         // 验证仓库是否存在
         Warehouse w = warehouseManager.findWarehouseByCode(whCode);
         if (null == w) {
@@ -280,7 +312,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (log.isDebugEnabled()) {
             log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
         }
-        List<WmsInvoiceConfirm> invoiceConfirmList = whInvoiceConfirmManager.findWmsInvoiceConfirmByCreateTimeAndDataSource(begin, end, w.getId(), dataSource);
+        List<WmsInvoiceConfirm> invoiceConfirmList = whInvoiceConfirmManager.findWmsInvoiceConfirmByCreateTimeAndDataSource(begin, end, start, pageSize, w.getId(), dataSource);
         for (WmsInvoiceConfirm wmsInvoiceConfirm : invoiceConfirmList) {
             // 有数据生成同步数据
             wmsInvoiceConfirm.setWhCode(whCode);
@@ -294,11 +326,13 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * 
      * @param beginTime not null 数据开始时间
      * @param endTime not null 数据结束时间
+     * @param start not null 开始记录数
+     * @param pageSize not null 每次多少条
      * @param dataSource not null 数据来源 区分上位系统
      * @return
      */
     @Override
-    public List<WmsInBoundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, String dataSource) {
+    public List<WmsInBoundConfirm> wmsInBoundConfirm(Date beginTime, Date endTime, Integer start, Integer pageSize, String dataSource) {
         log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm begin!");
         // 判断传入值是否为空
         if (null == beginTime) {
@@ -310,6 +344,12 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(dataSource)) {
             throw new BusinessException("dataSource is null error");
         }
+        if (null == start) {
+            throw new BusinessException("start is null error");
+        }
+        if (null == pageSize) {
+            throw new BusinessException("pageSize is null error");
+        }
         // 格式化时间
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
@@ -318,7 +358,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         List<WmsInBoundConfirm> wmsInboundConfirms = new ArrayList<WmsInBoundConfirm>();
         // 获取入库单反馈相关数据
-        List<WhInboundConfirm> whInboundConfirms = whInboundConfirmManager.findWhInboundConfirmByCreateTimeAndDataSource(begin, end, dataSource);
+        List<WhInboundConfirm> whInboundConfirms = whInboundConfirmManager.findWhInboundConfirmByCreateTimeAndDataSource(begin, end, start, pageSize, dataSource);
         for (WhInboundConfirm whInboundConfirm : whInboundConfirms) {
             WmsInBoundConfirm inbound = new WmsInBoundConfirm();
             BeanUtils.copyProperties(whInboundConfirm, inbound);

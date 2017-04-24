@@ -34,8 +34,8 @@ public class WhInvoiceConfirmManagerImpl implements WhInvoiceConfirmManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WmsInvoiceConfirm> findWmsInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
-        return whInvoiceConfirmDao.findWmsInvoiceConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
+    public List<WmsInvoiceConfirm> findWmsInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid, String dataSource) {
+        return whInvoiceConfirmDao.findWmsInvoiceConfirmByCreateTimeAndDataSource(beginTime, endTime, start, pageSize, ouid, dataSource);
     }
 
 }

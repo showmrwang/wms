@@ -98,7 +98,7 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid) {
-        return whSkuInventoryFlowDao.findWmsSkuInventoryFlowByCreateTime(beginTime, endTime, ouid);
+    public List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid) {
+        return whSkuInventoryFlowDao.findWmsSkuInventoryFlowByCreateTime(beginTime, endTime, start, pageSize, ouid);
     }
 }

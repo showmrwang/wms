@@ -24,6 +24,6 @@ public interface WhOutboundConfirmManager extends BaseManager {
      * @param dataSource
      * @return
      */
-    List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource);
+    List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid, String dataSource);
 
 }

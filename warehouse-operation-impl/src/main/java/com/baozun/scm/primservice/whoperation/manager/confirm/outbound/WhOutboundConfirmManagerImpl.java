@@ -280,9 +280,9 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
+    public List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid, String dataSource) {
         // 获取出库单反馈数据
-        List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmDao.findWhOutboundConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
+        List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmDao.findWhOutboundConfirmByCreateTimeAndDataSource(beginTime, endTime, start, pageSize, ouid, dataSource);
         for (WhOutboundConfirm whOutboundConfirm : whOutboundConfirms) {
             // 获取出库单附加属性数据
             WhOutboundAttrConfirm whOutboundAttrConfirm = whOutboundAttrConfirmDao.findWhOutboundAttrConfirmByOutBoundId(whOutboundConfirm.getId(), ouid);
