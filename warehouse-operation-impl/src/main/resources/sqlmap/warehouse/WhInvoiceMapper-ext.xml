@@ -14,7 +14,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id as id,
 	        	code as code,
 	        	odo_code as odoCode,
-	        	index as index,
+	        	`index` as `index`,
 	        	store_code as storeCode,
 	        	invoice_code as invoiceCode,
 	        	invoice_date as invoiceDate,

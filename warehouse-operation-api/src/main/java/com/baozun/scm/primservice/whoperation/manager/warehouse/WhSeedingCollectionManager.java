@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 
 public interface WhSeedingCollectionManager extends BaseManager {
@@ -42,4 +43,13 @@ public interface WhSeedingCollectionManager extends BaseManager {
 
 
     public void updateByVersion(WhSeedingCollection seedingCollection);
+
+    /**
+     * 获取播种批次下的出库单信息，用于和播种墙货格绑定
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingWallLattice> getSeedingBatchOdoInfo(String batchNo, Long ouId);
 }

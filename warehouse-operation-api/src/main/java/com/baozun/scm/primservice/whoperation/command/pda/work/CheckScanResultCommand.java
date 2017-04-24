@@ -59,7 +59,7 @@ public class CheckScanResultCommand extends BaseCommand {
     /**货格号*/
     private Integer useContainerLatticeNo;
     
-    private Boolean isHaveOuterContainer = true;  //货箱是否有外部容器
+    private Boolean isHaveOuterContainer = true;  //货箱是否有外部容器,默认有托盘
     
     private Boolean isHaveInsideContainer = true; //sku是否有内部容器
     

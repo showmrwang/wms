@@ -190,5 +190,4 @@ public class WhSeedingCollection extends BaseModel {
     public void setCollectionStatus(Integer collectionStatus) {
         this.collectionStatus = collectionStatus;
     }
-
 }

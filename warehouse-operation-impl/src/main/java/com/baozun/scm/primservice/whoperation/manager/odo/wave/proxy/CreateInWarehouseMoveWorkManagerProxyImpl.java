@@ -73,14 +73,14 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids, Double[] moveQtys, Long toLocationId, Boolean isExecute, Long ouId, Long userId) {
+    public Boolean createAndExecuteInWarehouseMoveWork(String[] occupationCodes, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId) {
         Boolean isSuccess = true;
         // 2.将库存行根据原始库位与目标库位进行分组
-        InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(ids, uuids, moveQtys, ouId);
-        inWarehouseMoveWorkCommand.setToLocationId(toLocationId);
-        Map<String, List<WhSkuInventoryCommand>> skuInventoryMap = inWarehouseMoveWorkCommand.getSkuInventoryMap();
+        InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(occupationCodes, uuids, moveQtys, ouId);
+        inWarehouseMoveWorkCommand.setToLocationId(toLocation);
+        Map<Long, List<WhSkuInventoryCommand>> skuInventoryMap = inWarehouseMoveWorkCommand.getSkuInventoryMap();
         // 3.循环库存分组信息分别创建工作
-        for (String key : skuInventoryMap.keySet()) {
+        for (Long key : skuInventoryMap.keySet()) {
             // 4.获取每个分组的所有库存明细数据
             List<WhSkuInventoryCommand> skuInventoryCommandLst = skuInventoryMap.get(key);
             try {
@@ -111,7 +111,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Integer systemCheck(Long[] ids, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId) {
+    public Integer systemCheck(String[] occupationCodes, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId) {
         // sku种类和数量
         Set<Long> customerIds = new HashSet<Long>();
         // sku种类和数量
@@ -142,8 +142,15 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
         }
         // 统计库内移动信息
         List<WhSkuInventoryCommand> skuInventoryCommandLst = new ArrayList<WhSkuInventoryCommand>();
-        for (int i = 0; i < ids.length; i++) {
-            WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryManager.findWhSkuInventoryByIdAndUuidAndOuid(ids[i], uuids[i], ouId);
+        for (int i = 0; i < uuids.length; i++) {
+            WhSkuInventoryCommand whSkuInventoryCommand = new WhSkuInventoryCommand();
+            
+            if(null != occupationCodes){
+                whSkuInventoryCommand = whSkuInventoryManager.findWhSkuInventoryByOccupationCodeAndUuid(occupationCodes[i], uuids[i], ouId);    
+            }else{
+                whSkuInventoryCommand = whSkuInventoryManager.findWhSkuInventoryByOccupationCodeAndUuid(null, uuids[i], ouId);
+            }
+            
             String onlySku = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInventoryCommand);
             skus.add(whSkuInventoryCommand.getSkuId());
             onlySkus.add(onlySku);
@@ -187,20 +194,34 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      * @param ouId
      * @return
      */
-    private InWarehouseMoveWorkCommand getSkuInventoryForGroup(Long[] ids, String[] uuids, Double[] moveQtys, Long ouId) {
+    private InWarehouseMoveWorkCommand getSkuInventoryForGroup(String[] occupationCodes, String[] uuids, Double[] moveQtys, Long ouId) {
         InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = new InWarehouseMoveWorkCommand();
-        Map<String, List<WhSkuInventoryCommand>> skuInventoryMap = new HashMap<String, List<WhSkuInventoryCommand>>();
-        Map<Long, Double> idAndQtyMap = new HashMap<Long, Double>();
+        Map<Long, List<WhSkuInventoryCommand>> skuInventoryMap = new HashMap<Long, List<WhSkuInventoryCommand>>();
+        Map<String, Double> idAndQtyMap = new HashMap<String, Double>();
         try {
-            for (int i = 0; i < ids.length; i++) {
+            for (int i = 0; i < uuids.length; i++) {
                 List<WhSkuInventoryCommand> skuInventoryCommandLst = new ArrayList<WhSkuInventoryCommand>();
-                WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryManager.findWhSkuInventoryByIdAndUuidAndOuid(ids[i], uuids[i], ouId);
-                if (null != skuInventoryMap.get(whSkuInventoryCommand.getLocationCode())) {
-                    skuInventoryCommandLst = skuInventoryMap.get(whSkuInventoryCommand.getLocationCode());
+                
+                WhSkuInventoryCommand skuInventoryCommand = new WhSkuInventoryCommand();
+                skuInventoryCommand.setUuid(uuids[i]);
+                if(null != occupationCodes){
+                    skuInventoryCommand.setOccupationCode(occupationCodes[i]);
                 }
-                skuInventoryCommandLst.add(whSkuInventoryCommand);
-                skuInventoryMap.put(whSkuInventoryCommand.getLocationCode(), skuInventoryCommandLst);
-                idAndQtyMap.put(ids[i], moveQtys[i]);
+                skuInventoryCommand.setOuId(ouId);
+                List<WhSkuInventoryCommand> whSkuInventoryCommandLst = whSkuInventoryManager.findInvComLstByInWarehouseMove(skuInventoryCommand);
+                for(WhSkuInventoryCommand whSkuInventoryCommand : whSkuInventoryCommandLst){
+                    if (null != skuInventoryMap.get(whSkuInventoryCommand.getLocationCode())) {
+                        skuInventoryCommandLst = skuInventoryMap.get(whSkuInventoryCommand.getLocationCode());
+                    }
+                    skuInventoryCommandLst.add(whSkuInventoryCommand);
+                    skuInventoryMap.put(whSkuInventoryCommand.getLocationId(), skuInventoryCommandLst);    
+                }
+                if(null != occupationCodes){
+                    idAndQtyMap.put(occupationCodes[i] + "-" + uuids[i], moveQtys[i]);
+                }else{
+                    idAndQtyMap.put("-" + uuids[i], moveQtys[i]);    
+                }
+                
             }
         } catch (Exception e) {
             log.error(e + "");

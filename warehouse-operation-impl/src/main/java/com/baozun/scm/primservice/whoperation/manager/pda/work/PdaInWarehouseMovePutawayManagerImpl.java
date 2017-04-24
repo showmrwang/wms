@@ -188,7 +188,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                 command.setIsNeedScanLocation(true);
             }else{ //库位已经扫描完毕
                 command.setIsScanFinsh(true);
-                whSkuInventoryManager.replenishmentPutaway(operationId, ouId, isTabbInvTotal, userId, workCode);
+                whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,null);
                 //更新工作及作业状态
                 this.updateStatus(operationId, workCode, ouId, userId);
                 //清除所有缓存

@@ -62,6 +62,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProvider
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -130,6 +131,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhInvoiceLineDao whInvoiceLineDao;
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private WhOutboundConfirmManager whOutboundConfirmManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -455,6 +458,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
             }
+            // 生成反馈信息 @mender yimin.lu 2017/4/24
+            this.whOutboundConfirmManager.saveWhOutboundConfirm(odo);
         } catch (Exception e) {
             log.error("", e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);

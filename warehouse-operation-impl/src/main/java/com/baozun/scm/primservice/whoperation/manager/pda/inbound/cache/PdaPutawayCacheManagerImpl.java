@@ -4182,7 +4182,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                  if (cacheValue == skuQty) {
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + skuId.toString());
                         //判断是否有不同唯一sku的商品
-                        String snDefect1 = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
+//                        String snDefect1 = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
                         String tipSkuAttrId = "";
                            Boolean allIsExists = false;  //为true时，存在同一个货箱(或同一个库位要上架的sku)不同唯一sku的情况
                            for (String sId : skuAttrIds) {
@@ -4190,22 +4190,43 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                if(isSnLine) { //存在sn
                                    if(isRecommendFail == false){  //库位推荐成功的skAttrIds是sn/残次信息加唯一sku,推荐不成功的只是唯一sku
                                        tempSkuAttrId = sId;
+                                       Set<String> tempSkuAttrIds = new HashSet<String>();
+                                       tempSkuAttrIds.add(tempSkuAttrId);
+                                       boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                       if (true == isExists) {
+                                           continue;
+                                       } else {
+                                           allIsExists = true;
+                                           tipSkuAttrId = sId;
+                                           break;
+                                       }
                                    }else{
-                                       tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(sId, snDefect1);
+//                                       Set<String> snDefects = skuAttrIdsSnDefect.get(sId);   //获取当前唯一sku所有对应的sn/残次信息
+//                                       tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(sId, snDefect1);
+                                       for(String tipsIdSn:tipSkuAttrIds) {
+                                            String tipsId =  SkuCategoryProvider.getSkuAttrId(tipsIdSn);
+                                            if(!sId.equals(tipsId)) {
+                                                allIsExists = true;
+                                                tipSkuAttrId = sId;
+                                                break;
+                                            }else{
+                                                continue;
+                                            }
+                                       }
                                    }
                                }else{  //不存在sn
                                    tempSkuAttrId = sId;
+                                   Set<String> tempSkuAttrIds = new HashSet<String>();
+                                   tempSkuAttrIds.add(tempSkuAttrId);
+                                   boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                   if (true == isExists) {
+                                       continue;
+                                   } else {
+                                       allIsExists = true;
+                                       tipSkuAttrId = sId;
+                                       break;
+                                   }
                                }
-                                Set<String> tempSkuAttrIds = new HashSet<String>();
-                                tempSkuAttrIds.add(tempSkuAttrId);
-                                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
-                                if (true == isExists) {
-                                    continue;
-                                } else {
-                                    allIsExists = true;
-                                    tipSkuAttrId = sId;
-                                    break;
-                                }
                             }
                            if(allIsExists) {
                                if (true == isSnLine){
@@ -4414,29 +4435,49 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     if (cacheValue == skuQty) {
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + skuId.toString());
                         String tipSkuAttrId = "";
-                        String snDefect2 = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
+//                        String snDefect2 = SkuCategoryProvider.getSnDefect(skuAttrId);// 当前sn残次信息
                         Boolean allIsExists = false;
                         for (String sId : skuAttrIds) {
                             String tempSkuAttrId = null;
                             if(isSnLine) { //存在sn
                                 if(isRecommendFail == false){  //库位推荐成功的skAttrIds是sn/残次信息加唯一sku,推荐不成功的只是唯一sku
                                     tempSkuAttrId = sId;
+                                    Set<String> tempSkuAttrIds = new HashSet<String>();
+                                    tempSkuAttrIds.add(tempSkuAttrId);
+                                    boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                    if (true == isExists) {
+                                        continue;
+                                    } else {
+                                        allIsExists = true;
+                                        tipSkuAttrId = sId;
+                                        break;
+                                    }
                                 }else{
-                                    tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(sId, snDefect2);
+//                                    tempSkuAttrId = SkuCategoryProvider.concatSkuAttrId(sId, snDefect2);
+                                    for(String tipsIdSn:tipSkuAttrIds) {
+                                        String tipsId =  SkuCategoryProvider.getSkuAttrId(tipsIdSn);
+                                        if(!sId.equals(tipsId)) {
+                                            allIsExists = true;
+                                            tipSkuAttrId = sId;
+                                            break;
+                                        }else{
+                                            continue;
+                                        }
+                                   }
                                 }
                             }else{  //不存在sn
                                 tempSkuAttrId = sId;
+                                Set<String> tempSkuAttrIds = new HashSet<String>();
+                                tempSkuAttrIds.add(tempSkuAttrId);
+                                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
+                                if (true == isExists) {
+                                    continue;
+                                } else {
+                                    allIsExists = true;
+                                    tipSkuAttrId = sId;
+                                    break;
+                                }
                             }
-                             Set<String> tempSkuAttrIds = new HashSet<String>();
-                             tempSkuAttrIds.add(tempSkuAttrId);
-                             boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
-                             if (true == isExists) {
-                                 continue;
-                             } else {
-                                 allIsExists = true;
-                                 tipSkuAttrId = sId;
-                                 break;
-                             }
                          }
                         if(allIsExists) {
                             if (true == isSnLine){

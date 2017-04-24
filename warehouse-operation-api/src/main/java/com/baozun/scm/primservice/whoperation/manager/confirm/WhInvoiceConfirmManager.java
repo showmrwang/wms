@@ -16,6 +16,6 @@ public interface WhInvoiceConfirmManager extends BaseManager {
      * @param dataSource
      * @return
      */
-    List<WmsInvoiceConfirm> findWmsInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource);
+    List<WmsInvoiceConfirm> findWmsInvoiceConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid, String dataSource);
 
 }

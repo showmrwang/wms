@@ -30,7 +30,7 @@ public class SeedingLattice extends BaseModel{
     private int seedQty;
     /** 出库单ID */
     private Long odoId;
-    /** 是否取消 */
+    /** 出库单状态 待播种/取消/完成/异常 */
     private int status;
 
     public Long getLatticeNo() {

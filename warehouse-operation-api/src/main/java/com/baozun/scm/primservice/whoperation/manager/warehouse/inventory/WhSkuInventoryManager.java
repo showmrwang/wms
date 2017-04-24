@@ -178,6 +178,14 @@ public interface WhSkuInventoryManager extends BaseManager {
      */
     List<WhSkuInventory> findWhSkuInventoryListByPramas(WhSkuInventory whSkuInventory);
     
+    /**
+     * 根据参数查询出库存信息
+     * @author qiming.liu
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventoryCommand> findInvComLstByInWarehouseMove(WhSkuInventoryCommand whSkuInventoryCommand);
+    
 	void replenishmentToLines(List<WhWaveLine> lines, Long odoId, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh);
 	
 	/**
@@ -254,7 +262,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param userId
      * @param workCode
      */
-    public void replenishmentPutaway(Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode);
+    public void replenishmentPutaway(Long locationId,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode,Long turnoverBoxId);
 
 
     
@@ -266,7 +274,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param insideContainerId
      * @param turnoverBoxId
      */
-    public void replenishmentContainerInventory(Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
+    public void replenishmentContainerInventory(Long lcoationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
     
     /**
      * 获取入库反馈信息实体
@@ -316,7 +324,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param ouid
      * @return
      */
-    WhSkuInventoryCommand findWhSkuInventoryByIdAndUuidAndOuid(Long id, String uuid, Long ouid);
+    WhSkuInventoryCommand findWhSkuInventoryByOccupationCodeAndUuid(String occupationCode, String uuid, Long ouid);
     
     /**
      * 生成出库箱库存

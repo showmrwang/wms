@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.handover;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.model.handover.Handover;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverLine;
@@ -59,6 +61,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private WhOdoLineDao whOdoLineDao;
     @Autowired
     private WhOdoPackageInfoDao whOdoPackageInfoDao;
+    @Autowired
+    private WhOutboundConfirmManager whOutboundConfirmManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -106,7 +110,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void handover(List<HandoverCollection> hcList, Long ouId, Long userId) {
+    public List<Long> handover(List<HandoverCollection> hcList, Long ouId, Long userId) {
         if (log.isInfoEnabled()) {
             log.info("HandoverManagerImpl.handover start, logId is:[{}]", logId);
         }
@@ -174,6 +178,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         }
         Long handoverId = handover.getId();
         // 1执行出库 保存库存日志
+        List<Long> handoverIds = new ArrayList<Long>();
+        handoverIds.add(handoverId);
         for (HandoverCollection handoverCollection : hcList) {
             String outboundboxCode = handoverCollection.getOutboundboxCode();
             List<WhSkuInventory> skuInventoryList = whSkuInventoryDao.findSkuInvByoutboundboxCode(outboundboxCode, ouId);
@@ -216,13 +222,16 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
 
 
                 WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
-                odo.setOdoStatus(OdoStatus.ODOLINE_HANDOVER_FINISH);
+                odo.setOdoStatus(OdoStatus.ODO_OUTSTOCK_FINISH);
                 int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
                 if (0 == odoUpdate) {
                     // 出库单状态更新失败
                     log.error("handover error whOdoDao.saveOrUpdateByVersion  , odoUpdate is:[{}]", odoUpdate);
                     throw new BusinessException(ErrorCodes.ODO_SAVEORUPDATEBYVERSION_ERROR);
                 }
+                // 调用胡斌方法
+                // TODO
+                // whOutboundConfirmManager.saveWhOutboundConfirm(odo);
                 List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
                 for (WhOdoLine whOdoLine : whOdoLineList) {
                     whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_HANDOVER_FINISH);
@@ -233,24 +242,15 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                         throw new BusinessException(ErrorCodes.ODOLINE_SAVEORUPDATEBYVERSION_ERROR);
                     }
                 }
-            } else {
-                // 出库单下的出库箱并没有全都完成交接
-                log.error("handover error whOutboundboxDao.findunhandoverBoxByOdoId  , unhandoveroutboundbox is:[{}]", a);
-                throw new BusinessException(ErrorCodes.ODO_OUTBOUNDBOX_NOT_HANDOVER_ALL);
             }
         }
 
         if (log.isInfoEnabled()) {
             log.info("HandoverManagerImpl.handover end, logId is:[{}]", logId);
         }
-
+        return handoverIds;
     }
 
-    /**
-     * 出库箱出库
-     * 
-     * @param hcList 要出库的所有出库箱信息
-     */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void print(List<HandoverCollection> hcList) {

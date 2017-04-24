@@ -256,6 +256,12 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_SN_PREFIX + userId);
         // 释放收货数据缓存
         this.cacheManager.remove(CacheKeyConstant.CACHE_RCVD_PREFIX + userId);
+        // @mender yimin.lu 2017/4/24 更新ASN头信息缓存【状态】缓存:如果Asn收货完成
+        Long asnId = commandList.get(0).getOccupationId();// ASN头ID
+        WhAsn asn = this.asnManager.findWhAsnByIdToShard(asnId, ouId);
+        if (asn != null) {
+            this.cacheManager.setObject(CacheKeyConstant.CACHE_ASN_PREFIX + asnId, asn);
+        }
     }
 
     private void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command, List<RcvdSnCacheCommand> cacheSn) {
@@ -1465,6 +1471,10 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
 
             log.info(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.initAsnCacheForGeneralReceiving end!");
         } else {
+            // @mender yimin.lu 2017/4/24 如果ASN收货完成且不可超收，则提示已经收货完成
+            if ((cacheAsn.getIsAutoClose() != null && cacheAsn.getIsAutoClose() && PoAsnStatus.ASN_RCVD_FINISH == cacheAsn.getStatus()) || PoAsnStatus.ASN_CLOSE == cacheAsn.getStatus()) {
+                throw new BusinessException(ErrorCodes.ASN_RCVD_FINISHED);
+            }
             // 刷新缓存逻辑：
             // 如果检测到超收比例被更改，则需要刷新超收比例
             log.info(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.freshAsnCacheForGeneralReceiving begin!");

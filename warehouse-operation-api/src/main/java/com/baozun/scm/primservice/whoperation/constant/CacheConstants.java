@@ -139,6 +139,8 @@ public final class CacheConstants {
     public static final String CACHE_SEEDING_LATTICE_COLLECTION_LINE = "SEEDING-LATTICE-LATTICE-COLLECTION-LINE";
     /** 周转箱中的明细 */
     public static final String CACHE_SEEDING_TURNOVERBOX_COLLECTION_LINE = "SEEDING-TURNOVERBOX-COLLECTION-LINE";
+    /**  上次播种明细，播种后置的换箱逻辑 */
+    public static final String CACHE_SEEDING_LAST_TIME_OUTBOUND_BOX_SEEDING_LINE = "SEEDING-LAST-TIME-OUTBOUND-BOX-SEEDING-LINE";
 
 
 

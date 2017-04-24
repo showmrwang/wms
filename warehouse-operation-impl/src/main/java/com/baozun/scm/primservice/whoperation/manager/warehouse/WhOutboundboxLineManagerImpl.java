@@ -45,4 +45,14 @@ public class WhOutboundboxLineManagerImpl extends BaseManagerImpl implements WhO
         }
     }
 
+    @Override
+    public void saveOrUpdate(WhOutboundboxLine whOutboundboxLine) {
+
+        if(null != whOutboundboxLine.getId() ){
+            whOutboundboxLineDao.saveOrUpdate(whOutboundboxLine);
+        }else{
+            whOutboundboxLineDao.insert(whOutboundboxLine);
+        }
+    }
+
 }
