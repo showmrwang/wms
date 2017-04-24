@@ -100,7 +100,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             log.warn("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm whOdo is null");
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"whOdo"});
         }
-        if (!Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())) {
+        if (!StringUtil.isEmpty(whOdo.getDataSource()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())) {
             // 数据来源!=WMS才需要生成反馈数据
             if (OdoStatus.ODO_OUTSTOCK_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(whOdo.getOdoStatus())) {
                 // 只有单据状态为新建或者是出库完成才需要生成对应数据
@@ -200,6 +200,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 line.setQty(whOdoLine.getPlanQty());
                 line.setActualQty(whOdoLine.getActualQty());
                 line.setInvStatus(invMap.get(whOdoLine.getInvStatus()));
+                line.setStoreCode(getStoreByRedis(whOdoLine.getStoreId()).getStoreCode());
                 WhSku sku = whSkuDao.findWhSkuById(whOdoLine.getSkuId(), ouid);
                 line.setUpc(sku.getExtCode());
                 line.setColor(sku.getColor());
