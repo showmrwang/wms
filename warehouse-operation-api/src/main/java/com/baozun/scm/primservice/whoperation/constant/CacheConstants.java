@@ -118,6 +118,9 @@ public final class CacheConstants {
     
     /**缓存sn*/
     public static final String CACHE_LATTICE_NO = "CACHE_LATTICE_NO_";
+    
+    /** pda拣货:有小车的情况已经扫描的sku */
+    public static final String PDA_PICKING_SCAN_SKU_LATTICE_NO = "PDA_PICKING_SCAN_SKU_LATTICE_NO_";
 
     /************************************* 播种缓存 ***********************************/
 
