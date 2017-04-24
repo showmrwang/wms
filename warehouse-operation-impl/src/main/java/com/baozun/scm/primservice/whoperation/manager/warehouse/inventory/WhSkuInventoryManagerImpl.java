@@ -2993,7 +2993,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 cCount++;
                             }
                         }
-                        if (scanQty.equals(count)) {
+                        if (scanQty.equals(cCount)) {
                             break;
                         }
                     }

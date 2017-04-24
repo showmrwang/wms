@@ -3646,11 +3646,12 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
                     }
                 }
+                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString());
+                cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, insideContainerCmd.getId().toString());
                 // 1.再清除所有提示容器队列
                 cacheManager.remove(CacheConstants.SCAN_CONTAINER_QUEUE + ocId.toString());
                 // 2.清除所有内部容器统计信息
                 cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, ocId.toString());
-
             } else {
                 Long icId = insideContainerCmd.getId();
                 // 除清逐件扫描商品数量
@@ -5009,7 +5010,6 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             isSnLine = false;
                         }
                         saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
-                        // 4.判断当前商品是否扫描完毕
                         if (true == isSnLine) {
                             // sn或残次商品
                             ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();
@@ -5068,6 +5068,9 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             tipScanSkuCmd.setScanSkuAttrIds(actualScanSkuAttrIds);
                             cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd);
                         }
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                        cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId);
+                        cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId);
                     }
                 } else {
 
