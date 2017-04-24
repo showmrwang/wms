@@ -411,6 +411,8 @@ public class ErrorCodes {
     public static final int BIPO_AUDIT_SUBSTATUS_ERROR = 11083;
     /** PO单状态不允许审核成功 */
     public static final int BIPO_AUDIT_STATUS_ERROR = 11084;
+    /** ASN已收货完成 */
+    public static final int ASN_RCVD_FINISHED = 11085;
     // 10001-20000 luyimin
 
 
@@ -686,6 +688,68 @@ public class ErrorCodes {
     public static final int CASELEVEL_PO_UPDATE_ERROR = 60079;
     /** 批量创建残次条码数量错误 */
     public static final int CASELEVEL_BATCH_NUM_SN_DEFECT_WARE_BARCODE_ERROR = 60080;
+
+
+    /** 集货信息不存在 */
+    public static final int SEEDING_COLLECTION_NULL = 60200;
+    /** 周转箱状态不可播种 */
+    public static final int SEEDING_COLLECTION_STATUS_ERROR = 60201;
+    /** 周转箱明细原始库存未找到 */
+    public static final int SEEDING_COLLECTION_LINE_ORG_SKUINV_NULL = 60202;
+    /** 商品不在周转箱内 */
+    public static final int SEEDING_TURNOVERBOX_HAVE_NOT_SKU = 60203;
+    /** 存在多属性商品 */
+    public static final int SEEDING_SKU_MULTIPLE_ATTR = 60204;
+    /** 该商品已播种结束 */
+    public static final int SEEDING_SKU_FINISHED_SEEDING = 60205;
+    /** 扫描模式错误 */
+    public static final int SEEDING_SCAN_PATTERN_ERROR = 60206;
+    /** 播种模式错误 */
+    public static final int SEEDING_SEEDING_PATTERN_ERROR = 60207;
+    /** 未找到播种货格 */
+    public static final int SEEDING_SEEDING_LATTICE_ERROR = 60208;
+    /** 播种数量大于该出库单明细所需 */
+    public static final int SEEDING_SEEDING_QTY_ERROR = 60209;
+    /** 该货格不在本次商品播种内 */
+    public static final int SEEDING_SEEDING_THIS_TURN_LATTICE_ERROR = 60210;
+    /** 出库箱已被使用 */
+    public static final int SEEDING_SEEDING_OUTBOUND_BOX_USED_ERROR = 60211;
+    /** 不存在上次播种缓存数据 */
+    public static final int SEEDING_SEEDING_LAST_TIME_CACHE_ERROR = 60212;
+    /** 货格未绑定出库单 */
+    public static final int SEEDING_SEEDING_EMPTY_LATTICE_ERROR = 60213;
+    /** 出库单播种缓存数据异常 */
+    public static final int SEEDING_SEEDING_ODO_SEEDING_CACHE_ERROR = 60214;
+    /** 出库单明细实际已播种数量错误 */
+    public static final int SEEDING_SEEDING_ODO_LINE_SEEDING_CACHE_ERROR = 60215;
+    /** 播种墙不存在 */
+    public static final int SEEDING_SEEDING_FACILITY_NULL_ERROR = 60216;
+    /** 播种墙未绑定批次 */
+    public static final int SEEDING_SEEDING_BIND_BATCH_NULL_ERROR = 60217;
+    /** 批次出库单数大于播种墙货格数 */
+    public static final int SEEDING_SEEDING_BATCH_ODO_QTY_ERROR = 60218;
+    /** 功能显示单据号类型错误 */
+    public static final int SEEDING_SEEDING_FUNCTION_SHOWCODE_ERROR = 60219;
+    /** 集货状态不正确 */
+    public static final int SEEDING_SEEDING_COLLECTION_STATUS_ERROR = 60220;
+    /** 未找到该货格播种信息 */
+    public static final int SEEDING_SEEDING_LATTICE_SEEDING_INFO_ERROR = 60221;
+    /** 播种墙未配置出库箱 */
+    public static final int SEEDING_SEEDING_FACILITY_BIND_BOX_ERROR = 60222;
+    /** 出库箱类型不存在 */
+    public static final int SEEDING_SEEDING_OUTBOUND_BOX_ERROR = 60223;
+    /** 货格已绑定出库箱 */
+    public static final int SEEDING_SEEDING_LATTICE_BIND_BOX_ERROR = 60224;
+    /** 播种墙功能不存在 */
+    public static final int SEEDING_SEEDING_FUNCTION_ERROR = 60225;
+    /** 出库单信息缓存错误 */
+    public static final int SEEDING_SEEDING_ODO_CACHE_ERROR = 60226;
+    /** uuid创建失败 */
+    public static final int SEEDING_SEEDING_CREATE_UUID_ERROR = 60227;
+    /** 未找到批次下的出库单信息 */
+    public static final int SEEDING_SEEDING_BATCH_ODO_INFO_NULL_ERROR = 60228;
+
+
 
     // 60001-70000 xiemingwei
 

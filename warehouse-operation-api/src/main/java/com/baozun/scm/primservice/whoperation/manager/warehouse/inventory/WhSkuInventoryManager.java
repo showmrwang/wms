@@ -178,6 +178,14 @@ public interface WhSkuInventoryManager extends BaseManager {
      */
     List<WhSkuInventory> findWhSkuInventoryListByPramas(WhSkuInventory whSkuInventory);
     
+    /**
+     * 根据参数查询出库存信息
+     * @author qiming.liu
+     * @param whSkuInventory
+     * @return
+     */
+    List<WhSkuInventoryCommand> findInvComLstByInWarehouseMove(WhSkuInventoryCommand whSkuInventoryCommand);
+    
 	void replenishmentToLines(List<WhWaveLine> lines, Long odoId, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh);
 	
 	/**
@@ -316,7 +324,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param ouid
      * @return
      */
-    WhSkuInventoryCommand findWhSkuInventoryByIdAndUuidAndOuid(Long id, String uuid, Long ouid);
+    WhSkuInventoryCommand findWhSkuInventoryByOccupationCodeAndUuid(String occupationCode, String uuid, Long ouid);
     
     /**
      * 生成出库箱库存

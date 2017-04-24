@@ -91,7 +91,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		create_time &gt; #{beginTime} 
 		and create_time &lt; #{endTime} 
 		and data_source = #{dataSource}
-		and ou_id = #{ouid}
+		and ou_id = #{ouid} 
+		order by id asc
+		limit #{start},#{pageSize}
 	</select>
 	
 </mapper>

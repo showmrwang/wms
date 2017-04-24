@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundAttrConfirmDao;
@@ -99,55 +100,61 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             log.warn("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm whOdo is null");
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"whOdo"});
         }
-        Long ouid = whOdo.getOuId();
-        // 只有出库单状态为新建/出库完成才需要生成反馈数据
-        if (whOdo.getOdoStatus().equals(OdoStatus.ODO_NEW) || whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
-            // 运输服务商-快递单号
-            String transportServiceProvider = null;
-            Map<String, String> tspMap = new HashMap<String, String>();
-            // 如果是出库完成状态 需要封装运输服务商-快递单号信息
-            if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
-                String tsp = "";
-                List<WhOdodeliveryInfo> whOdodeliveryInfos = whOdoDeliveryInfoDao.findWhOdodeliveryInfoByOdoId(whOdo.getId(), ouid);
-                for (WhOdodeliveryInfo whOdodeliveryInfo : whOdodeliveryInfos) {
-                    // 封装对应数据格式Map<出库箱号,运单号>
-                    tspMap.put(whOdodeliveryInfo.getOutboundboxCode(), whOdodeliveryInfo.getWaybillCode());
-                    tsp += whOdodeliveryInfo.getTransportCode() + "-" + whOdodeliveryInfo.getWaybillCode() + ",";
+        if (!StringUtil.isEmpty(whOdo.getDataSource()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())) {
+            // 数据来源!=WMS才需要生成反馈数据
+            if (OdoStatus.ODO_OUTSTOCK_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(whOdo.getOdoStatus())) {
+                // 只有单据状态为新建或者是出库完成才需要生成对应数据
+                Long ouid = whOdo.getOuId();
+                // 只有出库单状态为新建/出库完成才需要生成反馈数据
+                if (whOdo.getOdoStatus().equals(OdoStatus.ODO_NEW) || whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+                    // 运输服务商-快递单号
+                    String transportServiceProvider = null;
+                    Map<String, String> tspMap = new HashMap<String, String>();
+                    // 如果是出库完成状态 需要封装运输服务商-快递单号信息
+                    if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+                        String tsp = "";
+                        List<WhOdodeliveryInfo> whOdodeliveryInfos = whOdoDeliveryInfoDao.findWhOdodeliveryInfoByOdoId(whOdo.getId(), ouid);
+                        for (WhOdodeliveryInfo whOdodeliveryInfo : whOdodeliveryInfos) {
+                            // 封装对应数据格式Map<出库箱号,运单号>
+                            tspMap.put(whOdodeliveryInfo.getOutboundboxCode(), whOdodeliveryInfo.getWaybillCode());
+                            tsp += whOdodeliveryInfo.getTransportCode() + "-" + whOdodeliveryInfo.getWaybillCode() + ",";
+                        }
+                        transportServiceProvider = tsp.substring(0, tsp.length() - 1);
+                    }
+                    // 封装库存状态Map
+                    Map<Long, String> invMap = new HashMap<Long, String>();
+                    // 查询全部的库存状态
+                    List<InventoryStatus> inventoryStatus = inventoryStatusDao.findInventoryStatus();
+                    for (InventoryStatus inv : inventoryStatus) {
+                        invMap.put(inv.getId(), inv.getName());
+                    }
+                    // 封装出库单反馈头信息
+                    WhOutboundConfirm ob = new WhOutboundConfirm();
+                    ob.setExtOdoCode(whOdo.getExtCode());
+                    ob.setWmsOdoCode(whOdo.getOdoCode());
+                    ob.setExtOdoType(whOdo.getExtOdoType());
+                    ob.setTransportServiceProvider(transportServiceProvider);
+                    ob.setWmsOdoStatus(Integer.parseInt(whOdo.getOdoStatus()));
+                    ob.setCustomerCode(getCustomerByRedis(whOdo.getCustomerId()).getCustomerCode());
+                    ob.setStoreCode(getStoreByRedis(whOdo.getStoreId()).getStoreCode());
+                    ob.setOuId(ouid);
+                    ob.setDataSource(whOdo.getDataSource());
+                    // TODO 后续增加是否整单出库完成逻辑
+                    ob.setCreateTime(new Date());
+                    Long obcount = whOutboundConfirmDao.insert(ob);
+                    if (obcount.intValue() == 0) {
+                        log.error("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm error");
+                        throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                    }
+                    Long obid = ob.getId();
+                    // 封装出库单附加信息
+                    saveWhOutboundAttrConfirm(whOdo.getId(), ouid, obid);
+                    // 封装出库单明细信息
+                    saveWhOutboundLineConfirm(whOdo, ouid, obid, tspMap, invMap);
+                    // 封装出库单发票信息
+                    saveWhOutboundInvoiceConfirm(whOdo.getOdoCode(), ouid, obid);
                 }
-                transportServiceProvider = tsp.substring(0, tsp.length() - 1);
             }
-            // 封装库存状态Map
-            Map<Long, String> invMap = new HashMap<Long, String>();
-            // 查询全部的库存状态
-            List<InventoryStatus> inventoryStatus = inventoryStatusDao.findInventoryStatus();
-            for (InventoryStatus inv : inventoryStatus) {
-                invMap.put(inv.getId(), inv.getName());
-            }
-            // 封装出库单反馈头信息
-            WhOutboundConfirm ob = new WhOutboundConfirm();
-            ob.setExtOdoCode(whOdo.getExtCode());
-            ob.setWmsOdoCode(whOdo.getOdoCode());
-            ob.setExtOdoType(whOdo.getExtOdoType());
-            ob.setTransportServiceProvider(transportServiceProvider);
-            ob.setWmsOdoStatus(Integer.parseInt(whOdo.getOdoStatus()));
-            ob.setCustomerCode(getCustomerByRedis(whOdo.getCustomerId()).getCustomerCode());
-            ob.setStoreCode(getStoreByRedis(whOdo.getStoreId()).getStoreCode());
-            ob.setOuId(ouid);
-            ob.setDataSource(whOdo.getDataSource());
-            // TODO 后续增加是否整单出库完成逻辑
-            ob.setCreateTime(new Date());
-            Long obcount = whOutboundConfirmDao.insert(ob);
-            if (obcount.intValue() == 0) {
-                log.error("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm error");
-                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-            }
-            Long obid = ob.getId();
-            // 封装出库单附加信息
-            saveWhOutboundAttrConfirm(whOdo.getId(), ouid, obid);
-            // 封装出库单明细信息
-            saveWhOutboundLineConfirm(whOdo, ouid, obid, tspMap, invMap);
-            // 封装出库单发票信息
-            saveWhOutboundInvoiceConfirm(whOdo.getOdoCode(), ouid, obid);
         }
         log.info("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm end!");
     }
@@ -193,6 +200,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 line.setQty(whOdoLine.getPlanQty());
                 line.setActualQty(whOdoLine.getActualQty());
                 line.setInvStatus(invMap.get(whOdoLine.getInvStatus()));
+                line.setStoreCode(getStoreByRedis(whOdoLine.getStoreId()).getStoreCode());
                 WhSku sku = whSkuDao.findWhSkuById(whOdoLine.getSkuId(), ouid);
                 line.setUpc(sku.getExtCode());
                 line.setColor(sku.getColor());
@@ -280,9 +288,9 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
+    public List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid, String dataSource) {
         // 获取出库单反馈数据
-        List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmDao.findWhOutboundConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
+        List<WhOutboundConfirm> whOutboundConfirms = whOutboundConfirmDao.findWhOutboundConfirmByCreateTimeAndDataSource(beginTime, endTime, start, pageSize, ouid, dataSource);
         for (WhOutboundConfirm whOutboundConfirm : whOutboundConfirms) {
             // 获取出库单附加属性数据
             WhOutboundAttrConfirm whOutboundAttrConfirm = whOutboundAttrConfirmDao.findWhOutboundAttrConfirmByOutBoundId(whOutboundConfirm.getId(), ouid);

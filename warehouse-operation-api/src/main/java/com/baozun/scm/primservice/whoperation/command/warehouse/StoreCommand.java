@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- *
+ * 
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- *
+ * 
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- *
+ * 
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
@@ -24,7 +24,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 /**
  * 
  * @author larkark
- *
+ * 
  */
 public class StoreCommand extends BaseCommand {
 
@@ -34,7 +34,7 @@ public class StoreCommand extends BaseCommand {
      * 
      */
     private static final long serialVersionUID = -8824163791897913381L;
-    
+
     private Long id;
     /*
      * 店铺编码
@@ -88,9 +88,9 @@ public class StoreCommand extends BaseCommand {
      * asn超收比例
      */
     private Integer asnOverchargeProportion;
-    
+
     /*
-     *  是否自动审核PO
+     * 是否自动审核PO
      */
     private Boolean isPoAutoVerify = false;
     /*
@@ -98,7 +98,7 @@ public class StoreCommand extends BaseCommand {
      */
     private Boolean isAsnAutoVerify = false;
     /*
-     *  预收货模式 1-总数 2-总箱数 3-商品数量
+     * 预收货模式 1-总数 2-总箱数 3-商品数量
      */
     private Integer goodsReceiptMode = 1;
     /*
@@ -122,7 +122,7 @@ public class StoreCommand extends BaseCommand {
      */
     private Boolean isAllowCollectDiff = false;
     /*
-     * 是否自动打印收货差异清单 
+     * 是否自动打印收货差异清单
      */
     private Boolean isAutoPrintDiff = false;
     /*
@@ -133,7 +133,7 @@ public class StoreCommand extends BaseCommand {
      * 是否自动打印预收货交接清单
      */
     private Boolean isAutoPrintGoodsReceipt = false;
-    
+
     /*
      * 客户ID
      */
@@ -154,31 +154,41 @@ public class StoreCommand extends BaseCommand {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
-    /** 入库单据反馈节点 1:收货时反馈 2:上架时反馈*/
+    /** 入库单据反馈节点 1:收货时反馈 2:上架时反馈 */
     private Integer inboundConfirmNode = 1;
-    /** 入库反馈类型 1:按单反馈 2:按箱反馈*/
+    /** 入库反馈类型 1:按单反馈 2:按箱反馈 */
     private Integer inboundConfirmType = 1;
-    /** 入库反馈单据类型 1:按PO单反馈 2:按ASN单反馈*/
+    /** 入库反馈单据类型 1:按PO单反馈 2:按ASN单反馈 */
     private Integer inboundConfirmOrderType = 1;
     /** 消费者退货入是否关联原出库单库存属性 */
-	private Boolean isReturnedPurchaseOriginalInvAttr = false;
-	/** 消费者退货入是否强制校验商品库存属性 */
-	private Boolean isCheckReturnedPurchaseInvAttr = false;
-	/** 消费者退货入是否强制校验商品库存状态 */
-	private Boolean isCheckReturnedPurchaseInvStatus = false;
-	/** 消费者退货入收货店铺 */
-	private String returnedPurchaseStore;
-	/** 开票公司 */
+    private Boolean isReturnedPurchaseOriginalInvAttr = false;
+    /** 消费者退货入是否强制校验商品库存属性 */
+    private Boolean isCheckReturnedPurchaseInvAttr = false;
+    /** 消费者退货入是否强制校验商品库存状态 */
+    private Boolean isCheckReturnedPurchaseInvStatus = false;
+    /** 消费者退货入收货店铺 */
+    private String returnedPurchaseStore;
+    /** 开票公司 */
     private String makeOutAnInvoiceCompany;
     /** 发票导出模板 */
     private String invoiceExportTemplet;
     /** 开票分组 */
     private String makeOutAnInvoiceGroup;
-    
+    /** 配送对象分组 */
+    private String distributionTargetGroup;
+
+    public String getDistributionTargetGroup() {
+        return distributionTargetGroup;
+    }
+
+    public void setDistributionTargetGroup(String distributionTargetGroup) {
+        this.distributionTargetGroup = distributionTargetGroup;
+    }
+
     /*
      * 用于全局表最后修改时间统一
      */
-    private Date globalLastModifyTime ;
+    private Date globalLastModifyTime;
 
     private String invoiceTypeName;
 
@@ -195,7 +205,7 @@ public class StoreCommand extends BaseCommand {
     private List<Store> allStoreList;
 
     private List<Store> existStoreList;
-    
+
 
     public Long getId() {
         return id;
@@ -501,61 +511,61 @@ public class StoreCommand extends BaseCommand {
         this.existStoreList = existStoreList;
     }
 
-	public Integer getInboundConfirmNode() {
-		return inboundConfirmNode;
-	}
+    public Integer getInboundConfirmNode() {
+        return inboundConfirmNode;
+    }
 
-	public void setInboundConfirmNode(Integer inboundConfirmNode) {
-		this.inboundConfirmNode = inboundConfirmNode;
-	}
+    public void setInboundConfirmNode(Integer inboundConfirmNode) {
+        this.inboundConfirmNode = inboundConfirmNode;
+    }
 
-	public Integer getInboundConfirmType() {
-		return inboundConfirmType;
-	}
+    public Integer getInboundConfirmType() {
+        return inboundConfirmType;
+    }
 
-	public void setInboundConfirmType(Integer inboundConfirmType) {
-		this.inboundConfirmType = inboundConfirmType;
-	}
+    public void setInboundConfirmType(Integer inboundConfirmType) {
+        this.inboundConfirmType = inboundConfirmType;
+    }
 
-	public Integer getInboundConfirmOrderType() {
-		return inboundConfirmOrderType;
-	}
+    public Integer getInboundConfirmOrderType() {
+        return inboundConfirmOrderType;
+    }
 
-	public void setInboundConfirmOrderType(Integer inboundConfirmOrderType) {
-		this.inboundConfirmOrderType = inboundConfirmOrderType;
-	}
+    public void setInboundConfirmOrderType(Integer inboundConfirmOrderType) {
+        this.inboundConfirmOrderType = inboundConfirmOrderType;
+    }
 
-	public Boolean getIsReturnedPurchaseOriginalInvAttr() {
-		return isReturnedPurchaseOriginalInvAttr;
-	}
+    public Boolean getIsReturnedPurchaseOriginalInvAttr() {
+        return isReturnedPurchaseOriginalInvAttr;
+    }
 
-	public void setIsReturnedPurchaseOriginalInvAttr(Boolean isReturnedPurchaseOriginalInvAttr) {
-		this.isReturnedPurchaseOriginalInvAttr = isReturnedPurchaseOriginalInvAttr;
-	}
+    public void setIsReturnedPurchaseOriginalInvAttr(Boolean isReturnedPurchaseOriginalInvAttr) {
+        this.isReturnedPurchaseOriginalInvAttr = isReturnedPurchaseOriginalInvAttr;
+    }
 
-	public Boolean getIsCheckReturnedPurchaseInvAttr() {
-		return isCheckReturnedPurchaseInvAttr;
-	}
+    public Boolean getIsCheckReturnedPurchaseInvAttr() {
+        return isCheckReturnedPurchaseInvAttr;
+    }
 
-	public void setIsCheckReturnedPurchaseInvAttr(Boolean isCheckReturnedPurchaseInvAttr) {
-		this.isCheckReturnedPurchaseInvAttr = isCheckReturnedPurchaseInvAttr;
-	}
+    public void setIsCheckReturnedPurchaseInvAttr(Boolean isCheckReturnedPurchaseInvAttr) {
+        this.isCheckReturnedPurchaseInvAttr = isCheckReturnedPurchaseInvAttr;
+    }
 
-	public Boolean getIsCheckReturnedPurchaseInvStatus() {
-		return isCheckReturnedPurchaseInvStatus;
-	}
+    public Boolean getIsCheckReturnedPurchaseInvStatus() {
+        return isCheckReturnedPurchaseInvStatus;
+    }
 
-	public void setIsCheckReturnedPurchaseInvStatus(Boolean isCheckReturnedPurchaseInvStatus) {
-		this.isCheckReturnedPurchaseInvStatus = isCheckReturnedPurchaseInvStatus;
-	}
+    public void setIsCheckReturnedPurchaseInvStatus(Boolean isCheckReturnedPurchaseInvStatus) {
+        this.isCheckReturnedPurchaseInvStatus = isCheckReturnedPurchaseInvStatus;
+    }
 
-	public String getReturnedPurchaseStore() {
-		return returnedPurchaseStore;
-	}
+    public String getReturnedPurchaseStore() {
+        return returnedPurchaseStore;
+    }
 
-	public void setReturnedPurchaseStore(String returnedPurchaseStore) {
-		this.returnedPurchaseStore = returnedPurchaseStore;
-	}
+    public void setReturnedPurchaseStore(String returnedPurchaseStore) {
+        this.returnedPurchaseStore = returnedPurchaseStore;
+    }
 
     public String getMakeOutAnInvoiceCompany() {
         return makeOutAnInvoiceCompany;

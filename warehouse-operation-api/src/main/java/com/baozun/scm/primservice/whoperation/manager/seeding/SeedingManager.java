@@ -6,11 +6,14 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -90,7 +93,21 @@ public interface SeedingManager extends BaseManager {
      */
     public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollection(Long seedingCollectionId, Long ouId);
 
-    public void batchFinishedSeedingWithException(Long facilityId, Long ouId);
+    public WhSeedingCollectionLine findSeedingCollectionLineById(Long seedingCollectionLineId, Long ouId);
 
-    public void batchFinishedSeeding(Long facilityId, String batchNo, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public int updateSeedingCollectionLineByVersion(WhSeedingCollectionLine seedingCollectionLine);
+
+    public void batchFinishedSeedingWithException(WhOutboundFacilityCommand facilityCommand, List<WhSeedingCollectionCommand> seedingCollectionList, List<WhSeedingCollectionLineCommand> facilitySeedingCollectionLineList,Long logId);
+
+    public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+
+    public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList,WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+
+    public WhSkuInventory findSeedingOdoSkuInvByUuid(String odoCode, Long ouId, String uuid);
+
+    public WhSkuInventory findSeedingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
+
+    public void createOutboundBox(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> whOutboundboxLineList);
+
+    public int updateOutboundFacility(WhOutboundFacilityCommand facilityCommand, String logId);
 }

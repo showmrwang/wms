@@ -27,6 +27,7 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 
 public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Long> {
@@ -112,4 +113,13 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
     public WhSeedingCollection findSeedingCollectionByContainerId(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
     
     public WhSeedingCollectionCommand getSeedingCollectionByTurnoverBox(@Param("facilityId") Long facilityId, @Param("turnoverBoxCode") String turnoverBoxCode, @Param("ouId") Long ouId);
+
+    /**
+     * 获取播种批次下的出库单信息，用于和播种墙货格绑定
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingWallLattice> getSeedingBatchOdoInfo(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
 }

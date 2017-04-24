@@ -185,5 +185,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		create_time &gt; #{beginTime} 
 		and create_time &lt; #{endTime} 
 		and data_source = #{dataSource}
+		order by id asc
+		limit #{start},#{pageSize}
 	</select>
 </mapper>

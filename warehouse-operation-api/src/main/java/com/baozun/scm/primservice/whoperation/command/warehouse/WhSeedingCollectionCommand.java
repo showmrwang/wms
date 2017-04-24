@@ -76,60 +76,52 @@ public class WhSeedingCollectionCommand extends BaseCommand {
         this.id = id;
     }
 
-    public void setFacilityId(Long value) {
-        this.facilityId = value;
-    }
-
     public Long getFacilityId() {
-        return this.facilityId;
+        return facilityId;
     }
 
-    public void setTemporaryLocationId(Long value) {
-        this.temporaryLocationId = value;
+    public void setFacilityId(Long facilityId) {
+        this.facilityId = facilityId;
     }
 
     public Long getTemporaryLocationId() {
-        return this.temporaryLocationId;
+        return temporaryLocationId;
     }
 
-    public void setLocationId(Long value) {
-        this.locationId = value;
+    public void setTemporaryLocationId(Long temporaryLocationId) {
+        this.temporaryLocationId = temporaryLocationId;
     }
 
     public Long getLocationId() {
-        return this.locationId;
+        return locationId;
     }
 
-    public void setContainerId(Long value) {
-        this.containerId = value;
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
     }
 
     public Long getContainerId() {
-        return this.containerId;
+        return containerId;
     }
 
-    public void setBatch(String value) {
-        this.batch = value;
+    public void setContainerId(Long containerId) {
+        this.containerId = containerId;
     }
 
     public String getBatch() {
-        return this.batch;
+        return batch;
     }
 
-    public void setOuId(Long value) {
-        this.ouId = value;
+    public void setBatch(String batch) {
+        this.batch = batch;
     }
 
-    public Long getOuId() {
-        return this.ouId;
+    public String getWaveCode() {
+        return waveCode;
     }
 
-    public String getFacilityCode() {
-        return facilityCode;
-    }
-
-    public void setFacilityCode(String facilityCode) {
-        this.facilityCode = facilityCode;
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
     }
 
     public Integer getCollectionStatus() {
@@ -140,20 +132,12 @@ public class WhSeedingCollectionCommand extends BaseCommand {
         this.collectionStatus = collectionStatus;
     }
 
-    public String getContainerCode() {
-        return containerCode;
+    public Long getOuId() {
+        return ouId;
     }
 
-    public void setContainerCode(String containerCode) {
-        this.containerCode = containerCode;
-    }
-
-    public String getWaveCode() {
-        return waveCode;
-    }
-
-    public void setWaveCode(String waveCode) {
-        this.waveCode = waveCode;
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
     }
 
     public Long getOuterContainerId() {
@@ -212,4 +196,19 @@ public class WhSeedingCollectionCommand extends BaseCommand {
         this.checkingMode = checkingMode;
     }
 
+    public String getFacilityCode() {
+        return facilityCode;
+    }
+
+    public void setFacilityCode(String facilityCode) {
+        this.facilityCode = facilityCode;
+    }
+
+    public String getContainerCode() {
+        return containerCode;
+    }
+
+    public void setContainerCode(String containerCode) {
+        this.containerCode = containerCode;
+    }
 }

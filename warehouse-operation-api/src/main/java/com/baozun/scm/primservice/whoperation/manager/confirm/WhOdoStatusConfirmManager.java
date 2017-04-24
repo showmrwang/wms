@@ -25,6 +25,6 @@ public interface WhOdoStatusConfirmManager extends BaseManager {
      * @param dataSource
      * @return
      */
-    List<WmsOutBoundStatusConfirm> findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource);
+    List<WmsOutBoundStatusConfirm> findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid, String dataSource);
 
 }

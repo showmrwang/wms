@@ -79,7 +79,7 @@ public class WhOdoStatusConfirmManagerImpl extends BaseManagerImpl implements Wh
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WmsOutBoundStatusConfirm> findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Long ouid, String dataSource) {
-        return whOdoStatusConfirmDao.findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(beginTime, endTime, ouid, dataSource);
+    public List<WmsOutBoundStatusConfirm> findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid, String dataSource) {
+        return whOdoStatusConfirmDao.findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(beginTime, endTime, start, pageSize, ouid, dataSource);
     }
 }

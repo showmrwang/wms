@@ -48,6 +48,7 @@ public interface WhOutboundConfirmDao extends BaseDao<WhOutboundConfirm, Long> {
     /**
      * 通过创建时间段+仓库ID+数据来源获取对应出库单反馈数据
      */
-    List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid, @Param("dataSource") String dataSource);
+    List<WhOutboundConfirm> findWhOutboundConfirmByCreateTimeAndDataSource(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("ouid") Long ouid,
+            @Param("dataSource") String dataSource);
 
 }

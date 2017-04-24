@@ -45,9 +45,9 @@ public class WhInboundConfirmManagerImpl implements WhInboundConfirmManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public List<WhInboundConfirm> findWhInboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, String dataSource) {
+    public List<WhInboundConfirm> findWhInboundConfirmByCreateTimeAndDataSource(String beginTime, String endTime, Integer start, Integer pageSize, String dataSource) {
         // 获取入库单反馈数据
-        List<WhInboundConfirm> whInboundConfirms = whInboundConfirmDao.findWhInboundConfirmByCreateTimeAndDataSource(beginTime, endTime, dataSource);
+        List<WhInboundConfirm> whInboundConfirms = whInboundConfirmDao.findWhInboundConfirmByCreateTimeAndDataSource(beginTime, endTime, start, pageSize, dataSource);
         for (WhInboundConfirm whInboundConfirm : whInboundConfirms) {
             // 获取入库单反馈明细数据
             List<WhInboundLineConfirm> whInboundLineConfirms = whInboundLineConfirmDao.findWhInboundLineConfirmByInboundId(whInboundConfirm.getId());

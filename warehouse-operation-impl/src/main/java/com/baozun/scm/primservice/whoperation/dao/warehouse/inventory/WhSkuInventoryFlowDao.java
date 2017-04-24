@@ -51,6 +51,6 @@ public interface WhSkuInventoryFlowDao extends BaseDao<WhSkuInventoryFlow, Long>
      * 
      * @return
      */
-    List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("ouid") Long ouid);
+    List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("start") Integer start, @Param("pageSize") Integer pageSize, @Param("ouid") Long ouid);
 
 }

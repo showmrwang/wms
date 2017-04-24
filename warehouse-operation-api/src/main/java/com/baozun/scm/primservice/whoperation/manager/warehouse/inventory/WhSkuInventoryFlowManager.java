@@ -34,5 +34,5 @@ public interface WhSkuInventoryFlowManager extends BaseManager {
      * 
      * @return
      */
-    List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(String beginTime, String endTime, Long ouid);
+    List<WmsSkuInventoryFlow> findWmsSkuInventoryFlowByCreateTime(String beginTime, String endTime, Integer start, Integer pageSize, Long ouid);
 }

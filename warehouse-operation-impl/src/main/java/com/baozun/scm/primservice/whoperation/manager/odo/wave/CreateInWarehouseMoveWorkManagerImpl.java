@@ -138,7 +138,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     public InWarehouseMoveWorkCommand saveAllocatedAndTobefilled(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, List<WhSkuInventoryCommand> whSkuInventoryCommandLst) {
         List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst = new ArrayList<WhSkuInventoryAllocatedCommand>();
         List<WhSkuInventoryTobefilledCommand> whSkuInventoryTobefilledCommandLst = new ArrayList<WhSkuInventoryTobefilledCommand>();
-        Map<Long, Double> idAndQtyMap = new HashMap<Long, Double>();
+        Map<String, Double> idAndQtyMap = new HashMap<String, Double>();
         idAndQtyMap = inWarehouseMoveWorkCommand.getIdAndQtyMap();
         for(WhSkuInventoryCommand whSkuInventoryCommand : whSkuInventoryCommandLst){
             // 分配库存            
@@ -152,7 +152,11 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryAllocatedCommand.setOccupationCode(whSkuInventoryCommand.getOccupationCode());
             whSkuInventoryAllocatedCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
             whSkuInventoryAllocatedCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
-            whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getId()));
+            if(null != whSkuInventoryCommand.getOccupationCode()){
+                whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get( whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getUuid()));
+            }else{
+                whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getUuid()));  
+            }
             whSkuInventoryAllocatedCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
             whSkuInventoryAllocatedCommand.setInvType(whSkuInventoryCommand.getInvType());
             whSkuInventoryAllocatedCommand.setBatchNumber(whSkuInventoryCommand.getBatchNumber());
@@ -192,7 +196,11 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryTobefilledCommand.setOccupationCode(whSkuInventoryCommand.getOccupationCode());
             whSkuInventoryTobefilledCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
             whSkuInventoryTobefilledCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
-            whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getId()));
+            if(null != whSkuInventoryCommand.getOccupationCode()){
+                whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get( whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getUuid()));
+            }else{
+                whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getUuid()));  
+            }
             whSkuInventoryTobefilledCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
             whSkuInventoryTobefilledCommand.setInvType(whSkuInventoryCommand.getInvType());
             whSkuInventoryTobefilledCommand.setBatchNumber(whSkuInventoryCommand.getBatchNumber());

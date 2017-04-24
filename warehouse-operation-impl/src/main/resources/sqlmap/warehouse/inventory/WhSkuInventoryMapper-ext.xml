@@ -3004,6 +3004,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <include refid="whSkuInventoryDynamicWhereExt"/>
 	</select>
 	
+	<select id="findInvComLstByInWarehouseMove" resultMap="WhSkuInventoryCommandResultExt">
+		select  
+			<include refid="whSkuInventoryColumnsExt" />
+		from
+			t_wh_sku_inventory
+		where 
+			uuid = #{uuid}
+			and ou_id = #{ouId}
+			<if test="occupationCode!=null">
+				and occupation_code = #{occupationCode}
+			</if>
+			<if test="occupationCode==null">
+				and occupation_code is null
+			</if>
+	</select>
+	
     <select id="findWhSkuInvCmdByLocationContainerIdIsNull" resultMap="WhSkuInventoryCommandResultExt">
 			select  <include refid="whSkuInventoryColumnsExt" />
 				from 
@@ -3641,7 +3657,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and IFNULL(is_locked, 0) != 1
     </select>
     
-    <select id="findWhSkuInventoryByIdAndUuidAndOuid" resultMap="WhSkuInventoryCommandResultExt">
+    <select id="findWhSkuInventoryByOccupationCodeAndUuid" resultMap="WhSkuInventoryCommandResultExt">
 		select 
 			t.id as id,
 			t.sku_id as skuId,
@@ -3730,8 +3746,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<if test="uuid!=null and uuid!=''">
 						 and t.uuid = #{uuid}
 					</if>
-					<if test="id!=null and id!=''">
-						 and t.id = #{id}
+					<if test="occupationCode!=null and occupationCode!=''">
+						 and t.occupation_code = #{occupationCode}
 					</if>
 				</where> 
 				union all
@@ -3783,8 +3799,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<if test="uuid!=null and uuid!=''">
 						 and t.uuid = #{uuid}
 					</if>
-					<if test="id!=null and id!=''">
-						 and t.id = #{id}
+					<if test="occupationCode!=null and occupationCode!=''">
+						 and t.occupation_code = #{occupationCode}
 					</if>
 				</where> 
 				union all
@@ -3836,12 +3852,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<if test="uuid!=null and uuid!=''">
 						 and t.uuid = #{uuid}
 					</if>
-					<if test="id!=null and id!=''">
-						 and t.id = #{id}
+					<if test="occupationCode!=null and occupationCode!=''">
+						 and t.occupation_code = #{occupationCode}
 					</if>
 				</where> 
 				) t 
-		 group by t.uuid 
+		 group by t.uuid, t.occupation_code
     </select>
     
     
@@ -4014,6 +4030,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 		group by inv.uuid 
+    </select>
+
+
+    <select id="findSeedingOdoSkuInvByUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
+        select
+            <include refid="whSkuInventoryColumnsExt"/>
+        from
+            t_wh_sku_inventory
+        where
+            occupation_code = #{odoCode}
+            and ou_id = #{ouId}
+            and uuid = #{uuid}
+    </select>
+
+    <select id="findSeedingOdoSkuInvByOdoLineIdUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
+        select
+            <include refid="whSkuInventoryColumnsExt"/>
+        from
+            t_wh_sku_inventory
+        where
+            occupation_line_id = #{odoLineId}
+            and ou_id = #{ouId}
+            and uuid = #{uuid}
     </select>
     
     
