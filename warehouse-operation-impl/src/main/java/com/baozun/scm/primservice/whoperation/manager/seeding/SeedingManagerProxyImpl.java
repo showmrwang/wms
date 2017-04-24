@@ -40,7 +40,6 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManage
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.SeedingLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
@@ -346,22 +345,13 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
     public void facilityBatchFinishedSeeding(Long functionId, Long facilityId, Long userId, Long ouId, String logId) {
         // 播种设施
         WhOutboundFacilityCommand facilityCommand = seedingManager.getOutboundFacilityById(facilityId, ouId);
-        // 仓库信息
-        WarehouseMgmt warehouseMgmt = warehouseManager.findWhMgmtByOuId(ouId);
-
-        Map<Long, SeedingLattice> latticeMap = this.getLatticeMapFromCache(facilityId, facilityCommand.getBatch(), ouId, logId);
-        List<WhSeedingWallLattice> facilitySeedingOdoList = this.getFacilityBatchOdoCache(facilityId, facilityCommand.getBatch(), ouId, logId);
-
-        // TODO 重计算配货模式
-        //seedingManager.batchFinishedSeeding(facilityId, facilityCommand.getBatch(), facilitySeedingOdoList, null, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
 
         try {
             // 清除缓存
             this.releaseFacilityBatchRedis(facilityId, facilityCommand.getBatch(), ouId, logId);
 
         } catch (Exception e) {
-            log.error("SeedingManagerProxyImpl facilityBatchFinishedSeeding error, facilityId is:[{}], facilitySeedingOdoList is:[{}], IsTabbInvTotal is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}], ex is:[{}]", facilityId, facilitySeedingOdoList,
-                    warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId, e);
+            log.error("SeedingManagerProxyImpl facilityBatchFinishedSeeding error, facilityId is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}], ex is:[{}]", facilityId, userId, ouId, logId, e);
         }
     }
 

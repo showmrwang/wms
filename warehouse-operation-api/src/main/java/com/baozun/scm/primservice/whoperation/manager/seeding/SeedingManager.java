@@ -99,11 +99,9 @@ public interface SeedingManager extends BaseManager {
 
     public void batchFinishedSeedingWithException(WhOutboundFacilityCommand facilityCommand, List<WhSeedingCollectionCommand> seedingCollectionList, List<WhSeedingCollectionLineCommand> facilitySeedingCollectionLineList,Long logId);
 
-    public void batchFinishedSeeding(Long facilityId, String batchNo, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 
-    public void finishedSeedingByOutboundBox( List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
-
-    public void finishedSeedingByOdo(WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList,WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 
     public WhSkuInventory findSeedingOdoSkuInvByUuid(String odoCode, Long ouId, String uuid);
 

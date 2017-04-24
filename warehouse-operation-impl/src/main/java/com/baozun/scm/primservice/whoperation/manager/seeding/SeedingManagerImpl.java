@@ -256,19 +256,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void batchFinishedSeeding(Long facilityId, String batchNo, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
-
-        try {
-            checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, facilitySeedingSkuInventoryList, userId, ouId, logId);
-        } catch (Exception e) {
-            log.error("generateCheckingDataBySeeding error", e);
-        }
-
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void finishedSeedingByOutboundBox( List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
+    public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
         for(WhSkuInventory odoOrgSkuInv : odoOrgSkuInvList){
             if(0 == odoOrgSkuInv.getOnHandQty()){
                 whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), ouId);
@@ -285,14 +273,29 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
         }
 
         this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
+
+        try {
+            // TODO 重计算配货模式
+            //checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, boxSeedingLineList, userId, ouId, logId);
+        } catch (Exception e) {
+            log.error("generateCheckingDataBySeeding error", e);
+        }
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void finishedSeedingByOdo(WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
+    public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList, WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
         whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
         this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
+
+        try {
+            // TODO 重计算配货模式
+            //checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, odoSeedingLineList, userId, ouId, logId);
+        } catch (Exception e) {
+            log.error("generateCheckingDataBySeeding error", e);
+        }
     }
+
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
