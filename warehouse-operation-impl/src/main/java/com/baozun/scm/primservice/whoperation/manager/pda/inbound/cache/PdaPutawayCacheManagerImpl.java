@@ -3628,10 +3628,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                                 Iterator<String> iter2 = scanSkuAttrIds.iterator();
                                                 while (iter2.hasNext()) {
                                                     String skuAttrId = iter2.next();
+                                                    String saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
                                                     if (!StringUtils.isEmpty(skuAttrId)) {
-                                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locValue.toString() + skuAttrId);
-                                                        cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locValue.toString() + skuAttrId);
-                                                        cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locValue.toString() + skuAttrId);
+                                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locValue.toString() + saId);
+                                                        cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locValue.toString() + saId);
+                                                        cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locValue.toString() + saId);
                                                     }
                                                 }
                                             }
@@ -3662,10 +3663,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         Iterator<String> iter2 = scanSkuAttrIds.iterator();
                         while (iter2.hasNext()) {
                             String skuAttrId = iter2.next();
+                            String saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
                             if (!StringUtils.isEmpty(skuAttrId)) {
-                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + skuAttrId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId);
                             }
                         }
                     }
@@ -3682,10 +3684,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             Iterator<String> iter3 = scanSkuAttrIds.iterator();
                             while (iter3.hasNext()) {
                                 String skuAttrId = iter3.next();
+                                String saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
                                 if (!StringUtils.isEmpty(skuAttrId)) {
-                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + skuAttrId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId);
                                 }
                             }
                         }
@@ -3702,10 +3705,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             Iterator<String> iter3 = scanSkuAttrIds.iterator();
                             while (iter3.hasNext()) {
                                 String skuAttrId = iter3.next();
+                                String saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
                                 if (!StringUtils.isEmpty(skuAttrId)) {
-                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + skuAttrId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId);
                                 }
                             }
                         }
@@ -3732,10 +3736,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         Iterator<String> iter3 = scanSkuAttrIds.iterator();
                         while (iter3.hasNext()) {
                             String skuAttrId = iter3.next();
+                            String saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
                             if (!StringUtils.isEmpty(skuAttrId)) {
-                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + skuAttrId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId);
                             }
                         }
                     }
@@ -3752,10 +3757,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         Iterator<String> iter3 = scanSkuAttrIds.iterator();
                         while (iter3.hasNext()) {
                             String skuAttrId = iter3.next();
+                            String saId = SkuCategoryProvider.getSkuAttrId(skuAttrId);
                             if (!StringUtils.isEmpty(skuAttrId)) {
-                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
-                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + skuAttrId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + saId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + saId);
                             }
                         }
                     }
@@ -3806,7 +3812,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
         if (null != tipSkuAttrIds && !tipSkuAttrIds.isEmpty()) {
             tipSkuAttrIds.addFirst(tipSkuAttrId);
             tipSkuCmd.setScanSkuAttrIds(tipSkuAttrIds);
-            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipSkuCmd);
+            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipSkuCmd, CacheConstants.CACHE_ONE_DAY);
         } else {
             TipScanSkuCacheCommand tipCmd = new TipScanSkuCacheCommand();
             tipCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
