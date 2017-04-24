@@ -4850,6 +4850,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         return whSkuInventoryList;
     }
     
+    /**
+     * 根据参数查询出库存信息
+     * @author qiming.liu
+     * @param whSkuInventory
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventoryCommand> findInvComLstByInWarehouseMove(WhSkuInventoryCommand whSkuInventoryCommand) {
+        List<WhSkuInventoryCommand> skuInventoryCommandLst = whSkuInventoryDao.findInvComLstByInWarehouseMove(whSkuInventoryCommand);
+        return skuInventoryCommandLst;
+    }
+    
     // TODO zhukai
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -8032,8 +8045,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSkuInventoryCommand findWhSkuInventoryByIdAndUuidAndOuid(Long id, String uuid, Long ouid) {
-        WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryDao.findWhSkuInventoryByIdAndUuidAndOuid(id, uuid, ouid);
+    public WhSkuInventoryCommand findWhSkuInventoryByOccupationCodeAndUuid(String occupationCode, String uuid, Long ouid) {
+        WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryDao.findWhSkuInventoryByOccupationCodeAndUuid(occupationCode, uuid, ouid);
         return whSkuInventoryCommand;
     }
     

@@ -17,6 +17,10 @@ public class OdoStatus implements Serializable {
     public static final String ODO_OUTSTOCK_FINISH = "10";// 全部出库
     public static final String ODO_HANDOVER_FINISH = "16";// 已交接
     public static final String ODO_CANCEL = "17";// 取消
+    public static final String ODO_SEEDING_EXECUTING = "18";// 播种中
+    public static final String ODO_SEEDING_FINISH = "19";// 播种完成
+    public static final String ODO_PICKING_EXECUTING = "20";// 拣货中
+    public static final String ODO_PICKING_FINISH = "21";// 拣货完成
     public static final String ODO_TOBECREATED = "99";// 待创建
     /** ODO */
 

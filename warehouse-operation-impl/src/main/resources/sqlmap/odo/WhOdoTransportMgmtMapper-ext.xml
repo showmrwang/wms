@@ -15,6 +15,7 @@
                 odo_id as odoId,
                 transport_service_provider as transportServiceProvider,
                 mode_of_transport as modeOfTransport,
+                time_effect_type as timeEffectType,
                 courier_service_type as courierServiceType,
                 outbound_target_type as outboundTargetType,
                 outbound_target as outboundTarget,
@@ -47,6 +48,10 @@
 
             <if test="modeOfTransport!=null and modeOfTransport!=''">
                 and mode_of_transport = #{modeOfTransport}
+            </if>
+            
+            <if test="timeEffectType!=null and timeEffectType!=''">
+                and time_effect_type = #{timeEffectType}
             </if>
 
             <if test="courierServiceType!=null and courierServiceType!=''">

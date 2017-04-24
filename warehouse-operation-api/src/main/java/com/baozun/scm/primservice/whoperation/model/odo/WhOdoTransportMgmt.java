@@ -34,6 +34,8 @@ public class WhOdoTransportMgmt extends BaseModel {
     private String transportServiceProvider;
     /** 运输方式 */
     private String modeOfTransport;
+    /** 时效类型 */
+    private String timeEffectType;
     /** 快递服务类型 */
     private String courierServiceType;
     /** 出库目标类型 */
@@ -178,6 +180,14 @@ public class WhOdoTransportMgmt extends BaseModel {
 
     public void setSysDate(String sysDate) {
         this.sysDate = sysDate;
+    }
+
+    public String getTimeEffectType() {
+        return timeEffectType;
+    }
+
+    public void setTimeEffectType(String timeEffectType) {
+        this.timeEffectType = timeEffectType;
     }
 
 }

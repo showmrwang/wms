@@ -20,9 +20,9 @@ public class InWarehouseMoveWorkCommand  extends BaseModel {
     /** 库位ID 库位号 */
     private Long toLocationId;
     /** 分组信息 */
-    private Map<String, List<WhSkuInventoryCommand>> skuInventoryMap;
+    private Map<Long, List<WhSkuInventoryCommand>> skuInventoryMap;
     /** 移动数量 */
-    private Map<Long, Double> idAndQtyMap;
+    private Map<String, Double> idAndQtyMap;
     /** 分配库存集合 */
     private List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst;
     /** 待移入库存集合 */
@@ -42,16 +42,16 @@ public class InWarehouseMoveWorkCommand  extends BaseModel {
     public void setWhSkuInventoryTobefilledCommandLst(List<WhSkuInventoryTobefilledCommand> whSkuInventoryTobefilledCommandLst) {
         WhSkuInventoryTobefilledCommandLst = whSkuInventoryTobefilledCommandLst;
     }
-    public Map<String, List<WhSkuInventoryCommand>> getSkuInventoryMap() {
+    public Map<Long, List<WhSkuInventoryCommand>> getSkuInventoryMap() {
         return skuInventoryMap;
     }
-    public void setSkuInventoryMap(Map<String, List<WhSkuInventoryCommand>> skuInventoryMap) {
+    public void setSkuInventoryMap(Map<Long, List<WhSkuInventoryCommand>> skuInventoryMap) {
         this.skuInventoryMap = skuInventoryMap;
     }
-    public Map<Long, Double> getIdAndQtyMap() {
+    public Map<String, Double> getIdAndQtyMap() {
         return idAndQtyMap;
     }
-    public void setIdAndQtyMap(Map<Long, Double> idAndQtyMap) {
+    public void setIdAndQtyMap(Map<String, Double> idAndQtyMap) {
         this.idAndQtyMap = idAndQtyMap;
     }
     public Long getToLocationId() {

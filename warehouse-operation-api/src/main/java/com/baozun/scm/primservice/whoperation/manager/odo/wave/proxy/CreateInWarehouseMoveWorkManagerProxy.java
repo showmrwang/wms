@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 
@@ -17,7 +18,7 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @param toLocation
      * @return
      */
-    Boolean createAndExecuteInWarehouseMoveWork(Long[] ids, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId);
+    Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId);
     
     /**
      * [业务方法] 导入sn和残次条码
@@ -41,6 +42,6 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    Integer systemCheck(Long[] ids, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId);
+    Integer systemCheck(String[] occupationCodes, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId);
     
 }

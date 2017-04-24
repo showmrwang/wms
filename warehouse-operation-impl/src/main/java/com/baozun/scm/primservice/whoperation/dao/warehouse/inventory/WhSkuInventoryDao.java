@@ -732,6 +732,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventory> getSkuInvListByPramas(WhSkuInventory whSkuInventory);
+    
+    List<WhSkuInventoryCommand> findInvComLstByInWarehouseMove(WhSkuInventoryCommand whSkuInventoryCommand);
 
     /**
      * 根据库位Id集合查询库位库存信息
@@ -846,12 +848,12 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 查询库存信息
      * 
      * @author qiming.liu
-     * @param id
+     * @param occupationCode
      * @param uuid
      * @param ouid
      * @return
      */
-    WhSkuInventoryCommand findWhSkuInventoryByIdAndUuidAndOuid(@Param("id") Long id, @Param("uuid") String uuid, @Param("ouid") Long ouid);
+    WhSkuInventoryCommand findWhSkuInventoryByOccupationCodeAndUuid(@Param("occupationCode") String occupationCode, @Param("uuid") String uuid, @Param("ouid") Long ouid);
 
     /**
      * [业务方法] 通过内部容器id查找容器中的库存明细并插入播种墙集货明细表
