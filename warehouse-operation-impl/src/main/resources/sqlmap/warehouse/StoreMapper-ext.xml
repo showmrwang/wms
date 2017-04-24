@@ -87,7 +87,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	s.lifecycle as lifecycle,
 	        	syst.dic_label as invoiceTypeName,
 	        	sysl.dic_label as paymentTermName,
-	        	c.customer_name as customerName
+	        	c.customer_name as customerName,
+          	    s.distribution_target_group as distributionTargetGroup
 	        	
 	    ]]>
 	</sql>
@@ -232,6 +233,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        returned_purchase_store = #{returnedPurchaseStore,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        make_out_an_invoice_company = #{makeOutAnInvoiceCompany,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        invoice_export_templet = #{invoiceExportTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        distribution_target_group = #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        make_out_an_invoice_group = #{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        WHERE 
 			        id = #{id} 
@@ -289,7 +291,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	returned_purchase_store as returnedPurchaseStore,
 	        	make_out_an_invoice_company as makeOutAnInvoiceCompany,
 	        	invoice_export_templet as invoiceExportTemplet,
-	        	make_out_an_invoice_group as makeOutAnInvoiceGroup
+	        	make_out_an_invoice_group as makeOutAnInvoiceGroup,
+	        	distribution_target_group as distributionTargetGroup
 	    ]]>
 	</sql>
 	<sql id="storeDynamicWhereExpand">
