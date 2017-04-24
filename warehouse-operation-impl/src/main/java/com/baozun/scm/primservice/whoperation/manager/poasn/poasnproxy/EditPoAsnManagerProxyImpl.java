@@ -836,7 +836,6 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
     @Override
     public void auditBiPo(BiPoCommand poCommand) {
         try {
-
             BiPo biPo = this.biPoManager.findBiPoById(poCommand.getId());
             // BIPO单状态校验
             if (PoAsnStatus.BIPO_CLOSE == biPo.getStatus() || PoAsnStatus.BIPO_DELETE == biPo.getStatus() || PoAsnStatus.BIPO_TOBECREATED == biPo.getStatus() || PoAsnStatus.BIPO_CANCELED == biPo.getStatus()) {

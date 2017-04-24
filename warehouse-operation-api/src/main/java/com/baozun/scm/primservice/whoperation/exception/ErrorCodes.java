@@ -411,6 +411,8 @@ public class ErrorCodes {
     public static final int BIPO_AUDIT_SUBSTATUS_ERROR = 11083;
     /** PO单状态不允许审核成功 */
     public static final int BIPO_AUDIT_STATUS_ERROR = 11084;
+    /** ASN已收货完成 */
+    public static final int ASN_RCVD_FINISHED = 11085;
     // 10001-20000 luyimin
 
 
