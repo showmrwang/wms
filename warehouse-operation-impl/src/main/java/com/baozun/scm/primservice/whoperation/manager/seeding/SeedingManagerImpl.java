@@ -24,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.baseservice.print.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
@@ -44,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionD
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryLogDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CheckingModeCalcManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
@@ -319,6 +321,19 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
             whOutboundboxLineDao.insert(whOutboundboxLine);
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int updateOutboundFacility(WhOutboundFacilityCommand facilityCommand, String logId){
+        WhOutboundFacility whOutboundFacility = new WhOutboundFacility();
+        BeanUtils.copyProperties(facilityCommand, whOutboundFacility);
+        int count = whOutboundFacilityDao.saveOrUpdateByVersion(whOutboundFacility);
+        if(count != 1){
+            log.error("SeedingManagerImpl update outboundFacility error, facility is:[{}], logId is:[{}]", whOutboundFacility, logId);
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        return count;
     }
 
     /**

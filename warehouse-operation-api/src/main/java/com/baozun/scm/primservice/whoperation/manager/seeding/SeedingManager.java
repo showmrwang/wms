@@ -108,4 +108,6 @@ public interface SeedingManager extends BaseManager {
     public WhSkuInventory findSeedingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
 
     public void createOutboundBox(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> whOutboundboxLineList);
+
+    public int updateOutboundFacility(WhOutboundFacilityCommand facilityCommand, String logId);
 }

@@ -82,9 +82,9 @@ public class Store extends BaseModel {
      * asn超收比例
      */
     private Integer asnOverchargeProportion;
-    
+
     /*
-     *  是否自动审核PO
+     * 是否自动审核PO
      */
     private Boolean isPoAutoVerify = false;
     /*
@@ -92,7 +92,7 @@ public class Store extends BaseModel {
      */
     private Boolean isAsnAutoVerify = false;
     /*
-     *  预收货模式 1-总数 2-总箱数 3-商品数量
+     * 预收货模式 1-总数 2-总箱数 3-商品数量
      */
     private Integer goodsReceiptMode = 1;
     /*
@@ -116,7 +116,7 @@ public class Store extends BaseModel {
      */
     private Boolean isAllowCollectDiff = false;
     /*
-     * 是否自动打印收货差异清单 
+     * 是否自动打印收货差异清单
      */
     private Boolean isAutoPrintDiff = false;
     /*
@@ -127,7 +127,7 @@ public class Store extends BaseModel {
      * 是否自动打印预收货交接清单
      */
     private Boolean isAutoPrintGoodsReceipt = false;
-    
+
     /*
      * 客户ID
      */
@@ -148,7 +148,7 @@ public class Store extends BaseModel {
      * 1.可用;2.已删除;0.禁用
      */
     private Integer lifecycle;
-    
+
     /** 联系手机 */
     private String picMobileTelephone;
     /** 国家ID */
@@ -167,32 +167,42 @@ public class Store extends BaseModel {
     private Long villagesTownsId;
     /** 区ID */
     private Long districtId;
-    
-    /** 入库单据反馈节点 1:收货时反馈 2:上架时反馈*/
+
+    /** 入库单据反馈节点 1:收货时反馈 2:上架时反馈 */
     private Integer inboundConfirmNode = 1;
-    /** 入库反馈类型 1:按单反馈 2:按箱反馈*/
+    /** 入库反馈类型 1:按单反馈 2:按箱反馈 */
     private Integer inboundConfirmType = 1;
-    /** 入库反馈单据类型 1:按PO单反馈 2:按ASN单反馈*/
+    /** 入库反馈单据类型 1:按PO单反馈 2:按ASN单反馈 */
     private Integer inboundConfirmOrderType = 1;
     /** 消费者退货入是否关联原出库单库存属性 */
-	private Boolean isReturnedPurchaseOriginalInvAttr = false;
-	/** 消费者退货入是否强制校验商品库存属性 */
-	private Boolean isCheckReturnedPurchaseInvAttr = false;
-	/** 消费者退货入是否强制校验商品库存状态 */
-	private Boolean isCheckReturnedPurchaseInvStatus = false;
-	/** 消费者退货入收货店铺 */
-	private String returnedPurchaseStore;
-	/** 开票公司 */
+    private Boolean isReturnedPurchaseOriginalInvAttr = false;
+    /** 消费者退货入是否强制校验商品库存属性 */
+    private Boolean isCheckReturnedPurchaseInvAttr = false;
+    /** 消费者退货入是否强制校验商品库存状态 */
+    private Boolean isCheckReturnedPurchaseInvStatus = false;
+    /** 消费者退货入收货店铺 */
+    private String returnedPurchaseStore;
+    /** 开票公司 */
     private String makeOutAnInvoiceCompany;
     /** 发票导出模板 */
     private String invoiceExportTemplet;
     /** 开票分组 */
     private String makeOutAnInvoiceGroup;
-    
+    /** 配送对象分组 */
+    private String distributionTargetGroup;
+
     /*
      * 用于全局表最后修改时间统一
      */
-    private Date globalLastModifyTime ;
+    private Date globalLastModifyTime;
+
+    public String getDistributionTargetGroup() {
+        return distributionTargetGroup;
+    }
+
+    public void setDistributionTargetGroup(String distributionTargetGroup) {
+        this.distributionTargetGroup = distributionTargetGroup;
+    }
 
     public String getStoreCode() {
         return storeCode;
@@ -290,7 +300,7 @@ public class Store extends BaseModel {
     public void setAsnOverchargeProportion(Integer asnOverchargeProportion) {
         this.asnOverchargeProportion = asnOverchargeProportion;
     }
-    
+
     public Boolean getIsPoAutoVerify() {
         return isPoAutoVerify;
     }
@@ -499,61 +509,61 @@ public class Store extends BaseModel {
         this.districtId = districtId;
     }
 
-	public Integer getInboundConfirmNode() {
-		return inboundConfirmNode;
-	}
+    public Integer getInboundConfirmNode() {
+        return inboundConfirmNode;
+    }
 
-	public void setInboundConfirmNode(Integer inboundConfirmNode) {
-		this.inboundConfirmNode = inboundConfirmNode;
-	}
+    public void setInboundConfirmNode(Integer inboundConfirmNode) {
+        this.inboundConfirmNode = inboundConfirmNode;
+    }
 
-	public Integer getInboundConfirmType() {
-		return inboundConfirmType;
-	}
+    public Integer getInboundConfirmType() {
+        return inboundConfirmType;
+    }
 
-	public void setInboundConfirmType(Integer inboundConfirmType) {
-		this.inboundConfirmType = inboundConfirmType;
-	}
+    public void setInboundConfirmType(Integer inboundConfirmType) {
+        this.inboundConfirmType = inboundConfirmType;
+    }
 
-	public Integer getInboundConfirmOrderType() {
-		return inboundConfirmOrderType;
-	}
+    public Integer getInboundConfirmOrderType() {
+        return inboundConfirmOrderType;
+    }
 
-	public void setInboundConfirmOrderType(Integer inboundConfirmOrderType) {
-		this.inboundConfirmOrderType = inboundConfirmOrderType;
-	}
+    public void setInboundConfirmOrderType(Integer inboundConfirmOrderType) {
+        this.inboundConfirmOrderType = inboundConfirmOrderType;
+    }
 
-	public Boolean getIsReturnedPurchaseOriginalInvAttr() {
-		return isReturnedPurchaseOriginalInvAttr;
-	}
+    public Boolean getIsReturnedPurchaseOriginalInvAttr() {
+        return isReturnedPurchaseOriginalInvAttr;
+    }
 
-	public void setIsReturnedPurchaseOriginalInvAttr(Boolean isReturnedPurchaseOriginalInvAttr) {
-		this.isReturnedPurchaseOriginalInvAttr = isReturnedPurchaseOriginalInvAttr;
-	}
+    public void setIsReturnedPurchaseOriginalInvAttr(Boolean isReturnedPurchaseOriginalInvAttr) {
+        this.isReturnedPurchaseOriginalInvAttr = isReturnedPurchaseOriginalInvAttr;
+    }
 
-	public Boolean getIsCheckReturnedPurchaseInvAttr() {
-		return isCheckReturnedPurchaseInvAttr;
-	}
+    public Boolean getIsCheckReturnedPurchaseInvAttr() {
+        return isCheckReturnedPurchaseInvAttr;
+    }
 
-	public void setIsCheckReturnedPurchaseInvAttr(Boolean isCheckReturnedPurchaseInvAttr) {
-		this.isCheckReturnedPurchaseInvAttr = isCheckReturnedPurchaseInvAttr;
-	}
+    public void setIsCheckReturnedPurchaseInvAttr(Boolean isCheckReturnedPurchaseInvAttr) {
+        this.isCheckReturnedPurchaseInvAttr = isCheckReturnedPurchaseInvAttr;
+    }
 
-	public Boolean getIsCheckReturnedPurchaseInvStatus() {
-		return isCheckReturnedPurchaseInvStatus;
-	}
+    public Boolean getIsCheckReturnedPurchaseInvStatus() {
+        return isCheckReturnedPurchaseInvStatus;
+    }
 
-	public void setIsCheckReturnedPurchaseInvStatus(Boolean isCheckReturnedPurchaseInvStatus) {
-		this.isCheckReturnedPurchaseInvStatus = isCheckReturnedPurchaseInvStatus;
-	}
+    public void setIsCheckReturnedPurchaseInvStatus(Boolean isCheckReturnedPurchaseInvStatus) {
+        this.isCheckReturnedPurchaseInvStatus = isCheckReturnedPurchaseInvStatus;
+    }
 
-	public String getReturnedPurchaseStore() {
-		return returnedPurchaseStore;
-	}
+    public String getReturnedPurchaseStore() {
+        return returnedPurchaseStore;
+    }
 
-	public void setReturnedPurchaseStore(String returnedPurchaseStore) {
-		this.returnedPurchaseStore = returnedPurchaseStore;
-	}
+    public void setReturnedPurchaseStore(String returnedPurchaseStore) {
+        this.returnedPurchaseStore = returnedPurchaseStore;
+    }
 
     public String getMakeOutAnInvoiceCompany() {
         return makeOutAnInvoiceCompany;
@@ -578,6 +588,6 @@ public class Store extends BaseModel {
     public void setMakeOutAnInvoiceGroup(String makeOutAnInvoiceGroup) {
         this.makeOutAnInvoiceGroup = makeOutAnInvoiceGroup;
     }
-    
+
 
 }

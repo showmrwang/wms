@@ -345,6 +345,9 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
     public void facilityBatchFinishedSeeding(Long functionId, Long facilityId, Long userId, Long ouId, String logId) {
         // 播种设施
         WhOutboundFacilityCommand facilityCommand = seedingManager.getOutboundFacilityById(facilityId, ouId);
+        facilityCommand.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_4));
+        facilityCommand.setOperatorId(userId);
+        seedingManager.updateOutboundFacility(facilityCommand, logId);
 
         try {
             // 清除缓存
