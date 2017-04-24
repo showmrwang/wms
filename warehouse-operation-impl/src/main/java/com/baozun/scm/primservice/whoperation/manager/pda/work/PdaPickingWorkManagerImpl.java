@@ -2951,6 +2951,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
 
             count++;
         }
+        // 更新工作及作业状态
+        pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
     }
     /***
      * 返回货格号
@@ -2969,5 +2971,89 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         return useContainerLatticeNo;
+    }
+    
+    
+    /**
+     * 进入拣货作业时,如果缓存，存在先清楚
+     * @param workId
+     */
+    public void removeCache(Long workId,Long ouId){
+        // 根据工作Id和ouId获取作业信息
+        WhOperationCommand WhOperationCommand = whOperationManager.findOperationByWorkId(workId, ouId);
+        if(null == WhOperationCommand) {
+            throw new BusinessException(ErrorCodes.OPATION_NO_EXIST);
+        }
+        Long operationId = WhOperationCommand.getId();
+        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
+        if(null != operatorLine) {
+            Map<Long, Set<Long>> operSkuIds = operatorLine.getSkuIds();  //散装sku
+            Map<Long, Set<Long>> locInsideContainerIds = operatorLine.getInsideContainerIds();    //库位上所有的内部容器
+            Map<Long, Set<Long>> insideSkuIds = operatorLine.getInsideSkuIds();  //内部容器对应所有sku
+            Map<Long, Set<Long>> outerInsideId = operatorLine.getOuterToInside();
+            Map<Long, Set<Long>> locOuterContainerIds = operatorLine.getOuterContainerIds();
+            List<Long> locationIds = operatorLine.getLocationIds();
+            if(null != locOuterContainerIds  && locOuterContainerIds.size() != 0) {
+                for(Long locationId:locationIds) {
+                    //先删除托盘上的
+                    if(null != locOuterContainerIds  && locOuterContainerIds.size() != 0) {
+                        Set<Long> outerContainerIds = locOuterContainerIds.get(locationId);
+                        if(null != outerContainerIds){
+                            for(Long outerId:outerContainerIds){
+                                Set<Long> insideIds = outerInsideId.get(outerId);
+                                //先清楚内部容器的sku
+                                for(Long insideId:insideIds) {
+                                    Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
+                                    for(Long skuId:skuIds){
+                                        cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + insideId.toString()+skuId);
+                                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideId.toString() + skuId.toString());
+                                        cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
+                                    }
+                                    cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString());
+                                }
+                            }
+                        }
+                    }
+                    //在删库位上的货箱
+                    if(null != locInsideContainerIds  && locInsideContainerIds.size() != 0) {
+                        Set<Long> insideIds = locInsideContainerIds.get(locationId);
+                        if(null != insideIds) {
+                            //先清楚内部容器的sku
+                            for(Long insideId:insideIds) {
+                                Set<Long> skuIds = insideSkuIds.get(insideId);   //当前内部容器内sku所有的sku
+                                for(Long skuId:skuIds){
+                                    cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + insideId.toString()+skuId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideId.toString() + skuId.toString());
+                                    cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString() + skuId.toString());
+                                }
+                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideId.toString());
+                            }
+                        }
+                    }
+                   
+                    //散装sku
+                    if(null != operSkuIds  && operSkuIds.size() != 0) {
+                        Set<Long> locSkuIds = operSkuIds.get(locationId); 
+                        if(null != locSkuIds) {
+                            for(Long skuId:locSkuIds) {
+                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + locationId.toString()+skuId);
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + skuId.toString());
+                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
+                            }
+                        }
+                    }
+                    cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE+ locationId.toString());
+                    cacheManager.remove(CacheConstants.CACHE_LOC_INVENTORY+operationId.toString()+locationId.toString());    //单个库位的缓存
+                    cacheManager.remove(CacheConstants.CACHE_LOCATION+locationId.toString());
+                    
+                    
+                }
+            }
+            //清楚作业明细
+            cacheManager.remove(CacheConstants.OPERATION_LINE+operationId.toString());
+            cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
+            cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS+ operationId.toString());
+        }
+        
     }
 }

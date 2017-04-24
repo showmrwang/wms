@@ -221,4 +221,10 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param operationId
      */
     public Integer getLatticeNoBySkuAttrIds(PickingScanResultCommand  command,Long ouId);
+    
+    /**
+     * 进入拣货作业时,如果缓存，存在先清楚
+     * @param workId
+     */
+    public void removeCache(Long workId,Long ouId);
 }
