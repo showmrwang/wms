@@ -406,7 +406,7 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING + "-" + ouId + "-" + facilityCommand.getFacilityCode() + "-" + batchNo + "-*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_FUNCTION + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
-        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
+        cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE_CURRENT_BIND_OUTBOUNDBOX + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LATTICE_BIND_OUTBOUNDBOX_BOTH + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_OUTBOUNDBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");

@@ -61,7 +61,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 	       
 		       <if test="index!=null and index!=''">
-					and index = #{index}
+					and `index` = #{index}
 				</if>
 	       
 	       
@@ -176,7 +176,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        UPDATE t_wh_invoice SET
 			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        index = #{index,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        `index` = #{index,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        invoice_code = #{invoiceCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        invoice_date = #{invoiceDate,javaType=java.lang.String,jdbcType=VARCHAR} ,
