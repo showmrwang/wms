@@ -391,17 +391,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             store.store_name AS storeName
         FROM
             (
-                SELECT
-                    seeding_collection_id,
-                    odo_id
+               SELECT
+                    seedingColLine.seeding_collection_id,
+                    seedingColLine.odo_id
                 FROM
-                    t_wh_seeding_collection_line
+                    t_wh_seeding_collection_line as seedingColLine
+                    left join t_wh_seeding_collection as seedingCol on seedingCol.id = seedingColLine.seeding_collection_id
                 WHERE
-                    ou_id = #{ouId}
-                    and batch_number = #{batchNo}
+                    seedingCol.ou_id = #{ouId}
+                    and seedingCol.batch = #{batchNo}
                 GROUP BY
-                    seeding_collection_id,
-                    odo_id
+                    seedingColLine.seeding_collection_id,
+                    seedingColLine.odo_id
             ) AS collectionOdoTab
         LEFT JOIN t_wh_seeding_collection AS collection ON collectionOdoTab.seeding_collection_id = collection.id
         LEFT JOIN t_wh_odo AS odo ON collectionOdoTab.odo_id = odo.id
