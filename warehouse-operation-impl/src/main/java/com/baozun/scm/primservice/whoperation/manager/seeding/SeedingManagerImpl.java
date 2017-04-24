@@ -38,6 +38,8 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionSeedingWallDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -48,6 +50,8 @@ import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -84,6 +88,18 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     private WhSkuInventoryLogDao whSkuInventoryLogDao;
     @Autowired
     private CheckingModeCalcManager checkingModeCalcManager;
+
+    @Autowired
+    private SeedingManagerProxy seedingManagerProxy;
+
+    @Autowired
+    private WhSeedingCollectionLineDao whSeedingCollectionLineDao;
+
+    @Autowired
+    private WhOutboundboxDao whOutboundboxDao;
+
+    @Autowired
+    private WhOutboundboxLineDao whOutboundboxLineDao;
 
     /**
      * 根据容器编码查找容器
@@ -153,7 +169,10 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOutboundFacilityCommand getOutboundFacilityById(Long facilityId, Long ouId) {
-        return whOutboundFacilityDao.findByIdExt(facilityId, ouId);
+        WhOutboundFacilityCommand facilityCommand = whOutboundFacilityDao.findByIdExt(facilityId, ouId);
+        // TODO 测试 设置播种墙出库箱类型
+        //facilityCommand.setOutboundboxTypeId(23100001L);
+        return facilityCommand;
     }
 
     /**
@@ -185,6 +204,13 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
         return function;
     }
 
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSeedingCollectionLine findSeedingCollectionLineById(Long seedingCollectionLineId, Long ouId){
+        return seedingCollectionLineDao.findByIdExt(seedingCollectionLineId, ouId);
+    }
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollection(Long seedingCollectionId, Long ouId) {
@@ -193,28 +219,37 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void batchFinishedSeedingWithException(Long facilityId, Long ouId) {
+    public int updateSeedingCollectionLineByVersion(WhSeedingCollectionLine seedingCollectionLine){
+        return seedingCollectionLineDao.saveOrUpdateByVersion(seedingCollectionLine);
+    }
 
-        // 播种设施
-        WhOutboundFacilityCommand facilityCommand = this.getOutboundFacilityById(facilityId, ouId);
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void batchFinishedSeedingWithException(WhOutboundFacilityCommand facilityCommand, List<WhSeedingCollectionCommand> seedingCollectionList, List<WhSeedingCollectionLineCommand> facilitySeedingCollectionLineList, Long logId) {
+
 
         WhOutboundFacility outboundFacility = new WhOutboundFacility();
         BeanUtils.copyProperties(facilityCommand, outboundFacility);
         outboundFacility.setStatus(Constants.WH_FACILITY_STATUS_5);
         // TODO 测试 不更新播种墙状态
-        whOutboundFacilityDao.saveOrUpdateByVersion(outboundFacility);
+         whOutboundFacilityDao.saveOrUpdateByVersion(outboundFacility);
 
 
-        List<WhSeedingCollectionCommand> allSeedingCollection = whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId);
-        for (WhSeedingCollectionCommand orgSeedingCollection : allSeedingCollection) {
+        for (WhSeedingCollectionCommand orgSeedingCollection : seedingCollectionList) {
             if (!CollectionStatus.FINISH.equals(orgSeedingCollection.getCollectionStatus())) {
                 // 非完成状态的周转箱状态改为异常
-                // 周转箱
                 WhSeedingCollection seedingCollection = new WhSeedingCollection();
                 BeanUtils.copyProperties(orgSeedingCollection, seedingCollection);
                 seedingCollection.setCollectionStatus(CollectionStatus.ERROR);
                 whSeedingCollectionDao.saveOrUpdateByVersion(seedingCollection);
             }
+        }
+        // 更新明细的播种数量
+        for (WhSeedingCollectionLineCommand orgLine : facilitySeedingCollectionLineList) {
+            WhSeedingCollectionLine seedingCollectionLine = new WhSeedingCollectionLine();
+            BeanUtils.copyProperties(orgLine, seedingCollectionLine);
+            // TODO 测试 不更新播种数量
+             whSeedingCollectionLineDao.saveOrUpdate(seedingCollectionLine);
         }
 
     }
@@ -222,16 +257,64 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void batchFinishedSeeding(Long facilityId, String batchNo, List<WhSeedingWallLattice> facilitySeedingOdoList, List<WhSkuInventory> facilitySeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
-        // 删除原有库存
-        for (WhSeedingWallLattice seedingWallLattice : facilitySeedingOdoList) {
-            whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
-        }
 
-        this.saveWhSkuInventoryToDB(facilitySeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
         try {
             checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, facilitySeedingSkuInventoryList, userId, ouId, logId);
         } catch (Exception e) {
             log.error("generateCheckingDataBySeeding error", e);
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void finishedSeedingByOutboundBox( List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
+        for(WhSkuInventory odoOrgSkuInv : odoOrgSkuInvList){
+            if(0 == odoOrgSkuInv.getOnHandQty()){
+                whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), ouId);
+            }else {
+                whSkuInventoryDao.saveOrUpdateByVersion(odoOrgSkuInv);
+                Double originOnHandQty = 0.0;
+                if (isTabbInvTotal) {
+                    originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(odoOrgSkuInv.getUuid(), odoOrgSkuInv.getOuId());
+                }
+                // 从仓库判断是否需要记录库存数量变化
+                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), odoOrgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
+
+            }
+        }
+
+        this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void finishedSeedingByOdo(WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
+        whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
+        this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSkuInventory findSeedingOdoSkuInvByUuid(String odoCode, Long ouId, String uuid){
+        return whSkuInventoryDao.findSeedingOdoSkuInvByUuid(odoCode, ouId, uuid);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSkuInventory findSeedingOdoSkuInvByOdoLineIdUuid( Long odoLineId, Long ouId, String uuid){
+        return whSkuInventoryDao.findSeedingOdoSkuInvByOdoLineIdUuid(odoLineId, ouId, uuid);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createOutboundBox(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> whOutboundboxLineList){
+        whOutboundboxDao.insert(whOutboundbox);
+
+        for(WhOutboundboxLine whOutboundboxLine : whOutboundboxLineList){
+            whOutboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
+
+            whOutboundboxLineDao.insert(whOutboundboxLine);
         }
     }
 
@@ -260,7 +343,6 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
         }
 
     }
-
 
 
 }

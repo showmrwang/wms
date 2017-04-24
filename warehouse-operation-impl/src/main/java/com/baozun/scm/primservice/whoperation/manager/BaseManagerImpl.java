@@ -147,7 +147,7 @@ public abstract class BaseManagerImpl implements BaseManager {
                     && !InvTransactionType.INTRA_WH_MOVE.equals(invTransactionType) && !InvTransactionType.REPLENISHMENT.equals(invTransactionType) && !InvTransactionType.PICKING.equals(invTransactionType)
                     && !InvTransactionType.FACILITY_GOODS_COLLECTION.equals(invTransactionType) && !InvTransactionType.CHECK.equals(invTransactionType) && !InvTransactionType.HANDOVER.equals(invTransactionType)
                     && !InvTransactionType.HANDOVER_OUTBOUND.equals(invTransactionType) && !InvTransactionType.SPLIT_MOVE_OUTBOUND_BOX.equals(invTransactionType) && !InvTransactionType.SPLIT_MOVE_PACKING_CASE.equals(invTransactionType)
-                    && !InvTransactionType.INTRA_WH_ADJUSTMENT.equals(invTransactionType) && !InvTransactionType.WH_TO_WH_FLITTING.equals(invTransactionType) && !InvTransactionType.INTRA_WH_MACHINING.equals(invTransactionType)) {
+                    && !InvTransactionType.INTRA_WH_ADJUSTMENT.equals(invTransactionType) && !InvTransactionType.WH_TO_WH_FLITTING.equals(invTransactionType) && !InvTransactionType.INTRA_WH_MACHINING.equals(invTransactionType)&& !InvTransactionType.SEEDING.equals(invTransactionType)) {
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
         }

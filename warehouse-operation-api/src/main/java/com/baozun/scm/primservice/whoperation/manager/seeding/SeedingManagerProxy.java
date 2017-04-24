@@ -9,18 +9,10 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.SeedingLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface SeedingManagerProxy extends BaseManager {
 
-    /**
-     * 初始化播种墙缓存数据
-     * 
-     * @param facilityId
-     * @param ouId
-     * @param userId
-     * @param logId
-     */
-    public void initFacilityRedis(Long functionId, Long facilityId, Long ouId, Long userId, String logId);
 
 
 
@@ -115,7 +107,7 @@ public interface SeedingManagerProxy extends BaseManager {
     public void saveLatticeSeedingOutboundBoxCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String outboundBoxCode, String logId);
 
     /**
-     * 获取货格已绑定的所有出库箱
+     * 获取货格已绑定的所有出库箱，已包含当前播种的出库箱
      *
      * @param facilityId
      * @param batchNo
@@ -159,6 +151,44 @@ public interface SeedingManagerProxy extends BaseManager {
      * @param logId
      */
     public void saveOutboundBoxCollectionLineCache(Long facilityId, String batchNo, Long ouId, String outboundBoxCode, Map<Long, WhSeedingCollectionLineCommand> collectionLineMap, String logId);
+
+    /**
+     * 换箱后置逻辑，保存上次播种的明细，在确认不换箱之后清除该缓存，在换箱之后，将该缓存存入新出库箱，原出库箱里取消上次播种的数据
+     *
+     * @author mingwei.xie
+     * @param facilityId
+     * @param batchNo
+     * @param ouId
+     * @param latticeNo
+     * @param outboundBoxCode
+     * @param seedingCollectionLine
+     * @param logId
+     */
+    public void saveLastTimeOutboundBoxSeedingCache(Long facilityId, String batchNo, Long ouId, Long latticeNo, String outboundBoxCode, WhSeedingCollectionLineCommand seedingCollectionLine, String logId);
+
+    /**
+     * 获取上次播种的缓存明细，换箱逻辑的操作使用
+     *
+     * @author mingwei.xie
+     * @param facilityId
+     * @param batchNo
+     * @param ouId
+     * @param logId
+     */
+    public Map<Long, Map<String, WhSeedingCollectionLineCommand>>  getLastTimeOutboundBoxSeedingCache(Long facilityId, String batchNo, Long ouId, String logId);
+
+    /**
+     * 删除上次播种的缓存，未进行换箱操作，货格换箱结束
+     *
+     * @author mingwei.xie
+     * @param facilityId
+     * @param batchNo
+     * @param ouId
+     * @param logId
+     */
+    public void removeLastTimeOutboundBoxSeedingCache(Long facilityId, String batchNo, Long ouId, String logId);
+
+
 
     /**
      * 有出库箱时按照出库箱保存货格播种明细缓存，不再按照货格保存
@@ -226,7 +256,9 @@ public interface SeedingManagerProxy extends BaseManager {
      */
     public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByOdoFromCache(Long facilityId, String batchNo, Long ouId, Long odoId, String logId);
 
-    public void facilityBatchFinishedSeeding(Long facilityId, Map<SeedingLattice, List<WhSeedingCollectionLineCommand>> latticeSeedingLineMap, Map<SeedingLattice, Map<String, List<WhSeedingCollectionLineCommand>>> latticeOutboundBoxSeedingLineMap, Long userId, Long ouId, String logId);
+    public void facilityBatchFinishedSeeding(Long functionId, Long facilityId,  Long userId, Long ouId, String logId);
 
     public void releaseFacilityBatchRedis(Long facilityId, String batchNo, Long ouId, String logId);
+
+    public WhSkuInventory createWhSkuInventory(WhSeedingCollectionLineCommand collectionSeedingLine, Long ouId, String logId);
 }

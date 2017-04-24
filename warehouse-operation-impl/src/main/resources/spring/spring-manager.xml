@@ -83,6 +83,8 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollectionLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.handover.HandoverLine</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine</value>
 				</list>
 			</property>
 			

@@ -40,6 +40,11 @@ public interface WhSeedingCollectionLineDao extends BaseDao<WhSeedingCollectionL
     @CommonQuery
     int saveOrUpdate(WhSeedingCollectionLine o);
 
+    @CommonQuery
+    int saveOrUpdateByVersion(WhSeedingCollectionLine o);
+
+    WhSeedingCollectionLine findByIdExt(@Param("lineId") Long lineId, @Param("ouId") Long ouId);
+
     public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollection(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
 
 }
