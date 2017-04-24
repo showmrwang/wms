@@ -47,7 +47,7 @@ public interface HandoverManager extends BaseManager {
      * @param ouId
      * @param userId
      */
-    void handover(List<HandoverCollection> hcList, Long ouId, Long userId);
+    List<Long> handover(List<HandoverCollection> hcList, Long ouId, Long userId);
 
     void print(List<HandoverCollection> hcList);
 
