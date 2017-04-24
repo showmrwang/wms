@@ -168,6 +168,8 @@ public interface PdaConcentrationManager extends BaseManager {
      */
     void removeRecommendResultListCache(String batch, Long userId);
 
+    void initCache(Long userId, String batch);
+
     /**
      * [业务方法] 获取推荐路径
      * 
