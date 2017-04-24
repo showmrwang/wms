@@ -394,7 +394,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     skuAttrIdsSnDefect.put(operationLine.getFromLocationId(), onlySkuSnMap);
                 }
                 // 库位上每个唯一sku对应的货格（is_whole_case=0&&有小车&&库位上sku不在任何容器内）
-                if (null != operationLine.getFromLocationId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false) {
+                if (null != operationLine.getFromLocationId() && null != onlySku && null != operationLine.getUseContainerLatticeNo() && whOperationCommand.getIsWholeCase() == false) {
                     if (null != skuAttrIdsContainerLattice.get(operationLine.getFromLocationId())) {
                         Map<String, Set<Integer>> onlySkuUseContainerLatticeNoMap = new HashMap<String, Set<Integer>>();
                         onlySkuUseContainerLatticeNoMap = skuAttrIdsContainerLattice.get(operationLine.getFromLocationId());
@@ -514,7 +514,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     insideSkuAttrIdsSnDefect.put(operationLine.getFromInsideContainerId(), onlySkuSnMap);
                 }
                 // 内部容器每个唯一sku对应的货格（is_whole_case=0&&有小车）
-                if (null != operationLine.getFromInsideContainerId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false) {
+                if (null != operationLine.getFromInsideContainerId() && null != onlySku && null != operationLine.getUseContainerLatticeNo() && whOperationCommand.getIsWholeCase() == false) {
                     if (null != insideSkuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId())) {
                         Map<String, Set<Integer>> onlySkuUseContainerLatticeNoMap = new HashMap<String, Set<Integer>>();
                         onlySkuUseContainerLatticeNoMap = insideSkuAttrIdsContainerLattice.get(operationLine.getFromInsideContainerId());
@@ -529,7 +529,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             onlySkuUseContainerLatticeNoMap.put(onlySku, useContainerLatticeNoSet);
                         }
                         insideSkuAttrIdsContainerLattice.put(operationLine.getFromInsideContainerId(), onlySkuUseContainerLatticeNoMap);
-                    } else if (null != operationLine.getFromInsideContainerId() && null != onlySku && null != operationLine.getUseOutboundboxCode() && whOperationCommand.getIsWholeCase() == false && null == operationLine.getFromOuterContainerId()) {
+                    } else {
                         Map<String, Set<Integer>> onlySkuUseContainerLatticeNoMap = new HashMap<String, Set<Integer>>();
                         Set<Integer> useContainerLatticeNoSet = new HashSet<Integer>();
                         useContainerLatticeNoSet.add(operationLine.getUseContainerLatticeNo());
