@@ -309,6 +309,14 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     }
 
     @Override
+    public void initCache(Long userId, String batch) {
+        List<WhFacilityRecPathCommand> rfpList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId, batch);
+        if (null != rfpList) {
+            cacheManager.remonKeys(CacheConstants.PDA_CACHE_COLLECTION_REC + userId);
+        }
+    }
+
+    @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WorkCollectionCommand recommendSeedingWall(WorkCollectionCommand workCollectionCommand) {
         // TODO 根据workId查出批次号以及是否是播种模式

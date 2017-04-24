@@ -181,6 +181,42 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine">
+        <![CDATA[
+            UPDATE t_wh_seeding_collection_line SET
+                sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                seeding_collection_id = #{seedingCollectionId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                sku_code = #{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_ext_code = #{skuExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+                seeding_qty = #{seedingQty,javaType=Long,jdbcType=DECIMAL} ,
+                customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_status = #{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                mfg_date = #{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                exp_date = #{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                country_of_origin = #{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr1 = #{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr2 = #{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr3 = #{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+
+        ]]>
+    </update>
+
     <select id="getSeedingCollectionLineByCollection" resultMap="WhSeedingCollectionLineCommand">
         select
             collectionLine.id as id,
@@ -222,6 +258,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where
             collectionLine.seeding_collection_id = #{seedingCollectionId}
             and collectionLine.ou_id = #{ouId}
+    </select>
+
+    <select id="findByIdExt" resultMap="WhSeedingCollectionLineResultExt">
+        select
+            <include refid="whSeedingCollectionLineColumnsExt"/>
+        from
+            t_wh_seeding_collection_line
+        where
+            id = #{lineId}
+            and ou_id = #{ouId}
     </select>
 
 </mapper>

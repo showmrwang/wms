@@ -27,7 +27,6 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
-import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
@@ -74,14 +73,7 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
      */
     List<WhWorkCommand> findWorkByBatch(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
 
-    /**
-     * 获取播种批次下的出库单信息，用于和播种墙货格绑定
-     *
-     * @param batchNo
-     * @param ouId
-     * @return
-     */
-    List<WhSeedingWallLattice> getSeedingBatchOdoInfo(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
+
 
     /**
      * [业务方法] 通过工作id查找工作
