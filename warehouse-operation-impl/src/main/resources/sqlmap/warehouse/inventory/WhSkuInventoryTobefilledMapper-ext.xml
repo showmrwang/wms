@@ -383,4 +383,54 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
     </select>
+    
+    	<select id="findWhSkuInventoryTobefilledByReplenish" resultMap="WhSkuInventoryTobefilledResultExt">
+	    select
+	          inv.id as id,
+	          inv.sku_id as skuId,
+	          inv.location_id as locationId,
+	          inv.outer_container_id as outerContainerId,
+	          inv.inside_container_id as insideContainerId,
+	          inv.customer_id as customerId,
+	          inv.store_id as storeId,
+	          inv.occupation_code as occupationCode,
+	          inv.occupation_line_id as occupationLineId,
+	          inv.replenishment_code as replenishmentCode,
+	          inv.qty as qty,
+	          inv.inv_status as invStatus,
+	          inv.inv_type as invType,
+	          inv.batch_number as batchNumber,
+	          inv.mfg_date as mfgDate,
+	          inv.exp_date as expDate,
+	          inv.country_of_origin as countryOfOrigin,
+	          inv.inv_attr1 as invAttr1,
+	          inv.inv_attr2 as invAttr2,
+	          inv.inv_attr3 as invAttr3,
+	          inv.inv_attr4 as invAttr4,
+	          inv.inv_attr5 as invAttr5,
+	          inv.uuid as uuid,
+	          inv.ou_id as ouId,
+	          inv.last_modify_time as lastModifyTime
+		      from 
+					t_wh_operation_line operLine, 
+					t_wh_sku_inventory_tobefilled inv
+			  where
+				    operLine.replenishment_code = inv.replenishment_code
+				and inv.replenishment_code IS NOT NULL
+				and inv.ou_id = #{ouId}
+				and operLine.operation_id = #{operationId}
+				and  inv.location_id = #{locationId}
+				<if test="outerContainerId!=null and outerContainerId!=''">
+					 and inv.outer_container_id = #{outerContainerId}
+				</if>
+				<if test="insideContainerId!=null and insideContainerId!=''">
+								 and inv.inside_container_id=#{insideContainerId}
+				</if>
+				<if test="outerContainerId==null">
+					 and inv.outer_container_id is null
+				</if>
+				<if test="insideContainerId==null">
+					 and inv.inside_container_id is null
+				</if>
+	</select>
 </mapper>

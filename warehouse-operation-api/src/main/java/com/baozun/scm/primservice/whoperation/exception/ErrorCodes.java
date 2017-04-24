@@ -853,6 +853,10 @@ public class ErrorCodes {
     public static final int REPLE_WORK_ISEND = 70060;
     /** 校验容器/出库箱库存 */
     public static final int CHECK_CONTAINER_INVENTORY_IS_ERROR = 70061;
+    
+    
+    /** 待移入库存不存在 */
+    public static final int TOBEFILLED_INVENTORY_NO_EXIST = 70062;
 
     // 70001-80000 tangming
 

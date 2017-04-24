@@ -135,5 +135,17 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @return
      */
     public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(@Param("occLineIdList") List<Long> occLineIdList, @Param("ouId") Long ouId);
+    
+    
+    
+    /**
+     *补货查询待移入库存 
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param ouId
+     * @param locationId
+     * @return
+     */
+    public List<WhSkuInventoryTobefilled> findWhSkuInventoryTobefilledByReplenish(@Param("locationId") Long locationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId,@Param("ouId") Long ouId);
 	
 }
