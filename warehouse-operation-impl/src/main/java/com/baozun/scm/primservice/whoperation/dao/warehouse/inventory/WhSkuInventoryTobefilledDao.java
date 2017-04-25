@@ -146,6 +146,6 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @param locationId
      * @return
      */
-    public List<WhSkuInventoryTobefilled> findWhSkuInventoryTobefilledByReplenish(@Param("locationId") Long locationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId,@Param("ouId") Long ouId);
+    public List<WhSkuInventoryAllocatedCommand> findWhSkuInventoryTobefilledByReplenish(@Param("operationId") Long operationId,@Param("locationId") Long locationId,@Param("ouId") Long ouId);
 	
 }
