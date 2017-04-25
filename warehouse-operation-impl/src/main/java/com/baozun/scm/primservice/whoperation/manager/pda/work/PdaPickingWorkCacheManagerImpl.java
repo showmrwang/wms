@@ -884,7 +884,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               String tipSkuAttrId = null;
                               if (cacheValue == icSkuQty.longValue()) {
                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
-                                  if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){
+                                  if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       long valueLattice = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
@@ -1122,7 +1122,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               String tipSkuAttrId = null;
                               if (cacheValue == icSkuQty.longValue()) {
                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
-                                  if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){
+                                  if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       long valueLattice = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
@@ -1518,7 +1518,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               long cacheValue = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
                               if (cacheValue == icSkuQty.longValue()) {
                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
-                                  if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){
+                                  if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       long valueLattice = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
@@ -1726,7 +1726,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               long cacheValue = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
                               if (cacheValue == icSkuQty.longValue()) {
                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + insideContainerId.toString() + skuId.toString());
-                                  if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){
+                                  if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       long valueLattice = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO + insideContainerId.toString() + skuId.toString(), skuQty.intValue());
@@ -2054,7 +2054,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               long cacheValue = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString(), skuQty.intValue());
                               if (cacheValue == icSkuQty.longValue()) {
                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + skuId.toString());
-                                  if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){
+                                  if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
                                       long valueLattice = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO + locationId.toString() + skuId.toString(), skuQty.intValue());
@@ -2245,7 +2245,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               long cacheValue = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString(), skuQty.intValue());
                               if (cacheValue == icSkuQty.longValue()) {
                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString() + skuId.toString());
-                                  if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){
+                                  if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
                                       long valueLattice = cacheManager.incrBy(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO + locationId.toString() + skuId.toString(), skuQty.intValue());

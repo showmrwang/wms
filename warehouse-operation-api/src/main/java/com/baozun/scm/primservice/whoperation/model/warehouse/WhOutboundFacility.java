@@ -59,7 +59,7 @@ public class WhOutboundFacility extends BaseModel {
 	/** 仓库组织ID */
 	private Long ouId;
     /** 状态 */
-    private Integer status;
+    private String status;
     /** 占用batch */
     private String batch;
 	//columns END
@@ -148,12 +148,15 @@ public class WhOutboundFacility extends BaseModel {
     public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
-    public Integer getStatus() {
+
+    public String getStatus() {
         return status;
     }
-    public void setStatus(Integer status) {
+
+    public void setStatus(String status) {
         this.status = status;
     }
+
     public String getBatch() {
         return batch;
     }

@@ -447,15 +447,74 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * 按单复合
      * @param checkingLineList
      */
-    public void checkingByOdo(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId,Long ouId){
+    public void checkingByOdo(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId,Long ouId,Long functionId){
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
+        Long outboundboxId = cmd.getOutboundboxId();
         //更新复合明细表
         this.updateCheckingByOdo(checkingLineList, ouId);
         //生成出库箱库存
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
+        //获取出库单id 
+        Long odoId = checkingLineList.get(0).getOdoId();
         //更新出库单状态
+        this.updateOdoStatusByOdo(odoId, ouId);
         //算包裹计重
+        this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, outboundboxId, userId);
+    }
+    
+    /**
+     * 更新出库单状态(按单复合只更新一个出库单)
+     * 
+     * 
+     * @author
+     * @param whCheckingResultCommand
+     */
+    private void updateOdoStatusByOdo(Long odoId,Long ouId) {
+        // 修改出库单状态为复核完成状态。
+        OdoCommand odoCommand = odoManager.findOdoCommandByIdOuId(odoId, ouId);
+        WhOdo whOdo = new WhOdo();
+        //复制数据        
+        BeanUtils.copyProperties(odoCommand, whOdo);
+        //修改出库单状态为复核完成状态。
+        whOdo.setOdoStatus(null);  
+        odoManager.updateByVersion(whOdo);
     }
     
     
+    /**
+     * 算包裹计重(按单复合)
+     * 
+     * @param whCheckingResultCommand
+     */
+    private void packageWeightCalculationByOdo(List<WhCheckingLineCommand> checkingLineList,Long functionId,Long ouId,Long outboundboxId,Long userId) {
+        // 查询功能是否配置复核打印单据配置        
+        WhFunctionOutBound whFunctionOutBound  = wFunctionOutBoundManager.findByFunctionIdExt(functionId, ouId);
+        for(WhCheckingLineCommand whCheckingCommand :checkingLineList){
+            Map<String, List<WhCheckingLineCommand>> checkingLineMap = getCheckingLineForGroup(whCheckingCommand.getId(), ouId, outboundboxId);
+            for(String key : checkingLineMap.keySet()){
+                List<WhCheckingLineCommand> whCheckingLineCommandLst = checkingLineMap.get(key);
+                BigDecimal calcWeight = new BigDecimal(0.00);
+                for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
+                    WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
+                    BigDecimal b1 = new BigDecimal(whSkuCommand.getWeight().toString());
+                    BigDecimal b2 = new BigDecimal(whCheckingLineCommand.getCheckingQty().toString());
+                    calcWeight = calcWeight.add(b1.multiply(b2));
+                }
+                WhOdoPackageInfoCommand whOdoPackageInfoCommand = new WhOdoPackageInfoCommand();
+                whOdoPackageInfoCommand.setOdoId(whCheckingLineCommandLst.get(0).getOdoId());
+                whOdoPackageInfoCommand.setOutboundboxId(outboundboxId);
+                whOdoPackageInfoCommand.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
+                whOdoPackageInfoCommand.setStatus(1);
+                whOdoPackageInfoCommand.setCalcWeight(calcWeight.doubleValue());
+                whOdoPackageInfoCommand.setFloats(whFunctionOutBound.getWeightFloatPercentage());
+                whOdoPackageInfoCommand.setActualWeight(null);
+                whOdoPackageInfoCommand.setLifecycle(1);
+                whOdoPackageInfoCommand.setCreateId(userId);
+                whOdoPackageInfoCommand.setCreateTime(new Date());
+                whOdoPackageInfoCommand.setLastModifyTime(new Date());
+                whOdoPackageInfoCommand.setModifiedId(userId);
+                whOdoPackageInfoManager.saveOrUpdate(whOdoPackageInfoCommand);
+            }
+        }
+    }
 }

@@ -1693,7 +1693,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             String skuAttrIdSn = cSRCmd.getTipSkuAttrId(); // 提示唯一的sku包含唯一sku
             String skuAttrId = SkuCategoryProvider.getSkuAttrId(skuAttrIdSn);
             Map<String, Long> skuAttrIdsQty = null;
-           if(pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO){
+           if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
               ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
               if(null == latticeList){
                   throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -1896,7 +1896,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId, operationId,
                         ouId, skuCmd.getScanSkuQty());
                 // 已分配的库位库存转变为容器库存
-                whSkuInventoryManager.replenishmentContainerInventory(isShortPikcing,snList,skuAttrIds,locationId,operationId, ouId, null, null, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
+                whSkuInventoryManager.replenishmentContainerInventory(isShortPikcing,snList,skuAttrIds,locationId,operationId, ouId,outerContainerId,insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
                 // 清除缓存

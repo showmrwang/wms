@@ -114,6 +114,8 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
     
     public WhSeedingCollectionCommand getSeedingCollectionByTurnoverBox(@Param("facilityId") Long facilityId, @Param("turnoverBoxCode") String turnoverBoxCode, @Param("ouId") Long ouId);
 
+    public WhSeedingCollectionCommand getSeedingCollectionById(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
+
     /**
      * 获取播种批次下的出库单信息，用于和播种墙货格绑定
      *
