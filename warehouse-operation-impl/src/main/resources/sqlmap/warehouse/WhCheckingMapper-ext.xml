@@ -205,6 +205,41 @@
         from t_wh_checking ch 
 		where ch.outboundbox_code = #{outboundBoxCode} and ch.ou_id = #{ouId}
     </select>
+
+     <select id="findListByFacilityCode" resultMap="WhCheckingCommand" flushCache="false">
+        select
+	       	 ch.id as id,
+	         ch.facility_id as facilityId,
+	         ch.container_id as containerId,
+	         ch.batch as batch,
+	         ch.wave_code as waveCode,
+	         ch.customer_code as customerCode,
+	         ch.customer_name as customerName,
+	         ch.store_code as storeCode,
+	         ch.store_name as storeName,
+	         ch.transport_code as transportCode,
+	         ch.transport_name as transportName,
+	         ch.product_code as productCode,
+	         ch.product_name as productName,
+	         ch.time_effect_code as timeEffectCode,
+	         ch.time_effect_name as timeEffectName,
+	         ch.status as status,
+	         ch.ou_id as ouId,
+	         ch.outer_container_id as outerContainerId,
+	         ch.container_lattice_no as containerLatticeNo,
+	         ch.outboundbox_id as outboundboxId,
+	         ch.outboundbox_code as outboundboxCode,
+	         ch.distribution_mode as distributionMode,
+	         ch.picking_mode as pickingMode,
+	         ch.checking_mode as checkingMode
+        from t_wh_checking ch left join t_wh_outbound_facility facility on ch.facility_id = facility.id
+		where facility.facility_code = #{facilityCode}
+			and facility.facility_type = "seedingWall"
+			and ch.ou_id = #{ouId}
+			and facility.lifecycle = 1
+    </select>
+    
+    
     
 
 </mapper>

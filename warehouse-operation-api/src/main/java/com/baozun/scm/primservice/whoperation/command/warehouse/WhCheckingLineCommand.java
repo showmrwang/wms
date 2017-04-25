@@ -23,7 +23,7 @@ public class WhCheckingLineCommand extends BaseCommand {
 
 
     private static final long serialVersionUID = 8095167255432777708L;
-    
+
     /** 主键ID */
     private Long id;
     /** 复核ID */
@@ -78,6 +78,14 @@ public class WhCheckingLineCommand extends BaseCommand {
     private Long odoId;
     /** 出库单明细ID */
     private Long odoLineId;
+    /** 商品属性字符串*/
+    private String SkuAttr;
+    /** 商品id*/
+    private Long skuId;
+    /** 播种墙id*/
+    private Long facilityId;
+    /** 出库箱code*/
+    private String outboundboxCode;
 
     public Long getId() {
         return id;
@@ -294,4 +302,37 @@ public class WhCheckingLineCommand extends BaseCommand {
     public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
     }
+
+    public String getSkuAttr() {
+        return SkuAttr;
+    }
+
+    public void setSkuAttr(String skuAttr) {
+        SkuAttr = skuAttr;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+    public Long getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(Long facilityId) {
+        this.facilityId = facilityId;
+    }
+
+    public String getOutboundboxCode() {
+        return outboundboxCode;
+    }
+
+    public void setOutboundboxCode(String outboundboxCode) {
+        this.outboundboxCode = outboundboxCode;
+    }
+
 }

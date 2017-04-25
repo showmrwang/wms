@@ -178,5 +178,5 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.inbound.WhInboundConfirmManager" ref="whInboundConfirmManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.HandoverCollectionRuleManager" ref="handoverCollectionRuleManager" />
 	<!-- 按单复核 -->
-	<!--<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager" ref="whCheckingManager" />-->
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager" ref="whCheckingManager" />
 </beans>

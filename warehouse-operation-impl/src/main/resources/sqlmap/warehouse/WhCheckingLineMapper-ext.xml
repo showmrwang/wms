@@ -221,4 +221,13 @@
                 id = #{id}  and ou_id = #{ouId}
         ]]>
     </update>
+    
+    <select id="findListByParamExt" resultMap="WhCheckingLineCommand">
+        select
+        <include refid="whCheckingLineColumnsExt"/>
+        from t_wh_checking_line
+        <include refid="whCheckingLineDynamicWhereExt"/>
+
+    </select>
+    
 </mapper>
