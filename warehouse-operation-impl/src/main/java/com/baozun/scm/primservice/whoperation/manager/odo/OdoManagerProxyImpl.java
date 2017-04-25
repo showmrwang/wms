@@ -193,7 +193,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             List<WhOdoInvoiceLine> sourceInvoiceLineList = odoGroup.getOdoInvoiceLineList();
 
             // @mender yimin.lu 2017/4/25 出库目标对象，如果有值，则需要写入配送对象地址
-            this.createOdoAddress(sourceAddress, sourceOdoTrans.getOutboundTargetType(), sourceOdoTrans.getOutboundTarget());
+            sourceAddress = this.createOdoAddress(sourceAddress, sourceOdoTrans.getOutboundTargetType(), sourceOdoTrans.getOutboundTarget());
 
             if (sourceOdo.getId() != null) {
                 this.editOdo(sourceOdo, sourceOdoTrans);
@@ -216,24 +216,33 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         return msg;
     }
 
-    private void createOdoAddress(WhOdoAddress sourceAddress, String outboundTargetType, String outboundTarget) {
+    private WhOdoAddress createOdoAddress(WhOdoAddress sourceAddress, String outboundTargetType, String outboundTarget) {
         if (StringUtils.hasText(outboundTarget)) {
             if (Constants.AIMTYPE_1.equals(outboundTargetType)) {// 供应商
-                this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
+                if (sourceAddress == null) {
+                    sourceAddress = new WhOdoAddress();
+                }
+               return this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
 
             } else if (Constants.AIMTYPE_5.equals(outboundTargetType)) {
-                this.createOdoAddressByWh(sourceAddress, outboundTarget);
+                if (sourceAddress == null) {
+                    sourceAddress = new WhOdoAddress();
+                }
+                return this.createOdoAddressByWh(sourceAddress, outboundTarget);
 
             } else if (Constants.AIMTYPE_7.equals(outboundTargetType)) {
-                this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
+                if (sourceAddress == null) {
+                    sourceAddress = new WhOdoAddress();
+                }
+                return this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
             }
 
         }
-
+        return sourceAddress;
     }
 
 
-    private void createOdoAddressByDistributionTarget(WhOdoAddress sourceAddress, String outboundTarget) {
+    private WhOdoAddress createOdoAddressByDistributionTarget(WhOdoAddress sourceAddress, String outboundTarget) {
         DistributionTarget search = new DistributionTarget();
         List<DistributionTarget> targetList = this.distributionTargetManager.findDistributionTargetByParams(search);
         if (targetList == null || targetList.size() == 0) {
@@ -294,11 +303,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
             }
         }
-
+        return sourceAddress;
     }
 
 
-    private void createOdoAddressByWh(WhOdoAddress sourceAddress, String outboundTarget) {
+    private WhOdoAddress createOdoAddressByWh(WhOdoAddress sourceAddress, String outboundTarget) {
         Warehouse wh = this.warehouseManager.findWarehouseByCode(outboundTarget);
 
         sourceAddress.setDistributionTargetEmail(wh.getEmail());
@@ -354,11 +363,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
             }
         }
-
+        return sourceAddress;
     }
 
 
-    private void createOdoAddressBySupplier(WhOdoAddress sourceAddress, String outboundTarget) {
+    private WhOdoAddress createOdoAddressBySupplier(WhOdoAddress sourceAddress, String outboundTarget) {
         Supplier supplierSearch = new Supplier();
         supplierSearch.setCode(outboundTarget);
         List<Supplier> supplierList = this.supplierManager.findListByParam(supplierSearch);
@@ -420,7 +429,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
             }
         }
-
+        return sourceAddress;
     }
 
 

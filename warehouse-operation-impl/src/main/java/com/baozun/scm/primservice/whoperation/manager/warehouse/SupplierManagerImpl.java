@@ -40,6 +40,7 @@ public class SupplierManagerImpl implements SupplierManager {
     private GlobalLogManager globalLogManager;
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public Supplier getSupplierById(Long id) {
         log.info("SupplierManagerImpl getSupplierById is start");
         if(log.isDebugEnabled()){
@@ -102,6 +103,7 @@ public class SupplierManagerImpl implements SupplierManager {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public Pagination<SupplierCommand> getListByParams(Page page, Sort[] sorts, Map<String, Object> param) {
         log.info("SupplierManagerImpl getListByParams is start");
         if(log.isDebugEnabled()){
@@ -166,6 +168,7 @@ public class SupplierManagerImpl implements SupplierManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public List<Supplier> findListByParam(Supplier supplier) {
         log.info("SupplierManagerImpl findListByParam is start");
         if(log.isDebugEnabled()){
@@ -176,6 +179,7 @@ public class SupplierManagerImpl implements SupplierManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public List<Supplier> findListByLifecycle(Integer lifecycle) {
         log.info("SupplierManagerImpl findListByLifecycle is start");
         if(log.isDebugEnabled()){
@@ -188,6 +192,7 @@ public class SupplierManagerImpl implements SupplierManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public Map<Long, String> getNameIdMapByIds(List<Long> ids) {
         log.info("SupplierManagerImpl getNameIdMapByIds is start");
         if(log.isDebugEnabled()){
@@ -209,6 +214,7 @@ public class SupplierManagerImpl implements SupplierManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public Boolean uniqueCodeOrName(Supplier supplier) {
         log.info("SupplierManagerImpl uniqueCodeOrName is start");
         if(log.isDebugEnabled()){
@@ -270,6 +276,7 @@ public class SupplierManagerImpl implements SupplierManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
     public List<Supplier> findSupplierListByIds(List<Long> ids) {
         return supplierDao.getByIds(ids);
     }

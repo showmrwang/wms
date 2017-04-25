@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.RegionCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.RegionDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -32,16 +34,19 @@ public class RegionManagerImpl extends BaseManagerImpl implements RegionManager 
      * 通过父栏目ID查找对应国家省市
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<RegionCommand> findRegionByParentId(Long id) {
         return regionDao.findRegionByParentId(id);
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Pagination<RegionCommand> getListByParams(Page page, Sort[] sorts, Map<String, Object> params) {
         return regionDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Region findRegionById(Long id) {
         return regionDao.findById(id);
     }
@@ -50,6 +55,7 @@ public class RegionManagerImpl extends BaseManagerImpl implements RegionManager 
      * 修改区域状态
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void updateRgType(Long userId, Long rgId, Integer lifecycle) {
         Region region = regionDao.findById(rgId);
         if (null == region) {
@@ -73,6 +79,7 @@ public class RegionManagerImpl extends BaseManagerImpl implements RegionManager 
      * 批量修改区域状态
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public int updateLifeCycle(List<Long> ids, Integer lifeCycle, Long userid) {
         int result = regionDao.updateLifeCycle(ids, lifeCycle, userid);
         if (result <= 0) {
@@ -99,6 +106,7 @@ public class RegionManagerImpl extends BaseManagerImpl implements RegionManager 
      * 验证区域名称/编码是否重复
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public RegionCommand checkNameOrCode(String name, String code, Long parentId) {
         return regionDao.checkNameOrCode(name, code, parentId);
     }
@@ -107,6 +115,7 @@ public class RegionManagerImpl extends BaseManagerImpl implements RegionManager 
      * 修改/创建区域信息
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Region saveOrUpdateRegion(Region region, Long userid) {
         // GlobalLogCommand gl = new GlobalLogCommand();
         if (null != region.getId()) {
@@ -180,11 +189,13 @@ public class RegionManagerImpl extends BaseManagerImpl implements RegionManager 
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<RegionCommand> findRegionByParentIdNotDelete(Long id) {
         return regionDao.findRegionByParentIdNotDelete(id);
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Region findRegionByNameAndParentId(String name, Long parentId) {
         return this.regionDao.findRegionByNameAndParentId(name, parentId);
     }
