@@ -1117,7 +1117,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
                 if (StringUtils.isEmpty(facility.getBatch())) {
                     facility.setBatch(batch);
-                    facility.setStatus(Constants.WH_FACILITY_STATUS_2);
+                    facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_2));
                     whOutboundFacilityDao.saveOrUpdateByVersion(facility);
                     return true;
                 }

@@ -152,6 +152,8 @@ public interface SeedingManagerProxy extends BaseManager {
      */
     public void saveOutboundBoxCollectionLineCache(Long facilityId, String batchNo, Long ouId, String outboundBoxCode, Map<Long, WhSeedingCollectionLineCommand> collectionLineMap, String logId);
 
+    public void removeEmptyOutboundBoxCache(Long facilityId, String batchNo, Long ouId, String outboundBoxCode,  Long latticeNo);
+
     /**
      * 换箱后置逻辑，保存上次播种的明细，在确认不换箱之后清除该缓存，在换箱之后，将该缓存存入新出库箱，原出库箱里取消上次播种的数据
      *

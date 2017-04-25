@@ -16,6 +16,8 @@
  */
  package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -106,6 +108,9 @@ public class WhSkuInventoryTobefilledCommand extends BaseModel {
 	/** 最后操作时间 */
 	private java.util.Date lastModifyTime;
 	//columns END
+	
+    /** 残次库存信息 */
+    private List<WhSkuInventorySnCommand> whSkuInventorySnCommandList;
 
 	public WhSkuInventoryTobefilledCommand(){
 	}
@@ -406,5 +411,15 @@ public class WhSkuInventoryTobefilledCommand extends BaseModel {
 
 			.isEquals();
 	}
+
+    public List<WhSkuInventorySnCommand> getWhSkuInventorySnCommandList() {
+        return whSkuInventorySnCommandList;
+    }
+
+    public void setWhSkuInventorySnCommandList(List<WhSkuInventorySnCommand> whSkuInventorySnCommandList) {
+        this.whSkuInventorySnCommandList = whSkuInventorySnCommandList;
+    }
+    
+    
 }
 

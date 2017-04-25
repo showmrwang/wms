@@ -331,7 +331,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
             if (facility == null) {
                 facilityFlag = false;
             } else {
-                facility.setStatus(Constants.WH_GLOBAL_STATUS_2);
+                facility.setStatus(String.valueOf(Constants.WH_GLOBAL_STATUS_2));
                 facility.setBatch(batch);
                 int count = this.WhOutboundFacilityDao.saveOrUpdateByVersion(facility);
                 if (count <= 0) {
@@ -350,7 +350,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         if (facility == null) {
             return facility;
         }
-        facility.setStatus(Constants.WH_GLOBAL_STATUS_2);
+        facility.setStatus(String.valueOf(Constants.WH_GLOBAL_STATUS_2));
         facility.setBatch(batch);
         int count = this.WhOutboundFacilityDao.saveOrUpdateByVersion(facility);
         if (count <= 0) {

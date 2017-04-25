@@ -853,8 +853,8 @@ public class ErrorCodes {
     public static final int REPLE_WORK_ISEND = 70060;
     /** 校验容器/出库箱库存 */
     public static final int CHECK_CONTAINER_INVENTORY_IS_ERROR = 70061;
-    
-    
+
+
     /** 待移入库存不存在 */
     public static final int TOBEFILLED_INVENTORY_NO_EXIST = 70062;
 
@@ -948,4 +948,6 @@ public class ErrorCodes {
     public static final int SKUINVENTORY_IS_NULL = 110012;
     /** 出库单下的出库箱并没有全都完成交接 */
     public static final int ODO_OUTBOUNDBOX_NOT_HANDOVER_ALL = 110013;
+    /** 该ASN已收货完成且不能超收 */
+    public static final int ASN_RCVD_ALREADY_FINISHED = 110014;
 }

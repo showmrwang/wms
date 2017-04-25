@@ -56,6 +56,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	occupation_code_source as occupationCodeSource,
 	        	inbound_time as inboundTime,
 	        	last_modify_time as lastModifyTime,
+	        	seeding_wall_code as seedingWallCode,
 	        	container_lattice_no as containerLatticeNo,
 	        	temporary_location_id as temporaryLocationId,
 	        	outboundbox_code as outboundboxCode
@@ -94,6 +95,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.occupation_code_source as occupationCodeSource,
 			inv.inbound_time as inboundTime,
 	       	inv.last_modify_time as lastModifyTime,
+	       	inv.seeding_wall_code as seedingWallCode,
 	       	inv.container_lattice_no as containerLatticeNo,
 	       	inv.temporary_location_id as temporaryLocationId,
 	       	inv.outboundbox_code as outboundboxCode
@@ -130,6 +132,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.occupation_code_source as occupationCodeSource,
 					inv.inbound_time as inboundTime,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.seeding_wall_code as seedingWallCode,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
 	            	inv.temporary_location_id as temporaryLocationId,
@@ -3382,14 +3385,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.sys_uuid as snSysUuid
 					from 
 					t_wh_sku_inventory_tobefilled inv
-					left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id 
-					left join t_wh_odo odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
-						inv.occupation_code is not null 
 					    and inv.ou_id = #{ouId}
-					    and operLine.odo_line_id = #{operationId}
-	                    and inv.replenishmentCode = #{replenishmentCode}
+	                    and inv.inside_container_id = #{turnoverBoxId}
+	                    and inv.location_id = #{locationId}
     </select>
     
     <select id="checkReplenishmentInventory" resultMap="WhSkuInventoryCommandSnResultExt">
@@ -4195,8 +4195,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.store_id as storeId,
 	          inv.occupation_code as occupationCode,
 	          inv.occupation_line_id as occupationLineId,
-	          inv.replenishment_code as replenishmentCode,
-	          inv.on_hand_qty as onHandQty
+	          inv.on_hand_qty as onHandQty,
 	          inv.allocated_qty as  allocatedQty,
 	          inv.to_be_filled_qty as toBeFilledQty,
 	          inv.frozen_qty as frozenQty,
@@ -4230,14 +4229,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          sn.ou_id AS snOuId,
 	          sn.sys_uuid AS snSysUuid
 		      from 
-					t_wh_operation_line operLine, 
 					t_wh_sku_inventory inv
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid 
 			  where
-				    operLine.replenishment_code = inv.replenishment_code
-				and inv.replenishment_code IS NOT NULL
-				and inv.ou_id = #{ouId}
-				and operLine.operation_id = #{operationId}
+				inv.ou_id = #{ouId}
 				and inv.location_id = #{locationId}
 				<if test="outerContainerId!=null and outerContainerId!=''">
 					 and inv.outer_container_id = #{outerContainerId}

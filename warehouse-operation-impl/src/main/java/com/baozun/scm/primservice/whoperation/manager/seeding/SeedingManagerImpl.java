@@ -232,7 +232,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
         WhOutboundFacility outboundFacility = new WhOutboundFacility();
         BeanUtils.copyProperties(facilityCommand, outboundFacility);
-        outboundFacility.setStatus(Constants.WH_FACILITY_STATUS_5);
+        outboundFacility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_5));
         // TODO 测试 不更新播种墙状态
          whOutboundFacilityDao.saveOrUpdateByVersion(outboundFacility);
 
