@@ -201,7 +201,7 @@
                     batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     last_modify_time = now() ,
                     operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER},
+                    status = #{status,javaType=java.lang.String,jdbcType=VARCHAR},
                     lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
                 WHERE 
                     id = #{id} 

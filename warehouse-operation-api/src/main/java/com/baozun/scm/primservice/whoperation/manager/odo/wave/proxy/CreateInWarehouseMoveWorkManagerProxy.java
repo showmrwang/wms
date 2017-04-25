@@ -18,7 +18,7 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @param toLocation
      * @return
      */
-    Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId);
+    Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId);
     
     /**
      * [业务方法] 导入sn和残次条码
@@ -42,6 +42,6 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    Integer systemCheck(String[] occupationCodes, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId);
+    Integer systemCheck(String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId);
     
 }

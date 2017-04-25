@@ -34,10 +34,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.SeedingLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
@@ -56,15 +53,6 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
 
     @Autowired
     private CacheManager cacheManager;
-
-    @Autowired
-    private WhWorkManager whWorkManager;
-
-    @Autowired
-    private WhWorkLineManager whWorkLineManager;
-
-    @Autowired
-    private WarehouseManager warehouseManager;
 
 
 
@@ -147,12 +135,6 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
                 }
             }
         }
-        // TODO 测试 设置功能参数
-        //function = new WhFunctionSeedingWall();
-        //function.setScanPattern(2);
-        //function.setIsScanGoodsLattice(true);
-        //function.setSeedingWallPattern(2);
-        //function.setShowCode("3");
 
         return function;
     }
@@ -215,7 +197,9 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
 
         // 当前播种的出库箱
         String currentOutboundBoxCode = this.getLatticeCurrentSeedingOutboundBoxCache(facilityId, batchNo, ouId, latticeNo, logId);
-        outboundBoxCodeList.add(currentOutboundBoxCode);
+        if(null != currentOutboundBoxCode && !outboundBoxCodeList.contains(currentOutboundBoxCode)) {
+            outboundBoxCodeList.add(currentOutboundBoxCode);
+        }
 
         return outboundBoxCodeList;
     }
@@ -238,6 +222,17 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
     public void saveOutboundBoxCollectionLineCache(Long facilityId, String batchNo, Long ouId, String outboundBoxCode, Map<Long, WhSeedingCollectionLineCommand> collectionLineMap, String logId) {
         String cacheKey = CacheConstants.CACHE_SEEDING_OUTBOUNDBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + outboundBoxCode;
         cacheManager.setObject(cacheKey, collectionLineMap, CacheConstants.CACHE_ONE_WEEK);
+    }
+
+    @Override
+    public void removeEmptyOutboundBoxCache(Long facilityId, String batchNo, Long ouId, String outboundBoxCode, Long latticeNo) {
+        //删除出库箱的明细缓存
+        String boxLineCacheKey = CacheConstants.CACHE_SEEDING_OUTBOUNDBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + outboundBoxCode;
+        cacheManager.remonKeys(boxLineCacheKey);
+
+        //删除货格绑定的出库箱
+        String latticeBoxCacheKey = CacheConstants.CACHE_SEEDING_LATTICE_BIND_OUTBOUNDBOX_BOTH + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo + "-" + outboundBoxCode;
+        cacheManager.remonKeys(latticeBoxCacheKey);
     }
 
     @Override

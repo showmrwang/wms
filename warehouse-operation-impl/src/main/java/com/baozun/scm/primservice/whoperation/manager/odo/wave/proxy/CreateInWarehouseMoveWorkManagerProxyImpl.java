@@ -73,10 +73,10 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Boolean createAndExecuteInWarehouseMoveWork(String[] occupationCodes, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId) {
+    public Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId) {
         Boolean isSuccess = true;
         // 2.将库存行根据原始库位与目标库位进行分组
-        InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(occupationCodes, uuids, moveQtys, ouId);
+        InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(occupationCodes, occupationLineIds, uuids, moveQtys, ouId);
         inWarehouseMoveWorkCommand.setToLocationId(toLocation);
         Map<Long, List<WhSkuInventoryCommand>> skuInventoryMap = inWarehouseMoveWorkCommand.getSkuInventoryMap();
         // 3.循环库存分组信息分别创建工作
@@ -111,7 +111,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Integer systemCheck(String[] occupationCodes, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId) {
+    public Integer systemCheck(String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId) {
         // sku种类和数量
         Set<Long> customerIds = new HashSet<Long>();
         // sku种类和数量
@@ -144,13 +144,19 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
         List<WhSkuInventoryCommand> skuInventoryCommandLst = new ArrayList<WhSkuInventoryCommand>();
         for (int i = 0; i < uuids.length; i++) {
             WhSkuInventoryCommand whSkuInventoryCommand = new WhSkuInventoryCommand();
-            
-            if(null != occupationCodes){
-                whSkuInventoryCommand = whSkuInventoryManager.findWhSkuInventoryByOccupationCodeAndUuid(occupationCodes[i], uuids[i], ouId);    
+            String occupationCode = "";
+            Long occupationLineId = 0L;
+            if(0 < occupationCodes.length){
+                occupationCode = occupationCodes[i];    
             }else{
-                whSkuInventoryCommand = whSkuInventoryManager.findWhSkuInventoryByOccupationCodeAndUuid(null, uuids[i], ouId);
+                occupationCode = null;
             }
-            
+            if(0 < occupationLineIds.length){
+                occupationLineId = occupationLineIds[i];    
+            }else{
+                occupationLineId = null;
+            }
+            whSkuInventoryCommand = whSkuInventoryManager.findInvLstByOccupationCode(occupationCode, occupationLineId, uuids[i], ouId); 
             String onlySku = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInventoryCommand);
             skus.add(whSkuInventoryCommand.getSkuId());
             onlySkus.add(onlySku);
@@ -194,18 +200,20 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      * @param ouId
      * @return
      */
-    private InWarehouseMoveWorkCommand getSkuInventoryForGroup(String[] occupationCodes, String[] uuids, Double[] moveQtys, Long ouId) {
+    private InWarehouseMoveWorkCommand getSkuInventoryForGroup(String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long ouId) {
         InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = new InWarehouseMoveWorkCommand();
         Map<Long, List<WhSkuInventoryCommand>> skuInventoryMap = new HashMap<Long, List<WhSkuInventoryCommand>>();
         Map<String, Double> idAndQtyMap = new HashMap<String, Double>();
         try {
             for (int i = 0; i < uuids.length; i++) {
                 List<WhSkuInventoryCommand> skuInventoryCommandLst = new ArrayList<WhSkuInventoryCommand>();
-                
                 WhSkuInventoryCommand skuInventoryCommand = new WhSkuInventoryCommand();
                 skuInventoryCommand.setUuid(uuids[i]);
-                if(null != occupationCodes){
+                if(0 < occupationCodes.length){
                     skuInventoryCommand.setOccupationCode(occupationCodes[i]);
+                }
+                if(0 < occupationLineIds.length){
+                    skuInventoryCommand.setOccupationLineId(occupationLineIds[i]);
                 }
                 skuInventoryCommand.setOuId(ouId);
                 List<WhSkuInventoryCommand> whSkuInventoryCommandLst = whSkuInventoryManager.findInvComLstByInWarehouseMove(skuInventoryCommand);
@@ -216,18 +224,24 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                     skuInventoryCommandLst.add(whSkuInventoryCommand);
                     skuInventoryMap.put(whSkuInventoryCommand.getLocationId(), skuInventoryCommandLst);    
                 }
-                if(null != occupationCodes){
-                    idAndQtyMap.put(occupationCodes[i] + "-" + uuids[i], moveQtys[i]);
+                if(0 < occupationCodes.length){
+                    if(0 < occupationLineIds.length){
+                        idAndQtyMap.put(occupationCodes[i] + "-" + occupationLineIds[i] + "-" + uuids[i], moveQtys[i]);
+                    }else{
+                        idAndQtyMap.put(occupationCodes[i] + "-" + "-" + uuids[i], moveQtys[i]);
+                    }
                 }else{
-                    idAndQtyMap.put("-" + uuids[i], moveQtys[i]);    
+                    if(0 < occupationLineIds.length){
+                        idAndQtyMap.put("-" + occupationLineIds[i] + "-" + uuids[i], moveQtys[i]);
+                    }else{
+                        idAndQtyMap.put("-" + "-" + uuids[i], moveQtys[i]);
+                    }
                 }
-                
             }
         } catch (Exception e) {
             log.error(e + "");
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-
         inWarehouseMoveWorkCommand.setSkuInventoryMap(skuInventoryMap);
         inWarehouseMoveWorkCommand.setIdAndQtyMap(idAndQtyMap);
         return inWarehouseMoveWorkCommand;

@@ -8235,8 +8235,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSkuInventoryCommand findWhSkuInventoryByOccupationCodeAndUuid(String occupationCode, String uuid, Long ouid) {
-        WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryDao.findWhSkuInventoryByOccupationCodeAndUuid(occupationCode, uuid, ouid);
+    public WhSkuInventoryCommand findInvLstByOccupationCode(String occupationCode, Long occupationLineId, String uuid, Long ouId) {
+        WhSkuInventoryCommand whSkuInventoryCommand = whSkuInventoryDao.findInvLstByOccupationCode(occupationCode, occupationLineId, uuid, ouId);
         return whSkuInventoryCommand;
     }
     
