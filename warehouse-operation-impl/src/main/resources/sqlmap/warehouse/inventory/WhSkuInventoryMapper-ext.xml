@@ -3354,6 +3354,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.customer_id as customerId,
 					inv.store_id as storeId,
 					inv.occupation_code as invOccupationCode,
+					inv.occupation_line_id as occupationLineId,
 					inv.qty as onHandQty,
 					inv.inv_status as invStatus,
 					inv.inv_type as invType,
@@ -3370,7 +3371,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
 	        		inv.last_modify_time as lastModifyTime,
-	        		inv.temporary_location_id as temporaryLocationId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -3384,9 +3384,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.ou_id as snOuId,
 	        		sn.sys_uuid as snSysUuid
 					from 
+					t_wh_operation_line line,
 					t_wh_sku_inventory_tobefilled inv
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 					where 
+					    line.replenishment_code = inv.replenishment_code
 					    and inv.ou_id = #{ouId}
 	                    and inv.inside_container_id = #{turnoverBoxId}
 	                    and inv.location_id = #{locationId}
@@ -3988,7 +3990,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
     
     
-    <select id="getWhSkuInventoryCommandByOperationId" resultMap="WhSkuInventoryCommandResultExt">
+    <select id="getWhSkuInventoryCommandByOperationId" resultMap="WhSkuInventoryCommandSnResultExt">
 	    select
 	          inv.id as invId,
 	          inv.sku_id as skuId,
@@ -4184,7 +4186,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
     
      
-    <select id="findWhSkuInventoryCommandByReplish" resultMap="WhSkuInventoryCommandResultExt">
+    <select id="findWhSkuInventoryCommandByReplish" resultMap="WhSkuInventoryCommandSnResultExt">
 	    select
 	          inv.id as invId,
 	          inv.sku_id as skuId,

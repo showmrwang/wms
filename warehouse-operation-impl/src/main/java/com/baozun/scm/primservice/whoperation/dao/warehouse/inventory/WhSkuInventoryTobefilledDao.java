@@ -31,6 +31,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobefilled,Long>{
@@ -146,6 +147,6 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @param locationId
      * @return
      */
-    public List<WhSkuInventoryAllocatedCommand> findWhSkuInventoryTobefilledByReplenish(@Param("operationId") Long operationId,@Param("locationId") Long locationId,@Param("ouId") Long ouId);
+    public List<WhSkuInventoryTobefilledCommand> findWhSkuInventoryTobefilledByReplenish(@Param("operationId") Long operationId,@Param("locationId") Long locationId,@Param("ouId") Long ouId);
 	
 }

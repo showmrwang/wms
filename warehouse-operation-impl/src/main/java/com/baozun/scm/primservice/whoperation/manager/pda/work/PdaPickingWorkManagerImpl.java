@@ -1529,7 +1529,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         pdaPickingWorkCacheManager.cacheSkuAttrIdNoSn(locationId, skuAttrIds, insideContainerId);
         if (!StringUtil.isEmpty(command.getSkuSn()) || !StringUtils.isEmpty(command.getSkuDefect())) {
             // 缓存sn数据
-            String snDefect = SkuCategoryProvider.concatSkuAttrId(command.getSkuSn(), command.getSkuDefect()); // 拼接sn/残次信息
+            String snDefect = command.getSkuSn()+command.getSkuDefect(); // 拼接sn/残次信息
             this.cacheSkuSn(locationId, insideContainerId, skuId, snDefect);
             String skuAttrIdsSn = SkuCategoryProvider.concatSkuAttrId(skuAttrIds, command.getSkuSn(), command.getSkuDefect()); // 拼接sn/残次信息
             pdaPickingWorkCacheManager.cacheSkuAttrId(locationId, skuAttrIdsSn, insideContainerId); // 缓存的必须有sn/残次信息

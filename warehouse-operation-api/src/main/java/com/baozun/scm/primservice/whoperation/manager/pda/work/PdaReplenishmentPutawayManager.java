@@ -51,4 +51,5 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * @param operationId
      */
     public void cancelPattern(Long operationId,Integer cancelPattern);
+    
 }
