@@ -86,6 +86,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private Long facilityId;
     /** 出库箱code*/
     private String outboundboxCode;
+    /** 播种墙编码*/
+    private String seedingWallCode;
 
     public Long getId() {
         return id;
@@ -333,6 +335,14 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setOutboundboxCode(String outboundboxCode) {
         this.outboundboxCode = outboundboxCode;
+    }
+
+    public String getSeedingWallCode() {
+        return seedingWallCode;
+    }
+
+    public void setSeedingWallCode(String seedingWallCode) {
+        this.seedingWallCode = seedingWallCode;
     }
 
 }

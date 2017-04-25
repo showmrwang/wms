@@ -104,6 +104,8 @@ public class WhCheckingCommand extends BaseCommand {
     private String mainSkuCode;
     /** 主品名称*/
     private String mainSkuName;
+    /** 耗材编码*/
+    private String consumableSkuBarcode;
 
 
     public Long getId() {
@@ -425,6 +427,14 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setMainSkuName(String mainSkuName) {
         this.mainSkuName = mainSkuName;
+    }
+
+    public String getConsumableSkuBarcode() {
+        return consumableSkuBarcode;
+    }
+
+    public void setConsumableSkuBarcode(String consumableSkuBarcode) {
+        this.consumableSkuBarcode = consumableSkuBarcode;
     }
 
 }

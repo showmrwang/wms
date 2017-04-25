@@ -239,6 +239,162 @@
 			and facility.lifecycle = 1
     </select>
     
+    <sql id="whCheckingCommandColumnsExt">
+        <![CDATA[
+                checking.id as id,
+                checking.facility_id as facilityId,
+                checking.container_id as containerId,
+                checking.batch as batch,
+                checking.wave_code as waveCode,
+                checking.customer_code as customerCode,
+                checking.customer_name as customerName,
+                checking.store_code as storeCode,
+                checking.store_name as storeName,
+                checking.transport_code as transportCode,
+                checking.transport_name as transportName,
+                checking.product_code as productCode,
+                checking.product_name as productName,
+                checking.time_effect_code as timeEffectCode,
+                checking.time_effect_name as timeEffectName,
+                checking.status as status,
+                checking.ou_id as ouId,
+                checking.outer_container_id as outerContainerId,
+                checking.container_lattice_no as containerLatticeNo,
+                checking.outboundbox_id as outboundboxId,
+                checking.outboundbox_code as outboundboxCode,
+                checking.distribution_mode as distributionMode,
+                checking.picking_mode as pickingMode,
+                checking.checking_mode as checkingMode,
+                sku.bar_code as consumableSkuBarcode
+        ]]>
+    </sql>
+    
+    <sql id="whCheckingCommandDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and checking.id = #{id}
+            </if>
+
+            <if test="facilityId!=null">
+                and checking.facility_id = #{facilityId}
+            </if>
+
+            <if test="containerId!=null">
+                and checking.container_id = #{containerId}
+            </if>
+
+
+            <if test="batch!=null and batch!=''">
+                and checking.batch = #{batch}
+            </if>
+
+
+            <if test="waveCode!=null and waveCode!=''">
+                and checking.wave_code = #{waveCode}
+            </if>
+
+
+            <if test="customerCode!=null and customerCode!=''">
+                and checking.customer_code = #{customerCode}
+            </if>
+
+
+            <if test="customerName!=null and customerName!=''">
+                and checking.customer_name = #{customerName}
+            </if>
+
+
+            <if test="storeCode!=null and storeCode!=''">
+                and checking.store_code = #{storeCode}
+            </if>
+
+
+            <if test="storeName!=null and storeName!=''">
+                and checking.store_name = #{storeName}
+            </if>
+
+
+            <if test="transportCode!=null and transportCode!=''">
+                and checking.transport_code = #{transportCode}
+            </if>
+
+
+            <if test="transportName!=null and transportName!=''">
+                and checking.transport_name = #{transportName}
+            </if>
+
+
+            <if test="productCode!=null and productCode!=''">
+                and checking.product_code = #{productCode}
+            </if>
+
+
+            <if test="productName!=null and productName!=''">
+                and checking.product_name = #{productName}
+            </if>
+
+
+            <if test="timeEffectCode!=null and timeEffectCode!=''">
+                and checking.time_effect_code = #{timeEffectCode}
+            </if>
+
+
+            <if test="timeEffectName!=null and timeEffectName!=''">
+                and checking.time_effect_name = #{timeEffectName}
+            </if>
+
+            <if test="status!=null">
+                and checking.status = #{status}
+            </if>
+
+            <if test="ouId!=null">
+                and checking.ou_id = #{ouId}
+            </if>
+
+            <if test="outerContainerId!=null">
+                and checking.outer_container_id = #{outerContainerId}
+            </if>
+
+            <if test="containerLatticeNo!=null">
+                and checking.container_lattice_no = #{containerLatticeNo}
+            </if>
+
+            <if test="outboundboxId!=null">
+                and checking.outboundbox_id = #{outboundboxId}
+            </if>
+
+
+            <if test="outboundboxCode!=null and outboundboxCode!=''">
+                and checking.outboundbox_code = #{outboundboxCode}
+            </if>
+
+
+            <if test="distributionMode!=null and distributionMode!=''">
+                and checking.distribution_mode = #{distributionMode}
+            </if>
+
+
+            <if test="pickingMode!=null and pickingMode!=''">
+                and checking.picking_mode = #{pickingMode}
+            </if>
+
+
+            <if test="checkingMode!=null and checkingMode!=''">
+                and checking.checking_mode = #{checkingMode}
+            </if>
+        </where>
+    </sql>
+    
+    <select id="findListByParamExt" resultMap="WhCheckingCommand">
+        select
+        <include refid="whCheckingCommandColumnsExt"/>
+        from t_wh_checking checking left join t_wh_sku sku on checking.outboundbox_id = sku.id
+        <include refid="whCheckingCommandDynamicWhereExt"/>
+    </select>
+    
+    
     
     
 

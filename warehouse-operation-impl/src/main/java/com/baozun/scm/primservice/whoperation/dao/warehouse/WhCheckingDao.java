@@ -75,4 +75,10 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      */
     List<WhCheckingCommand> findListByContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法] 查找复核数据
+     * @param checking
+     * @return
+     */
+    List<WhCheckingCommand> findListByParamExt(WhCheckingCommand checking);
 }
