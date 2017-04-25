@@ -627,11 +627,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="insideContainerId!=null and insideContainerId!=''">
 				and invAllocated.inside_container_id = #{insideContainerId} 
 			</if>
+			<if test="occupationCode!=null and occupationCode!=''">
+				and occupation_code = #{occupationCode}
+			</if>
+			<if test="occupationLineId!=null and occupationLineId!=''">
+				and occupation_line_id = #{occupationLineId}
+			</if>
 			<if test="replenishmentCode!=null and replenishmentCode!=''">
 				and invAllocated.replenishment_code = #{replenishmentCode} 
 			</if>
 			<if test="replenishmentRuleId!=null and replenishmentRuleId!=''">
 				and invAllocated.replenishment_rule_id = #{replenishmentRuleId} 
+			</if>
+			<if test="uuid!=null and uuid!=''">
+				and uuid = #{uuid}
 			</if>
 		</where>
 	</select>	

@@ -153,9 +153,17 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryAllocatedCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
             whSkuInventoryAllocatedCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
             if(null != whSkuInventoryCommand.getOccupationCode()){
-                whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get( whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getUuid()));
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }else{
-                whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getUuid()));  
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get("-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }
             whSkuInventoryAllocatedCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
             whSkuInventoryAllocatedCommand.setInvType(whSkuInventoryCommand.getInvType());
@@ -197,9 +205,17 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryTobefilledCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
             whSkuInventoryTobefilledCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
             if(null != whSkuInventoryCommand.getOccupationCode()){
-                whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get( whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getUuid()));
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }else{
-                whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getUuid()));  
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get("-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }
             whSkuInventoryTobefilledCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
             whSkuInventoryTobefilledCommand.setInvType(whSkuInventoryCommand.getInvType());
@@ -371,13 +387,18 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
             Double onHandQty = 0.00;
             Double frozenQty = 0.00;
+            // 库存条件 
             skuInventory.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            // 分配条件 
             allocatedCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            allocatedCommand.setOccupationCode(skuInventoryAllocatedCommand.getOccupationCode());
+            allocatedCommand.setOccupationLineId(skuInventoryAllocatedCommand.getOccupationLineId());
+            allocatedCommand.setUuid(skuInventoryAllocatedCommand.getUuid());
+            // 待移入条件 
             totalCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            // 待移入条件 
             skuInventoryTobefilled.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
             skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
             Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
             Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
             Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
@@ -406,13 +427,18 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
             Double onHandQty = 0.00;
             Double frozenQty = 0.00;
+            // 库存条件 
             skuInventory.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            // 分配条件 
             allocatedCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            allocatedCommand.setOccupationCode(skuInventoryAllocatedCommand.getOccupationCode());
+            allocatedCommand.setOccupationLineId(skuInventoryAllocatedCommand.getOccupationLineId());
+            allocatedCommand.setUuid(skuInventoryAllocatedCommand.getUuid());
+            // 待移入条件 
             totalCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            // 待移入条件 
             skuInventoryTobefilled.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
             skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
             Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
             Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
             Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
