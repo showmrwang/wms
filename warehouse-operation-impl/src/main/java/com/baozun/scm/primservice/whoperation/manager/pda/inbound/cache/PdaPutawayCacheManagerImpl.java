@@ -3086,8 +3086,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 if (!StringUtils.isEmpty(cacheQty)) {
                     value = new Long(cacheQty).longValue();
                 }
-                if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                if ((value + 1) > locSkuQty.longValue()) {
+                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + 1, locSkuQty, logId);
                     throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
                 }
                 long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, 1);
@@ -3392,8 +3392,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 if (!StringUtils.isEmpty(cacheQty)) {
                     value = new Long(cacheQty).longValue();
                 }
-                if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                if ((value + 1) > locSkuQty.longValue()) {
+                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + 1, locSkuQty, logId);
                     throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
                 }
                 long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, 1);
