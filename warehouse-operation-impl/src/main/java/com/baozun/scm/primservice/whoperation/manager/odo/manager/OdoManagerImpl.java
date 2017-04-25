@@ -1206,6 +1206,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     subList = odoIdList.subList(fromIndex, toIndex);
                 }
             }
+            @SuppressWarnings("unused")
             int updateOdoCount = this.whOdoDao.addOdoToWave(subList, wave.getOuId(), wave.getCreatedId(), wave.getCode(), OdoStatus.ODO_WAVE);
 
         }
@@ -1310,6 +1311,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             if (i == 0) {
                 throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
             }
+            insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, whOdo.getOuId(), null, null, null);
         }
     }
 
