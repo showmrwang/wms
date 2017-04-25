@@ -56,6 +56,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	occupation_code_source as occupationCodeSource,
 	        	inbound_time as inboundTime,
 	        	last_modify_time as lastModifyTime,
+	        	seeding_wall_code as seedingWallCode,
 	        	container_lattice_no as containerLatticeNo,
 	        	temporary_location_id as temporaryLocationId,
 	        	outboundbox_code as outboundboxCode
@@ -94,6 +95,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.occupation_code_source as occupationCodeSource,
 			inv.inbound_time as inboundTime,
 	       	inv.last_modify_time as lastModifyTime,
+	       	inv.seeding_wall_code as seedingWallCode,
 	       	inv.container_lattice_no as containerLatticeNo,
 	       	inv.temporary_location_id as temporaryLocationId,
 	       	inv.outboundbox_code as outboundboxCode
@@ -130,6 +132,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.occupation_code_source as occupationCodeSource,
 					inv.inbound_time as inboundTime,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.seeding_wall_code as seedingWallCode,
 	        		inv.container_lattice_no as containerLatticeNo,
 	            	inv.outboundbox_code as outboundboxCode,
 	            	inv.temporary_location_id as temporaryLocationId,

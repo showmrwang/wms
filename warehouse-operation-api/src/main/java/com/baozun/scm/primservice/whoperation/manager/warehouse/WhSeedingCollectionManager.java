@@ -40,6 +40,8 @@ public interface WhSeedingCollectionManager extends BaseManager {
      */
     public WhSeedingCollectionCommand getSeedingCollectionByTurnoverBox(Long facilityId, String turnoverBoxCode, Long ouId);
 
+    public WhSeedingCollectionCommand getSeedingCollectionById(Long seedingCollectionId, Long ouId);
+
 
 
     public void updateByVersion(WhSeedingCollection seedingCollection);

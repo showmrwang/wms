@@ -90,6 +90,12 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
         return whSeedingCollectionDao.getSeedingCollectionByTurnoverBox(facilityId, turnoverBoxCode, ouId);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSeedingCollectionCommand getSeedingCollectionById(Long seedingCollectionId, Long ouId){
+        return whSeedingCollectionDao.getSeedingCollectionById(seedingCollectionId, ouId);
+    }
+
 
     /**
      * 获取播种的周转箱信息
