@@ -281,6 +281,15 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
     int deleteOdoDeliveryInfo(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
 
     /**
+     * 删除WhOdoTransportService
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoTransportService(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+
+    /**
      * 保存出库单索引数据(仓库)
      * 
      * @param whOdoArchivIndex
