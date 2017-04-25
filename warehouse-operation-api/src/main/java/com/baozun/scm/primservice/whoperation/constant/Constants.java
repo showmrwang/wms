@@ -819,4 +819,8 @@ public final class Constants {
     public static final String PICKING_WORK_PAGE = "PICKING_WORK_PAGE";
 
 
+    /** 出库目标对象 */
+    public static final String AIMTYPE_1 = "1";// 供应商
+    public static final String AIMTYPE_5 = "5";// 仓库
+    public static final String AIMTYPE_7 = "7";// 店铺对应配送对象
 }

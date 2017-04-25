@@ -76,13 +76,16 @@ import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.OutBoundBoxTypeManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.RegionManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.SupplierManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.ma.DistributionTargetManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -98,8 +101,12 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Region;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget;
 
 @Service("odoManagerProxy")
 public class OdoManagerProxyImpl implements OdoManagerProxy {
@@ -149,6 +156,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private StoreManager storeManager;
     @Autowired
     private OutBoundBoxTypeManager outBoundBoxTypeManager;
+    @Autowired
+    private SupplierManager supplierManager;
+    @Autowired
+    private RegionManager regionManager;
+    @Autowired
+    private DistributionTargetManager distributionTargetManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -179,6 +192,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             WhOdoInvoice sourceInvoice = odoGroup.getOdoInvoice();
             List<WhOdoInvoiceLine> sourceInvoiceLineList = odoGroup.getOdoInvoiceLineList();
 
+            // @mender yimin.lu 2017/4/25 出库目标对象，如果有值，则需要写入配送对象地址
+            this.createOdoAddress(sourceAddress, sourceOdoTrans.getOutboundTargetType(), sourceOdoTrans.getOutboundTarget());
+
             if (sourceOdo.getId() != null) {
                 this.editOdo(sourceOdo, sourceOdoTrans);
                 returnOdoId = sourceOdo.getId();
@@ -199,6 +215,214 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         return msg;
     }
+
+    private void createOdoAddress(WhOdoAddress sourceAddress, String outboundTargetType, String outboundTarget) {
+        if (StringUtils.hasText(outboundTarget)) {
+            if (Constants.AIMTYPE_1.equals(outboundTargetType)) {// 供应商
+                this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
+
+            } else if (Constants.AIMTYPE_5.equals(outboundTargetType)) {
+                this.createOdoAddressByWh(sourceAddress, outboundTarget);
+
+            } else if (Constants.AIMTYPE_7.equals(outboundTargetType)) {
+                this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
+            }
+
+        }
+
+    }
+
+
+    private void createOdoAddressByDistributionTarget(WhOdoAddress sourceAddress, String outboundTarget) {
+        DistributionTarget search = new DistributionTarget();
+        List<DistributionTarget> targetList = this.distributionTargetManager.findDistributionTargetByParams(search);
+        if (targetList == null || targetList.size() == 0) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        DistributionTarget target = targetList.get(0);
+
+        sourceAddress.setDistributionTargetEmail(target.getEmail());
+        sourceAddress.setDistributionTargetMobilePhone(target.getTelephone());
+        sourceAddress.setDistributionTargetName(target.getName());
+        sourceAddress.setDistributionTargetTelephone(target.getMobilePhone());
+        sourceAddress.setDistributionTargetZip(target.getZip());
+
+        // 地址
+        sourceAddress.setDistributionTargetAddress(target.getAddress());
+
+        // 国家
+        if (target.getCountry() != null) {
+            Region countryRegion = this.regionManager.findRegionById(target.getCountry());
+            if (countryRegion != null) {
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionCode());
+            }
+        }
+
+
+        // 省
+        if (target.getProvince() != null) {
+
+            Region provinceRegion = this.regionManager.findRegionById(target.getProvince());
+            if (provinceRegion != null) {
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionCode());
+            }
+        }
+
+        // 市
+        if (target.getCity() != null) {
+            Region cityRegion = this.regionManager.findRegionById(target.getCity());
+            if (cityRegion != null) {
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionCode());
+            }
+        }
+
+
+
+        // 区
+        if (target.getDistrict() != null) {
+            Region districtRegion = this.regionManager.findRegionById(target.getDistrict());
+            if (districtRegion != null) {
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionCode());
+            }
+        }
+
+
+        // 乡镇
+        if (target.getVillagesTowns() != null) {
+            Region villageRegion = this.regionManager.findRegionById(target.getVillagesTowns());
+            if (villageRegion != null) {
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
+            }
+        }
+
+    }
+
+
+    private void createOdoAddressByWh(WhOdoAddress sourceAddress, String outboundTarget) {
+        Warehouse wh = this.warehouseManager.findWarehouseByCode(outboundTarget);
+
+        sourceAddress.setDistributionTargetEmail(wh.getEmail());
+        sourceAddress.setDistributionTargetMobilePhone(wh.getPicContact());
+        sourceAddress.setDistributionTargetName(wh.getPic());
+        sourceAddress.setDistributionTargetTelephone(wh.getPicContact());
+        sourceAddress.setDistributionTargetZip(wh.getZipCode());
+
+        // 地址
+        sourceAddress.setDistributionTargetAddress(wh.getAddress());
+
+        // 国家
+        if (wh.getCountryId() != null) {
+            Region countryRegion = this.regionManager.findRegionById(wh.getCountryId());
+            if (countryRegion != null) {
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionCode());
+            }
+        }
+
+
+        // 省
+        if (wh.getProvinceId() != null) {
+
+            Region provinceRegion = this.regionManager.findRegionById(wh.getProvinceId());
+            if (provinceRegion != null) {
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionCode());
+            }
+        }
+
+        // 市
+        if (wh.getCityId() != null) {
+            Region cityRegion = this.regionManager.findRegionById(wh.getCityId());
+            if (cityRegion != null) {
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionCode());
+            }
+        }
+
+
+
+        // 区
+        if (wh.getDistrictId() != null) {
+            Region districtRegion = this.regionManager.findRegionById(wh.getDistrictId());
+            if (districtRegion != null) {
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionCode());
+            }
+        }
+
+
+        // 乡镇
+        if (wh.getVillagesTownsId() != null) {
+            Region villageRegion = this.regionManager.findRegionById(wh.getVillagesTownsId());
+            if (villageRegion != null) {
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
+            }
+        }
+
+    }
+
+
+    private void createOdoAddressBySupplier(WhOdoAddress sourceAddress, String outboundTarget) {
+        Supplier supplierSearch = new Supplier();
+        supplierSearch.setCode(outboundTarget);
+        List<Supplier> supplierList = this.supplierManager.findListByParam(supplierSearch);
+        if (supplierList == null || supplierList.size() == 0) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        Supplier supplier = supplierList.get(0);
+
+        sourceAddress.setDistributionTargetEmail(supplier.getEmail());
+        sourceAddress.setDistributionTargetMobilePhone(supplier.getPicMobileTelephone());
+        sourceAddress.setDistributionTargetName(supplier.getUser());
+        sourceAddress.setDistributionTargetTelephone(supplier.getContact());
+        sourceAddress.setDistributionTargetZip(supplier.getZipCode());
+
+        // 地址
+        sourceAddress.setDistributionTargetAddress(supplier.getAddress());
+
+        // 国家
+        if (supplier.getCountryId() != null) {
+            Region countryRegion = this.regionManager.findRegionById(supplier.getCountryId());
+            if (countryRegion != null) {
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionCode());
+            }
+        }
+
+
+        // 省
+        if (supplier.getProvinceId() != null) {
+
+            Region provinceRegion = this.regionManager.findRegionById(supplier.getProvinceId());
+            if (provinceRegion != null) {
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionCode());
+            }
+        }
+
+        // 市
+        if (supplier.getCityId() != null) {
+            Region cityRegion = this.regionManager.findRegionById(supplier.getCityId());
+            if (cityRegion != null) {
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionCode());
+            }
+        }
+
+
+
+        // 区
+        if (supplier.getDistrictId() != null) {
+            Region districtRegion = this.regionManager.findRegionById(supplier.getDistrictId());
+            if (districtRegion != null) {
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionCode());
+            }
+        }
+
+
+        // 乡镇
+        if (supplier.getVillagesTownsId() != null) {
+            Region villageRegion = this.regionManager.findRegionById(supplier.getVillagesTownsId());
+            if (villageRegion != null) {
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
+            }
+        }
+
+    }
+
 
     /**
      * 修改出库单头信息

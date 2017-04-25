@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.RegionDao">
+	<resultMap id="RegionResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Region">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="regionColumnsExt">
+	    <![CDATA[
+	        	t.id as id,
+	        	t.region_name as regionName,
+	        	t.region_code as regionCode,
+	        	t.region_name_en as regionNameEn,
+	        	t.parent_id as parentId,
+	        	t.short_name as shortName,
+	        	t.sort_no as sortNo,
+	        	t.level as level,
+	        	t.lifecycle as lifecycle,
+	        	t.create_time as createTime,
+	        	t.last_modify_time as lastModifyTime,
+	        	t.operator_id as operatorId
+	    ]]>
+	</sql>
+	
+	<sql id="regionDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="regionName!=null and regionName!=''">
+					and region_name = #{regionName}
+				</if>
+	       
+	       
+		       <if test="regionNameEn!=null and regionNameEn!=''">
+					and region_name_en = #{regionNameEn}
+				</if>
+	       
+				<if test="parentId!=null">
+					and parent_id = #{parentId}
+				</if>
+	       
+	       
+		       <if test="shortName!=null and shortName!=''">
+					and short_name = #{shortName}
+				</if>
+	       
+				<if test="sortNo!=null">
+					and sort_no = #{sortNo}
+				</if>
+	       
+				<if test="level!=null">
+					and level = #{level}
+				</if>
+	       
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+	<resultMap id="regionCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.RegionCommand">
+	</resultMap>
+			
+	<select id="findRegionByParentId" resultMap="regionCommand">
+		SELECT <include refid="regionColumnsExt"></include> 
+			from t_bi_region t where t.parent_id = #{id} and t.lifecycle = 1
+	</select>
+	
+	<select id="findRegionByParentIdNotDelete" resultMap="regionCommand">
+		SELECT <include refid="regionColumnsExt"></include> 
+			from t_bi_region t where t.parent_id = #{id} and t.lifecycle &lt;&gt; 2
+	</select>
+	
+			<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Region">
+		    <![CDATA[
+		        UPDATE t_bi_region SET
+			        region_name = #{regionName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        region_name_en = #{regionNameEn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        region_code = #{regionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        parent_id = #{parentId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        short_name = #{shortName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        sort_no = #{sortNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        level = #{level,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now(),
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        and last_modify_time = #{lastModifyTime}    
+		    ]]>
+		</update>
+	
+	
+	<sql id="regionDynamicColumnsExt">
+	    <![CDATA[
+	        	t.id as id,
+	        	t.region_name as regionName,
+	        	t.region_code as regionCode,
+	        	t.region_name_en as regionNameEn,
+	        	t.parent_id as parentId,
+	        	t.short_name as shortName,
+	        	t.sort_no as sortNo,
+	        	t.level as level,
+	        	t.lifecycle as lifecycle,
+	        	t.create_time as createTime,
+	        	t.last_modify_time as lastModifyTime,
+	        	t.operator_id as operatorId,
+	        	r.region_name as parenName 
+	    ]]>
+	</sql>
+	
+	<sql id="regionDynamicWhereLikeExt">
+		<where>
+			t.level = #{level} 
+			and t.lifecycle &lt;&gt; 2 
+			<if test="level > 1">
+				and t.parent_id = r.id
+			</if>
+			<if test="level == 1">
+				and r.parent_id = 0 
+				and t.id = r.id 
+			</if>
+			<if test="parenName!=null and parenName!=''">
+				and r.region_name like #{parenName}
+			</if>		  
+			<if test="regionCode!=null and regionCode!=''">
+				and t.region_code like #{regionCode}
+			</if>		  
+			<if test="regionName!=null and regionName!=''">
+				and t.region_name like #{regionName}
+			</if>		  
+			<if test="rgCode!=null and rgCode!=''">
+				and t.region_code like #{rgCode}
+			</if>		  
+			<if test="rgName!=null and rgName!=''">
+				and t.region_name like #{rgName}
+			</if>		  
+			<if test="lifecycle!=null">
+				and t.lifecycle = #{lifecycle}
+			</if>		  
+		</where>
+</sql>	
+	
+	
+	 <select id="findListByQueryMapWithPageExt" resultMap="regionCommand">
+		SELECT <include refid="regionDynamicColumnsExt"></include> 		
+			from t_bi_region t,t_bi_region r  
+		<include refid="regionDynamicWhereLikeExt"/>
+	</select>
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+		select count(*) 
+			from t_bi_region t,t_bi_region r  
+		<include refid="regionDynamicWhereLikeExt"/>
+	</select>
+	
+	  <update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Region">
+		UPDATE t_bi_region SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = now() 
+		WHERE id in
+		<foreach collection="ids" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</update>
+	
+	<select id="checkNameOrCode" resultMap="regionCommand">
+		SELECT <include refid="regionColumnsExt"></include> 
+			from t_bi_region  t
+		<where>
+			<if test="name!=null">
+				and t.region_name = #{name}
+			</if>
+			<if test="code!=null">
+				and t.region_code = #{code}
+			</if>
+			<if test="parentId!=null">
+				and t.parent_id = #{parentId}
+			</if>
+		</where>
+		and t.lifecycle &lt;&gt; 2 
+	</select>
+	
+	<select id="findRegionByCodeLifecycle" resultMap="RegionResultExt">
+		SELECT <include refid="regionColumnsExt"></include> 
+			from t_bi_region  t 
+			where t.region_code = #{code} and t.lifecycle = #{lifecycle} 
+	</select>
+	
+	<select id="getSortNoByParentId" resultType="Integer">
+		select max(t.sort_no) from t_bi_region t where t.parent_id = #{parentId}
+	</select>
+	
+	<select id="findRegionByNameAndParentId" resultMap="RegionResult">
+		SELECT <include refid="regionColumnsExt"></include> 
+			from t_bi_region t where t.parent_id = #{parentId} and t.region_name=#{name}
+	</select>
+	
+	
+</mapper>

@@ -35,6 +35,8 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     private Double codAmt;
     /** 保价金额 */
     private Double insuranceCoverage;
+    /** 时效类型 */
+    private String timeEffectType;
 
     // ------------------------------------------------------------------------------------------------------------
     // 自定义字段
@@ -45,6 +47,14 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     private String odoExtCode;
 
 
+
+    public String getTimeEffectType() {
+        return timeEffectType;
+    }
+
+    public void setTimeEffectType(String timeEffectType) {
+        this.timeEffectType = timeEffectType;
+    }
 
     public Double getInsuranceCoverage() {
         return insuranceCoverage;

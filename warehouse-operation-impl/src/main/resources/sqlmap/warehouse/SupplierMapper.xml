@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.SupplierDao">
+	<resultMap id="SupplierResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.Supplier">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="supplierColumns">
+	    <![CDATA[
+	        	id as id,
+	        	code as code,
+	        	name as name,
+	        	type as type,
+	        	level as level,
+	        	user as user,
+	        	contact as contact,
+	        	customer_id as customerId,
+	        	lifecycle as lifecycle,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	operator_id as operatorId,
+	        	pic_mobile_telephone as picMobileTelephone,
+		        country_id as countryId,
+		        province_id as provinceId,
+		        city_id as cityId,
+		        address as address,
+		        zip_code as zipCode,
+		        email as email,
+		        villages_towns_id as villagesTownsId,
+		        district_id as districtId
+	    ]]>
+	</sql>
+		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+		<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Supplier" 
+		 flushCache="true">
+	    <![CDATA[
+	        INSERT INTO
+	        t_wh_supplier (
+	        	id,
+	        	code ,
+	        	name ,
+	        	type ,
+	        	level ,
+	        	user ,
+	        	contact ,
+	        	customer_id ,
+	        	lifecycle ,
+	        	create_time ,
+	        	last_modify_time ,
+	        	operator_id ,
+	        	pic_mobile_telephone ,
+		        country_id ,
+		        province_id  ,
+		        city_id ,
+		        address ,
+		        zip_code ,
+		        email ,
+		        villages_towns_id ,
+		        district_id
+	        ) VALUES (
+	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{level,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{user,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{contact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+	        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+	        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
+	        	#{picMobileTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			    #{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			    #{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			    #{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			    #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			    #{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			    #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			    #{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			    #{districtId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        )
+	    ]]>
+
+		</insert>
+	    
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Supplier">
+	    <![CDATA[
+	        UPDATE t_wh_supplier SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        level = #{level,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        user = #{user,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        contact = #{contact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_id = #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_supplier where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_supplier 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="SupplierResult" flushCache="false">
+			select <include refid="supplierColumns" />
+		    <![CDATA[
+			    from t_wh_supplier 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="SupplierResult" flushCache="false">
+			select <include refid="supplierColumns" />
+			    from t_wh_supplier 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="supplierDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and code like #{code}
+				</if>
+	       
+	       
+		       <if test="name!=null and name!=''">
+					and name like #{name}
+				</if>
+	       
+	       
+		       <if test="type!=null and type!=''">
+					and type = #{type}
+				</if>
+	       
+	       
+		       <if test="level!=null and level!=''">
+					and level = #{level}
+				</if>
+	       
+	       
+		       <if test="user!=null and user!=''">
+					and user = #{user}
+				</if>
+	       
+				<if test="contact!=null">
+					and contact = #{contact}
+				</if>
+		       
+		       	<if test="customerId!=null">
+		               and customer_id = #{customerId}
+		        </if>
+		        
+				<if test="lifecycle!=null">
+					and lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="operatorId!=null">
+					and operator_id = #{operatorId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_supplier 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_supplier 
+		<include refid="supplierDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_supplier 
+		<include refid="supplierDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="SupplierResult">
+    	select <include refid="supplierColumns" />
+	    from t_wh_supplier 
+		<include refid="supplierDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="SupplierResult">
+    	select <include refid="supplierColumns" />
+	    from t_wh_supplier 
+		<include refid="supplierDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="SupplierResult">
+    	select <include refid="supplierColumns" />
+	    from t_wh_supplier 
+		<include refid="supplierDynamicWhere"/>
+		
+    </select>
+
+    <select id="getByCode" resultMap="SupplierResult" parameterType="java.lang.String">
+	    select <include refid="supplierColumns"/>
+	    <![CDATA[
+	        from t_wh_supplier where code = #{code}
+	    ]]>
+    </select>
+    
+    <select id="getByName" resultMap="SupplierResult" parameterType="java.lang.String">
+	    select <include refid="supplierColumns"/>
+	    <![CDATA[
+	        from t_wh_supplier where name = #{name}
+	    ]]>
+    </select>
+    
+	
+</mapper>
