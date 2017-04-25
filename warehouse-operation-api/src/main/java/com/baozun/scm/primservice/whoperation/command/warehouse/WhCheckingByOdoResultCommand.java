@@ -27,6 +27,8 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private String turnoverBoxCode; // 周转箱
 
     private String outboundBoxCode; // 出库箱编码
+    
+    private Long outboundboxId;
     /** 出库单ID */
     private Long odoId;
     /** 出库单明细ID */
@@ -114,4 +116,14 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
     }
+
+    public Long getOutboundboxId() {
+        return outboundboxId;
+    }
+
+    public void setOutboundboxId(Long outboundboxId) {
+        this.outboundboxId = outboundboxId;
+    }
+    
+    
 }
