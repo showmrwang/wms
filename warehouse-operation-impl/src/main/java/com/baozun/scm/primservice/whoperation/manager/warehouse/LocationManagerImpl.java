@@ -137,7 +137,12 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     private LocationSkuVolume getLocationSkuVolumeByLocationIdAndOuid(Long ouId, Long locationId) {
         LocationSkuVolume locationSkuVolume = locationSkuVolumeDao.findListBylocationId(locationId, ouId);
         Long OnHandQty = whSkuInventoryDao.findOnHandQtyByLocationId(locationId, ouId);
-        locationSkuVolume.setOnHandQty(OnHandQty);
+        if (null == OnHandQty) {
+            locationSkuVolume.setOnHandQty(0L);
+        } else {
+            locationSkuVolume.setOnHandQty(OnHandQty);
+        }
+
         return locationSkuVolume;
     }
 
