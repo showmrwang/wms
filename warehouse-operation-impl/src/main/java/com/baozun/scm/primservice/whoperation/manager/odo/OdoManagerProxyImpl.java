@@ -263,7 +263,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (target.getCountry() != null) {
             Region countryRegion = this.regionManager.findRegionById(target.getCountry());
             if (countryRegion != null) {
-                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionCode());
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionName());
             }
         }
 
@@ -273,7 +273,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
             Region provinceRegion = this.regionManager.findRegionById(target.getProvince());
             if (provinceRegion != null) {
-                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionCode());
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionName());
             }
         }
 
@@ -281,7 +281,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (target.getCity() != null) {
             Region cityRegion = this.regionManager.findRegionById(target.getCity());
             if (cityRegion != null) {
-                sourceAddress.setDistributionTargetCity(cityRegion.getRegionCode());
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionName());
             }
         }
 
@@ -291,7 +291,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (target.getDistrict() != null) {
             Region districtRegion = this.regionManager.findRegionById(target.getDistrict());
             if (districtRegion != null) {
-                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionCode());
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionName());
             }
         }
 
@@ -300,7 +300,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (target.getVillagesTowns() != null) {
             Region villageRegion = this.regionManager.findRegionById(target.getVillagesTowns());
             if (villageRegion != null) {
-                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionName());
             }
         }
         return sourceAddress;
@@ -323,7 +323,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (wh.getCountryId() != null) {
             Region countryRegion = this.regionManager.findRegionById(wh.getCountryId());
             if (countryRegion != null) {
-                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionCode());
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionName());
             }
         }
 
@@ -333,7 +333,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
             Region provinceRegion = this.regionManager.findRegionById(wh.getProvinceId());
             if (provinceRegion != null) {
-                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionCode());
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionName());
             }
         }
 
@@ -341,7 +341,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (wh.getCityId() != null) {
             Region cityRegion = this.regionManager.findRegionById(wh.getCityId());
             if (cityRegion != null) {
-                sourceAddress.setDistributionTargetCity(cityRegion.getRegionCode());
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionName());
             }
         }
 
@@ -351,7 +351,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (wh.getDistrictId() != null) {
             Region districtRegion = this.regionManager.findRegionById(wh.getDistrictId());
             if (districtRegion != null) {
-                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionCode());
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionName());
             }
         }
 
@@ -360,7 +360,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (wh.getVillagesTownsId() != null) {
             Region villageRegion = this.regionManager.findRegionById(wh.getVillagesTownsId());
             if (villageRegion != null) {
-                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionName());
             }
         }
         return sourceAddress;
@@ -389,7 +389,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (supplier.getCountryId() != null) {
             Region countryRegion = this.regionManager.findRegionById(supplier.getCountryId());
             if (countryRegion != null) {
-                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionCode());
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionName());
             }
         }
 
@@ -399,7 +399,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
             Region provinceRegion = this.regionManager.findRegionById(supplier.getProvinceId());
             if (provinceRegion != null) {
-                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionCode());
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionName());
             }
         }
 
@@ -407,7 +407,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (supplier.getCityId() != null) {
             Region cityRegion = this.regionManager.findRegionById(supplier.getCityId());
             if (cityRegion != null) {
-                sourceAddress.setDistributionTargetCity(cityRegion.getRegionCode());
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionName());
             }
         }
 
@@ -417,7 +417,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (supplier.getDistrictId() != null) {
             Region districtRegion = this.regionManager.findRegionById(supplier.getDistrictId());
             if (districtRegion != null) {
-                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionCode());
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionName());
             }
         }
 
@@ -426,7 +426,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (supplier.getVillagesTownsId() != null) {
             Region villageRegion = this.regionManager.findRegionById(supplier.getVillagesTownsId());
             if (villageRegion != null) {
-                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionCode());
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionName());
             }
         }
         return sourceAddress;

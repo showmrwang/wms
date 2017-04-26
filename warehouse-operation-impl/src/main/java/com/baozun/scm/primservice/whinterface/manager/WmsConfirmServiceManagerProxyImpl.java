@@ -102,7 +102,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " customerCode: " + customerCode);
+            log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " start: " + start + "pageSize: " + pageSize + " whCode: " + whCode + " customerCode: " + customerCode);
         }
         // 获取对应时间段+仓库的库存流水信息
         List<WmsSkuInventoryFlow> wmsSkuInventoryFlows = whSkuInventoryFlowManager.findWmsSkuInventoryFlowByCreateTime(begin, end, start, pageSize, w.getId());
@@ -155,7 +155,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
+            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " start: " + start + "pageSize: " + pageSize + " whCode: " + whCode + " dataSource: " + dataSource);
         }
         List<WmsOutBoundStatusConfirm> whOutboundStatusConfirms = whOdoStatusConfirmManager.findWmsOutBoundStatusConfirmByCreateTimeAndDataSource(begin, end, start, pageSize, w.getId(), dataSource);
         for (WmsOutBoundStatusConfirm wmsOutBoundStatusConfirm : whOutboundStatusConfirms) {
@@ -208,7 +208,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
+            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundConfirm beginTime: " + begin + " endTime: " + end + " start: " + start + "pageSize: " + pageSize + " whCode: " + whCode + " dataSource: " + dataSource);
         }
         List<WmsOutBoundConfirm> wobc = new ArrayList<WmsOutBoundConfirm>();
         // 获取出库单反馈数据
@@ -310,7 +310,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " whCode: " + whCode + " dataSource: " + dataSource);
+            log.debug("WmsConfirmServiceManagerProxy.wmsOutBoundStatusConfirm beginTime: " + begin + " endTime: " + end + " start: " + start + "pageSize: " + pageSize + " whCode: " + whCode + " dataSource: " + dataSource);
         }
         List<WmsInvoiceConfirm> invoiceConfirmList = whInvoiceConfirmManager.findWmsInvoiceConfirmByCreateTimeAndDataSource(begin, end, start, pageSize, w.getId(), dataSource);
         for (WmsInvoiceConfirm wmsInvoiceConfirm : invoiceConfirmList) {
@@ -354,7 +354,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         String begin = DateUtil.formatDate(beginTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         String end = DateUtil.formatDate(endTime, DateUtil.DEFAULT_DATE_TIME_FORMAT);
         if (log.isDebugEnabled()) {
-            log.debug("WmsConfirmServiceManagerProxy.wmsInBoundConfirm beginTime: " + begin + " endTime: " + end + " dataSource: " + dataSource);
+            log.debug("WmsConfirmServiceManagerProxy.wmsInBoundConfirm beginTime: " + begin + " endTime: " + end + " start: " + start + "pageSize: " + pageSize + " dataSource: " + dataSource);
         }
         List<WmsInBoundConfirm> wmsInboundConfirms = new ArrayList<WmsInBoundConfirm>();
         // 获取入库单反馈相关数据
