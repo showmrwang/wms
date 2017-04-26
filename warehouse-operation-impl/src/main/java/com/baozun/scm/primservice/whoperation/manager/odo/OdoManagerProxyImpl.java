@@ -596,6 +596,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 log.error("", ex);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
+            // @mender yimin.lu 2017/04/26
+            if (odoAddress != null) {
+                odoAddress.setOuId(ouId);
+            }
             odoId = this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, invoice, invoiceLineList, ouId, userId);
         } catch (BusinessException e) {
             throw e;
