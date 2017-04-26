@@ -4197,16 +4197,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    <select id="findSeedingOdoSkuInvByUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
-        select
-            <include refid="whSkuInventoryColumnsExt"/>
-        from
-            t_wh_sku_inventory
-        where
-            occupation_code = #{odoCode}
-            and ou_id = #{ouId}
-            and uuid = #{uuid}
-    </select>
 
     <select id="findSeedingOdoSkuInvByOdoLineIdUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
         select
