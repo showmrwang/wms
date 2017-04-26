@@ -33,8 +33,8 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private Long odoId;
     /** 出库单明细ID */
     private Long odoLineId;
-
-    private Integer checkingPattern;
+    /** 按单复核模式类型*/
+    private String checkingPattern;
     /**复合明细集合*/
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
 
@@ -126,13 +126,11 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.outboundboxId = outboundboxId;
     }
 
-    public Integer getCheckingPattern() {
+    public String getCheckingPattern() {
         return checkingPattern;
     }
 
-    public void setCheckingPattern(Integer checkingPattern) {
+    public void setCheckingPattern(String checkingPattern) {
         this.checkingPattern = checkingPattern;
     }
-
-
 }

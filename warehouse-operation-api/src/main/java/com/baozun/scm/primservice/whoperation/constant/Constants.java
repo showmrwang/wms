@@ -42,7 +42,7 @@ public final class Constants {
 
     /** 调编码生成器Asn预约实体标识 */
     public static final String ASN_RESERVE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve";
-    
+
     /** 调编码生成器 发票实体标识 */
     public static final String INVOICE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoice";
 
@@ -823,4 +823,17 @@ public final class Constants {
     public static final String AIMTYPE_1 = "1";// 供应商
     public static final String AIMTYPE_5 = "5";// 仓库
     public static final String AIMTYPE_7 = "7";// 店铺对应配送对象
+
+    /**按单复核模式1 小车加出库箱*/
+    public static final String WAY_1 = "way1";
+    /**按单复核模式2 小车加货格*/
+    public static final String WAY_2 = "way2";
+    /**按单复核模式3 播种墙+出库箱*/
+    public static final String WAY_3 = "way3";
+    /**按单复核模式4 播种墙+货格*/
+    public static final String WAY_4 = "way4";
+    /**按单复核模式5 只有出库箱*/
+    public static final String WAY_5 = "way5";
+    /**按单复核模式6 周转箱*/
+    public static final String WAY_6 = "way6";
 }
