@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,12 +15,17 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuLocationCom
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.LocationProductVolumeDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.LocationSkuVolumeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume;
+import com.baozun.scm.primservice.whoperation.model.warehouse.LocationSkuVolume;
 
 @Service("locationManagerProxy")
 @Transactional
@@ -32,6 +38,10 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     private LocationProductVolumeDao locationProductVolumeDao;
     @Autowired
     private WhSkuDao whSkuDao;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
+    @Autowired
+    private LocationSkuVolumeDao locationSkuVolumeDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -92,4 +102,43 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
 
         return this.whLocationDao.findListByParam(location);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<LocationSkuVolume> findListByfacilityId(Long facilityId, Long ouId) {
+        // 根据复核台id查出所对应的库位信息
+        // 先找出所有库位id在根据库位id找到对应的库为名 和该库位下商品剩余数
+        List<LocationSkuVolume> list = new ArrayList<>();
+        try {
+            List<Long> locationIds = locationSkuVolumeDao.findLocationIdsByfacilityId(facilityId, ouId);
+            Long a = 1L;
+            if (null != locationIds && locationIds.size() > 0) {
+                for (Long locationId : locationIds) {
+
+                    LocationSkuVolume locationSkuVolume = getLocationSkuVolumeByLocationIdAndOuid(ouId, locationId);
+                    list.add(locationSkuVolume);
+                    locationSkuVolume.setId(a);
+                    a++;
+                }
+            }
+            return list;
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCodes.SKU_IS_NULL_BY_ID);
+        }
+    }
+
+    /**
+     * 通过库位id和ouid获取库位库存信息
+     * 
+     * @param ouId
+     * @param locationId
+     * @return
+     */
+    private LocationSkuVolume getLocationSkuVolumeByLocationIdAndOuid(Long ouId, Long locationId) {
+        LocationSkuVolume locationSkuVolume = locationSkuVolumeDao.findListBylocationId(locationId, ouId);
+        Long OnHandQty = whSkuInventoryDao.findOnHandQtyByLocationId(locationId, ouId);
+        locationSkuVolume.setOnHandQty(OnHandQty);
+        return locationSkuVolume;
+    }
+
 }
