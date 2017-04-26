@@ -120,4 +120,12 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @return
      */
 	List<WhSkuInventorySnCommand> findInvSnByAsnCodeAndUuid(@Param("asnCode") String occupationCode, @Param("uuid") String uuid, @Param("ouId") Long ouId);
+	
+	/**
+	 * 查询当前uuid在sn表中的数量
+	 * @param uuid
+	 * @param ouId
+	 * @return
+	 */
+	public long findCountSnByuuid(@Param("uuid") String uuid,@Param("ouId")Long ouId);
 }

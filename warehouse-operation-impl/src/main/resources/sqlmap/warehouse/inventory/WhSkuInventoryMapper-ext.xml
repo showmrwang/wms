@@ -4319,4 +4319,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					 and inv.seeding_wall_code =#{seedingWallCode}
 				</if>
 	</select>
+	
 </mapper>
