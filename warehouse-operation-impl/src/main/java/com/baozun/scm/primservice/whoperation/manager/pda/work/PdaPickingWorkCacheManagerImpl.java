@@ -919,7 +919,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
-                                  if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){  //所有唯一sku是否扫描完毕
+                                  if(!isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){  //所有唯一sku是否扫描完毕,相同返回true,不相同返回false
+                                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       //同一种sku有不同的库存属性
                                       for(String skuAttr:skuAttrIds){
                                            if(!scanSkuAttrIdsNoSn.contains(skuAttr)) {
@@ -1158,7 +1159,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
                                   //
-                                  if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+                                  if(!isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){  //相同返回true,不相同返回false
+                                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       //同一种sku有不同的库存属性
                                       for(String skuAttr:skuAttrIds){
                                            if(!scanSkuAttrIdsNoSn.contains(skuAttr)) {
@@ -1554,7 +1556,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
                                   String tipSkuAttrId = null;
-                                  if(isCacheAllExists2(skuAttrIds,scanSkuAttrIdsNoSn)){
+                                  if(!isCacheAllExists2(skuAttrIds,scanSkuAttrIdsNoSn)){//相同返回true,不相同返回false
+                                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       //同一种sku有不同的库存属性
                                       for(String skuAttr:skuAttrIds){
                                            if(!scanSkuAttrIdsNoSn.contains(skuAttr)) {
@@ -1762,7 +1765,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
                                   String tipSkuAttrId = null;
-                                  if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+                                  if(!isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+                                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
                                       //同一种sku有不同的库存属性
                                       for(String skuAttr:skuAttrIds){
                                            if(!scanSkuAttrIdsNoSn.contains(skuAttr)) {
@@ -2093,7 +2097,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);  //唯一sku对应的sku数量
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
                                   String tipSkuAttrId = null;
-                                  if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+                                  if(!isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){////相同返回true,不相同返回false
+                                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
                                       //同一种sku有不同的库存属性
                                       for(String skuAttr:skuAttrIds){
                                           Set<String> snDefectSet = skuSnDefect.get(skuAttr);
@@ -2288,7 +2293,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
                                   //同一种sku，不同种库存属性情况
                                   String tipSkuAttrId = null;
-                                  if(isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){
+                                  if(!isCacheAllExists2(skuAttrIds, scanSkuAttrIdsNoSn)){//相同返回true,不相同返回false
+                                      cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
                                       //同一种sku有不同的库存属性
                                       for(String skuAttr:skuAttrIds){
                                           Set<String> snDefectSet = skuSnDefect.get(skuAttr);
@@ -2656,7 +2662,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        }
        
        /**
-        * 判断是值是否相同(如果不相同则,返回true,否则返回false)
+        * 判断是值是否相同(如果相同返回true,不相同返回false)
         * @param ids
         * @param cacheKeys
         * @return
@@ -2671,7 +2677,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                    while (iter.hasNext()) {
                        String value = iter.next();
                        if (null == value) value = "-1";
-                       if (!value.equals(cId)) {
+                       if (value.equals(cId)) {
                            isExists = true;
                            break;
                        }

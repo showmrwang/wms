@@ -173,7 +173,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * 拣货完成
      * @param operationId
      */
-    public void shortPickingEnd(Long operationId,Long ouId,Long userId,String outBoundBoxCode,String turnoverBoxCode,Long outBoundBoxId);
+    public void shortPickingEnd(String workCode,Long operationId,Long ouId,Long userId,String outBoundBoxCode,String turnoverBoxCode,Long outBoundBoxId);
     
     
     /***

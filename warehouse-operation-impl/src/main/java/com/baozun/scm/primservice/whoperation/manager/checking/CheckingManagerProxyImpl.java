@@ -452,6 +452,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         Long outboundboxId = cmd.getOutboundboxId();
         //更新复合明细表
         this.updateCheckingByOdo(checkingLineList, ouId);
+        cmd.setOuId(ouId);
         //生成出库箱库存
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
         //获取出库单id 

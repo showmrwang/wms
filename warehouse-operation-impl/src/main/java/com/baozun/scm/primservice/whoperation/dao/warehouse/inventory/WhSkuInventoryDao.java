@@ -898,8 +898,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param operationId
      * @return
      */
-    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOdo(@Param("odoLineId") Long odoLineId, @Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("outerContainerId") Long containerId, @Param("containerLatticeNo") Integer containerLatticeNo,
-            @Param("outboundbox") String outboundbox, @Param("turnoverBoxCode") String turnoverBoxCode, @Param("seedingWallCode") String seedingWallCode);
+    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOdo(@Param("odoLineId") Long odoLineId, @Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("containerId") Long containerId, @Param("containerLatticeNo") Integer containerLatticeNo,
+            @Param("outboundbox") String outboundbox, @Param("turnoverBoxId") Long turnoverBoxId, @Param("seedingWallCode") String seedingWallCode);
 
 
     /**
