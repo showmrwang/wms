@@ -874,6 +874,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<WhSeedingCollectionLineCommand> findListByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 通过内部容器id查找容器中的库存明细并插入播种墙集货明细表 groupBy odoLine
+     * 
+     * @param containerId
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingCollectionLineCommand> findListByContainerIdExt(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
+
     /***
      * 补货查询已分配库存记录
      * 

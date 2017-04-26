@@ -1484,7 +1484,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     public void insertIntoSeedingCollectionLine(WhSeedingCollection whSeedingCollection) {
         Long containerId = whSeedingCollection.getContainerId();
         if (null != containerId) {
-            List<WhSeedingCollectionLineCommand> invList = this.whSkuInventoryDao.findListByContainerId(containerId, whSeedingCollection.getOuId());
+            List<WhSeedingCollectionLineCommand> invList = this.whSkuInventoryDao.findListByContainerIdExt(containerId, whSeedingCollection.getOuId());
             if (null != invList && !invList.isEmpty()) {
                 for (WhSeedingCollectionLineCommand inv : invList) {
                     if (null != inv.getStoreId()) {
@@ -1505,6 +1505,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     BeanUtils.copyProperties(inv, line);
                     line.setSeedingCollectionId(whSeedingCollection.getId());
                     line.setSeedingQty(0L);
+                    line.setBatchNumber(whSeedingCollection.getBatch());
                     this.whSeedingCollectionLineDao.insert(line);
                 }
             }
