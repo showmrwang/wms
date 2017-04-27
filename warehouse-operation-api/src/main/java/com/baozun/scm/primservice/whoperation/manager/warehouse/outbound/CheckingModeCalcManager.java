@@ -19,9 +19,9 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.outbound;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 /**
  * @author lichuan
@@ -52,6 +52,6 @@ public interface CheckingModeCalcManager extends BaseManager {
      * @param ouId
      * @param logId
      */
-    void generateCheckingDataBySeeding(Long facilityId, String batchNo, List<WhSkuInventory> facilitySeedingSkuInventoryList, Long userId, Long ouId, String logId);
+    void generateCheckingDataBySeeding(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> seedingLineList, Long userId, Long ouId, String logId);
 
 }

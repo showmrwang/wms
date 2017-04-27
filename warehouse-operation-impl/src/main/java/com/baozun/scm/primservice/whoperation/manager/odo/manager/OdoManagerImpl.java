@@ -348,12 +348,22 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     this.whOdoVasDao.insert(vas);
                 }
             }
+            Set<Long> skuIdSet = new HashSet<Long>();
             if (odoLineList != null && odoLineList.size() > 0) {
                 for (OdoLineCommand lineCommand : odoLineList) {
                     WhOdoLine odoLine = new WhOdoLine();
                     BeanUtils.copyProperties(lineCommand, odoLine);
                     odoLine.setOdoId(odoId);
                     odoLine.setOuId(ouId);
+                    odoLine.setCurrentQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setActualQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setCancelQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setAssignQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setDiekingQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setCreateTime(new Date());
+                    odoLine.setCreatedId(userId);
+                    odoLine.setLastModifyTime(new Date());
+                    odoLine.setModifiedId(userId);
                     this.whOdoLineDao.insert(odoLine);
                     Long odoLineId = odoLine.getId();
                     if (lineCommand.getVasList() != null && lineCommand.getVasList().size() > 0) {
@@ -451,16 +461,44 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     }
                 }
             }
+            // @mender yimin.lu 配货模式计算
             // 汇总信息
             if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
                 this.getSummaryByOdolineList(odo);
+                // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
+                if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                    // 设置计数器编码
+                    String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
+                    odo.setCounterCode(counterCode);
+                }
                 int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
                 if (updateCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                // 加入仓库配货模式
+                try {
+
+                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(odo.getCounterCode(), odo.getId());
+                } catch (BusinessException ex) {
+                    log.error("", ex);
+                } catch (Exception exp) {
+                    log.error("", exp);
+                    throw new BusinessException(ErrorCodes.ODO_DISTRIBUTIONPATTERN_ERROR);
+                }
             }
+
             // 生成反馈信息 @mender yimin.lu 2017/4/24
-            this.whOutboundConfirmManager.saveWhOutboundConfirm(odo);
+            //@mender yimin.lu 捕获异常封装
+            try{
+                this.whOutboundConfirmManager.saveWhOutboundConfirm(odo);
+            }catch(BusinessException ex){
+                log.error("",ex);
+                throw ex;
+            }catch(Exception exp){
+                log.error("",exp);
+                throw new BusinessException(ErrorCodes.ODO_CONFIRM_ERROR);
+            }
+
         } catch (Exception e) {
             log.error("", e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
