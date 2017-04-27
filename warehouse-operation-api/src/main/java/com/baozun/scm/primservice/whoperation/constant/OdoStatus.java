@@ -10,7 +10,7 @@ public class OdoStatus implements Serializable {
     private static final long serialVersionUID = 249822883185178906L;
     
     /**
-     * 出库单头和明细状态
+     * 出库单状态
      * 
      * @author lichuan
      */
