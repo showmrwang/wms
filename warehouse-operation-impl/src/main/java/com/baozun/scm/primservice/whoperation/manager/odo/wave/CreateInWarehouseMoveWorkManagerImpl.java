@@ -3,10 +3,8 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
-import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationInvVolumeWeightCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.InWarehouseMoveWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
@@ -30,7 +25,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
-import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao;
@@ -47,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WorkTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -55,11 +50,9 @@ import com.baozun.scm.primservice.whoperation.manager.rule.WhLocationInvVolumeWi
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
@@ -70,8 +63,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("createInWarehouseMoveWorkManager")
 @Transactional
@@ -125,6 +116,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     private WhSkuDao whSkuDao;
     @Autowired
     private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
+    @Autowired
+    private WhSkuInventorySnDao whSkuInventorySnDao;
     
     
     /**
@@ -141,7 +134,9 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
         Map<String, Double> idAndQtyMap = new HashMap<String, Double>();
         idAndQtyMap = inWarehouseMoveWorkCommand.getIdAndQtyMap();
         for(WhSkuInventoryCommand whSkuInventoryCommand : whSkuInventoryCommandLst){
-            // 分配库存            
+            //调编码生成器工作头实体标识 
+            String occupationCode = codeManager.generateCode(Constants.WMS, Constants.WHSKUINVENTORYALLOCATED_MODEL_URL, "", Constants.WMS_SKUINVENTORYALLOCATED_OCCUPATION, null);
+            // 分配库存 
             WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand = new WhSkuInventoryAllocatedCommand();
             whSkuInventoryAllocatedCommand.setSkuId(whSkuInventoryCommand.getSkuId());
             whSkuInventoryAllocatedCommand.setLocationId(whSkuInventoryCommand.getLocationId());
@@ -149,13 +144,21 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryAllocatedCommand.setInsideContainerId(whSkuInventoryCommand.getInsideContainerId());
             whSkuInventoryAllocatedCommand.setCustomerId(whSkuInventoryCommand.getCustomerId());
             whSkuInventoryAllocatedCommand.setStoreId(whSkuInventoryCommand.getStoreId());
-            whSkuInventoryAllocatedCommand.setOccupationCode(whSkuInventoryCommand.getOccupationCode());
-            whSkuInventoryAllocatedCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
+            whSkuInventoryAllocatedCommand.setOccupationCode(occupationCode);
+            whSkuInventoryAllocatedCommand.setOccupationLineId(null);
             whSkuInventoryAllocatedCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
             if(null != whSkuInventoryCommand.getOccupationCode()){
-                whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get( whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getUuid()));
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }else{
-                whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getUuid()));  
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryAllocatedCommand.setQty(idAndQtyMap.get("-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }
             whSkuInventoryAllocatedCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
             whSkuInventoryAllocatedCommand.setInvType(whSkuInventoryCommand.getInvType());
@@ -193,13 +196,21 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryTobefilledCommand.setInsideContainerId(whSkuInventoryCommand.getInsideContainerId());
             whSkuInventoryTobefilledCommand.setCustomerId(whSkuInventoryCommand.getCustomerId());
             whSkuInventoryTobefilledCommand.setStoreId(whSkuInventoryCommand.getStoreId());
-            whSkuInventoryTobefilledCommand.setOccupationCode(whSkuInventoryCommand.getOccupationCode());
-            whSkuInventoryTobefilledCommand.setOccupationLineId(whSkuInventoryCommand.getOccupationLineId());
+            whSkuInventoryTobefilledCommand.setOccupationCode(occupationCode);
+            whSkuInventoryTobefilledCommand.setOccupationLineId(null);
             whSkuInventoryTobefilledCommand.setReplenishmentCode(whSkuInventoryCommand.getReplenishmentCode());
             if(null != whSkuInventoryCommand.getOccupationCode()){
-                whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get( whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getUuid()));
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get(whSkuInventoryCommand.getOccupationCode() + "-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }else{
-                whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getUuid()));  
+                if(null != whSkuInventoryCommand.getOccupationLineId()){
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get("-" + whSkuInventoryCommand.getOccupationLineId() + "-" + whSkuInventoryCommand.getUuid()));
+                }else{
+                    whSkuInventoryTobefilledCommand.setQty(idAndQtyMap.get("-" + "-" + whSkuInventoryCommand.getUuid()));
+                }
             }
             whSkuInventoryTobefilledCommand.setInvStatus(whSkuInventoryCommand.getInvStatus());
             whSkuInventoryTobefilledCommand.setInvType(whSkuInventoryCommand.getInvType());
@@ -371,13 +382,19 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
             Double onHandQty = 0.00;
             Double frozenQty = 0.00;
+            // 库存条件 
             skuInventory.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            skuInventory.setIsLocked(null);
+            // 分配条件 
             allocatedCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            allocatedCommand.setOccupationCode(skuInventoryAllocatedCommand.getOccupationCode());
+            allocatedCommand.setOccupationLineId(skuInventoryAllocatedCommand.getOccupationLineId());
+            allocatedCommand.setUuid(skuInventoryAllocatedCommand.getUuid());
+            // 待移入条件 
             totalCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            // 待移入条件 
             skuInventoryTobefilled.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
             skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
             Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
             Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
             Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
@@ -406,13 +423,19 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
             Double onHandQty = 0.00;
             Double frozenQty = 0.00;
+            // 库存条件 
             skuInventory.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            skuInventory.setIsLocked(null);
+            // 分配条件 
             allocatedCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            allocatedCommand.setOccupationCode(skuInventoryAllocatedCommand.getOccupationCode());
+            allocatedCommand.setOccupationLineId(skuInventoryAllocatedCommand.getOccupationLineId());
+            allocatedCommand.setUuid(skuInventoryAllocatedCommand.getUuid());
+            // 待移入条件 
             totalCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            // 待移入条件 
             skuInventoryTobefilled.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
             skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
             Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
             Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
             Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
@@ -519,8 +542,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
         whWorkLineCommand.setOdoId(odo == null ? null : odo.getId());
         //出库单明细ID 
         whWorkLineCommand.setOdoLineId(skuInventoryAllocatedCommand.getOccupationLineId());
-        //补货单据号        
-        whWorkLineCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+        //库内移动单据号
+        whWorkLineCommand.setInvMoveCode(skuInventoryAllocatedCommand.getOccupationCode());
         //创建时间 
         whWorkLineCommand.setCreateTime(new Date());
         //最后操作时间 

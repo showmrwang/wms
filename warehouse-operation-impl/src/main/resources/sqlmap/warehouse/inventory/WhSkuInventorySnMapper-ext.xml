@@ -224,7 +224,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <foreach item="insideContainerId" index="index" collection="insideContainerIdList" open="(" separator="," close=")">
             #{insideContainerId}
         </foreach>
-</select>
+	</select>
 	
 	<select id="findInvSnByAsnCodeAndUuid" resultMap="WhSkuInventorySnCommandResultExt">
 		select 
@@ -255,4 +255,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and uuid = #{uuid}
 			and ou_id = #{ouid} 
 	</select>
+	
+	<select id="findInvSnByOccupationCodeAndUuid" resultMap="WhSkuInventorySnCommandResultExt">
+    	select 
+    		<include refid="whSkuInventorySnColumnsExt" />
+		from 
+			t_wh_sku_inventory_sn
+		where 
+			occupation_code = #{occupationCode} 
+			and uuid = #{uuid} 
+			and ou_id = #{ouid} 
+    </select>
+	
+	<select id="findCountSnByuuid" resultType="long">
+	    select count(1)
+	    from t_wh_sku_inventory_sn
+	    where uuid = #{uuid}
+	          ou_id = #{ouId}
+	 </select>
 </mapper>

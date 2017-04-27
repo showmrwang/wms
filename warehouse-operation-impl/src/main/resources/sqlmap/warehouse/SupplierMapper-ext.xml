@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.SupplierDao">
+		<resultMap id="SupplierResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.Supplier">
+		</resultMap>
+		
+		<resultMap id="supplierCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.SupplierCommand">
+	    </resultMap>
+		
+		<select id="findListCountByQueryMapExt" resultType="long">
+	        select count(*) from t_wh_supplier as s
+		    left join sys_dictionary as syst on s.type = syst.dic_value   AND syst.group_value = 'SUPPLIER_TYPE'
+		    left join sys_dictionary as sysl on s.level = sysl.dic_value   AND sysl.group_value = 'SUPPLIER_LEVEL'
+		    left join t_bi_customer customer on s.customer_id = customer.id
+			<include refid="supplierDynamicWhereExt"/> 
+	    </select>
+	    
+	    <select id="findListByQueryMapWithPageExt" resultMap="supplierCommand">
+	    	select <include refid="supplierColumnsExt" />
+		    from t_wh_supplier as s
+		    left join sys_dictionary as syst on s.type = syst.dic_value  AND syst.group_value = 'SUPPLIER_TYPE'
+		    left join sys_dictionary as sysl on s.level = sysl.dic_value  AND sysl.group_value = 'SUPPLIER_LEVEL'
+		    left join t_bi_customer customer on s.customer_id = customer.id
+			<include refid="supplierDynamicWhereExt"/>
+	    </select>
+	    
+    	<select id="uniqueCodeOrName" resultType="long">
+			select count(*) from t_wh_supplier
+			<where>
+				<if test="id!=null">
+					and id != #{id}
+				</if>
+				<if test="code!=null and code!=''">
+					and code like #{code}
+				</if>
+				<if test="name!=null and name!=''">
+					and name like #{name}
+				</if>
+			</where>
+		</select>
+	    
+		<!-- 用于select查询公用抽取的列 -->
+		<sql id="supplierColumnsExt">
+		    <![CDATA[
+		        	s.id as id,
+		        	s.code as code,
+		        	s.name as name,
+		        	s.type as type,
+		        	s.level as level,
+		        	s.user as user,
+		        	s.contact as contact,
+		        	s.customer_id as customerId,
+		        	s.lifecycle as lifecycle,
+		        	s.create_time as createTime,
+		        	s.last_modify_time as lastModifyTime,
+		        	s.operator_id as operatorId,
+                    syst.dic_label as typeName,
+                    sysl.dic_label as levelName,
+                    customer.customer_name as customerName
+		    ]]>
+		</sql>
+		<sql id="supplier">
+		    <![CDATA[
+	              id as id,
+		          code as code,
+		          name as name,
+		          type as type,
+		          level as level,
+		          user as user,
+		          contact as contact,
+		          customer_id as customerId,
+		          lifecycle as lifecycle,
+		          create_time as createTime,
+		          last_modify_time as lastModifyTime,
+		          operator_id as operatorId
+		     ]]>
+		 </sql>
+		<sql id="supplierDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+			<where>
+		       
+		            
+		           <if test="customerIdList!=null">
+		              s.customer_id in
+				     <foreach collection="customerIdList" item="ids" open="("
+			             separator="," close=")">
+			             #{ids}
+		                </foreach>
+			        </if>
+             
+                    <if test="customerIdList==null">
+                           s.customer_id in (null)
+			        </if>
+					<if test="id!=null and id!=''">
+						and s.id = #{id}
+					</if>
+		       
+			       <if test="code!=null and code!=''">
+						and s.code like #{code}
+					</if>
+		       
+		       
+			       <if test="name!=null and name!=''">
+						and s.name like #{name}
+					</if>
+		       
+		       
+			       <if test="type!=null and type!=''">
+						and s.type like #{type}
+					</if>
+		       
+		       
+			       <if test="level!=null and level!=''">
+						and s.level like #{level}
+					</if>
+		       
+		       
+			       <if test="user!=null and user!=''">
+						and s.user like #{user}
+					</if>
+		       
+					<if test="contact!=null">
+						and s.contact like #{contact}
+					</if>
+					
+					<if test="customerId!=null">
+		                and s.customer_id = #{customerId}
+		            </if>
+					
+					<!-- input 模糊查询 End-->
+					<if test="code1!=null and code1!=''">
+						and s.code like #{code1}
+					</if>
+		       
+		       
+			       <if test="name1!=null and name1!=''">
+						and s.name like #{name1}
+					</if>
+		       
+		       
+			       <if test="type1!=null and type1!=''">
+						and s.type like #{type1}
+					</if>
+		       
+		       
+			       <if test="level1!=null and level1!=''">
+						and s.level like #{level1}
+					</if>
+		       
+		       
+			       <if test="user1!=null and user1!=''">
+						and s.user like #{user1}
+					</if>
+		       
+					<if test="contact1!=null and contact1!=''">
+						and s.contact like #{contact1}
+					</if>
+					<!-- input 模糊查询 End-->
+		       
+					<if test="lifecycle!=null">
+						and s.lifecycle = #{lifecycle}
+					</if>
+		       
+					<if test="createTime!=null">
+						and s.create_time = #{createTime}
+					</if>
+		       
+					<if test="lastModifyTime!=null">
+						and s.last_modify_time = #{lastModifyTime}
+					</if>
+		       
+					<if test="operatorId!=null">
+						and s.operator_id = #{operatorId}
+					</if>
+			</where>
+		</sql>
+
+		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Supplier">
+		    <![CDATA[
+		        UPDATE t_wh_supplier SET
+			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        name = #{name,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        type = #{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        level = #{level,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        user = #{user,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        contact = #{contact,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        customer_id =  #{customerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = #{globalLastModifyTime} ,
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
+			        pic_mobile_telephone = #{picMobileTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        country_id = #{countryId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        province_id = #{provinceId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        city_id = #{cityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        address = #{address,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        zip_code = #{zipCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        email = #{email,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        villages_towns_id = #{villagesTownsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        district_id = #{districtId,javaType=java.lang.Long,jdbcType=BIGINT}
+		        WHERE 
+			        id = #{id} 
+
+			        and last_modify_time	=  #{lastModifyTime}
+		    ]]>
+		</update>
+		
+		<update id="updateLifeCycle" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.Supplier">
+			UPDATE t_wh_supplier SET lifecycle = #{lifecycle},operator_id = #{userid},last_modify_time = #{lastModifyTime} 
+			WHERE id in
+			<foreach collection="ids" item="id" open="(" separator=","
+				close=")">
+				#{id}
+			</foreach>
+	   </update>
+	   
+	   <select id="getSupplierByIds" resultMap="SupplierResultExt">
+	       select
+	            <include refid="supplier" />
+	       from t_wh_supplier
+	       where lifecycle = #{lifecycle} and customer_id in
+	             <if test="customerList!=null">
+				     <foreach collection="customerList" item="ids" open="("
+			             separator="," close=")">
+			             #{ids}
+		                </foreach>
+			     </if>
+                 <if test="customerList==null">
+                          (null)
+			     </if>
+	   </select>
+	
+</mapper>

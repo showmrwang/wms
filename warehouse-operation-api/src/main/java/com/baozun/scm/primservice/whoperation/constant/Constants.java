@@ -44,7 +44,7 @@ public final class Constants {
 
     /** 调编码生成器Asn预约实体标识 */
     public static final String ASN_RESERVE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.warehouse.AsnReserve";
-    
+
     /** 调编码生成器 发票实体标识 */
     public static final String INVOICE_MODEL_URL = "com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoice";
 
@@ -370,12 +370,18 @@ public final class Constants {
 
     /** 调编码生成器作业头实体标识 */
     public static final String WHOPERATION_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation";
+    
+    /** 调编码生成器分配库存实体标识 */
+    public static final String WHSKUINVENTORYALLOCATED_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated";
 
     /** 调编码生成器 出库单WMS内部单号分组 */
     public static final String WMS_ODO_INNER = "WMS_ODO_INNER";
 
     /** 调编码生成器 出库单WMS外部单号分组 */
     public static final String WMS_ODO_EXT = "WMS_ODO_EXT";
+    
+    /** 调编码生成器 分配库存WMS占用单据号分组 */
+    public static final String WMS_SKUINVENTORYALLOCATED_OCCUPATION = "WMS_SKUINVENTORYALLOCATED_OCCUPATION";
 
     /** 出库单增值服务类型 */
     public static final String ODO_VAS_TYPE_WH = "WH";
@@ -821,4 +827,21 @@ public final class Constants {
     public static final String PICKING_WORK_PAGE = "PICKING_WORK_PAGE";
 
 
+    /** 出库目标对象 */
+    public static final String AIMTYPE_1 = "1";// 供应商
+    public static final String AIMTYPE_5 = "5";// 仓库
+    public static final String AIMTYPE_7 = "7";// 店铺对应配送对象
+
+    /**按单复核模式1 小车加出库箱*/
+    public static final String WAY_1 = "way1";
+    /**按单复核模式2 小车加货格*/
+    public static final String WAY_2 = "way2";
+    /**按单复核模式3 播种墙+出库箱*/
+    public static final String WAY_3 = "way3";
+    /**按单复核模式4 播种墙+货格*/
+    public static final String WAY_4 = "way4";
+    /**按单复核模式5 只有出库箱*/
+    public static final String WAY_5 = "way5";
+    /**按单复核模式6 周转箱*/
+    public static final String WAY_6 = "way6";
 }

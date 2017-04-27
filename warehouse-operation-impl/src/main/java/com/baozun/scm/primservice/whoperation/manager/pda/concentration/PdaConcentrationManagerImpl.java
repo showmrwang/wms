@@ -565,6 +565,15 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             isSuccess = false;
             throw new BusinessException("容器不匹配");
         }
+        if (null == workCollectionCommand.getContainerId()) {
+
+            ContainerCommand container = containerDao.getContainerByCode(inputContainerCode, workCollectionCommand.getOuId());
+            if (null == container) {
+                isSuccess = false;
+                throw new BusinessException("找不到容器");
+            }
+            workCollectionCommand.setContainerId(container.getId());
+        }
         Boolean isRecordSuccess = this.recordSeedingCollection(workCollectionCommand, cacheKey);
         if (!isRecordSuccess) {
             isSuccess = false;
@@ -1117,7 +1126,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(destinationCode, ouId);
                 if (StringUtils.isEmpty(facility.getBatch())) {
                     facility.setBatch(batch);
-                    facility.setStatus(Constants.WH_FACILITY_STATUS_2);
+                    facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_2));
                     whOutboundFacilityDao.saveOrUpdateByVersion(facility);
                     return true;
                 }
@@ -1484,7 +1493,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     public void insertIntoSeedingCollectionLine(WhSeedingCollection whSeedingCollection) {
         Long containerId = whSeedingCollection.getContainerId();
         if (null != containerId) {
-            List<WhSeedingCollectionLineCommand> invList = this.whSkuInventoryDao.findListByContainerId(containerId, whSeedingCollection.getOuId());
+            List<WhSeedingCollectionLineCommand> invList = this.whSkuInventoryDao.findListByContainerIdExt(containerId, whSeedingCollection.getOuId());
             if (null != invList && !invList.isEmpty()) {
                 for (WhSeedingCollectionLineCommand inv : invList) {
                     if (null != inv.getStoreId()) {
@@ -1505,6 +1514,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     BeanUtils.copyProperties(inv, line);
                     line.setSeedingCollectionId(whSeedingCollection.getId());
                     line.setSeedingQty(0L);
+                    line.setBatchNumber(whSeedingCollection.getBatch());
                     this.whSeedingCollectionLineDao.insert(line);
                 }
             }

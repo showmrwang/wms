@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.LocationSkuVolumeDao">
+	<resultMap id="LocationSkuVolumeResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.LocationSkuVolume">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="locationSkuVolumeColumnsExt">
+	    <![CDATA[
+	        	lsv.id as id,
+	        	lsv.serial_number as serialNumber,
+	        	lsv.location_id as locationId,
+	        	lsv.sku_id as skuId,
+	        	lsv.lower_capacity as lowerCapacity,
+	        	lsv.upper_capacity as upperCapacity,
+	        	lsv.ou_id as ouId,
+	        	lsv.create_time as createTime,
+	        	lsv.last_modify_time as lastModifyTime,
+	        	lsv.created_id as createdId,
+	        	lsv.modified_id as modifiedId ,
+				lo.code as locationCode
+	    ]]>
+	</sql>
+	
+	<sql id="locationSkuVolumeDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="serialNumber!=null">
+					and serial_number = #{serialNumber}
+				</if>
+	       
+				<if test="locationId!=null">
+					and location_id = #{locationId}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="lowerCapacity!=null">
+					and lower_capacity = #{lowerCapacity}
+				</if>
+	       
+				<if test="upperCapacity!=null">
+					and upper_capacity = #{upperCapacity}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	<select id="findLocationIdsByfacilityId" resultType="long">
+		select location_id 
+			from
+		t_wh_location_sku_volume
+			WHERE
+	id IN (
+		SELECT
+			lsv_id
+		FROM
+			t_wh_facility_location_sku_volume
+		WHERE
+			facility_id = #{facilityId}
+			and ou_id = #{ouId}
+			)
+	</select>
+	
+		<select id="findListBylocationId" resultMap="LocationSkuVolumeResultExt">
+		select <include refid="locationSkuVolumeColumnsExt" /> 
+			from
+		t_wh_location_sku_volume  lsv  LEFT JOIN t_wh_location  lo on lsv.location_id =lo.id
+			WHERE lsv.location_id = #{locationId}
+			  and lsv.ou_id = #{ouId}
+	</select>
+</mapper>

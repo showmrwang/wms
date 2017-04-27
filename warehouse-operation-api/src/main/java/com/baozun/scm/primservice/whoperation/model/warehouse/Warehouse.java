@@ -134,13 +134,13 @@ public class Warehouse extends BaseModel {
     private Long defaultVolumeUomType;
     /** 面积默认单位类型 */
     private Long defaultAreaUomType;
-    
+
 
     /** 拣货出现差异是否生成盘点任务 */
     private Boolean isGenerateInventoryTask;
     /** 是否强制校验消费者退货入的包裹登记 */
     private Boolean isCheckReturnedPurchaseReg;
-    
+
 
     /** 邮箱 */
     private String email;
@@ -186,8 +186,14 @@ public class Warehouse extends BaseModel {
     private Integer zqty;
     /** 播种墙对应单据数 */
     private Integer seedingOdoQty;
-
-
+    /** 是否管理耗材 */
+    private Boolean isMgmtConsumableSku;
+    /** 是否推荐耗材 */
+    private Boolean isRecommandConsumableSku;
+    /** 是否强制校验耗材 */
+    private Boolean isCheckConsumableSkuBarcode;
+    /** 是否自动化仓 */
+    private Boolean isAutomaticWarehouse;
 
     public Boolean getIsCheckReturnedPurchaseReg() {
         return isCheckReturnedPurchaseReg;
@@ -204,6 +210,7 @@ public class Warehouse extends BaseModel {
     public void setCode(String code) {
         this.code = code;
     }
+
     public String getName() {
         return name;
     }
@@ -211,6 +218,7 @@ public class Warehouse extends BaseModel {
     public void setName(String name) {
         this.name = name;
     }
+
     public Integer getOpMode() {
         return opMode;
     }
@@ -218,6 +226,7 @@ public class Warehouse extends BaseModel {
     public void setOpMode(Integer opMode) {
         this.opMode = opMode;
     }
+
     public Integer getManageMode() {
         return manageMode;
     }
@@ -225,6 +234,7 @@ public class Warehouse extends BaseModel {
     public void setManageMode(Integer manageMode) {
         this.manageMode = manageMode;
     }
+
     public String getPic() {
         return pic;
     }
@@ -232,6 +242,7 @@ public class Warehouse extends BaseModel {
     public void setPic(String pic) {
         this.pic = pic;
     }
+
     public String getPicContact() {
         return picContact;
     }
@@ -239,6 +250,7 @@ public class Warehouse extends BaseModel {
     public void setPicContact(String picContact) {
         this.picContact = picContact;
     }
+
     public String getPhone() {
         return phone;
     }
@@ -246,6 +258,7 @@ public class Warehouse extends BaseModel {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
     public String getFax() {
         return fax;
     }
@@ -253,6 +266,7 @@ public class Warehouse extends BaseModel {
     public void setFax(String fax) {
         this.fax = fax;
     }
+
     public String getOtherContact1() {
         return otherContact1;
     }
@@ -260,6 +274,7 @@ public class Warehouse extends BaseModel {
     public void setOtherContact1(String otherContact1) {
         this.otherContact1 = otherContact1;
     }
+
     public String getOtherContact2() {
         return otherContact2;
     }
@@ -267,6 +282,7 @@ public class Warehouse extends BaseModel {
     public void setOtherContact2(String otherContact2) {
         this.otherContact2 = otherContact2;
     }
+
     public String getOtherContact3() {
         return otherContact3;
     }
@@ -274,6 +290,7 @@ public class Warehouse extends BaseModel {
     public void setOtherContact3(String otherContact3) {
         this.otherContact3 = otherContact3;
     }
+
     public Long getCountryId() {
         return countryId;
     }
@@ -281,6 +298,7 @@ public class Warehouse extends BaseModel {
     public void setCountryId(Long countryId) {
         this.countryId = countryId;
     }
+
     public Long getProvinceId() {
         return provinceId;
     }
@@ -288,6 +306,7 @@ public class Warehouse extends BaseModel {
     public void setProvinceId(Long provinceId) {
         this.provinceId = provinceId;
     }
+
     public Long getCityId() {
         return cityId;
     }
@@ -295,6 +314,7 @@ public class Warehouse extends BaseModel {
     public void setCityId(Long cityId) {
         this.cityId = cityId;
     }
+
     public String getAddress() {
         return address;
     }
@@ -302,6 +322,7 @@ public class Warehouse extends BaseModel {
     public void setAddress(String address) {
         this.address = address;
     }
+
     public String getZipCode() {
         return zipCode;
     }
@@ -317,6 +338,7 @@ public class Warehouse extends BaseModel {
     public void setSize(Double size) {
         this.size = size;
     }
+
     public String getSizeUom() {
         return sizeUom;
     }
@@ -332,6 +354,7 @@ public class Warehouse extends BaseModel {
     public void setRentPrice(Double rentPrice) {
         this.rentPrice = rentPrice;
     }
+
     public String getRentPriceUom() {
         return rentPriceUom;
     }
@@ -339,6 +362,7 @@ public class Warehouse extends BaseModel {
     public void setRentPriceUom(String rentPriceUom) {
         this.rentPriceUom = rentPriceUom;
     }
+
     public String getDescription() {
         return description;
     }
@@ -346,6 +370,7 @@ public class Warehouse extends BaseModel {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -353,6 +378,7 @@ public class Warehouse extends BaseModel {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+
     public Date getLastModifyTime() {
         return lastModifyTime;
     }
@@ -360,6 +386,7 @@ public class Warehouse extends BaseModel {
     public void setLastModifyTime(Date lastModifyTime) {
         this.lastModifyTime = lastModifyTime;
     }
+
     public Long getOperatorId() {
         return operatorId;
     }
@@ -367,6 +394,7 @@ public class Warehouse extends BaseModel {
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
     }
+
     public Integer getLifecycle() {
         return lifecycle;
     }
@@ -374,111 +402,147 @@ public class Warehouse extends BaseModel {
     public void setLifecycle(Integer lifecycle) {
         this.lifecycle = lifecycle;
     }
+
     public Boolean getIsMandatorilyReserved() {
         return isMandatorilyReserved;
     }
+
     public void setIsMandatorilyReserved(Boolean isMandatorilyReserved) {
         this.isMandatorilyReserved = isMandatorilyReserved;
     }
+
     public Boolean getIsPoOvercharge() {
         return isPoOvercharge;
     }
+
     public void setIsPoOvercharge(Boolean isPoOvercharge) {
         this.isPoOvercharge = isPoOvercharge;
     }
+
     public Integer getPoOverchargeProportion() {
         return poOverchargeProportion;
     }
+
     public void setPoOverchargeProportion(Integer poOverchargeProportion) {
         this.poOverchargeProportion = poOverchargeProportion;
     }
+
     public Boolean getIsAsnOvercharge() {
         return isAsnOvercharge;
     }
+
     public void setIsAsnOvercharge(Boolean isAsnOvercharge) {
         this.isAsnOvercharge = isAsnOvercharge;
     }
+
     public Integer getAsnOverchargeProportion() {
         return asnOverchargeProportion;
     }
+
     public void setAsnOverchargeProportion(Integer asnOverchargeProportion) {
         this.asnOverchargeProportion = asnOverchargeProportion;
     }
+
     public Boolean getIsPoAutoVerify() {
         return isPoAutoVerify;
     }
+
     public void setIsPoAutoVerify(Boolean isPoAutoVerify) {
         this.isPoAutoVerify = isPoAutoVerify;
     }
+
     public Boolean getIsAsnAutoVerify() {
         return isAsnAutoVerify;
     }
+
     public void setIsAsnAutoVerify(Boolean isAsnAutoVerify) {
         this.isAsnAutoVerify = isAsnAutoVerify;
     }
+
     public Integer getGoodsReceiptMode() {
         return goodsReceiptMode;
     }
+
     public void setGoodsReceiptMode(Integer goodsReceiptMode) {
         this.goodsReceiptMode = goodsReceiptMode;
     }
+
     public Boolean getIsAutoPrintBintag() {
         return isAutoPrintBintag;
     }
+
     public void setIsAutoPrintBintag(Boolean isAutoPrintBintag) {
         this.isAutoPrintBintag = isAutoPrintBintag;
     }
+
     public Boolean getIsAutoGenerationCn() {
         return isAutoGenerationCn;
     }
+
     public void setIsAutoGenerationCn(Boolean isAutoGenerationCn) {
         this.isAutoGenerationCn = isAutoGenerationCn;
     }
+
     public Boolean getIsAllowBlocked() {
         return isAllowBlocked;
     }
+
     public void setIsAllowBlocked(Boolean isAllowBlocked) {
         this.isAllowBlocked = isAllowBlocked;
     }
+
     public Boolean getIsSkuNeedsScan() {
         return isSkuNeedsScan;
     }
+
     public void setIsSkuNeedsScan(Boolean isSkuNeedsScan) {
         this.isSkuNeedsScan = isSkuNeedsScan;
     }
+
     public String getInvAttrMgmt() {
         return invAttrMgmt;
     }
+
     public void setInvAttrMgmt(String invAttrMgmt) {
         this.invAttrMgmt = invAttrMgmt;
     }
+
     public Boolean getIsAutoPrintDiff() {
         return isAutoPrintDiff;
     }
+
     public void setIsAutoPrintDiff(Boolean isAutoPrintDiff) {
         this.isAutoPrintDiff = isAutoPrintDiff;
     }
+
     public Boolean getIsHintQualityTesting() {
         return isHintQualityTesting;
     }
+
     public void setIsHintQualityTesting(Boolean isHintQualityTesting) {
         this.isHintQualityTesting = isHintQualityTesting;
     }
+
     public Boolean getIsAutoPrintGoodsReceipt() {
         return isAutoPrintGoodsReceipt;
     }
+
     public void setIsAutoPrintGoodsReceipt(Boolean isAutoPrintGoodsReceipt) {
         this.isAutoPrintGoodsReceipt = isAutoPrintGoodsReceipt;
     }
+
     public Boolean getIsAutoPrintPlatformtag() {
         return isAutoPrintPlatformtag;
     }
+
     public void setIsAutoPrintPlatformtag(Boolean isAutoPrintPlatformtag) {
         this.isAutoPrintPlatformtag = isAutoPrintPlatformtag;
     }
+
     public Integer getSkuMixNumber() {
         return skuMixNumber;
     }
+
     public void setSkuMixNumber(Integer skuMixNumber) {
         this.skuMixNumber = skuMixNumber;
     }
@@ -570,9 +634,11 @@ public class Warehouse extends BaseModel {
     public void setDistrictId(Long districtId) {
         this.districtId = districtId;
     }
+
     public Boolean getIsInboundLocationBarcode() {
         return isInboundLocationBarcode;
     }
+
     public void setIsInboundLocationBarcode(Boolean isInboundLocationBarcode) {
         this.isInboundLocationBarcode = isInboundLocationBarcode;
     }
@@ -713,6 +779,36 @@ public class Warehouse extends BaseModel {
         this.seedingOdoQty = seedingOdoQty;
     }
 
+    public Boolean getIsMgmtConsumableSku() {
+        return isMgmtConsumableSku;
+    }
 
+    public void setIsMgmtConsumableSku(Boolean isMgmtConsumableSku) {
+        this.isMgmtConsumableSku = isMgmtConsumableSku;
+    }
+
+    public Boolean getIsRecommandConsumableSku() {
+        return isRecommandConsumableSku;
+    }
+
+    public void setIsRecommandConsumableSku(Boolean isRecommandConsumableSku) {
+        this.isRecommandConsumableSku = isRecommandConsumableSku;
+    }
+
+    public Boolean getIsCheckConsumableSkuBarcode() {
+        return isCheckConsumableSkuBarcode;
+    }
+
+    public void setIsCheckConsumableSkuBarcode(Boolean isCheckConsumableSkuBarcode) {
+        this.isCheckConsumableSkuBarcode = isCheckConsumableSkuBarcode;
+    }
+
+    public Boolean getIsAutomaticWarehouse() {
+        return isAutomaticWarehouse;
+    }
+
+    public void setIsAutomaticWarehouse(Boolean isAutomaticWarehouse) {
+        this.isAutomaticWarehouse = isAutomaticWarehouse;
+    }
 
 }

@@ -51,12 +51,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	modified_id ,
 		        	wave_code,
 		        	counter_code,
-		        	distribution_code ,
-		        	archiv_time ,
-		        	data_source ,
-		        	ext_odo_type
+		        	distribution_code,
+		        	data_source,
+		        	ext_odo_type,
+		        	is_freight_invoice_sunder,
+		        	head_start_odo_status,
+		        	lag_odo_status,
+		        	is_permit_outbound,
+		        	odo_index
                 ) VALUES (
-                   #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -93,10 +97,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{counterCode,javaType=java.lang.String,jdbcType=LONGVARCHAR},
-		        	#{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{archivTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{distributionCode,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{extOdoType,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{headStartOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT},
+		        	#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR}
                 )
             ]]>
     </insert>
@@ -612,6 +620,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 </delete>
     <delete id="deleteOdoLine" parameterType="map">
 			delete from t_wh_odo_line where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+    <delete id="deleteOdoTransportService" parameterType="map">
+			delete from t_wh_odo_transport_service where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
     <delete id="deleteOdoLineSn" parameterType="map">
 			delete from t_wh_odo_line_sn where odo_line_id in (select id from t_wh_odo_line where odo_id = #{odoid} and ou_id = #{ouid}) and ou_id = #{ouid}

@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.baseservice.sac.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingMode;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
@@ -275,7 +276,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
      * @param logId
      */
     @Override
-    public void generateCheckingDataBySeeding(Long facilityId, String batchNo, List<WhSkuInventory> facilitySeedingSkuInventoryList, Long userId, Long ouId, String logId) {
+    public void generateCheckingDataBySeeding(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> seedingLineList, Long userId, Long ouId, String logId) {
         if (log.isInfoEnabled()) {
             log.info("generateCheckingData by seedingCollection start, batchNo is:[{}], logId is:[{}]", batchNo, logId);
         }
@@ -344,10 +345,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
             }
         }
         // 播种结果明细分组
-        List<WhSkuInventory> seedingSkuInventoryListGroup = new ArrayList<WhSkuInventory>();
-        if (null != facilitySeedingSkuInventoryList && !facilitySeedingSkuInventoryList.isEmpty()) {
-            for (WhSkuInventory seedingInv : facilitySeedingSkuInventoryList) {
-                String line = ParamsUtil.concatParam((""), (null == seedingInv.getContainerLatticeNo() ? "" : seedingInv.getContainerLatticeNo().toString()), seedingInv.getOutboundboxCode());
+        List<WhSeedingCollectionLineCommand> seedingSkuInventoryListGroup = new ArrayList<WhSeedingCollectionLineCommand>();
+        if (null != seedingLineList && !seedingLineList.isEmpty()) {
+            for (WhSeedingCollectionLineCommand seedingInv : seedingLineList) {
+                String line = ParamsUtil.concatParam((null == seedingInv.getFacilityCode() ? "" : seedingInv.getFacilityCode()), seedingInv.getLatticeNo() + "", seedingInv.getOutboundBoxCode());
                 boolean isExists = isExistsSeedingSkuInventoryLineGroup(seedingSkuInventoryListGroup, line);
                 if (false == isExists) {
                     seedingSkuInventoryListGroup.add(seedingInv);
@@ -358,17 +359,15 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
         String waveCode = "";
         if (null != seedingSkuInventoryListGroup && !seedingSkuInventoryListGroup.isEmpty()) {
             // 每组数据分别生成待复核数据
-            for (WhSkuInventory groupLine : seedingSkuInventoryListGroup) {
-                Long outerContainerId = groupLine.getOuterContainerId();
-                Integer containerLatticeNo = groupLine.getContainerLatticeNo();
-                Long insideContainerId = groupLine.getInsideContainerId();
-                String outboundBoxCode = groupLine.getOutboundboxCode();
+            for (WhSeedingCollectionLineCommand groupLine : seedingSkuInventoryListGroup) {
+                String facilityCode = groupLine.getFacilityCode();
+                Integer latticeNo = groupLine.getLatticeNo();
+                String outboundBoxCode = groupLine.getOutboundBoxCode();
                 // Long outboundBoxId = groupLine.getOutboundBoxId();
                 // 根据条件查询所有库存数据
                 WhSkuInventory params = new WhSkuInventory();
-                params.setOuterContainerId(outerContainerId);
-                params.setContainerLatticeNo(containerLatticeNo);
-                params.setInsideContainerId(insideContainerId);
+                params.setSeedingWallCode(facilityCode);
+                params.setContainerLatticeNo(latticeNo);
                 params.setOutboundboxCode(outboundBoxCode);
                 List<WhSkuInventory> invList = whSkuInventoryDao.getSkuInvListGroupUuid(params);
                 if (null != invList && invList.size() > 0) {
@@ -376,8 +375,8 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     WhChecking checking = new WhChecking();
                     checking.setBatch(batch);
                     checking.setCheckingMode(checkingMode);
-                    checking.setContainerId(insideContainerId);
-                    checking.setContainerLatticeNo(containerLatticeNo);
+                    checking.setContainerId(null);
+                    checking.setContainerLatticeNo(latticeNo);
                     checking.setCustomerCode("");
                     checking.setCustomerName("");
                     checking.setDistributionMode(distributionMode);
@@ -385,7 +384,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setOuId(ouId);
                     checking.setOutboundboxCode(outboundBoxCode);
                     // checking.setOutboundboxId(outboundBoxId);
-                    checking.setOuterContainerId(outerContainerId);
+                    checking.setOuterContainerId(null);
                     checking.setPickingMode(pickingMode);
                     checking.setProductCode("");
                     checking.setProductName("");
@@ -454,11 +453,11 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
         }
     }
 
-    private boolean isExistsSeedingSkuInventoryLineGroup(List<WhSkuInventory> seedingSkuInventoryListGroup, String execLine) {
+    private boolean isExistsSeedingSkuInventoryLineGroup(List<WhSeedingCollectionLineCommand> seedingSkuInventoryListGroup, String execLine) {
         boolean isExists = false;
         if (null != seedingSkuInventoryListGroup && !seedingSkuInventoryListGroup.isEmpty()) {
-            for (WhSkuInventory cmd : seedingSkuInventoryListGroup) {
-                String line = ParamsUtil.concatParam((""), (null == cmd.getContainerLatticeNo() ? "" : cmd.getContainerLatticeNo().toString()), cmd.getOutboundboxCode());
+            for (WhSeedingCollectionLineCommand cmd : seedingSkuInventoryListGroup) {
+                String line = ParamsUtil.concatParam((null == cmd.getFacilityCode() ? "" : cmd.getFacilityCode()), cmd.getLatticeNo() + "", cmd.getOutboundBoxCode());
                 if (line.equals(execLine)) {
                     isExists = true;
                     break;

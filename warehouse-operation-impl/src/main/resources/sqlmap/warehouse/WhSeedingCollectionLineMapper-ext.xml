@@ -248,9 +248,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             collectionLine.odo_line_id as odoLineId,
             collectionLine.sku_id as skuId,
             store.id as storeId,
-            customer.id as customerId
+            customer.id as customerId,
+            odo.odo_code as odoCode
         from
             t_wh_seeding_collection_line as collectionLine
+            left join t_wh_odo as odo
+              on collectionLine.odo_id = odo.id
             left join t_bi_customer as customer
               on customer.customer_code = collectionLine.customer_code and customer.customer_name = collectionLine.customer_name
             left join t_bi_store as store

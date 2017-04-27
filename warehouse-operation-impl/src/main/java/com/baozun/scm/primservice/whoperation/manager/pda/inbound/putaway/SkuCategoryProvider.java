@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
@@ -72,7 +73,7 @@ public final class SkuCategoryProvider {
         ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         return ret;
     }
-    
+
     public static String getSkuAttrIdByOperationLine(WhOperationLineCommand opeCmd) {
         String ret = "";
         Long skuId = opeCmd.getSkuId();
@@ -87,10 +88,10 @@ public final class SkuCategoryProvider {
         String invAttr3 = (StringUtils.isEmpty(opeCmd.getInvAttr3()) ? PH : opeCmd.getInvAttr3());
         String invAttr4 = (StringUtils.isEmpty(opeCmd.getInvAttr4()) ? PH : opeCmd.getInvAttr4());
         String invAttr5 = (StringUtils.isEmpty(opeCmd.getInvAttr5()) ? PH : opeCmd.getInvAttr5());
-        ret = skuId + DV + invType + DV + invStatus + DV+batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         return ret;
     }
-    
+
     public static String getSkuAttrIdByOperationExecLine(WhOperationExecLine opeCmd) {
         String ret = "";
         Long skuId = opeCmd.getSkuId();
@@ -105,7 +106,7 @@ public final class SkuCategoryProvider {
         String invAttr3 = (StringUtils.isEmpty(opeCmd.getInvAttr3()) ? PH : opeCmd.getInvAttr3());
         String invAttr4 = (StringUtils.isEmpty(opeCmd.getInvAttr4()) ? PH : opeCmd.getInvAttr4());
         String invAttr5 = (StringUtils.isEmpty(opeCmd.getInvAttr5()) ? PH : opeCmd.getInvAttr5());
-        ret = skuId + DV + invType + DV + invStatus +DV+ batchNumber + DV + countryOfOrigin +  DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         return ret;
     }
 
@@ -129,15 +130,16 @@ public final class SkuCategoryProvider {
         // invAttr4 + DV + invAttr5;
         return ret;
     }
-    
-    
+
+
     public static String getSkuAttrIdByWhWorkLineCommand(WhWorkLineCommand whWorkLineCmd) {
         String ret = "";
-        Long skuId = whWorkLineCmd.getSkuId();
+        // Long skuId = whWorkLineCmd.getSkuId();
+        String skuCode = whWorkLineCmd.getSkuCode();
         String invType = (StringUtils.isEmpty(whWorkLineCmd.getInvType()) ? PH : whWorkLineCmd.getInvType());
         String invStatus = (StringUtils.isEmpty(whWorkLineCmd.getInvStatus()) ? PH : whWorkLineCmd.getInvStatus() + "");
         String batchNumber = (StringUtils.isEmpty(whWorkLineCmd.getBatchNumber()) ? PH : whWorkLineCmd.getBatchNumber());
-        String countryOfOrigin = (StringUtils.isEmpty(whWorkLineCmd.getCountryOfOrigin()) ? PH :whWorkLineCmd.getCountryOfOrigin());
+        String countryOfOrigin = (StringUtils.isEmpty(whWorkLineCmd.getCountryOfOrigin()) ? PH : whWorkLineCmd.getCountryOfOrigin());
         String mfgDate = (StringUtils.isEmpty(whWorkLineCmd.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(whWorkLineCmd.getMfgDate()));
         String expDate = (StringUtils.isEmpty(whWorkLineCmd.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(whWorkLineCmd.getExpDate()));
         String invAttr1 = (StringUtils.isEmpty(whWorkLineCmd.getInvAttr1()) ? PH : whWorkLineCmd.getInvAttr1());
@@ -145,14 +147,14 @@ public final class SkuCategoryProvider {
         String invAttr3 = (StringUtils.isEmpty(whWorkLineCmd.getInvAttr3()) ? PH : whWorkLineCmd.getInvAttr3());
         String invAttr4 = (StringUtils.isEmpty(whWorkLineCmd.getInvAttr4()) ? PH : whWorkLineCmd.getInvAttr4());
         String invAttr5 = (StringUtils.isEmpty(whWorkLineCmd.getInvAttr5()) ? PH : whWorkLineCmd.getInvAttr5());
-        ret = skuId + DV + invType + DV + invStatus +DV+ batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
-//        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
-//                expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
-//                invAttr4 + DV + invAttr5;
+        ret = skuCode + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
+        // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
+        // invAttr4 + DV + invAttr5;
         return ret;
     }
-    
-    
+
+
     public static String getSkuAttrIdByInv(WhSkuInventoryAllocatedCommand invCmd) {
         String ret = "";
         Long skuId = invCmd.getSkuId();
@@ -173,7 +175,7 @@ public final class SkuCategoryProvider {
         ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         return ret;
     }
-    
+
     public static String getSkuAttrIdBySkuCmd(WhSkuCommand skuCmd) {
         String ret = "";
         Long skuId = skuCmd.getId();
@@ -191,7 +193,28 @@ public final class SkuCategoryProvider {
         ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         return ret;
     }
-    
+
+    public static String getSkuAttrIdByCheck(WhCheckingLineCommand whCheckingLineCommand) {
+        String ret = "";
+        Long skuId = whCheckingLineCommand.getSkuId();
+        String invType = (StringUtils.isEmpty(whCheckingLineCommand.getInvType()) ? PH : whCheckingLineCommand.getInvType());
+        String invStatus = (StringUtils.isEmpty(whCheckingLineCommand.getInvStatus()) ? PH : whCheckingLineCommand.getInvStatus() + "");
+        String batchNumber = (StringUtils.isEmpty(whCheckingLineCommand.getBatchNumber()) ? PH : whCheckingLineCommand.getBatchNumber());
+        String countryOfOrigin = (StringUtils.isEmpty(whCheckingLineCommand.getCountryOfOrigin()) ? PH : whCheckingLineCommand.getCountryOfOrigin());
+        String mfgDate = (StringUtils.isEmpty(whCheckingLineCommand.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(whCheckingLineCommand.getMfgDate()));
+        String expDate = (StringUtils.isEmpty(whCheckingLineCommand.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(whCheckingLineCommand.getExpDate()));
+        String invAttr1 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr1()) ? PH : whCheckingLineCommand.getInvAttr1());
+        String invAttr2 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr2()) ? PH : whCheckingLineCommand.getInvAttr2());
+        String invAttr3 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr3()) ? PH : whCheckingLineCommand.getInvAttr3());
+        String invAttr4 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr4()) ? PH : whCheckingLineCommand.getInvAttr4());
+        String invAttr5 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr5()) ? PH : whCheckingLineCommand.getInvAttr5());
+        // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
+        // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
+        // invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        return ret;
+    }
+
     public static String concatSkuAttrId(Object... argArray) {
         String ret = "";
         int i = 0;

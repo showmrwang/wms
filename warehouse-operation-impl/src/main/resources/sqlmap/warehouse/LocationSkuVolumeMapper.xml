@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.LocationSkuVolumeDao">
+	<resultMap id="LocationSkuVolumeResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.LocationSkuVolume">
+	</resultMap>
+	<resultMap id="LocationSkuVolumePaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="LocationSkuVolumeResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="locationSkuVolumeColumns">
+	    <![CDATA[
+	        	id as id,
+	        	serial_number as serialNumber,
+	        	location_id as locationId,
+	        	sku_id as skuId,
+	        	lower_capacity as lowerCapacity,
+	        	upper_capacity as upperCapacity,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	created_id as createdId,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	<sql id="locationSkuVolumeConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+	
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.LocationSkuVolume" 
+				useGeneratedKeys="true" keyProperty="id" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_location_sku_volume (
+		        	serial_number ,
+		        	location_id ,
+		        	sku_id ,
+		        	lower_capacity ,
+		        	upper_capacity ,
+		        	ou_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	created_id ,
+		        	modified_id 
+		        ) VALUES (
+		        	#{serialNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lowerCapacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{upperCapacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+	
+			</insert>
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.LocationSkuVolume">
+	    <![CDATA[
+	        UPDATE t_wh_location_sku_volume SET
+		        serial_number = #{serialNumber,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lower_capacity = #{lowerCapacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        upper_capacity = #{upperCapacity,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_location_sku_volume SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="locationSkuVolumeConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_location_sku_volume where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_location_sku_volume 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_location_sku_volume <include refid="locationSkuVolumeConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="LocationSkuVolumeResult" flushCache="false">
+			select <include refid="locationSkuVolumeColumns" />
+		    <![CDATA[
+			    from t_wh_location_sku_volume 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="LocationSkuVolumeResult" flushCache="false">
+			select <include refid="locationSkuVolumeColumns" />
+			    from t_wh_location_sku_volume 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="locationSkuVolumeDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="serialNumber!=null">
+					and serial_number = #{serialNumber}
+				</if>
+	       
+				<if test="locationId!=null">
+					and location_id = #{locationId}
+				</if>
+	       
+				<if test="skuId!=null">
+					and sku_id = #{skuId}
+				</if>
+	       
+				<if test="lowerCapacity!=null">
+					and lower_capacity = #{lowerCapacity}
+				</if>
+	       
+				<if test="upperCapacity!=null">
+					and upper_capacity = #{upperCapacity}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createdId!=null">
+					and created_id = #{createdId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_location_sku_volume 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_location_sku_volume 
+		<include refid="locationSkuVolumeDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_location_sku_volume 
+		<include refid="locationSkuVolumeDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="LocationSkuVolumeResult">
+    	select <include refid="locationSkuVolumeColumns" />
+	    from t_wh_location_sku_volume 
+		<include refid="locationSkuVolumeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="LocationSkuVolumeResult">
+    	select <include refid="locationSkuVolumeColumns" />
+	    from t_wh_location_sku_volume 
+		<include refid="locationSkuVolumeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="LocationSkuVolumeResult">
+    	select <include refid="locationSkuVolumeColumns" />
+	    from t_wh_location_sku_volume 
+		<include refid="locationSkuVolumeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="LocationSkuVolumeResult">
+		select <include refid="locationSkuVolumeColumns" />
+	    from t_wh_location_sku_volume  
+		<include refid="locationSkuVolumeConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_location_sku_volume  
+		<include refid="locationSkuVolumeConditionWhereExt"/>
+    </select>
+
+	
+</mapper>

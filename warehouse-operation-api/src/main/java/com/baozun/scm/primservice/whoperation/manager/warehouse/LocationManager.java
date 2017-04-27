@@ -7,12 +7,13 @@ import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume;
+import com.baozun.scm.primservice.whoperation.model.warehouse.LocationSkuVolume;
 
 /**
  * bk
  * 
  * @author Administrator
- *
+ * 
  */
 public interface LocationManager extends BaseManager {
 
@@ -22,6 +23,7 @@ public interface LocationManager extends BaseManager {
 
     /**
      * [业务方法] 取得复核库位
+     * 
      * @param ouId
      * @return
      */
@@ -47,6 +49,8 @@ public interface LocationManager extends BaseManager {
      * @return
      */
     SkuRedisCommand findSkuMasterBySkuId(Long skuId, Long ouId, String logId);
+
+    List<LocationSkuVolume> findListByfacilityId(Long facilityId, Long ouId);
 
 
 

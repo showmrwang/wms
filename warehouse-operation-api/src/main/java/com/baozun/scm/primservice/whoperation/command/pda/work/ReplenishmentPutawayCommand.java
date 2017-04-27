@@ -49,6 +49,8 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     /**是否只有唯一目标库位*/
     private Boolean isOnlyLocation = false;
     
+    
+    private Boolean isPutawayToContainer = false;  //是否引入新的容器
 
     public Long getOperationId() {
         return operationId;
@@ -200,6 +202,14 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
 
     public void setLocationId(Long locationId) {
         this.locationId = locationId;
+    }
+
+    public Boolean getIsPutawayToContainer() {
+        return isPutawayToContainer;
+    }
+
+    public void setIsPutawayToContainer(Boolean isPutawayToContainer) {
+        this.isPutawayToContainer = isPutawayToContainer;
     }
     
     

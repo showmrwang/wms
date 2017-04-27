@@ -85,6 +85,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.handover.HandoverLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo</value>
 				</list>
 			</property>
 			

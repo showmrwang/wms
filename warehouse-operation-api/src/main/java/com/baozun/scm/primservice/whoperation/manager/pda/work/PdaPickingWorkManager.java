@@ -105,42 +105,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public void scanTrunkfulContainer(PickingScanResultCommand  command);
     
-    /**
-     * 循环提示内部容器--整箱整托拣货
-     * 
-     * @author qiming.liu
-     * @param PickingScanResultCommand
-     * @return PickingScanResultCommand
-     */
-    PickingScanResultCommand wholeCaseForTipInsideContainer(PickingScanResultCommand command);
-    
-    /**
-     * 提示托盘--整箱整托拣货 
-     * 
-     * @author qiming.liu
-     * @param PickingScanResultCommand
-     * @return
-     */
-    PickingScanResultCommand wholeCaseTipTray(PickingScanResultCommand command);
-    
-    /**
-     * 判断是否是SN/残次商品--整箱整托拣货
-     * 
-     * @author qiming.liu
-     * @param 
-     * @return
-     */
-    PickingScanResultCommand wholeCaseIsSn(PickingScanResultCommand command); 
-    
-    /**
-     * 根据库存UUID查找对应SN/残次信息
-     * 
-     * @author qiming.liu
-     * @param 
-     * @return
-     */
-    List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(Long ouid, String uuid);
-    
     /***
      * 查询库存sn残次信息
      * @param sn
@@ -148,7 +112,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public PickingScanResultCommand judgeIsOccupationCode(PickingScanResultCommand command);
-    
     
     /**
      * 生成作业执行明细
@@ -195,8 +158,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public Location getLocationByCode(String locationCode,Long ouId);
     
-    
-    
     /***
      * 补货(拣货)取消流程
      * @param outerContainerId
@@ -212,7 +173,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * 拣货完成
      * @param operationId
      */
-    public void shortPickingEnd(Long operationId,Long ouId,Long userId,String outBoundBoxCode,String turnoverBoxCode,Long outBoundBoxId);
+    public void shortPickingEnd(String workCode,Long operationId,Long ouId,Long userId,String outBoundBoxCode,String turnoverBoxCode,Long outBoundBoxId);
     
     
     /***
@@ -227,4 +188,14 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param workId
      */
     public void removeCache(Long workId,Long ouId);
+    
+    /**
+     * 是否继续扫描sn
+     * @param insideContainerCode
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    public Boolean isContainerScanSn(String insideContainerCode,Long skuId,Long ouId,Long locationId,Double scanSkuQty);
+    
 }

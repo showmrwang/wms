@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 
 public interface PdaReplenishmentPutawayManager extends BaseManager {
 
@@ -51,4 +52,13 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * @param operationId
      */
     public void cancelPattern(Long operationId,Integer cancelPattern);
+    
+    /**
+     * 获取补货功能参数
+     * @param ouId
+     * @param functionId
+     * @return
+     */
+    public WhFunctionReplenishment findWhFunctionReplenishmentByfunctionId(Long ouId,Long functionId);
+    
 }

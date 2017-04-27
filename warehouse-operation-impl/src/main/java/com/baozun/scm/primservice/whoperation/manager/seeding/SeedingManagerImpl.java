@@ -232,7 +232,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
         WhOutboundFacility outboundFacility = new WhOutboundFacility();
         BeanUtils.copyProperties(facilityCommand, outboundFacility);
-        outboundFacility.setStatus(Constants.WH_FACILITY_STATUS_5);
+        outboundFacility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_5));
         // TODO 测试 不更新播种墙状态
          whOutboundFacilityDao.saveOrUpdateByVersion(outboundFacility);
 
@@ -275,13 +275,8 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
         }
 
         this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
-
-        try {
-            // TODO 重计算配货模式
-            //checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, boxSeedingLineList, userId, ouId, logId);
-        } catch (Exception e) {
-            log.error("generateCheckingDataBySeeding error", e);
-        }
+        // 生成复核数据并重计算复核模式
+        checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, boxSeedingLineList, userId, ouId, logId);
     }
 
     @Override
@@ -289,25 +284,15 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList, WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
         whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
         this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
-
-        try {
-            // TODO 重计算配货模式
-            //checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, odoSeedingLineList, userId, ouId, logId);
-        } catch (Exception e) {
-            log.error("generateCheckingDataBySeeding error", e);
-        }
+        // 生成复核数据并重计算复核模式
+        checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, odoSeedingLineList, userId, ouId, logId);
     }
+
 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSkuInventory findSeedingOdoSkuInvByUuid(String odoCode, Long ouId, String uuid){
-        return whSkuInventoryDao.findSeedingOdoSkuInvByUuid(odoCode, ouId, uuid);
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSkuInventory findSeedingOdoSkuInvByOdoLineIdUuid( Long odoLineId, Long ouId, String uuid){
+    public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid( Long odoLineId, Long ouId, String uuid){
         return whSkuInventoryDao.findSeedingOdoSkuInvByOdoLineIdUuid(odoLineId, ouId, uuid);
     }
 

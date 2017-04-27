@@ -30,14 +30,15 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 
 @Service("whPrintInfoManager")
 public class WhPrintInfoManagerImpl extends BaseManagerImpl implements WhPrintInfoManager {
-    
+
     public static final Logger log = LoggerFactory.getLogger(WhPrintInfoManagerImpl.class);
-    
+
     @Autowired
     private WhPrintInfoDao whPrintInfoDao;
-    
+
     /**
      * 打印信息表
+     * 
      * @param outboundboxCode
      * @param checkingPrint
      * @return
@@ -52,5 +53,10 @@ public class WhPrintInfoManagerImpl extends BaseManagerImpl implements WhPrintIn
     public void saveOrUpdate(WhPrintInfo whPrintInfo) {
         whPrintInfoDao.insert(whPrintInfo);
     }
-    
+
+    @Override
+    public WhPrintInfo findFromcheckingCollectionByOutboundboxCode(String outboundboxCode) {
+        return whPrintInfoDao.findFromcheckingCollectionByOutboundboxCode(outboundboxCode);
+    }
+
 }

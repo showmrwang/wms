@@ -417,6 +417,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count += odoAddress;
             int odoDeliveryInfo = odoArchivDao.deleteOdoDeliveryInfo(odoid, ouid);
             count += odoDeliveryInfo;
+            odoArchivDao.deleteOdoTransportService(odoid, ouid);
             int odo = odoArchivDao.deleteOdo(odoid, ouid);
             count += odo;
         } catch (Exception e) {

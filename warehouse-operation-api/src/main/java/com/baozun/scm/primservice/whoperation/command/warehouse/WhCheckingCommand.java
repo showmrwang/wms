@@ -14,10 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
-import java.util.List;
-
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 
 
 public class WhCheckingCommand extends BaseCommand {
@@ -72,9 +69,9 @@ public class WhCheckingCommand extends BaseCommand {
     private String pickingMode;
     /** 复核模式 */
     private String checkingMode;
-    /** 复核头集合 */
-    private List<WhCheckingLineCommand> checkingLineCommandLst;
-    
+    // /** 复核头集合 */
+    // private List<WhCheckingLineCommand> checkingLineCommandLst;
+
 
     // ========== 按箱复核 ==========
     /** 外部容器，小车编码*/
@@ -89,8 +86,27 @@ public class WhCheckingCommand extends BaseCommand {
     private Long odoId;
     /** 按单复核方式*/
     private Integer oDCheckWay;
-    /** 页面缓存复核明细*/
-    private List<WhCheckingLine> checkingLineList;
+    // /** 页面缓存复核明细*/
+    // private List<WhCheckingLine> checkingLineList;
+    /** 出库单号*/
+    private String odoCode;
+    /** 外部对接编码*/
+    private String extCode;
+    /** 小批次下总箱数*/
+    private Integer batchBoxCount;
+    /** 待复核总箱数*/
+    private Integer toBeCheckedBoxCount;
+    /** 小批次下总单数*/
+    private Integer batchOdoCount;
+    /** 待复核总单数*/
+    private Integer toBeCheckedOdoCount;
+    /** 主品条码*/
+    private String mainSkuCode;
+    /** 主品名称*/
+    private String mainSkuName;
+    /** 耗材编码*/
+    private String consumableSkuBarcode;
+
 
     public Long getId() {
         return id;
@@ -284,14 +300,14 @@ public class WhCheckingCommand extends BaseCommand {
         this.checkingMode = checkingMode;
     }
 
-    public List<WhCheckingLineCommand> getCheckingLineCommandLst() {
-        return checkingLineCommandLst;
-    }
+    // public List<WhCheckingLineCommand> getCheckingLineCommandLst() {
+    // return checkingLineCommandLst;
+    // }
+    //
+    // public void setCheckingLineCommandLst(List<WhCheckingLineCommand> checkingLineCommandLst) {
+    // this.checkingLineCommandLst = checkingLineCommandLst;
+    // }
 
-    public void setCheckingLineCommandLst(List<WhCheckingLineCommand> checkingLineCommandLst) {
-        this.checkingLineCommandLst = checkingLineCommandLst;
-    }
-    
 
     public String getOuterContainerCode() {
         return outerContainerCode;
@@ -325,13 +341,13 @@ public class WhCheckingCommand extends BaseCommand {
         this.tip = tip;
     }
 
-    public List<WhCheckingLine> getCheckingLineList() {
-        return checkingLineList;
-    }
-
-    public void setCheckingLineList(List<WhCheckingLine> checkingLineList) {
-        this.checkingLineList = checkingLineList;
-    }
+    // public List<WhCheckingLine> getCheckingLineList() {
+    // return checkingLineList;
+    // }
+    //
+    // public void setCheckingLineList(List<WhCheckingLine> checkingLineList) {
+    // this.checkingLineList = checkingLineList;
+    // }
 
     public Long getOdoId() {
         return odoId;
@@ -347,6 +363,78 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setoDCheckWay(Integer oDCheckWay) {
         this.oDCheckWay = oDCheckWay;
+    }
+
+    public String getOdoCode() {
+        return odoCode;
+    }
+
+    public void setOdoCode(String odoCode) {
+        this.odoCode = odoCode;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
+    }
+
+    public Integer getBatchBoxCount() {
+        return batchBoxCount;
+    }
+
+    public void setBatchBoxCount(Integer batchBoxCount) {
+        this.batchBoxCount = batchBoxCount;
+    }
+
+    public Integer getToBeCheckedBoxCount() {
+        return toBeCheckedBoxCount;
+    }
+
+    public void setToBeCheckedBoxCount(Integer toBeCheckedBoxCount) {
+        this.toBeCheckedBoxCount = toBeCheckedBoxCount;
+    }
+
+    public Integer getBatchOdoCount() {
+        return batchOdoCount;
+    }
+
+    public void setBatchOdoCount(Integer batchOdoCount) {
+        this.batchOdoCount = batchOdoCount;
+    }
+
+    public Integer getToBeCheckedOdoCount() {
+        return toBeCheckedOdoCount;
+    }
+
+    public void setToBeCheckedOdoCount(Integer toBeCheckedOdoCount) {
+        this.toBeCheckedOdoCount = toBeCheckedOdoCount;
+    }
+
+    public String getMainSkuCode() {
+        return mainSkuCode;
+    }
+
+    public void setMainSkuCode(String mainSkuCode) {
+        this.mainSkuCode = mainSkuCode;
+    }
+
+    public String getMainSkuName() {
+        return mainSkuName;
+    }
+
+    public void setMainSkuName(String mainSkuName) {
+        this.mainSkuName = mainSkuName;
+    }
+
+    public String getConsumableSkuBarcode() {
+        return consumableSkuBarcode;
+    }
+
+    public void setConsumableSkuBarcode(String consumableSkuBarcode) {
+        this.consumableSkuBarcode = consumableSkuBarcode;
     }
 
 }

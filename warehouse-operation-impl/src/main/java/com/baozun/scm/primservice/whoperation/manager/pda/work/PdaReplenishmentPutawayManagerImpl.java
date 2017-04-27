@@ -20,18 +20,24 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPuta
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentScanResultComamnd;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -42,8 +48,10 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManag
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 /***
@@ -82,6 +90,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     private WhSkuInventorySnDao whSkuInventorySnDao;
     @Autowired
     private WhWorkLineDao whWorkLineDao;
+    @Autowired
+    private WhOperationLineDao whOperationLineDao;
+    @Autowired
+    private WhFunctionReplenishmentDao whFunctionReplenishmentDao;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
     
     
     @Override
@@ -95,8 +109,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         List<Long> locationIds = opExecLineCmd.getLocationIds();
-        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipLocation(locationIds, operationId);
-        Long tipLocationId = sRCmd.getLocationId();
+        Long tipLocationId = null;
+        for(Long locationId:locationIds) {
+            if(null != locationId) {
+                tipLocationId = locationId;
+            }
+        }
         Location location = whLocationDao.findByIdExt(tipLocationId, ouId);
         if(null == location) {
             throw new BusinessException(ErrorCodes.TIP_LOCATION_FAIL);
@@ -162,6 +180,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Long operationId = command.getOperationId();
         Long ouId = command.getOuId();
         Long locationId = command.getLocationId();
+        Long functionId = command.getFunctionId();
         Long userId = command.getUserId();
         String workCode = command.getWorkBarCode();
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
@@ -170,7 +189,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }
         Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();   //所有目标库位对应的周黄钻想
         Set<Long> turnoverBoxIds = locToTurnoverBoxIds.get(locationId);
-        List<Long> locationIds = opExecLineCmd.getLocationIds();
         String turnoverBoxCode = command.getTurnoverBoxCode();
         ContainerCommand cmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
         if(null == cmd) {
@@ -188,34 +206,85 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             //当前周转箱上架
             whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
         }else{//继续扫描下一个库位
-            ReplenishmentScanResultComamnd  rishSRCmd =  pdaReplenishmentPutawayCacheManager.tipLocation(locationIds, operationId);
-            if(rishSRCmd.getIsNeedScanLocation()) { //还有库位没有扫描，继续扫描库位
-                //如果存在库位则缓存上一个库位
-                pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheLoc(operationId, locationId);
-                Long locId = rishSRCmd.getLocationId();
-                Location location = whLocationDao.findByIdExt(locId, ouId);
-                if(null == location) {
-                    throw new BusinessException(ErrorCodes.TIP_LOCATION_FAIL);
-                }
-                command.setTipLcoationBarCode(location.getBarCode());
-                command.setTipLocationCode(location.getCode());
-                command.setLocationId(location.getId()); 
-                command.setIsNeedScanLocation(true);
-                //当前周转箱上架
-                whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
-            }else{ //周转箱上架完毕
-                command.setIsScanFinsh(true);
-                whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
-                //更新工作及作业状态
-                this.updateStatus(operationId, workCode, ouId, userId);
-                //清除所有缓存
-                pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
-            }
+             command.setIsScanFinsh(true);
+             whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
+             //判断当前补货库位有没有拣货工作
+             //更新工作及作业状态
+             this.updateStatus(operationId, workCode, ouId, userId);
+             //清除所有缓存
+             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
         }
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is end");
         return command;
     }
 
+    
+    private void judeLocationIsPicking(Long turnoverBoxId,Long locationId,Long ouId,Long userId){
+        //判断目标库位上是否有拣货工作
+            //更新到工作明细
+            List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId);
+            for(WhWorkLineCommand workLineCmd:workLineList) {
+                     Long odoLineId = workLineCmd.getOdoLineId();
+                     Long odoId = workLineCmd.getOdoId();
+                     String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
+                     List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId, odoLineId, odoId);
+                     for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
+                            Long outerId = invCmd.getOuterContainerId();
+                            Long insideId = invCmd.getInsideContainerId();
+                            String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+                            if(workSkuAttrId.equals(skuAttrId)) {
+                                  if(null != outerId && null != insideId) {
+                                      WhWorkLine workLine = new WhWorkLine();
+                                      BeanUtils.copyProperties(workLineCmd, workLine);
+                                      workLine.setFromInsideContainerId(insideId);
+                                      workLine.setFromOuterContainerId(outerId);
+                                      whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                      insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                  }
+                                  if(null == outerId && null != insideId){
+                                      WhWorkLine workLine = new WhWorkLine();
+                                      BeanUtils.copyProperties(workLineCmd, workLine);
+                                      workLine.setFromInsideContainerId(insideId);
+                                      whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                      insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                  }
+                            }
+                     }
+            }
+            //更新到作业明细
+            List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId);
+            if(null != operLineCmdList && operLineCmdList.size() != 0) {
+                //库位上有拣货工作
+                for(WhOperationLineCommand operLineCmd:operLineCmdList){
+                    Long odoLineId = operLineCmd.getOdoLineId();
+                    Long odoId = operLineCmd.getOdoId();
+                    String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
+                    List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId, odoLineId, odoId);
+                    for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
+                           Long outerId = invCmd.getOuterContainerId();
+                           Long insideId = invCmd.getInsideContainerId();
+                           String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+                           if(workSkuAttrId.equals(skuAttrId)) {
+                                 if(null != outerId && null != insideId) {
+                                     WhOperationLine opLine = new WhOperationLine();
+                                     BeanUtils.copyProperties(operLineCmd, opLine);
+                                     opLine.setFromOuterContainerId(outerId);
+                                     opLine.setFromInsideContainerId(insideId);
+                                     whOperationLineDao.saveOrUpdateByVersion(opLine);
+                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                 }
+                                 if(null == outerId && null != insideId){
+                                     WhOperationLine opLine = new WhOperationLine();
+                                     BeanUtils.copyProperties(operLineCmd, opLine);
+                                     opLine.setFromInsideContainerId(insideId);
+                                     whOperationLineDao.saveOrUpdateByVersion(opLine);
+                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                 }
+                           }
+                    }
+                }
+            }
+    }
     @Override
     public void updateStatus(Long operationId, String workCode,Long ouId,Long userId) {
         // TODO Auto-generated method stub
@@ -549,6 +618,19 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
 //        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
 //    }
     
+    /**
+     * 获取补货功能参数
+     * @param ouId
+     * @param functionId
+     * @return
+     */
+    public WhFunctionReplenishment findWhFunctionReplenishmentByfunctionId(Long ouId,Long functionId){
+        WhFunctionReplenishment replenish = whFunctionReplenishmentDao.findByFunctionIdExt(ouId, functionId);
+        if(null == replenish) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        return replenish;
+    }
     
     /***
      * 补货上架取消

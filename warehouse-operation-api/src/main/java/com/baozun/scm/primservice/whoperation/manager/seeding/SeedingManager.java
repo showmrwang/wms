@@ -103,9 +103,7 @@ public interface SeedingManager extends BaseManager {
 
     public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList,WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 
-    public WhSkuInventory findSeedingOdoSkuInvByUuid(String odoCode, Long ouId, String uuid);
-
-    public WhSkuInventory findSeedingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
+    public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
 
     public void createOutboundBox(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> whOutboundboxLineList);
 

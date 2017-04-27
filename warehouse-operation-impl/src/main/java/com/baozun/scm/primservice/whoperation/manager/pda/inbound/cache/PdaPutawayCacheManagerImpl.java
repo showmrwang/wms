@@ -3086,8 +3086,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 if (!StringUtils.isEmpty(cacheQty)) {
                     value = new Long(cacheQty).longValue();
                 }
-                if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                if ((value + 1) > locSkuQty.longValue()) {
+                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + 1, locSkuQty, logId);
                     throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
                 }
                 long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, 1);
@@ -3139,64 +3139,60 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     ArrayDeque<String> oneByOneScanSkuAttrIds = null;
                     if (null != tipScanSkuCmd) {
                         oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
-                    }
-                    if (null != oneByOneScanSkuAttrIds && !oneByOneScanSkuAttrIds.isEmpty()) {
-                        boolean isExists = false;
-                        Iterator<String> iter = oneByOneScanSkuAttrIds.iterator();
-                        while (iter.hasNext()) {
-                            String value = iter.next();
-                            if (null == value) value = "";
-                            if (value.equals(saId)) {
-                                isExists = true;
-                                break;
+                        if (null != oneByOneScanSkuAttrIds && !oneByOneScanSkuAttrIds.isEmpty()) {
+                            boolean isExists = false;
+                            Iterator<String> iter = oneByOneScanSkuAttrIds.iterator();
+                            while (iter.hasNext()) {
+                                String value = iter.next();
+                                if (null == value) value = "";
+                                if (value.equals(saId)) {
+                                    isExists = true;
+                                    break;
+                                }
                             }
-                        }
-                        long value = 0L;
-                        if (false == isExists) {
-                            oneByOneScanSkuAttrIds.addFirst(saId);// 先加入逐件扫描的队列
-                            tipScanSkuCmd.setOneByOneScanSkuAttrIds(oneByOneScanSkuAttrIds);
-                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+                            long value = 0L;
+                            if (false == isExists) {
+                                oneByOneScanSkuAttrIds.addFirst(saId);// 先加入逐件扫描的队列
+                                tipScanSkuCmd.setOneByOneScanSkuAttrIds(oneByOneScanSkuAttrIds);
+                                cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+                            } else {
+                                // 取到扫描的数量
+                                String cacheValue = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                                if (!StringUtils.isEmpty(cacheValue)) {
+                                    value = new Long(cacheValue).longValue();
+                                }
+                            }
+                            if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                                log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                                throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                            }
+                            long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
+                            if (cacheValue < locSkuQty.longValue()) {
+                                // 提示相同商品
+                                cssrCmd.setNeedTipSku(true);
+                                cssrCmd.setTipSkuAttrId(saId);
+                                cssrCmd.setTipSameSkuAttrId(true);
+                                return cssrCmd;
+                            }
                         } else {
-                            // 取到扫描的数量
-                            String cacheValue = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
-                            if (!StringUtils.isEmpty(cacheValue)) {
-                                value = new Long(cacheValue).longValue();
+                            // 不考虑功能参数复合过程中改变的情况
+                            ArrayDeque<String> oneByOneCacheSkuAttrIds = new ArrayDeque<String>();
+                            oneByOneCacheSkuAttrIds.addFirst(saId);
+                            tipScanSkuCmd.setOneByOneScanSkuAttrIds(oneByOneCacheSkuAttrIds);
+                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+                            long value = 0L;
+                            if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                                log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                                throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
                             }
-                        }
-                        if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                            log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                        }
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
-                        if (cacheValue < locSkuQty.longValue()) {
-                            // 提示相同商品
-                            cssrCmd.setNeedTipSku(true);
-                            cssrCmd.setTipSkuAttrId(saId);
-                            cssrCmd.setTipSameSkuAttrId(true);
-                            return cssrCmd;
-                        }
-                    } else {
-                        // 不考虑功能参数复合过程中改变的情况
-                        TipScanSkuCacheCommand cacheSkuCmd = new TipScanSkuCacheCommand();
-                        cacheSkuCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
-                        cacheSkuCmd.setInsideContainerId(icCmd.getId());
-                        cacheSkuCmd.setInsideContainerCode(icCmd.getCode());
-                        ArrayDeque<String> oneByOneCacheSkuAttrIds = new ArrayDeque<String>();
-                        oneByOneCacheSkuAttrIds.addFirst(saId);
-                        cacheSkuCmd.setOneByOneScanSkuAttrIds(oneByOneCacheSkuAttrIds);
-                        cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                        long value = 0L;
-                        if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                            log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                        }
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
-                        if (cacheValue < locSkuQty.longValue()) {
-                            // 提示相同商品
-                            cssrCmd.setNeedTipSku(true);
-                            cssrCmd.setTipSkuAttrId(saId);
-                            cssrCmd.setTipSameSkuAttrId(true);
-                            return cssrCmd;
+                            long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
+                            if (cacheValue < locSkuQty.longValue()) {
+                                // 提示相同商品
+                                cssrCmd.setNeedTipSku(true);
+                                cssrCmd.setTipSkuAttrId(saId);
+                                cssrCmd.setTipSameSkuAttrId(true);
+                                return cssrCmd;
+                            }
                         }
                     }
                 } else {
@@ -3396,8 +3392,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 if (!StringUtils.isEmpty(cacheQty)) {
                     value = new Long(cacheQty).longValue();
                 }
-                if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                if ((value + 1) > locSkuQty.longValue()) {
+                    log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + 1, locSkuQty, logId);
                     throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
                 }
                 long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, 1);
@@ -3449,64 +3445,60 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     ArrayDeque<String> oneByOneScanSkuAttrIds = null;
                     if (null != tipScanSkuCmd) {
                         oneByOneScanSkuAttrIds = tipScanSkuCmd.getOneByOneScanSkuAttrIds();
-                    }
-                    if (null != oneByOneScanSkuAttrIds && !oneByOneScanSkuAttrIds.isEmpty()) {
-                        boolean isExists = false;
-                        Iterator<String> iter = oneByOneScanSkuAttrIds.iterator();
-                        while (iter.hasNext()) {
-                            String value = iter.next();
-                            if (null == value) value = "";
-                            if (value.equals(saId)) {
-                                isExists = true;
-                                break;
+                        if (null != oneByOneScanSkuAttrIds && !oneByOneScanSkuAttrIds.isEmpty()) {
+                            boolean isExists = false;
+                            Iterator<String> iter = oneByOneScanSkuAttrIds.iterator();
+                            while (iter.hasNext()) {
+                                String value = iter.next();
+                                if (null == value) value = "";
+                                if (value.equals(saId)) {
+                                    isExists = true;
+                                    break;
+                                }
                             }
-                        }
-                        long value = 0L;
-                        if (false == isExists) {
-                            oneByOneScanSkuAttrIds.addFirst(saId);// 先加入逐件扫描的队列
-                            tipScanSkuCmd.setOneByOneScanSkuAttrIds(oneByOneScanSkuAttrIds);
-                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+                            long value = 0L;
+                            if (false == isExists) {
+                                oneByOneScanSkuAttrIds.addFirst(saId);// 先加入逐件扫描的队列
+                                tipScanSkuCmd.setOneByOneScanSkuAttrIds(oneByOneScanSkuAttrIds);
+                                cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+                            } else {
+                                // 取到扫描的数量
+                                String cacheValue = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
+                                if (!StringUtils.isEmpty(cacheValue)) {
+                                    value = new Long(cacheValue).longValue();
+                                }
+                            }
+                            if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                                log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                                throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
+                            }
+                            long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
+                            if (cacheValue < locSkuQty.longValue()) {
+                                // 提示相同商品
+                                cssrCmd.setNeedTipSku(true);
+                                cssrCmd.setTipSkuAttrId(saId);
+                                cssrCmd.setTipSameSkuAttrId(true);
+                                return cssrCmd;
+                            }
                         } else {
-                            // 取到扫描的数量
-                            String cacheValue = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId);
-                            if (!StringUtils.isEmpty(cacheValue)) {
-                                value = new Long(cacheValue).longValue();
+                            // 不考虑功能参数复合过程中改变的情况
+                            ArrayDeque<String> oneByOneCacheSkuAttrIds = new ArrayDeque<String>();
+                            oneByOneCacheSkuAttrIds.addFirst(saId);
+                            tipScanSkuCmd.setOneByOneScanSkuAttrIds(oneByOneCacheSkuAttrIds);
+                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
+                            long value = 0L;
+                            if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
+                                log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
+                                throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
                             }
-                        }
-                        if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                            log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                        }
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
-                        if (cacheValue < locSkuQty.longValue()) {
-                            // 提示相同商品
-                            cssrCmd.setNeedTipSku(true);
-                            cssrCmd.setTipSkuAttrId(saId);
-                            cssrCmd.setTipSameSkuAttrId(true);
-                            return cssrCmd;
-                        }
-                    } else {
-                        // 不考虑功能参数复合过程中改变的情况
-                        TipScanSkuCacheCommand cacheSkuCmd = new TipScanSkuCacheCommand();
-                        cacheSkuCmd.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
-                        cacheSkuCmd.setInsideContainerId(icCmd.getId());
-                        cacheSkuCmd.setInsideContainerCode(icCmd.getCode());
-                        ArrayDeque<String> oneByOneCacheSkuAttrIds = new ArrayDeque<String>();
-                        oneByOneCacheSkuAttrIds.addFirst(saId);
-                        cacheSkuCmd.setOneByOneScanSkuAttrIds(oneByOneCacheSkuAttrIds);
-                        cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                        long value = 0L;
-                        if ((value + scanSkuQty.longValue()) > locSkuQty.longValue()) {
-                            log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, value + scanSkuQty.longValue(), locSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-                        }
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
-                        if (cacheValue < locSkuQty.longValue()) {
-                            // 提示相同商品
-                            cssrCmd.setNeedTipSku(true);
-                            cssrCmd.setTipSkuAttrId(saId);
-                            cssrCmd.setTipSameSkuAttrId(true);
-                            return cssrCmd;
+                            long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + saId, scanSkuQty.intValue());
+                            if (cacheValue < locSkuQty.longValue()) {
+                                // 提示相同商品
+                                cssrCmd.setNeedTipSku(true);
+                                cssrCmd.setTipSkuAttrId(saId);
+                                cssrCmd.setTipSameSkuAttrId(true);
+                                return cssrCmd;
+                            }
                         }
                     }
                 } else {
@@ -4504,32 +4496,34 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             }
                         }else{
                          // 判断是否需要提示下一个库位
-                            Set<Long> allLocIds = locSkuAttrIds.keySet();
-                            boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
-                            if (false == isLocAllCache) {
-                                // 提示下一个库位
-                                cssrCmd.setPutaway(true);// 可上架
-                                Long tipLocId = null;
-                                for (Long lId : allLocIds) {
-                                    if (0 == tipLocationId.compareTo(lId)) {
-                                        continue;
+                            if(null != locSkuAttrIds && locSkuAttrIds.size() != 0) {
+                                Set<Long> allLocIds = locSkuAttrIds.keySet();
+                                boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
+                                if (false == isLocAllCache) {
+                                    // 提示下一个库位
+                                    cssrCmd.setPutaway(true);// 可上架
+                                    Long tipLocId = null;
+                                    for (Long lId : allLocIds) {
+                                        if (0 == tipLocationId.compareTo(lId)) {
+                                            continue;
+                                        }
+                                        Set<Long> tempLocIds = new HashSet<Long>();
+                                        tempLocIds.add(lId);
+                                        boolean isExists = isCacheAllExists(tempLocIds, tipLocIds);
+                                        if (true == isExists) {
+                                            continue;
+                                        } else {
+                                            tipLocId = lId;
+                                            break;
+                                        }
                                     }
-                                    Set<Long> tempLocIds = new HashSet<Long>();
-                                    tempLocIds.add(lId);
-                                    boolean isExists = isCacheAllExists(tempLocIds, tipLocIds);
-                                    if (true == isExists) {
-                                        continue;
-                                    } else {
-                                        tipLocId = lId;
-                                        break;
-                                    }
+                                    cssrCmd.setNeedTipLoc(true);
+                                    cssrCmd.setTipLocId(tipLocId);
+                                    return cssrCmd;
+                                }else{
+                                    cssrCmd.setPutaway(true);// 上架结束 
                                 }
-                                cssrCmd.setNeedTipLoc(true);
-                                cssrCmd.setTipLocId(tipLocId);
-                                return cssrCmd;
-                        }else{
-                            cssrCmd.setPutaway(true);// 上架结束 
-                        }
+                            }
                         }
                     } else if (cacheValue < skuQty) {
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + skuId.toString());

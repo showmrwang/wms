@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,13 +34,10 @@ import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.logistics.command.MailnoGetContentCommand;
-import com.baozun.scm.primservice.logistics.command.MailnoTransInfoCommand;
 import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
-import com.baozun.scm.primservice.logistics.command.TransSkuItemCommand;
 import com.baozun.scm.primservice.logistics.manager.TransServiceManager;
 import com.baozun.scm.primservice.logistics.model.MailnoGetResponse;
 import com.baozun.scm.primservice.logistics.model.SuggestTransResult;
-import com.baozun.scm.primservice.logistics.model.TransSkuItem;
 import com.baozun.scm.primservice.logistics.model.SuggestTransResult.LpCodeList;
 import com.baozun.scm.primservice.logistics.model.VasTransResult;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
@@ -86,16 +82,16 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.OutBoundBoxTypeManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.RegionManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.SupplierManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.ma.DistributionTargetManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -111,14 +107,13 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
-import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Region;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget;
 
 @Service("odoManagerProxy")
 public class OdoManagerProxyImpl implements OdoManagerProxy {
@@ -163,14 +158,14 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     @Autowired
     private OperUserManager operUserManager;
     @Autowired
-    private CustomerManager customerManager;
-    @Autowired
-    private StoreManager storeManager;
-    @Autowired
-    private OutBoundBoxTypeManager outBoundBoxTypeManager;
-    @Autowired
     private TransServiceManager transServiceManager;
-    
+    @Autowired
+    private SupplierManager supplierManager;
+    @Autowired
+    private RegionManager regionManager;
+    @Autowired
+    private DistributionTargetManager distributionTargetManager;
+
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.odoManager.findListByQueryMapWithPageExt(page, sorts, params);
@@ -200,6 +195,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             WhOdoInvoice sourceInvoice = odoGroup.getOdoInvoice();
             List<WhOdoInvoiceLine> sourceInvoiceLineList = odoGroup.getOdoInvoiceLineList();
 
+            // @mender yimin.lu 2017/4/25 出库目标对象，如果有值，则需要写入配送对象地址
+            sourceAddress = this.createOdoAddress(sourceAddress, sourceOdoTrans.getOutboundTargetType(), sourceOdoTrans.getOutboundTarget());
+
             if (sourceOdo.getId() != null) {
                 this.editOdo(sourceOdo, sourceOdoTrans);
                 returnOdoId = sourceOdo.getId();
@@ -208,7 +206,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            msg.setMsg(e.getErrorCode() + "");
+            msg.setMsg(e.getErrorCode() + ":" + e.getMessage());
             return msg;
         } catch (Exception ex) {
             log.error("" + ex);
@@ -220,6 +218,223 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
         return msg;
     }
+
+    private WhOdoAddress createOdoAddress(WhOdoAddress sourceAddress, String outboundTargetType, String outboundTarget) {
+        if (StringUtils.hasText(outboundTarget)) {
+            if (Constants.AIMTYPE_1.equals(outboundTargetType)) {// 供应商
+                if (sourceAddress == null) {
+                    sourceAddress = new WhOdoAddress();
+                }
+               return this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
+
+            } else if (Constants.AIMTYPE_5.equals(outboundTargetType)) {
+                if (sourceAddress == null) {
+                    sourceAddress = new WhOdoAddress();
+                }
+                return this.createOdoAddressByWh(sourceAddress, outboundTarget);
+
+            } else if (Constants.AIMTYPE_7.equals(outboundTargetType)) {
+                if (sourceAddress == null) {
+                    sourceAddress = new WhOdoAddress();
+                }
+                return this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
+            }
+
+        }
+        return sourceAddress;
+    }
+
+
+    private WhOdoAddress createOdoAddressByDistributionTarget(WhOdoAddress sourceAddress, String outboundTarget) {
+        DistributionTarget search = new DistributionTarget();
+        List<DistributionTarget> targetList = this.distributionTargetManager.findDistributionTargetByParams(search);
+        if (targetList == null || targetList.size() == 0) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        DistributionTarget target = targetList.get(0);
+
+        sourceAddress.setDistributionTargetEmail(target.getEmail());
+        sourceAddress.setDistributionTargetMobilePhone(target.getTelephone());
+        sourceAddress.setDistributionTargetName(target.getName());
+        sourceAddress.setDistributionTargetTelephone(target.getMobilePhone());
+        sourceAddress.setDistributionTargetZip(target.getZip());
+
+        // 地址
+        sourceAddress.setDistributionTargetAddress(target.getAddress());
+
+        // 国家
+        if (target.getCountry() != null) {
+            Region countryRegion = this.regionManager.findRegionById(target.getCountry());
+            if (countryRegion != null) {
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionName());
+            }
+        }
+
+
+        // 省
+        if (target.getProvince() != null) {
+
+            Region provinceRegion = this.regionManager.findRegionById(target.getProvince());
+            if (provinceRegion != null) {
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionName());
+            }
+        }
+
+        // 市
+        if (target.getCity() != null) {
+            Region cityRegion = this.regionManager.findRegionById(target.getCity());
+            if (cityRegion != null) {
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionName());
+            }
+        }
+
+
+
+        // 区
+        if (target.getDistrict() != null) {
+            Region districtRegion = this.regionManager.findRegionById(target.getDistrict());
+            if (districtRegion != null) {
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionName());
+            }
+        }
+
+
+        // 乡镇
+        if (target.getVillagesTowns() != null) {
+            Region villageRegion = this.regionManager.findRegionById(target.getVillagesTowns());
+            if (villageRegion != null) {
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionName());
+            }
+        }
+        return sourceAddress;
+    }
+
+
+    private WhOdoAddress createOdoAddressByWh(WhOdoAddress sourceAddress, String outboundTarget) {
+        Warehouse wh = this.warehouseManager.findWarehouseByCode(outboundTarget);
+
+        sourceAddress.setDistributionTargetEmail(wh.getEmail());
+        sourceAddress.setDistributionTargetMobilePhone(wh.getPicContact());
+        sourceAddress.setDistributionTargetName(wh.getPic());
+        sourceAddress.setDistributionTargetTelephone(wh.getPicContact());
+        sourceAddress.setDistributionTargetZip(wh.getZipCode());
+
+        // 地址
+        sourceAddress.setDistributionTargetAddress(wh.getAddress());
+
+        // 国家
+        if (wh.getCountryId() != null) {
+            Region countryRegion = this.regionManager.findRegionById(wh.getCountryId());
+            if (countryRegion != null) {
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionName());
+            }
+        }
+
+
+        // 省
+        if (wh.getProvinceId() != null) {
+
+            Region provinceRegion = this.regionManager.findRegionById(wh.getProvinceId());
+            if (provinceRegion != null) {
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionName());
+            }
+        }
+
+        // 市
+        if (wh.getCityId() != null) {
+            Region cityRegion = this.regionManager.findRegionById(wh.getCityId());
+            if (cityRegion != null) {
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionName());
+            }
+        }
+
+
+
+        // 区
+        if (wh.getDistrictId() != null) {
+            Region districtRegion = this.regionManager.findRegionById(wh.getDistrictId());
+            if (districtRegion != null) {
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionName());
+            }
+        }
+
+
+        // 乡镇
+        if (wh.getVillagesTownsId() != null) {
+            Region villageRegion = this.regionManager.findRegionById(wh.getVillagesTownsId());
+            if (villageRegion != null) {
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionName());
+            }
+        }
+        return sourceAddress;
+    }
+
+
+    private WhOdoAddress createOdoAddressBySupplier(WhOdoAddress sourceAddress, String outboundTarget) {
+        Supplier supplierSearch = new Supplier();
+        supplierSearch.setCode(outboundTarget);
+        List<Supplier> supplierList = this.supplierManager.findListByParam(supplierSearch);
+        if (supplierList == null || supplierList.size() == 0) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        Supplier supplier = supplierList.get(0);
+
+        sourceAddress.setDistributionTargetEmail(supplier.getEmail());
+        sourceAddress.setDistributionTargetMobilePhone(supplier.getPicMobileTelephone());
+        sourceAddress.setDistributionTargetName(supplier.getUser());
+        sourceAddress.setDistributionTargetTelephone(supplier.getContact());
+        sourceAddress.setDistributionTargetZip(supplier.getZipCode());
+
+        // 地址
+        sourceAddress.setDistributionTargetAddress(supplier.getAddress());
+
+        // 国家
+        if (supplier.getCountryId() != null) {
+            Region countryRegion = this.regionManager.findRegionById(supplier.getCountryId());
+            if (countryRegion != null) {
+                sourceAddress.setDistributionTargetCountry(countryRegion.getRegionName());
+            }
+        }
+
+
+        // 省
+        if (supplier.getProvinceId() != null) {
+
+            Region provinceRegion = this.regionManager.findRegionById(supplier.getProvinceId());
+            if (provinceRegion != null) {
+                sourceAddress.setDistributionTargetProvince(provinceRegion.getRegionName());
+            }
+        }
+
+        // 市
+        if (supplier.getCityId() != null) {
+            Region cityRegion = this.regionManager.findRegionById(supplier.getCityId());
+            if (cityRegion != null) {
+                sourceAddress.setDistributionTargetCity(cityRegion.getRegionName());
+            }
+        }
+
+
+
+        // 区
+        if (supplier.getDistrictId() != null) {
+            Region districtRegion = this.regionManager.findRegionById(supplier.getDistrictId());
+            if (districtRegion != null) {
+                sourceAddress.setDistributionTargetDistrict(districtRegion.getRegionName());
+            }
+        }
+
+
+        // 乡镇
+        if (supplier.getVillagesTownsId() != null) {
+            Region villageRegion = this.regionManager.findRegionById(supplier.getVillagesTownsId());
+            if (villageRegion != null) {
+                sourceAddress.setDistributionTargetVillagesTowns(villageRegion.getRegionName());
+            }
+        }
+        return sourceAddress;
+    }
+
 
     /**
      * 修改出库单头信息
@@ -360,16 +575,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
             }
-            // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
-            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
-                // 设置计数器编码
-                Set<Long> skuIdSet = new HashSet<Long>();
-                for (OdoLineCommand line : odoLineList) {
-                    skuIdSet.add(line.getSkuId());
-                }
-                String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
-                odo.setCounterCode(counterCode);
-            }
 
             // 匹配配货模式
             transportMgmt.setOuId(ouId);
@@ -384,6 +589,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             } catch (Exception ex) {
                 log.error("", ex);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            // @mender yimin.lu 2017/04/26
+            if (odoAddress != null) {
+                odoAddress.setOuId(ouId);
             }
             odoId = this.odoManager.createOdo(odo, odoLineList, transportMgmt, odoAddress, invoice, invoiceLineList, ouId, userId);
         } catch (BusinessException e) {

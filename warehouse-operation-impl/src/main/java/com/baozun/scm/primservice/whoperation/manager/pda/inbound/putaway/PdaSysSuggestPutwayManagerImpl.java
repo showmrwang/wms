@@ -325,8 +325,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             } 
            srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
            srCmd.setInsideContainerCode(containerCode);
+           this.removeCachce(containerId, false);
            if(null != outerContainerId){
-               this.removeCachce(containerId, false);
                this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
            }
             

@@ -1,20 +1,20 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  *
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  *
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  *
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
+
+import java.util.Date;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -25,27 +25,27 @@ import com.baozun.scm.primservice.whoperation.command.BaseCommand;
  *
  */
 public class WhWorkLineCommand extends BaseCommand {
-	
-	/**
+
+    /**
      * 
      */
     private static final long serialVersionUID = -6219910037554120940L;
-	
-    //columns START
+
+    // columns START
     /** 主键ID */
-    private java.lang.Long id;
+    private Long id;
     /** 工作明细号 */
-    private java.lang.String lineCode;
+    private String lineCode;
     /** 工作ID */
-    private java.lang.Long workId;
+    private Long workId;
     /** 仓库组织ID */
-    private java.lang.Long ouId;
+    private Long ouId;
     /** 操作开始时间 */
-    private java.util.Date startTime;
+    private Date startTime;
     /** 操作结束时间 */
-    private java.util.Date finishTime;
+    private Date finishTime;
     /** 商品ID */
-    private java.lang.Long skuId;
+    private Long skuId;
     /** 计划量 */
     private Double qty = 0.0;
     /** 执行量/完成量 */
@@ -53,331 +53,426 @@ public class WhWorkLineCommand extends BaseCommand {
     /** 取消量 */
     private Double cancelQty = 0.0;
     /** 库存状态 */
-    private java.lang.Long invStatus;
+    private Long invStatus;
     /** 库存类型 */
-    private java.lang.String invType;
+    private String invType;
     /** 批次号 */
-    private java.lang.String batchNumber;
+    private String batchNumber;
     /** 生产日期 */
-    private java.util.Date mfgDate;
+    private Date mfgDate;
     /** 失效日期 */
-    private java.util.Date expDate;
+    private Date expDate;
     /** 最小失效日期 */
-    private java.util.Date minExpDate;
+    private Date minExpDate;
     /** 最大失效日期 */
-    private java.util.Date maxExpDate;
+    private Date maxExpDate;
     /** 原产地 */
-    private java.lang.String countryOfOrigin;
+    private String countryOfOrigin;
     /** 库存属性1 */
-    private java.lang.String invAttr1;
+    private String invAttr1;
     /** 库存属性2 */
-    private java.lang.String invAttr2;
+    private String invAttr2;
     /** 库存属性3 */
-    private java.lang.String invAttr3;
+    private String invAttr3;
     /** 库存属性4 */
-    private java.lang.String invAttr4;
+    private String invAttr4;
     /** 库存属性5 */
-    private java.lang.String invAttr5;
+    private String invAttr5;
     /** 内部对接码 */
-    private java.lang.String uuid;
+    private String uuid;
     /** 原始库位 */
-    private java.lang.Long fromLocationId;
+    private Long fromLocationId;
     /** 原始库位外部容器 */
-    private java.lang.Long fromOuterContainerId;
+    private Long fromOuterContainerId;
     /** 原始库位内部容器 */
-    private java.lang.Long fromInsideContainerId;
+    private Long fromInsideContainerId;
     /** 使用出库箱，耗材ID */
-    private java.lang.Long useOutboundboxId;
+    private Long useOutboundboxId;
     /** 使用出库箱编码 */
-    private java.lang.String useOutboundboxCode;
+    private String useOutboundboxCode;
     /** 使用容器 */
-    private java.lang.Long useContainerId;
+    private Long useContainerId;
     /** 使用外部容器，小车 */
-    private java.lang.Long useOuterContainerId;
+    private Long useOuterContainerId;
     /** 使用货格编码数 */
-    private java.lang.Integer useContainerLatticeNo;
+    private Integer useContainerLatticeNo;
     /** 目标库位 */
-    private java.lang.Long toLocationId;
+    private Long toLocationId;
     /** 目标库位外部容器 */
-    private java.lang.Long toOuterContainerId;
+    private Long toOuterContainerId;
     /** 目标库位内部容器 */
-    private java.lang.Long toInsideContainerId;
+    private Long toInsideContainerId;
     /** 是否整托整箱 */
-    private java.lang.Boolean isWholeCase;
+    private Boolean isWholeCase;
     /** 出库单ID */
-    private java.lang.Long odoId;
+    private Long odoId;
     /** 出库单明细ID */
-    private java.lang.Long odoLineId;
+    private Long odoLineId;
     /** 补货单据号 */
-    private java.lang.String replenishmentCode;
+    private String replenishmentCode;
     /** invMoveCode */
-    private java.lang.String invMoveCode;
+    private String invMoveCode;
     /** 创建时间 */
-    private java.util.Date createTime;
+    private Date createTime;
     /** 最后操作时间 */
-    private java.util.Date lastModifyTime;
+    private Date lastModifyTime;
     /** 操作人ID */
-    private java.lang.Long operatorId;
-    //columns END
-	
-    public java.lang.Long getId() {
+    private Long operatorId;
+    /** 商品code*/
+    private String skuCode;
+
+    // columns END
+
+    public Long getId() {
         return id;
     }
-    public void setId(java.lang.Long id) {
+
+    public void setId(Long id) {
         this.id = id;
     }
-    public java.lang.String getLineCode() {
+
+    public String getLineCode() {
         return lineCode;
     }
-    public void setLineCode(java.lang.String lineCode) {
+
+    public void setLineCode(String lineCode) {
         this.lineCode = lineCode;
     }
-    public java.lang.Long getWorkId() {
+
+    public Long getWorkId() {
         return workId;
     }
-    public void setWorkId(java.lang.Long workId) {
+
+    public void setWorkId(Long workId) {
         this.workId = workId;
     }
-    public java.lang.Long getOuId() {
+
+    public Long getOuId() {
         return ouId;
     }
-    public void setOuId(java.lang.Long ouId) {
+
+    public void setOuId(Long ouId) {
         this.ouId = ouId;
     }
-    public java.util.Date getStartTime() {
+
+    public Date getStartTime() {
         return startTime;
     }
-    public void setStartTime(java.util.Date startTime) {
+
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
-    public java.util.Date getFinishTime() {
+
+    public Date getFinishTime() {
         return finishTime;
     }
-    public void setFinishTime(java.util.Date finishTime) {
+
+    public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
     }
-    public java.lang.Long getSkuId() {
+
+    public Long getSkuId() {
         return skuId;
     }
-    public void setSkuId(java.lang.Long skuId) {
+
+    public void setSkuId(Long skuId) {
         this.skuId = skuId;
     }
-    public java.lang.Long getInvStatus() {
+
+    public Long getInvStatus() {
         return invStatus;
     }
-    public void setInvStatus(java.lang.Long invStatus) {
+
+    public void setInvStatus(Long invStatus) {
         this.invStatus = invStatus;
     }
-    public java.lang.String getInvType() {
+
+    public String getInvType() {
         return invType;
     }
-    public void setInvType(java.lang.String invType) {
+
+    public void setInvType(String invType) {
         this.invType = invType;
     }
-    public java.lang.String getBatchNumber() {
+
+    public String getBatchNumber() {
         return batchNumber;
     }
-    public void setBatchNumber(java.lang.String batchNumber) {
+
+    public void setBatchNumber(String batchNumber) {
         this.batchNumber = batchNumber;
     }
-    public java.util.Date getMfgDate() {
+
+    public Date getMfgDate() {
         return mfgDate;
     }
-    public void setMfgDate(java.util.Date mfgDate) {
+
+    public void setMfgDate(Date mfgDate) {
         this.mfgDate = mfgDate;
     }
-    public java.util.Date getExpDate() {
+
+    public Date getExpDate() {
         return expDate;
     }
-    public void setExpDate(java.util.Date expDate) {
+
+    public void setExpDate(Date expDate) {
         this.expDate = expDate;
     }
-    public java.util.Date getMinExpDate() {
+
+    public Date getMinExpDate() {
         return minExpDate;
     }
-    public void setMinExpDate(java.util.Date minExpDate) {
+
+    public void setMinExpDate(Date minExpDate) {
         this.minExpDate = minExpDate;
     }
-    public java.util.Date getMaxExpDate() {
+
+    public Date getMaxExpDate() {
         return maxExpDate;
     }
-    public void setMaxExpDate(java.util.Date maxExpDate) {
+
+    public void setMaxExpDate(Date maxExpDate) {
         this.maxExpDate = maxExpDate;
     }
-    public java.lang.String getCountryOfOrigin() {
+
+    public String getCountryOfOrigin() {
         return countryOfOrigin;
     }
-    public void setCountryOfOrigin(java.lang.String countryOfOrigin) {
+
+    public void setCountryOfOrigin(String countryOfOrigin) {
         this.countryOfOrigin = countryOfOrigin;
     }
-    public java.lang.String getInvAttr1() {
+
+    public String getInvAttr1() {
         return invAttr1;
     }
-    public void setInvAttr1(java.lang.String invAttr1) {
+
+    public void setInvAttr1(String invAttr1) {
         this.invAttr1 = invAttr1;
     }
-    public java.lang.String getInvAttr2() {
+
+    public String getInvAttr2() {
         return invAttr2;
     }
-    public void setInvAttr2(java.lang.String invAttr2) {
+
+    public void setInvAttr2(String invAttr2) {
         this.invAttr2 = invAttr2;
     }
-    public java.lang.String getInvAttr3() {
+
+    public String getInvAttr3() {
         return invAttr3;
     }
-    public void setInvAttr3(java.lang.String invAttr3) {
+
+    public void setInvAttr3(String invAttr3) {
         this.invAttr3 = invAttr3;
     }
-    public java.lang.String getInvAttr4() {
+
+    public String getInvAttr4() {
         return invAttr4;
     }
-    public void setInvAttr4(java.lang.String invAttr4) {
+
+    public void setInvAttr4(String invAttr4) {
         this.invAttr4 = invAttr4;
     }
-    public java.lang.String getInvAttr5() {
+
+    public String getInvAttr5() {
         return invAttr5;
     }
-    public void setInvAttr5(java.lang.String invAttr5) {
+
+    public void setInvAttr5(String invAttr5) {
         this.invAttr5 = invAttr5;
     }
-    public java.lang.Long getFromLocationId() {
+
+    public Long getFromLocationId() {
         return fromLocationId;
     }
-    public void setFromLocationId(java.lang.Long fromLocationId) {
+
+    public void setFromLocationId(Long fromLocationId) {
         this.fromLocationId = fromLocationId;
     }
-    public java.lang.Long getFromOuterContainerId() {
+
+    public Long getFromOuterContainerId() {
         return fromOuterContainerId;
     }
-    public void setFromOuterContainerId(java.lang.Long fromOuterContainerId) {
+
+    public void setFromOuterContainerId(Long fromOuterContainerId) {
         this.fromOuterContainerId = fromOuterContainerId;
     }
-    public java.lang.Long getFromInsideContainerId() {
+
+    public Long getFromInsideContainerId() {
         return fromInsideContainerId;
     }
-    public void setFromInsideContainerId(java.lang.Long fromInsideContainerId) {
+
+    public void setFromInsideContainerId(Long fromInsideContainerId) {
         this.fromInsideContainerId = fromInsideContainerId;
     }
-    public java.lang.Long getUseOutboundboxId() {
+
+    public Long getUseOutboundboxId() {
         return useOutboundboxId;
     }
-    public void setUseOutboundboxId(java.lang.Long useOutboundboxId) {
+
+    public void setUseOutboundboxId(Long useOutboundboxId) {
         this.useOutboundboxId = useOutboundboxId;
     }
-    public java.lang.String getUseOutboundboxCode() {
+
+    public String getUseOutboundboxCode() {
         return useOutboundboxCode;
     }
-    public void setUseOutboundboxCode(java.lang.String useOutboundboxCode) {
+
+    public void setUseOutboundboxCode(String useOutboundboxCode) {
         this.useOutboundboxCode = useOutboundboxCode;
     }
-    public java.lang.Long getUseContainerId() {
+
+    public Long getUseContainerId() {
         return useContainerId;
     }
-    public void setUseContainerId(java.lang.Long useContainerId) {
+
+    public void setUseContainerId(Long useContainerId) {
         this.useContainerId = useContainerId;
     }
-    public java.lang.Long getUseOuterContainerId() {
+
+    public Long getUseOuterContainerId() {
         return useOuterContainerId;
     }
-    public void setUseOuterContainerId(java.lang.Long useOuterContainerId) {
+
+    public void setUseOuterContainerId(Long useOuterContainerId) {
         this.useOuterContainerId = useOuterContainerId;
     }
-    public java.lang.Integer getUseContainerLatticeNo() {
+
+    public Integer getUseContainerLatticeNo() {
         return useContainerLatticeNo;
     }
-    public void setUseContainerLatticeNo(java.lang.Integer useContainerLatticeNo) {
+
+    public void setUseContainerLatticeNo(Integer useContainerLatticeNo) {
         this.useContainerLatticeNo = useContainerLatticeNo;
     }
-    public java.lang.Long getToLocationId() {
+
+    public Long getToLocationId() {
         return toLocationId;
     }
-    public void setToLocationId(java.lang.Long toLocationId) {
+
+    public void setToLocationId(Long toLocationId) {
         this.toLocationId = toLocationId;
     }
-    public java.lang.Long getToOuterContainerId() {
+
+    public Long getToOuterContainerId() {
         return toOuterContainerId;
     }
-    public void setToOuterContainerId(java.lang.Long toOuterContainerId) {
+
+    public void setToOuterContainerId(Long toOuterContainerId) {
         this.toOuterContainerId = toOuterContainerId;
     }
-    public java.lang.Long getToInsideContainerId() {
+
+    public Long getToInsideContainerId() {
         return toInsideContainerId;
     }
-    public void setToInsideContainerId(java.lang.Long toInsideContainerId) {
+
+    public void setToInsideContainerId(Long toInsideContainerId) {
         this.toInsideContainerId = toInsideContainerId;
     }
-    public java.lang.Boolean getIsWholeCase() {
+
+    public Boolean getIsWholeCase() {
         return isWholeCase;
     }
-    public void setIsWholeCase(java.lang.Boolean isWholeCase) {
+
+    public void setIsWholeCase(Boolean isWholeCase) {
         this.isWholeCase = isWholeCase;
     }
-    public java.lang.Long getOdoId() {
+
+    public Long getOdoId() {
         return odoId;
     }
-    public void setOdoId(java.lang.Long odoId) {
+
+    public void setOdoId(Long odoId) {
         this.odoId = odoId;
     }
-    public java.lang.Long getOdoLineId() {
+
+    public Long getOdoLineId() {
         return odoLineId;
     }
-    public void setOdoLineId(java.lang.Long odoLineId) {
+
+    public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
     }
-    public java.util.Date getCreateTime() {
+
+    public Date getCreateTime() {
         return createTime;
     }
-    public void setCreateTime(java.util.Date createTime) {
+
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
-    public java.util.Date getLastModifyTime() {
+
+    public Date getLastModifyTime() {
         return lastModifyTime;
     }
-    public void setLastModifyTime(java.util.Date lastModifyTime) {
+
+    public void setLastModifyTime(Date lastModifyTime) {
         this.lastModifyTime = lastModifyTime;
     }
-    public java.lang.Long getOperatorId() {
+
+    public Long getOperatorId() {
         return operatorId;
     }
-    public void setOperatorId(java.lang.Long operatorId) {
+
+    public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
     }
-    public java.lang.Double getQty() {
+
+    public Double getQty() {
         return qty;
     }
-    public void setQty(java.lang.Double qty) {
+
+    public void setQty(Double qty) {
         this.qty = qty;
     }
-    public java.lang.Double getCompleteQty() {
+
+    public Double getCompleteQty() {
         return completeQty;
     }
-    public void setCompleteQty(java.lang.Double completeQty) {
+
+    public void setCompleteQty(Double completeQty) {
         this.completeQty = completeQty;
     }
-    public java.lang.Double getCancelQty() {
+
+    public Double getCancelQty() {
         return cancelQty;
     }
-    public void setCancelQty(java.lang.Double cancelQty) {
+
+    public void setCancelQty(Double cancelQty) {
         this.cancelQty = cancelQty;
     }
-    public java.lang.String getUuid() {
+
+    public String getUuid() {
         return uuid;
     }
-    public void setUuid(java.lang.String uuid) {
+
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
+
     public String getReplenishmentCode() {
         return replenishmentCode;
     }
+
     public void setReplenishmentCode(String replenishmentCode) {
         this.replenishmentCode = replenishmentCode;
     }
-    public java.lang.String getInvMoveCode() {
+
+    public String getInvMoveCode() {
         return invMoveCode;
     }
-    public void setInvMoveCode(java.lang.String invMoveCode) {
+
+    public void setInvMoveCode(String invMoveCode) {
         this.invMoveCode = invMoveCode;
     }
-    
-}
 
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+}

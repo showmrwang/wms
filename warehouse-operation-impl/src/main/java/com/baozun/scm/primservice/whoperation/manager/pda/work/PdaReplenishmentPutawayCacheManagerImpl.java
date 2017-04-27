@@ -121,36 +121,36 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
      }
      
 
-     /**
-      * 补货上架缓存库位
-      * @param operationId
-      * @param locationId
-      */
-    @Override
-     public void pdaReplenishPutwayCacheLoc(Long operationId,Long locationId){
-        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
-            if(null == replenishment){
-                replenishment = new ReplenishmentPutawayCacheCommand();
-                ArrayDeque<Long> tipLocationIds = new ArrayDeque<Long>();
-                tipLocationIds.addFirst(locationId);
-                replenishment.setTipLocationIds(tipLocationIds);
-                cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
-            }else{
-                ArrayDeque<Long> tipLocationIds = replenishment.getTipLocationIds(); 
-                if(null == tipLocationIds || tipLocationIds.isEmpty()) {
-                    tipLocationIds = new ArrayDeque<Long>();
-                    tipLocationIds.addFirst(locationId);
-                    replenishment.setTipLocationIds(tipLocationIds);
-                    cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
-                }else{
-                    if(!tipLocationIds.contains(locationId)) {
-                        tipLocationIds.addFirst(locationId);
-                        replenishment.setTipLocationIds(tipLocationIds);
-                        cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
-                    }
-                }
-            }
-     }
+//     /**
+//      * 补货上架缓存库位
+//      * @param operationId
+//      * @param locationId
+//      */
+//    @Override
+//     public void pdaReplenishPutwayCacheLoc(Long operationId,Long locationId){
+//        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+//            if(null == replenishment){
+//                replenishment = new ReplenishmentPutawayCacheCommand();
+//                ArrayDeque<Long> tipLocationIds = new ArrayDeque<Long>();
+//                tipLocationIds.addFirst(locationId);
+//                replenishment.setTipLocationIds(tipLocationIds);
+//                cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+//            }else{
+//                ArrayDeque<Long> tipLocationIds = replenishment.getTipLocationIds(); 
+//                if(null == tipLocationIds || tipLocationIds.isEmpty()) {
+//                    tipLocationIds = new ArrayDeque<Long>();
+//                    tipLocationIds.addFirst(locationId);
+//                    replenishment.setTipLocationIds(tipLocationIds);
+//                    cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+//                }else{
+//                    if(!tipLocationIds.contains(locationId)) {
+//                        tipLocationIds.addFirst(locationId);
+//                        replenishment.setTipLocationIds(tipLocationIds);
+//                        cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+//                    }
+//                }
+//            }
+//     }
     
     
     /**

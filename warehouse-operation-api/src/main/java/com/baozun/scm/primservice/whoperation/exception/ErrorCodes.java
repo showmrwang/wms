@@ -413,6 +413,10 @@ public class ErrorCodes {
     public static final int BIPO_AUDIT_STATUS_ERROR = 11084;
     /** ASN已收货完成 */
     public static final int ASN_RCVD_FINISHED = 11085;
+    /** 出库单反馈数据异常 */
+    public static final int ODO_CONFIRM_ERROR = 11086;
+    /** 出库单加入配货模式计数器池失败 */
+    public static final int ODO_DISTRIBUTIONPATTERN_ERROR = 11087;
     // 10001-20000 luyimin
 
 
@@ -748,6 +752,8 @@ public class ErrorCodes {
     public static final int SEEDING_SEEDING_CREATE_UUID_ERROR = 60227;
     /** 未找到批次下的出库单信息 */
     public static final int SEEDING_SEEDING_BATCH_ODO_INFO_NULL_ERROR = 60228;
+    /** 库存不足 */
+    public static final int SEEDING_SEEDING_SKUINVENTORY_SHORTAGE = 60229;
 
 
 
@@ -853,8 +859,8 @@ public class ErrorCodes {
     public static final int REPLE_WORK_ISEND = 70060;
     /** 校验容器/出库箱库存 */
     public static final int CHECK_CONTAINER_INVENTORY_IS_ERROR = 70061;
-    
-    
+
+
     /** 待移入库存不存在 */
     public static final int TOBEFILLED_INVENTORY_NO_EXIST = 70062;
 
@@ -948,4 +954,14 @@ public class ErrorCodes {
     public static final int SKUINVENTORY_IS_NULL = 110012;
     /** 出库单下的出库箱并没有全都完成交接 */
     public static final int ODO_OUTBOUNDBOX_NOT_HANDOVER_ALL = 110013;
+    /** 该ASN已收货完成且不能超收 */
+    public static final int ASN_RCVD_ALREADY_FINISHED = 110014;
+    /** 出库箱尚未打印面单或箱标签，请打印面单或箱标签 */
+    public static final int OUTBOUNDBOX_NOT_PRINT = 110015;
+    /** 该出库箱尚未复核或称重 */
+    public static final int OUTBOUNDBOX_NOT_CHECK_OR_WEIGHT = 110016;
+    /** 推荐失败 */
+    public static final int RECOMMEND_FAILED = 110017;
+    /** 推荐的交接库位不存在 */
+    public static final int RECOMMEND_STATION_DONT_EXSIT = 110018;
 }

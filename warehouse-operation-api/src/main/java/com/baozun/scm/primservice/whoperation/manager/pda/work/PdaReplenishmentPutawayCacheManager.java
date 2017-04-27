@@ -9,7 +9,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
 
     /**
-     * 缓存库位
+     * 缓存库位（用完就删）
      * @param locationIds
      * @param operationId
      * @return
@@ -31,12 +31,12 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
     public void pdaReplenishPutwayRemoveAllCache(Long operationId);
     
     
-    /**
-     * 补货上架缓存库位
-     * @param operationId
-     * @param locationId
-     */
-    public void pdaReplenishPutwayCacheLoc(Long operationId,Long locationId);
+//    /**
+//     * 补货上架缓存库位
+//     * @param operationId
+//     * @param locationId
+//     */
+//    public void pdaReplenishPutwayCacheLoc(Long operationId,Long locationId);
     
     
     

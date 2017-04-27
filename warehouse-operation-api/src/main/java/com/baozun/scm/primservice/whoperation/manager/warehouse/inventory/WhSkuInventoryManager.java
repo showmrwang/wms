@@ -324,10 +324,19 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param ouid
      * @return
      */
-    WhSkuInventoryCommand findWhSkuInventoryByOccupationCodeAndUuid(String occupationCode, String uuid, Long ouid);
+    WhSkuInventoryCommand findInvLstByOccupationCode(String occupationCode, Long occupationLineId, String uuid, Long ouid);
     
     /**
      * 生成出库箱库存
      */
     public void addOutBoundInventory(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId);
+    
+    
+    /***
+     * 
+     * @param outboundbox
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findOutboundboxInventory(String outboundbox,Long ouId);
 }
