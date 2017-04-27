@@ -49,6 +49,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	odo_id as odoId,
 	        	odo_line_id as odoLineId,
 	        	replenishment_code as replenishmentCode,
+	        	inv_move_code as invMoveCode,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId
@@ -211,6 +212,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="replenishmentCode!=null and replenishmentCode!=''">
 					and replenishment_code = #{replenishmentCode}
 				</if>
+				
+				<if test="invMoveCode!=null and invMoveCode!=''">
+					and inv_move_code = #{invMoveCode}
+				</if>
 	       
 				<if test="createTime!=null">
 					and create_time = #{createTime}
@@ -266,6 +271,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        inv_move_code = #{invMoveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
