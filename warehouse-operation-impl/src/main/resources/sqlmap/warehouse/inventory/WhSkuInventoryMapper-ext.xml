@@ -4087,6 +4087,41 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.inside_container_id = #{containerId} and inv.ou_id = #{ouId}
 		group by inv.uuid 
     </select>
+
+    <select id="findListByContainerIdExt" resultMap="WhSeedingCollectionLineCommandResult">
+		select 
+			sku.code as skuCode, 
+			sku.ext_code as skuExtCode, 
+			sku.bar_code as skuBarCode,
+			sku.name as skuName, 
+			sum(inv.on_hand_qty) as qty,
+			inv.customer_id as customerId, 
+			inv.store_id as storeId,
+			inv.inv_status as invStatus, 
+			inv.inv_type as invType, 
+			inv.batch_number as batchNumber,
+			inv.mfg_date as mfgDate,
+			inv.exp_date as expDate, 
+			inv.country_of_origin as countryOfOrigin,
+			inv.inv_attr1 as invAttr1,
+			inv.inv_attr2 as invAttr2,
+			inv.inv_attr3 as invAttr3,
+			inv.inv_attr4 as invAttr4,
+			inv.inv_attr5 as invAttr5,
+			inv.uuid as uuid,
+			inv.ou_id as ouId,
+			inv.occupation_line_id as odoLineId, 
+			odo.id as odoId,
+			sku.id as skuId
+		from 
+			t_wh_sku_inventory inv 
+			left join t_wh_sku sku on inv.sku_id = sku.id 
+			left join t_wh_odo odo on inv.occupation_code = odo.odo_code
+		where 
+			inv.inside_container_id = #{containerId} and inv.ou_id = #{ouId}
+			and inv.occupation_line_id is not null and inv.occupation_code is not null
+		group by inv.occupation_line_id and inv.uuid
+    </select>
     <delete id="deleteWhSkuInventoryByOutboundboxCode" >
 	        delete from t_wh_sku_inventory where
 		        outboundbox_code = #{outboundboxCode} and ou_id = #{ouId}
@@ -4162,16 +4197,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    <select id="findSeedingOdoSkuInvByUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
-        select
-            <include refid="whSkuInventoryColumnsExt"/>
-        from
-            t_wh_sku_inventory
-        where
-            occupation_code = #{odoCode}
-            and ou_id = #{ouId}
-            and uuid = #{uuid}
-    </select>
 
     <select id="findSeedingOdoSkuInvByOdoLineIdUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
         select
@@ -4249,4 +4274,83 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					 and inv.inside_container_id is null
 				</if>
 	</select>
+	
+	
+	  
+    <select id="getWhSkuInventoryCommandByOdo" resultMap="WhSkuInventoryCommandSnResultExt">
+	    select
+	          inv.id as invId,
+	          inv.sku_id as skuId,
+	          inv.location_id as locationId,
+	          inv.outer_container_id as outerContainerId,
+	          inv.inside_container_id as insideContainerId,
+	          inv.customer_id as customerId,
+	          inv.store_id as storeId,
+	          inv.occupation_code as occupationCode,
+	          inv.occupation_line_id as occupationLineId,
+	          inv.on_hand_qty as onHandQty,
+	          inv.allocated_qty as  allocatedQty,
+	          inv.to_be_filled_qty as toBeFilledQty,
+	          inv.frozen_qty as frozenQty,
+	          inv.inv_status as invStatus,
+	          inv.inv_type as invType,
+	          inv.batch_number as batchNumber,
+	          inv.mfg_date as mfgDate,
+	          inv.exp_date as expDate,
+	          inv.country_of_origin as countryOfOrigin,
+	          inv.inv_attr1 as invAttr1,
+	          inv.inv_attr2 as invAttr2,
+	          inv.inv_attr3 as invAttr3,
+	          inv.inv_attr4 as invAttr4,
+	          inv.inv_attr5 as invAttr5,
+	          inv.uuid as uuid,
+	          inv.is_locked as  isLocked,
+	          inv.ou_id as ouId,
+	          inv.occupation_code_source as occupationCodeSource,
+	          inv.last_modify_time as lastModifyTime,
+	          inv.inbound_time as inboundTime,
+	          sn.id AS snId,
+	          sn.sn AS snSn,
+	          sn.occupation_code AS snOccupationCode,
+	          sn.defect_ware_barcode AS snDefectWareBarcode,
+	          sn.defect_source AS snDefectSource,
+	          sn.defect_type_id AS snDefectTypeId,
+	          sn.defect_reasons_id AS snDefectReasonsId,
+	          sn.status AS snStatus,
+	          sn.inv_attr AS snInvAttr,
+	          sn.uuid AS snUuid,
+	          sn.ou_id AS snOuId,
+	          sn.sys_uuid AS snSysUuid
+		      from 
+					t_wh_sku_inventory inv
+					left join t_wh_odo odo on inv.occupation_code = odo.odo_code
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid 
+			  where
+				inv.ou_id = #{ouId}
+				and inv.occupation_line_id = #{odoLineId}
+				<if test="containerId!=null and containerId!=''">
+					 and inv.inside_container_id = #{containerId}
+				</if>
+				<if test="containerLatticeNo!=null and containerLatticeNo!=''">
+								 and inv.container_lattice_no=#{containerLatticeNo}
+				</if>
+				<if test="outboundbox!=null and outboundbox!=''" >
+					 and inv.outboundbox_code =#{outboundbox}
+				</if>
+				<if test="turnoverBoxId!=null and turnoverBoxId!=''">
+					 and inv.inside_container_id =#{turnoverBoxId}
+				</if>
+				<if test="seedingWallCode!=null and seedingWallCode!=''">
+					 and inv.seeding_wall_code =#{seedingWallCode}
+				</if>
+	</select>
+	
+	<select id="findOnHandQtyByLocationId" resultType="long">
+		select sum(on_hand_qty) as on_hand_qty
+		from
+		t_wh_sku_inventory where location_id =#{locationId}
+		and ou_id = #{ouId}
+
+	</select>
+	
 </mapper>

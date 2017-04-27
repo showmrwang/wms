@@ -230,4 +230,14 @@
 
     </select>
     
+    
+       <select id="findCheckingLineById" resultMap="WhCheckingLineCommand">
+        select
+        <include refid="whCheckingLineColumnsExt"/>
+        from t_wh_checking_line
+        where id = #{id}
+              and ou_id = #{ouId}
+
+    </select>
+    
 </mapper>

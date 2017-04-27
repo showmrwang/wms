@@ -21,38 +21,42 @@ import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
+import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.LocationSkuVolume;
 
 
-
-public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
+public interface LocationSkuVolumeDao extends BaseDao<LocationSkuVolume, Long> {
 
 
     @QueryPage("findListCountByQueryMap")
-    Pagination<WhPrintInfo> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+    Pagination<LocationSkuVolume> findListByQueryMapWithPage(Page page, Sort[] sorts, Map<String, Object> params);
+
+    @QueryPage("queryCount")
+    Pagination<LocationSkuVolume> query(Page page, Sort[] sorts, QueryCondition cond);
+
+    List<LocationSkuVolume> query(QueryCondition cond);
+
+    Long queryCount(QueryCondition cond);
 
     @CommonQuery
-    int saveOrUpdate(WhPrintInfo o);
+    int saveOrUpdate(LocationSkuVolume o);
+
+    List<Long> findLocationIdsByfacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
+
+    LocationSkuVolume findListBylocationId(@Param("locationId") Long locationId, @Param("ouId") Long ouId);
 
     /**
-     * 打印信息表
+     * [业务方法] 通过商品和库位查找商品库位信息
      * 
-     * @param outboundboxCode
-     * @param checkingPrint
+     * @param skuId
+     * @param locationId
+     * @param ouId
      * @return
      */
-    List<WhPrintInfo> findByOutboundboxCodeAndPrintType(@Param("outboundboxCode") String outboundboxCode, @Param("checkingPrint") String checkingPrint, @Param("ouId") Long ouId);
-
-    /**
-     * 根据箱号找打印信息
-     * 
-     * @param outboundboxCode
-     */
-    WhPrintInfo findFromcheckingCollectionByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode);
-
+    LocationSkuVolume findBySkuIdAndLocationId(@Param("skuId") Long skuId, @Param("locationId") Long locationId, @Param("ouId") Long ouId);
 }

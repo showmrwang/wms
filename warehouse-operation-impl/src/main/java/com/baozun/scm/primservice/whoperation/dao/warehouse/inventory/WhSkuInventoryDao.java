@@ -393,9 +393,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int findRcvdInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
-    
+
     /**
      * 根据外部容器获取库位库存记录数
+     * 
      * @author lichuan
      * @param ouId
      * @param outerContainerId
@@ -412,9 +413,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int findRcvdInventoryCountsByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
-    
+
     /**
      * 根据内部容器获取库位库存记录数
+     * 
      * @author lichuan
      * @param ouId
      * @param insideContainerId
@@ -732,7 +734,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventory> getSkuInvListByPramas(WhSkuInventory whSkuInventory);
-    
+
     /**
      * 库内移动查询出库存信息
      * 
@@ -800,7 +802,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
             @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId);
 
 
-    public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByWave(@Param("ouId") Long ouId,  @Param("turnoverBoxId") Long turnoverBoxId,@Param("locationId") Long locationId,@Param("operationId") Long operationId);
+    public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByWave(@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId, @Param("locationId") Long locationId, @Param("operationId") Long operationId);
 
     /**
      * 校验容器库存(废除)
@@ -812,7 +814,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     public List<WhSkuInventoryCommand> checkReplenishmentInventory(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
 
 
-    public List<WhSkuInventoryCommand> findReplenishmentBylocationId(@Param("ouId") Long ouId, @Param("locationId") Long locationId, @Param("odoLineId") Long odoLineId, @Param("odoId") Long odoId);
+    public List<WhSkuInventoryCommand> findReplenishmentBylocationId(@Param("turnoverBoxId") Long turnoverBoxId,@Param("ouId") Long ouId, @Param("locationId") Long locationId, @Param("odoLineId") Long odoLineId, @Param("odoId") Long odoId);
 
     List<WhSeedingCollectionLine> findSeedingDataByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 
@@ -856,7 +858,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * 
      * @author qiming.liu
      * @param occupationCode
-     * @param occupationLineId 
+     * @param occupationLineId
      * @param uuid
      * @param ouid
      * @return
@@ -872,6 +874,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<WhSeedingCollectionLineCommand> findListByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 通过内部容器id查找容器中的库存明细并插入播种墙集货明细表 groupBy odoLine
+     * 
+     * @param containerId
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingCollectionLineCommand> findListByContainerIdExt(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
+
     /***
      * 补货查询已分配库存记录
      * 
@@ -879,7 +890,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param operationId
      * @return
      */
-    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOperationId(@Param("ouId") Long ouId, @Param("operationId") Long operationId,@Param("locationId") Long locationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId);
+    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOperationId(@Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("locationId") Long locationId, @Param("outerContainerId") Long outerContainerId,
+            @Param("insideContainerId") Long insideContainerId);
 
     /**
      * 按照占用码删除库存，转换库存时使用
@@ -898,8 +910,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param operationId
      * @return
      */
-    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOdo(@Param("odoLineId") Long odoLineId, @Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("outerContainerId") Long containerId, @Param("containerLatticeNo") Integer containerLatticeNo,
-            @Param("outboundbox") String outboundbox, @Param("turnoverBoxCode") String turnoverBoxCode, @Param("seedingWallCode") String seedingWallCode);
+    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOdo(@Param("odoLineId") Long odoLineId, @Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("containerId") Long containerId, @Param("containerLatticeNo") Integer containerLatticeNo,
+            @Param("outboundbox") String outboundbox, @Param("turnoverBoxId") Long turnoverBoxId, @Param("seedingWallCode") String seedingWallCode);
 
 
     /**
@@ -933,8 +945,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<WhCheckingCollectionLine> findWhCheckingCollectionListByContainerId(@Param("insideContainerId") Long insideContainerId, @Param("outerContainerId") Long outerContainerId, @Param("containerLatticeNo") Integer containerLatticeNo,
             @Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
-    
-    
+
+
     /***
      * 查询库位库存
      * 
@@ -942,11 +954,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param operationId
      * @return
      */
-    List<WhSkuInventoryCommand> findWhSkuInventoryCommandByReplish(@Param("ouId") Long ouId,@Param("locationId") Long locationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId);
+    List<WhSkuInventoryCommand> findWhSkuInventoryCommandByReplish(@Param("ouId") Long ouId, @Param("locationId") Long locationId, @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId);
 
 
-    public WhSkuInventory findSeedingOdoSkuInvByUuid(@Param("odoCode") String odoCode, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
-    public WhSkuInventory findSeedingOdoSkuInvByOdoLineIdUuid(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+    public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
+    /**
+     * 根据库位id查询库存量
+     * 
+     * @param ouId
+     */
+    Long findOnHandQtyByLocationId(@Param("locationId") Long locationId, @Param("ouId") Long ouId);
 }

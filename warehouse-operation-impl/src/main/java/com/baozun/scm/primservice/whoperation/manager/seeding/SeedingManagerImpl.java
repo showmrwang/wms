@@ -299,15 +299,10 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     }
 
 
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSkuInventory findSeedingOdoSkuInvByUuid(String odoCode, Long ouId, String uuid){
-        return whSkuInventoryDao.findSeedingOdoSkuInvByUuid(odoCode, ouId, uuid);
-    }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSkuInventory findSeedingOdoSkuInvByOdoLineIdUuid( Long odoLineId, Long ouId, String uuid){
+    public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid( Long odoLineId, Long ouId, String uuid){
         return whSkuInventoryDao.findSeedingOdoSkuInvByOdoLineIdUuid(odoLineId, ouId, uuid);
     }
 

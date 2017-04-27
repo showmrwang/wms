@@ -43,8 +43,11 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
@@ -60,6 +63,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
@@ -440,6 +444,18 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             line.setCheckingQty(checkingQty);
             whCheckingLineManager.saveOrUpdateByVersion(line);
         }
+        Long checkingId = null;
+        for(WhCheckingLineCommand lineCmd:checkingLineList){
+             checkingId = lineCmd.getCheckingId(); //复合头id
+             break;
+        }
+        //更新复合头状态
+        WhCheckingCommand  checking = whCheckingManager.findWhChecking(checkingId, ouId);
+        if(null == checking) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        checking.setStatus(CheckingStatus.FINISH);
+        whCheckingManager.saveOrUpdate(checking);
     }
     
     /**
@@ -452,12 +468,14 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         Long outboundboxId = cmd.getOutboundboxId();
         //更新复合明细表
         this.updateCheckingByOdo(checkingLineList, ouId);
+        cmd.setOuId(ouId);
         //生成出库箱库存
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
         //获取出库单id 
         Long odoId = checkingLineList.get(0).getOdoId();
+//        出库箱头信息（t_wh_outboundbox）和出库箱明细
         //更新出库单状态
-        this.updateOdoStatusByOdo(odoId, ouId);
+//        this.updateOdoStatusByOdo(odoId, ouId);
         //算包裹计重
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, outboundboxId, userId);
     }
@@ -476,7 +494,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         //复制数据        
         BeanUtils.copyProperties(odoCommand, whOdo);
         //修改出库单状态为复核完成状态。
-        whOdo.setOdoStatus(null);  
+        whOdo.setOdoStatus(OdoStatus.ODO_CHECKING_FINISH);  
         odoManager.updateByVersion(whOdo);
     }
     
@@ -517,4 +535,5 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             }
         }
     }
+    
 }

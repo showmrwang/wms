@@ -65,6 +65,7 @@ public class CheckScanResultCommand extends BaseCommand {
     
     private Boolean isScanLatticeNo = false; // 是否扫描货格
     
+    private Boolean isContinueScanSn = false;  //是否是sn商品
     
     
     public int getPickingWay() {
@@ -187,5 +188,10 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setIsScanLatticeNo(Boolean isScanLatticeNo) {
         this.isScanLatticeNo = isScanLatticeNo;
     }
-    
+    public Boolean getIsContinueScanSn() {
+        return isContinueScanSn;
+    }
+    public void setIsContinueScanSn(Boolean isContinueScanSn) {
+        this.isContinueScanSn = isContinueScanSn;
+    }
 }

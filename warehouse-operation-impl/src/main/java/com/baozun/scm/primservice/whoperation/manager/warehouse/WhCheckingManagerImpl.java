@@ -250,10 +250,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private Boolean scanOutboundBox(WhCheckingByOdoCommand command) {
         WhCheckingCommand whCheckingCommand = command.getCheckingCommand();
         String input = whCheckingCommand.getInput();
-        WhChecking checking = new WhChecking();
-        List<WhChecking> checkingList = new ArrayList<WhChecking>();
+        WhCheckingCommand checking = new WhCheckingCommand();
+        List<WhCheckingCommand> checkingList = new ArrayList<WhCheckingCommand>();
         checking.setOutboundboxCode(input);
-        checkingList = whCheckingDao.findListByParam(checking);
+        checkingList = whCheckingDao.findListByParamExt(checking);
         if (null != checkingList && !checkingList.isEmpty()) {
             // 扫描出库箱编码
             checking = checkingList.get(0);
@@ -579,4 +579,14 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
 
     // ============================= 按单复核 end =============================
 
+    /**
+     * 
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    public WhCheckingCommand findWhChecking(Long checkingId,Long ouId){
+        
+        return whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+    }
 }

@@ -379,6 +379,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
             if (odoAddress != null) {
                 odoAddress.setOdoId(odoId);
+                odoAddress.setOuId(ouId);
                 this.whOdoAddressDao.insert(odoAddress);
             }
 
