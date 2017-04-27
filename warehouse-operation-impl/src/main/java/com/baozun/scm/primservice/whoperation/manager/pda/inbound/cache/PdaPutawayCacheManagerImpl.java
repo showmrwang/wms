@@ -4496,32 +4496,34 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             }
                         }else{
                          // 判断是否需要提示下一个库位
-                            Set<Long> allLocIds = locSkuAttrIds.keySet();
-                            boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
-                            if (false == isLocAllCache) {
-                                // 提示下一个库位
-                                cssrCmd.setPutaway(true);// 可上架
-                                Long tipLocId = null;
-                                for (Long lId : allLocIds) {
-                                    if (0 == tipLocationId.compareTo(lId)) {
-                                        continue;
+                            if(null != locSkuAttrIds && locSkuAttrIds.size() != 0) {
+                                Set<Long> allLocIds = locSkuAttrIds.keySet();
+                                boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
+                                if (false == isLocAllCache) {
+                                    // 提示下一个库位
+                                    cssrCmd.setPutaway(true);// 可上架
+                                    Long tipLocId = null;
+                                    for (Long lId : allLocIds) {
+                                        if (0 == tipLocationId.compareTo(lId)) {
+                                            continue;
+                                        }
+                                        Set<Long> tempLocIds = new HashSet<Long>();
+                                        tempLocIds.add(lId);
+                                        boolean isExists = isCacheAllExists(tempLocIds, tipLocIds);
+                                        if (true == isExists) {
+                                            continue;
+                                        } else {
+                                            tipLocId = lId;
+                                            break;
+                                        }
                                     }
-                                    Set<Long> tempLocIds = new HashSet<Long>();
-                                    tempLocIds.add(lId);
-                                    boolean isExists = isCacheAllExists(tempLocIds, tipLocIds);
-                                    if (true == isExists) {
-                                        continue;
-                                    } else {
-                                        tipLocId = lId;
-                                        break;
-                                    }
+                                    cssrCmd.setNeedTipLoc(true);
+                                    cssrCmd.setTipLocId(tipLocId);
+                                    return cssrCmd;
+                                }else{
+                                    cssrCmd.setPutaway(true);// 上架结束 
                                 }
-                                cssrCmd.setNeedTipLoc(true);
-                                cssrCmd.setTipLocId(tipLocId);
-                                return cssrCmd;
-                        }else{
-                            cssrCmd.setPutaway(true);// 上架结束 
-                        }
+                            }
                         }
                     } else if (cacheValue < skuQty) {
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + skuId.toString());

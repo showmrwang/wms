@@ -40,6 +40,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCom
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
@@ -434,7 +435,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * 按单复合更新复合表
      * @param checkingLineList
      */
-    private void updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList,Long ouId){
+    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList,Long ouId){
         for(WhCheckingLineCommand cmd:checkingLineList){
             Long id = cmd.getId();  //复合明细id
             Long checkingQty = cmd.getCheckingQty();  //复合明细数量
@@ -456,6 +457,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         }
         checking.setStatus(CheckingStatus.FINISH);
         whCheckingManager.saveOrUpdate(checking);
+        
+        return checkingId;
     }
     
     /**
@@ -466,19 +469,99 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     public void checkingByOdo(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId,Long ouId,Long functionId){
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         Long outboundboxId = cmd.getOutboundboxId();
+        String outboundbox = cmd.getOutboundbox();
         //更新复合明细表
-        this.updateCheckingByOdo(checkingLineList, ouId);
+        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId);
         cmd.setOuId(ouId);
         //生成出库箱库存
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
         //获取出库单id 
-        Long odoId = checkingLineList.get(0).getOdoId();
+        WhCheckingLineCommand lineCmd = checkingLineList.get(0);
+        Long odoId = lineCmd.getOdoId();
 //        出库箱头信息（t_wh_outboundbox）和出库箱明细
+        this.addOutboundbox(checkingId, ouId, odoId);
+        //生成出库箱明细
+        this.addOutboundboxLine(outboundbox, ouId, lineCmd);
         //更新出库单状态
 //        this.updateOdoStatusByOdo(odoId, ouId);
         //算包裹计重
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, outboundboxId, userId);
     }
+    
+    
+    /**
+     * 出库箱头信息
+     * 
+     * @author qiming.liu
+     * @param whCheckingResultCommand
+     */
+    private void addOutboundbox(Long checkingId,Long ouId,Long odoId) {
+        WhCheckingCommand checkingCmd =  whCheckingManager.findWhChecking(checkingId, ouId);
+        if(null == checkingCmd){
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        
+        WhOutboundboxCommand whOutboundboxCommand = new WhOutboundboxCommand();
+        BeanUtils.copyProperties(checkingCmd, whOutboundboxCommand);
+        whOutboundboxCommand.setOuId(ouId);
+        whOutboundboxCommand.setOdoId(odoId);
+        whOutboundboxManager.saveOrUpdate(whOutboundboxCommand);
+        
+    }
+    
+    /***
+     * 生成出库箱明细
+     * @param outboundbox
+     * @param ouId
+     */
+    private void addOutboundboxLine(String outboundbox,Long ouId,WhCheckingLineCommand lineCmd){
+        List<WhSkuInventoryCommand> list = new ArrayList<WhSkuInventoryCommand>();
+        List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
+        if(null != listSkuInvCmd && listSkuInvCmd.size() != 0){
+            //先遍历出uuid相同的记录
+            for(int j=0;j<listSkuInvCmd.size()-1;j++){
+                String uuid = listSkuInvCmd.get(j).getUuid();
+                for(int i=j+1;i<listSkuInvCmd.size();i++){
+                    String skuInvUuid = listSkuInvCmd.get(i).getUuid();
+                    if(uuid.equals(skuInvUuid)) {
+                        list.add(listSkuInvCmd.get(i));
+                    }
+                }
+            }
+        }
+        //添加出库箱明细
+        for(WhSkuInventoryCommand skuInvCmd:list){
+            WhOutboundboxLineCommand outboundboxLineComd = new WhOutboundboxLineCommand();
+            Long skuId = skuInvCmd.getSkuId();
+            outboundboxLineComd.setWhOutboundboxId(null);
+            outboundboxLineComd.setSkuCode(lineCmd.getSkuCode());
+            outboundboxLineComd.setSkuExtCode(lineCmd.getSkuExtCode());
+            outboundboxLineComd.setSkuBarCode(lineCmd.getSkuBarCode());
+            outboundboxLineComd.setSkuName(lineCmd.getSkuName());
+            outboundboxLineComd.setQty(skuInvCmd.getOnHandQty().longValue());
+            outboundboxLineComd.setCustomerCode(lineCmd.getCustomerCode());
+            outboundboxLineComd.setCustomerName(lineCmd.getCustomerName());
+            outboundboxLineComd.setStoreCode(lineCmd.getStoreCode());
+            outboundboxLineComd.setStoreName(lineCmd.getStoreName());
+            outboundboxLineComd.setInvStatus(skuInvCmd.getInvStatus().toString());
+            outboundboxLineComd.setInvType(skuInvCmd.getInvType());
+            outboundboxLineComd.setBatchNumber(skuInvCmd.getBatchNumber());
+            outboundboxLineComd.setMfgDate(skuInvCmd.getMfgDate());
+            outboundboxLineComd.setExpDate(skuInvCmd.getExpDate());
+            outboundboxLineComd.setCountryOfOrigin(skuInvCmd.getCountryOfOrigin());
+            outboundboxLineComd.setInvAttr1(skuInvCmd.getInvAttr1());
+            outboundboxLineComd.setInvAttr2(skuInvCmd.getInvAttr2());
+            outboundboxLineComd.setInvAttr3(skuInvCmd.getInvAttr3());
+            outboundboxLineComd.setInvAttr4(skuInvCmd.getInvAttr4());
+            outboundboxLineComd.setInvAttr5(skuInvCmd.getInvAttr5());
+            outboundboxLineComd.setUuid(skuInvCmd.getUuid());
+            outboundboxLineComd.setOuId(skuInvCmd.getOuId());
+            outboundboxLineComd.setOdoId(lineCmd.getOdoId());
+            outboundboxLineComd.setOdoLineId(lineCmd.getOdoLineId());
+            outboundboxLineComd.setSysDate(String.valueOf(new Date()));
+            whOutboundboxLineManager.saveOrUpdate(outboundboxLineComd);
+        }
+     }
     
     /**
      * 更新出库单状态(按单复合只更新一个出库单)

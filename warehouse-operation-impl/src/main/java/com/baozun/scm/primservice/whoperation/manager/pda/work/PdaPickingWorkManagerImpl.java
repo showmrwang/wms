@@ -2829,6 +2829,44 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     }
     
     
+    /**
+     * 是否继续扫描sn
+     * @param insideContainerCode
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    public Boolean isContainerScanSn(String insideContainerCode,Long skuId,Long ouId,Long locationId,Double scanSkuQty){
+        Boolean result = false;
+        
+        if(!StringUtils.isEmpty(insideContainerCode)){
+            Long insideContainerId = null;
+            ContainerCommand cmd = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if (null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = cmd.getId();
+            String cacheValue = cacheManager.getValue(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
+            Double value = 0.0;
+            if (!StringUtils.isEmpty(cacheValue)) {
+                value = new Double(cacheValue).doubleValue();
+                if(value.equals(scanSkuQty)){
+                    result = true;
+                }
+            }
+        }else{
+            String cacheValue = cacheManager.getValue(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + locationId.toString() + skuId.toString());
+            Double value = 0.0;
+            if (!StringUtils.isEmpty(cacheValue)) {
+                value = new Double(cacheValue).doubleValue();
+                if(value.equals(scanSkuQty)){
+                    result = true;
+                }
+            } 
+        }
+        return result;
+    }
     
     /**
      * 进入拣货作业时,如果缓存，存在先清楚

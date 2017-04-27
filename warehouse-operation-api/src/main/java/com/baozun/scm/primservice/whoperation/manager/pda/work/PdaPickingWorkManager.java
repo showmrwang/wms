@@ -189,4 +189,13 @@ public interface PdaPickingWorkManager extends BaseManager {
      */
     public void removeCache(Long workId,Long ouId);
     
+    /**
+     * 是否继续扫描sn
+     * @param insideContainerCode
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    public Boolean isContainerScanSn(String insideContainerCode,Long skuId,Long ouId,Long locationId,Double scanSkuQty);
+    
 }
