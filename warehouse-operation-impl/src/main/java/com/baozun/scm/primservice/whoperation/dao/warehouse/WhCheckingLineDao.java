@@ -65,6 +65,9 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
      * @return
      */
     List<WhCheckingLineCommand> findListByParamExt(WhCheckingLine o);
+    
+    
+    public WhCheckingLineCommand  judeIsLastBox(@Param("ouId")Long ouId,@Param("odoId") Long odoId);
 
 
 

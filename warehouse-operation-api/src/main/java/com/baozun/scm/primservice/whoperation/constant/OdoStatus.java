@@ -51,7 +51,7 @@ public class OdoStatus implements Serializable {
     public static final String ODO_PICKING_FINISH = "21";// 拣货完成
     public static final String ODO_TOBECREATED = "99";// 待创建
     
-    public static final String ODO_CHECKING_FINISH="100";//复合完成
+    
     /** ODO */
 
     /** ODO_LINE */

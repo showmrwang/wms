@@ -482,8 +482,11 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         this.addOutboundbox(checkingId, ouId, odoId);
         //生成出库箱明细
         this.addOutboundboxLine(outboundbox, ouId, lineCmd);
-        //更新出库单状态
-//        this.updateOdoStatusByOdo(odoId, ouId);
+        Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
+        if(result){
+          //更新出库单状态
+          this.updateOdoStatusByOdo(odoId, ouId);
+        }
         //算包裹计重
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, outboundboxId, userId);
     }
@@ -532,7 +535,6 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         //添加出库箱明细
         for(WhSkuInventoryCommand skuInvCmd:list){
             WhOutboundboxLineCommand outboundboxLineComd = new WhOutboundboxLineCommand();
-            Long skuId = skuInvCmd.getSkuId();
             outboundboxLineComd.setWhOutboundboxId(null);
             outboundboxLineComd.setSkuCode(lineCmd.getSkuCode());
             outboundboxLineComd.setSkuExtCode(lineCmd.getSkuExtCode());
@@ -577,7 +579,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         //复制数据        
         BeanUtils.copyProperties(odoCommand, whOdo);
         //修改出库单状态为复核完成状态。
-        whOdo.setOdoStatus(OdoStatus.ODO_CHECKING_FINISH);  
+        whOdo.setOdoStatus(null);  
         odoManager.updateByVersion(whOdo);
     }
     
