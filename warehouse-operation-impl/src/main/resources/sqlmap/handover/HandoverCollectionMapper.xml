@@ -14,7 +14,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="handoverCollectionColumns">
 	    <![CDATA[
-	        	id as id,
+	        		id as id,
 	        	outboundbox_id as outboundboxId,
 	        	outboundbox_code as outboundboxCode,
 	        	handover_station_id as handoverStationId,
@@ -22,7 +22,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	handover_batch as handoverBatch,
 	        	handover_status as handoverStatus,
 	        	group_condition as groupCondition,
-	        	ou_id as ouId
+	        	ou_id as ouId,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
 	    ]]>
 	</sql>
 	<sql id="handoverCollectionConditionWhereExt">
@@ -102,7 +106,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <![CDATA[
 		        INSERT INTO
 		        t_wh_handover_collection (
-		       		 id,
+		       		id,
 		        	outboundbox_id ,
 		        	outboundbox_code ,
 		        	handover_station_id ,
@@ -110,9 +114,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	handover_batch ,
 		        	handover_status ,
 		        	group_condition ,
-		        	ou_id 
+		        	ou_id ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id 
 		        ) VALUES (
-		      	    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{handoverStationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -120,7 +128,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{handoverBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{handoverStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
 
@@ -136,7 +148,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        HANDOVER_STATION_TYPE = #{handoverStationType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        handover_batch = #{handoverBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        handover_status = #{handoverStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        group_condition = #{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        group_condition = #{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -226,6 +242,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
 				</if>
 		</where>
 	</sql>

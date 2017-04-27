@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.rule;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -305,8 +306,12 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
             handoverCollection.setOuId(ouId);
             handoverCollection.setOutboundboxCode(outboundboxCommand.getOutboundboxCode());
             handoverCollection.setOutboundboxId(outboundboxCommand.getOutboundboxId());
+            handoverCollection.setCreateId(userId);
+            handoverCollection.setCreateTime(new Date());
             handoverCollectionDao.insert(handoverCollection);
         } else {
+            handoverCollection.setLastModifyTime(new Date());
+            handoverCollection.setModifiedId(userId);
             handoverCollection.setHandoverStatus(HandoverCollectionStatus.TO_HANDOVER);// 交接状态
             handoverCollectionDao.saveOrUpdate(handoverCollection);
         }
