@@ -483,13 +483,13 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 }else{
                     ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
                     Long outerContainerId = outerCmd.getId();
-                    this.removeCachce(containerId, false);
                     this.containerPutawayCacheInsideContainer(containerCmd, outerContainerId, logId, outerContainerCode);
                 }
             } else {
                 srCmd.setContainerType(WhContainerType.INSIDE_CONTAINER);// 内部容器,无外部容器，无需循环提示容器
                 srCmd.setInsideContainerCode(containerCode);
             }
+            this.removeCachce(containerId, false);
         }
         if (0 < outerCount1 || 0 < outerCount2) {
             //外部容器，判断是否已经存在缓存,如果存在先删除
