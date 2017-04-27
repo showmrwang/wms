@@ -11,7 +11,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="handoverCollectionColumnsExt">
 	    <![CDATA[
-	        	id as id,
+	       id as id,
 	        	outboundbox_id as outboundboxId,
 	        	outboundbox_code as outboundboxCode,
 	        	handover_station_id as handoverStationId,
@@ -19,7 +19,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	handover_batch as handoverBatch,
 	        	handover_status as handoverStatus,
 	        	group_condition as groupCondition,
-	        	ou_id as ouId
+	        	ou_id as ouId,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
 	    ]]>
 	</sql>
 	
@@ -66,6 +70,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
+				</if>
+				
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
 				</if>
 		</where>
 	</sql>
@@ -159,6 +179,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					t_wh_handover_collection
 				WHERE
 					handover_station_id = #{HandoverStationCode}
+					AND handover_status = #{status}
+						limit 1
     </select>
     <select id="findStationByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
 	       select id as id,

@@ -565,6 +565,15 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             isSuccess = false;
             throw new BusinessException("容器不匹配");
         }
+        if (null == workCollectionCommand.getContainerId()) {
+
+            ContainerCommand container = containerDao.getContainerByCode(inputContainerCode, workCollectionCommand.getOuId());
+            if (null == container) {
+                isSuccess = false;
+                throw new BusinessException("找不到容器");
+            }
+            workCollectionCommand.setContainerId(container.getId());
+        }
         Boolean isRecordSuccess = this.recordSeedingCollection(workCollectionCommand, cacheKey);
         if (!isRecordSuccess) {
             isSuccess = false;
