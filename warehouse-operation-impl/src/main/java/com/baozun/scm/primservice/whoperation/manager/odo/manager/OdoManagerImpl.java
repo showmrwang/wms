@@ -354,6 +354,15 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     BeanUtils.copyProperties(lineCommand, odoLine);
                     odoLine.setOdoId(odoId);
                     odoLine.setOuId(ouId);
+                    odoLine.setCurrentQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setActualQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setCancelQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setAssignQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setDiekingQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setCreateTime(new Date());
+                    odoLine.setCreatedId(userId);
+                    odoLine.setLastModifyTime(new Date());
+                    odoLine.setModifiedId(userId);
                     this.whOdoLineDao.insert(odoLine);
                     Long odoLineId = odoLine.getId();
                     if (lineCommand.getVasList() != null && lineCommand.getVasList().size() > 0) {
@@ -460,7 +469,16 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
             // 生成反馈信息 @mender yimin.lu 2017/4/24
-            this.whOutboundConfirmManager.saveWhOutboundConfirm(odo);
+            //@mender yimin.lu 捕获异常封装
+            try{
+                this.whOutboundConfirmManager.saveWhOutboundConfirm(odo);
+            }catch(BusinessException ex){
+                log.error("",ex);
+                throw ex;
+            }catch(Exception exp){
+                log.error("",exp);
+                throw new BusinessException(ErrorCodes.ODO_CONFIRM_ERROR);
+            }
         } catch (Exception e) {
             log.error("", e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);

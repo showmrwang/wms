@@ -413,6 +413,8 @@ public class ErrorCodes {
     public static final int BIPO_AUDIT_STATUS_ERROR = 11084;
     /** ASN已收货完成 */
     public static final int ASN_RCVD_FINISHED = 11085;
+    /** 出库单反馈数据异常 */
+    public static final int ODO_CONFIRM_ERROR = 11086;
     // 10001-20000 luyimin
 
 

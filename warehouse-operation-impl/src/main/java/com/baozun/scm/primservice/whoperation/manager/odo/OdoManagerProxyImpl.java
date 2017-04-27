@@ -203,7 +203,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            msg.setMsg(e.getErrorCode() + "");
+            msg.setMsg(e.getErrorCode() + ":" + e.getMessage());
             return msg;
         } catch (Exception ex) {
             log.error("" + ex);
