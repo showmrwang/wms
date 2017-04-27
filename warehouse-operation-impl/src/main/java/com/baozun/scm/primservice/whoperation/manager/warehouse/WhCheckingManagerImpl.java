@@ -579,4 +579,14 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
 
     // ============================= 按单复核 end =============================
 
+    /**
+     * 
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    public WhCheckingCommand findWhChecking(Long checkingId,Long ouId){
+        
+        return whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+    }
 }

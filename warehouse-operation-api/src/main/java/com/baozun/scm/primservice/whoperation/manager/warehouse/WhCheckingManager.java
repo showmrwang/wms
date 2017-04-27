@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 
 
 public interface WhCheckingManager extends BaseManager {
@@ -23,5 +24,13 @@ public interface WhCheckingManager extends BaseManager {
      * @return
      */
     WhCheckingByOdoCommand checkInput(WhCheckingByOdoCommand whCheckingCommand);
+    
+    /**
+     * 
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    public WhCheckingCommand findWhChecking(Long checkingId,Long ouId);
 
 }

@@ -16,7 +16,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     private Long ouId;
 
-    private Long containerId; // 小车id
+    private String contaierCode;
 
     private Integer containerLatticeNo; // 货格号
 
@@ -38,13 +38,6 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     /**复合明细集合*/
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
 
-    public Long getContainerId() {
-        return containerId;
-    }
-
-    public void setContainerId(Long containerId) {
-        this.containerId = containerId;
-    }
 
     public Integer getContainerLatticeNo() {
         return containerLatticeNo;
@@ -133,4 +126,14 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     public void setCheckingPattern(String checkingPattern) {
         this.checkingPattern = checkingPattern;
     }
+
+    public String getContaierCode() {
+        return contaierCode;
+    }
+
+    public void setContaierCode(String contaierCode) {
+        this.contaierCode = contaierCode;
+    }
+    
+    
 }
