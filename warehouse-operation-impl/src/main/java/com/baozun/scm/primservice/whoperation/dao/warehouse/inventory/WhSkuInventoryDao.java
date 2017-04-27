@@ -893,6 +893,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOperationId(@Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("locationId") Long locationId, @Param("outerContainerId") Long outerContainerId,
             @Param("insideContainerId") Long insideContainerId);
 
+    /***
+     * 库内移动查询已分配库存记录
+     * 
+     * @param ouId
+     * @param operationId
+     * @return
+     */
+    List<WhSkuInventoryCommand> getWhSkuInventoryCommandByInvMove(@Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("locationId") Long locationId, @Param("outerContainerId") Long outerContainerId,
+            @Param("insideContainerId") Long insideContainerId);
+    
     /**
      * 按照占用码删除库存，转换库存时使用
      * 

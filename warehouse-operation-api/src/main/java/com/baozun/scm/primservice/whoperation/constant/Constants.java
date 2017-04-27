@@ -759,6 +759,8 @@ public final class Constants {
     public static final String PICKING_INVENTORY = "PICKING_INVENTORY";
     /** 补货中的拣货操作库存 */
     public static final String REPLENISHMENT_PICKING_INVENTORY = "REPLENISHMENT_PICKING_INVENTORY";
+    /** 库内移动中的拣货操作库存 */
+    public static final String INVMOVE_PICKING_INVENTORY = "INVMOVE_PICKING_INVENTORY";
 
     /** 数据来源=WMS */
     public static final String WMS_DATA_SOURCE = "WMS";

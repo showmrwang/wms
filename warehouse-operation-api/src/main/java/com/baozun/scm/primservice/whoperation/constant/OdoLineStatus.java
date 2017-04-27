@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class OdoLineStatus implements Serializable {
 
-   
     private static final long serialVersionUID = 7187081492568354679L;
     /**
      * 出库单明细状态
@@ -31,5 +30,5 @@ public class OdoLineStatus implements Serializable {
     public static final String HANDOVER_FINISH = "80"; // 交接完成
     public static final String CANCEL = "88"; // 取消
     public static final String PARTLY_FINISH = "99";// 部分完成
-    public static final String FINSH = "100"; // 完成、关闭
+    public static final String FINISH = "100"; // 完成、关闭
 }
