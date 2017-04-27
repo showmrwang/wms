@@ -170,7 +170,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryAllocatedCommand.setInvAttr2(whSkuInventoryCommand.getInvAttr2());
             whSkuInventoryAllocatedCommand.setInvAttr3(whSkuInventoryCommand.getInvAttr3());
             whSkuInventoryAllocatedCommand.setInvAttr4(whSkuInventoryCommand.getInvAttr4());
-            whSkuInventoryAllocatedCommand.setInvAttr5(whSkuInventoryCommand.getInvAttr4());
+            whSkuInventoryAllocatedCommand.setInvAttr5(whSkuInventoryCommand.getInvAttr5());
             whSkuInventoryAllocatedCommand.setUuid(null);
             whSkuInventoryAllocatedCommand.setOuId(whSkuInventoryCommand.getOuId());
             whSkuInventoryAllocatedCommand.setLastModifyTime(whSkuInventoryCommand.getLastModifyTime());

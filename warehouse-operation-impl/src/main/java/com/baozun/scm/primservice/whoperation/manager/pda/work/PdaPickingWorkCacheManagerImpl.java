@@ -32,7 +32,6 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
-import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
@@ -47,7 +46,6 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -553,6 +551,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
               skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId,locationId,outerContainerId,insideContainerId);
           }
+          if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) {//库内移动
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByInvMove(ouId, operationId,locationId,outerContainerId,insideContainerId);
+          }
           if(null == skuInvList || skuInvList.size() == 0){
                   throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
           }
@@ -725,6 +726,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           }
           if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
               skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId,locationId,outerContainerId,insideContainerId);
+          }
+          if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) {//库内移动
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByInvMove(ouId, operationId,locationId,outerContainerId,insideContainerId);
           }
           if(null == skuInvList || skuInvList.size() == 0){
                   throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
