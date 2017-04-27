@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportServiceDao">
+	<resultMap id="WhOdoTransportServiceResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOdoTransportServiceColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	odo_id as odoId,
+	        	is_vas_success as isVasSuccess,
+	        	vas_error_code as vasErrorCode,
+	        	is_tsp_success as isTspSuccess,
+	        	tsp_error_code as tspErrorCode,
+	        	is_waybill_code_success as isWaybillCodeSuccess,
+	        	waybill_code_error_code as waybillCodeErrorCode,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whOdoTransportServiceDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+				<if test="isVasSuccess!=null">
+					and is_vas_success = #{isVasSuccess}
+				</if>
+	       
+	       
+		       <if test="vasErrorCode!=null and vasErrorCode!=''">
+					and vas_error_code = #{vasErrorCode}
+				</if>
+	       
+				<if test="isTspSuccess!=null">
+					and is_tsp_success = #{isTspSuccess}
+				</if>
+	       
+	       
+		       <if test="tspErrorCode!=null and tspErrorCode!=''">
+					and tsp_error_code = #{tspErrorCode}
+				</if>
+	       
+				<if test="isWaybillCodeSuccess!=null">
+					and is_waybill_code_success = #{isWaybillCodeSuccess}
+				</if>
+	       
+	       
+		       <if test="waybillCodeErrorCode!=null and waybillCodeErrorCode!=''">
+					and waybill_code_error_code = #{waybillCodeErrorCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	<select id="findByOdoIdAndOuId" resultMap="WhOdoTransportServiceResultExt">
+		select 
+			<include refid="whOdoTransportServiceColumnsExt"/>
+		from 
+			t_wh_odo_transport_service
+		where 
+			odo_id = #{odoId}
+			and ou_id = #{ouId}
+	</select>
+	
+	<update id="updateWhOdoTransportService" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService">
+		UPDATE t_wh_odo_transport_service SET
+	        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+	        is_vas_success = #{isVasSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        vas_error_code = #{vasErrorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        is_tsp_success = #{isTspSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        tsp_error_code = #{tspErrorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        is_waybill_code_success = #{isWaybillCodeSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        waybill_code_error_code = #{waybillCodeErrorCode,javaType=java.lang.String,jdbcType=VARCHAR} 
+        WHERE 
+	        id = #{id} 
+	        and ou_id = #{ouId} 
+	</update>
+</mapper>

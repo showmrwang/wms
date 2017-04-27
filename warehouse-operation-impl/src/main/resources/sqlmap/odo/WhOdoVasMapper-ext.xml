@@ -16,7 +16,7 @@
                 odo_line_id as odoLineId,
                 vas_type as vasType,
                 wh_vas_type as whVasType,
-                express_vas_type as expressVasType,
+                express_vas_code as expressVasCode,
                 print_templet as printTemplet,
                 sku_bar_code as skuBarCode,
                 content as content,
@@ -57,8 +57,8 @@
                 and wh_vas_type = #{whVasType}
             </if>
 
-            <if test="expressVasType!=null">
-                and express_vas_type = #{expressVasType}
+            <if test="expressVasCode!=null and expressVasCode != ''">
+                and express_vas_code = #{expressVasCode}
             </if>
 
             <if test="printTemplet!=null and printTemplet!=''">
@@ -144,7 +144,7 @@
             odovas.odo_line_id as odoLineId,
             odovas.vas_type as vasType,
             odovas.wh_vas_type as whVasType,
-            odovas.express_vas_type as expressVasType,
+            odovas.express_vas_code as expressVasCode,
             odovas.print_templet as printTemplet,
             odovas.sku_bar_code as skuBarCode,
             odovas.content as content,
@@ -187,7 +187,7 @@
             odovas.odo_line_id as odoLineId,
             odovas.vas_type as vasType,
             odovas.wh_vas_type as whVasType,
-            odovas.express_vas_type as expressVasType,
+            odovas.express_vas_code as expressVasCode,
             odovas.print_templet as printTemplet,
             odovas.sku_bar_code as skuBarCode,
             odovas.content as content,
@@ -202,7 +202,6 @@
             odovas.vas_attr5 as vasAttr5,
             odovas.ou_id as ouId
         from t_wh_odo_vas odovas
-        inner join t_ma_transport_vas transVas on transVas.id=odovas.express_vas_type
         <where>
 			<if test="odoId!=null">
                 and odovas.odo_id = #{odoId}
@@ -225,4 +224,15 @@
                 id = #{id} and ou_id=#{ouId}
         ]]>
     </delete>
+    
+    <select id="findVasCodeByExpress" resultType="string">
+    	select 
+    		express_vas_code
+    	from
+    		t_wh_odo_vas
+    	where
+    		odo_id = #{odoId}
+    		and vas_type = #{type}
+    		and ou_id = #{ouId}
+    </select>
 </mapper>

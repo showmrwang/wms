@@ -67,6 +67,10 @@ public class CheckScanResultCommand extends BaseCommand {
     
     private Boolean isContinueScanSn = false;  //是否是sn商品
     
+    private Integer latticeNo;
+    
+    private Boolean isTipNewLattice = false;
+    
     
     public int getPickingWay() {
         return pickingWay;
@@ -194,4 +198,17 @@ public class CheckScanResultCommand extends BaseCommand {
     public void setIsContinueScanSn(Boolean isContinueScanSn) {
         this.isContinueScanSn = isContinueScanSn;
     }
+    public Integer getLatticeNo() {
+        return latticeNo;
+    }
+    public void setLatticeNo(Integer latticeNo) {
+        this.latticeNo = latticeNo;
+    }
+    public Boolean getIsTipNewLattice() {
+        return isTipNewLattice;
+    }
+    public void setIsTipNewLattice(Boolean isTipNewLattice) {
+        this.isTipNewLattice = isTipNewLattice;
+    }
+    
 }

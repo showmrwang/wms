@@ -34,7 +34,7 @@ public class WhOdoVas extends BaseModel {
     /** 仓库增值服务类型 */
     private Long whVasType;
     /** 快递增值服务ID */
-    private Long expressVasType;
+    private String expressVasCode;
     /** 打印模板 */
     private String printTemplet;
     /** 赠品编码/礼品包装 */
@@ -95,14 +95,6 @@ public class WhOdoVas extends BaseModel {
 
     public void setWhVasType(Long whVasType) {
         this.whVasType = whVasType;
-    }
-
-    public Long getExpressVasType() {
-        return expressVasType;
-    }
-
-    public void setExpressVasType(Long expressVasType) {
-        this.expressVasType = expressVasType;
     }
 
     public String getPrintTemplet() {
@@ -215,6 +207,14 @@ public class WhOdoVas extends BaseModel {
 
     public void setSysDate(String sysDate) {
         this.sysDate = sysDate;
+    }
+
+    public String getExpressVasCode() {
+        return expressVasCode;
+    }
+
+    public void setExpressVasCode(String expressVasCode) {
+        this.expressVasCode = expressVasCode;
     }
 
 

@@ -634,7 +634,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            log.error("" + e);
+            log.error("", e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }

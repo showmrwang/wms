@@ -72,4 +72,19 @@ public class WhCheckingLineManagerImpl extends BaseManagerImpl implements WhChec
         
         return whCheckingLineDao.findCheckingLineById(id, ouId);
     }
+    
+    /***判断当前是否是最后一箱
+     * 
+     * @param ouId
+     * @param odoId
+     * @return
+     */
+    public Boolean judeIsLastBox(Long ouId,Long odoId){
+        Boolean result = false;  //默认不是最后一箱
+        WhCheckingLineCommand cmd =  whCheckingLineDao.judeIsLastBox(ouId, odoId);
+        if(cmd.getQty().equals(cmd.getCheckingQty())) {
+            result = true;
+        }
+       return result;
+    }
 }

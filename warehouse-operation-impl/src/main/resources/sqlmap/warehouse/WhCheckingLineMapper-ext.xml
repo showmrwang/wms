@@ -240,4 +240,15 @@
 
     </select>
     
+    
+     <select id="judeIsLastBox" resultMap="WhCheckingLineCommand">
+        select
+            sum(qty) as qty,
+            sum(checking_qty) as checkingQty
+        from t_wh_checking_line
+        where id = #{id}
+              and odo_id = #{odoId}
+
+    </select>
+    
 </mapper>

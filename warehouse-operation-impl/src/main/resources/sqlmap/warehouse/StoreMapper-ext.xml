@@ -88,7 +88,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	syst.dic_label as invoiceTypeName,
 	        	sysl.dic_label as paymentTermName,
 	        	c.customer_name as customerName,
-          	    s.distribution_target_group as distributionTargetGroup
+          	    s.distribution_target_group as distributionTargetGroup,
+          	    s.express_recommendation as expressRecommendation
 	        	
 	    ]]>
 	</sql>
@@ -234,7 +235,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        make_out_an_invoice_company = #{makeOutAnInvoiceCompany,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        invoice_export_templet = #{invoiceExportTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        distribution_target_group = #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        make_out_an_invoice_group = #{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} 
+			        make_out_an_invoice_group = #{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        express_recommendation = #{expressRecommendation,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        WHERE 
 			        id = #{id} 
 			        
@@ -292,7 +294,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	make_out_an_invoice_company as makeOutAnInvoiceCompany,
 	        	invoice_export_templet as invoiceExportTemplet,
 	        	make_out_an_invoice_group as makeOutAnInvoiceGroup,
-	        	distribution_target_group as distributionTargetGroup
+	        	distribution_target_group as distributionTargetGroup,
+	        	express_recommendation as expressRecommendation
 	    ]]>
 	</sql>
 	<sql id="storeDynamicWhereExpand">

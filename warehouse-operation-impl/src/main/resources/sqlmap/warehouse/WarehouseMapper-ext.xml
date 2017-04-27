@@ -471,5 +471,44 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		left join t_bi_warehouse_mgmt mgmt on (w.id = mgmt.warehouse_id)
 		where w.lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
 	</select>
-
+	
+	<select id="findWarehouseCommandById" resultMap="warehouseCommand">
+		select 
+			w.id as id,
+			w.code as code,
+			w.name as name,
+			w.op_mode as opMode,
+			w.manage_mode as manageMode,
+			w.pic as pic,
+			w.pic_contact as picContact,
+			w.phone as phone,
+			w.fax as fax,
+			w.other_contact1 as otherContact1,
+			w.other_contact2 as otherContact2,
+			w.other_contact3 as otherContact3,
+			w.country_id as countryId,
+			pro.region_name as province,
+			vill.region_name as villagesTowns,
+			dis.region_name as district,
+			city.region_name as city,
+			w.address as address,
+			w.zip_code as zipCode,
+			w.email as email,
+			w.size as size,
+			w.size_uom as sizeUom,
+			w.rent_price as rentPrice,
+			w.rent_price_uom as rentPriceUom,
+			w.description as description,
+			w.create_time as createTime,
+			w.last_modify_time as lastModifyTime,
+			w.operator_id as operatorId,
+			w.lifecycle as lifecycle
+		from t_bi_warehouse w
+			left join t_bi_region pro on (w.province_id = pro.id)
+			left join t_bi_region city on (w.city_id = city.id)
+			left join t_bi_region dis on (w.district_id = dis.id)
+			left join t_bi_region vill on (w.villages_towns_id = vill.id)
+		where 
+			w.id = #{id}
+	</select>
 </mapper>

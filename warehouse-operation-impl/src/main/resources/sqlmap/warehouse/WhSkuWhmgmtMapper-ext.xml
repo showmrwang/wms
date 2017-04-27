@@ -112,4 +112,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findTypeOfGoodsBySkuId" resultType="string">
+		select
+			c.`code`
+		from
+			t_wh_sku_whmgmt s
+			left join t_wh_product_category c on (s.type_of_goods = c.id)
+		where
+			s.sku_id = #{skuId}
+			and s.ou_id = #{ouId}
+	</select>
 </mapper>

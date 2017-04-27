@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -140,7 +141,9 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             // 归档odoDeliveryInfo by odoid
             count = archivWhDeliveryInfo(odoid, ouid, sysDate, count);
             // 保存出库单索引数据(仓库) 只限于出库单状态为完成&&数据来源!=WMS
-            if (OdoStatus.ODO_OUTSTOCK_FINISH.equals(whOdo.getOdoStatus()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())) {
+            if (OdoStatus.ODO_OUTSTOCK_FINISH.equals(whOdo.getOdoStatus()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource()) 
+                    && !StringUtils.isEmpty(whOdo.getEcOrderCode())) {
+                // 保存到shard库的t_wh_odo_archiv_line_index
                 WhOdoArchivIndex oai = new WhOdoArchivIndex();
                 oai.setEcOrderCode(whOdo.getEcOrderCode());
                 oai.setDataSource(whOdo.getDataSource());

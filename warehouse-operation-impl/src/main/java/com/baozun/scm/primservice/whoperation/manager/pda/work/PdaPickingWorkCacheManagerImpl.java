@@ -32,7 +32,6 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
-import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
@@ -47,7 +46,6 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -553,6 +551,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
               skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId,locationId,outerContainerId,insideContainerId);
           }
+          if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) {//库内移动
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByInvMove(ouId, operationId,locationId,outerContainerId,insideContainerId);
+          }
           if(null == skuInvList || skuInvList.size() == 0){
                   throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
           }
@@ -726,6 +727,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {//补货
               skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId,locationId,outerContainerId,insideContainerId);
           }
+          if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) {//库内移动
+              skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByInvMove(ouId, operationId,locationId,outerContainerId,insideContainerId);
+          }
           if(null == skuInvList || skuInvList.size() == 0){
                   throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
           }
@@ -761,7 +765,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * @param skuCmd(扫描的sku)
        * @return
        */
-      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,
+      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Map<String, Set<Integer>>  skuAttrIdsLattice,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,
                                                                          Map<Long, Set<Long>> locSkuIds,Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrId,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> iSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operationId,Map<Long,Long> insideContainerSkuIdsQty,Map<Long, Set<Long>> insideContainerSkuIds,
                                                                          Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd){
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingyCacheSkuAndCheckContainer is start");
@@ -932,6 +936,27 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
                                       Long insideSkuQty = insideContainerSkuIdsQty.get(skuId);  //当前货箱的sku总数
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内同一种唯一sku 没有拣完，还要捡到别的货格中
+                                          ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+                                          if(null == latticeList){
+                                              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                                          }
+                                          //如果有sn残次信息,去掉sn/残次信息
+                                          Integer lattice = null;
+                                          Set<Integer> latticeNos = insideSkuAttrIdsLattice.get(skuAttrId);
+                                          Iterator<Integer> it = latticeNos.iterator();
+                                          while (it.hasNext()){
+                                              lattice = it.next();
+                                              if(latticeList.contains(lattice)) {
+                                                  continue;
+                                              }else{
+                                                  break;
+                                              }
+                                          }
+                                          //缓存货格号
+                                          latticeList.addFirst(lattice);
+                                          cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+                                          cssrCmd.setLatticeNo(lattice);
+                                          cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
                                               //有sn的
@@ -1187,6 +1212,27 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
                                       Long insideSkuQty = insideContainerSkuIdsQty.get(skuId);
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内统一种唯一sku 没有拣完，还要捡到别的货格中
+                                          ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+                                          if(null == latticeList){
+                                              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                                          }
+                                          //如果有sn残次信息,去掉sn/残次信息
+                                          Integer lattice = null;
+                                          Set<Integer> latticeNos = insideSkuAttrIdsLattice.get(skuAttrId);
+                                          Iterator<Integer> it = latticeNos.iterator();
+                                          while (it.hasNext()){
+                                              lattice = it.next();
+                                              if(latticeList.contains(lattice)) {
+                                                  continue;
+                                              }else{
+                                                  break;
+                                              }
+                                          }
+                                          //缓存货格号
+                                          latticeList.addFirst(lattice);
+                                          cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+                                          cssrCmd.setLatticeNo(lattice);
+                                          cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
                                               //有sn的
@@ -1605,6 +1651,27 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
                                       Long insideSkuQty = insideContainerSkuIdsQty.get(skuId);
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内统一种唯一sku 没有拣完，还要捡到别的货格中
+                                        ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+                                        if(null == latticeList){
+                                            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                                        }
+                                        //如果有sn残次信息,去掉sn/残次信息
+                                        Integer lattice = null;
+                                        Set<Integer> latticeNos = insideSkuAttrIdsLattice.get(skuAttrId);
+                                        Iterator<Integer> it = latticeNos.iterator();
+                                        while (it.hasNext()){
+                                            lattice = it.next();
+                                            if(latticeList.contains(lattice)) {
+                                                continue;
+                                            }else{
+                                                break;
+                                            }
+                                        }
+                                        //缓存货格号
+                                        latticeList.addFirst(lattice);
+                                        cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+                                        cssrCmd.setLatticeNo(lattice);
+                                        cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
 //                                              //有sn的
@@ -1834,6 +1901,27 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
                                       Long insideSkuQty = insideContainerSkuIdsQty.get(skuId);
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内统一种唯一sku 没有拣完，还要捡到别的货格中
+                                          ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+                                          if(null == latticeList){
+                                              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                                          }
+                                          //如果有sn残次信息,去掉sn/残次信息
+                                          Integer lattice = null;
+                                          Set<Integer> latticeNos = insideSkuAttrIdsLattice.get(skuAttrId);
+                                          Iterator<Integer> it = latticeNos.iterator();
+                                          while (it.hasNext()){
+                                              lattice = it.next();
+                                              if(latticeList.contains(lattice)) {
+                                                  continue;
+                                              }else{
+                                                  break;
+                                              }
+                                          }
+                                          //缓存货格号
+                                          latticeList.addFirst(lattice);
+                                          cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+                                          cssrCmd.setLatticeNo(lattice);
+                                          cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
                                               //有sn的
@@ -2184,6 +2272,27 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
                                       Long lskuQty = locSkuQty.get(skuId);
                                       if(lskuQty.longValue() > valueLattice) { //当前库位上同一种唯一sku 没有拣完，还要捡到别的货格中
+                                          ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+                                          if(null == latticeList){
+                                              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                                          }
+                                          //如果有sn残次信息,去掉sn/残次信息
+                                          Integer lattice = null;
+                                          Set<Integer> latticeNos = skuAttrIdsLattice.get(skuAttrId);
+                                          Iterator<Integer> it = latticeNos.iterator();
+                                          while (it.hasNext()){
+                                              lattice = it.next();
+                                              if(latticeList.contains(lattice)) {
+                                                  continue;
+                                              }else{
+                                                  break;
+                                              }
+                                          }
+                                          //缓存货格号
+                                          latticeList.addFirst(lattice);
+                                          cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+                                          cssrCmd.setLatticeNo(lattice);
+                                          cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
 //                                              //有sn的
@@ -2396,6 +2505,27 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
                                       Long lskuQty = locSkuQty.get(skuId);
                                       if(lskuQty.longValue() > valueLattice) { //当前库位上同一种唯一sku 没有拣完，还要捡到别的货格中
+                                          ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+                                          if(null == latticeList){
+                                              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                                          }
+                                          //如果有sn残次信息,去掉sn/残次信息
+                                          Integer lattice = null;
+                                          Set<Integer> latticeNos = skuAttrIdsLattice.get(skuAttrId);
+                                          Iterator<Integer> it = latticeNos.iterator();
+                                          while (it.hasNext()){
+                                              lattice = it.next();
+                                              if(latticeList.contains(lattice)) {
+                                                  continue;
+                                              }else{
+                                                  break;
+                                              }
+                                          }
+                                          //缓存货格号
+                                          latticeList.addFirst(lattice);
+                                          cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+                                          cssrCmd.setLatticeNo(lattice);
+                                          cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
                                               //有sn的

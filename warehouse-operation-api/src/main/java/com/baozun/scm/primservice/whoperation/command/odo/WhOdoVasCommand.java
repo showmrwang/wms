@@ -15,8 +15,8 @@ public class WhOdoVasCommand extends BaseCommand {
     private String vasType;
     /** 仓库增值服务类型 */
     private Long whVasType;
-    /** 快递增值服务ID */
-    private Long expressVasType;
+    /** 快递增值服务code */
+    private String expressVasCode;
     /** 打印模板 */
     private String printTemplet;
     /** 赠品编码/礼品包装 */
@@ -130,14 +130,6 @@ public class WhOdoVasCommand extends BaseCommand {
         this.whVasType = whVasType;
     }
 
-    public Long getExpressVasType() {
-        return expressVasType;
-    }
-
-    public void setExpressVasType(Long expressVasType) {
-        this.expressVasType = expressVasType;
-    }
-
     public String getPrintTemplet() {
         return printTemplet;
     }
@@ -240,6 +232,14 @@ public class WhOdoVasCommand extends BaseCommand {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getExpressVasCode() {
+        return expressVasCode;
+    }
+
+    public void setExpressVasCode(String expressVasCode) {
+        this.expressVasCode = expressVasCode;
     }
 
 

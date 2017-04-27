@@ -14,6 +14,7 @@ public class WavePhase implements Serializable {
     public static final String DISTRIBUTION = "DISTRIBUTION_PATTERN_CALC"; // 配货模式计算
     public static final String CREATE_OUTBOUND_CARTON = "CREATE_OUTBOUND_CARTON"; // 创建出库箱/容器
     public static final String CREATE_TASK = "CREATE_TASK"; // 创建任务
+    public static final String GET_LOGISTICS_INFO = "GET_LOGISTICS_INFO"; // 获取物流信息(增值服务,物流商推荐,运单号)
     public static final String CREATE_WORK = "CREATE_WORK"; // 创建工作
     
     public static final int WEAK_ALLOCATED_NUM = 10; // 软分配
@@ -23,5 +24,6 @@ public class WavePhase implements Serializable {
     public static final int DISTRIBUTION_NUM = 50; // 配货模式计算
     public static final int CREATE_OUTBOUND_CARTON_NUM = 60; // 创建出库箱/容器
     public static final int CREATE_TASK_NUM = 65; // 创建任务
-    public static final int CREATE_WORK_NUM = 70; // 创建工作
+    public static final int GET_LOGISTICS_INFO_NUM = 70; // 获取物流信息(增值服务,物流商推荐,运单号)
+    public static final int CREATE_WORK_NUM = 80; // 创建工作
 }

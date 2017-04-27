@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
@@ -47,5 +48,13 @@ public interface OdoVasManager extends BaseManager {
      * @return
      */
     List<WhOdoVasCommand> findOdoExpressVasCommandByOdoIdOdoLineId(Long odoId, Long odoLineId, Long ouId);
+    
+    /**
+     * 保存物流服务推荐的物流增值服务
+     * @author kai.zhu
+     * @version 2017年4月26日
+     * @param odoVasLineList 
+     */
+    void insertVasList(Long odoId, List<VasLine> vasList, List<WhOdoVas> odoVasLineList, Long ouId);
 
 }

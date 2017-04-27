@@ -217,4 +217,9 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
     List<OdoLineCommand> findOdoLineByOdoIdOrderByPickingSort(@Param("idList") List<Long> idList, @Param("ouId") Long ouId);
 
     List<WhOdoLine> findOdoLineListByOdoIdAndLinenumList(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("extLinenumList") List<Integer> lineSeq);
+    
+    /**
+     * 查找出库单中的商品id集合
+     */
+    List<Long> findSkuIdListByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 }

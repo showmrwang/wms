@@ -43,5 +43,13 @@ public interface WhCheckingLineManager extends BaseManager{
       * @return
       */
      public WhCheckingLineCommand getCheckingLineById(Long id,Long ouId);
+     
+     /***判断当前是否是最后一箱
+      * 
+      * @param ouId
+      * @param odoId
+      * @return
+      */
+     public Boolean judeIsLastBox(Long ouId,Long odoId);
 
 }

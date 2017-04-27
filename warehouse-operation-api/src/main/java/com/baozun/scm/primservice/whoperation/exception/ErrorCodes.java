@@ -956,4 +956,12 @@ public class ErrorCodes {
     public static final int ODO_OUTBOUNDBOX_NOT_HANDOVER_ALL = 110013;
     /** 该ASN已收货完成且不能超收 */
     public static final int ASN_RCVD_ALREADY_FINISHED = 110014;
+    /** 出库箱尚未打印面单或箱标签，请打印面单或箱标签 */
+    public static final int OUTBOUNDBOX_NOT_PRINT = 110015;
+    /** 该出库箱尚未复核或称重 */
+    public static final int OUTBOUNDBOX_NOT_CHECK_OR_WEIGHT = 110016;
+    /** 推荐失败 */
+    public static final int RECOMMEND_FAILED = 110017;
+    /** 推荐的交接库位不存在 */
+    public static final int RECOMMEND_STATION_DONT_EXSIT = 110018;
 }

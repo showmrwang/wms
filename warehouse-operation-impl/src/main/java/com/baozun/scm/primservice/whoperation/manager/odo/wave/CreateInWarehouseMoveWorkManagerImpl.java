@@ -170,7 +170,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryAllocatedCommand.setInvAttr2(whSkuInventoryCommand.getInvAttr2());
             whSkuInventoryAllocatedCommand.setInvAttr3(whSkuInventoryCommand.getInvAttr3());
             whSkuInventoryAllocatedCommand.setInvAttr4(whSkuInventoryCommand.getInvAttr4());
-            whSkuInventoryAllocatedCommand.setInvAttr5(whSkuInventoryCommand.getInvAttr4());
+            whSkuInventoryAllocatedCommand.setInvAttr5(whSkuInventoryCommand.getInvAttr5());
             whSkuInventoryAllocatedCommand.setUuid(null);
             whSkuInventoryAllocatedCommand.setOuId(whSkuInventoryCommand.getOuId());
             whSkuInventoryAllocatedCommand.setLastModifyTime(whSkuInventoryCommand.getLastModifyTime());
@@ -384,6 +384,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             Double frozenQty = 0.00;
             // 库存条件 
             skuInventory.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+            skuInventory.setIsLocked(null);
             // 分配条件 
             allocatedCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
             allocatedCommand.setOccupationCode(skuInventoryAllocatedCommand.getOccupationCode());
@@ -424,6 +425,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             Double frozenQty = 0.00;
             // 库存条件 
             skuInventory.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+            skuInventory.setIsLocked(null);
             // 分配条件 
             allocatedCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
             allocatedCommand.setOccupationCode(skuInventoryAllocatedCommand.getOccupationCode());
@@ -540,8 +542,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
         whWorkLineCommand.setOdoId(odo == null ? null : odo.getId());
         //出库单明细ID 
         whWorkLineCommand.setOdoLineId(skuInventoryAllocatedCommand.getOccupationLineId());
-        //补货单据号        
-        whWorkLineCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+        //库内移动单据号
+        whWorkLineCommand.setInvMoveCode(skuInventoryAllocatedCommand.getOccupationCode());
         //创建时间 
         whWorkLineCommand.setCreateTime(new Date());
         //最后操作时间 

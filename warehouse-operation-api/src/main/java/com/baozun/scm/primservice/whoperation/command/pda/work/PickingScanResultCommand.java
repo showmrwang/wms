@@ -210,6 +210,7 @@ public class PickingScanResultCommand extends BaseCommand {
     private Double scanSkuQty; // 扫描数量
     /** 是否继续扫描sn明细 */
     private Boolean isContinueScanSn = false; // 默认不继续扫描sn
+    
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -245,6 +246,7 @@ public class PickingScanResultCommand extends BaseCommand {
     private Integer inWarehouseMoveWay;
     /** 取消模式 */
     private Integer cancelPattern;
+    
     /************************************************** 整托整箱结束 **************************************************/
 
     /************************************************** pda补货开始 **************************************************/
