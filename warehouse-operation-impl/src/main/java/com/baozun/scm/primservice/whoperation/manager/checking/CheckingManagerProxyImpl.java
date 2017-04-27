@@ -579,7 +579,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         //复制数据        
         BeanUtils.copyProperties(odoCommand, whOdo);
         //修改出库单状态为复核完成状态。
-        whOdo.setOdoStatus(null);  
+        whOdo.setHeadStartOdoStatus(OdoStatus.ODO_SEEDING_EXECUTING);
         odoManager.updateByVersion(whOdo);
     }
     

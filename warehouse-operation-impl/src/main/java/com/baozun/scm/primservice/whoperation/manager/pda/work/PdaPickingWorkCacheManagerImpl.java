@@ -975,6 +975,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
                                               }
+                                              cssrCmd.setTipSkuAttrId(skuAttrId);
                                           }else{
                                             cssrCmd.setTipSkuAttrId(skuAttrId);
                                           }
@@ -1010,6 +1011,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                           if(result) {
                                               cssrCmd.setIsNeedScanSkuSn(true);
                                           }
+                                          cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                       }else{
                                         cssrCmd.setIsNeedScanSku(true);
                                         cssrCmd.setTipSkuAttrId(tipSkuAttrId);
@@ -1148,6 +1150,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
                                               }
+                                              cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                           }else{
                                             cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                           }
@@ -1179,6 +1182,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                         if(result) {
                                             cssrCmd.setIsNeedScanSkuSn(true);
                                         }
+                                        cssrCmd.setTipSkuAttrId(skuAttrId);
                                   }else{
                                       cssrCmd.setTipSkuAttrId(skuAttrId);
                                   }
@@ -2596,6 +2600,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                           if(result) {
                                               cssrCmd.setIsNeedScanSkuSn(true);
                                           }
+                                          cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                       }else{
                                         cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                       }
