@@ -348,6 +348,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     this.whOdoVasDao.insert(vas);
                 }
             }
+            Set<Long> skuIdSet = new HashSet<Long>();
             if (odoLineList != null && odoLineList.size() > 0) {
                 for (OdoLineCommand lineCommand : odoLineList) {
                     WhOdoLine odoLine = new WhOdoLine();
@@ -460,14 +461,32 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     }
                 }
             }
+            // @mender yimin.lu 配货模式计算
             // 汇总信息
             if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
                 this.getSummaryByOdolineList(odo);
+                // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
+                if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                    // 设置计数器编码
+                    String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
+                    odo.setCounterCode(counterCode);
+                }
                 int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
                 if (updateCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                // 加入仓库配货模式
+                try {
+
+                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(odo.getCounterCode(), odo.getId());
+                } catch (BusinessException ex) {
+                    log.error("", ex);
+                } catch (Exception exp) {
+                    log.error("", exp);
+                    throw new BusinessException(ErrorCodes.ODO_DISTRIBUTIONPATTERN_ERROR);
+                }
             }
+
             // 生成反馈信息 @mender yimin.lu 2017/4/24
             //@mender yimin.lu 捕获异常封装
             try{
@@ -479,6 +498,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 log.error("",exp);
                 throw new BusinessException(ErrorCodes.ODO_CONFIRM_ERROR);
             }
+
         } catch (Exception e) {
             log.error("", e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
