@@ -7,6 +7,8 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import com.baozun.scm.primservice.logistics.command.MailnoGetContentCommand;
+import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
@@ -17,6 +19,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResul
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
@@ -284,4 +287,20 @@ public interface OdoManager extends BaseManager {
     void editOdo(WhOdo odo, WhOdoTransportMgmt trans);
 
     void wmsOutBoundPermit(List<WhOdo> whOdos);
+    
+    /**
+     * 获取推荐实体
+     * @author kai.zhu
+     * @version 2017年4月25日
+     */
+    SuggestTransContentCommand getSuggestTransContent(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, String logId, Long ouId);
+    
+    /**
+     * 获取运单号实体
+     * @author kai.zhu
+     * @version 2017年4月26日
+     * @param address 
+     */
+    MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, WarehouseCommand wh, SuggestTransContentCommand trans, Long ouId);
+
 }

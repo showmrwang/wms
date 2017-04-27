@@ -84,4 +84,6 @@ public interface WhOdoVasDao extends BaseDao<WhOdoVas, Long> {
      */
     List<WhOdoVasCommand> findOdoExpressVasCommandByOdoIdOdoLineId(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
+    List<String> findVasCodeByExpress(@Param("odoId") Long odoId, @Param("type") String expressType, @Param("ouId") Long ouId);
+
 }

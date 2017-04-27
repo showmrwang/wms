@@ -179,4 +179,7 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.HandoverCollectionRuleManager" ref="handoverCollectionRuleManager" />
 	<!-- 按单复核 -->
 	<!--<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager" ref="whCheckingManager" />-->
+	
+	<!-- 物流服务 -->
+	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="transServiceManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.manager.TransServiceManager" />
 </beans>

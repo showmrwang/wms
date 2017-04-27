@@ -341,4 +341,10 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
 
         return whHandoverStationCommand;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public WarehouseCommand findWarehouseCommandById(Long ouId) {
+        return warehouseDao.findWarehouseCommandById(ouId);
+    }
 }

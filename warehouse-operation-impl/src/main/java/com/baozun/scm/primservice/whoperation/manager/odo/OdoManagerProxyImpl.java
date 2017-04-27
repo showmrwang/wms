@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.primservice.logistics.command.MailnoGetContentCommand;
+import com.baozun.scm.primservice.logistics.command.MailnoTransInfoCommand;
+import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
+import com.baozun.scm.primservice.logistics.command.TransSkuItemCommand;
+import com.baozun.scm.primservice.logistics.manager.TransServiceManager;
+import com.baozun.scm.primservice.logistics.model.MailnoGetResponse;
+import com.baozun.scm.primservice.logistics.model.SuggestTransResult;
+import com.baozun.scm.primservice.logistics.model.TransSkuItem;
+import com.baozun.scm.primservice.logistics.model.SuggestTransResult.LpCodeList;
+import com.baozun.scm.primservice.logistics.model.VasTransResult;
+import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
@@ -49,6 +61,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearc
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
@@ -92,13 +105,19 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 @Service("odoManagerProxy")
@@ -149,7 +168,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private StoreManager storeManager;
     @Autowired
     private OutBoundBoxTypeManager outBoundBoxTypeManager;
-
+    @Autowired
+    private TransServiceManager transServiceManager;
+    
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         return this.odoManager.findListByQueryMapWithPageExt(page, sorts, params);
@@ -301,6 +322,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (null == odo.getIsLocked()) {
                 odo.setIsLocked(false);
             }
+            odo.setExtOdoType("1");
             odo.setCreatedId(userId);
             odo.setCreateTime(new Date());
             odo.setModifiedId(userId);
@@ -2103,6 +2125,102 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
 
         return odoIdList;
+    }
+
+
+    @Override
+    public void getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId) {
+        // 获取增值服务
+        WhOdo odo = odoManager.findOdoByIdOuId(odoId, ouId);
+        WhOdoTransportMgmt transMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId);
+        WhOdoAddress address = odoAddressManager.findOdoAddressByOdoId(odoId, ouId);
+        List<WhOdoLine> odoLineList = odoLineManager.findOdoLineListByOdoId(odoId, ouId);
+        List<WhOdoVas> odoVasLineList = odoVasManager.findOdoVasByOdoIdOdoLineIdType(odoId, null, Constants.ODO_VAS_TYPE_EXPRESS, ouId);
+        WarehouseCommand wh = warehouseManager.findWarehouseCommandById(ouId);
+        // 封装数据匹配物流sql推荐实体
+        SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, odoVasLineList, logId, ouId);
+        trans.setWhCode(wh.getCode());
+        
+        VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
+        if (null != vasResult && vasResult.getStatus() == 1) {
+            List<VasLine> vasList = vasResult.getVasList();;
+            if (null != vasList && !vasList.isEmpty()) {
+                odoVasManager.insertVasList(odoId, vasList, odoVasLineList, ouId);
+            }
+        } else {
+            // 失败,记录ErrorMessage
+            if (null == vasResult) {
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "response is null", ouId);
+            } else {
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, vasResult.getErrorCode() + "|" + vasResult.getErrorMassage(), ouId);
+            }
+        }
+        // 获取推荐物流商
+        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType())
+                || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
+            SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
+            if (null != transResult && transResult.getStatus() == 1) {
+                List<LpCodeList> lpList = transResult.getLpList();
+                if (null != lpList && !lpList.isEmpty()) {
+                    // 默认取第一个
+                    LpCodeList lp = lpList.get(0);
+                    // 物流商编码
+                    String lpCode = lp.getLpcode();
+                    // 产品类型(物流服务类型)
+                    String expressType = lp.getExpressType();
+                    transMgmt.setTransportServiceProvider(lpCode);
+                    transMgmt.setCourierServiceType(expressType);
+                    int num = odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
+                    if (num < 1) {
+                        throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                    }
+                }
+            } else {
+                // 失败,记录ErrorMessage
+                if (null == transResult) {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "response is null", ouId);
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, transResult.getMsg(), ouId);
+                }
+            }
+        }
+        // 获取运单号
+        MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, wh, trans, ouId);
+        List<MailnoGetResponse> matchingTransNo = transServiceManager.matchingTransNo(mailNoContent, Constants.WMS4);
+        if (null != matchingTransNo && !matchingTransNo.isEmpty()) {
+            MailnoGetResponse res = matchingTransNo.get(0);
+            if (null != res && null != res.getStatus() && res.getStatus() == 1) {
+                String mailNo = res.getMailno();    // 物流单号
+                String transBigWord = res.getTransBigWord();    // 运单大头笔
+                String tmsCode = res.getTmsCode();  // 二级配送公司编码,用于发货回传
+                String logisticsCode = res.getLogisticsCode();  // 物流公司编码,用于发货回传
+                String packageCenterCode = res.getPackageCenterCode();  // 集包地编码
+                String packageCenterName = res.getPackageCenterName();  // 集包地名称
+                transMgmt.setTransBigWord(transBigWord);
+                transMgmt.setTmsCode(tmsCode);
+                transMgmt.setLogisticsCode(logisticsCode);
+                transMgmt.setPackageCenterCode(packageCenterCode);
+                transMgmt.setPackageCenterName(packageCenterName);
+                WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
+                delivery.setOdoId(odoId);
+                delivery.setCreateTime(new Date());
+                delivery.setLastModifyTime(new Date());
+                delivery.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+                delivery.setOuId(ouId);
+                delivery.setStatus(1);
+                delivery.setTransportCode(transMgmt.getTransportServiceProvider());
+                delivery.setTimeEffectType(transMgmt.getTimeEffectType());
+                delivery.setTransportServiceType(transMgmt.getCourierServiceType());
+                delivery.setWaybillCode(mailNo);
+                odoTransportMgmtManager.updateOdoTransportMgmtAndSaveDeliveryInfo(transMgmt, delivery);
+            } else {
+                if (null == res) {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", ouId);
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
+                }
+            }
+        }
     }
 
 }

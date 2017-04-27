@@ -24,6 +24,8 @@ public final class Constants {
 
     /** 调编码生成器租户编码 */
     public static final String WMS = "wms";
+    
+    public static final String WMS4 = "WMS4";
 
     /** 调编码生成器 po单实体标识 */
     public static final String WHPO_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhPo";

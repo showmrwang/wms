@@ -144,6 +144,14 @@ public class WarehouseCommand extends BaseCommand {
 	private Integer seedingOdoQty;
     /** 是否强制校验消费者退货入的包裹登记 */
     private Boolean isCheckReturnedPurchaseReg;
+    /** 省名称 */
+    private String province;
+    /** 镇名称 */
+    private String villagesTowns;
+    /** 区名称 */
+    private String district;
+    /** 市名称 */
+    private String city;
     
     
     public Boolean getIsCheckReturnedPurchaseReg() {
@@ -676,6 +684,38 @@ public class WarehouseCommand extends BaseCommand {
 	public void setIsFacilityCheckCode(Boolean isFacilityCheckCode) {
 		this.isFacilityCheckCode = isFacilityCheckCode;
 	}
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getVillagesTowns() {
+        return villagesTowns;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setVillagesTowns(String villagesTowns) {
+        this.villagesTowns = villagesTowns;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
 
 

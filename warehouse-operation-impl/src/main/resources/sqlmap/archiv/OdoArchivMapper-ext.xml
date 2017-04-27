@@ -488,8 +488,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     actual_deliver_goods_time ,
                     is_cod,
                     cod_amt,
-                    insurance_coverage,
-                    ou_id 
+                    ou_id ,
+		        	insurance_coverage ,
+		        	trans_big_word ,
+		        	tms_code ,
+		        	logistics_code ,
+		        	package_center_code ,
+		        	package_center_name 
                 ) VALUES (
                 	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -505,8 +510,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
                     #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
                     #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
-                    #{insuranceCoverage,javaType=Double,jdbcType=DECIMAL} ,
-                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{insuranceCoverage,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
     </insert>
@@ -520,7 +530,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     odo_line_id ,
                     vas_type ,
                     wh_vas_type ,
-                    express_vas_type ,
+                    express_vas_code ,
                     print_templet ,
                     sku_bar_code ,
                     content ,
@@ -540,7 +550,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{expressVasCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{content,javaType=java.lang.String,jdbcType=VARCHAR} ,

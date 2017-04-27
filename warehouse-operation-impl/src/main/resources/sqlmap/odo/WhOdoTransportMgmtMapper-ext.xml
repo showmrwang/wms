@@ -26,7 +26,12 @@
                 is_cod as isCod,
                 cod_amt as codAmt,
                 insurance_coverage as insuranceCoverage,
-                ou_id as ouId
+                ou_id as ouId,
+                trans_big_word as transBigWord,
+	        	tms_code as tmsCode,
+	        	logistics_code as logisticsCode,
+	        	package_center_code as packageCenterCode,
+	        	package_center_name as packageCenterName
         ]]>
     </sql>
 
