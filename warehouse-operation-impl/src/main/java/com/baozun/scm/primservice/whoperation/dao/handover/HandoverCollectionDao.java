@@ -85,7 +85,7 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
      * @param recommandHandoverStationCode
      * @return
      */
-    String findStatusByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1);
+    String findStatusByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1, @Param("status") Integer status);
 
     /***
      * 

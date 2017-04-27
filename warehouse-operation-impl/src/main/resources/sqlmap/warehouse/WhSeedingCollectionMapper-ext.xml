@@ -398,8 +398,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
     <select id="getSeedingBatchOdoInfo" resultType="com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice">
         SELECT
-            collection.batch AS batch,
-            collection.wave_code AS waveCode,
+            #{batchNo} AS batch,
             odo.id AS odoId,
             odo.odo_code AS odoCode,
             odo.ext_code AS extCode,
@@ -412,24 +411,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             store.store_code AS storeCode,
             store.store_name AS storeName
         FROM
-            (
-               SELECT
-                    seedingColLine.seeding_collection_id,
-                    seedingColLine.odo_id
-                FROM
-                    t_wh_seeding_collection_line as seedingColLine
-                    left join t_wh_seeding_collection as seedingCol on seedingCol.id = seedingColLine.seeding_collection_id
-                WHERE
-                    seedingCol.ou_id = #{ouId}
-                    and seedingCol.batch = #{batchNo}
-                GROUP BY
-                    seedingColLine.seeding_collection_id,
-                    seedingColLine.odo_id
-            ) AS collectionOdoTab
-        LEFT JOIN t_wh_seeding_collection AS collection ON collectionOdoTab.seeding_collection_id = collection.id
-        LEFT JOIN t_wh_odo AS odo ON collectionOdoTab.odo_id = odo.id
-        LEFT JOIN sys_dictionary AS odoStatusSys ON odo.odo_status = odoStatusSys.dic_value AND odoStatusSys.group_value = "ODO_STATUS"
+            t_wh_odo AS odo
+        LEFT JOIN sys_dictionary AS odoStatusSys ON odo.odo_status = odoStatusSys.dic_value
+        AND odoStatusSys.group_value = "ODO_STATUS"
         LEFT JOIN t_bi_customer AS customer ON odo.customer_id = customer.id
         LEFT JOIN t_bi_store AS store ON odo.store_id = store.id
+        WHERE
+            odo.id IN (
+                SELECT DISTINCT
+                    odo_id
+                FROM
+                    t_wh_seeding_collection_line
+                WHERE
+                    ou_id = #{ouId}
+                AND batch_number = #{batchNo}
+            )
     </select>
 </mapper>

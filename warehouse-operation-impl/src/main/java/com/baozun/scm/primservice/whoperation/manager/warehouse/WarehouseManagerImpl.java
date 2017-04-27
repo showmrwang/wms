@@ -336,7 +336,7 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
         String batch = handoverCollectionDao.findBatchByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
         whHandoverStationCommand.setHandover_batch(batch);
         // 状态
-        String status = handoverCollectionDao.findStatusByHandoverStationIdAndStatus(whHandoverStationCommand.getId());
+        String status = handoverCollectionDao.findStatusByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
         whHandoverStationCommand.setStatus(status);
 
         return whHandoverStationCommand;
