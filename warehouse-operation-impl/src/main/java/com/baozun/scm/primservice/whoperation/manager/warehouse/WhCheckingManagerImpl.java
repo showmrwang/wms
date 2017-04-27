@@ -15,7 +15,11 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 
@@ -44,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
@@ -170,14 +175,93 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 有出库单id
             whCheckingLine.setOdoId(checking.getOdoId());
         }
+        // 查找复核明细数据
         List<WhCheckingLineCommand> whCheckingLineList = whCheckingLineDao.findListByParamExt(whCheckingLine);
         if (null != whCheckingLineList && !whCheckingLineList.isEmpty()) {
+            whCheckingLineList = setDicLabel(whCheckingLineList);
             for (WhCheckingLineCommand command : whCheckingLineList) {
                 String skuAttr = SkuCategoryProvider.getSkuAttrIdByCheck(command);
                 command.setSkuAttr(skuAttr);
             }
         }
         return whCheckingLineList;
+    }
+
+    // 封装字典表数据
+    private List<WhCheckingLineCommand> setDicLabel(List<WhCheckingLineCommand> list) {
+        // 库存类型
+        Set<String> dic1 = new HashSet<String>();
+        // 库存属性1
+        Set<String> dic2 = new HashSet<String>();
+        // 库存属性2
+        Set<String> dic3 = new HashSet<String>();
+        // 库存属性3
+        Set<String> dic4 = new HashSet<String>();
+        // 库存属性4
+        Set<String> dic5 = new HashSet<String>();
+        // 库存属性5
+        Set<String> dic6 = new HashSet<String>();
+        if (list != null && list.size() > 0) {
+            for (WhCheckingLineCommand command : list) {
+                if (StringUtils.hasText(command.getInvType())) {
+                    dic1.add(command.getInvType());
+                }
+                if (StringUtils.hasText(command.getInvAttr1())) {
+                    dic2.add(command.getInvAttr1());
+                }
+                if (StringUtils.hasText(command.getInvAttr2())) {
+                    dic3.add(command.getInvAttr2());
+                }
+                if (StringUtils.hasText(command.getInvAttr3())) {
+
+                    dic4.add(command.getInvAttr3());
+                }
+                if (StringUtils.hasText(command.getInvAttr4())) {
+
+                    dic5.add(command.getInvAttr4());
+                }
+                if (StringUtils.hasText(command.getInvAttr5())) {
+
+                    dic6.add(command.getInvAttr5());
+                }
+            }
+            Map<String, List<String>> map = new HashMap<String, List<String>>();
+            map.put(Constants.INVENTORY_TYPE, new ArrayList<String>(dic1));
+            map.put(Constants.INVENTORY_ATTR_1, new ArrayList<String>(dic2));
+            map.put(Constants.INVENTORY_ATTR_2, new ArrayList<String>(dic3));
+            map.put(Constants.INVENTORY_ATTR_3, new ArrayList<String>(dic4));
+            map.put(Constants.INVENTORY_ATTR_4, new ArrayList<String>(dic5));
+            map.put(Constants.INVENTORY_ATTR_5, new ArrayList<String>(dic6));
+
+            Map<String, SysDictionary> dicMap = this.findSysDictionaryByRedis(map);
+            for (WhCheckingLineCommand command : list) {
+                if (StringUtils.hasText(command.getInvType())) {
+                    SysDictionary sys = dicMap.get(Constants.INVENTORY_TYPE + "_" + command.getInvType());
+                    command.setInvTypeStr(sys == null ? command.getInvType() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(command.getInvAttr1())) {
+                    SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_1 + "_" + command.getInvAttr1());
+                    command.setInvAttr1Str(sys == null ? command.getInvAttr1() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(command.getInvAttr2())) {
+                    SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_2 + "_" + command.getInvAttr2());
+                    command.setInvAttr2Str(sys == null ? command.getInvAttr2() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(command.getInvAttr3())) {
+                    SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_3 + "_" + command.getInvAttr3());
+                    command.setInvAttr3Str(sys == null ? command.getInvAttr3() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(command.getInvAttr4())) {
+                    SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_4 + "_" + command.getInvAttr4());
+                    command.setInvAttr4Str(sys == null ? command.getInvAttr4() : sys.getDicLabel());
+                }
+                if (StringUtils.hasText(command.getInvAttr5())) {
+                    SysDictionary sys = dicMap.get(Constants.INVENTORY_ATTR_5 + "_" + command.getInvAttr5());
+                    command.setInvAttr5Str(sys == null ? command.getInvAttr5() : sys.getDicLabel());
+                }
+            }
+        }
+        return list;
     }
 
     /**
@@ -585,8 +669,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param ouId
      * @return
      */
-    public WhCheckingCommand findWhChecking(Long checkingId,Long ouId){
-        
+    public WhCheckingCommand findWhChecking(Long checkingId, Long ouId) {
+
         return whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
     }
 }
