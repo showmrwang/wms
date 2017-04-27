@@ -20,7 +20,7 @@
                 odo_line_id as odoLineId,
                 vas_type as vasType,
                 wh_vas_type as whVasType,
-                express_vas_type as expressVasType,
+                express_vas_code as expressVasCode,
                 print_templet as printTemplet,
                 sku_bar_code as skuBarCode,
                 content as content,
@@ -129,7 +129,7 @@
                     odo_line_id ,
                     vas_type ,
                     wh_vas_type ,
-                    express_vas_type ,
+                    express_vas_code ,
                     print_templet ,
                     sku_bar_code ,
                     content ,
@@ -149,7 +149,7 @@
                     #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{expressVasCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{content,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -175,7 +175,7 @@
                 odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 vas_type = #{vasType,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 wh_vas_type = #{whVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                express_vas_type = #{expressVasType,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                express_vas_code = #{expressVasCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 print_templet = #{printTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 sku_bar_code = #{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 content = #{content,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -267,8 +267,8 @@
                 and wh_vas_type = #{whVasType}
             </if>
 
-            <if test="expressVasType!=null">
-                and express_vas_type = #{expressVasType}
+            <if test="expressVasCode!=null">
+                and express_vas_code = #{expressVasCode}
             </if>
 
             <if test="printTemplet!=null and printTemplet!=''">

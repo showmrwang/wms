@@ -24,6 +24,8 @@ public final class Constants {
 
     /** 调编码生成器租户编码 */
     public static final String WMS = "wms";
+    
+    public static final String WMS4 = "WMS4";
 
     /** 调编码生成器 po单实体标识 */
     public static final String WHPO_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.poasn.WhPo";
@@ -842,4 +844,14 @@ public final class Constants {
     public static final String WAY_5 = "way5";
     /**按单复核模式6 周转箱*/
     public static final String WAY_6 = "way6";
+
+    // 字典表 值
+    // WEEK_DAY
+    public static final String WEEK_DAY_MONDAY = "Monday";
+    public static final String WEEK_DAY_TUESDAY = "Tuesday";
+    public static final String WEEK_DAY_WEDNESDAY = "Wednesday";
+    public static final String WEEK_DAY_THURSDAY = "Thursday";
+    public static final String WEEK_DAY_FRIDAY = "Friday";
+    public static final String WEEK_DAY_SATURDAY = "Saturday";
+    public static final String WEEK_DAY_SUNDAY = "Sunday";
 }

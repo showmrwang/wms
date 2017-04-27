@@ -683,6 +683,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 Boolean isMove = false;
                 for (WhSkuInventory inv : invList) {
                     switch (targetType) {
+                        case Constants.SEEDING_WALL:
+                            isMove = true;
+                            inv.setLocationId(null);
+                            inv.setTemporaryLocationId(null);
+                            break;
                         case Constants.TEMPORARY_STORAGE_LOCATION:
                             isMove = true;
                             inv.setLocationId(null);

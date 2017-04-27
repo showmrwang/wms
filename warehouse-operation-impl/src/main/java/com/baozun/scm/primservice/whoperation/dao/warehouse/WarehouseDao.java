@@ -29,9 +29,6 @@ import org.apache.ibatis.annotations.Param;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
-
-
-
 public interface WarehouseDao extends BaseDao<Warehouse, Long> {
 
 
@@ -61,5 +58,7 @@ public interface WarehouseDao extends BaseDao<Warehouse, Long> {
      * @return
      */
     List<Warehouse> findListByLifecycle(Integer lifecycle);
+
+    WarehouseCommand findWarehouseCommandById(@Param("id") Long ouId);
     
 }

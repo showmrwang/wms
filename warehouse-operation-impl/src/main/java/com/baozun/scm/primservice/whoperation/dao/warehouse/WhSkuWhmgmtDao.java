@@ -16,6 +16,8 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuWhmgmtCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuWhmgmt;
 
@@ -50,5 +52,12 @@ public interface WhSkuWhmgmtDao extends BaseDao<WhSkuWhmgmt, Long> {
      * @return
      */
     Long queryCountBySkuIdAndOuId(Map<String, Object> params);
+    
+    /**
+     * 根据skuId找货品类型
+     * @author kai.zhu
+     * @version 2017年4月27日
+     */
+    String findTypeOfGoodsBySkuId(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
 }

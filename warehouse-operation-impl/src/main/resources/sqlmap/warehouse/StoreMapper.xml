@@ -59,7 +59,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	make_out_an_invoice_company as makeOutAnInvoiceCompany,
 	        	invoice_export_templet as invoiceExportTemplet,
 	        	make_out_an_invoice_group as makeOutAnInvoiceGroup,
-	        	distribution_target_group as distributionTargetGroup
+	        	distribution_target_group as distributionTargetGroup,
+	        	express_recommendation as expressRecommendation
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -115,7 +116,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	make_out_an_invoice_company ,
 	        	invoice_export_templet ,
 	        	make_out_an_invoice_group ,
-	        	distribution_target_group 
+	        	distribution_target_group ,
+	        	express_recommendation
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -165,7 +167,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{makeOutAnInvoiceCompany,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{invoiceExportTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
-	        	 #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR}
+	        	#{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{expressRecommendation,javaType=java.lang.String,jdbcType=VARCHAR}
                 )
 	        )
 	    ]]>
@@ -213,7 +216,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        make_out_an_invoice_company = #{makeOutAnInvoiceCompany,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        invoice_export_templet = #{invoiceExportTemplet,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        make_out_an_invoice_group = #{makeOutAnInvoiceGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
-               	distribution_target_group = #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR}
+               	distribution_target_group = #{distributionTargetGroup,javaType=java.lang.String,jdbcType=VARCHAR} ,
+               	express_recommendation = #{expressRecommendation,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 	    ]]>

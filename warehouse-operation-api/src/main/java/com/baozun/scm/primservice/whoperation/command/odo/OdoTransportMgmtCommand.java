@@ -35,6 +35,16 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     private Double codAmt;
     /** 保价金额 */
     private Double insuranceCoverage;
+    /** 运单大头笔 */
+    private String transBigWord;
+    /** 二级配送公司编码 */
+    private String tmsCode;
+    /** 物流公司编码 */
+    private String logisticsCode;
+    /** 集包地编码 */
+    private String packageCenterCode;
+    /** 集包地名称 */
+    private String packageCenterName;
     /** 时效类型 */
     private String timeEffectType;
 
@@ -45,7 +55,6 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     private String actualDeliverGoodsTimeStr;
 
     private String odoExtCode;
-
 
 
     public String getTimeEffectType() {
@@ -176,6 +185,46 @@ public class OdoTransportMgmtCommand extends BaseCommand {
     }
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public String getTransBigWord() {
+        return transBigWord;
+    }
+
+    public String getTmsCode() {
+        return tmsCode;
+    }
+
+    public String getLogisticsCode() {
+        return logisticsCode;
+    }
+
+    public String getPackageCenterCode() {
+        return packageCenterCode;
+    }
+
+    public String getPackageCenterName() {
+        return packageCenterName;
+    }
+
+    public void setTransBigWord(String transBigWord) {
+        this.transBigWord = transBigWord;
+    }
+
+    public void setTmsCode(String tmsCode) {
+        this.tmsCode = tmsCode;
+    }
+
+    public void setLogisticsCode(String logisticsCode) {
+        this.logisticsCode = logisticsCode;
+    }
+
+    public void setPackageCenterCode(String packageCenterCode) {
+        this.packageCenterCode = packageCenterCode;
+    }
+
+    public void setPackageCenterName(String packageCenterName) {
+        this.packageCenterName = packageCenterName;
     }
     
 }

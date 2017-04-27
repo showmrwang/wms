@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
+import com.baozun.scm.primservice.logistics.command.MailnoGetContentCommand;
+import com.baozun.scm.primservice.logistics.command.MailnoTransInfoCommand;
+import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
+import com.baozun.scm.primservice.logistics.command.TransSkuItemCommand;
+import com.baozun.scm.primservice.logistics.model.TransSkuItem;
+import com.baozun.scm.primservice.logistics.model.TransVasList;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
@@ -36,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResul
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -53,11 +61,15 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
 import com.baozun.scm.primservice.whoperation.dao.sku.SkuDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuWhmgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProviderDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -77,12 +89,15 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("odoManager")
@@ -133,7 +148,15 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private CodeManager codeManager;
     @Autowired
     private WhOutboundConfirmManager whOutboundConfirmManager;
-
+    @Autowired
+    private OutBoundBoxTypeDao outBoundBoxTypeDao;
+    @Autowired
+    private WhSkuDao whSkuDao;
+    @Autowired
+    private SkuMgmtDao skuMgmtDao;
+    @Autowired
+    private WhSkuWhmgmtDao whSkuWhmgmtDao;
+    
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -549,8 +572,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         odo.setIncludeFragileCargo(isFragile);
         odo.setIncludeHazardousCargo(isHazardous);
 
-        // 设置允许合并与否
-        odo.setIsAllowMerge(false);
+        // 设置允许合并与否 @mender yimin.lu 2017/4/27
+        odo.setIsAllowMerge(isAllowMerge);
     }
 
 
@@ -1354,4 +1377,133 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public SuggestTransContentCommand getSuggestTransContent(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, String logId, Long ouId) {
+        SuggestTransContentCommand trans = new SuggestTransContentCommand();
+        Store store = this.getStoreByRedis(odo.getStoreId());
+        Customer customer = this.getCustomerByRedis(odo.getCustomerId());
+        if (null == odo || null == transMgmt || null == address || null == store || null == customer) {
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
+        trans.setOwnerCode(store.getStoreCode());
+        trans.setLpcode(transMgmt.getTransportServiceProvider());
+        trans.setTimeType(transMgmt.getTimeEffectType());
+        trans.setTransType(transMgmt.getModeOfTransport());
+        trans.setOdoCode(odo.getOdoCode());
+        trans.setOrderId(odo.getEcOrderCode());
+        trans.setOdoType(odo.getOdoType());
+        trans.setOrderSouce(odo.getDataSource());
+        trans.setOrderType(odo.getOrderType());
+        trans.setDistributeMode(odo.getDistributeMode());
+        trans.setSkuNumberOfPackages(odo.getSkuNumberOfPackages().longValue());
+        trans.setTotalActual(new BigDecimal(odo.getAmt().doubleValue()));
+        trans.setCountry(address.getDistributionTargetCountry());
+        trans.setProvince(address.getDistributionTargetProvince());
+        trans.setCity(address.getDistributionTargetCity());
+        trans.setDistrict(address.getDistributionTargetDistrict());
+        trans.setVillage(address.getDistributionTargetVillagesTowns());
+        trans.setIsDangerous(odo.getIncludeHazardousCargo() ? 1 : 0);
+        trans.setIsBreak(odo.getIncludeFragileCargo() ? 1 : 0);
+        trans.setIntefaceType(StringUtils.isEmpty(store.getExpressRecommendation()) ? "2" : store.getExpressRecommendation());
+        if (null != odo.getOutboundCartonType()) {
+            OutBoundBoxType boxType = outBoundBoxTypeDao.findByIdExt(odo.getOutboundCartonType(), ouId);
+            trans.setOutboundCartonType(boxType.getCode());
+        }
+        
+        // 添加商品信息
+        List<TransSkuItem> skuItemList = new ArrayList<TransSkuItem>();
+        for (WhOdoLine line : odoLineList) {
+            Long skuId = line.getSkuId();
+            TransSkuItem skuItem = new TransSkuItem();
+            WhSku sku = whSkuDao.findWhSkuById(skuId, ouId);
+            SkuMgmt skuMgmt = skuMgmtDao.findSkuMgmtBySkuIdShared(skuId, ouId);
+            String typeOfGoods = whSkuWhmgmtDao.findTypeOfGoodsBySkuId(skuId, ouId);
+            skuItem.setTypeOfGoods(typeOfGoods);
+            skuItem.setSkuCode(sku.getCode());
+            skuItem.setExtCode(sku.getExtCode());
+            skuItem.setBrandId(sku.getBrandId());
+            skuItem.setLength(sku.getLength() == null ? null : sku.getLength().longValue());
+            skuItem.setWidth(sku.getWidth() == null ? null : sku.getWidth().longValue());
+            skuItem.setHeight(sku.getHeight() == null ? null : sku.getHeight().longValue());
+            skuItem.setWeight(sku.getWeight() == null ? null : sku.getWeight().longValue());
+            skuItem.setSize(sku.getSize());
+            skuItem.setQty(line.getQty() == null ? null : line.getQty().intValue());
+            skuItem.setVloume(sku.getVolume() == null ? null : sku.getVolume().longValue());
+            skuItem.setIsValid(skuMgmt.getIsValid() != null && skuMgmt.getIsValid() ? 1 : 0);
+            skuItem.setIsCountryOfOrigin(skuMgmt.getIsCountryOfOrigin() != null && skuMgmt.getIsCountryOfOrigin() ? 1 : 0);
+            skuItem.setSerialNumberType(skuMgmt.getSerialNumberType());
+            skuItem.setIsSkuAttr(skuMgmt.getIsSkuAttr() != null && skuMgmt.getIsSkuAttr() ? 1 : 0);
+            skuItemList.add(skuItem);
+        }
+        trans.setTransSkuItem(skuItemList);
+        
+        // 添加增值服务信息
+        List<TransVasList> transVasList = new ArrayList<TransVasList>();
+        for (WhOdoVas odoVas : odoVasLineList) {
+            TransVasList transVas = new TransVasList();
+            transVas.setVasCode(odoVas.getExpressVasCode());
+            transVasList.add(transVas);
+        }
+        trans.setTransVasList(transVasList);
+        return trans;
+    }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, WarehouseCommand wh, SuggestTransContentCommand trans, Long ouId) {
+        MailnoGetContentCommand mailNoContent = new MailnoGetContentCommand();
+        mailNoContent.setOrderCode(odo.getOdoCode());
+        mailNoContent.setTradeId(odo.getEcOrderCode());
+        mailNoContent.setOrderSource(odo.getDataSource());
+        mailNoContent.setWhCode(wh.getCode());
+        mailNoContent.setOwnerCode(trans.getOwnerCode());
+        mailNoContent.setLpCode(transMgmt.getTransportServiceProvider());
+        mailNoContent.setExpressType(transMgmt.getCourierServiceType());
+        mailNoContent.setTotalActual(trans.getTotalActual());
+        mailNoContent.setQuantity(1);
+        mailNoContent.setType(1);
+        mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
+        // mailNoContent.setInsuranceAmount
+        // mailNoContent.setTransFree
+        // 商品信息
+        List<TransSkuItemCommand> skuItem = new ArrayList<TransSkuItemCommand>();
+        for (WhOdoLine odoLine : odoLineList) {
+            TransSkuItemCommand item = new TransSkuItemCommand();
+            WhSku sku = whSkuDao.findWhSkuById(odoLine.getSkuId(), ouId);
+            item.setItemId(odoLine.getSkuId().toString());
+            item.setItemCode(sku.getCode());
+            item.setItemName(sku.getName());
+            item.setItemQty(odoLine.getQty().intValue());
+            item.setItemPrice(new BigDecimal(odoLine.getLinePrice()));
+            skuItem.add(item);
+        }
+        mailNoContent.setSkuItem(skuItem);
+        Store store = this.getStoreByRedis(odo.getStoreId());
+        // 发件人信息
+        MailnoTransInfoCommand send = new MailnoTransInfoCommand();
+        send.setProvince(wh.getProvince());
+        send.setCity(wh.getCity());
+        send.setDistrict(wh.getDistrict());
+        send.setAddress(wh.getAddress());
+        send.setZipCode(wh.getZipCode());
+        send.setReceiver(store.getPic());
+        send.setMobile(store.getPicContact());
+        send.setTelephone(store.getPicMobileTelephone());
+        mailNoContent.setSenderTransInfo(send);
+        
+        // 收件人信息
+        MailnoTransInfoCommand receiver = new MailnoTransInfoCommand();
+        receiver.setProvince(address.getDistributionTargetProvince());
+        receiver.setCity(address.getDistributionTargetCity());
+        receiver.setDistrict(address.getDistributionTargetDistrict());
+        receiver.setAddress(address.getDistributionTargetAddress());
+        receiver.setZipCode(address.getDistributionTargetZip());
+        receiver.setReceiver(address.getDistributionTargetName());
+        receiver.setMobile(address.getDistributionTargetMobilePhone());
+        receiver.setTelephone(address.getDistributionTargetTelephone());
+        mailNoContent.setTransInfo(receiver);
+        
+        return mailNoContent;
+    }
 }

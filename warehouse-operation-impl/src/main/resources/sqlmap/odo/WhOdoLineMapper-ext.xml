@@ -1059,4 +1059,16 @@
 			</if>
 
 	</select>
+	
+	<select id="findSkuIdListByOdoIdOuId" resultType="long">
+		select 
+			l.sku_id
+		from 
+			t_wh_odo_line l
+		where 
+			l.odo_id = #{odoId}
+			and l.ou_id = #{ouId}
+		group by 
+			sku_id
+	</select>
 </mapper>

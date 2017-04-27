@@ -375,8 +375,13 @@ public interface OdoManagerProxy extends BaseManager {
     void finishCreateWave(WhWave wave);
 
     WhOdo findByExtCodeStoreIdOuId(String extOdoCode, Long storeId, Long ouId);
-
-
+    
+    /**
+     * 根据出库单Id获取物流相关信息(增值服务,物流商推荐,获取运单号)
+     * @author kai.zhu
+     * @version 2017年4月24日
+     */
+    void getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId);
 
 
 }

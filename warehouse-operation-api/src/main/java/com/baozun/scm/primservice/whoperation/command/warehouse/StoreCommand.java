@@ -176,6 +176,8 @@ public class StoreCommand extends BaseCommand {
     private String makeOutAnInvoiceGroup;
     /** 配送对象分组 */
     private String distributionTargetGroup;
+    /** 快递推荐优先规则 */
+    private String expressRecommendation;
 
     public String getDistributionTargetGroup() {
         return distributionTargetGroup;
@@ -589,6 +591,14 @@ public class StoreCommand extends BaseCommand {
 
     public void setMakeOutAnInvoiceGroup(String makeOutAnInvoiceGroup) {
         this.makeOutAnInvoiceGroup = makeOutAnInvoiceGroup;
+    }
+
+    public String getExpressRecommendation() {
+        return expressRecommendation;
+    }
+
+    public void setExpressRecommendation(String expressRecommendation) {
+        this.expressRecommendation = expressRecommendation;
     }
 
 }
