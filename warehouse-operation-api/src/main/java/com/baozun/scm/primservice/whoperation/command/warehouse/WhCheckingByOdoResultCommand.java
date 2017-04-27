@@ -35,6 +35,8 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private Long odoLineId;
     /** 按单复核模式类型*/
     private String checkingPattern;
+    /** 复核完成*/
+    private Boolean checkFinish;
     /**复合明细集合*/
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
 
@@ -136,4 +138,13 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     }
     
     
+
+    public Boolean getCheckFinish() {
+        return checkFinish;
+    }
+
+    public void setCheckFinish(Boolean checkFinish) {
+        this.checkFinish = checkFinish;
+    }
+
 }
