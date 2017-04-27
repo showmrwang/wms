@@ -537,7 +537,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (null == odo.getIsLocked()) {
                 odo.setIsLocked(false);
             }
-            odo.setExtOdoType("1");
             odo.setCreatedId(userId);
             odo.setCreateTime(new Date());
             odo.setModifiedId(userId);
