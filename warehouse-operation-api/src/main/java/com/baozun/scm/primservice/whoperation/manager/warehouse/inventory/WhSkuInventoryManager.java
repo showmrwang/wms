@@ -330,4 +330,13 @@ public interface WhSkuInventoryManager extends BaseManager {
      * 生成出库箱库存
      */
     public void addOutBoundInventory(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId);
+    
+    
+    /***
+     * 
+     * @param outboundbox
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findOutboundboxInventory(String outboundbox,Long ouId);
 }

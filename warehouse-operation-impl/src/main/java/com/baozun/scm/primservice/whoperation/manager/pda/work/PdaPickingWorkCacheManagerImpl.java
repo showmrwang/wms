@@ -884,6 +884,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 //                                  }
 //                              }
                               cssrCmd.setIsContinueScanSn(true);
+                              cssrCmd.setIsNeedScanSkuSn(true);
                               cssrCmd.setTipSkuAttrId(skuAttrId);
                               return cssrCmd;
                           }
@@ -1554,6 +1555,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 //                                  }
 //                              }
                               cssrCmd.setIsContinueScanSn(true);
+                              cssrCmd.setIsNeedScanSkuSn(true);
                               cssrCmd.setTipSkuAttrId(skuAttrId);
                               return cssrCmd;
                           }
@@ -2132,6 +2134,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
 //                                  }
 //                              }
                               cssrCmd.setIsContinueScanSn(true);
+                              cssrCmd.setIsNeedScanSkuSn(true);
                               cssrCmd.setTipSkuAttrId(skuAttrId);
                               return cssrCmd;
                           }

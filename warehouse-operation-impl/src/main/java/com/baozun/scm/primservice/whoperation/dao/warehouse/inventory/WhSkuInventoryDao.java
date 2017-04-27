@@ -966,4 +966,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param ouId
      */
     Long findOnHandQtyByLocationId(@Param("locationId") Long locationId, @Param("ouId") Long ouId);
+    
+    
+    /**
+     * 查询出库箱信息
+     * @param outboundbox
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand>  findOutboundboxInventory(@Param("outboundbox") String outboundbox, @Param("ouId") Long ouId);
 }

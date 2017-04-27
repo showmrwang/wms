@@ -45,7 +45,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             // 校验传入参数
             checkParams(recFacilityPath);
             Long ouId = recFacilityPath.getOuId();
-            Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+            Warehouse wh = this.warehouseManager.findWarehouseByIdExt(ouId);
             if (!wh.getIsApplyFacility()) {
                 return responseMsgForFacility(recFacilityPath, 0);
             }

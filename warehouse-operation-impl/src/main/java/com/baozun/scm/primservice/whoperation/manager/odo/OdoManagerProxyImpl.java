@@ -203,7 +203,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            msg.setMsg(e.getErrorCode() + "");
+            msg.setMsg(e.getErrorCode() + ":" + e.getMessage());
             return msg;
         } catch (Exception ex) {
             log.error("" + ex);
@@ -570,16 +570,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (StringUtils.isEmpty(odo.getExtCode())) {
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
-            }
-            // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
-            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
-                // 设置计数器编码
-                Set<Long> skuIdSet = new HashSet<Long>();
-                for (OdoLineCommand line : odoLineList) {
-                    skuIdSet.add(line.getSkuId());
-                }
-                String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
-                odo.setCounterCode(counterCode);
             }
 
             // 匹配配货模式

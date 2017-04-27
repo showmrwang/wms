@@ -8238,7 +8238,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
     
     /**
-     * 生成出库箱库存(按单复合)
+     * 生成出库箱库存(按单复合,删除原来的库存生成新的出库箱库存)
      */
     public void addOutBoundInventory(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId){
        String checkingPattern = cmd.getCheckingPattern();  //
@@ -8247,6 +8247,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
        String outboundboxCode = cmd.getOutboundBoxCode();
        String seedingWallCode = cmd.getSeedingWallCode(); // 播种墙编码
        String turnoverBoxCode = cmd.getTurnoverBoxCode(); // 周转箱
+       String outboundbox = cmd.getOutboundbox(); 
        ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
        if(null == c) {
            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
@@ -8284,6 +8285,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
            if(Constants.WAY_6.equals(checkingPattern)) {
                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId,odoId,ouId, null, null, null, turnoverBoxId, null);
            } 
+           //只有出库箱
            if(Constants.WAY_5.equals(checkingPattern)) {
                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId,odoId,ouId,null, null, outboundboxCode, null,null);
            }
@@ -8298,55 +8300,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            String odoUuid = null;
                            WhSkuInventory skuInv = new WhSkuInventory();
                            BeanUtils.copyProperties(invCmd, skuInv);
+                           skuInv.setId(null);
                            skuInv.setLocationId(null);
-                           //小车货格
-                           if(Constants.WAY_2.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(containerId);
-                               skuInv.setContainerLatticeNo(containerLatticeNo);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(null); //出库箱编码
-                           }
-                           //小车出库箱
-                           if(Constants.WAY_1.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(containerId);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
-                           }
-                           //播种墙货格
-                           if(Constants.WAY_4.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(null);
-                               skuInv.setContainerLatticeNo(containerLatticeNo);
-                               skuInv.setSeedingWallCode(seedingWallCode);
-                               skuInv.setOutboundboxCode(null); //出库箱编码
-                           }  
-                           //播种墙出库箱
-                           if(Constants.WAY_3.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(null);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(seedingWallCode);
-                               skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
-                           }  
-                           //周转箱
-                           if(Constants.WAY_6.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(turnoverBoxId);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(null); //出库箱编码
-                           } 
-                           //出库箱
-                           if(Constants.WAY_5.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(null);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
-                           }
+                           skuInv.setOuterContainerId(null);
+                           skuInv.setInsideContainerId(null);
+                           skuInv.setContainerLatticeNo(null);
+                           skuInv.setSeedingWallCode(null);
+                           skuInv.setOutboundboxCode(outboundbox); //出库箱编码
                            try {
                                odoUuid = SkuInventoryUuid.invUuid(skuInv);
                                skuInv.setUuid(uuid);// UUID
@@ -8372,6 +8332,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
                            // 记录入库库存日志(这个实现的有问题)
                            insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,null);
+                           //删除原来的库存
+                           whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
                        }
                    }
                }else{//有sn
@@ -8382,54 +8344,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            Long qty = checkingLineCmd.getCheckingQty();
                            WhSkuInventory skuInv = new WhSkuInventory();
                            BeanUtils.copyProperties(invCmd, skuInv);
-                           //小车货格
-                           if(Constants.WAY_2.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(containerId);
-                               skuInv.setContainerLatticeNo(containerLatticeNo);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(null); //出库箱编码
-                           }
-                           //小车出库箱
-                           if(Constants.WAY_1.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(containerId);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
-                           }
-                           //播种墙货格
-                           if(Constants.WAY_4.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(null);
-                               skuInv.setContainerLatticeNo(containerLatticeNo);
-                               skuInv.setSeedingWallCode(seedingWallCode);
-                               skuInv.setOutboundboxCode(null); //出库箱编码
-                           }  
-                           //播种墙出库箱
-                           if(Constants.WAY_3.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(null);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(seedingWallCode);
-                               skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
-                           }  
-                           //周转箱
-                           if(Constants.WAY_6.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(turnoverBoxId);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(null); //出库箱编码
-                           } 
-                           //出库箱
-                           if(Constants.WAY_5.equals(checkingPattern)) {
-                               skuInv.setOuterContainerId(null);
-                               skuInv.setInsideContainerId(null);
-                               skuInv.setContainerLatticeNo(null);
-                               skuInv.setSeedingWallCode(null);
-                               skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
-                           }
+                           skuInv.setId(null);
+                           skuInv.setLocationId(null);
+                           skuInv.setOuterContainerId(null);
+                           skuInv.setInsideContainerId(null);
+                           skuInv.setContainerLatticeNo(null);
+                           skuInv.setSeedingWallCode(null);
+                           skuInv.setOutboundboxCode(outboundbox); //出库箱编码
                            try {
                                odoUuid = SkuInventoryUuid.invUuid(skuInv);
                                skuInv.setUuid(uuid);// UUID
@@ -8455,6 +8376,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
                            // 记录入库库存日志(这个实现的有问题)
                            insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,null);
+                           //删除原来的库存
+                           whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
                            //操作sn/残次信息
                            Integer count = 0;
                            for (WhSkuInventorySnCommand cSnCmd : snList) {
@@ -8475,5 +8398,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
            }
        }
       
+    }
+    
+    
+    /***
+     * 
+     * @param outboundbox
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findOutboundboxInventory(String outboundbox,Long ouId){
+        
+        return whSkuInventoryDao.findOutboundboxInventory(outboundbox, ouId);
     }
 }
