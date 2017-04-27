@@ -466,6 +466,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    from t_bi_po_line 
 		        where 
 		        po_id = #{poId} 
-		        and bipoline.status!=17 and (bipoline.status!=10 or bipoline.available_qty>0)
+		        and status!=17 and (status!=10 or available_qty>0)
 		</select>
 </mapper>

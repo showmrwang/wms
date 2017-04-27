@@ -572,8 +572,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         odo.setIncludeFragileCargo(isFragile);
         odo.setIncludeHazardousCargo(isHazardous);
 
-        // 设置允许合并与否
-        odo.setIsAllowMerge(false);
+        // 设置允许合并与否 @mender yimin.lu 2017/4/27
+        odo.setIsAllowMerge(isAllowMerge);
     }
 
 
