@@ -1306,6 +1306,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         Map<String, WhSkuInventory> skuInvMap = new HashMap<String, WhSkuInventory>();
         Map<String, WhCarton> whCartonMap = new HashMap<String, WhCarton>();
 
+
+        // @mender yimin
         // 1.保存库存
         // 2.筛选ASN明细数据集合
         for (RcvdCacheCommand cacheInv : commandList) {
@@ -1379,7 +1381,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             Entry<Long, Double> entry = it.next();
             WhAsnLine asnLine = this.asnLineManager.findWhAsnLineByIdToShard(entry.getKey(), ouId);
             if (null == asnLine) {
-                throw new BusinessException("1");
+                throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
             }
             asnLine.setQtyRcvd(asnLine.getQtyRcvd() + entry.getValue());
             asnLine.setModifiedId(userId);
