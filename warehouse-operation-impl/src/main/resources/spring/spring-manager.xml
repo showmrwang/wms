@@ -86,6 +86,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo</value>
 				</list>
 			</property>
 			

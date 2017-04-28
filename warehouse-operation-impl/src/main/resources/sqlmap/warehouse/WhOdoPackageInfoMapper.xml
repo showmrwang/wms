@@ -48,7 +48,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	create_id ,
 		        	create_time ,
 		        	last_modify_time ,
-		        	modified_id 
+		        	modified_id,
+		        	ou_id 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -62,7 +63,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}, 
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT}
 		        )
 		    ]]>
 
@@ -85,7 +87,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
-		        id = #{id} 
+		        id = #{id} and ou_id = #{ouId}
 	    ]]>
 		</update>
 	   <delete id="delete" parameterType="java.lang.Long">

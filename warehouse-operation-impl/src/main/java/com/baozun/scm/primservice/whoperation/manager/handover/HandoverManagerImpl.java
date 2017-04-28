@@ -134,7 +134,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         // 称重
         Long totalActualWeight = 0L;
         for (HandoverCollection handoverCollection : hcList) {
-            WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(handoverCollection.getOutboundboxCode());
+            WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(handoverCollection.getOutboundboxCode(),ouId);
             if (null != whOdoPackageInfo) {
                 totalCalcWeight += whOdoPackageInfo.getCalcWeight();
                 totalActualWeight += whOdoPackageInfo.getActualWeight();

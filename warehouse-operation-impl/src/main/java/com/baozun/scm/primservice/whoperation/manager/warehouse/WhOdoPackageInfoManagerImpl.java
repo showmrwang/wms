@@ -44,5 +44,16 @@ public class WhOdoPackageInfoManagerImpl extends BaseManagerImpl implements WhOd
             whOdoPackageInfoDao.insert(whOdoPackageInfo);
         }
     }
+    
+    /**
+     * [通用方法] 通过出出库箱编码, 组织id查找出库单打包信息
+     * 
+     * @param outboundBoxCode
+     * @param ouId
+     * @return
+     */
+    public WhOdoPackageInfo findByOutboundBoxCode(String outboundboxCode,Long ouId){
+        return whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode,ouId);
+    }
 
 }

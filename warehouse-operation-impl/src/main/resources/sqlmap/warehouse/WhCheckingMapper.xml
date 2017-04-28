@@ -191,7 +191,6 @@
                 time_effect_code = #{timeEffectCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 time_effect_name = #{timeEffectName,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -200,7 +199,7 @@
                 picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
-                id = #{id} 
+                id = #{id} and ou_id=#{ouId}
         ]]>
     </update>
     <update id="batchUpdate">

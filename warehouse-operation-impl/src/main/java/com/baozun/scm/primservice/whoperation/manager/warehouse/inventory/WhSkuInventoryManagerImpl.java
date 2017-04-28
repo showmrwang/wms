@@ -8247,18 +8247,24 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
        String outboundboxCode = cmd.getOutboundBoxCode();
        String seedingWallCode = cmd.getSeedingWallCode(); // 播种墙编码
        String turnoverBoxCode = cmd.getTurnoverBoxCode(); // 周转箱
-       String outboundbox = cmd.getOutboundbox(); 
-       ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-       if(null == c) {
-           throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+       Long turnoverBoxId = null;
+       if(Constants.WAY_6.equals(checkingPattern)) {
+           ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+           if(null == c) {
+               throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+           }
+           turnoverBoxId   = c.getId();
        }
-       Long turnoverBoxId   = c.getId();
        String containerCode = cmd.getContaierCode();
-       ContainerCommand container = containerDao.getContainerByCode(containerCode, ouId);
-       if(null == container) {
-           throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+      
+       Long containerId = null;
+       if(Constants.WAY_2.equals(checkingPattern) || Constants.WAY_1.equals(checkingPattern)) {
+           ContainerCommand container = containerDao.getContainerByCode(containerCode, ouId);
+           if(null == container) {
+               throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+           }
+           containerId = container.getId();
        }
-       Long containerId = container.getId();
        /**复合明细集合*/
        List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
        for(WhCheckingLineCommand checkingLine:checkingLineList){
@@ -8293,10 +8299,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
                String uuid = invCmd.getUuid();
                if (null == snList || 0 == snList.size()) {//没有sn
-                   for(WhCheckingLineCommand checkingLineCmd:checkingLineList){ //复合记录
-                       String checkingUuid = checkingLineCmd.getUuid();
+                       String checkingUuid = checkingLine.getUuid();
                        if(uuid.equals(checkingUuid)) {
-                           Long qty = checkingLineCmd.getCheckingQty();
+                           Long qty = checkingLine.getCheckingQty();
                            String odoUuid = null;
                            WhSkuInventory skuInv = new WhSkuInventory();
                            BeanUtils.copyProperties(invCmd, skuInv);
@@ -8306,7 +8311,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            skuInv.setInsideContainerId(null);
                            skuInv.setContainerLatticeNo(null);
                            skuInv.setSeedingWallCode(null);
-                           skuInv.setOutboundboxCode(outboundbox); //出库箱编码
+                           skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
                            try {
                                odoUuid = SkuInventoryUuid.invUuid(skuInv);
                                skuInv.setUuid(uuid);// UUID
@@ -8335,13 +8340,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            //删除原来的库存
                            whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
                        }
-                   }
                }else{//有sn
-                   for(WhCheckingLineCommand checkingLineCmd:checkingLineList){ //复合记录
-                       String checkingUuid = checkingLineCmd.getUuid();
+                       String checkingUuid = checkingLine.getUuid();
                        String odoUuid = null;
                        if(uuid.equals(checkingUuid)) {
-                           Long qty = checkingLineCmd.getCheckingQty();
+                           Long qty = checkingLine.getCheckingQty();
                            WhSkuInventory skuInv = new WhSkuInventory();
                            BeanUtils.copyProperties(invCmd, skuInv);
                            skuInv.setId(null);
@@ -8350,7 +8353,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            skuInv.setInsideContainerId(null);
                            skuInv.setContainerLatticeNo(null);
                            skuInv.setSeedingWallCode(null);
-                           skuInv.setOutboundboxCode(outboundbox); //出库箱编码
+                           skuInv.setOutboundboxCode(outboundboxCode); //出库箱编码
                            try {
                                odoUuid = SkuInventoryUuid.invUuid(skuInv);
                                skuInv.setUuid(uuid);// UUID
@@ -8379,21 +8382,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            //删除原来的库存
                            whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
                            //操作sn/残次信息
-                           Integer count = 0;
-                           for (WhSkuInventorySnCommand cSnCmd : snList) {
-                                WhSkuInventorySn sn = new WhSkuInventorySn();
-                                BeanUtils.copyProperties(cSnCmd, sn);
-                                sn.setUuid(odoUuid);
-                                whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
-                                insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
-                                count ++;
-                                if(count == Integer.valueOf(qty.toString())) {
-                                    break;
-                                }
-                           }
-                           insertSkuInventorySnLog(odoUuid, ouId); // 记录sn日志
+//                           for (WhSkuInventorySnCommand cSnCmd : snList) {
+//                                WhSkuInventorySn sn = new WhSkuInventorySn();
+//                                BeanUtils.copyProperties(cSnCmd, sn);
+//                                sn.setUuid(odoUuid);
+//                                whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
+//                                insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+//                           }
+//                           insertSkuInventorySnLog(odoUuid, ouId); // 记录sn日志
                        }
-                   }
                }
            }
        }

@@ -58,6 +58,6 @@ public interface WhOdoPackageInfoDao extends BaseDao<WhOdoPackageInfo, Long> {
      * @param ouId
      * @return
      */
-    WhOdoPackageInfo findByOutboundBoxCode(@Param("outboundboxCode") String outboundboxCode);
+    WhOdoPackageInfo findByOutboundBoxCode(@Param("outboundboxCode") String outboundboxCode,@Param("ouId") Long ouId);
 
 }
