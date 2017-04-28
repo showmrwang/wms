@@ -4099,7 +4099,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					t_wh_sku_inventory_allocated inv
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid 
 			  where
-				    operLine.inv_move_code = inv.occupation_code
+				operLine.inv_move_code = inv.occupation_code
 				and inv.occupation_code IS NOT NULL
 				and inv.ou_id = #{ouId}
 				and operLine.operation_id = #{operationId}

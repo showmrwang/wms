@@ -386,7 +386,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
     </select>
     
-    	<select id="findWhSkuInventoryTobefilledByReplenish" resultMap="WhSkuInventoryTobefilledCommandResultExt">
+    <select id="findWhSkuInventoryTobefilledByReplenish" resultMap="WhSkuInventoryTobefilledCommandResultExt">
 	    select
 	          inv.id as id,
 	          inv.sku_id as skuId,
@@ -436,5 +436,56 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and operLine.operation_id = #{operationId}
 				and  inv.location_id = #{locationId}
 				and inv.inside_container_id is null
+	</select>
+	
+	<select id="findWhSkuInventoryTobefilledByInvMove" resultMap="WhSkuInventoryTobefilledCommandResultExt">
+	    select
+	          inv.id as id,
+	          inv.sku_id as skuId,
+	          inv.location_id as locationId,
+	          inv.outer_container_id as outerContainerId,
+	          inv.inside_container_id as insideContainerId,
+	          inv.customer_id as customerId,
+	          inv.store_id as storeId,
+	          inv.occupation_code as occupationCode,
+	          inv.occupation_line_id as occupationLineId,
+	          inv.replenishment_code as replenishmentCode,
+	          inv.qty as qty,
+	          inv.inv_status as invStatus,
+	          inv.inv_type as invType,
+	          inv.batch_number as batchNumber,
+	          inv.mfg_date as mfgDate,
+	          inv.exp_date as expDate,
+	          inv.country_of_origin as countryOfOrigin,
+	          inv.inv_attr1 as invAttr1,
+	          inv.inv_attr2 as invAttr2,
+	          inv.inv_attr3 as invAttr3,
+	          inv.inv_attr4 as invAttr4,
+	          inv.inv_attr5 as invAttr5,
+	          inv.uuid as uuid,
+	          inv.ou_id as ouId,
+	          inv.last_modify_time as lastModifyTime,
+	          sn.id AS snId,
+	          sn.sn AS snSn,
+	          sn.occupation_code AS snOccupationCode,
+	          sn.defect_ware_barcode AS snDefectWareBarcode,
+	          sn.defect_source AS snDefectSource,
+	          sn.defect_type_id AS snDefectTypeId,
+	          sn.defect_reasons_id AS snDefectReasonsId,
+	          sn.status AS snStatus,
+	          sn.inv_attr AS snInvAttr,
+	          sn.uuid AS snUuid,
+	          sn.ou_id AS snOuId,
+	          sn.sys_uuid AS snSysUuid
+		      from 
+					t_wh_operation_line operLine, 
+					t_wh_sku_inventory_tobefilled inv
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid 
+			  where
+				    operLine.inv_move_code = inv.occupation_code
+				and inv.occupation_code IS NOT NULL
+				and inv.ou_id = #{ouId}
+				and operLine.operation_id = #{operationId}
+				and  inv.location_id = #{locationId}
 	</select>
 </mapper>
