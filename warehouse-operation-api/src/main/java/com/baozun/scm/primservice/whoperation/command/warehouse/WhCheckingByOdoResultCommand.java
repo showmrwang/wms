@@ -20,7 +20,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     private Integer containerLatticeNo; // 货格号
 
-    private String outboundbox; // 出库箱号
+//    private String outboundbox; // 出库箱号
 
     private String seedingWallCode; // 播种墙编码
 
@@ -73,13 +73,13 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.checkingLineList = checkingLineList;
     }
 
-    public String getOutboundbox() {
-        return outboundbox;
-    }
-
-    public void setOutboundbox(String outboundbox) {
-        this.outboundbox = outboundbox;
-    }
+//    public String getOutboundbox() {
+//        return outboundbox;
+//    }
+//
+//    public void setOutboundbox(String outboundbox) {
+//        this.outboundbox = outboundbox;
+//    }
 
     public Long getOuId() {
         return ouId;

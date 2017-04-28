@@ -27,9 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
@@ -44,9 +46,12 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
+import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -62,15 +67,19 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManag
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
-
+@Transactional
 @Service("checkingManagerProxy")
 public class CheckingManagerProxyImpl extends BaseManagerImpl implements CheckingManagerProxy {
     
@@ -106,6 +115,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     private WhSkuManager whSkuManager;
     @Autowired
     private ContainerDao containerDao;
+    @Autowired
+    private UomDao uomDao;
 
 
     /**
@@ -301,7 +312,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 whOdoPackageInfoCommand.setOutboundboxId(whCheckingCommand.getOutboundboxId());
                 whOdoPackageInfoCommand.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
                 whOdoPackageInfoCommand.setStatus(1);
-                whOdoPackageInfoCommand.setCalcWeight(calcWeight.doubleValue());
+                whOdoPackageInfoCommand.setCalcWeight(calcWeight.longValue());
                 whOdoPackageInfoCommand.setFloats(whFunctionOutBound.getWeightFloatPercentage());
                 whOdoPackageInfoCommand.setActualWeight(null);
                 whOdoPackageInfoCommand.setLifecycle(1);
@@ -378,7 +389,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundboxLineCommand.setSkuExtCode(whCheckingLineCommand.getSkuExtCode());
         whOutboundboxLineCommand.setSkuBarCode(whCheckingLineCommand.getSkuBarCode());
         whOutboundboxLineCommand.setSkuName(whCheckingLineCommand.getSkuName());
-        whOutboundboxLineCommand.setQty(whCheckingLineCommand.getQty());
+        whOutboundboxLineCommand.setQty(whCheckingLineCommand.getQty().doubleValue());
         whOutboundboxLineCommand.setCustomerCode(whCheckingLineCommand.getCustomerCode());
         whOutboundboxLineCommand.setCustomerName(whCheckingLineCommand.getCustomerName());
         whOutboundboxLineCommand.setStoreCode(whCheckingLineCommand.getStoreCode());
@@ -469,26 +480,26 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     public void checkingByOdo(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId,Long ouId,Long functionId){
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         Long outboundboxId = cmd.getOutboundboxId();
-        String outboundbox = cmd.getOutboundbox();
+        String outboundbox = cmd.getOutboundBoxCode();
         //更新复合明细表
         Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId);
         cmd.setOuId(ouId);
-        //生成出库箱库存
+        //生成出库箱库存(sn有问题)
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
         //获取出库单id 
         WhCheckingLineCommand lineCmd = checkingLineList.get(0);
         Long odoId = lineCmd.getOdoId();
 //        出库箱头信息（t_wh_outboundbox）和出库箱明细
         this.addOutboundbox(checkingId, ouId, odoId);
-        //生成出库箱明细
+        //生成出库箱明细???
         this.addOutboundboxLine(outboundbox, ouId, lineCmd);
+        //算包裹计重????
+        this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId,odoId,outboundboxId, userId,outboundbox);
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if(result){
-          //更新出库单状态
-          this.updateOdoStatusByOdo(odoId, ouId);
+            //更新出库单状态
+            this.updateOdoStatusByOdo(odoId, ouId);
         }
-        //算包裹计重
-        this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, outboundboxId, userId);
     }
     
     
@@ -510,6 +521,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundboxCommand.setOdoId(odoId);
         whOutboundboxManager.saveOrUpdate(whOutboundboxCommand);
         
+        
     }
     
     /***
@@ -518,29 +530,29 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * @param ouId
      */
     private void addOutboundboxLine(String outboundbox,Long ouId,WhCheckingLineCommand lineCmd){
-        List<WhSkuInventoryCommand> list = new ArrayList<WhSkuInventoryCommand>();
+//        List<WhSkuInventoryCommand> list = new ArrayList<WhSkuInventoryCommand>();
         List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
-        if(null != listSkuInvCmd && listSkuInvCmd.size() != 0){
-            //先遍历出uuid相同的记录
-            for(int j=0;j<listSkuInvCmd.size()-1;j++){
-                String uuid = listSkuInvCmd.get(j).getUuid();
-                for(int i=j+1;i<listSkuInvCmd.size();i++){
-                    String skuInvUuid = listSkuInvCmd.get(i).getUuid();
-                    if(uuid.equals(skuInvUuid)) {
-                        list.add(listSkuInvCmd.get(i));
-                    }
-                }
-            }
-        }
+//        if(null != listSkuInvCmd && listSkuInvCmd.size() != 0){
+//            //先遍历出uuid相同的记录
+//            for(int j=0;j<listSkuInvCmd.size()-1;j++){
+//                String uuid = listSkuInvCmd.get(j).getUuid();
+//                for(int i=j+1;i<listSkuInvCmd.size();i++){
+//                    String skuInvUuid = listSkuInvCmd.get(i).getUuid();
+//                    if(uuid.equals(skuInvUuid)) {
+//                        list.add(listSkuInvCmd.get(i));
+//                    }
+//                }
+//            }
+//        }
         //添加出库箱明细
-        for(WhSkuInventoryCommand skuInvCmd:list){
+        for(WhSkuInventoryCommand skuInvCmd:listSkuInvCmd){
             WhOutboundboxLineCommand outboundboxLineComd = new WhOutboundboxLineCommand();
-            outboundboxLineComd.setWhOutboundboxId(null);
+            outboundboxLineComd.setWhOutboundboxId(1L);
             outboundboxLineComd.setSkuCode(lineCmd.getSkuCode());
             outboundboxLineComd.setSkuExtCode(lineCmd.getSkuExtCode());
             outboundboxLineComd.setSkuBarCode(lineCmd.getSkuBarCode());
             outboundboxLineComd.setSkuName(lineCmd.getSkuName());
-            outboundboxLineComd.setQty(skuInvCmd.getOnHandQty().longValue());
+            outboundboxLineComd.setQty(skuInvCmd.getOnHandQty());
             outboundboxLineComd.setCustomerCode(lineCmd.getCustomerCode());
             outboundboxLineComd.setCustomerName(lineCmd.getCustomerName());
             outboundboxLineComd.setStoreCode(lineCmd.getStoreCode());
@@ -574,10 +586,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      */
     private void updateOdoStatusByOdo(Long odoId,Long ouId) {
         // 修改出库单状态为复核完成状态。
-        OdoCommand odoCommand = odoManager.findOdoCommandByIdOuId(odoId, ouId);
-        WhOdo whOdo = new WhOdo();
-        //复制数据        
-        BeanUtils.copyProperties(odoCommand, whOdo);
+        WhOdo whOdo  = odoManager.findOdoByIdOuId(odoId, ouId);
         //修改出库单状态为复核完成状态。
         whOdo.setHeadStartOdoStatus(OdoStatus.ODO_SEEDING_EXECUTING);
         odoManager.updateByVersion(whOdo);
@@ -589,35 +598,49 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * 
      * @param whCheckingResultCommand
      */
-    private void packageWeightCalculationByOdo(List<WhCheckingLineCommand> checkingLineList,Long functionId,Long ouId,Long outboundboxId,Long userId) {
-        // 查询功能是否配置复核打印单据配置        
-        WhFunctionOutBound whFunctionOutBound  = wFunctionOutBoundManager.findByFunctionIdExt(functionId, ouId);
-        for(WhCheckingLineCommand whCheckingCommand :checkingLineList){
-            Map<String, List<WhCheckingLineCommand>> checkingLineMap = getCheckingLineForGroup(whCheckingCommand.getId(), ouId, outboundboxId);
-            for(String key : checkingLineMap.keySet()){
-                List<WhCheckingLineCommand> whCheckingLineCommandLst = checkingLineMap.get(key);
-                BigDecimal calcWeight = new BigDecimal(0.00);
-                for(WhCheckingLineCommand whCheckingLineCommand : whCheckingLineCommandLst){
-                    WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
-                    BigDecimal b1 = new BigDecimal(whSkuCommand.getWeight().toString());
-                    BigDecimal b2 = new BigDecimal(whCheckingLineCommand.getCheckingQty().toString());
-                    calcWeight = calcWeight.add(b1.multiply(b2));
-                }
-                WhOdoPackageInfoCommand whOdoPackageInfoCommand = new WhOdoPackageInfoCommand();
-                whOdoPackageInfoCommand.setOdoId(whCheckingLineCommandLst.get(0).getOdoId());
-                whOdoPackageInfoCommand.setOutboundboxId(outboundboxId);
-                whOdoPackageInfoCommand.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
-                whOdoPackageInfoCommand.setStatus(1);
-                whOdoPackageInfoCommand.setCalcWeight(calcWeight.doubleValue());
-                whOdoPackageInfoCommand.setFloats(whFunctionOutBound.getWeightFloatPercentage());
-                whOdoPackageInfoCommand.setActualWeight(null);
-                whOdoPackageInfoCommand.setLifecycle(1);
-                whOdoPackageInfoCommand.setCreateId(userId);
-                whOdoPackageInfoCommand.setCreateTime(new Date());
-                whOdoPackageInfoCommand.setLastModifyTime(new Date());
-                whOdoPackageInfoCommand.setModifiedId(userId);
-                whOdoPackageInfoManager.saveOrUpdate(whOdoPackageInfoCommand);
+    private void packageWeightCalculationByOdo(List<WhCheckingLineCommand> checkingLineList,Long functionId,Long ouId,Long odoId,Long outboundboxId,Long userId,String outboundboxCode) {
+        List<UomCommand>  weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);   //重量度量单位
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
             }
+        }
+        SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
+        Double sum = 0.0;
+        for(WhCheckingLineCommand whCheckingLineCommand : checkingLineList){
+         Double actualWeight = 0.0;
+          WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
+            actualWeight = whSkuCommand.getWeight()*whCheckingLineCommand.getCheckingQty();
+             sum += actualWeight;
+         
+        }
+        WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoManager.findByOutboundBoxCode(outboundboxCode,ouId);
+        if(null != odoPackageInfo) {
+            WhOdoPackageInfoCommand whOdoPackageInfoCommand = new WhOdoPackageInfoCommand();
+            BeanUtils.copyProperties(odoPackageInfo, whOdoPackageInfoCommand);
+            whOdoPackageInfoCommand.setCalcWeight(sum.longValue());
+            whOdoPackageInfoManager.saveOrUpdate(whOdoPackageInfoCommand);
+        }else{
+            WhFunctionOutBound whFunctionOutBound  = wFunctionOutBoundManager.findByFunctionIdExt(functionId, ouId);
+            WhOdoPackageInfoCommand whOdoPackageInfoCommand = new WhOdoPackageInfoCommand();
+            whOdoPackageInfoCommand.setOdoId(odoId);
+            whOdoPackageInfoCommand.setOutboundboxId(outboundboxId);
+            whOdoPackageInfoCommand.setOutboundboxCode(outboundboxCode);
+            whOdoPackageInfoCommand.setStatus(Constants.LIFECYCLE_START);
+            whOdoPackageInfoCommand.setFloats(1);
+            whOdoPackageInfoCommand.setLifecycle(Constants.LIFECYCLE_START);
+            whOdoPackageInfoCommand.setCreateId(userId);
+            whOdoPackageInfoCommand.setCreateTime(new Date());
+            whOdoPackageInfoCommand.setLastModifyTime(new Date());
+            whOdoPackageInfoCommand.setModifiedId(userId);
+            whOdoPackageInfoCommand.setCalcWeight(sum.longValue());
+            whOdoPackageInfoCommand.setOuId(ouId);
+            whOdoPackageInfoManager.saveOrUpdate(whOdoPackageInfoCommand);
         }
     }
     

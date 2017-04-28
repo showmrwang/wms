@@ -116,7 +116,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
-		        id = #{id} 
+		        id = #{id} and ou_id =#{ouId}
 	    ]]>
 		</update>
 	   <delete id="delete" parameterType="java.lang.Long">

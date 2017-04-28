@@ -54,6 +54,8 @@ public class WhOdoPackageInfo extends BaseModel {
 	private java.util.Date lastModifyTime;
 	/** 修改人ID */
 	private java.lang.Long modifiedId;
+	
+	private Long ouId;
 	//columns END
 	
     public java.lang.Long getOdoId() {
@@ -127,6 +129,12 @@ public class WhOdoPackageInfo extends BaseModel {
     }
     public void setModifiedId(java.lang.Long modifiedId) {
         this.modifiedId = modifiedId;
+    }
+    public Long getOuId() {
+        return ouId;
+    }
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
     }
 
 }

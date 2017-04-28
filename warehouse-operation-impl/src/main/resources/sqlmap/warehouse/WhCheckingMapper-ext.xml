@@ -396,8 +396,8 @@
     
      <select id="findWhCheckingByIdExt" resultMap="WhCheckingCommand">
         select
-        <include refid="whCheckingCommandColumnsExt"/>
-        from t_wh_checking
+        <include refid="whCheckingColumnsExt"/>
+        from t_wh_checking 
         where id = #{id}
          and ou_id = #{ouId}
     </select>

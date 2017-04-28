@@ -45,7 +45,7 @@ public class WhOutboundboxLineCommand extends BaseModel {
     /** 商品名称 */
     private String skuName;
     /** 数量 */
-    private Long qty;
+    private Double qty;
     /** 客户CODE */
     private String customerCode;
     /** 客户名称 */
@@ -130,13 +130,6 @@ public class WhOutboundboxLineCommand extends BaseModel {
         this.skuName = skuName;
     }
 
-    public Long getQty() {
-        return qty;
-    }
-
-    public void setQty(Long qty) {
-        this.qty = qty;
-    }
 
     public String getCustomerCode() {
         return customerCode;
@@ -305,5 +298,16 @@ public class WhOutboundboxLineCommand extends BaseModel {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Double getQty() {
+        return qty;
+    }
+
+    public void setQty(Double qty) {
+        this.qty = qty;
+    }
+    
+    
+    
 
 }

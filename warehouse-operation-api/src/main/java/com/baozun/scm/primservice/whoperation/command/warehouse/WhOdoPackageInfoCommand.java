@@ -39,7 +39,7 @@ public class WhOdoPackageInfoCommand extends BaseModel {
 	/** 状态 */
 	private java.lang.Integer status;
 	/** 计重 */
-	private Double calcWeight;
+	private Long calcWeight;
 	/** 浮动百分比 */
 	private java.lang.Integer floats;
 	/** 称重 */
@@ -55,6 +55,8 @@ public class WhOdoPackageInfoCommand extends BaseModel {
 	/** 修改人ID */
 	private java.lang.Long modifiedId;
 	//columns END
+	
+	private Long ouId;
 	
     public java.lang.Long getOdoId() {
         return odoId;
@@ -79,12 +81,6 @@ public class WhOdoPackageInfoCommand extends BaseModel {
     }
     public void setStatus(java.lang.Integer status) {
         this.status = status;
-    }
-    public Double getCalcWeight() {
-        return calcWeight;
-    }
-    public void setCalcWeight(Double calcWeight) {
-        this.calcWeight = calcWeight;
     }
     public java.lang.Integer getFloats() {
         return floats;
@@ -128,6 +124,19 @@ public class WhOdoPackageInfoCommand extends BaseModel {
     public void setModifiedId(java.lang.Long modifiedId) {
         this.modifiedId = modifiedId;
     }
+    public Long getOuId() {
+        return ouId;
+    }
+    public void setOuId(Long ouId) {
+        this.ouId = ouId;
+    }
+    public Long getCalcWeight() {
+        return calcWeight;
+    }
+    public void setCalcWeight(Long calcWeight) {
+        this.calcWeight = calcWeight;
+    }
 
+    
 }
 
