@@ -58,6 +58,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Uom;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 import com.baozun.utilities.DateUtil;
 
@@ -131,7 +132,8 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         }
         WhPo po = this.poManager.findWhPoByIdToShard(cacheAsn.getPoId(), ouId);
 
-        Double cacheRate = this.generalRcvdManager.getRedisOverChargeRate(occupationId, ouId);
+        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        Double cacheRate = this.generalRcvdManager.getRedisOverChargeRate(occupationId, wh);
         try {
             // 加锁
             int updateCount = this.asnManager.updateByVersionForLock(cacheAsn.getId(), ouId, cacheAsn.getLastModifyTime());
@@ -1479,7 +1481,8 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
             // 如果检测到超收比例被更改，则需要刷新超收比例
             log.info(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.freshAsnCacheForGeneralReceiving begin!");
             log.debug(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.freshAsnCacheForGeneralReceiving params:[occupationId:{},ouId:{}]", occupationId, ouId);
-            this.generalRcvdManager.freshAsnCacheForGeneralReceiving(occupationId, ouId);
+            Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+            this.generalRcvdManager.freshAsnCacheForGeneralReceiving(occupationId, wh);
             log.info(this.getClass().getSimpleName() + ".initOrFreshCacheForScanningAsn->this.freshAsnCacheForGeneralReceiving end!");
         }
     }

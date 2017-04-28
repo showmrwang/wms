@@ -248,16 +248,16 @@ public interface GeneralRcvdManager extends BaseManager {
      * 从缓存中获取超收比例
      * 
      * @param occupationId
-     * @param ouId
+     * @param wh
      * @return
      */
-    Double getRedisOverChargeRate(Long occupationId, Long ouId);
+    Double getRedisOverChargeRate(Long occupationId, Warehouse wh);
 
     /**
      * 刷新ASN缓存操作
      * 
      * @param occupationId
-     * @param ouId
+     * @param wh
      */
-    void freshAsnCacheForGeneralReceiving(Long occupationId, Long ouId);
+    void freshAsnCacheForGeneralReceiving(Long occupationId, Warehouse wh);
 }
