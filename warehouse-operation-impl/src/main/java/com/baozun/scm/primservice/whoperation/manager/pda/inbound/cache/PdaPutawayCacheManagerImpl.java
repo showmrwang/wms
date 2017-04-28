@@ -1100,6 +1100,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
                 }
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
+                // 清除所有相关的缓存
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + "*");
             }
         }
         // 1.再清除所有提示容器队列
@@ -2139,6 +2141,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             }
                         }
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
+                        // 清除所有相关的缓存
+                        cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + "*");
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
                     }
@@ -3629,6 +3633,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                                 }
                                             }
                                         }
+                                        // 清除所有相关的缓存
+                                        cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locValue.toString() + "*");
+                                        cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locValue.toString() + "*");
+                                        cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locValue.toString() + "*");
                                     }
                                 }
                             }
@@ -3666,6 +3674,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                 }
                 // 清除商品队列
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
+                // 清除所有相关的缓存
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + "*");
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + "*");
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + "*");
                 // 0.清除商品队列或库位队列
                 if (true == isAfterPutawayTipLoc) {
                     // 除清逐件扫描商品数量
@@ -3685,6 +3697,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             }
                         }
                     }
+                    // 清除所有相关的缓存
+                    cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + "*");
+                    cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + "*");
+                    cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + "*");
                     // 清除商品队列
                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                 }
@@ -3706,6 +3722,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             }
                         }
                     }
+                    // 清除所有相关的缓存
+                    cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + "*");
+                    cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + "*");
+                    cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + "*");
                     // 清除商品队列及库位队列
                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                     cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
@@ -3737,6 +3757,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                     }
                 }
+                // 清除所有相关的缓存
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + "*");
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + "*");
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + "*");
                 // 清除商品队列
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
             }
@@ -3758,6 +3782,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                     }
                 }
+                // 清除所有相关的缓存
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString() + "*");
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + "*");
+                cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + "*");
                 // 清除商品队列及库位队列
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());
                 cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icId.toString());
