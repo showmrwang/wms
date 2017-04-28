@@ -989,6 +989,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    
     public WhWaveMaster findWaveMasterByIdouId(Long waveMasterId, Long ouId) {
         return this.whWaveMasterDao.findByIdExt(waveMasterId, ouId);
     }
@@ -1461,8 +1462,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setLpCode(transMgmt.getTransportServiceProvider());
         mailNoContent.setExpressType(transMgmt.getCourierServiceType());
         mailNoContent.setTotalActual(trans.getTotalActual());
-        mailNoContent.setQuantity(1);
-        mailNoContent.setType(1);
+        mailNoContent.setQuantity(1);   // 获取面单数量1
+        mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
         // mailNoContent.setInsuranceAmount
         // mailNoContent.setTransFree
