@@ -195,7 +195,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否短拣 */
     private Boolean isShortPicking = false;
     /** 是否满箱 */
-    private Boolean isTrunkful;
+    private Boolean isTrunkful = false;
     /** 出库箱/周转箱满箱后是否使用新的容器 */
     private Boolean isUserNewContainer = false;
 

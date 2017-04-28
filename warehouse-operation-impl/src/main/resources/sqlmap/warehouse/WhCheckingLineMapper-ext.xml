@@ -222,13 +222,178 @@
         ]]>
     </update>
     
+    <sql id="whCheckingLineCommandColumnsExt">
+        <![CDATA[
+                line.id as id,
+                line.checking_id as checkingId,
+                line.sku_code as skuCode,
+                line.sku_ext_code as skuExtCode,
+                line.sku_bar_code as skuBarCode,
+                line.sku_name as skuName,
+                line.qty as qty,
+                line.checking_qty as checkingQty,
+                line.customer_code as customerCode,
+                line.customer_name as customerName,
+                line.store_code as storeCode,
+                line.store_name as storeName,
+                line.inv_status as invStatus,
+                line.inv_type as invType,
+                line.batch_number as batchNumber,
+                line.mfg_date as mfgDate,
+                line.exp_date as expDate,
+                line.country_of_origin as countryOfOrigin,
+                line.inv_attr1 as invAttr1,
+                line.inv_attr2 as invAttr2,
+                line.inv_attr3 as invAttr3,
+                line.inv_attr4 as invAttr4,
+                line.inv_attr5 as invAttr5,
+                line.uuid as uuid,
+                line.ou_id as ouId,
+                line.odo_id as odoId,
+                line.odo_line_id as odoLineId,
+                status.name as invStatusStr
+        ]]>
+    </sql>
+    
     <select id="findListByParamExt" resultMap="WhCheckingLineCommand">
         select
-        <include refid="whCheckingLineColumnsExt"/>
-        from t_wh_checking_line
-        <include refid="whCheckingLineDynamicWhereExt"/>
+        <include refid="whCheckingLineCommandColumnsExt"/>
+        from t_wh_checking_line line left join t_wh_inventory_status status on line.inv_status = status.id
+        <include refid="whCheckingLineCommandDynamicWhereExt"/>
 
     </select>
+    
+    <sql id="whCheckingLineCommandDynamicWhereExt">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and line.id = #{id}
+            </if>
+
+            <if test="checkingId!=null">
+                and line.checking_id = #{checkingId}
+            </if>
+
+
+            <if test="skuCode!=null and skuCode!=''">
+                and line.sku_code = #{skuCode}
+            </if>
+
+
+            <if test="skuExtCode!=null and skuExtCode!=''">
+                and line.sku_ext_code = #{skuExtCode}
+            </if>
+
+
+            <if test="skuBarCode!=null and skuBarCode!=''">
+                and line.sku_bar_code = #{skuBarCode}
+            </if>
+
+
+            <if test="skuName!=null and skuName!=''">
+                and line.sku_name = #{skuName}
+            </if>
+
+            <if test="qty!=null">
+                and line.qty = #{qty}
+            </if>
+
+            <if test="checkingQty!=null">
+                and line.checking_qty = #{checkingQty}
+            </if>
+
+
+            <if test="customerCode!=null and customerCode!=''">
+                and line.customer_code = #{customerCode}
+            </if>
+
+
+            <if test="customerName!=null and customerName!=''">
+                and line.customer_name = #{customerName}
+            </if>
+
+
+            <if test="storeCode!=null and storeCode!=''">
+                and line.store_code = #{storeCode}
+            </if>
+
+
+            <if test="storeName!=null and storeName!=''">
+                and line.store_name = #{storeName}
+            </if>
+
+
+            <if test="invStatus!=null and invStatus!=''">
+                and line.inv_status = #{invStatus}
+            </if>
+
+
+            <if test="invType!=null and invType!=''">
+                and line.inv_type = #{invType}
+            </if>
+
+
+            <if test="batchNumber!=null and batchNumber!=''">
+                and line.batch_number = #{batchNumber}
+            </if>
+
+            <if test="mfgDate!=null">
+                and line.mfg_date = #{mfgDate}
+            </if>
+
+            <if test="expDate!=null">
+                and line.exp_date = #{expDate}
+            </if>
+
+
+            <if test="countryOfOrigin!=null and countryOfOrigin!=''">
+                and line.country_of_origin = #{countryOfOrigin}
+            </if>
+
+
+            <if test="invAttr1!=null and invAttr1!=''">
+                and line.inv_attr1 = #{invAttr1}
+            </if>
+
+
+            <if test="invAttr2!=null and invAttr2!=''">
+                and line.inv_attr2 = #{invAttr2}
+            </if>
+
+
+            <if test="invAttr3!=null and invAttr3!=''">
+                and line.inv_attr3 = #{invAttr3}
+            </if>
+
+
+            <if test="invAttr4!=null and invAttr4!=''">
+                and line.inv_attr4 = #{invAttr4}
+            </if>
+
+
+            <if test="invAttr5!=null and invAttr5!=''">
+                and line.inv_attr5 = #{invAttr5}
+            </if>
+
+
+            <if test="uuid!=null and uuid!=''">
+                and line.uuid = #{uuid}
+            </if>
+
+            <if test="ouId!=null">
+                and line.ou_id = #{ouId}
+            </if>
+
+            <if test="odoId!=null">
+                and line.odo_id = #{odoId}
+            </if>
+
+            <if test="odoLineId!=null">
+                and line.odo_line_id = #{odoLineId}
+            </if>
+        </where>
+    </sql>
     
     
        <select id="findCheckingLineById" resultMap="WhCheckingLineCommand">

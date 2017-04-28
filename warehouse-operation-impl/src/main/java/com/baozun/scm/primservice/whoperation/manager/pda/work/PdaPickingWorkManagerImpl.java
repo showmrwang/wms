@@ -1405,7 +1405,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         String outerContainerCode = command.getTipOuterContainerCode();
         String turnoverBoxCode = command.getTurnoverBoxCode(); // 周转箱
         Long outBoundBoxId = command.getOutBoundBoxId(); // 出库箱id
-        Boolean isTrunkful = command.getIsTrunkful(); // 是否满箱
         Boolean isShortPikcing = command.getIsShortPicking();
         Boolean isShortPickingEnd = command.getIsShortPickingEnd(); // 拣货完成
         String outerContainer = command.getOuterContainer();
@@ -1679,16 +1678,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 已分配的库位库存转变为容器库存
                 whSkuInventoryManager.replenishmentContainerInventory(isShortPikcing,snList,skuAttrIds,locationId,operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
             }
-            if (pickingWay == Constants.PICKING_WAY_THREE && isTrunkful) { // 是否出库箱满箱
-                // 跳转到扫描出库箱页面
-                command.setIsUserNewContainer(true);
-                return command;
-            }
-            if (pickingWay == Constants.PICKING_WAY_FOUR && isTrunkful) { // 周转箱是否满箱
-                // 跳转到扫描周转箱页面
-                command.setIsUserNewContainer(true);
-                return command;
-            }
+//            if (pickingWay == Constants.PICKING_WAY_THREE && isTrunkful) { // 是否出库箱满箱
+//                // 跳转到扫描出库箱页面
+//                command.setIsUserNewContainer(true);
+//                return command;
+//            }
+//            if (pickingWay == Constants.PICKING_WAY_FOUR && isTrunkful) { // 周转箱是否满箱
+//                // 跳转到扫描周转箱页面
+//                command.setIsUserNewContainer(true);
+//                return command;
+//            }
             command.setIsNeedTipSku(true);
             String skuAttrId = cSRCmd.getTipSkuAttrId(); // 提示唯一的sku包含唯一sku
             String skuAttrIdNoSn = SkuCategoryProvider.getSkuAttrId(skuAttrId);
@@ -1702,7 +1701,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Map<Long,Map<String,Long>>  insideSkuAttrIdsQty = latticeInsideSkuAttrIdsQty.get(key);
                     skuAttrIdsQty = insideSkuAttrIdsQty.get(insideContainerId);
               }else{
-                    skuAttrIdsQty = latticeSkuAttrIdsQty.get(locationId);
+                    skuAttrIdsQty = latticeSkuAttrIdsQty.get(key);
               }
               command.setUseContainerLatticeNo(lattice);
             }else{
@@ -2040,6 +2039,21 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     whOperationExecLine.setQty(qty.longValue());
                     if (isShortPicking) {// 短拣商品
                         whOperationExecLine.setIsShortPicking(true);
+                    }
+                    if (pickingWay == Constants.PICKING_WAY_FOUR || pickingWay == Constants.PICKING_WAY_THREE) {
+                        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
+                        if (null == operatorLine) {
+                            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                        }
+                        Set<String> outbounxBoxs  = operatorLine.getOutbounxBoxs();
+                        Set<Long> turnoverBoxs = operatorLine.getTurnoverBoxs();
+                        if(!outbounxBoxs.contains(outBoundBoxCode)){
+                            whOperationExecLine.setIsUseNew(true);
+                        }
+                        if(!turnoverBoxs.contains(turnoverBoxId)){
+                            whOperationExecLine.setIsUseNew(true);
+                        }
+                        
                     }
                     whOperationExecLineDao.insert(whOperationExecLine);
                     useContainerLatticeNo = whOperationExecLine.getUseContainerLatticeNo(); // 非整箱整托返回货格号

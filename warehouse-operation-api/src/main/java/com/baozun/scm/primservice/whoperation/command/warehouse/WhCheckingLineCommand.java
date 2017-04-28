@@ -88,6 +88,21 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String outboundboxCode;
     /** 播种墙编码*/
     private String seedingWallCode;
+    // 字典表str
+    /** 库存状态str*/
+    private String invStatusStr;
+    /** 库存类型str*/
+    private String invTypeStr;
+    /** 库存属性1str*/
+    private String invAttr1Str;
+    /** 库存属性2str*/
+    private String invAttr2Str;
+    /** 库存属性3str*/
+    private String invAttr3Str;
+    /** 库存属性4str*/
+    private String invAttr4Str;
+    /** 库存属性5str*/
+    private String invAttr5Str;
 
     public Long getId() {
         return id;
@@ -343,6 +358,62 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setSeedingWallCode(String seedingWallCode) {
         this.seedingWallCode = seedingWallCode;
+    }
+
+    public String getInvStatusStr() {
+        return invStatusStr;
+    }
+
+    public void setInvStatusStr(String invStatusStr) {
+        this.invStatusStr = invStatusStr;
+    }
+
+    public String getInvAttr1Str() {
+        return invAttr1Str;
+    }
+
+    public void setInvAttr1Str(String invAttr1Str) {
+        this.invAttr1Str = invAttr1Str;
+    }
+
+    public String getInvAttr2Str() {
+        return invAttr2Str;
+    }
+
+    public void setInvAttr2Str(String invAttr2Str) {
+        this.invAttr2Str = invAttr2Str;
+    }
+
+    public String getInvAttr3Str() {
+        return invAttr3Str;
+    }
+
+    public void setInvAttr3Str(String invAttr3Str) {
+        this.invAttr3Str = invAttr3Str;
+    }
+
+    public String getInvAttr4Str() {
+        return invAttr4Str;
+    }
+
+    public void setInvAttr4Str(String invAttr4Str) {
+        this.invAttr4Str = invAttr4Str;
+    }
+
+    public String getInvAttr5Str() {
+        return invAttr5Str;
+    }
+
+    public void setInvAttr5Str(String invAttr5Str) {
+        this.invAttr5Str = invAttr5Str;
+    }
+
+    public String getInvTypeStr() {
+        return invTypeStr;
+    }
+
+    public void setInvTypeStr(String invTypeStr) {
+        this.invTypeStr = invTypeStr;
     }
 
 }

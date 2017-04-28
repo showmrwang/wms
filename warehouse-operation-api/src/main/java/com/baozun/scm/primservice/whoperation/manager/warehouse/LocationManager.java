@@ -52,6 +52,17 @@ public interface LocationManager extends BaseManager {
 
     List<LocationSkuVolume> findListByfacilityId(Long facilityId, Long ouId);
 
+    /**
+     * [通用方法] 扣减耗材
+     * 
+     * @param facilityId
+     * @param skuBarcode
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    Long reduceQty(Long facilityId, Long skuId, Long ouId, Long userId);
+
 
 
 }
