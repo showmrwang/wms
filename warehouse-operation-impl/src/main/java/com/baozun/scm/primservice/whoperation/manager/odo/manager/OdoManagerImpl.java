@@ -374,15 +374,16 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             Set<Long> skuIdSet = new HashSet<Long>();
             if (odoLineList != null && odoLineList.size() > 0) {
                 for (OdoLineCommand lineCommand : odoLineList) {
+                    skuIdSet.add(lineCommand.getSkuId());
                     WhOdoLine odoLine = new WhOdoLine();
                     BeanUtils.copyProperties(lineCommand, odoLine);
                     odoLine.setOdoId(odoId);
                     odoLine.setOuId(ouId);
-                    odoLine.setCurrentQty(Constants.DEFAULT_DOUBLE);
-                    odoLine.setActualQty(Constants.DEFAULT_DOUBLE);
-                    odoLine.setCancelQty(Constants.DEFAULT_DOUBLE);
-                    odoLine.setAssignQty(Constants.DEFAULT_DOUBLE);
-                    odoLine.setDiekingQty(Constants.DEFAULT_DOUBLE);
+                    odoLine.setCurrentQty(lineCommand.getCurrentQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCurrentQty());
+                    odoLine.setActualQty(lineCommand.getActualQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getActualQty());
+                    odoLine.setCancelQty(lineCommand.getCancelQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCancelQty());
+                    odoLine.setAssignQty(lineCommand.getAssignQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getAssignQty());
+                    odoLine.setDiekingQty(lineCommand.getDiekingQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getDiekingQty());
                     odoLine.setCreateTime(new Date());
                     odoLine.setCreatedId(userId);
                     odoLine.setLastModifyTime(new Date());
@@ -989,6 +990,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    
     public WhWaveMaster findWaveMasterByIdouId(Long waveMasterId, Long ouId) {
         return this.whWaveMasterDao.findByIdExt(waveMasterId, ouId);
     }
@@ -1296,7 +1298,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         // 插入波次
         this.whWaveDao.insert(wave);
         // 仓库中配货模式计算
-        // this.distributionModeArithmeticManagerProxy.AddToWave(odoIdCounterCodeMap);
+        this.distributionModeArithmeticManagerProxy.AddToWave(odoIdCounterCodeMap);
 
     }
 
@@ -1461,8 +1463,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setLpCode(transMgmt.getTransportServiceProvider());
         mailNoContent.setExpressType(transMgmt.getCourierServiceType());
         mailNoContent.setTotalActual(trans.getTotalActual());
-        mailNoContent.setQuantity(1);
-        mailNoContent.setType(1);
+        mailNoContent.setQuantity(1);   // 获取面单数量1
+        mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
         // mailNoContent.setInsuranceAmount
         // mailNoContent.setTransFree

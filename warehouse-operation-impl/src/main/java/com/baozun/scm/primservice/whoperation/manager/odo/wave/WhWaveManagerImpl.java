@@ -430,9 +430,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> getNeedAllocationRuleWhWave(Integer allocatePhase, Long ouId, String logId) {
         List<Long> datas = whWaveDao.getNeedAllocationRuleWhWave(allocatePhase, ouId);
-        if (log.isInfoEnabled()) {
-            log.info("getHardAllocateWhWaveList,ouId:{},waveList:{},logId:{}", ouId, StringUtils.collectionToCommaDelimitedString(datas), logId);
-        }
         return datas;
     }
 

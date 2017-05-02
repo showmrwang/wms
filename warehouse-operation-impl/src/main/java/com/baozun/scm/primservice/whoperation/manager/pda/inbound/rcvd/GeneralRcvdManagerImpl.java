@@ -745,10 +745,11 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Double getRedisOverChargeRate(Long occupationId, Long ouId) {
+    public Double getRedisOverChargeRate(Long occupationId, Warehouse wh) {
+        Long ouId = wh.getId();
         String cacheRate = this.cacheManager.getMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString());
         if (StringUtils.isEmpty(cacheRate)) {
-            cacheRate = String.valueOf(this.getOverChargeRate(occupationId, ouId));
+            cacheRate = String.valueOf(this.getOverChargeRate(occupationId, wh));
             // 插入缓存
             this.cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), cacheRate + "", CacheKeyConstant.CACHE_ONE_DAY);
         }
@@ -756,11 +757,12 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
     }
 
     @Override
-    public void freshAsnCacheForGeneralReceiving(Long occupationId, Long ouId) {
+    public void freshAsnCacheForGeneralReceiving(Long occupationId, Warehouse wh) {
         try {
             // 刷新缓存逻辑：
             // 如果检测到超收比例被更改，则需要刷新超收比例
-            Double overchargeRate = this.getOverChargeRate(occupationId, ouId);
+            Long ouId = wh.getId();
+            Double overchargeRate = this.getOverChargeRate(occupationId, wh);
             String cacheRate = cacheManager.getMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString());
             if (StringUtils.isEmpty(cacheRate)) {
                 cacheManager.setMapValue(CacheKeyConstant.CACHE_ASN_OVERCHARGE, occupationId.toString(), overchargeRate.toString(), CacheKeyConstant.CACHE_ONE_DAY);
@@ -786,7 +788,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
     }
     
-    private Double getOverChargeRate(Long occupationId, Long ouId) {
+    private Double getOverChargeRate(Long occupationId, Warehouse wh) {
+        Long ouId = wh.getId();
         WhAsn asn = this.cacheManager.getObject(CacheKeyConstant.CACHE_ASN_PREFIX + occupationId);
         if (asn == null) {
             asn = this.whAsnDao.findWhAsnById(occupationId, ouId);
@@ -803,7 +806,6 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
         Double overChargeRateAsn = asn.getOverChageRate();
 
         Map<Long, Store> storeMap = this.findStoreByRedis(Arrays.asList(new Long[] {storeId}));
-        Warehouse wh = this.getWhToRedis(ouId);
         Store store = storeMap.get(storeId);
         if (null == overChargeRatePo) {
             Integer storePo = store.getIsPoOvercharge() ? store.getPoOverchargeProportion() : null;

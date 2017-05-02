@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -41,7 +42,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
     public String getCounterCodeForOdo(Long ouId, Integer skuNumberOfPackages, Double qty, Set<Long> skuIdSet) {
         log.info("");
         if (ouId == null || skuNumberOfPackages == null || qty == null || skuIdSet == null || skuIdSet.size() == 0) {
-            return "";
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         TreeSet<Long> skuIdSortSet = sortSet(skuIdSet);
         String counterCode = ouId + CacheKeyConstant.WAVE_ODO_SPLIT + skuNumberOfPackages + CacheKeyConstant.WAVE_ODO_SPLIT + qty.intValue() + CacheKeyConstant.WAVE_ODO_SPLIT + CacheKeyConstant.WAVE_ODO_SKU_SPLIT;

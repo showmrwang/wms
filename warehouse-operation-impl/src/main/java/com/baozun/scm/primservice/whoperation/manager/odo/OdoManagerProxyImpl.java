@@ -2351,7 +2351,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         
         VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
         if (null != vasResult && vasResult.getStatus() == 1) {
-            List<VasLine> vasList = vasResult.getVasList();;
+            List<VasLine> vasList = vasResult.getVasList();
             if (null != vasList && !vasList.isEmpty()) {
                 odoVasManager.insertVasList(odoId, vasList, odoVasLineList, ouId);
             }
@@ -2364,7 +2364,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         }
         // 获取推荐物流商
-        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType())
+        /*if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType())
                 || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
             SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
             if (null != transResult && transResult.getStatus() == 1) {
@@ -2428,7 +2428,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
                 }
             }
-        }
+        }*/
     }
 
 }
