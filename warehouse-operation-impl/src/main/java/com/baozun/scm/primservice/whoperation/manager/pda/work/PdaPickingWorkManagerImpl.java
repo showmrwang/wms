@@ -1710,7 +1710,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                    lattice = cSRCmd.getLatticeNo();
                }
               String key = lattice.toString()+locationId;
-              if(null != insideContainerId) {
+              if(cSRCmd.getIsHaveInsideContainer()) {
                     Map<Long,Map<String,Long>>  insideSkuAttrIdsQty = latticeInsideSkuAttrIdsQty.get(key);
                     skuAttrIdsQty = insideSkuAttrIdsQty.get(insideContainerId);
               }else{

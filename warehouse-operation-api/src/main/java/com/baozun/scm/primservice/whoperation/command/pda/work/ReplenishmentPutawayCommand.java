@@ -22,7 +22,7 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     /** 库位条码 */
     private String locationBarCode;
     /** 提示库位条码 */
-    private String tipLcoationBarCode;
+    private String tipLocationBarCode;
     /** 工作条码 */
     private String workBarCode;
     /** 仓库id */
@@ -124,14 +124,6 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
         this.tipLocationCode = tipLocationCode;
     }
 
-    public String getTipLcoationBarCode() {
-        return tipLcoationBarCode;
-    }
-
-    public void setTipLcoationBarCode(String tipLcoationBarCode) {
-        this.tipLcoationBarCode = tipLcoationBarCode;
-    }
-
     public String getTipTurnoverBoxCode() {
         return tipTurnoverBoxCode;
     }
@@ -210,6 +202,14 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
 
     public void setIsPutawayToContainer(Boolean isPutawayToContainer) {
         this.isPutawayToContainer = isPutawayToContainer;
+    }
+
+    public String getTipLocationBarCode() {
+        return tipLocationBarCode;
+    }
+
+    public void setTipLocationBarCode(String tipLocationBarCode) {
+        this.tipLocationBarCode = tipLocationBarCode;
     }
     
     
