@@ -313,8 +313,10 @@ public interface OdoManager extends BaseManager {
     List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId);
 
     /**
-     * 获取一批出库单的店铺
+     * 获取一批出库单的发票-店铺分组
      */
-    List<Long> getStoreIdByOdoIdList(List<Long> odoIdList, Long ouId);
+    Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId);
+
+    List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId);
 
 }

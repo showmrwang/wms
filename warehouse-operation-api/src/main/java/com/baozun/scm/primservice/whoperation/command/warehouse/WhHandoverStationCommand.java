@@ -213,9 +213,13 @@ public class WhHandoverStationCommand extends BaseModel {
         return isTipHandover;
     }
 
+    public boolean getIsTipHandover() {
+        return isTipHandover;
+    }
+
     public void setTipHandover(boolean isTipHandover) {
         this.isTipHandover = isTipHandover;
     }
-    
+
 
 }
