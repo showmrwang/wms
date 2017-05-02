@@ -2063,13 +2063,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         /**
          * 校验出库单头和明细状态；以及是否处于别的波次中
          */
-        // Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
-        // @mender yimin.lu TODO
-
-        // @mender yimin.lu TODO
-        Map<String, List<Long>> invoiceStoreMap = this.odoManager.getStoreIdMapByOdoIdListGroupByInvoice(odoIdList, ouId);
-
-
 
         WhWaveMaster master = this.odoManager.findWaveMasterByIdouId(waveMasterId, ouId);
         if (master == null) {
