@@ -1508,4 +1508,16 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         
         return mailNoContent;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId) {
+        return this.whOdoDao.findNewOdoIdList(odoIdOriginalList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> getStoreIdByOdoIdList(List<Long> odoIdList, Long ouId) {
+        return this.whOdoDao.getStoreIdByOdoIdList(odoIdList, ouId);
+    }
 }

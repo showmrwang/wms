@@ -332,4 +332,8 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     String checkOdoStatus(@Param("outboundBoxCode") String outboundBoxCode, @Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
+
+    List<Long> findNewOdoIdList(@Param("odoIdList") List<Long> odoIdOriginalList, @Param("ouId") Long ouId);
+
+    List<Long> getStoreIdByOdoIdList(@Param("odoIdList") List<Long> odoIdOriginalList, @Param("ouId") Long ouId);
 }

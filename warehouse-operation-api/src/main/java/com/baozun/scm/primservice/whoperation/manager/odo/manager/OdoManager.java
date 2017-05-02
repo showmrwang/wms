@@ -303,4 +303,18 @@ public interface OdoManager extends BaseManager {
      */
     MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, WarehouseCommand wh, SuggestTransContentCommand trans, Long ouId);
 
+    /**
+     * 从一批出库单中筛选出新建未创建波次的出库单
+     * 
+     * @param odoIdOriginalList
+     * @param ouId
+     * @return
+     */
+    List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId);
+
+    /**
+     * 获取一批出库单的店铺
+     */
+    List<Long> getStoreIdByOdoIdList(List<Long> odoIdList, Long ouId);
+
 }

@@ -108,10 +108,10 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
-import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Region;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget;
 
@@ -2061,7 +2061,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     @Override
-    public String createOdoWaveNew(Long waveMasterId, Long ouId, Long userId, List<Long> odoIdList, String logId) {
+    public String createOdoWaveNew(Long waveMasterId, Long ouId, Long userId, List<Long> odoIdOriginalList, String logId) {
         /**
          * 校验阶段
          */
@@ -2069,6 +2069,16 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
          * 校验出库单头和明细状态；以及是否处于别的波次中
          */
         // Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
+        // @mender yimin.lu TODO
+        List<Long> odoIdList = this.odoManager.findNewOdoIdList(odoIdOriginalList, ouId);
+        if (odoIdList == null) {
+            throw new BusinessException("出库单数目不满足波次最小出库单数");
+        }
+        // @mender yimin.lu TODO
+        List<Long> storeIdList = this.odoManager.getStoreIdByOdoIdList(odoIdList, ouId);
+        if (storeIdList != null && storeIdList.size() > 0) {}
+
+
 
         WhWaveMaster master = this.odoManager.findWaveMasterByIdouId(waveMasterId, ouId);
         if (master == null) {
