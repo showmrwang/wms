@@ -276,6 +276,17 @@ public interface WhSkuInventoryManager extends BaseManager {
      */
     public void replenishmentContainerInventory(Boolean isShortPicking,List<String> snDefectList,String skuAttrIds,Long lcoationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
     
+    /***
+     * 库内移动中的拣货由库位库存生成容器库存
+     * @param operationId
+     * @param ouId
+     * @param outerContainerId
+     * @param insideContainerId
+     * @param turnoverBoxId
+     */
+    public void invmoveContainerInventory(Boolean isShortPicking,List<String> snDefectList,String skuAttrIds,Long lcoationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
+    
+    
     /**
      * 获取入库反馈信息实体
      * @author kai.zhu
