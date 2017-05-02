@@ -36,64 +36,64 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
             }
             List<BiPo> bipoList = this.selectPoAsnManagerProxy.findBiPoByExtCode(wmsInBoundCancel.getExtPoCode());
             if (bipoList == null || bipoList.size() == 0) {
-                return new WmsResponse(0, WmsErrorCode.EXTCODE_NO_ERROR, "EXTCODE_NO_ERROR");
+                return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.EXTCODE_NO_ERROR, "EXTCODE_NO_ERROR");
             }
 
             if (bipoList.size() > 1) {
-                return new WmsResponse(0, WmsErrorCode.EXTCODE_NOT_UNIQUE_ERROR, "EXTCODE_NOT_UNIQUE_ERROR");
+                return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.EXTCODE_NOT_UNIQUE_ERROR, "EXTCODE_NOT_UNIQUE_ERROR");
             }
 
             BiPo bipo = bipoList.get(0);
 
             if (null == bipo.getStatus() || PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
-                return new WmsResponse(0, WmsErrorCode.STATUS_CANCEL_ERROR, "PO_STATUS_CANCEL_ERROR");
+                return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.STATUS_CANCEL_ERROR, "PO_STATUS_CANCEL_ERROR");
             }
             if (wmsInBoundCancel.getIsPoCancel()) {
                 ResponseMsg msg = this.editPoAsnManagerProxy.cancel(bipo.getId(), true, null, null, null);
                 if (msg == null) {
-                    return new WmsResponse(0, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
+                    return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
                 }
                 if (ResponseMsg.STATUS_SUCCESS == msg.getReasonStatus()) {
-                    return new WmsResponse(1, null, null);
+                    return new WmsResponse(WmsResponse.STATUS_SUCCESS, null, null);
                 } else {
-                    return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());
+                    return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());
                 }
             } else {
                 List<BiPoLine> lineList = this.selectPoAsnManagerProxy.findBiPoLineByBiPoIdAndLineNums(bipo.getId(), wmsInBoundCancel.getExtLinenum());
                 if (lineList == null || lineList.size() != wmsInBoundCancel.getExtLinenum().size()) {
-                    return new WmsResponse(0, WmsErrorCode.SEARCH_ERROR, " fidn BiPoLine by ExtLinenum error");
+                    return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.SEARCH_ERROR, " find BiPoLine by ExtLinenum error");
                 }
                 ResponseMsg msg = this.editPoAsnManagerProxy.cancel(bipo.getId(), false, lineList, null, null);
                 if (msg == null) {
-                    return new WmsResponse(0, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
+                    return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
                 }
                 if (ResponseMsg.STATUS_SUCCESS == msg.getReasonStatus()) {
-                    return new WmsResponse(1, null, null);
+                    return new WmsResponse(WmsResponse.STATUS_SUCCESS, null, null);
                 } else {
-                    return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());
+                    return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());
                 }
             }
         } catch (Exception e) {
-            return new WmsResponse(0, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
         }
     }
 
     private WmsResponse checkParamsForInBoundCancel(WmsInBoundCancel wmsInBoundCancel) {
         if (StringUtils.isEmpty(wmsInBoundCancel.getExtPoCode())) {
-            return new WmsResponse(0, WmsErrorCode.PARAM_IS_NULL, "ExtPoCode");
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.PARAM_IS_NULL, "ExtPoCode");
         }
         if (StringUtils.isEmpty(wmsInBoundCancel.getDataSource())) {
-            return new WmsResponse(0, WmsErrorCode.PARAM_IS_NULL, "dataSource");
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.PARAM_IS_NULL, "dataSource");
         }
         if (null == wmsInBoundCancel.getIsPoCancel()) {
-            return new WmsResponse(0, WmsErrorCode.PARAM_IS_NULL, "IsPoCancel");
+            return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.PARAM_IS_NULL, "IsPoCancel");
         }
         if (!wmsInBoundCancel.getIsPoCancel()) {
             if (null == wmsInBoundCancel.getExtLinenum() && wmsInBoundCancel.getExtLinenum().size() == 0) {
-                return new WmsResponse(0, WmsErrorCode.PARAM_IS_NULL, "lineSeq");
+                return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.PARAM_IS_NULL, "lineSeq");
             }
         }
-        return new WmsResponse(1, null, null);
+        return new WmsResponse(WmsResponse.STATUS_SUCCESS, null, null);
     }
 
 }

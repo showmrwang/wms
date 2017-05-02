@@ -162,7 +162,7 @@ public class WhOdoArchivIndexManagerImpl implements WhOdoArchivIndexManager {
     }
 
     @Override
-    @MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexListByAsnId(Long asnId, Long ouId) {
         WhOdoArchivLineIndex search = new WhOdoArchivLineIndex();
         search.setAsnId(asnId);

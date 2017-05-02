@@ -5089,12 +5089,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     									if (1 != invCommand.getOnHandQty().compareTo(useableQty)) {
     										if (-1 == occupyQty.compareTo(invCommand.getOnHandQty())) {
     											// 创建已分配库存,待移入库存
-    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
+    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE, false);
     											useableQty -= occupyQty;
     											occupyQty = Constants.DEFAULT_DOUBLE;
     										} else {
     											// 创建已分配库存,待移入库存
-    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE);
+    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE, false);
     											useableQty -= invCommand.getOnHandQty();
     											occupyQty -= invCommand.getOnHandQty();
     										}
@@ -5103,12 +5103,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     										// occupyQty < useableQty
     										if (-1 == occupyQty.compareTo(useableQty)) {
     											// 创建已分配库存,待移入库存
-    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
+    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE, false);
     											useableQty -= occupyQty;
     											occupyQty = Constants.DEFAULT_DOUBLE;
     										} else {
     											// 创建已分配库存,待移入库存
-    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE);
+    											createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE, false);
     											occupyQty -= useableQty;
     											useableQty = Constants.DEFAULT_DOUBLE;
     										}
@@ -5323,11 +5323,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			// OnHandQty <= useableQty
 			if (1 != invCommand.getOnHandQty().compareTo(useableQty)) {
 				// 创建已分配库存,待移入库存
-				createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE);
+				createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE, true);
 				useableQty -= invCommand.getOnHandQty();
 			} else {
 				// 创建已分配库存,待移入库存
-				createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE);
+				createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE, true);
 				useableQty = Constants.DEFAULT_DOUBLE;
 			}
 			if (0 == Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
@@ -5344,12 +5344,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			if (0 == Constants.DEFAULT_DOUBLE.compareTo(occupyQty) && -1 == Constants.DEFAULT_DOUBLE.compareTo(useableQty)) {
 				if (1 != invCommand.getOnHandQty().compareTo(useableQty)) {
 					// OnHandQty <= useableQty
-					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE, true);
 					useableQty -= invCommand.getOnHandQty();
 					moreQty += invCommand.getOnHandQty();
 				} else {
 					// OnHandQty > useableQty
-					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE, true);
 					moreQty += useableQty;
 					useableQty = Constants.DEFAULT_DOUBLE;
 				}
@@ -5360,8 +5360,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				if (-1 == occupyQty.compareTo(invCommand.getOnHandQty())) {
 					// occupyQty < OnHandQty
 					// 创建已分配库存,待移入库存
-					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
-					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, invCommand.getOnHandQty() - occupyQty, ruleId, GLOBAL_LOG_UPDATE);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE, true);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, invCommand.getOnHandQty() - occupyQty, ruleId, GLOBAL_LOG_UPDATE, true);
 					moreQty += invCommand.getOnHandQty() - occupyQty;
 					qty += occupyQty;
 					useableQty -= invCommand.getOnHandQty();
@@ -5369,7 +5369,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				} else {
 					// occupyQty >= OnHandQty
 					// 创建已分配库存,待移入库存
-					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, invCommand.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE, true);
 					qty += invCommand.getOnHandQty();
 					useableQty -= invCommand.getOnHandQty();
 					occupyQty -= invCommand.getOnHandQty();
@@ -5379,8 +5379,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				if (-1 == occupyQty.compareTo(useableQty)) {
 					// occupyQty < useableQty
 					// 创建已分配库存,待移入库存
-					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
-					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, useableQty - occupyQty, ruleId, GLOBAL_LOG_UPDATE);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE, true);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, null, bhCode, null, targetLocation, wh, useableQty - occupyQty, ruleId, GLOBAL_LOG_UPDATE, true);
 					moreQty += useableQty - occupyQty;
 					qty += occupyQty;
 					useableQty = Constants.DEFAULT_DOUBLE;
@@ -5388,7 +5388,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				} else {
 					// occupyQty >= useableQty
 					// 创建已分配库存,待移入库存
-					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE);
+					createSkuInventoryAllocatedAndTobefilled(invCommand, occupyCode, bhCode, occupyLineId, targetLocation, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE, true);
 					qty += useableQty;
 					occupyQty -= useableQty;
 					useableQty = Constants.DEFAULT_DOUBLE;
@@ -5401,7 +5401,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     	return map;
     }
     
-    private void createSkuInventoryAllocatedAndTobefilled(WhSkuInventoryCommand invCommand, String occupyCode, String bhCode, Long occupyLineId, Long locationId, Warehouse wh, Double qty, Long ruleId, String type) {
+    private void createSkuInventoryAllocatedAndTobefilled(WhSkuInventoryCommand invCommand, String occupyCode, String bhCode, Long occupyLineId, Long locationId, Warehouse wh, Double qty, Long ruleId, String type, boolean isBox) {
         if (qty.doubleValue() == 0) {
             return;
         }
@@ -5425,8 +5425,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		WhSkuInventoryTobefilled tobefilled = new WhSkuInventoryTobefilled();
 		BeanUtils.copyProperties(invCommand, tobefilled);
 		tobefilled.setId(null);
-		tobefilled.setInsideContainerId(null);
-		tobefilled.setOuterContainerId(null);
+		if (!isBox) {
+		    tobefilled.setInsideContainerId(null);
+		    tobefilled.setOuterContainerId(null);
+        }
 		tobefilled.setOccupationCode(occupyCode);
 		tobefilled.setOccupationLineId(occupyLineId);
 		tobefilled.setReplenishmentCode(bhCode);
@@ -5705,11 +5707,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		if (1 != inv.getOnHandQty().compareTo(useableQty)) {
 			if (-1 == occupyQty.compareTo(inv.getOnHandQty())) {
 				// 创建已分配库存,待移入库存
-				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
+				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE, false);
 				num += occupyQty;
 			} else {
 				// 创建已分配库存,待移入库存
-				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, inv.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE);
+				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, inv.getOnHandQty(), ruleId, GLOBAL_LOG_UPDATE, false);
 				num += inv.getOnHandQty();
 			}
 		// OnHandQty > useableQty
@@ -5717,11 +5719,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 			// occupyQty < useableQty
 			if (-1 == occupyQty.compareTo(useableQty)) {
 				// 创建已分配库存,待移入库存
-				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE);
+				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, occupyQty, ruleId, GLOBAL_LOG_UPDATE, false);
 				num += occupyQty;
 			} else {
 				// 创建已分配库存,待移入库存
-				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE);
+				createSkuInventoryAllocatedAndTobefilled(inv, occupyCode, bhCode, occupyLineId, targetLocationId, wh, useableQty, ruleId, GLOBAL_LOG_UPDATE, false);
 				num += useableQty;
 			}
 		}
@@ -5787,11 +5789,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 // 占用数量 >= 在库数量
                 if (upperLimitQty >= upperCounter) {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, false);
                     upperLimitQty -= upperCounter;
                 } else {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE, false);
                     upperLimitQty = 0.0;
                 }
                 if (upperLimitQty.doubleValue() == 0) {
@@ -5834,11 +5836,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 // 占用数量 >= 在库数量
                 if (upperLimitQty >= upperCounter) {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, false);
                     upperLimitQty -= upperCounter;
                 } else {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE, false);
                     upperLimitQty = 0.0;
                 }
                 if (upperLimitQty.doubleValue() == 0) {
@@ -5921,7 +5923,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
                 invCommand.setOnHandQty(invCommand.getOnHandQty() - allocatedQty);
                 allocatedQty = 0d;
-                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, false);
             }
             upperLimitQty -= onHandQty;
             if (upperLimitQty.doubleValue() == 0) {
@@ -5954,7 +5956,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                     invCommand.setOnHandQty(invCommand.getOnHandQty() - allocatedQty);
                     allocatedQty = 0d;
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, false);
                 }
                 continue;
             }
@@ -5970,19 +5972,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 allocatedQty = 0d;
                 if (upperLimitQty.doubleValue() == 0) {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, false);
                     continue;
                 }
                 if (upperLimitQty.doubleValue() > invCommand.getOnHandQty()) {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, false);
                     upperLimitQty -= invCommand.getOnHandQty();
                     continue;
                 }
                 // 创建已分配库存,待移入库存
-                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
+                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE, false);
                 invCommand.setOnHandQty(invCommand.getOnHandQty() - upperLimitQty);
-                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, false);
                 upperLimitQty = 0.0;
 
             }
@@ -6042,7 +6044,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     invCommand.setOnHandQty(invCommand.getOnHandQty() - allocatedQty);
                     allocatedQty = 0d;
 
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, true);
                 }
 
                 continue;
@@ -6058,19 +6060,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 allocatedQty = 0d;
                 if (upperLimitQty.doubleValue() == 0) {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, true);
                     continue;
                 }
                 if (upperLimitQty.doubleValue() > invCommand.getOnHandQty()) {
                     // 创建已分配库存,待移入库存
-                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                    createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, true);
                     upperLimitQty -= invCommand.getOnHandQty();
                     continue;
                 }
                 // 创建已分配库存,待移入库存
-                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE);
+                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_UPDATE, true);
                 invCommand.setOnHandQty(invCommand.getOnHandQty() - upperLimitQty);
-                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, true);
                 upperLimitQty = 0.0;
 
             }
@@ -6107,7 +6109,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 invCommand.setOnHandQty(invCommand.getOnHandQty() - allocatedQty);
                 allocatedQty = 0d;
                 // 创建已分配库存,待移入库存
-                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE);
+                createSkuInventoryAllocatedAndTobefilled(invCommand, null, replenishmentCode, null, locationId, wh, upperLimitQty, ruleId, GLOBAL_LOG_DELETE, true);
             }
             upperLimitQty -= onHandQty;
             if (upperLimitQty.doubleValue() == 0) {

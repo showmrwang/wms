@@ -371,7 +371,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	asn.version as version,
 	        	asn.uuid as uuid,
 	        	asn.is_auto_close as isAutoClose,
-	        	asn.overchage_rate as overChageRate
+	        	asn.overchage_rate as overChageRate,
+	        	asn.original_ext_odo_code as orginalExtOdoCode,
+				asn.original_ec_order_code as originalEcOrderCode
 	    ]]>
 	</sql>
 	
@@ -409,7 +411,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			       	urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			       	uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
 			        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			       	overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
+			       	overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+			       	original_ext_odo_code= #{orginalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR},
+                	original_ec_order_code= #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR}
 		    ]]>
 		     <where>
 		    		id = #{id} 
@@ -460,7 +464,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				s.store_name as storeName,
 				sys.dic_label as statusName,
 				asn.uuid as uuid,
-				asn.overchage_rate as overChageRate
+				asn.overchage_rate as overChageRate,
+				asn.original_ext_odo_code as orginalExtOdoCode,
+				asn.original_ec_order_code as originalEcOrderCode
 	    ]]>
 	</sql>
 	
@@ -498,7 +504,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				asn.uuid as uuid,
 				asn.overchage_rate as overChageRate,
 				asn.is_auto_close as isAutoClose,
-				supplier.name as supplierName
+				supplier.name as supplierName,
+				asn.original_ext_odo_code as orginalExtOdoCode,
+				asn.original_ec_order_code as originalEcOrderCode
 	    ]]>
 	</sql>
 	
@@ -550,40 +558,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
 	<select id="findWhAsnById" resultMap="WhAsnResultExt">
     	select 
-    		    id as id,
-	        	asn_code as asnCode,
-	        	po_id as poId,
-	        	original_ext_odo_code as originalExtOdoCode,
-	        	original_ec_order_code as originalEcOrderCode,
-	        	ou_id as ouId,
-	        	customer_id as customerId,
-	        	store_id as storeId,
-	        	po_date as poDate,
-	        	eta as eta,
-	        	delivery_time as deliveryTime,
-	        	qty_planned as qtyPlanned,
-	        	qty_rcvd as qtyRcvd,
-	        	ctn_planned as ctnPlanned,
-	        	ctn_rcvd as ctnRcvd,
-	        	supplier_id as supplierId,
-	        	logistics_provider as logisticsProvider,
-	        	asn_type as asnType,
-	        	status as status,
-	        	is_iqc as isIqc,
-	        	start_time as startTime,
-	        	stop_time as stopTime,
-	        	inbound_time as inboundTime,
-	        	create_time as createTime,
-	        	created_id as createdId,
-	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId,
-	        	asn_ext_code as asnExtCode,
-	        	po_ou_id as poOuId,
-	        	ext_code as extCode,
-	        	urgent_status as urgentStatus,
-	        	uuid as uuid,
-	        	is_auto_close as isAutoClose,
-	        	overchage_rate as overChageRate
+    		     <include refid="whAsnColumns" />
 		    from 
 		    t_wh_asn 
 		    <where>
@@ -759,37 +734,47 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="findReturns" resultMap="whAsnCommand">
 		SELECT
  			asn.id as id,
-			asn.asn_code as asnCode,
-			asn.asn_ext_code as asnExtCode,
-			asn.po_id as poId,
-			asn.ou_id as ouId,
-			asn.customer_id as customerId,
-			asn.store_id as storeId,
-			asn.po_date as poDate,
-			asn.eta as eta,
-			asn.delivery_time as deliveryTime,
-			asn.qty_planned as qtyPlanned,
-			asn.qty_rcvd as qtyRcvd,
-			asn.ctn_planned as ctnPlanned,
-			asn.ctn_rcvd as ctnRcvd,
-			asn.supplier_id as supplierId,
-			asn.logistics_provider as logisticsProvider,
-			asn.asn_type as asnType,
-			asn.status as status,
-			asn.is_iqc as isIqc,
-			asn.start_time as startTime,
-			asn.stop_time as stopTime,
-			asn.inbound_time as inboundTime,
-			asn.create_time as createTime,
-			asn.created_id as createdId,
-			asn.last_modify_time as lastModifyTime,
-			asn.modified_id as modifiedId,
-			asn.po_ou_id as poOuId,
-			asn.ext_code as extCode,
-			asn.urgent_status as urgentStatus,
-			asn.uuid as uuid,
-			asn.overchage_rate as overChageRate,
-			asn.is_auto_close as isAutoClose
+	        	asn.asn_code as asnCode,
+	        	asn.po_id as poId,
+	        	asn.original_ext_odo_code as originalExtOdoCode,
+	        	asn.original_ec_order_code as originalEcOrderCode,
+	        	asn.ou_id as ouId,
+	        	asn.customer_id as customerId,
+	        	asn.store_id as storeId,
+	        	asn.po_date as poDate,
+	        	asn.eta as eta,
+	        	asn.delivery_time as deliveryTime,
+	        	asn.qty_planned as qtyPlanned,
+	        	asn.qty_rcvd as qtyRcvd,
+	        	asn.ctn_planned as ctnPlanned,
+	        	asn.ctn_rcvd as ctnRcvd,
+	        	asn.supplier_id as supplierId,
+	        	asn.logistics_provider as logisticsProvider,
+	        	asn.asn_type as asnType,
+	        	asn.status as status,
+	        	asn.is_iqc as isIqc,
+	        	asn.start_time as startTime,
+	        	date_format(asn.start_time,'%Y-%m-%d') as startTimeStr,
+	        	asn.stop_time as stopTime,
+	        	date_format(asn.stop_time,'%Y-%m-%d') as stopTimeStr,
+	        	asn.inbound_time as inboundTime,
+	        	date_format(asn.inbound_time,'%Y-%m-%d') as inboundTimeStr,
+	        	asn.create_time as createTime,
+	        	asn.created_id as createdId,
+	        	asn.last_modify_time as lastModifyTime,
+	        	asn.modified_id as modifiedId,
+	        	asn.asn_ext_code as asnExtCode,
+	        	date_format(asn.po_date,'%Y-%m-%d') as poDateStr,
+	        	date_format(asn.eta,'%Y-%m-%d %T') as etaStr,
+	        	asn.po_ou_id as poOuId,
+	        	asn.ext_code as extCode,
+	        	asn.urgent_status as urgentStatus,
+	        	asn.version as version,
+	        	asn.uuid as uuid,
+	        	asn.is_auto_close as isAutoClose,
+	        	asn.overchage_rate as overChageRate,
+	        	asn.original_ext_odo_code as orginalExtOdoCode,
+				asn.original_ec_order_code as originalEcOrderCode
  		
  		
 		from t_wh_asn asn

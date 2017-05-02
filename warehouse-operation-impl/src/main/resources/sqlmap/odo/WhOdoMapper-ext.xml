@@ -3430,4 +3430,32 @@
 				s.invoice_export_templet
 		) t
     </select>
+    
+    <select id="getStoreIdByOdoIdList" resultType="long">
+    	select 
+    		o.store_Id
+    	from t_wh_odo o
+    	where 
+    		o.id in 
+				<foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+	                #{id}
+	            </foreach>
+			and o.ou_id = #{ouId}
+			
+			group by o.store_id
+    </select>
+    
+     <select id="findNewOdoIdList" resultType="long">
+        select
+        id
+        from t_wh_odo 
+        where
+            id in
+            <foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            AND ou_id = #{ouId}
+            and odo_status='1' 
+			and (wave_code is null or wave_code='') 
+    </select>
 </mapper>
