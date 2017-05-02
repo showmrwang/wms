@@ -101,7 +101,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         if(null == location) {
             throw new BusinessException(ErrorCodes.TIP_LOCATION_FAIL);
         }
-        command.setTipLcoationBarCode(location.getBarCode());
+        command.setTipLocationBarCode(location.getBarCode());
         command.setTipLocationCode(location.getCode());
         command.setLocationId(location.getId()); 
         command.setIsNeedScanLocation(true);
@@ -182,7 +182,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                 if(null == location) {
                     throw new BusinessException(ErrorCodes.TIP_LOCATION_FAIL);
                 }
-                command.setTipLcoationBarCode(location.getBarCode());
+                command.setTipLocationBarCode(location.getBarCode());
                 command.setTipLocationCode(location.getCode());
                 command.setLocationId(location.getId()); 
                 command.setIsNeedScanLocation(true);

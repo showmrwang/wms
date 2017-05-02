@@ -122,7 +122,6 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
                if(null == location){
                    throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
                }
-               psRCmd.setTipLocationBarCode(location.getBarCode());
                psRCmd.setTipLocationCode(location.getCode());
                psRCmd.setLocationId(locationId);
            }
