@@ -46,9 +46,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	version as version,
 	        	uuid as uuid,
 	        	is_auto_close,
-	        	overchage_rate as overChageRate,
-	        	original_ext_odo_code as orginalExtOdoCode,
-				original_ec_order_code as originalEcOrderCode
+	        	overchage_rate as overChageRate
 	    ]]>
 	</sql>
 		<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
@@ -90,9 +88,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	urgent_status,
 	        	uuid,
 	        	is_auto_close,
-	        	overchage_rate,
-	        	original_ext_odo_code,
-                original_ec_order_code
+	        	overchage_rate
 	        ) VALUES (
 	        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -127,9 +123,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        	#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-	        	#{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR}
+	        	#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
 	        )
 	    ]]>
 
@@ -170,9 +164,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
 		        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        original_ext_odo_code= #{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR},
-                original_ec_order_code= #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR}
+		        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL}
 	        WHERE 
 		        id = #{id} 
 	    ]]>
