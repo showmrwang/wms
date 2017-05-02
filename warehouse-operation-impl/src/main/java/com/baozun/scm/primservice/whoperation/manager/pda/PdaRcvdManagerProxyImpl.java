@@ -1187,7 +1187,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
             command.setInsideContainerId(insideContainerId);
             // @mender yimin.lu 2016/7/13
             if (!BaseModel.LIFECYCLE_NORMAL.equals(containerCommand.getTwoLevelTypeLifecycle())) {
-                throw new BusinessException(ErrorCodes.DATA_EXPRIE_ERROR);
+                throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_STATUS_ERROR);
             }
             Container container = this.generalRcvdManager.findContainerByIdToShard(containerCommand.getId(), ouId);
             if (ContainerStatus.CONTAINER_LIFECYCLE_FORBIDDEN == containerCommand.getLifecycle()) {
@@ -1300,7 +1300,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
             Long outerContainerId = palletCommand.getId();
             // 校验状态
             if (!BaseModel.LIFECYCLE_NORMAL.equals(palletCommand.getTwoLevelTypeLifecycle())) {
-                throw new BusinessException(ErrorCodes.DATA_EXPRIE_ERROR);
+                throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_STATUS_ERROR);
             }
             Container container = this.generalRcvdManager.findContainerByIdToShard(outerContainerId, ouId);
             // 如果为禁用，抛出异常

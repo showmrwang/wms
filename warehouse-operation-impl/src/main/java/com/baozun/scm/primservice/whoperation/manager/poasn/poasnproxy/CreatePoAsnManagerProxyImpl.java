@@ -1266,7 +1266,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
         if (null == asn) {
             throw new BusinessException(ErrorCodes.OCCUPATION_RCVD_GET_ERROR);
         }
-
+        String occupationCode = asn.getAsnCode();// 占用单据号
         // 更新Po数据集合
         Long poId = asn.getPoId();
         WhPo po = this.poManager.findWhPoByIdToShard(poId, ouId);
@@ -1378,7 +1378,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             Double qtyRcvd = cacheInv.getSkuBatchCount().doubleValue();// 收货数量
             Long lineId = cacheInv.getLineId();// 明细Id
             Long insideContainerId = cacheInv.getInsideContainerId();
-            String occupationCode = cacheInv.getOccupationCode();// 占用单据号
+
 
             this.packageSkuInv(saveInvList, cacheInv, uuid, qtyRcvd, customerId, storeId);// 封装库存信息
 
