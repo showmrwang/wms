@@ -417,6 +417,8 @@ public class ErrorCodes {
     public static final int ODO_CONFIRM_ERROR = 11086;
     /** 出库单加入配货模式计数器池失败 */
     public static final int ODO_DISTRIBUTIONPATTERN_ERROR = 11087;
+    /** 容器二级容器类型状态异常 */
+    public static final int CONTAINER2NDCATEGORY_STATUS_ERROR = 11088;
     // 10001-20000 luyimin
 
 
