@@ -128,7 +128,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        	#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-	        	#{orginalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        	#{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR}
 	        )
 	    ]]>
@@ -171,7 +171,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
 		        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        original_ext_odo_code= #{orginalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR},
+		        original_ext_odo_code= #{originalExtOdoCode,javaType=java.lang.String,jdbcType=VARCHAR},
                 original_ec_order_code= #{originalEcOrderCode,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
