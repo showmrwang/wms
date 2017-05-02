@@ -1517,7 +1517,33 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<Long> getStoreIdByOdoIdList(List<Long> odoIdList, Long ouId) {
-        return this.whOdoDao.getStoreIdByOdoIdList(odoIdList, ouId);
+    public Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId) {
+        List<Long> storeIdList = this.whOdoDao.getStoreIdByOdoIdList(odoIdList, ouId);
+        Map<String, List<Long>> invoiceStoreMap=new HashMap<String, List<Long>>();
+        if(storeIdList!=null&&storeIdList.size()>0){
+            Map<Long, Store> storeMap= this.findStoreByRedis(storeIdList);
+            Iterator<Entry<Long,Store>>storeIt=storeMap.entrySet().iterator();
+            while(storeIt.hasNext()){
+                Entry<Long,Store> storeEntry=storeIt.next();
+                Long storeId=storeEntry.getKey();
+                Store store=storeEntry.getValue();
+                
+                String key = (StringUtils.isEmpty(store.getMakeOutAnInvoiceCompany()) ? "null" : store.getMakeOutAnInvoiceCompany()) + "$" + (StringUtils.isEmpty(store.getInvoiceExportTemplet()) ? "null" : store.getInvoiceExportTemplet());
+                if (invoiceStoreMap.containsKey(key)) {
+                    invoiceStoreMap.get(key).add(storeId);
+                } else {
+                    List<Long> values = new ArrayList<Long>();
+                    values.add(storeId);
+                    invoiceStoreMap.put(key, values);
+                }
+            }
+        }
+        return invoiceStoreMap;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
+        return this.whOdoDao.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
     }
 }

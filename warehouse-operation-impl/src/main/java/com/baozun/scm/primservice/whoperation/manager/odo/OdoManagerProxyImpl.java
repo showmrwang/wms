@@ -33,12 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
-import com.baozun.scm.primservice.logistics.command.MailnoGetContentCommand;
 import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
 import com.baozun.scm.primservice.logistics.manager.TransServiceManager;
-import com.baozun.scm.primservice.logistics.model.MailnoGetResponse;
-import com.baozun.scm.primservice.logistics.model.SuggestTransResult;
-import com.baozun.scm.primservice.logistics.model.SuggestTransResult.LpCodeList;
 import com.baozun.scm.primservice.logistics.model.VasTransResult;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
@@ -101,7 +97,6 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
@@ -2061,7 +2056,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     @Override
-    public String createOdoWaveNew(Long waveMasterId, Long ouId, Long userId, List<Long> odoIdOriginalList, String logId) {
+    public String createOdoWaveNew(Long waveMasterId, Long ouId, Long userId, List<Long> odoIdList, String logId) {
         /**
          * 校验阶段
          */
@@ -2070,13 +2065,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
          */
         // Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
         // @mender yimin.lu TODO
-        List<Long> odoIdList = this.odoManager.findNewOdoIdList(odoIdOriginalList, ouId);
-        if (odoIdList == null) {
-            throw new BusinessException("出库单数目不满足波次最小出库单数");
-        }
+
         // @mender yimin.lu TODO
-        List<Long> storeIdList = this.odoManager.getStoreIdByOdoIdList(odoIdList, ouId);
-        if (storeIdList != null && storeIdList.size() > 0) {}
+        Map<String, List<Long>> invoiceStoreMap = this.odoManager.getStoreIdMapByOdoIdListGroupByInvoice(odoIdList, ouId);
 
 
 
@@ -2439,6 +2430,24 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 }
             }
         }*/
+    }
+
+
+    @Override
+    public List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId) {
+        return this.odoManager.findNewOdoIdList(odoIdOriginalList, ouId);
+    }
+
+
+    @Override
+    public Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId) {
+        return this.odoManager.getStoreIdMapByOdoIdListGroupByInvoice(odoIdList, ouId);
+    }
+
+
+    @Override
+    public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
+        return this.odoManager.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
     }
 
 }
