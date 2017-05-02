@@ -972,4 +972,8 @@ public class ErrorCodes {
     public static final int RECOMMEND_FAILED = 110017;
     /** 推荐的交接库位不存在 */
     public static final int RECOMMEND_STATION_DONT_EXSIT = 110018;
+    // 120000-130000 zhaozili
+    /** 出库箱不存在 */
+    public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001; 
+    // 120000-130000 zhaozili 
 }
