@@ -687,7 +687,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             line.setLastModifyTime(new Date());
             line.setModifiedId(userId);
         }
-        line.setOdoLineStatus(OdoStatus.CREATING);
+        line.setOdoLineStatus(OdoStatus.ODOLINE_TOBECREATED);
         line.setIsCheck(lineCommand.getIsCheck());
         line.setFullLineOutbound(lineCommand.getFullLineOutbound());
         line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
