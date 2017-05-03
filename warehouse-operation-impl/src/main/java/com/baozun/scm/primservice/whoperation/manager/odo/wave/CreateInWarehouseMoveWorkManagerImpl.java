@@ -175,17 +175,10 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryAllocatedCommand.setOuId(whSkuInventoryCommand.getOuId());
             whSkuInventoryAllocatedCommand.setLastModifyTime(whSkuInventoryCommand.getLastModifyTime());
             whSkuInventoryAllocatedCommand.setReplenishmentRuleId(whSkuInventoryCommand.getReplenishmentRuleId());
+            whSkuInventoryAllocatedCommand.setUuid(whSkuInventoryCommand.getUuid()); 
             WhSkuInventoryAllocated whSkuInventoryAllocated = new WhSkuInventoryAllocated();
             // 复制数据        
             BeanUtils.copyProperties(whSkuInventoryAllocatedCommand, whSkuInventoryAllocated);
-            // 内部对接码
-            try {
-                whSkuInventoryAllocatedCommand.setUuid(SkuInventoryUuid.invUuid(whSkuInventoryAllocated));
-                whSkuInventoryAllocated.setUuid(whSkuInventoryAllocatedCommand.getUuid());
-            } catch (Exception e) {
-                log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
-                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
-            }
             // 插入数据            
             skuInventoryAllocatedDao.insert(whSkuInventoryAllocated);
             // 待移入库存           
