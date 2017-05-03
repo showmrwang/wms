@@ -253,7 +253,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 odo.setDistributionCode(null);
                 odo.setAssignFailReason(Constants.DISTRIBUTE_MODE_FAIL);
                 odo.setWaveCode(null);
-                odo.setOdoStatus(OdoStatus.ODO_NEW);
+                odo.setOdoStatus(OdoStatus.NEW);
                 List<WhOdoLine> odolineList = this.odoLineManager.findOdoLineListByOdoId(odoId, ouId);
                 for (WhOdoLine line : odolineList) {
                     line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);

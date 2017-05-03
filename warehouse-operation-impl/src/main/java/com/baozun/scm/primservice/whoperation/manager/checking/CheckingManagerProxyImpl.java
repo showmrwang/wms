@@ -70,13 +70,11 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Transactional
@@ -588,7 +586,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         // 修改出库单状态为复核完成状态。
         WhOdo whOdo  = odoManager.findOdoByIdOuId(odoId, ouId);
         //修改出库单状态为复核完成状态。
-        whOdo.setHeadStartOdoStatus(OdoStatus.ODO_SEEDING_EXECUTING);
+        whOdo.setHeadStartOdoStatus(OdoStatus.SEEDING);
         odoManager.updateByVersion(whOdo);
     }
     

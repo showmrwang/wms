@@ -316,7 +316,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         Map<String, String> response = new HashMap<String, String>();
         String odoIdString = StringUtil.listToString(odoIds, ',');
         List<String> optionList = convertOptions(options);
-        List<OdoMergeCommand> list = this.whOdoDao.odoMerge(OdoStatus.ODO_NEW, odoIdString, ouId, optionList.get(0), optionList.get(1), optionList.get(2), optionList.get(3));
+        List<OdoMergeCommand> list = this.whOdoDao.odoMerge(OdoStatus.NEW, odoIdString, ouId, optionList.get(0), optionList.get(1), optionList.get(2), optionList.get(3));
         if (!list.isEmpty() && list.size() > 0) {
             /* 合并订单 */
             response = this.startOdoMerge(list, ouId, userId);
@@ -551,10 +551,10 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         whOdo.setId(null);
         whOdo.setOdoCode(codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null));
         whOdo.setExtCode(codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null));
-        if (null != whOdo.getOdoStatus() && OdoStatus.ODO_WAVE.equals(whOdo.getOdoStatus())) {
-            whOdo.setOdoStatus(OdoStatus.ODO_WAVE);
+        if (null != whOdo.getOdoStatus() && OdoStatus.WAVE.equals(whOdo.getOdoStatus())) {
+            whOdo.setOdoStatus(OdoStatus.WAVE);
         } else {
-            whOdo.setOdoStatus(OdoStatus.ODO_NEW);
+            whOdo.setOdoStatus(OdoStatus.NEW);
         }
         whOdo.setCreateTime(new Date());
         whOdo.setLastModifyTime(new Date());
@@ -590,17 +590,17 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                 if (!newWhOdoCode.equalsIgnoreCase(odo.getOdoCode())) {
                     // 待更新状态订单不是合并订单主档
                     // 状态:新建->(非合并订单)已合并/(合并订单)取消;
-                    odo.setOdoStatus((null == odo.getOriginalOdoCode()) ? OdoStatus.ODO_MERGE : OdoStatus.ODO_CANCEL);
+                    odo.setOdoStatus((null == odo.getOriginalOdoCode()) ? OdoStatus.MERGE : OdoStatus.CANCEL);
                     odo.setGroupOdoCode(newWhOdoCode);
                 }
                 break;
             case Constants.ODO_CANCEL:
                 // 状态:新建->取消;
-                odo.setOdoStatus(OdoStatus.ODO_CANCEL);
+                odo.setOdoStatus(OdoStatus.CANCEL);
                 break;
             case Constants.ODO_NEW:
                 // 状态:已合并->新建;
-                odo.setOdoStatus(OdoStatus.ODO_NEW);
+                odo.setOdoStatus(OdoStatus.NEW);
                 odo.setGroupOdoCode(null);
                 break;
             default:
@@ -961,7 +961,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                 break;
             case Constants.ODO_LINE_NEW:
                 // 状态:已合并->新建;
-                whOdoLine.setOdoLineStatus(OdoStatus.ODO_NEW);
+                whOdoLine.setOdoLineStatus(OdoStatus.NEW);
                 break;
             default:
                 throw new BusinessException("更新合并前订单明细行失败");
