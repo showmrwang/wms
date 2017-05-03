@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whinterface.model.outbound;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +49,8 @@ public class WmsOutBoundConfirm implements Serializable {
     private String dataSource;
     /** 是否整单出库完成 默认是 */
     private Boolean isOutboundFinish;
+    /** 出库时间 */
+    private Date outboundTime;
     /** 出库单反馈明细 */
     private List<WmsOutBoundLineConfirm> wmsOutBoundLineConfirm;
     /** 出库单发票信息 */
@@ -157,6 +160,14 @@ public class WmsOutBoundConfirm implements Serializable {
 
     public void setWmsOutBoundAttrConfirm(WmsOutBoundAttrConfirm wmsOutBoundAttrConfirm) {
         this.wmsOutBoundAttrConfirm = wmsOutBoundAttrConfirm;
+    }
+
+    public Date getOutboundTime() {
+        return outboundTime;
+    }
+
+    public void setOutboundTime(Date outboundTime) {
+        this.outboundTime = outboundTime;
     }
 
 

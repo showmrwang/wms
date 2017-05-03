@@ -218,6 +218,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             // 有数据生成同步数据
             BeanUtils.copyProperties(whOutboundConfirm, o);
             o.setWhCode(whCode);
+            o.setOutboundTime(whOutboundConfirm.getCreateTime());
             // 运输服务商 快递单号数据封装
             List<String> tspList = new ArrayList<String>();
             if (!StringUtil.isEmpty(whOutboundConfirm.getTransportServiceProvider())) {
