@@ -383,5 +383,4 @@ public interface OdoManagerProxy extends BaseManager {
      */
     void getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId);
 
-
 }

@@ -16,6 +16,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -55,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
@@ -156,6 +158,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private SkuMgmtDao skuMgmtDao;
     @Autowired
     private WhSkuWhmgmtDao whSkuWhmgmtDao;
+    @Autowired
+    private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -1405,6 +1409,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         trans.setCity(address.getDistributionTargetCity());
         trans.setDistrict(address.getDistributionTargetDistrict());
         trans.setVillage(address.getDistributionTargetVillagesTowns());
+        trans.setAddress(address.getDistributionTargetAddress());
         trans.setIsDangerous(odo.getIncludeHazardousCargo() ? 1 : 0);
         trans.setIsBreak(odo.getIncludeFragileCargo() ? 1 : 0);
         trans.setIntefaceType(StringUtils.isEmpty(store.getExpressRecommendation()) ? "2" : store.getExpressRecommendation());
@@ -1463,6 +1468,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setLpCode(transMgmt.getTransportServiceProvider());
         mailNoContent.setExpressType(transMgmt.getCourierServiceType());
         mailNoContent.setTotalActual(trans.getTotalActual());
+        mailNoContent.setTimeType(transMgmt.getTimeEffectType());
         mailNoContent.setQuantity(1);   // 获取面单数量1
         mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
@@ -1508,4 +1514,17 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         
         return mailNoContent;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Map<String, List<Long>> getBatchNoOdoIdListGroup(Long waveId, Long ouId) {
+        Map<String, List<Long>> batchMap = new HashMap<String, List<Long>>();
+        List<String> batchList = whOdoOutBoundBoxDao.getBatchListByWaveId(waveId, ouId);
+        for (String batch : batchList) {
+            List<Long> odoIdList = whOdoOutBoundBoxDao.getOdoIdListByBatch(batch, waveId, ouId);
+            batchMap.put(batch, odoIdList);
+        }
+        return batchMap;
+    }
+    
 }

@@ -294,7 +294,8 @@ public final class Constants {
     public static final String CHECK_OPERATIONS_AREA_ODOID_LIST_PLACEHOLDER = "${odoIdListStr}";
     /** 播种墙推荐规则出库单ID占位符 */
     public static final String SEEDING_WALL_ODOID_LIST_PLACEHOLDER = "${odoIdListStr}";
-
+    /** ID占位符 */
+    public static final String ODOID_LIST_PLACEHOLDER = "${idListStr}";
     /** 出库箱装箱规则sql占位符 */
     public static final String OUTBOUNDBOX_RULE_PLACEHOLDER = "${odoIdListStr}";
     /** 交接集货规则sql占位符 */

@@ -39,6 +39,7 @@ import com.baozun.scm.primservice.logistics.manager.TransServiceManager;
 import com.baozun.scm.primservice.logistics.model.MailnoGetResponse;
 import com.baozun.scm.primservice.logistics.model.SuggestTransResult;
 import com.baozun.scm.primservice.logistics.model.SuggestTransResult.LpCodeList;
+import com.baozun.scm.primservice.logistics.model.TransVasList;
 import com.baozun.scm.primservice.logistics.model.VasTransResult;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
@@ -2354,6 +2355,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             List<VasLine> vasList = vasResult.getVasList();
             if (null != vasList && !vasList.isEmpty()) {
                 odoVasManager.insertVasList(odoId, vasList, odoVasLineList, ouId);
+                List<TransVasList> transVasList = new ArrayList<TransVasList>();
+                for (VasLine vas : vasList) {
+                    TransVasList transVas = new TransVasList();
+                    transVas.setVasCode(vas.getCode());
+                    transVasList.add(transVas);
+                }
+                trans.setTransVasList(transVasList);
             }
         } else {
             // 失败,记录ErrorMessage
@@ -2364,7 +2372,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         }
         // 获取推荐物流商
-        /*if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType())
+        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType())
                 || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
             SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
             if (null != transResult && transResult.getStatus() == 1) {
@@ -2376,8 +2384,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     String lpCode = lp.getLpcode();
                     // 产品类型(物流服务类型)
                     String expressType = lp.getExpressType();
+                    // 时效类型
+                    String timeEffectType = lp.getCode();
                     transMgmt.setTransportServiceProvider(lpCode);
                     transMgmt.setCourierServiceType(expressType);
+                    transMgmt.setTimeEffectType(timeEffectType);
                     int num = odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
                     if (num < 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
@@ -2390,6 +2401,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 } else {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, transResult.getMsg(), ouId);
                 }
+                return;
             }
         }
         // 获取运单号
@@ -2428,7 +2440,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
                 }
             }
-        }*/
+        }
     }
 
 }
