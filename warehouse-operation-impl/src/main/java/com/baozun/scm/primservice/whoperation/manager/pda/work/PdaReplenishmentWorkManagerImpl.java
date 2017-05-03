@@ -17,12 +17,14 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResult
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -56,6 +58,8 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
     private ContainerDao containerDao;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
     
     /****
      * 确定补货方式和占用模型
@@ -301,11 +305,15 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             log.error("pdaPickingRemmendContainer container is null logid: " + logId);
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
-        //修改周转箱状态
-        Container c = new Container();
-        BeanUtils.copyProperties(cmd, c);
-        c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-        c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-        containerDao.saveOrUpdateByVersion(c); 
+        //1先判断当前周转箱有没有生成容器库存,如果生成容器库存，则不能改变周转箱状态
+        List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, cmd.getId());
+        if(null != skuInvCmdList && skuInvCmdList.size() != 0){
+          //修改周转箱状态
+            Container c = new Container();
+            BeanUtils.copyProperties(cmd, c);
+            c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+            c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+            containerDao.saveOrUpdateByVersion(c);
+        }
     }
 }

@@ -338,4 +338,5 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     List<Long> getStoreIdByOdoIdList(@Param("odoIdList") List<Long> odoIdOriginalList, @Param("ouId") Long ouId);
 
     List<Long> findOdoIdListByStoreIdListAndOriginalIdList(@Param("odoIdList") List<Long> odoIdList, @Param("storeIdList") List<Long> storeIdList, @Param("ouId") Long ouId);
+
 }

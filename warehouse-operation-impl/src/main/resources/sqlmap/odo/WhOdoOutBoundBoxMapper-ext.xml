@@ -273,5 +273,27 @@
 			</if>
 		</where>
 	</select>
-
+	
+	<select id="getBatchListByWaveId" resultType="string">
+    	select
+			b.box_batch
+		from
+			t_wh_odo_outboundbox b
+		where
+			b.wave_id = #{waveId}
+			and b.ou_id = #{ouId}
+		group by b.box_batch
+    </select>
+    
+    <select id="getOdoIdListByBatch" resultType="long">
+    	select
+			b.odo_id
+		from
+			t_wh_odo_outboundbox b
+		where
+			b.wave_id = #{waveId}
+			and b.ou_id = #{ouId}
+			and b.box_batch = #{batch}
+		group by b.odo_id
+    </select>
 </mapper>

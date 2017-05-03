@@ -97,4 +97,16 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      */
     Double findQtyByOdoLineId(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
+    /**
+     * 获取波次下的小批次
+     * @author kai.zhu
+     * @version 2017年5月2日
+     */
+    List<String> getBatchListByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据batch获取关联的odoIdList
+     */
+    List<Long> getOdoIdListByBatch(@Param("batch") String batch, @Param("waveId") Long waveId, @Param("ouId") Long ouId);
+
 }

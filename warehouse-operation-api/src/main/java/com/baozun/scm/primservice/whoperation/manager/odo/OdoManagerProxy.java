@@ -411,5 +411,4 @@ public interface OdoManagerProxy extends BaseManager {
      */
     List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId);
 
-
 }
