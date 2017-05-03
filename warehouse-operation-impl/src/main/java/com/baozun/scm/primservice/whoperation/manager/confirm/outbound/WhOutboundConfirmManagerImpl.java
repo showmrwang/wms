@@ -185,7 +185,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
      * @param outboundid
      */
     private void saveWhOutboundLineConfirm(WhOdo whOdo, Long ouid, Long outboundid, Map<String, String> tspMap, Map<Long, String> invMap) {
-        if (whOdo.getOdoStatus().equals(OdoStatus.ODO_NEW)) {
+        if (whOdo.getOdoStatus().equals(OdoStatus.NEW)) {
             // 新建状态 出库单反馈明细直接用odoLine数据
             List<WhOdoLine> whOdoLines = whOdoLineDao.findOdoLineListByOdoIdOuId(whOdo.getId(), ouid);
             for (WhOdoLine whOdoLine : whOdoLines) {
@@ -210,7 +210,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 }
             }
         }
-        if (whOdo.getOdoStatus().equals(OdoStatus.ODO_OUTSTOCK_FINISH)) {
+        if (whOdo.getOdoStatus().equals(OdoStatus.FINISH)) {
             // 出库完成状态 出库单反馈明细需要查询出库箱等数据表
             // 获取出库箱装箱信息
             List<WhOutboundbox> outboundboxs = whOutboundboxDao.findWhOutboundboxByOdoId(whOdo.getId(), ouid);
