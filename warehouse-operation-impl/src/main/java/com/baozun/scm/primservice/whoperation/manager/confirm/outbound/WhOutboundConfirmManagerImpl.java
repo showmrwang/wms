@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
@@ -22,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundCon
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundInvoiceLineConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundLineConfirmDao;
+import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundSnLineConfirmDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
@@ -30,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineSnDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -39,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundC
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm;
+import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundSnLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
@@ -85,6 +89,10 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
     private WhInvoiceDao whInvoiceDao;
     @Autowired
     private WhInvoiceLineDao whInvoiceLineDao;
+    @Autowired
+    private WhOutboundboxLineSnDao whOutboundboxLineSnDao;
+    @Autowired
+    private WhOutboundSnLineConfirmDao whOutboundSnLineConfirmDao;
 
 
     /**
@@ -241,6 +249,29 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                         log.error("WhOutboundConfirmManagerImpl.saveWhOutboundLineConfirm error");
                         throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
                     }
+                    // 获取SN/残次信息
+                    List<WhOutboundboxLineSnCommand> snList = whOutboundboxLineSnDao.findWhOutboundboxLineSnCommandByOutBoundBoxLineId(boxLine.getId(), ouid);
+                    for (WhOutboundboxLineSnCommand lineSnCommand : snList) {
+                        // 有数据保存SN/残次反馈信息
+                        WhOutboundSnLineConfirm sn = new WhOutboundSnLineConfirm();
+                        BeanUtils.copyProperties(lineSnCommand, sn);
+                        sn.setOutboundLineConfirmId(line.getId());
+                        if (Constants.SKU_SN_DEFECT_SOURCE_WH.equals(sn.getDefectSource())) {
+                            // 仓库残次原因/类型
+                            sn.setDefectType(lineSnCommand.getWhDefectTypeCode());
+                            sn.setDefectReasons(lineSnCommand.getWhDefectReasonsCode());
+                        } else {
+                            // 店铺残次原因/类型
+                            sn.setDefectType(lineSnCommand.getStoreDefectTypeCode());
+                            sn.setDefectReasons(lineSnCommand.getStoreDefectReasonsCode());
+                        }
+                        sn.setOuId(ouid);
+                        Long snLineCount = whOutboundSnLineConfirmDao.insert(sn);
+                        if (snLineCount.intValue() == 0) {
+                            log.error("WhOutboundConfirmManagerImpl.saveWhOutboundLineConfirm error");
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    }
                 }
             }
         }
@@ -294,6 +325,10 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             whOutboundConfirm.setWhOutboundAttrConfirm(whOutboundAttrConfirm);
             // 获取出库单明细数据
             List<WhOutboundLineConfirm> whOutboundLineConfirms = whOutboundLineConfirmDao.findWhOutboundLineConfirmByOutBoundId(whOutboundConfirm.getId(), ouid);
+            for (WhOutboundLineConfirm whOutboundLineConfirm : whOutboundLineConfirms) {
+                List<WhOutboundSnLineConfirm> snLineConfirms = whOutboundSnLineConfirmDao.findWhOutboundSnLineConfirmByOutBoundLineId(whOutboundLineConfirm.getId(), ouid);
+                whOutboundLineConfirm.setSnLineConfirms(snLineConfirms);
+            }
             whOutboundConfirm.setWhOutBoundLineConfirm(whOutboundLineConfirms);
             // 获取出库单发票信息
             List<WhOutboundInvoiceConfirm> whOutboundInvoiceConfirms = whOutboundInvoiceConfirmDao.findWhOutboundInvoiceConfirmByOutBoundId(whOutboundConfirm.getId(), ouid);

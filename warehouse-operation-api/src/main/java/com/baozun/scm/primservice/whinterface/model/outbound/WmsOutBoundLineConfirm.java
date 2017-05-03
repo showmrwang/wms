@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whinterface.model.outbound;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 出库单反馈明细信息
@@ -73,6 +74,8 @@ public class WmsOutBoundLineConfirm implements Serializable {
     private String invAttr4;
     /** 库存属性5 */
     private String invAttr5;
+    /** 出库单反馈SN/残次信息 */
+    private List<WmsOutBoundSnLineConfirm> wmsOutBoundSnLineConfirm;
 
 
     public String getStoreCode() {
@@ -249,6 +252,14 @@ public class WmsOutBoundLineConfirm implements Serializable {
 
     public void setInvAttr5(String invAttr5) {
         this.invAttr5 = invAttr5;
+    }
+
+    public List<WmsOutBoundSnLineConfirm> getWmsOutBoundSnLineConfirm() {
+        return wmsOutBoundSnLineConfirm;
+    }
+
+    public void setWmsOutBoundSnLineConfirm(List<WmsOutBoundSnLineConfirm> wmsOutBoundSnLineConfirm) {
+        this.wmsOutBoundSnLineConfirm = wmsOutBoundSnLineConfirm;
     }
 
 

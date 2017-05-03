@@ -107,5 +107,39 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	   		 wh_outboundbox_line_id = #{obblid}
 	   		 and ou_id = #{ouid}
     </select>
+    
+   <resultMap id="WhOutboundboxLineSnCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand">
+	</resultMap>
+	
+	<select id="findWhOutboundboxLineSnCommandByOutBoundBoxLineId" resultMap="WhOutboundboxLineSnCommandResultExt">
+    	select 
+	        	sn.id as id,
+	        	sn.wh_outboundbox_line_id as whOutboundboxLineId,
+	        	sn.sn as sn,
+	        	sn.occupation_code as occupationCode,
+	        	sn.replenishment_code as replenishmentCode,
+	        	sn.defect_ware_barcode as defectWareBarcode,
+	        	sn.defect_source as defectSource,
+	        	sn.defect_type_id as defectTypeId,
+	        	sn.defect_reasons_id as defectReasonsId,
+	        	sn.status as status,
+	        	sn.inv_attr as invAttr,
+	        	sn.uuid as uuid,
+	        	sn.ou_id as ouId,
+	        	sn.sys_uuid as sysUuid,
+				stype.code as storeDefectTypeCode,
+				srea.code as storeDefectReasonsCode,
+				wtype.code as whDefectTypeCode,
+				wrea.code as whDefectReasonsCode
+	   		 from  
+	   		 t_wh_outboundbox_line_sn sn
+	   		 left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id 
+			 left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
+			 left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
+			 left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
+	   		 where
+	   		 sn.wh_outboundbox_line_id = #{obblid}
+	   		 and sn.ou_id = #{ouid}
+    </select>
 	
 </mapper>

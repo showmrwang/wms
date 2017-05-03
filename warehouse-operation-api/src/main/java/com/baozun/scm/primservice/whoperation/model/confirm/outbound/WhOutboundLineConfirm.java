@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.model.confirm.outbound;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
@@ -77,6 +78,8 @@ public class WhOutboundLineConfirm extends BaseModel {
     private String invAttr5;
     /** 仓库组织ID */
     private Long ouId;
+    /** SN/残次信息 */
+    private List<WhOutboundSnLineConfirm> snLineConfirms;
 
     public Long getOutbouncConfirmId() {
         return outbouncConfirmId;
@@ -268,6 +271,14 @@ public class WhOutboundLineConfirm extends BaseModel {
 
     public void setOuId(Long ouId) {
         this.ouId = ouId;
+    }
+
+    public List<WhOutboundSnLineConfirm> getSnLineConfirms() {
+        return snLineConfirms;
+    }
+
+    public void setSnLineConfirms(List<WhOutboundSnLineConfirm> snLineConfirms) {
+        this.snLineConfirms = snLineConfirms;
     }
 
 
