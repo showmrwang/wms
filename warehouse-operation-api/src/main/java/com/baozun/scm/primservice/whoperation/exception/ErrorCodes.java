@@ -419,6 +419,12 @@ public class ErrorCodes {
     public static final int ODO_DISTRIBUTIONPATTERN_ERROR = 11087;
     /** 容器二级容器类型状态异常 */
     public static final int CONTAINER2NDCATEGORY_STATUS_ERROR = 11088;
+    /** 同一波次必须是同一发票公司和发票模板 */
+    public static final int CREATE_WAVE_INVOICE_ERROR = 11089;
+    /** 波次主档未找到可以创建波次的出库单数据 */
+    public static final int CREATE_WAVE_MASTER_NULL_ODO_ERROR = 11090;
+    /** 创建波次失败 */
+    public static final int CREATE_WAVE_ERROR = 11091;
     // 10001-20000 luyimin
 
 
@@ -966,4 +972,8 @@ public class ErrorCodes {
     public static final int RECOMMEND_FAILED = 110017;
     /** 推荐的交接库位不存在 */
     public static final int RECOMMEND_STATION_DONT_EXSIT = 110018;
+    // 120000-130000 zhaozili
+    /** 出库箱不存在 */
+    public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001; 
+    // 120000-130000 zhaozili 
 }

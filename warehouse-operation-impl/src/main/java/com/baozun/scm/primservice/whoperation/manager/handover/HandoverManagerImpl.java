@@ -17,6 +17,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.HandoverCollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao;
@@ -234,7 +235,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 // whOutboundConfirmManager.saveWhOutboundConfirm(odo);
                 List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
                 for (WhOdoLine whOdoLine : whOdoLineList) {
-                    whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_HANDOVER_FINISH);
+                    whOdoLine.setOdoLineStatus(OdoLineStatus.HANDOVER_FINISH);
                     int odoLineUpdate = whOdoLineDao.saveOrUpdate(whOdoLine);
                     if (0 == odoLineUpdate) {
                         // 出库单明细状态更新失败
@@ -255,7 +256,6 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void print(List<HandoverCollection> hcList) {
         // 打印出库单据
-
     }
 
     @Override

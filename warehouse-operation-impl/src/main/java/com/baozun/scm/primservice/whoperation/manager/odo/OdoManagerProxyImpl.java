@@ -39,6 +39,7 @@ import com.baozun.scm.primservice.logistics.manager.TransServiceManager;
 import com.baozun.scm.primservice.logistics.model.MailnoGetResponse;
 import com.baozun.scm.primservice.logistics.model.SuggestTransResult;
 import com.baozun.scm.primservice.logistics.model.SuggestTransResult.LpCodeList;
+import com.baozun.scm.primservice.logistics.model.TransVasList;
 import com.baozun.scm.primservice.logistics.model.VasTransResult;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
@@ -2061,24 +2062,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     @Override
-    public String createOdoWaveNew(Long waveMasterId, Long ouId, Long userId, List<Long> odoIdOriginalList, String logId) {
+    public String createOdoWaveNew(Long waveMasterId, Long ouId, Long userId, List<Long> odoIdList, String logId) {
         /**
          * 校验阶段
          */
         /**
          * 校验出库单头和明细状态；以及是否处于别的波次中
          */
-        // Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
-        // @mender yimin.lu TODO
-        List<Long> odoIdList = this.odoManager.findNewOdoIdList(odoIdOriginalList, ouId);
-        if (odoIdList == null) {
-            throw new BusinessException("出库单数目不满足波次最小出库单数");
-        }
-        // @mender yimin.lu TODO
-        List<Long> storeIdList = this.odoManager.getStoreIdByOdoIdList(odoIdList, ouId);
-        if (storeIdList != null && storeIdList.size() > 0) {}
-
-
 
         WhWaveMaster master = this.odoManager.findWaveMasterByIdouId(waveMasterId, ouId);
         if (master == null) {
@@ -2364,6 +2354,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             List<VasLine> vasList = vasResult.getVasList();
             if (null != vasList && !vasList.isEmpty()) {
                 odoVasManager.insertVasList(odoId, vasList, odoVasLineList, ouId);
+                List<TransVasList> transVasList = new ArrayList<TransVasList>();
+                for (VasLine vas : vasList) {
+                    TransVasList transVas = new TransVasList();
+                    transVas.setVasCode(vas.getCode());
+                    transVasList.add(transVas);
+                }
+                trans.setTransVasList(transVasList);
             }
         } else {
             // 失败,记录ErrorMessage
@@ -2374,7 +2371,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         }
         // 获取推荐物流商
-        /*if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType())
+        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType())
                 || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
             SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
             if (null != transResult && transResult.getStatus() == 1) {
@@ -2386,8 +2383,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     String lpCode = lp.getLpcode();
                     // 产品类型(物流服务类型)
                     String expressType = lp.getExpressType();
+                    // 时效类型
+                    String timeEffectType = lp.getCode();
                     transMgmt.setTransportServiceProvider(lpCode);
                     transMgmt.setCourierServiceType(expressType);
+                    transMgmt.setTimeEffectType(timeEffectType);
                     int num = odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
                     if (num < 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
@@ -2400,6 +2400,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 } else {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, transResult.getMsg(), ouId);
                 }
+                return;
             }
         }
         // 获取运单号
@@ -2438,7 +2439,23 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
                 }
             }
-        }*/
+        }
+    }
+
+
+    @Override
+    public List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId) {
+        return this.odoManager.findNewOdoIdList(odoIdOriginalList, ouId);
+    }
+
+    @Override
+    public Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId) {
+        return this.odoManager.getStoreIdMapByOdoIdListGroupByInvoice(odoIdList, ouId);
+    }
+
+    @Override
+    public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
+        return this.odoManager.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
     }
 
 }

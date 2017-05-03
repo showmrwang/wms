@@ -3458,4 +3458,22 @@
             and odo_status='1' 
 			and (wave_code is null or wave_code='') 
     </select>
+    
+    <select id="findOdoIdListByStoreIdListAndOriginalIdList" resultType="long">
+    	select 
+    		o.id
+    	from t_wh_odo o
+    	where 
+    		o.id in 
+				<foreach collection="odoIdList" item="id" open="(" separator="," close=")">
+	                #{id}
+	            </foreach>
+	        and o.store_id in
+	        <foreach collection="storeIdList" item="sid" open="(" separator="," close=")">
+	                #{sid}
+	            </foreach>
+			and o.ou_id = #{ouId}
+			
+    </select>
+
 </mapper>

@@ -302,6 +302,13 @@ public interface OdoManager extends BaseManager {
      * @param address 
      */
     MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, WarehouseCommand wh, SuggestTransContentCommand trans, Long ouId);
+    
+    /**
+     * 批次号+List<odoId>
+     * @author kai.zhu
+     * @version 2017年5月2日
+     */
+    Map<String, List<Long>> getBatchNoOdoIdListGroup(Long waveId, Long ouId);
 
     /**
      * 从一批出库单中筛选出新建未创建波次的出库单
@@ -313,8 +320,10 @@ public interface OdoManager extends BaseManager {
     List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId);
 
     /**
-     * 获取一批出库单的店铺
+     * 获取一批出库单的发票-店铺分组
      */
-    List<Long> getStoreIdByOdoIdList(List<Long> odoIdList, Long ouId);
+    Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId);
+
+    List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId);
 
 }

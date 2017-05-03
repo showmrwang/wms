@@ -857,6 +857,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             WhOperationLineCommand.setOdoLineId(whWorkLineCommand.getOdoLineId());
             //补货单据号
             WhOperationLineCommand.setReplenishmentCode(whWorkLineCommand.getReplenishmentCode());
+            //库内移动单据号 
+            WhOperationLineCommand.setInvMoveCode(whWorkLineCommand.getInvMoveCode());
             //创建时间
             WhOperationLineCommand.setCreateTime(new Date());
             //最后操作时间

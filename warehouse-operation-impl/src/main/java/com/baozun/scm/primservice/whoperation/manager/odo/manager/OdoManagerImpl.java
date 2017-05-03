@@ -55,6 +55,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
@@ -156,6 +157,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private SkuMgmtDao skuMgmtDao;
     @Autowired
     private WhSkuWhmgmtDao whSkuWhmgmtDao;
+    @Autowired
+    private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -1245,11 +1248,12 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList) {
-        // 验证所有出库单上店铺所配置的发票公司和发票模板一致
-        int invoiceCount = this.whOdoDao.countInvoiceInfo(odoIdList, wave.getOuId());
-        if (invoiceCount > 1) {
-            throw new BusinessException(ErrorCodes.WAVE_ODOLIST_INVOICE_DIFFERENCE, new Object[] {wave.getCode()});
-        }
+        // 验证所有出库单上店铺所配置的发票公司和发票模板一致 @mender yimin.lu 此处不验证
+        // int invoiceCount = this.whOdoDao.countInvoiceInfo(odoIdList, wave.getOuId());
+        // if (invoiceCount > 1) {
+        // throw new BusinessException(ErrorCodes.WAVE_ODOLIST_INVOICE_DIFFERENCE, new Object[]
+        // {wave.getCode()});
+        // }
         int batchCount = 500;
         int totalCount = odoIdList.size();
         int ceil = (int) Math.ceil((double) totalCount / batchCount);
@@ -1405,6 +1409,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         trans.setCity(address.getDistributionTargetCity());
         trans.setDistrict(address.getDistributionTargetDistrict());
         trans.setVillage(address.getDistributionTargetVillagesTowns());
+        trans.setAddress(address.getDistributionTargetAddress());
         trans.setIsDangerous(odo.getIncludeHazardousCargo() ? 1 : 0);
         trans.setIsBreak(odo.getIncludeFragileCargo() ? 1 : 0);
         trans.setIntefaceType(StringUtils.isEmpty(store.getExpressRecommendation()) ? "2" : store.getExpressRecommendation());
@@ -1463,6 +1468,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setLpCode(transMgmt.getTransportServiceProvider());
         mailNoContent.setExpressType(transMgmt.getCourierServiceType());
         mailNoContent.setTotalActual(trans.getTotalActual());
+        mailNoContent.setTimeType(transMgmt.getTimeEffectType());
         mailNoContent.setQuantity(1);   // 获取面单数量1
         mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
@@ -1511,13 +1517,52 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Map<String, List<Long>> getBatchNoOdoIdListGroup(Long waveId, Long ouId) {
+        Map<String, List<Long>> batchMap = new HashMap<String, List<Long>>();
+        List<String> batchList = whOdoOutBoundBoxDao.getBatchListByWaveId(waveId, ouId);
+        for (String batch : batchList) {
+            List<Long> odoIdList = whOdoOutBoundBoxDao.getOdoIdListByBatch(batch, waveId, ouId);
+            batchMap.put(batch, odoIdList);
+        }
+        return batchMap;
+    }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId) {
         return this.whOdoDao.findNewOdoIdList(odoIdOriginalList, ouId);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<Long> getStoreIdByOdoIdList(List<Long> odoIdList, Long ouId) {
-        return this.whOdoDao.getStoreIdByOdoIdList(odoIdList, ouId);
+    public Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId) {
+        List<Long> storeIdList = this.whOdoDao.getStoreIdByOdoIdList(odoIdList, ouId);
+        Map<String, List<Long>> invoiceStoreMap=new HashMap<String, List<Long>>();
+        if(storeIdList!=null&&storeIdList.size()>0){
+            Map<Long, Store> storeMap= this.findStoreByRedis(storeIdList);
+            Iterator<Entry<Long,Store>>storeIt=storeMap.entrySet().iterator();
+            while(storeIt.hasNext()){
+                Entry<Long,Store> storeEntry=storeIt.next();
+                Long storeId=storeEntry.getKey();
+                Store store=storeEntry.getValue();
+                
+                String key = (StringUtils.isEmpty(store.getMakeOutAnInvoiceCompany()) ? "null" : store.getMakeOutAnInvoiceCompany()) + "$" + (StringUtils.isEmpty(store.getInvoiceExportTemplet()) ? "null" : store.getInvoiceExportTemplet());
+                if (invoiceStoreMap.containsKey(key)) {
+                    invoiceStoreMap.get(key).add(storeId);
+                } else {
+                    List<Long> values = new ArrayList<Long>();
+                    values.add(storeId);
+                    invoiceStoreMap.put(key, values);
+                }
+            }
+        }
+        return invoiceStoreMap;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
+        return this.whOdoDao.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
+    }
+
 }

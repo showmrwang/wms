@@ -383,5 +383,32 @@ public interface OdoManagerProxy extends BaseManager {
      */
     void getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId);
 
+    /**
+     * 从一批出库单集合中筛选出可以创建波次的出库单
+     * 
+     * @param odoIdOriginalList
+     * @param ouId
+     * @return
+     */
+    List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId);
+
+    /**
+     * 从一批出库单集合中，筛选出 发票公司对应的店铺集合
+     * 
+     * @param odoIdList
+     * @param ouId
+     * @return
+     */
+    Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId);
+
+    /**
+     * 从一批出库单集合中根据店铺集合筛选出相应的出库单
+     * 
+     * @param odoIdList
+     * @param value
+     * @param ouId
+     * @return
+     */
+    List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId);
 
 }
