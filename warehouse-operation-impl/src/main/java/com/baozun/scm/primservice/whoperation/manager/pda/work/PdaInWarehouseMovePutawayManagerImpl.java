@@ -31,6 +31,7 @@ import com.baozun.scm.primservice.whoperation.constant.CancelPattern;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionInventoryMoveDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
@@ -49,6 +50,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManag
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInventoryMove;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
@@ -94,7 +96,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
     @Autowired
     private WhOperationLineDao whOperationLineDao;
     @Autowired
-    private WhFunctionReplenishmentDao whFunctionReplenishmentDao;
+    private WhFunctionInventoryMoveDao whFunctionInventoryMoveDao;
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
     
@@ -606,33 +608,18 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         return statisticsCommand;
     }
     
-//    /**
-//     * 校验库位库存
-//     * 
-//     * @author qiming.liu
-//     * @param ReplenishmentPutawayCommand
-//     * @return
-//     */
-//    public void checkStock() {
-//        whSkuInventoryManager.replenishmentPutaway(operationId, ouId, isTabbInvTotal, userId, workCode);
-//        //更新工作及作业状态
-//        this.updateStatus(operationId, workCode, ouId, userId);
-//        //清除所有缓存
-//        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
-//    }
-    
     /**
-     * 获取补货功能参数
+     * 获取库内移动功能参数
      * @param ouId
      * @param functionId
      * @return
      */
-    public WhFunctionReplenishment findWhFunctionReplenishmentByfunctionId(Long ouId,Long functionId){
-        WhFunctionReplenishment replenish = whFunctionReplenishmentDao.findByFunctionIdExt(ouId, functionId);
-        if(null == replenish) {
+    public WhFunctionInventoryMove findWhFunctionInventoryMoveByfunctionId(Long ouId,Long functionId){
+        WhFunctionInventoryMove whFunctionInventoryMove = whFunctionInventoryMoveDao.findByFunctionIdExt(ouId, functionId);
+        if(null == whFunctionInventoryMove) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        return replenish;
+        return whFunctionInventoryMove;
     }
     
     /***

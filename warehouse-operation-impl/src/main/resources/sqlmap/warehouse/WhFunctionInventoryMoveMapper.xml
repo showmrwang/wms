@@ -25,6 +25,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	is_scan_inv_attr as isScanInvAttr,
 	        	pallet_picking_mode as palletPickingMode,
 	        	container_picking_mode as containerPickingMode,
+	        	is_putaway_to_container as isPutawayToContainer,
 	        	putaway_scan_pattern as putawayScanPattern,
 	        	is_putaway_scan_inv_attr as isPutawayScanInvAttr,
 	        	ou_id as ouId
@@ -54,6 +55,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	is_scan_inv_attr ,
 		        	pallet_picking_mode ,
 		        	container_picking_mode ,
+		        	is_putaway_to_container ,
 		        	putaway_scan_pattern ,
 		        	is_putaway_scan_inv_attr ,
 		        	ou_id 
@@ -72,6 +74,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{isScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{palletPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{containerPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{isPutawayToContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{putawayScanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{isPutawayScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
@@ -97,6 +100,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_scan_inv_attr = #{isScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        pallet_picking_mode = #{palletPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        container_picking_mode = #{containerPickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_putaway_to_container = #{isPutawayToContainer,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        putaway_scan_pattern = #{putawayScanPattern,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        is_putaway_scan_inv_attr = #{isPutawayScanInvAttr,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
@@ -194,6 +198,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="containerPickingMode!=null">
 					and container_picking_mode = #{containerPickingMode}
+				</if>
+				
+				<if test="isPutawayToContainer!=null">
+					and is_putaway_to_container = #{isPutawayToContainer}
 				</if>
 	       
 				<if test="putawayScanPattern!=null">

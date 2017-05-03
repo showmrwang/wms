@@ -56,6 +56,8 @@ public class WhFunctionInventoryMove extends BaseModel {
     private Integer palletPickingMode;
     /** 整箱拣货模式 */
     private Integer containerPickingMode;
+    /** 上架是否需引入容器 */
+    private Boolean isPutawayToContainer;
     /** 移动上架扫描模式  1数量扫描 2逐件扫描 默认数量扫描 */
     private Integer putawayScanPattern;
     /** 移动上架是否扫描商品库存属性 */
@@ -165,6 +167,14 @@ public class WhFunctionInventoryMove extends BaseModel {
 
     public void setContainerPickingMode(Integer containerPickingMode) {
         this.containerPickingMode = containerPickingMode;
+    }
+
+    public Boolean getIsPutawayToContainer() {
+        return isPutawayToContainer;
+    }
+
+    public void setIsPutawayToContainer(Boolean isPutawayToContainer) {
+        this.isPutawayToContainer = isPutawayToContainer;
     }
 
     public Integer getPutawayScanPattern() {
