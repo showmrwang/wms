@@ -57,6 +57,25 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     /** 内部容器每个唯一sku对应的所有sn及残次条码 */
     private Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>();
     
+    //多库位添加新字段
+    
+    /** 周转箱对应的所有sku */
+    private Map<String, Set<Long>> sSkuIds = new HashMap<String, Set<Long>>();
+    /** 周转箱每个sku总件数 */
+    private Map<String, Map<Long, Long>> sSkuQty = new HashMap<String, Map<Long, Long>>();
+    /** 周转箱每个sku对应的唯一sku及件数 */
+    private Map<String, Map<Long, Map<String, Long>>> sSkuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();
+    /** 周转箱每个唯一sku对应的所有sn及残次条码 */
+    private Map<String, Map<String, Set<String>>> sSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
+    /** 内部容器对应所有sku（整托整箱）*/
+    private Map<String, Set<Long>> sInsideSkuIds = new HashMap<String, Set<Long>>();
+    /** 内部容器每个sku总件数（整托整箱） */
+    private Map<String, Map<Long, Long>> sInsideSkuQty = new HashMap<String, Map<Long, Long>>();
+    /** 内部容器每个sku对应的唯一sku及件数（整托整箱） */
+    private Map<String, Map<Long, Map<String, Long>>> sInsideSkuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();
+    /** 内部容器每个唯一sku对应的所有sn及残次条码 */
+    private Map<String, Map<String, Set<String>>> sInsideSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
+    
     //columns END
     
     public Boolean getIsWholeCase() {
@@ -149,4 +168,53 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     public void setInsideSkuAttrIdsSnDefect(Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect) {
         this.insideSkuAttrIdsSnDefect = insideSkuAttrIdsSnDefect;
     }
+    public Map<String, Set<Long>> getsSkuIds() {
+        return sSkuIds;
+    }
+    public void setsSkuIds(Map<String, Set<Long>> sSkuIds) {
+        this.sSkuIds = sSkuIds;
+    }
+    public Map<String, Map<Long, Long>> getsSkuQty() {
+        return sSkuQty;
+    }
+    public void setsSkuQty(Map<String, Map<Long, Long>> sSkuQty) {
+        this.sSkuQty = sSkuQty;
+    }
+    public Map<String, Map<Long, Map<String, Long>>> getsSkuAttrIds() {
+        return sSkuAttrIds;
+    }
+    public void setsSkuAttrIds(Map<String, Map<Long, Map<String, Long>>> sSkuAttrIds) {
+        this.sSkuAttrIds = sSkuAttrIds;
+    }
+    public Map<String, Map<String, Set<String>>> getsSkuAttrIdsSnDefect() {
+        return sSkuAttrIdsSnDefect;
+    }
+    public void setsSkuAttrIdsSnDefect(Map<String, Map<String, Set<String>>> sSkuAttrIdsSnDefect) {
+        this.sSkuAttrIdsSnDefect = sSkuAttrIdsSnDefect;
+    }
+    public Map<String, Set<Long>> getsInsideSkuIds() {
+        return sInsideSkuIds;
+    }
+    public void setsInsideSkuIds(Map<String, Set<Long>> sInsideSkuIds) {
+        this.sInsideSkuIds = sInsideSkuIds;
+    }
+    public Map<String, Map<Long, Long>> getsInsideSkuQty() {
+        return sInsideSkuQty;
+    }
+    public void setsInsideSkuQty(Map<String, Map<Long, Long>> sInsideSkuQty) {
+        this.sInsideSkuQty = sInsideSkuQty;
+    }
+    public Map<String, Map<Long, Map<String, Long>>> getsInsideSkuAttrIds() {
+        return sInsideSkuAttrIds;
+    }
+    public void setsInsideSkuAttrIds(Map<String, Map<Long, Map<String, Long>>> sInsideSkuAttrIds) {
+        this.sInsideSkuAttrIds = sInsideSkuAttrIds;
+    }
+    public Map<String, Map<String, Set<String>>> getsInsideSkuAttrIdsSnDefect() {
+        return sInsideSkuAttrIdsSnDefect;
+    }
+    public void setsInsideSkuAttrIdsSnDefect(Map<String, Map<String, Set<String>>> sInsideSkuAttrIdsSnDefect) {
+        this.sInsideSkuAttrIdsSnDefect = sInsideSkuAttrIdsSnDefect;
+    }
+    
 }
