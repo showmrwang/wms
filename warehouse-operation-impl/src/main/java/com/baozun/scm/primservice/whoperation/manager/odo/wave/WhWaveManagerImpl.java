@@ -310,7 +310,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         for (WhOdo odo : odoList) {
             odo.setWaveCode(null);
             // #TODO适用于整单出库逻辑
-            odo.setOdoStatus(OdoStatus.ODO_NEW);
+            odo.setOdoStatus(OdoStatus.NEW);
             this.whOdoDao.saveOrUpdateByVersion(odo);
         }
         for (WhOdoLine line : odoLineList) {
@@ -381,7 +381,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime) + ")";
         List<OdoMergeCommand> list = new ArrayList<OdoMergeCommand>();
         if (StringUtils.hasText(odoIds) && !"()".equals(odoIds)) {
-            list = this.whOdoDao.odoMerge(OdoStatus.ODO_WAVE, odoIds, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
+            list = this.whOdoDao.odoMerge(OdoStatus.WAVE, odoIds, ouId, outboundCartonType, epistaticSystemsOrderType, store, deliverGoodsTime);
         }
         return list;
     }
@@ -859,7 +859,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
             odo.setWaveCode("");
             odo.setModifiedId(userId);
-            odo.setOdoStatus(OdoStatus.ODO_NEW);
+            odo.setOdoStatus(OdoStatus.NEW);
             int odoupdateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (odoupdateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -920,7 +920,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
             }
             odo.setModifiedId(userId);
-            odo.setOdoStatus(OdoStatus.ODO_NEW);
+            odo.setOdoStatus(OdoStatus.NEW);
             odo.setWaveCode(null);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {

@@ -154,7 +154,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                 whOdoLineDao.saveOrUpdateByVersion(odoLine);
             }
         }
-        odo.setOdoStatus(OdoStatus.ODO_OUTSTOCK_FINISH);
+        odo.setOdoStatus(OdoStatus.FINISH);
         whOdoDao.saveOrUpdateByVersion(odo);
     }
 

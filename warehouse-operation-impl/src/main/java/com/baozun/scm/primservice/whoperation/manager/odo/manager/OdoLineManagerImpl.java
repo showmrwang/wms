@@ -138,7 +138,7 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         try {
             if (lineList != null && lineList.size() > 0) {
                 for (WhOdoLine line : lineList) {
-                    line.setOdoLineStatus(OdoStatus.ODO_CANCEL);
+                    line.setOdoLineStatus(OdoStatus.CANCEL);
                     int updateLineCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
                     if (updateLineCount <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -146,8 +146,8 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
                 }
             }
             odo = this.getSummaryByOdolineList(odo);
-            if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            if (OdoStatus.CREATING.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.NEW);
             }
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
