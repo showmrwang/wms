@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -1786,6 +1787,12 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 operationLineDao.saveOrUpdateByVersion(whOperationLine);
             } else {
                 operationLineDao.insert(whOperationLine);
+            }
+            // 根据出库单code获取出库单信息
+            WhOdo odo = odoDao.findByIdOuId(whWorkLineCommand.getOdoId(), whWorkLineCommand.getOuId());
+            if(!OdoStatus.ODO_SEEDING_EXECUTING.equals(odo.getHeadStartOdoStatus())){
+                odo.setHeadStartOdoStatus(OdoStatus.ODO_SEEDING_EXECUTING); 
+                odoDao.update(odo);
             }
         }
     }
