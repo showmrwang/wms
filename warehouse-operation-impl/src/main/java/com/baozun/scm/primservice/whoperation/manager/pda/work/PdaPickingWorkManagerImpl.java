@@ -2099,6 +2099,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         Set<String> outbounxBoxs  = operatorLine.getOutbounxBoxs();
                         if(!outbounxBoxs.contains(outBoundBoxCode)){
                             whOperationExecLine.setIsUseNew(true);
+                            whOperationExecLine.setOldOutboundboxCode(whOperationExecLine.getUseOutboundboxCode());
+                            whOperationExecLine.setUseOutboundboxCode(outBoundBoxCode);
                         }
                         
                     }
@@ -2110,6 +2112,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         Set<Long> turnoverBoxs = operatorLine.getTurnoverBoxs();
                         if(!turnoverBoxs.contains(turnoverBoxId)){
                             whOperationExecLine.setIsUseNew(true);
+                            whOperationExecLine.setOldContainerId(whOperationExecLine.getOldContainerId());
+                            whOperationExecLine.setUseContainerId(turnoverBoxId);
                         }
                     }
                     whOperationExecLineDao.insert(whOperationExecLine);
