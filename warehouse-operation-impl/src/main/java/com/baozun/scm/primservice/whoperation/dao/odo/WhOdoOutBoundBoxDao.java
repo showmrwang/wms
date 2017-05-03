@@ -108,5 +108,14 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      * 根据batch获取关联的odoIdList
      */
     List<Long> getOdoIdListByBatch(@Param("batch") String batch, @Param("waveId") Long waveId, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 根据出库单ID和是否已创建工作查询数据
+     * @param odoId
+     * @param isCreateWork
+     * @param ouId
+     * @return
+     */
+    List<WhOdoOutBoundBoxCommand> gethOdoOutBoundBoxLstByOdo(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("isCreateWork") Boolean isCreateWork, @Param("ouId") Long ouId);
 
 }

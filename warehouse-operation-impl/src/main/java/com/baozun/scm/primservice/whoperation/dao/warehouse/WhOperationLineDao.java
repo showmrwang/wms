@@ -54,9 +54,6 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @return
      */
 	List<WhOperationLineCommand> findOperationLineByOperationId(@Param("operationId") Long operationId, @Param("ouId") Long ouId);
-	
-	
-	
 
     /**
      * 根据作业头Id和ouId,locationId获取作业明细信息
@@ -67,5 +64,15 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @return
      */
     List<WhOperationLineCommand> findOperationLineByLocationId(@Param("ouId") Long ouId,@Param("locationId") Long locationId);
+    
+    /**
+     * 根据作业头Id和ouId获取作业明细信息
+     * 
+     * @author qiming.liu
+     * @param operationId
+     * @param ouId
+     * @return
+     */
+    List<WhOperationLineCommand> findOperationLineByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 	
 }
