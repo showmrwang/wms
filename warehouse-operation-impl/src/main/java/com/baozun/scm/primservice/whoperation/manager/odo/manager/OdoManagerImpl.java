@@ -16,7 +16,6 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
-import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -1249,11 +1248,12 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList) {
-        // 验证所有出库单上店铺所配置的发票公司和发票模板一致
-        int invoiceCount = this.whOdoDao.countInvoiceInfo(odoIdList, wave.getOuId());
-        if (invoiceCount > 1) {
-            throw new BusinessException(ErrorCodes.WAVE_ODOLIST_INVOICE_DIFFERENCE, new Object[] {wave.getCode()});
-        }
+        // 验证所有出库单上店铺所配置的发票公司和发票模板一致 @mender yimin.lu 此处不验证
+        // int invoiceCount = this.whOdoDao.countInvoiceInfo(odoIdList, wave.getOuId());
+        // if (invoiceCount > 1) {
+        // throw new BusinessException(ErrorCodes.WAVE_ODOLIST_INVOICE_DIFFERENCE, new Object[]
+        // {wave.getCode()});
+        // }
         int batchCount = 500;
         int totalCount = odoIdList.size();
         int ceil = (int) Math.ceil((double) totalCount / batchCount);
@@ -1527,4 +1527,42 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         return batchMap;
     }
     
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId) {
+        return this.whOdoDao.findNewOdoIdList(odoIdOriginalList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId) {
+        List<Long> storeIdList = this.whOdoDao.getStoreIdByOdoIdList(odoIdList, ouId);
+        Map<String, List<Long>> invoiceStoreMap=new HashMap<String, List<Long>>();
+        if(storeIdList!=null&&storeIdList.size()>0){
+            Map<Long, Store> storeMap= this.findStoreByRedis(storeIdList);
+            Iterator<Entry<Long,Store>>storeIt=storeMap.entrySet().iterator();
+            while(storeIt.hasNext()){
+                Entry<Long,Store> storeEntry=storeIt.next();
+                Long storeId=storeEntry.getKey();
+                Store store=storeEntry.getValue();
+                
+                String key = (StringUtils.isEmpty(store.getMakeOutAnInvoiceCompany()) ? "null" : store.getMakeOutAnInvoiceCompany()) + "$" + (StringUtils.isEmpty(store.getInvoiceExportTemplet()) ? "null" : store.getInvoiceExportTemplet());
+                if (invoiceStoreMap.containsKey(key)) {
+                    invoiceStoreMap.get(key).add(storeId);
+                } else {
+                    List<Long> values = new ArrayList<Long>();
+                    values.add(storeId);
+                    invoiceStoreMap.put(key, values);
+                }
+            }
+        }
+        return invoiceStoreMap;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
+        return this.whOdoDao.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
+    }
+
 }

@@ -857,4 +857,7 @@ public final class Constants {
     public static final String WEEK_DAY_FRIDAY = "Friday";
     public static final String WEEK_DAY_SATURDAY = "Saturday";
     public static final String WEEK_DAY_SUNDAY = "Sunday";
+    
+    
+    public static final Double PICKING_NUM = 1.0;  //拣货数量
 }

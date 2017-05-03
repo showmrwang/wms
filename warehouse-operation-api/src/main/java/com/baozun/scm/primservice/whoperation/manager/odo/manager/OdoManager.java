@@ -310,4 +310,20 @@ public interface OdoManager extends BaseManager {
      */
     Map<String, List<Long>> getBatchNoOdoIdListGroup(Long waveId, Long ouId);
 
+    /**
+     * 从一批出库单中筛选出新建未创建波次的出库单
+     * 
+     * @param odoIdOriginalList
+     * @param ouId
+     * @return
+     */
+    List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId);
+
+    /**
+     * 获取一批出库单的发票-店铺分组
+     */
+    Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId);
+
+    List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId);
+
 }

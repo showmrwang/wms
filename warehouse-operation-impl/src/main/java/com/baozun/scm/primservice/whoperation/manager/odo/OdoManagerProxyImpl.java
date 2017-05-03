@@ -109,10 +109,10 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
-import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Region;
+import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget;
 
@@ -2069,7 +2069,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         /**
          * 校验出库单头和明细状态；以及是否处于别的波次中
          */
-        // Map<Long, WhOdo> odoMap = new HashMap<Long, WhOdo>();
 
         WhWaveMaster master = this.odoManager.findWaveMasterByIdouId(waveMasterId, ouId);
         if (master == null) {
@@ -2441,6 +2440,22 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 }
             }
         }
+    }
+
+
+    @Override
+    public List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId) {
+        return this.odoManager.findNewOdoIdList(odoIdOriginalList, ouId);
+    }
+
+    @Override
+    public Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId) {
+        return this.odoManager.getStoreIdMapByOdoIdListGroupByInvoice(odoIdList, ouId);
+    }
+
+    @Override
+    public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
+        return this.odoManager.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
     }
 
 }

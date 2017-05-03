@@ -644,7 +644,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
      * 
      * @param infoPo
      */
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     private void snycPoToInfoWhenEditHead(WhPo shardPo) {
         WhPo infoPo = this.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), shardPo.getOuId());
         infoPo.setEta(shardPo.getEta());
@@ -670,7 +669,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     }
 
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     private void snycPoToInfoWhenClosed(WhPo shardPo, Boolean isPo, List<WhPoLine> lineList) {
         isPo = isPo == null ? true : isPo;
         if (!isPo) {
@@ -721,7 +719,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     }
 
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     private void snycPoToInfoWhenRcvdFinished(WhPo shardPo, List<WhPoLine> lineList) {
         this.snycPoToInfoWhenRcvd(shardPo, lineList);
         WhPo infoPo = this.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), shardPo.getOuId());
@@ -747,7 +744,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
     }
 
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     private void snycPoToInfoWhenRcvd(WhPo shardPo, List<WhPoLine> lineList) {
         WhPo infoPo = this.findWhPoByExtCodeStoreIdOuIdToInfo(shardPo.getExtCode(), shardPo.getStoreId(), shardPo.getOuId());
         if (infoPo == null) {

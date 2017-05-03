@@ -1,11 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
-import java.util.List;
-
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;

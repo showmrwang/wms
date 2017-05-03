@@ -7365,6 +7365,22 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                }
            }
            //删除库位库存表中的容器库存
+           for (WhSkuInventoryCommand invCmd : invList) {
+               String uuid = invCmd.getUuid();
+               Double oldQty = 0.0;
+               if (true == isTabbInvTotal) {
+                     try {
+                             oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
+                     } catch (Exception e) {
+                             log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                     }
+               } else {
+                         oldQty = 0.0;
+               }
+//               insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
+               whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
+           }
     }
     
     /***
@@ -8531,8 +8547,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 BeanUtils.copyProperties(skuInvCmd, skuInv);
                 Double qty = 0.0;
                 if(scanSkuQty.doubleValue() > skuInvCmd.getOnHandQty().doubleValue()){
+                    uuid = skuInvCmd.getUuid();
                     skuInvQty += skuInvCmd.getOnHandQty();
                     if(scanSkuQty.doubleValue() > skuInvQty.doubleValue()) {
+                        Double oldQty = 0.0;
+                        if (true == isTabbInvTotal) {
+                            try {
+                                oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
+                            } catch (Exception e) {
+                                log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                            }
+                        } else {
+                            oldQty = 0.0;
+                        }
+                        insertSkuInventoryLog(skuInvCmd.getId(), -skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                         whSkuInventoryDao.deleteWhSkuInventoryById(skuInvCmd.getId(), ouId);
                         continue;
                     }else{
@@ -8542,6 +8571,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                      qty = skuInvCmd.getOnHandQty() - scanSkuQty;
                 }
                 if(qty == 0){
+                    uuid = skuInvCmd.getUuid();
+                    Double oldQty = 0.0;
+                    if (true == isTabbInvTotal) {
+                        try {
+                            oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty = 0.0;
+                    }
+                    insertSkuInventoryLog(skuInvCmd.getId(), -skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                     whSkuInventoryDao.deleteWhSkuInventoryById(skuInvCmd.getId(), ouId);
                 }
                 if(qty.doubleValue() > 0){
@@ -8558,6 +8600,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     insertGlobalLog(GLOBAL_LOG_UPDATE, skuInv, ouId, userId, null, null);
                     break;
                 }else{
+                    uuid = skuInvCmd.getUuid();
+                    Double oldQty = 0.0;
+                    if (true == isTabbInvTotal) {
+                        try {
+                            oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty = 0.0;
+                    }
+                    insertSkuInventoryLog(skuInvCmd.getId(), -skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                     whSkuInventoryDao.deleteWhSkuInventoryById(skuInvCmd.getId(), ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, skuInv, ouId, userId, null, null);
                 } 

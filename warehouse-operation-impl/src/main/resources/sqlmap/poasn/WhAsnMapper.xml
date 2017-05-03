@@ -164,7 +164,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        urgent_status = #{urgentStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
 		        is_auto_close = #{isAutoClose,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL} 
+		        overchage_rate=#{overChageRate,javaType=java.lang.Double,jdbcType=DECIMAL}
 	        WHERE 
 		        id = #{id} 
 	    ]]>

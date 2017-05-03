@@ -384,7 +384,7 @@ public class AsnLineManagerImpl extends BaseManagerImpl implements AsnLineManage
                 lineCommand.setMfgDateStr("");
             }
             if (line.getExpDate() != null) {
-                lineCommand.setExpDateStr(DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD));
+                lineCommand.setExpDateStr(DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD));
             } else {
                 lineCommand.setExpDateStr("");
             }
