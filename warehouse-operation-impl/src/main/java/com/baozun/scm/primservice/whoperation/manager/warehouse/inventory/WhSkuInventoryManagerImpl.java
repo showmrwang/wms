@@ -7365,7 +7365,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                }
            }
            //删除库位库存表中的容器库存
-           for (WhSkuInventoryCommand invCmd : invList) {
+           //1.根据周转箱id,查询容器库存记录
+           List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, turnoverBoxId);
+           //循环删除容器库存记录
+           for (WhSkuInventoryCommand invCmd : skuInvCmdList) {
                String uuid = invCmd.getUuid();
                Double oldQty = 0.0;
                if (true == isTabbInvTotal) {
@@ -7378,7 +7381,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                } else {
                          oldQty = 0.0;
                }
-//               insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
+               insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
            }
     }
