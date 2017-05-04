@@ -187,7 +187,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             sourceOdo.setOuId(odoGroup.getOuId());
             //#TODO yimin.lu 设置状态逻辑 暂时放于此位置
             if (odoGroup.getIsWms() != null && odoGroup.getIsWms()) {
-                sourceOdo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
+                sourceOdo.setOdoStatus(OdoStatus.CREATING);
             }
 
             List<OdoLineCommand> sourceOdoLineList = odoGroup.getOdoLineList();
@@ -451,7 +451,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (odo == null) {
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
-            if (!(OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(odo.getOdoStatus()))) {
+            if (!(OdoStatus.CREATING.equals(odo.getOdoStatus()) || OdoStatus.NEW.equals(odo.getOdoStatus()))) {
                 throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
             }
             Long odoId = odo.getId();
@@ -496,7 +496,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             this.odoManager.editOdo(odo, trans);
             // 计算配货模式
             if (distributionModeCalcFlag) {
-                if (!OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+                if (!OdoStatus.CREATING.equals(odo.getOdoStatus())) {
 
                     this.distributionModeArithmeticManagerProxy.AddToWave(odo.getCounterCode(), odoId);
                 }
@@ -558,14 +558,14 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             	odo.setIsAllowMerge(true);
             }
             if (StringUtils.isEmpty(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.ODO_NEW);
+                odo.setOdoStatus(OdoStatus.NEW);
             }
             // @mender yimin.lu 2017/4/11 领先、滞后出库单状态
             if (StringUtils.isEmpty(odo.getHeadStartOdoStatus())) {
-                odo.setHeadStartOdoStatus(OdoStatus.ODO_NEW);
+                odo.setHeadStartOdoStatus(OdoStatus.NEW);
             }
             if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
-                odo.setLagOdoStatus(OdoStatus.ODO_NEW);
+                odo.setLagOdoStatus(OdoStatus.NEW);
             }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
@@ -687,7 +687,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             line.setLastModifyTime(new Date());
             line.setModifiedId(userId);
         }
-        line.setOdoLineStatus(OdoStatus.ODO_TOBECREATED);
+        line.setOdoLineStatus(OdoStatus.ODOLINE_TOBECREATED);
         line.setIsCheck(lineCommand.getIsCheck());
         line.setFullLineOutbound(lineCommand.getFullLineOutbound());
         line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
@@ -773,7 +773,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (odo == null) {
                 throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
             }
-            if (!(OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(odo.getOdoStatus()))) {
+            if (!(OdoStatus.CREATING.equals(odo.getOdoStatus()) || OdoStatus.NEW.equals(odo.getOdoStatus()))) {
                 throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
             }
             /*
@@ -786,8 +786,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             /** 以下逻辑判断ODO状态 */
             long lineCount = this.odoLineManager.findOdoLineListCountByOdoId(odoId, ouId);
             if (lineCount > 0) { 
-                if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
-                    odo.setOdoStatus(OdoStatus.ODO_NEW);
+                if (OdoStatus.CREATING.equals(odo.getOdoStatus())) {
+                    odo.setOdoStatus(OdoStatus.NEW);
                     odo.setModifiedId(userId);
                     // 出库单变成新增的节点，需要将数据插入到订单池
                     isAddToCachePool = true;
@@ -853,7 +853,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (odo == null) {
                 throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
             }
-            if (!(OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus()) || OdoStatus.ODO_NEW.equals(odo.getOdoStatus()))) {
+            if (!(OdoStatus.CREATING.equals(odo.getOdoStatus()) || OdoStatus.NEW.equals(odo.getOdoStatus()))) {
                 throw new BusinessException(ErrorCodes.ODO_EDIT_ERROR);
             }
             /*
@@ -866,8 +866,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             /** 以下逻辑判断ODO状态 */
             long lineCount = this.odoLineManager.findOdoLineListCountByOdoId(odoId, ouId);
             if (lineCount > 0) {
-                if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
-                    odo.setOdoStatus(OdoStatus.ODO_NEW);
+                if (OdoStatus.CREATING.equals(odo.getOdoStatus())) {
+                    odo.setOdoStatus(OdoStatus.NEW);
                     odo.setModifiedId(userId);
                     // 出库单变成新增的节点，需要将数据插入到订单池
                     isAddToCachePool = true;
@@ -1169,7 +1169,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             // 如果不选分组 默认按照客户分组
             // 如果没有选出库单状态，则默认为：新建和部分出库
             if (search.getOdoStatus() == null || search.getOdoStatus().size() == 0) {
-                search.setOdoStatus(Arrays.asList(new String[] {OdoStatus.ODO_NEW, OdoStatus.ODO_OUTSTOCK}));
+                search.setOdoStatus(Arrays.asList(new String[] {OdoStatus.NEW, OdoStatus.PARTLY_FINISH}));
             }
             // 如果没有选出库单明细状态，则默认为新建和部分出库
             if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {
@@ -1189,7 +1189,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 if(liOdoList!=null&&liOdoList.size()>0){
                     for (Long liOdoId : liOdoList) {
                         WhOdo odo = this.odoManager.findOdoByIdOuId(liOdoId, ouId);
-                        if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus()) || OdoStatus.ODO_OUTSTOCK.equals(odo.getOdoStatus())) {
+                        if (OdoStatus.NEW.equals(odo.getOdoStatus()) || OdoStatus.PARTLY_FINISH.equals(odo.getOdoStatus())) {
                             if (StringUtils.hasText(odo.getWaveCode())) {
                                 throw new BusinessException(odo.getExtCode() + "已处于别的波次[波次编号：" + odo.getWaveCode() + "]中");
                             }
@@ -1226,7 +1226,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 if (odo == null) {
                     throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                 }
-                if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus()) || OdoStatus.ODO_OUTSTOCK.equals(odo.getOdoStatus())) {
+                if (OdoStatus.NEW.equals(odo.getOdoStatus()) || OdoStatus.PARTLY_FINISH.equals(odo.getOdoStatus())) {
 
                     if (StringUtils.hasText(odo.getWaveCode())) {
                         throw new BusinessException(odo.getExtCode() + "已处于别的波次[波次编号：" + odo.getWaveCode() + "]中");
@@ -1503,8 +1503,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             odo.setSkuNumberOfPackages(skuNumberOfPackages);
             odo.setIncludeFragileCargo(isFragile);
             odo.setIncludeHazardousCargo(isHazardous);
-            if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.ODO_NEW);
+            if (OdoStatus.CREATING.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.NEW);
             }
             List<WhOdoVasCommand> vasList = this.odoVasManager.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), null, ouId);
             // 设置允许合并与否
@@ -2013,7 +2013,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 odo.setIsAllowMerge(true);
             }
             if (StringUtils.isEmpty(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.ODO_NEW);
+                odo.setOdoStatus(OdoStatus.NEW);
             }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
@@ -2024,7 +2024,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 odo.setExtCode(extCode);
             }
             // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
-            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+            if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
                 // 设置计数器编码
                 Set<Long> skuIdSet = new HashSet<Long>();
                 for (OdoLineCommand line : odoLineList) {
@@ -2305,7 +2305,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             // 如果不选分组 默认按照客户分组
             // 如果没有选出库单状态，则默认为：新建和部分出库
             if (search.getOdoStatus() == null || search.getOdoStatus().size() == 0) {
-                search.setOdoStatus(Arrays.asList(new String[] {OdoStatus.ODO_NEW, OdoStatus.ODO_OUTSTOCK}));
+                search.setOdoStatus(Arrays.asList(new String[] {OdoStatus.NEW, OdoStatus.PARTLY_FINISH}));
             }
             // 如果没有选出库单明细状态，则默认为新建和部分出库
             if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {

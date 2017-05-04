@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
 
 import lark.common.annotation.CommonQuery;
@@ -42,5 +43,8 @@ public interface WhOutboundboxLineSnDao extends BaseDao<WhOutboundboxLineSn, Lon
      * @return
      */
     List<WhOutboundboxLineSn> findWhOutboundboxLineSnByOutBoundBoxLineId(@Param("obblid") Long obblid, @Param("ouid") Long ouid);
+
+
+    List<WhOutboundboxLineSnCommand> findWhOutboundboxLineSnCommandByOutBoundBoxLineId(@Param("obblid") Long obblid, @Param("ouid") Long ouid);
 
 }

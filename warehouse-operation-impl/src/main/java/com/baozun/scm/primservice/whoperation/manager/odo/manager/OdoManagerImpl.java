@@ -490,10 +490,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
             // @mender yimin.lu 配货模式计算
             // 汇总信息
-            if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+            if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
                 this.getSummaryByOdolineList(odo);
                 // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
-                if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+                if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
                     // 设置计数器编码
                     String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
                     odo.setCounterCode(counterCode);
@@ -611,10 +611,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             if (odo == null) {
                 throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
             }
-            if (OdoStatus.ODO_TOBECREATED.equals(odo.getOdoStatus())) {
+            if (OdoStatus.CREATING.equals(odo.getOdoStatus())) {
 
-            } else if (OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.ODO_TOBECREATED);
+            } else if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.CREATING);
                 int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
                 if (updateCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -685,7 +685,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
 
-            odo.setOdoStatus(OdoStatus.ODO_CANCEL);
+            odo.setOdoStatus(OdoStatus.CANCEL);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
                 throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
@@ -1029,7 +1029,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             WhOdo odo = entry.getValue();
             odo.setModifiedId(userId);
             odo.setWaveCode(wave.getCode());
-            odo.setOdoStatus(OdoStatus.ODO_WAVE);
+            odo.setOdoStatus(OdoStatus.WAVE);
             int count = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (count <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -1133,7 +1133,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         WhOdo whOdo = this.whOdoDao.findByIdOuId(odoId, ouId);
         Long cnt = this.whOdoLineDao.findListCountNotNew(whOdoLine);
         if (0 == cnt) {
-            whOdo.setOdoStatus(OdoStatus.ODO_NEW);
+            whOdo.setOdoStatus(OdoStatus.NEW);
         }
         whOdo.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
         whOdo.setIsAssignSuccess(false);
@@ -1275,7 +1275,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
             @SuppressWarnings("unused")
-            int updateOdoCount = this.whOdoDao.addOdoToWave(subList, wave.getOuId(), wave.getCreatedId(), wave.getCode(), OdoStatus.ODO_WAVE);
+            int updateOdoCount = this.whOdoDao.addOdoToWave(subList, wave.getOuId(), wave.getCreatedId(), wave.getCode(), OdoStatus.WAVE);
 
         }
 

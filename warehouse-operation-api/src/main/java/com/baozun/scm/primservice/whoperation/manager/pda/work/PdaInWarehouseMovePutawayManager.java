@@ -3,7 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionInventoryMove;
 
 public interface PdaInWarehouseMovePutawayManager extends BaseManager {
 
@@ -59,6 +59,6 @@ public interface PdaInWarehouseMovePutawayManager extends BaseManager {
      * @param functionId
      * @return
      */
-    public WhFunctionReplenishment findWhFunctionReplenishmentByfunctionId(Long ouId,Long functionId);
+    public WhFunctionInventoryMove findWhFunctionInventoryMoveByfunctionId(Long ouId,Long functionId);
     
 }

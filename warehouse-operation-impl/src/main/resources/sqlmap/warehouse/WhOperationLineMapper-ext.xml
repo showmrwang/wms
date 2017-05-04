@@ -310,5 +310,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
+    
+    <select id="findOperationLineByOdoId" resultMap="whOperationLineCommandResultExt">
+    	select 
+    		<include refid="whOperationLineColumnsExt" />
+	    from 
+	    	t_wh_operation_line
+		<where> 
+				ou_id = #{ouId}
+			<if test="odoId!=null">
+				and odo_id = #{odoId}
+			</if>
+		</where>
+		group by odo_line_id
+    </select>
 	
 </mapper>

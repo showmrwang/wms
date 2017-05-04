@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationLineCacheCommand;
@@ -39,8 +40,12 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
@@ -55,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.concentration.PdaConcentrationManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
@@ -70,6 +76,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CheckingModeCalcManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
@@ -144,6 +151,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private CheckingModeCalcManager checkingModeCalcManager;
     @Autowired
     private OdoManager odoManager;
+    @Autowired
+    private OdoLineManager odoLineManager;
+    @Autowired
+    private WhOdoDao odoDao;
+    @Autowired
+    private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
+    @Autowired
+    private WhOdoLineDao whOdoLineDao;
+    
 
 
     /**
@@ -1907,6 +1923,25 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
+                // 更改出库单状态                
+                List<WhOperationLineCommand>  whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
+                for(WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst){
+                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOuId(), null, true, ouId);
+                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), true, ouId);
+                    if(0 == odoOutBoundBoxByOdo.size()){
+                        // 根据出库单code获取出库单信息
+                        WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), ouId);
+                        odo.setHeadStartOdoStatus(OdoStatus.PICKING_FINISH);
+                        odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
+                        odoDao.update(odo);    
+                    }
+                    if(0 == odoOutBoundBoxByOdoLine.size()){
+                        // 根据出库单code获取出库单信息
+                        WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), ouId);
+                        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
+                        whOdoLineDao.update(whOdoLine);    
+                    }
+                }
             }
             if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细

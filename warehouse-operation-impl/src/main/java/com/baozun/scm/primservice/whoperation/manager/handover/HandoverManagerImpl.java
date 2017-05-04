@@ -223,7 +223,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
 
 
                 WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
-                odo.setOdoStatus(OdoStatus.ODO_OUTSTOCK_FINISH);
+                odo.setOdoStatus(OdoStatus.FINISH);
                 int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
                 if (0 == odoUpdate) {
                     // 出库单状态更新失败

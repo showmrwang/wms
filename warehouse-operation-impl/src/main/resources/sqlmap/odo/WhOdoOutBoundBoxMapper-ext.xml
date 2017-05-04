@@ -296,4 +296,23 @@
 			and b.box_batch = #{batch}
 		group by b.odo_id
     </select>
+    
+    <select id="gethOdoOutBoundBoxLstByOdo" resultMap="whOdoOutBoundBoxCommandResultExt">
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		<where>
+			ou_id = #{ouId}
+			<if test="odoId!=null">
+				and odo_id = #{odoId}
+			</if>
+			<if test="odoLineId!=null">
+				and odo_line_id = #{odoLineId}
+			</if>
+			<if test="isCreateWork!=null">
+				and is_create_work = #{isCreateWork}
+			</if>
+		</where>
+	</select>
 </mapper>

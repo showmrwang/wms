@@ -35,7 +35,7 @@ public class OdoStatus implements Serializable {
     
 
     /** ODO */
-    public static final String ODO_NEW = "1";// 新建
+  /*  public static final String ODO_NEW = "1";// 新建
     public static final String ODO_OUTSTOCK = "2";// 部分出库
     public static final String ODO_MERGE = "5";// 已合并
     public static final String ODO_WAVE = "8";// 波次中
@@ -47,7 +47,7 @@ public class OdoStatus implements Serializable {
     public static final String ODO_PICKING_EXECUTING = "20";// 拣货中
     public static final String ODO_PICKING_FINISH = "21";// 拣货完成
     public static final String ODO_TOBECREATED = "99";// 待创建
-    
+*/    
     
     /** ODO */
 

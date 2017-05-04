@@ -36,9 +36,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoC
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
@@ -888,7 +885,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // 修改出库单状态为复核完成状态。
         WhOdo whOdo  = whOdoDao.findByIdOuId(odoId, ouId);
         //修改出库单状态为复核完成状态。
-        whOdo.setHeadStartOdoStatus(OdoStatus.ODO_SEEDING_EXECUTING);
+        whOdo.setHeadStartOdoStatus(OdoStatus.SEEDING);
         whOdoDao.saveOrUpdateByVersion(whOdo);
     }
     

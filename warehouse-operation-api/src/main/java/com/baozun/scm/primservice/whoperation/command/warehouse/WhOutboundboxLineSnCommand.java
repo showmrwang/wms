@@ -27,9 +27,9 @@ public class WhOutboundboxLineSnCommand extends BaseModel {
      * 
      */
     private static final long serialVersionUID = 7150910093135074938L;
-    
+
     // columns START
-    
+
     /** 主键ID */
     private Long id;
     /** 出库箱明细行ID */
@@ -61,8 +61,17 @@ public class WhOutboundboxLineSnCommand extends BaseModel {
     /** 当前月份 用于归档 */
     private String sysDate;
 
+    /** 残次类型code(店铺) */
+    private String storeDefectTypeCode;
+    /** 残次原因code(店铺) */
+    private String storeDefectReasonsCode;
+    /** 残次类型code(仓库) */
+    private String whDefectTypeCode;
+    /** 残次原因code(仓库) */
+    private String whDefectReasonsCode;
+
     // columns END
-    
+
     public Long getId() {
         return id;
     }
@@ -181,6 +190,38 @@ public class WhOutboundboxLineSnCommand extends BaseModel {
 
     public void setSysDate(String sysDate) {
         this.sysDate = sysDate;
+    }
+
+    public String getStoreDefectTypeCode() {
+        return storeDefectTypeCode;
+    }
+
+    public void setStoreDefectTypeCode(String storeDefectTypeCode) {
+        this.storeDefectTypeCode = storeDefectTypeCode;
+    }
+
+    public String getStoreDefectReasonsCode() {
+        return storeDefectReasonsCode;
+    }
+
+    public void setStoreDefectReasonsCode(String storeDefectReasonsCode) {
+        this.storeDefectReasonsCode = storeDefectReasonsCode;
+    }
+
+    public String getWhDefectTypeCode() {
+        return whDefectTypeCode;
+    }
+
+    public void setWhDefectTypeCode(String whDefectTypeCode) {
+        this.whDefectTypeCode = whDefectTypeCode;
+    }
+
+    public String getWhDefectReasonsCode() {
+        return whDefectReasonsCode;
+    }
+
+    public void setWhDefectReasonsCode(String whDefectReasonsCode) {
+        this.whDefectReasonsCode = whDefectReasonsCode;
     }
 
 }

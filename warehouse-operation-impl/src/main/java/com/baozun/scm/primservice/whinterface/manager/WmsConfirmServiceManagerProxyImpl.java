@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundInvoiceConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundInvoiceLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundLineConfirm;
+import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundSnLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager;
@@ -34,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundC
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundInvoiceLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm;
+import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundSnLineConfirm;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundConfirm;
 import com.baozun.scm.primservice.whoperation.model.whinterface.inbound.WhInboundInvLineConfirm;
@@ -218,6 +220,9 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             // 有数据生成同步数据
             BeanUtils.copyProperties(whOutboundConfirm, o);
             o.setWhCode(whCode);
+            if (whOutboundConfirm.getWmsOdoStatus() != 1) {
+                o.setOutboundTime(whOutboundConfirm.getCreateTime());
+            }
             // 运输服务商 快递单号数据封装
             List<String> tspList = new ArrayList<String>();
             if (!StringUtil.isEmpty(whOutboundConfirm.getTransportServiceProvider())) {
@@ -243,6 +248,15 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
                 WmsOutBoundLineConfirm wmsOutboundLineConfirm = new WmsOutBoundLineConfirm();
                 BeanUtils.copyProperties(line, wmsOutboundLineConfirm);
                 lineConfirms.add(wmsOutboundLineConfirm);
+                List<WmsOutBoundSnLineConfirm> snLineConfirms = new ArrayList<WmsOutBoundSnLineConfirm>();
+                // 出库单明细SN/残次信息
+                List<WhOutboundSnLineConfirm> snLine = line.getSnLineConfirms();
+                for (WhOutboundSnLineConfirm sn : snLine) {
+                    WmsOutBoundSnLineConfirm s = new WmsOutBoundSnLineConfirm();
+                    BeanUtils.copyProperties(sn, s);
+                    snLineConfirms.add(s);
+                }
+                wmsOutboundLineConfirm.setWmsOutBoundSnLineConfirm(snLineConfirms);
             }
             o.setWmsOutBoundLineConfirm(lineConfirms);
             List<WmsOutBoundInvoiceConfirm> invoiceConfirms = new ArrayList<WmsOutBoundInvoiceConfirm>();

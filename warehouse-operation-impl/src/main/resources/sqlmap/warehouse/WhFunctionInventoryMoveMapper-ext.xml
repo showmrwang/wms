@@ -25,6 +25,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	is_scan_inv_attr as isScanInvAttr,
 	        	pallet_picking_mode as palletPickingMode,
 	        	container_picking_mode as containerPickingMode,
+	        	is_putaway_to_container as isPutawayToContainer,
 	        	putaway_scan_pattern as putawayScanPattern,
 	        	is_putaway_scan_inv_attr as isPutawayScanInvAttr,
 	        	ou_id as ouId
@@ -90,6 +91,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="containerPickingMode!=null">
 					and container_picking_mode = #{containerPickingMode}
+				</if>
+				
+				<if test="isPutawayToContainer!=null">
+					and is_putaway_to_container = #{isPutawayToContainer}
 				</if>
 	       
 				<if test="putawayScanPattern!=null">

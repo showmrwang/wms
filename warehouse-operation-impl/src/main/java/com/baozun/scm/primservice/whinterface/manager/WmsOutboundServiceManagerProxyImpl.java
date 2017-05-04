@@ -112,7 +112,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
                 return new WmsResponse(0, WmsErrorCode.EXTCODE_NOT_UNIQUE_ERROR, "EXTCODE_NOT_UNIQUE_ERROR");
             }
             WhOdo odo = odoList.get(0);
-            if (!OdoStatus.ODO_NEW.equals(odo.getOdoStatus())) {
+            if (!OdoStatus.NEW.equals(odo.getOdoStatus())) {
                 return new WmsResponse(0, WmsErrorCode.STATUS_CANCEL_ERROR, "ODO_STATUS_CANCEL_ERROR");
             }
             if (wmsOutBoundCancel.getIsOdoCancel().booleanValue()) {

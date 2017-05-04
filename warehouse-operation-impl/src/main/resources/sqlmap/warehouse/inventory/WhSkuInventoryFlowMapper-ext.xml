@@ -159,7 +159,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inv_attr2 as invAttr2,
 	        	inv_attr3 as invAttr3,
 	        	inv_attr4 as invAttr4,
-	        	inv_attr5 as invAttr5
+	        	inv_attr5 as invAttr5,
 	        	inv_transaction_type as invTransactionType,
 	        	create_time as createTime
 	    ]]>
