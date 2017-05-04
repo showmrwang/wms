@@ -202,8 +202,8 @@ public final class SkuCategoryProvider {
         String invStatus = (StringUtils.isEmpty(whCheckingLineCommand.getInvStatusStr()) ? PH : whCheckingLineCommand.getInvStatusStr() + "");
         String batchNumber = (StringUtils.isEmpty(whCheckingLineCommand.getBatchNumber()) ? PH : whCheckingLineCommand.getBatchNumber());
         String countryOfOrigin = (StringUtils.isEmpty(whCheckingLineCommand.getCountryOfOrigin()) ? PH : whCheckingLineCommand.getCountryOfOrigin());
-        String mfgDate = (StringUtils.isEmpty(whCheckingLineCommand.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(whCheckingLineCommand.getMfgDate()));
-        String expDate = (StringUtils.isEmpty(whCheckingLineCommand.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(whCheckingLineCommand.getExpDate()));
+        String mfgDate = (StringUtils.isEmpty(whCheckingLineCommand.getMfgDate()) ? PH : new SimpleDateFormat("yyyy-MM-dd").format(whCheckingLineCommand.getMfgDate()));
+        String expDate = (StringUtils.isEmpty(whCheckingLineCommand.getExpDate()) ? PH : new SimpleDateFormat("yyyy-MM-dd").format(whCheckingLineCommand.getExpDate()));
         String invAttr1 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr1Str()) ? PH : whCheckingLineCommand.getInvAttr1Str());
         String invAttr2 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr2Str()) ? PH : whCheckingLineCommand.getInvAttr2Str());
         String invAttr3 = (StringUtils.isEmpty(whCheckingLineCommand.getInvAttr3Str()) ? PH : whCheckingLineCommand.getInvAttr3Str());
