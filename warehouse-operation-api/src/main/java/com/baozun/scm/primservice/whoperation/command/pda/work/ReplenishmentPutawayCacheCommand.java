@@ -1,6 +1,8 @@
 package com.baozun.scm.primservice.whoperation.command.pda.work;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -15,7 +17,8 @@ public class ReplenishmentPutawayCacheCommand extends BaseCommand {
     /** 已经扫描的库位 */
     private ArrayDeque<Long> tipLocationIds = new ArrayDeque<Long>();
     /** 已经扫描的周转箱 */
-    private ArrayDeque<Long> tipTurnoverBoxIds = new ArrayDeque<Long>();
+    
+    private Map<Long,ArrayDeque<Long>> tipTurnoverBoxIds = new HashMap<Long,ArrayDeque<Long>>();
 
     public ArrayDeque<Long> getTipLocationIds() {
         return tipLocationIds;
@@ -25,14 +28,15 @@ public class ReplenishmentPutawayCacheCommand extends BaseCommand {
         this.tipLocationIds = tipLocationIds;
     }
 
-    public ArrayDeque<Long> getTipTurnoverBoxIds() {
+    public Map<Long, ArrayDeque<Long>> getTipTurnoverBoxIds() {
         return tipTurnoverBoxIds;
     }
 
-    public void setTipTurnoverBoxIds(ArrayDeque<Long> tipTurnoverBoxIds) {
+    public void setTipTurnoverBoxIds(Map<Long, ArrayDeque<Long>> tipTurnoverBoxIds) {
         this.tipTurnoverBoxIds = tipTurnoverBoxIds;
     }
 
+    
 
 
 }

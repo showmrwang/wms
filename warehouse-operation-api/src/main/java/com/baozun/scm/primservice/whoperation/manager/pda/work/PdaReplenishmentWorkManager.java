@@ -59,7 +59,7 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      * @param ouId
      * @return
      */
-    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId);
+    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId, Long operationId);
     
     /***
      * 修改周转箱状态

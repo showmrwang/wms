@@ -457,7 +457,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        UPDATE t_wh_operation_exec_line SET
 			        operation_id = #{operationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        work_line_id = #{workLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -497,7 +496,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now() ,
-			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
+			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}
@@ -930,4 +930,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and is_short_picking = #{isShortPicking}
 	</select>
 	
+	
+	<select id="getOperationExecLineCount" resultType="long">
+		select
+	           count(1)
+		from
+		t_wh_operation_exec_line
+		where
+			ou_id = #{ouId}
+			and operation_id = #{operationId}
+			and use_container_id=#{useContainerId}
+	</select>
 </mapper>
