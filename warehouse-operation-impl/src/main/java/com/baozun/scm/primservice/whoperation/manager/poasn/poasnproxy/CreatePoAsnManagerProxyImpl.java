@@ -1099,6 +1099,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             if (sku == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("条码找不到对应的商品", null, rowNum, null));
             }
+            lineCommand.setSkuId(sku.getId());
             if (lineCommand.getInvStatus() == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
             } else {
@@ -1113,31 +1114,31 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 }
             }
             if (StringUtils.hasText(lineCommand.getInvAttr1())) {
-                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_1, lineCommand.getInvType());
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_1, lineCommand.getInvAttr1());
                 if (dic == null) {
                     rootExcelException.getExcelExceptions().add(new ExcelException("库存属性1编码错误", null, rowNum, null));
                 }
             }
             if (StringUtils.hasText(lineCommand.getInvAttr2())) {
-                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_2, lineCommand.getInvType());
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_2, lineCommand.getInvAttr2());
                 if (dic == null) {
                     rootExcelException.getExcelExceptions().add(new ExcelException("库存属性2编码错误", null, rowNum, null));
                 }
             }
             if (StringUtils.hasText(lineCommand.getInvAttr3())) {
-                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_3, lineCommand.getInvType());
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_3, lineCommand.getInvAttr3());
                 if (dic == null) {
                     rootExcelException.getExcelExceptions().add(new ExcelException("库存属性3编码错误", null, rowNum, null));
                 }
             }
             if (StringUtils.hasText(lineCommand.getInvAttr4())) {
-                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_4, lineCommand.getInvType());
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_4, lineCommand.getInvAttr4());
                 if (dic == null) {
                     rootExcelException.getExcelExceptions().add(new ExcelException("库存属性4编码错误", null, rowNum, null));
                 }
             }
             if (StringUtils.hasText(lineCommand.getInvAttr5())) {
-                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_5, lineCommand.getInvType());
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_5, lineCommand.getInvAttr5());
                 if (dic == null) {
                     rootExcelException.getExcelExceptions().add(new ExcelException("库存属性5编码错误", null, rowNum, null));
                 }
@@ -1288,6 +1289,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                     line.setInvAttr4(lineCommand.getInvAttr4());
                     line.setInvAttr5(lineCommand.getInvAttr5());
                     line.setInvType(lineCommand.getInvType());
+                    line.setSkuId(lineCommand.getSkuId());
                     line.setCreatedId(userId);
                     line.setCreateTime(new Date());
                     line.setModifiedId(userId);

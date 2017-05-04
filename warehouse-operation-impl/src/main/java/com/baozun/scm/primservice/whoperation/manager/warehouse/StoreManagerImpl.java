@@ -309,6 +309,7 @@ public class StoreManagerImpl extends BaseManagerImpl implements StoreManager {
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public Boolean checkCustomerStoreUser(Long customerId, Long storeId, Long userId) {
         try {
 
