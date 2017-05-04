@@ -217,8 +217,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 String skuAttr = SkuCategoryProvider.getSkuAttrIdByCheck(command);
                 command.setSkuAttr(skuAttr);
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                command.setMfgDateStr(format.format(command.getMfgDate()));
-                command.setExpDateStr(format.format(command.getExpDate()));
+                if (null != command.getMfgDate()) {
+                    command.setMfgDateStr(format.format(command.getMfgDate()));
+                }
+                if (null != command.getExpDate()) {
+                    command.setExpDateStr(format.format(command.getExpDate()));
+                }
                 // if(!StringUtils.hasLength(command.getInvType())){
                 // command.setInvTypeStr("");
                 // }

@@ -166,6 +166,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private RegionManager regionManager;
     @Autowired
     private DistributionTargetManager distributionTargetManager;
+    @Autowired
+    private WhWaveManager whWaveManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -2456,6 +2458,18 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     @Override
     public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
         return this.odoManager.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
+    }
+
+
+    @Override
+    public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {
+        return this.odoManager.findPrintOdoIdList(waveCode, ouId);
+    }
+
+
+    @Override
+    public WhWave findWaveByIdOuId(Long waveId, Long ouId) {
+        return this.whWaveManager.findWaveByIdOuId(waveId, ouId);
     }
 
 }

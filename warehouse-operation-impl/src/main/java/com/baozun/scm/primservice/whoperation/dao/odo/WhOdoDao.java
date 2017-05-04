@@ -346,4 +346,6 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      */
     int updateOdoIndexByOdoId(@Param("odoId") Long odoId, @Param("odoIndex") String odoIndex, @Param("ouId") Long ouId);
 
+    List<Long> findPrintOdoIdList(@Param("waveCode") String waveCode, @Param("ouId") Long ouId);
+
 }
