@@ -1006,7 +1006,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     }
 
     @Override
-    public ResponseMsg importBiPo(String url, String fileName, Long userImportExcelId, Locale locale, Long userId, String logId) {
+    public ResponseMsg importBiPo(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId) {
         File importExcelFile = new File(url, fileName);
         if (!importExcelFile.exists()) {
             throw new BusinessException(ErrorCodes.IMPORT_ERROR_FILE_NOT_EXISTS);
@@ -1036,6 +1036,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 importExcel.setWorkbook(workbook);
                 importExcel.setUserImportExcelId(userImportExcelId);
                 importExcel.setUserId(userId);
+                importExcel.setOuId(ouId);
 
                 // 调用异常输出接口，生成错误信息
                 String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
@@ -1062,6 +1063,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 importExcel.setWorkbook(workbook);
                 importExcel.setUserImportExcelId(userImportExcelId);
                 importExcel.setUserId(userId);
+                importExcel.setOuId(ouId);
 
                 // 调用异常输出接口，生成错误信息
                 String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
@@ -1223,8 +1225,10 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 List<Supplier> s = this.supplierManager.findListByParam(search);
                 if (s == null || s.size() == 0) {
                     rootExcelException.getExcelExceptions().add(new ExcelException("供应商编码找不到对应的可用的供应商", null, rowNum, null));
+                } else {
+
+                    excelPo.setSupplierId(s.get(0).getId());
                 }
-                excelPo.setSupplierId(s.get(0).getId());
             }
             poCommandList.add(excelPo);
 

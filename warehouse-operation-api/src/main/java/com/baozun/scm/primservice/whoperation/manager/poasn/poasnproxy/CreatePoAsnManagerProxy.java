@@ -141,10 +141,11 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * @param errorUrl
      * @param url
      * @param fileName
+     * @param userId2
      * 
      * @return
      */
-    ResponseMsg importBiPo(String url, String fileName, Long userImportExcelId, Locale locale, Long userId, String logId);
+    ResponseMsg importBiPo(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId);
     
 	/**
 	 * 生成PoCode编码
