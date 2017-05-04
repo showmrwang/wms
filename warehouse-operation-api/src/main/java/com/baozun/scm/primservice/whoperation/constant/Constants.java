@@ -860,4 +860,12 @@ public final class Constants {
     
     
     public static final Double PICKING_NUM = 1.0;  //拣货数量
+
+    public static final String IMPORT_BIPO_EXCEL_CONFIG_ID = "BiPo";// 入库单导入
+
+    public static final int IMPORT_BIPO_TITLE_INDEX = 0;// 入库单导入读取行
+
+    public static final String IMPORT_BIPOLINE_EXCEL_CONFIG_ID = "BiPoLine";// 入库单导入
+
+    public static final int IMPORT_BIPOLINE_TITLE_INDEX = 0;// 入库单导入读取行
 }

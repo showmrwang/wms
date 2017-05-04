@@ -568,7 +568,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
-            log.error("" + e);
+            log.error("", e);
             throw new BusinessException(ErrorCodes.CLOSE_PO_ERROR);
         }
 

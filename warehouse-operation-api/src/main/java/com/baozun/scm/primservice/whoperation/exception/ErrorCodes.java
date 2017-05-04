@@ -978,4 +978,9 @@ public class ErrorCodes {
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001; 
     // 120000-130000 zhaozili 
+
+    /** 文件不存在 */
+    public static final int IMPORT_ERROR_FILE_NOT_EXISTS = 60203;
+    /** 导入失败 */
+    public static final int IMPORT_ERROR = 60202;
 }
