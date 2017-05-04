@@ -4458,6 +4458,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.location_id =#{locationId}
 			and inv.ou_id = #{ouId}
 			and IFNULL(inv.is_locked,0) != 1
+		group by inv.uuid
 	</select>
 	
 	<select id="findOutboundboxInventory"  resultMap="WhSkuInventoryCommandResultExt">
