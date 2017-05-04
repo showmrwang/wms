@@ -3475,5 +3475,16 @@
 			and o.ou_id = #{ouId}
 			
     </select>
-
+	
+	<update id="updateOdoIndexByOdoId">
+		update 
+			t_wh_odo o
+		set 
+			o.odo_index = #{odoIndex},
+		 	o.last_modify_time = now()
+		where
+			o.id = #{odoId} 
+			and o.ou_id = #{ouId}
+	</update>
+	
 </mapper>

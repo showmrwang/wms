@@ -1565,4 +1565,23 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         return this.whOdoDao.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void updateOdoIndexByBatch(Map<String, List<Long>> batchMap, Long ouId) {
+        int batchIndex = 1;
+        for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
+            int index = 1;
+            List<Long> odoIdList = entry.getValue();
+            for (Long odoId : odoIdList) {
+                String odoIndex = batchIndex + "-" + index;
+                int updateCount = whOdoDao.updateOdoIndexByOdoId(odoId, odoIndex, ouId);
+                if (updateCount != 1) {
+                    throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                }
+                index++;
+            }
+            batchIndex++;
+        }
+    }
+
 }

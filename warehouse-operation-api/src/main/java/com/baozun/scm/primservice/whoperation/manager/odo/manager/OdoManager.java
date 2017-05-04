@@ -325,5 +325,12 @@ public interface OdoManager extends BaseManager {
     Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId);
 
     List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId);
+    
+    /**
+     * 按批次给odo排序
+     * @author kai.zhu
+     * @version 2017年5月3日
+     */
+    void updateOdoIndexByBatch(Map<String, List<Long>> batchMap, Long ouId);
 
 }
