@@ -3487,4 +3487,15 @@
 			and o.ou_id = #{ouId}
 	</update>
 	
+    
+    <select id="findPrintOdoIdList" resultType="long">
+    	select 
+    		o.id
+    	from t_wh_odo o
+    	where 
+    		o.wave_code=#{waveCode}
+			and o.ou_id = #{ouId}
+		order by odo_index
+    </select>
+
 </mapper>

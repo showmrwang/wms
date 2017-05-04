@@ -333,4 +333,13 @@ public interface OdoManager extends BaseManager {
      */
     void updateOdoIndexByBatch(Map<String, List<Long>> batchMap, Long ouId);
 
+    /**
+     * 打印销售清单的出库单集合【有排序】
+     * 
+     * @param waveCode
+     * @param ouId
+     * @return
+     */
+    List<Long> findPrintOdoIdList(String waveCode, Long ouId);
+
 }

@@ -2458,4 +2458,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         return this.odoManager.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
     }
 
+
+    @Override
+    public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {
+        return this.odoManager.findPrintOdoIdList(waveCode, ouId);
+    }
+
 }

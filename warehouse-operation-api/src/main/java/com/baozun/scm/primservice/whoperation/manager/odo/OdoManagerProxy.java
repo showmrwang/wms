@@ -411,4 +411,13 @@ public interface OdoManagerProxy extends BaseManager {
      */
     List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId);
 
+    /**
+     * 查找打印的出库单ID集合
+     * 
+     * @param code
+     * @param ouId
+     * @return
+     */
+    List<Long> findPrintOdoIdList(String code, Long ouId);
+
 }
