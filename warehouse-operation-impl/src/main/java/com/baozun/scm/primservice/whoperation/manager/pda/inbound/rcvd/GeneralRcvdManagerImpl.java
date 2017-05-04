@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 import lark.common.annotation.MoreDB;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,6 +100,8 @@ import com.baozun.scm.primservice.whoperation.util.DateUtil;
 @Service("generalRcvdManager")
 @Transactional
 public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRcvdManager {
+
+    protected static final Logger log = LoggerFactory.getLogger(GeneralRcvdManager.class);
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
@@ -340,8 +344,10 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
 
 
         } catch (BusinessException e) {
+            log.error("", e);
             throw e;
         } catch (Exception ex) {
+            log.error("", ex);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
 
