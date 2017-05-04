@@ -47,7 +47,6 @@ import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException
 import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
-import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager;
 import com.baozun.scm.primservice.whoperation.manager.bi.OutPutStreamToServersManager;
 import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
@@ -59,6 +58,7 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoMan
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
+import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
@@ -101,7 +101,7 @@ import com.baozun.scm.primservice.whoperation.util.StringUtil;
  * 
  */
 @Service("createPoAsnManagerProxy")
-public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements CreatePoAsnManagerProxy {
+public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
     protected static final Logger log = LoggerFactory.getLogger(CreatePoAsnManagerProxy.class);
 
@@ -143,6 +143,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     private SupplierManager supplierManager;
     @Autowired
     private OutPutStreamToServersManager outPutStreamToServersManager;
+    @Autowired
+    private SysDictionaryManager sysDictionaryManager;
 
     /**
      * 验证po单数据是否完整
@@ -1048,7 +1050,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             ExcelImportResult biPoLinesExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_BIPOLINE_EXCEL_CONFIG_ID, Constants.IMPORT_BIPOLINE_TITLE_INDEX);
             if (ExcelImportResult.READ_STATUS_SUCCESS == biPoLinesExcelImportResult.getReadstatus()) {
                 // 验证商品信息完整及是否存在重复商品
-                this.validateBiPoLines(biPoLinesExcelImportResult, poLineList, locale, poCommand, userId);
+                this.validateBiPoLines(biPoLinesExcelImportResult, poLineList, locale, poCommand, userId, logId);
             }
             if (ExcelImportResult.READ_STATUS_FAILED == biPoExcelImportResult.getReadstatus() | ExcelImportResult.READ_STATUS_FAILED == biPoLinesExcelImportResult.getReadstatus()) {
                 Workbook workbook = biPoExcelImportResult.getWorkbook();
@@ -1083,19 +1085,64 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 
     }
 
-    private void validateBiPoLines(ExcelImportResult excelImportResult, List<BiPoLineCommand> poLineList, Locale locale, BiPoCommand excelPo, Long userId) {
+    private void validateBiPoLines(ExcelImportResult excelImportResult, List<BiPoLineCommand> poLineList, Locale locale, BiPoCommand excelPo, Long userId, String logId) {
         List<BiPoLineCommand> lineCommandList = excelImportResult.getListBean();
         RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+
+        Map<Long, String> invMap = this.getInvStatusMap();
         for (int index = 0; index < lineCommandList.size(); index++) {
             int rowNum = index + Constants.IMPORT_BIPOLINE_TITLE_INDEX + 1;
             BiPoLineCommand lineCommand = lineCommandList.get(index);
 
-            poLineList.add(lineCommand);
 
             Sku sku = this.biPoLineManager.findSkuByBarCode(lineCommand.getSkuBarCode(), excelPo.getCustomerId(), logId);
             if (sku == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("条码找不到对应的商品", null, rowNum, null));
             }
+            if (lineCommand.getInvStatus() == null) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
+            } else {
+                if (!invMap.containsKey(lineCommand.getInvStatus())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存状态编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvType())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_TYPE, lineCommand.getInvType());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存类型编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr1())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_1, lineCommand.getInvType());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性1编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr2())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_2, lineCommand.getInvType());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性2编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr3())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_3, lineCommand.getInvType());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性3编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr4())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_4, lineCommand.getInvType());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性4编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr5())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_5, lineCommand.getInvType());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性5编码错误", null, rowNum, null));
+                }
+            }
+            poLineList.add(lineCommand);
 
         }
         if (rootExcelException.isException()) {
@@ -1160,6 +1207,11 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 
             if (StringUtils.isEmpty(excelPo.getPoType())) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("入库单类型不能为空", null, rowNum, null));
+            } else {
+                SysDictionary poTypeDic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.PO_TYPE, excelPo.getPoType() + "");
+                if (poTypeDic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("系统参数入库单类型不正确", null, rowNum, null));
+                }
             }
             if (StringUtils.isEmpty(excelPo.getSupplierCode())) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("供应商不能为空", null, rowNum, null));
@@ -1273,6 +1325,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             po.setCreatedId(userId);
             po.setLastModifyTime(new Date());
             po.setModifiedId(userId);
+            po.setLogisticsProvider(excelPo.getLogisticsProvider());
             this.createPoDefault(po, lineList, ouId);
 
         } catch (BusinessException e) {
@@ -1304,7 +1357,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 		
 		// 退换货逻辑
 		if (whPo.getPoType() == 2) {
-			Store store = this.getStoreByRedis(whPo.getStoreId());
+
+            Store store = this.storeManager.findStoreById(whPo.getStoreId());
 			// 退货入关联销售出
 			String ecOrderCode = whPo.getOriginalEcOrderCode();
 			String dataSource = whPo.getDataSource();
@@ -1495,6 +1549,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
             }
             container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            // @mender yimin.lu 2017/5/4 容器状态
+            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             container.setOperatorId(userId);
             containerList.add(container);
         }
