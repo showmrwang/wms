@@ -146,6 +146,9 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     
     private Boolean isUniqueSkuAttrInside;
     
+    /** 库内移动方式 */
+    private Integer inWarehouseMoveWay;
+    
     public Long getOperationId() {
         return operationId;
     }
@@ -667,5 +670,12 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
         this.isUniqueSkuAttrInside = isUniqueSkuAttrInside;
     }
 
-    
+    public Integer getInWarehouseMoveWay() {
+        return inWarehouseMoveWay;
+    }
+
+    public void setInWarehouseMoveWay(Integer inWarehouseMoveWay) {
+        this.inWarehouseMoveWay = inWarehouseMoveWay;
+    }
+
 }
