@@ -95,7 +95,8 @@ public final class CacheConstants {
     public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
     /*** pda补货和库内移动，作业执行明细统计 */
     public static final String OPERATIONEXEC_STATISTICS = "OPERATIONEXEC_STATISTICS";
-
+    /*** 库内移动sn列表上传修改 */
+    public static final String SN_STATISTICS = "SN_STATISTICS";
 
     /*** 缓存库位 */
     public static final String CACHE_LOCATION = "CACHE_LOCATION";

@@ -19,6 +19,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.warehouse.InWarehouseMoveWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 public interface CreateInWarehouseMoveWorkManager extends BaseManager {
 
@@ -44,6 +45,29 @@ public interface CreateInWarehouseMoveWorkManager extends BaseManager {
      * @param 
      * @return
      */
-    public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId);
+    public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey);
 
+    /**
+     * [业务方法] 缓存sn列表
+     * @param 
+     * @param 
+     * @return
+     */
+    public String snStatisticsRedis(List<WhSkuInventorySn> skuInventorySnsLst);
+    
+    /**
+     * [业务方法] 获取缓存sn列表
+     * @param 
+     * @param 
+     * @return
+     */
+    public List<WhSkuInventorySn> getSnStatistics(String key);
+    
+    /**
+     * [业务方法] 删除缓存sn列表
+     * @param 
+     * @param 
+     * @return
+     */
+    public void delSnStatistics(String key);
 }

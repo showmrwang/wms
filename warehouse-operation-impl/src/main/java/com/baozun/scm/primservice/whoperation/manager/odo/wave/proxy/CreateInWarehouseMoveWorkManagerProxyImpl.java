@@ -73,7 +73,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId) {
+    public Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId, String snKey) {
         Boolean isSuccess = true;
         // 2.将库存行根据原始库位与目标库位进行分组
         InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(occupationCodes, occupationLineIds, uuids, moveQtys, ouId);
@@ -91,7 +91,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 // 10.是否直接执行
                 if (true == isExecute) {
                     // 11.库内移动工作执行
-                    createInWarehouseMoveWorkManager.executeInWarehouseMoveWork(inWarehouseMoveWorkCode, ouId, userId);
+                    createInWarehouseMoveWorkManager.executeInWarehouseMoveWork(inWarehouseMoveWorkCode, ouId, userId, snKey);
                 }
             } catch (Exception e) {
                 log.error(e + "");
@@ -260,22 +260,24 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      * @return
      */
     @Override
-    public List<WhSkuInventorySn> batchImport(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId) {
+    public String batchImport(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId) {
         File importExcelFile = new File(url, fileName);
         if (!importExcelFile.exists()) {
             throw new BusinessException("文件不存在");
         }
         List<WhSkuInventorySn> skuInventorySnsLst = new ArrayList<WhSkuInventorySn>();
+        String key = "";
         try {
             // 创建excel上下文实例,它的构成需要配置文件的路径
             ExcelContext context = new ExcelContext("excel-config.xml");
             // Sn和残次条码
             ExcelImportResult result = this.readSkuFromExcel(context, importExcelFile, locale);
             skuInventorySnsLst = result.getListBean();
+            key = createInWarehouseMoveWorkManager.snStatisticsRedis(skuInventorySnsLst);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return skuInventorySnsLst;
+        return key;
     }
 
     private ExcelImportResult readSkuFromExcel(ExcelContext context, File importExcelFile, Locale locale) throws Exception {
