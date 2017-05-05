@@ -8363,8 +8363,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         for(String sn:snDefectList){
                                             if(sn.equals(snCmd.getSn()) || sn.equals(snCmd.getDefectWareBarcode())){
                                                 WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
-                                                skuInvSn.setUuid(uuid);
                                                 BeanUtils.copyProperties(snCmd, skuInvSn);
+                                                skuInvSn.setUuid(uuid);
                                                 whSkuInventorySnDao.saveOrUpdate(skuInvSn);
                                                 insertGlobalLog(GLOBAL_LOG_UPDATE, skuInvSn, ouId, userId, null, null);
                                             }
