@@ -8,8 +8,6 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
-import org.apache.poi.ss.usermodel.Workbook;
-
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
@@ -322,16 +320,17 @@ public interface OdoManagerProxy extends BaseManager {
     void runWave(WaveCommand waveCommand);
 
     /**
-     * 导入
      * 
      * @param url
-     * @param errorUrl
      * @param fileName
+     * @param userImportExcelId
      * @param locale
-     * @param userId
      * @param ouId
+     * @param userId
+     * @param logId
+     * @return
      */
-    Workbook importWhOdo(String url, String errorUrl, String fileName, Locale locale, Long ouId, Long userId);
+    ResponseMsg importWhOdo(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId);
 
     /**
      * 查找延迟创建的波次
@@ -421,5 +420,6 @@ public interface OdoManagerProxy extends BaseManager {
     List<Long> findPrintOdoIdList(String code, Long ouId);
 
     WhWave findWaveByIdOuId(Long waveId, Long ouId);
+
 
 }

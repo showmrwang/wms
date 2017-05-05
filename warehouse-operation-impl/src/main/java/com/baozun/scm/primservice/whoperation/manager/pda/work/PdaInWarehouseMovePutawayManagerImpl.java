@@ -361,10 +361,8 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         for(WhOperationExecLine operationExecLine : operationExecLineList){
             //获取内部容器唯一sku
             String onlySku = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(operationExecLine);
-            //根据工作明细id获取工作明细数据            
-            WhWorkLine whWorkLine = whWorkLineDao.findById(operationExecLine.getWorkLineId());
             //根据库存UUID查找对应SN/残次信息
-            List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), whWorkLine.getUuid());
+            List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), operationExecLine.getUuid());
             //获取库位ID 
             locationIds.add(operationExecLine.getToLocationId());
             if(whOperationCommand.getIsWholeCase() == false){

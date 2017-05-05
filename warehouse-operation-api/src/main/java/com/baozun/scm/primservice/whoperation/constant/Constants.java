@@ -382,7 +382,7 @@ public final class Constants {
     public static final String WMS_ODO_EXT = "WMS_ODO_EXT";
 
     /** 调编码生成器 分配库存WMS占用单据号分组 */
-    public static final String WMS_SKUINVENTORYALLOCATED_OCCUPATION = "WMS_SKUINVENTORYALLOCATED_OCCUPATION";
+    public static final String WMS_SKUINVENTORYALLOCATED_OCCUPATION = "MOVE";
 
     /** 出库单增值服务类型 */
     public static final String ODO_VAS_TYPE_WH = "WH";
@@ -861,6 +861,7 @@ public final class Constants {
     
     public static final Double PICKING_NUM = 1.0;  //拣货数量
 
+    // ------------------导入配置--------------------------------
     public static final String IMPORT_BIPO_EXCEL_CONFIG_ID = "biPo";// 入库单导入
 
     public static final int IMPORT_BIPO_TITLE_INDEX = 0;// 入库单导入读取行
@@ -868,4 +869,22 @@ public final class Constants {
     public static final String IMPORT_BIPOLINE_EXCEL_CONFIG_ID = "biPoLine";// 入库单导入
 
     public static final int IMPORT_BIPOLINE_TITLE_INDEX = 0;// 入库单导入读取行
+
+    public static final String IMPORT_WHODO_EXCEL_CONFIG_ID = "whOdo";
+    public static final int IMPORT_WHODO_TITLE_INDEX = 0;
+
+    public static final String IMPORT_WHODO_LINE_EXCEL_CONFIG_ID = "whOdoLine";
+    public static final int IMPORT_WHODO_LINE_TITLE_INDEX = 0;
+
+    public static final String IMPORT_WHODO_ADDRESS_EXCEL_CONFIG_ID = "whOdoAddress";
+    public static final int IMPORT_WHODO_ADDRESS_TITLE_INDEX = 0;
+
+
+    public static final String IMPORT_WHODO_TRANSPORTMGMT_EXCEL_CONFIG_ID = "whOdoTransportMgmt";
+    public static final int IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX = 0;
+
+    /** 根地址ID */
+    public static final Long ROOT_REGION = 0L;
+
+
 }

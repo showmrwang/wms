@@ -371,6 +371,8 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
                                    break;
                                }
                            }
+                       }else{
+                           cssrCmd.setIsPutaway(true);
                        }
                    }
                }else{

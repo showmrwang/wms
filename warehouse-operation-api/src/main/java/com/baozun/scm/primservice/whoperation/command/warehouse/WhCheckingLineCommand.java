@@ -88,6 +88,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String outboundboxCode;
     /** 播种墙编码*/
     private String seedingWallCode;
+    /** 小车编码*/
+    private String outerContainerCode;
     // 字典表str
     /** 库存状态str*/
     private String invStatusStr = new String();
@@ -435,4 +437,13 @@ public class WhCheckingLineCommand extends BaseCommand {
     public void setExpDateStr(String expDateStr) {
         this.expDateStr = expDateStr;
     }
+
+    public String getOuterContainerCode() {
+        return outerContainerCode;
+    }
+
+    public void setOuterContainerCode(String outerContainerCode) {
+        this.outerContainerCode = outerContainerCode;
+    }
+
 }

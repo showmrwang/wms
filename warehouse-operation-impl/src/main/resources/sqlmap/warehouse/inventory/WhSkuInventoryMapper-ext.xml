@@ -3396,12 +3396,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.sys_uuid as snSysUuid
 					from 
 					t_wh_sku_inventory inv
-					left join 	t_wh_operation_line line on line.odo_line_id = inv.occupation_line_id
 					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
-					left join  t_wh_odo odo on odo.id = line.odo_id and odo.odo_code = inv.occupation_code
 					where 
-					    line.operation_id = #{operationId}
-					    and inv.ou_id = #{ouId}
+					    inv.ou_id = #{ouId}
 	                    and inv.inside_container_id = #{turnoverBoxId}
     </select>
     
@@ -3451,7 +3448,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 					    line.replenishment_code = inv.replenishment_code
 					    and inv.ou_id = #{ouId}
-	                    and inv.inside_container_id = #{turnoverBoxId}
 	                    and inv.location_id = #{locationId}
 	                    and line.operation_id = #{operationId}
     </select>
@@ -4455,10 +4451,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				inv.ou_id = #{ouId}
 				and inv.occupation_line_id = #{odoLineId}
 				<if test="containerId!=null and containerId!=''">
-					 and inv.inside_container_id = #{containerId}
+					 and inv.outer_container_id = #{containerId}
 				</if>
 				<if test="containerLatticeNo!=null and containerLatticeNo!=''">
-								 and inv.container_lattice_no=#{containerLatticeNo}
+					 and inv.container_lattice_no=#{containerLatticeNo}
 				</if>
 				<if test="outboundbox!=null and outboundbox!=''" >
 					 and inv.outboundbox_code =#{outboundbox}
