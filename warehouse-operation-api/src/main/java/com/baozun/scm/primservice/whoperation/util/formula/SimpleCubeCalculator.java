@@ -73,9 +73,9 @@ public class SimpleCubeCalculator {
     @SuppressWarnings("unused")
     private static Double defaultUomConversion = 1.0;
     private static Double defaultUomValue = sysUomValue;
-    private static String[] uomCache = new String[] {sysUom};
+    private String[] uomCache = new String[] {sysUom};
     private static int uomSize = 1;
-    private static Map<String, Double> uomConversion = new HashMap<String, Double>();
+    private Map<String, Double> uomConversion = new HashMap<String, Double>();
     // 容器系统单位体积
     private Double _volume;
     // 容器原始单位体积
@@ -332,11 +332,15 @@ public class SimpleCubeCalculator {
         boolean ret = false;
         if (null == actualUom || "".equals(actualUom)) throw new IllegalArgumentException("isUomSupport actual uom is null error!");
         actualUom = actualUom.trim();
+        System.out.println("1");
         for (String u : uomCache) {
             if (u.equals(actualUom)) {
                 ret = true;
+                System.out.println("2");
+                break;
             }
         }
+        System.out.println("3");
         if (false == ret) {
             throw new IllegalArgumentException("isUomSupport actual uom is not support error!");
         }
