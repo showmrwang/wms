@@ -86,6 +86,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<delete id="deleteAsnTransportMgmt" parameterType="map">
 			delete from t_wh_asn_transport_mgmt where asn_id = #{asnid} and ou_id = #{ouid}
 	 </delete>
+	<delete id="deleteAsnRcvdLog" parameterType="map">
+			delete from t_wh_asn_rcvd_log where asn_id = #{asnid} and ou_id = #{ouid}
+	 </delete>
+	<delete id="deleteAsnRcvdSnLog" parameterType="map">
+			delete from t_wh_asn_rcvd_sn_log where asn_rcvd_id in (select id from t_wh_asn_rcvd_log where asn_id = #{asnid} and ou_id = #{ouid}) and ou_id = #{ouid}
+	 </delete>
 	 
 	 <insert id="archivWhPoByShard" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo"  
 		 flushCache="true">
@@ -522,5 +528,88 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        )
 		    ]]>
 		</insert>
+		
+		<insert id="archivWhAsnRcvdLogByShard" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog" 
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_asn_rcvd_log_archiv${sysDate} (
+		        	id,
+		        	asn_id ,
+		        	asn_line_id ,
+		        	asn_code ,
+		        	sku_code ,
+		        	sku_name ,
+		        	quantity ,
+		        	qty_rcvd ,
+		        	container_code ,
+		        	container_name ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	batch_no ,
+		        	country_of_origin ,
+		        	inv_status ,
+		        	inv_type ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	ou_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	operator_id 
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{quantity,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{containerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+			</insert>
 	 
+	 	<insert id="archivWhAsnRcvdSnLogByShard" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog" flushCache="true"> 
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_asn_rcvd_sn_log_archiv${sysDate} (
+		        	id,
+		        	asn_rcvd_id ,
+		        	sn ,
+		        	defect_ware_barcode ,
+		        	defect_type ,
+		        	defect_reasons ,
+		        	ou_id 
+		        ) VALUES (
+		       		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnRcvdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{defectReasons,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+	</insert>
 </mapper>

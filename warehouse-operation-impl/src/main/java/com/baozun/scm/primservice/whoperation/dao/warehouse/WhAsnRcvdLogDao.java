@@ -14,7 +14,10 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -31,6 +34,7 @@ public interface WhAsnRcvdLogDao extends BaseDao<WhAsnRcvdLog, Long> {
 
     /**
      * 根据参数查询装箱信息
+     * 
      * @author shenlijun
      * @param page
      * @param sorts
@@ -39,5 +43,14 @@ public interface WhAsnRcvdLogDao extends BaseDao<WhAsnRcvdLog, Long> {
      */
     @QueryPage("findCountByAsnId")
     Pagination<WhAsnRcvdLogCommand> getWhAsnRcvdLoglist(Page page, Sort[] sorts, Map<String, Object> param);
+
+    /**
+     * 通过ASNID查找对应数据
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    List<WhAsnRcvdLog> findWhAsnRcvdLogByAsnId(@Param("id") Long id, @Param("ouid") Long ouid);
 
 }
