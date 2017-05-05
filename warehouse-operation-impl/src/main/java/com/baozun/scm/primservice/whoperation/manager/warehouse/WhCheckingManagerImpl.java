@@ -862,7 +862,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             sum += actualWeight;
 
         }
-        System.out.println("结果值:" + weightCalculator.calculateStuffWeight(sum));
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
         if (null != odoPackageInfo) {
             odoPackageInfo.setCalcWeight(sum.longValue());
@@ -882,7 +881,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOdoPackageInfo.setModifiedId(userId);
             whOdoPackageInfo.setCalcWeight(sum.longValue());
             whOdoPackageInfo.setOuId(ouId);
-            whOdoPackageInfoDao.saveOrUpdateByVersion(odoPackageInfo);
+            whOdoPackageInfoDao.insert(whOdoPackageInfo);
         }
     }
 
