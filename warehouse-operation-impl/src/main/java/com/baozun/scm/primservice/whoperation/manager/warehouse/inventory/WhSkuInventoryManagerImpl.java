@@ -8006,11 +8006,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if(scanSkuQty.doubleValue() > allocated.getQty().doubleValue()){ //扫描的数量大于当前分配行
                                     allocatedQty += allocated.getQty();
                                     if(scanSkuQty.doubleValue() == allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                     if(scanSkuQty.doubleValue() > allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                         continue;
                                     }
@@ -8033,7 +8033,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         allocate.setOuId(ouId);
                                         whSkuInventoryAllocatedDao.insert(allocate);
                                         insertGlobalLog(GLOBAL_LOG_INSERT, allocate, ouId, userId, null, null);
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                 }
@@ -8041,19 +8041,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     //修改已分配库存的数量 
                                     Double result = allocated.getQty()- scanSkuQty;
                                     if(result == 0){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }else{
                                         WhSkuInventoryAllocated allocate = new WhSkuInventoryAllocated();
                                         BeanUtils.copyProperties(allocated, allocate);
                                         allocate.setQty(result);
-                                        allocate.setId(allocated.getAlloctedId());
+                                        allocate.setId(allocated.getId());
                                         whSkuInventoryAllocatedDao.saveOrUpdateByVersion(allocate);
                                         insertGlobalLog(GLOBAL_LOG_UPDATE, allocated, ouId, userId, null, null);
                                     }
                                 }
                                 if(allocated.getQty().doubleValue() == scanSkuQty.doubleValue()){
-                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                 }
                                 if(!isShortPicking){//非短拣
@@ -8108,11 +8108,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if(scanSkuQty.doubleValue() > allocated.getQty().doubleValue()){ //扫描的数量大于当前分配行
                                     allocatedQty += allocated.getQty();
                                     if(scanSkuQty.doubleValue() == allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                     if(scanSkuQty.doubleValue() > allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                         continue;
                                     }
@@ -8135,7 +8135,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         allocate.setOuId(ouId);
                                         whSkuInventoryAllocatedDao.insert(allocate);
                                         insertGlobalLog(GLOBAL_LOG_INSERT, allocate, ouId, userId, null, null);
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                 }
@@ -8143,19 +8143,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     //修改已分配库存的数量 
                                     Double result = allocated.getQty()- scanSkuQty;
                                     if(result == 0){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }else{
                                         WhSkuInventoryAllocated allocate = new WhSkuInventoryAllocated();
                                         BeanUtils.copyProperties(allocated, allocate);
                                         allocate.setQty(result);
-                                        allocate.setId(allocated.getAlloctedId());
+                                        allocate.setId(allocated.getId());
                                         whSkuInventoryAllocatedDao.saveOrUpdateByVersion(allocate);
                                         insertGlobalLog(GLOBAL_LOG_UPDATE, allocated, ouId, userId, null, null);
                                     }
                                 }
                                 if(allocated.getQty().doubleValue() == scanSkuQty.doubleValue()){
-                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                 }
                                 if(!isShortPicking){//非短拣
@@ -8275,11 +8275,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if(scanSkuQty.doubleValue() > allocated.getQty().doubleValue()){ //扫描的数量大于当前分配行
                                     allocatedQty += allocated.getQty();
                                     if(scanSkuQty.doubleValue() == allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                     if(scanSkuQty.doubleValue() > allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                         continue;
                                     }
@@ -8301,7 +8301,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         allocate.setOuId(ouId);
                                         whSkuInventoryAllocatedDao.insert(allocate);
                                         insertGlobalLog(GLOBAL_LOG_INSERT, allocate, ouId, userId, null, null);
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                 }
@@ -8309,19 +8309,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     //修改已分配库存的数量 
                                     Double result = allocated.getQty()- scanSkuQty;
                                     if(result == 0){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }else{
                                         WhSkuInventoryAllocated allocate = new WhSkuInventoryAllocated();
                                         BeanUtils.copyProperties(allocated, allocate);
                                         allocate.setQty(result);
-                                        allocate.setId(allocated.getAlloctedId());
+                                        allocate.setId(allocated.getId());
                                         whSkuInventoryAllocatedDao.saveOrUpdateByVersion(allocate);
                                         insertGlobalLog(GLOBAL_LOG_UPDATE, allocated, ouId, userId, null, null);
                                     }
                                 }
                                 if(allocated.getQty().doubleValue() == scanSkuQty.doubleValue()){
-                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                 }
                                 if(!isShortPicking){//非短拣
@@ -8384,11 +8384,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if(scanSkuQty.doubleValue() > allocated.getQty().doubleValue()){ //扫描的数量大于当前分配行
                                     allocatedQty += allocated.getQty();
                                     if(scanSkuQty.doubleValue() == allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                     if(scanSkuQty.doubleValue() > allocatedQty.doubleValue()){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                         continue;
                                     }
@@ -8411,7 +8411,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         allocate.setOuId(ouId);
                                         whSkuInventoryAllocatedDao.insert(allocate);
                                         insertGlobalLog(GLOBAL_LOG_INSERT, allocate, ouId, userId, null, null);
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }
                                 }
@@ -8419,19 +8419,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     //修改已分配库存的数量 
                                     Double result = allocated.getQty()- scanSkuQty;
                                     if(result == 0){
-                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                        whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                         insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                     }else{
                                         WhSkuInventoryAllocated allocate = new WhSkuInventoryAllocated();
                                         BeanUtils.copyProperties(allocated, allocate);
                                         allocate.setQty(result);
-                                        allocate.setId(allocated.getAlloctedId());
+                                        allocate.setId(allocated.getId());
                                         whSkuInventoryAllocatedDao.saveOrUpdateByVersion(allocate);
                                         insertGlobalLog(GLOBAL_LOG_UPDATE, allocated, ouId, userId, null, null);
                                     }
                                 }
                                 if(allocated.getQty().doubleValue() == scanSkuQty.doubleValue()){
-                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getAlloctedId(), ouId);
+                                    whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, allocated, ouId, userId, null, null);
                                 }
                                 if(!isShortPicking){//非短拣

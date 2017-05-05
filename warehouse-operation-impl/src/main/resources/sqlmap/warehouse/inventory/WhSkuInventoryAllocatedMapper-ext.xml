@@ -10,6 +10,50 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="WhSkuInventoryAllocatedCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand">
 	</resultMap>
 	
+	<resultMap id="WhSkuInventoryAllocatedCommandSnResultExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand">
+		<result property="id" column="alloctedId"/>
+		<result property="skuId" column="skuId"/>
+		<result property="locationId" column="locationId"/>
+		<result property="outerContainerId" column="outerContainerId"/>
+		<result property="insideContainerId" column="insideContainerId"/>
+		<result property="customerId" column="customerId"/>
+		<result property="storeId" column="storeId"/>
+		<result property="occupationCode" column="invOccupationCode"/>
+		<result property="occupationLineId" column="invOccupationLineId"/>
+		<result property="replenishmentCode" column="replenishmentCode"/>
+		<result property="qty" column="qty"/>
+		<result property="invStatus" column="invStatus"/>
+		<result property="invType" column="invType"/>
+		<result property="batchNumber" column="batchNumber"/>
+		<result property="mfgDate" column="mfgDate"/>
+		<result property="expDate" column="expDate"/>
+		<result property="countryOfOrigin" column="countryOfOrigin"/>
+		<result property="invAttr1" column="invAttr1"/>
+		<result property="invAttr2" column="invAttr2"/>
+		<result property="invAttr3" column="invAttr3"/>
+		<result property="invAttr4" column="invAttr4"/>
+		<result property="invAttr5" column="invAttr5"/>
+		<result property="uuid" column="alloctedUuid"/>
+		<result property="ouId" column="alloctedOuId"/>
+		<result property="lastModifyTime" column="lastModifyTime"/>
+		<result property="replenishmentRuleId" column="replenishmentRuleId"/>
+		<collection property="whSkuInventorySnCommandList"
+			ofType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
+			<id property="id" column="snId"/>
+			<result property="sn" column="snSn" />
+			<result property="occupationCode" column="snOccupationCode" />
+			<result property="defectWareBarcode" column="snDefectWareBarcode" />
+			<result property="defectSource" column="snDefectSource" />
+			<result property="defectTypeId" column="snDefectTypeId" />
+			<result property="defectReasonsId" column="snDefectReasonsId" />
+			<result property="status" column="snStatus" />
+			<result property="invAttr" column="snInvAttr" />
+			<result property="uuid" column="snUuid" />
+			<result property="ouId" column="snOuId" />
+			<result property="sysUuid" column="snSysUuid" />
+		</collection>
+	</resultMap>	
+	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryAllocatedColumnsExt">
 	    <![CDATA[
@@ -709,7 +753,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 	</select>
 	
-	<select id="getWhSkuInventoryCommandByOccupationLineId" resultMap="WhSkuInventoryAllocatedCommandResultExt">
+	<select id="getWhSkuInventoryCommandByOccupationLineId" resultMap="WhSkuInventoryAllocatedCommandSnResultExt">
 	    select
 	          distinct inv.id as alloctedId,
 	          inv.sku_id as skuId,
@@ -733,8 +777,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inv_attr3 as invAttr3,
 	          inv.inv_attr4 as invAttr4,
 	          inv.inv_attr5 as invAttr5,
-	          inv.uuid as uuid,
-	          inv.ou_id as ouId,
+	          inv.uuid as alloctedUuid,
+	          inv.ou_id as alloctedOuId,
 	          inv.last_modify_time as lastModifyTime,
 	          inv.replenishment_rule_id as replenishmentRuleId,
 	          sn.id AS snId,

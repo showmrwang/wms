@@ -4451,10 +4451,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				inv.ou_id = #{ouId}
 				and inv.occupation_line_id = #{odoLineId}
 				<if test="containerId!=null and containerId!=''">
-					 and inv.inside_container_id = #{containerId}
+					 and inv.outer_container_id = #{containerId}
 				</if>
 				<if test="containerLatticeNo!=null and containerLatticeNo!=''">
-								 and inv.container_lattice_no=#{containerLatticeNo}
+					 and inv.container_lattice_no=#{containerLatticeNo}
 				</if>
 				<if test="outboundbox!=null and outboundbox!=''" >
 					 and inv.outboundbox_code =#{outboundbox}

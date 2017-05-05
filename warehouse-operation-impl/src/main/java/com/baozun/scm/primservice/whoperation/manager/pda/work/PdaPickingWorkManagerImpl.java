@@ -1707,16 +1707,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 已分配的库位库存转变为容器库存
                 whSkuInventoryManager.replenishmentContainerInventory(execLine.getId(),isShortPikcing,snList,skuAttrIds,locationId,operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
             }
-//            if (pickingWay == Constants.PICKING_WAY_THREE && isTrunkful) { // 是否出库箱满箱
-//                // 跳转到扫描出库箱页面
-//                command.setIsUserNewContainer(true);
-//                return command;
-//            }
-//            if (pickingWay == Constants.PICKING_WAY_FOUR && isTrunkful) { // 周转箱是否满箱
-//                // 跳转到扫描周转箱页面
-//                command.setIsUserNewContainer(true);
-//                return command;
-//            }
             command.setIsContinueScanSn(false);
             String skuAttrId = cSRCmd.getTipSkuAttrId(); // 提示唯一的sku包含唯一sku
             String skuAttrIdNoSn = SkuCategoryProvider.getSkuAttrId(skuAttrId);
