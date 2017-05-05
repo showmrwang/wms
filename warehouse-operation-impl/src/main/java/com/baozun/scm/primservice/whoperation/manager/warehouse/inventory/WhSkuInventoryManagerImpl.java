@@ -7478,7 +7478,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 for(WhSkuInventoryCommand invTobefilled:invTobefilledList){
                     String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invTobefilled);
                     if(skuAttrId.equals(toBeSkuAttrId)) {
-                        sumQty += invTobefilled.getQty();
+                        sumQty += invTobefilled.getOnHandQty();
                         Double tobefilledQty = sumQty-skuScanQty;   //待移入库存还剩下的sku数量
                         if(tobefilledQty.doubleValue() < 0){
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -7578,7 +7578,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 for(WhSkuInventoryCommand invTobefilled:invTobefilledList){
                     String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invTobefilled);
                     if(skuAttrId.equals(toBeSkuAttrId)) {
-                        sumQty += invTobefilled.getQty();
+                        sumQty += invTobefilled.getOnHandQty();
                         Double tobefilledQty = sumQty-skuScanQty;   //待移入库存还剩下的sku数量
                         if(tobefilledQty.doubleValue() < 0){
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();

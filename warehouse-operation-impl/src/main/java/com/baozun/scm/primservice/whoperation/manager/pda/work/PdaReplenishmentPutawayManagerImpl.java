@@ -586,14 +586,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
       boolean isSnLine = false;
       if ((null != isTipSkuSn && true == isTipSkuSn) || (null != isTipSkuDefect && true == isTipSkuDefect)) {
           skuAttrIdNoSn = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd); // 没有sn/残次信息
-          skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuAttrIdNoSn,command.getTipSkuSn(),command.getTipSkuDefect());
+          skuAttrId = SkuCategoryProvider.concatSkuAttrId(skuAttrIdNoSn,command.getSkuSn(),command.getSkuDefect());
           isSnLine = true;
       } else {
           skuAttrIdNoSn = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd); // 没有sn/残次信息
           isSnLine = false;
       }
       if(isSnLine){ //缓存扫描的sn/残次信息
-          String sn = SkuCategoryProvider.concatSkuAttrId(command.getTipSkuSn(),command.getTipSkuDefect());
+          String sn = SkuCategoryProvider.concatSkuAttrId(command.getSkuSn(),command.getSkuDefect());
           this.cahceSkuSn(sn, locationId, turnoverBoxId, skuId);
       }
       //缓存sku 信息
@@ -668,7 +668,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             command.setSkuId(skuId);
             this.tipSkuDetailAspect(command, skuAttrIds, skuAttrIdsQty1, logId);
         }else if(csrCmd.getIsNeedScanSku()){
-            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString());
+            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             String skuAttrIds = csrCmd.getTipSkuAttrId(); // 提示唯一的sku包含唯一sku
             Long skuId1 = SkuCategoryProvider.getSkuId(skuAttrIdNoSn);
@@ -684,7 +684,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             //删除缓存的sn
             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
         }else if(csrCmd.getIsNeedTipInsideContainer()){
-            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString());
+            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, true, turnoverBoxId, locationId,false);
             //提示一下个周转箱
@@ -700,14 +700,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             Location loc = whLocationDao.findByIdExt(tipLoctionid, ouId);
             command.setLocationBarCode(loc.getBarCode());
             command.setLocationCode(loc.getCode());
-            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString());
+            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, true, turnoverBoxId, locationId,false);
         }else if(csrCmd.getIsPutaway()){
             command.setIsScanFinsh(true);
-            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString());
+            List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
-            //清除所有缓存
+            this.updateStatus(operationId, workCode, ouId, userId);
+             //清除所有缓存
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, true, turnoverBoxId, locationId,true);
         }
         return command;
@@ -715,7 +716,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     
     
     private void cahceSkuSn(String sn,Long locationId,Long turnoverBoxId,Long skuId){
-        List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString());
+        List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
         if(null == list) {
             list = new ArrayList<String>();
             list.add(sn);
@@ -925,10 +926,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         for(WhOperationExecLine operationExecLine : operationExecLineList){
             //获取内部容器唯一sku
             String onlySku = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(operationExecLine);
-            //根据工作明细id获取工作明细数据            
-            WhWorkLine whWorkLine = whWorkLineDao.findById(operationExecLine.getWorkLineId());
             //根据库存UUID查找对应SN/残次信息
-            List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), whWorkLine.getUuid());
+            List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), operationExecLine.getUuid());
             //获取库位ID 
             locationIds.add(operationExecLine.getToLocationId());
             if(whOperationCommand.getIsWholeCase() == false){

@@ -134,7 +134,7 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     
     private Double scanSkuQty;
     
-    private Boolean isContinueScanSn;
+    private Boolean isContinueScanSn = false;
     
     
     private String newTurnoverBoxCode;// 引入新容器

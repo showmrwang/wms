@@ -60,7 +60,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	odo_line_id as odoLineId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	operator_id as operatorId
+	        	operator_id as operatorId,
+	        	uuid as uuid
 	        	
 	    ]]>
 	</sql>
