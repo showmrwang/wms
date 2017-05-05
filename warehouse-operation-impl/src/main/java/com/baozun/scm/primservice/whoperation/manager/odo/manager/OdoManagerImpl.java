@@ -1584,4 +1584,27 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
     }
 
+    @Override
+    public void updateOdoIndexByBatchExt(Map<String, Map<String, List<Long>>> batchPrintConditionMap, Long ouId) {
+        int batchIndex = 1;
+        for (Entry<String, Map<String, List<Long>>> entry : batchPrintConditionMap.entrySet()) {
+            Map<String, List<Long>> printConditionMap = entry.getValue();
+            int printIndex = 1;
+            for (Entry<String, List<Long>> printEntry : printConditionMap.entrySet()) {
+                int index = 1;
+                List<Long> odoIdList = printEntry.getValue();
+                for (Long odoId : odoIdList) {
+                    String odoIndex = batchIndex + "-" + printIndex + "-" + index;
+                    int updateCount = whOdoDao.updateOdoIndexByOdoId(odoId, odoIndex, ouId);
+                    if (updateCount != 1) {
+                        throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                    }
+                    index++;
+                }
+                printIndex++;
+            }
+            batchIndex++;
+        }
+    }
+
 }
