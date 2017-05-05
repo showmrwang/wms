@@ -90,19 +90,23 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String seedingWallCode;
     // 字典表str
     /** 库存状态str*/
-    private String invStatusStr;
+    private String invStatusStr = new String();
     /** 库存类型str*/
-    private String invTypeStr;
+    private String invTypeStr = new String();
     /** 库存属性1str*/
-    private String invAttr1Str;
+    private String invAttr1Str = new String();
     /** 库存属性2str*/
-    private String invAttr2Str;
+    private String invAttr2Str = new String();
     /** 库存属性3str*/
-    private String invAttr3Str;
+    private String invAttr3Str = new String();
     /** 库存属性4str*/
-    private String invAttr4Str;
+    private String invAttr4Str = new String();
     /** 库存属性5str*/
-    private String invAttr5Str;
+    private String invAttr5Str = new String();
+    /** 生产日期str*/
+    private String mfgDateStr = new String();
+    /** 失效日期str*/
+    private String expDateStr = new String();
 
     public Long getId() {
         return id;
@@ -416,4 +420,19 @@ public class WhCheckingLineCommand extends BaseCommand {
         this.invTypeStr = invTypeStr;
     }
 
+    public String getMfgDateStr() {
+        return mfgDateStr;
+    }
+
+    public void setMfgDateStr(String mfgDateStr) {
+        this.mfgDateStr = mfgDateStr;
+    }
+
+    public String getExpDateStr() {
+        return expDateStr;
+    }
+
+    public void setExpDateStr(String expDateStr) {
+        this.expDateStr = expDateStr;
+    }
 }

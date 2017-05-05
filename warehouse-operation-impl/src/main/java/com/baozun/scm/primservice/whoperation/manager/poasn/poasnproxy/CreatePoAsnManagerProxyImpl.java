@@ -1,10 +1,9 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -41,14 +40,15 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
-import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
+import com.baozun.scm.primservice.whoperation.excel.ExcelContext;
+import com.baozun.scm.primservice.whoperation.excel.ExcelImport;
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
 import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException;
 import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
-import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager;
+import com.baozun.scm.primservice.whoperation.manager.bi.OutPutStreamToServersManager;
 import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.GeneralRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
@@ -58,12 +58,15 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoMan
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
+import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.SupplierManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.carton.WhCartonManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.bi.ImportExcel;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
@@ -81,13 +84,13 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
@@ -98,7 +101,7 @@ import com.baozun.scm.primservice.whoperation.util.StringUtil;
  * 
  */
 @Service("createPoAsnManagerProxy")
-public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements CreatePoAsnManagerProxy {
+public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
     protected static final Logger log = LoggerFactory.getLogger(CreatePoAsnManagerProxy.class);
 
@@ -136,6 +139,12 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     private InventoryStatusManager inventoryStatusManager;
     @Autowired
     private WhCartonManager whCartonManager;
+    @Autowired
+    private SupplierManager supplierManager;
+    @Autowired
+    private OutPutStreamToServersManager outPutStreamToServersManager;
+    @Autowired
+    private SysDictionaryManager sysDictionaryManager;
 
     /**
      * 验证po单数据是否完整
@@ -728,7 +737,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 line.setStatus(PoAsnStatus.ASNLINE_NOT_RCVD);
                 line.setIsIqc(poline.getIsIqc());
                 line.setMfgDate(poline.getMfgDate());
-                line.setExpDate(poline.getMfgDate());
+                // @mender yimin.lu 2017/5/4 失效日期修正
+                line.setExpDate(poline.getExpDate());
                 line.setValidDate(poline.getValidDate());
                 line.setBatchNo(poline.getBatchNo());
                 line.setCountryOfOrigin(poline.getCountryOfOrigin());
@@ -996,61 +1006,253 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
     }
 
     @Override
-    public ResponseMsg importBiPo(String url, String errorUrl, String fileName, Locale locale) {
-        String inPath = url + "/" + fileName;
-        String outPath = null;// errorUrl + "\\/" + fileName;
-        if (locale == null) {
-            locale = Locale.CHINESE;
+    public ResponseMsg importBiPo(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId) {
+        File importExcelFile = new File(url, fileName);
+        if (!importExcelFile.exists()) {
+            throw new BusinessException(ErrorCodes.IMPORT_ERROR_FILE_NOT_EXISTS);
         }
-        String[] excelIdArray = new String[] {"biPo", "biPoLine"};
-        return importBiPoForDefault(inPath, outPath, excelIdArray, locale);
-    }
 
-    private ResponseMsg importBiPoForDefault(String inPath, String outPath, String[] excelIdArray, Locale locale) {
-        BiPoCommand excelPo = null;
+        try {
+            // 创建excel上下文实例,它的构成需要配置文件的路径
+            ExcelContext context = new ExcelContext("excel-config.xml");
 
-        if (excelIdArray != null && excelIdArray.length > 0) {
-            try {
-                InputStream fis = new FileInputStream(inPath);
-                OutputStream fos = StringUtils.isEmpty(outPath) ? null : new FileOutputStream(outPath);
-                ExcelImportResult result = BiPoDefaultExcelContext.getContext().readExcel(excelIdArray[0], fis, fos, locale);
-                if (result == null) {
-                    throw new BusinessException("入库单头信息Excel解析失败");
-                }
 
-                List<BiPoCommand> poCommandList = result.getListBean();
-                System.out.println("行数： " + poCommandList.size());
-                excelPo = poCommandList.get(0);
+            List<BiPoCommand> poCommandList = new ArrayList<BiPoCommand>();
+            List<BiPoLineCommand> poLineList = new ArrayList<BiPoLineCommand>();
 
-                if (excelPo == null) {
-                    throw new BusinessException("入库单头信息读取失败");
-                }
-                fis = new FileInputStream(inPath);
-                fos = StringUtils.isEmpty(outPath) ? null : new FileOutputStream(outPath);
-                ExcelImportResult poLineCommandListResult = BiPoDefaultExcelContext.getContext().readExcel(excelIdArray[1], fis, fos, locale);
-                if (poLineCommandListResult == null) {
-                    throw new BusinessException("入库单明细信息Excel解析失败");
-                }
-                List<BiPoLineCommand> poLineList = poLineCommandListResult.getListBean();
-                excelPo.setPoLineList(poLineList);
-
-                this.createBiPoFromExcel(excelPo, result, poLineCommandListResult);
-            } catch (RootExcelException e) {
-                System.out.println(e.getMessage() + " [" + e.getSheetName() + "]");
-                for (ExcelException ee : e.getExcelExceptions()) {
-                    System.out.println(e.getSheetName() + ":第[" + ee.getRow() + "]行 [" + ee.getTitleName() + "] " + ee.getErrorCode() + " " + ee.getMessage());
-                }
-            } catch (BusinessException bex) {
-                bex.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+            // 入库单头信息
+            ExcelImportResult biPoExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_BIPO_EXCEL_CONFIG_ID, Constants.IMPORT_BIPO_TITLE_INDEX);
+            if (ExcelImportResult.READ_STATUS_SUCCESS == biPoExcelImportResult.getReadstatus()) {
+                // 验证商品信息完整及是否存在重复商品
+                this.validateBiPo(biPoExcelImportResult, poCommandList, locale, userId);
             }
+            // 如果头信息有严重的问题，则不进行明细的校验，直接推出错误
+            if (poCommandList.size() == 0) {
+                Workbook workbook = biPoExcelImportResult.getWorkbook();
+                ExcelImport.exportImportErroeMsg(workbook, biPoExcelImportResult.getRootExcelException());
+
+                ImportExcel importExcel = new ImportExcel();
+                importExcel.setImportType("BI_PO");
+                importExcel.setWorkbook(workbook);
+                importExcel.setUserImportExcelId(userImportExcelId);
+                importExcel.setUserId(userId);
+                importExcel.setOuId(ouId);
+
+                // 调用异常输出接口，生成错误信息
+                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+
+                ResponseMsg msg = new ResponseMsg();
+                msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                msg.setMsg(errorFileName);
+                return msg;
+            }
+            BiPoCommand poCommand = poCommandList.get(0);
+            // 入库单明细信息
+            ExcelImportResult biPoLinesExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_BIPOLINE_EXCEL_CONFIG_ID, Constants.IMPORT_BIPOLINE_TITLE_INDEX);
+            if (ExcelImportResult.READ_STATUS_SUCCESS == biPoLinesExcelImportResult.getReadstatus()) {
+                // 验证商品信息完整及是否存在重复商品
+                this.validateBiPoLines(biPoLinesExcelImportResult, poLineList, locale, poCommand, userId, logId);
+            }
+            if (ExcelImportResult.READ_STATUS_FAILED == biPoExcelImportResult.getReadstatus() | ExcelImportResult.READ_STATUS_FAILED == biPoLinesExcelImportResult.getReadstatus()) {
+                Workbook workbook = biPoExcelImportResult.getWorkbook();
+                ExcelImport.exportImportErroeMsg(workbook, biPoExcelImportResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, biPoLinesExcelImportResult.getRootExcelException());
+
+                ImportExcel importExcel = new ImportExcel();
+                importExcel.setImportType("BI_PO");
+                importExcel.setWorkbook(workbook);
+                importExcel.setUserImportExcelId(userImportExcelId);
+                importExcel.setUserId(userId);
+                importExcel.setOuId(ouId);
+
+                // 调用异常输出接口，生成错误信息
+                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+
+                ResponseMsg msg = new ResponseMsg();
+                msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                msg.setMsg(errorFileName);
+                return msg;
+            }
+            // 如果校验成功，则进行导入
+            poCommand.setPoLineList(poLineList);
+
+            return this.createBiPoFromExcel(poCommand, userId, logId);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BusinessException(ErrorCodes.IMPORT_ERROR);
         }
 
-        return null;
+
     }
+
+    private void validateBiPoLines(ExcelImportResult excelImportResult, List<BiPoLineCommand> poLineList, Locale locale, BiPoCommand excelPo, Long userId, String logId) {
+        List<BiPoLineCommand> lineCommandList = excelImportResult.getListBean();
+        RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+
+        Map<Long, String> invMap = this.getInvStatusMap();
+        for (int index = 0; index < lineCommandList.size(); index++) {
+            int rowNum = index + Constants.IMPORT_BIPOLINE_TITLE_INDEX + 1;
+            BiPoLineCommand lineCommand = lineCommandList.get(index);
+
+
+            Sku sku = this.biPoLineManager.findSkuByBarCode(lineCommand.getSkuBarCode(), excelPo.getCustomerId(), logId);
+            if (sku == null) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("条码找不到对应的商品", null, rowNum, null));
+            }
+            lineCommand.setSkuId(sku.getId());
+            if (lineCommand.getInvStatus() == null) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
+            } else {
+                if (!invMap.containsKey(lineCommand.getInvStatus())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存状态编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvType())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_TYPE, lineCommand.getInvType());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存类型编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr1())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_1, lineCommand.getInvAttr1());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性1编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr2())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_2, lineCommand.getInvAttr2());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性2编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr3())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_3, lineCommand.getInvAttr3());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性3编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr4())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_4, lineCommand.getInvAttr4());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性4编码错误", null, rowNum, null));
+                }
+            }
+            if (StringUtils.hasText(lineCommand.getInvAttr5())) {
+                SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_5, lineCommand.getInvAttr5());
+                if (dic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存属性5编码错误", null, rowNum, null));
+                }
+            }
+            poLineList.add(lineCommand);
+
+        }
+        if (rootExcelException.isException()) {
+            excelImportResult.setRootExcelException(rootExcelException);
+            excelImportResult.setReadstatus(ExcelImportResult.READ_STATUS_FAILED);
+        }
+        
+    }
+
+    private void validateBiPo(ExcelImportResult excelImportResult, List<BiPoCommand> poCommandList, Locale locale, Long userId) {
+        List<BiPoCommand> readBiPoList = excelImportResult.getListBean();
+        RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+        int rowNum = Constants.IMPORT_BIPO_TITLE_INDEX + 1;
+
+
+        if (readBiPoList.size() > 1) {
+            rootExcelException.getExcelExceptions().add(new ExcelException("只能按单导入", null, rowNum, null));
+        } else {
+            BiPoCommand excelPo = readBiPoList.get(0);
+            // 校验逻辑
+            if (StringUtils.isEmpty(excelPo.getExtCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("入库单外接编码不能为空", null, rowNum, null));
+            }
+            if (StringUtils.isEmpty(excelPo.getExtCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("入库单客户编码不能为空", null, rowNum, null));
+            }
+            Customer customer = this.customerManager.findCustomerbyCode(excelPo.getCustomerCode());
+            if (customer == null) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("客户编码有误，找不到对应的客户信息", null, rowNum, null));
+            }
+            Long customerId = customer.getId();
+            excelPo.setCustomerId(customerId);
+            if (StringUtils.isEmpty(excelPo.getStoreCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码不能为空", null, rowNum, null));
+            } else {
+                Store store = this.storeManager.findStoreByCode(excelPo.getStoreCode());
+                if (store == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码找不到对应的店铺信息", null, rowNum, null));
+                } else {
+                    if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("店铺无效", null, rowNum, null));
+                    }
+                    if (!customer.getId().equals(store.getCustomerId())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("客户-店铺不对应", null, rowNum, null));
+                    }
+                    Long storeId = store.getId();
+                    excelPo.setStoreId(storeId);
+                    Boolean customerStoreUserFlag = this.storeManager.checkCustomerStoreUser(customerId, storeId, userId);
+                    if (!customerStoreUserFlag) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("用户不具有此客户-店铺权限", null, rowNum, null));
+                    }
+                    // 校验ExtCode: ext_code与storeId 唯一性
+                    if (StringUtils.hasText(excelPo.getExtCode())) {
+                        List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByStoreIdExtCode(storeId, excelPo.getExtCode());
+                        if (null == checkExtCodeBiPoList || checkExtCodeBiPoList.size() > 0) {
+                            log.warn("check extcode returns failure when createPo!");
+                            rootExcelException.getExcelExceptions().add(new ExcelException("PO单校验相关单据号失败，同一个店铺下有相同的相关单据号", null, rowNum, null));
+                        }
+                    }
+                }
+            }
+
+            if (StringUtils.isEmpty(excelPo.getPoType())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("入库单类型不能为空", null, rowNum, null));
+            } else {
+                SysDictionary poTypeDic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.PO_TYPE, excelPo.getPoType() + "");
+                if (poTypeDic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("系统参数入库单类型不正确", null, rowNum, null));
+                }
+            }
+            if (StringUtils.isEmpty(excelPo.getSupplierCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("供应商不能为空", null, rowNum, null));
+            } else {
+                Supplier search = new Supplier();
+                search.setCode(excelPo.getSupplierCode());
+                search.setLifecycle(Constants.LIFECYCLE_START);
+                List<Supplier> s = this.supplierManager.findListByParam(search);
+                if (s == null || s.size() == 0) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("供应商编码找不到对应的可用的供应商", null, rowNum, null));
+                } else {
+
+                    excelPo.setSupplierId(s.get(0).getId());
+                }
+            }
+            poCommandList.add(excelPo);
+
+        }
+
+        if (rootExcelException.isException()) {
+            excelImportResult.setRootExcelException(rootExcelException);
+            excelImportResult.setReadstatus(ExcelImportResult.READ_STATUS_FAILED);
+        }
+
+    }
+
+    private ExcelImportResult readSheetFromExcel(ExcelContext context, File importExcelFile, Locale locale, String sheetName, int index) throws Exception {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(importExcelFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new BusinessException("文件读取异常");
+        }
+        return context.readExcel(sheetName, index, inputStream, locale);
+    }
+
+
 
     /**
      * EXCEL导入PO
@@ -1060,73 +1262,20 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
      * @param result
      * @return
      */
-    private ResponseMsg createBiPoFromExcel(BiPoCommand excelPo, ExcelImportResult result, ExcelImportResult poLineCommandListResult) {
-        String logId = excelPo.getLogId();
+    private ResponseMsg createBiPoFromExcel(BiPoCommand excelPo, Long userId, String logId) {
         Long ouId = excelPo.getOuId();
-        Long userId = null == excelPo.getUserId() ? 100011L : excelPo.getUserId();
-        Long customerId, storeId;
+        Long customerId = excelPo.getCustomerId();
+        Long storeId = excelPo.getStoreId();
         ResponseMsg rm = new ResponseMsg();
-        Workbook workbook = result.getWorkbook();
-        ExcelImportResult errorExcel = new ExcelImportResult();
         try {
-            // 校验逻辑
-            if (StringUtils.isEmpty(excelPo.getExtCode())) {
-                errorExcel.addRowException("入库单客户编码不能为空", "", result.getTitleIndex(), "biPo");
-            }
 
-            if (StringUtils.isEmpty(excelPo.getPoType())) {
-                errorExcel.addRowException("入库单类型不能为空", "", result.getTitleIndex(), "biPo");
-            }
-            Customer customer = this.customerManager.findCustomerbyCode(excelPo.getCustomerCode());
-            if (customer == null) {
-                throw new BusinessException("客户编码有误，找不到对应的客户信息");
-            }
-            customerId = customer.getId();
-            Store store = this.storeManager.findStoreByCode(excelPo.getStoreCode());
-            if (store == null) {
-                throw new BusinessException("店铺编码找不到对应的店铺信息");
-            }
-            storeId = store.getId();
-            if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
-                throw new BusinessException("店铺无效");
-            }
-            if (!customer.getId().equals(store.getCustomerId())) {
-                throw new BusinessException("客户-店铺不对应");
-            }
-            Boolean customerStoreUserFlag = this.storeManager.checkCustomerStoreUser(customerId, storeId, userId);
-            if (!customerStoreUserFlag) {
-                // throw new BusinessException("用户不具有此客户-店铺权限");
-            }
-            // 校验ExtCode: ext_code与storeId 唯一性
-            List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByStoreIdExtCode(storeId, excelPo.getExtCode());
-            if (null == checkExtCodeBiPoList || checkExtCodeBiPoList.size() > 0) {
-                log.warn("check extcode returns failure when createPo!");
-                throw new BusinessException(ErrorCodes.PO_CHECK_EXTCODE_ERROR);
-            }
-            // TODO
-            Long supplierId = null;
-            TransportProvider tp = this.biPoManager.findTransportProviderByCode(excelPo.getLogisticsProviderCode());
-            if (tp == null) {
-                throw new BusinessException("运输服务商编码有误");
-            }
             List<BiPoLineCommand> biPoLineCommandList = excelPo.getPoLineList();
             List<WhPoLine> lineList = new ArrayList<WhPoLine>();
-            // #TODO
             Double qtyPlanned = Constants.DEFAULT_DOUBLE;
-            Map<String, Long> skubarIdMap = new HashMap<String, Long>();
             if (biPoLineCommandList != null && biPoLineCommandList.size() > 0) {
                 for (BiPoLineCommand lineCommand : biPoLineCommandList) {
                     WhPoLine line = new WhPoLine();
-                    if (skubarIdMap.containsKey(lineCommand.getSkuBarCode())) {
-                        line.setSkuId(skubarIdMap.get(lineCommand.getSkuBarCode()));
-                    } else {
-                        Sku sku = this.biPoLineManager.findSkuByBarCode(lineCommand.getSkuBarCode(), customerId, logId);
-                        if (sku == null) {
-                            throw new BusinessException("条码找不到对应的商品");
-                        }
-                        line.setSkuId(sku.getId());
-                        skubarIdMap.put(lineCommand.getSkuBarCode(), sku.getId());
-                    }
+                    line.setSkuId(lineCommand.getSkuId());
                     line.setQtyPlanned(lineCommand.getQtyPlanned());
                     line.setAvailableQty(line.getQtyPlanned());
                     qtyPlanned += line.getQtyPlanned();
@@ -1144,6 +1293,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                     line.setInvAttr4(lineCommand.getInvAttr4());
                     line.setInvAttr5(lineCommand.getInvAttr5());
                     line.setInvType(lineCommand.getInvType());
+                    line.setSkuId(lineCommand.getSkuId());
                     line.setCreatedId(userId);
                     line.setCreateTime(new Date());
                     line.setModifiedId(userId);
@@ -1163,11 +1313,13 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             po.setPoCode(poCode);
             po.setExtCode(excelPo.getExtCode());
             po.setOuId(ouId);
-            po.setSupplierId(supplierId);
+            po.setSupplierId(excelPo.getSupplierId());
             po.setPoType(excelPo.getPoType());
             po.setStatus(PoAsnStatus.PO_NEW);
             po.setIsIqc(excelPo.getIsIqc());
             po.setPoDate(excelPo.getPoDate());
+            po.setStoreId(storeId);
+            po.setCustomerId(customerId);
             po.setEta(excelPo.getEta());
 
             Integer ctnPlanned = Constants.DEFAULT_INTEGER;
@@ -1179,6 +1331,7 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             po.setCreatedId(userId);
             po.setLastModifyTime(new Date());
             po.setModifiedId(userId);
+            po.setLogisticsProvider(excelPo.getLogisticsProvider());
             this.createPoDefault(po, lineList, ouId);
 
         } catch (BusinessException e) {
@@ -1210,7 +1363,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
 		
 		// 退换货逻辑
 		if (whPo.getPoType() == 2) {
-			Store store = this.getStoreByRedis(whPo.getStoreId());
+
+            Store store = this.storeManager.findStoreById(whPo.getStoreId());
 			// 退货入关联销售出
 			String ecOrderCode = whPo.getOriginalEcOrderCode();
 			String dataSource = whPo.getDataSource();
@@ -1379,7 +1533,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
             Long lineId = cacheInv.getLineId();// 明细Id
             Long insideContainerId = cacheInv.getInsideContainerId();
 
-
+            // @mender yimin.lu 2017/5/4 兼容退换货收货
+            cacheInv.setOccupationCode(occupationCode);
             this.packageSkuInv(saveInvList, cacheInv, uuid, qtyRcvd, customerId, storeId);// 封装库存信息
 
             this.packageCarton(saveWhCartonList, cacheInv, qtyRcvd, insideContainerId, asnId, lineId, ouId, userId);// 装箱信息
@@ -1400,6 +1555,8 @@ public class CreatePoAsnManagerProxyImpl extends BaseManagerImpl implements Crea
                 throw new BusinessException(ErrorCodes.CONTAINER_RCVD_GET_ERROR);
             }
             container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+            // @mender yimin.lu 2017/5/4 容器状态
+            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             container.setOperatorId(userId);
             containerList.add(container);
         }

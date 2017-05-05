@@ -26,6 +26,8 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
 
 
 
@@ -195,6 +197,22 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
     int archivWhAsnTransportMgmtByShard(WhAsnTransportMgmt whAsnTransportMgmt);
 
     /**
+     * 备份仓库下WhAsnRcvdLog
+     * 
+     * @param WhAsnRcvdLog
+     * @return
+     */
+    int archivWhAsnRcvdLogByShard(WhAsnRcvdLog whAsnRcvdLog);
+
+    /**
+     * 备份仓库下WhAsnRcvdSnLog
+     * 
+     * @param WhAsnRcvdSnLog
+     * @return
+     */
+    int archivWhAsnRcvdSnLogByShard(WhAsnRcvdSnLog whAsnRcvdSnLog);
+
+    /**
      * 删除仓库whasn信息
      * 
      * @param asnid
@@ -226,5 +244,23 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
      * @return
      */
     int deleteAsnTransportMgmt(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
+
+    /**
+     * 删除仓库whAsnRcvdLog
+     * 
+     * @param asnid
+     * @param ouid
+     * @return
+     */
+    int deleteAsnRcvdLog(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
+    
+    /**
+     * 删除仓库whAsnRcvdSnLog
+     * 
+     * @param asnid
+     * @param ouid
+     * @return
+     */
+    int deleteAsnRcvdSnLog(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
 
 }

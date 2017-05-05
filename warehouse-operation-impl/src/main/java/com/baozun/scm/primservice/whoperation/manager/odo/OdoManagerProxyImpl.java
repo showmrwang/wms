@@ -166,6 +166,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private RegionManager regionManager;
     @Autowired
     private DistributionTargetManager distributionTargetManager;
+    @Autowired
+    private WhWaveManager whWaveManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -1030,6 +1032,21 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         //@mender yimin.lu 2017/4/10 屏蔽部分取消接口
         if(!isOdoCancel){
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        // #TODO @mender yimin.lu 2017/5/5 当出库单大于某个状态时候，不允许取消
+        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        if (StringUtils.hasText(wh.getOdoNotCancelNode())) {
+            Long odoStatus = Constants.DEFAULT_LONG;
+            Long cancelNode = Constants.DEFAULT_LONG;
+            try {
+                odoStatus = Long.parseLong(odo.getOdoStatus());
+                cancelNode = Long.parseLong(wh.getOdoNotCancelNode());
+            } catch (Exception ex) {
+                throw new BusinessException(ErrorCodes.WAREHOUSE_CANCEL_NODE_ERROR);
+            }
+            if (odoStatus >= cancelNode) {
+                throw new BusinessException(ErrorCodes.ODO_CANCEL_ERROR);
+            }
         }
         if(isOdoCancel){
             this.cancelOdo(odo, ouId, logId);
@@ -2456,6 +2473,18 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     @Override
     public List<Long> findOdoIdListByStoreIdListAndOriginalIdList(List<Long> odoIdList, List<Long> storeIdList, Long ouId) {
         return this.odoManager.findOdoIdListByStoreIdListAndOriginalIdList(odoIdList, storeIdList, ouId);
+    }
+
+
+    @Override
+    public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {
+        return this.odoManager.findPrintOdoIdList(waveCode, ouId);
+    }
+
+
+    @Override
+    public WhWave findWaveByIdOuId(Long waveId, Long ouId) {
+        return this.whWaveManager.findWaveByIdOuId(waveId, ouId);
     }
 
 }

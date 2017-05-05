@@ -1235,7 +1235,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
-            log.error(e + "");
+            log.error("", e);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }

@@ -57,7 +57,8 @@
                 y_qty as yqty,
                 z_qty as zqty,
                 seeding_odo_qty as seedingOdoQty,
-                is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
+                is_check_returned_purchase_reg as isCheckReturnedPurchaseReg,
+	        	odo_not_cancel_node as odoNotCancelNode
         ]]>
     </sql>
 
@@ -116,7 +117,8 @@
                     y_qty ,
                     z_qty ,
                     seeding_odo_qty ,
-                    is_check_returned_purchase_reg
+                    is_check_returned_purchase_reg,
+		        	odo_not_cancel_node
                 ) VALUES (
                 #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{warehouseId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -164,7 +166,8 @@
                     #{yqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     #{zqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                     #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                     #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} 
+                     #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{odoNotCancelNode,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
 
@@ -219,7 +222,8 @@
                 y_qty = #{yqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 z_qty = #{zqty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 seeding_odo_qty = #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-                is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} 
+                is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        odo_not_cancel_node = #{odoNotCancelNode,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
                 id = #{id} 
         ]]>
@@ -450,7 +454,9 @@
             <if test="zqty!=null">
                 and z_qty = #{zqty}
             </if>
-
+<if test="odoNotCancelNode!=null">
+					and odo_not_cancel_node = #{odoNotCancelNode}
+				</if>
             <if test="seedingOdoQty!=null">
                 and seeding_odo_qty = #{seedingOdoQty}
             </if>

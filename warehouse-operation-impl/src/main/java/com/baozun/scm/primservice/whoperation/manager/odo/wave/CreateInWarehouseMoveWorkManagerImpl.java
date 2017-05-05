@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.InWarehouseMoveWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.LocationCommand;
@@ -23,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineComman
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -61,6 +63,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
@@ -72,6 +75,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private CacheManager cacheManager;
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
@@ -114,8 +119,6 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     private Container2ndCategoryDao container2ndCategoryDao;
     @Autowired
     private WhSkuDao whSkuDao;
-    @Autowired
-    private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
     @Autowired
     private WhSkuInventorySnDao whSkuInventorySnDao;
     
@@ -879,11 +882,14 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @return
      */
     @Override
-    public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId) {
+    public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey) {
         // 获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(inWarehouseMoveWorkCode, ouId);
         WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWorkCommand.getId(), ouId);
         List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), ouId);
+        //根据key获取缓存sn列表            
+        List<WhSkuInventorySn> skuInventorySnLst = this.getSnStatistics(snKey);
+        
         for(WhOperationLineCommand operationLineCommand : whOperationLineCommandLst){
             WhOperationExecLine operationExecLine = new WhOperationExecLine();
             // 将operationLineCommand基本信息复制到operationExecLine中
@@ -892,8 +898,57 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             operationExecLine.setIsShortPicking(false);
             // 是否使用新的出库箱/周转箱
             operationExecLine.setIsUseNew(false);
-            whOperationExecLineDao.insert(operationExecLine);    
+            whOperationExecLineDao.insert(operationExecLine);
+            //根据uuid和invMoveCode获取待移入库存
+            WhSkuInventoryAllocated skuInventoryAllocated = new WhSkuInventoryAllocated();
+            List<WhSkuInventoryAllocated> skuInventoryAllocatedLst =  skuInventoryAllocatedDao.findskuInventoryAllocateds(skuInventoryAllocated);
+            //根据uuid获取库存
+            WhSkuInventory skuInventory = new WhSkuInventory();
+            List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findWhSkuInventoryByPramas(skuInventory);
+            //根据invMoveCode获取待移入库存 
+            WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
+            List<WhSkuInventoryTobefilled> skuInventoryTobefilledLst  = skuInventoryTobefilledDao.findskuInventoryTobefilleds(skuInventoryTobefilled);
         }
+    }
+    
+    /**
+     * 缓存sn列表
+     * 
+     * @author qiming.liu
+     * @param skuInventorySnsLst
+     * @return
+     */
+    @Override
+    public String snStatisticsRedis(List<WhSkuInventorySn> skuInventorySnsLst) {
+        Long time = new Date().getTime();
+        String key = time.toString();
+        cacheManager.setObject(CacheConstants.SN_STATISTICS + key, skuInventorySnsLst, CacheConstants.CACHE_ONE_DAY);
+        return key;
+    }
+    
+    /**
+     * 根据key获取缓存sn列表信息
+     * 
+     * @author qiming.liu
+     * @param key
+     * @return
+     */
+    @Override
+    public List<WhSkuInventorySn> getSnStatistics(String key) {
+        List<WhSkuInventorySn> whSkuInventorySnLst = cacheManager.getObject(CacheConstants.SN_STATISTICS + key);
+        return whSkuInventorySnLst;
+    }
+    
+    /**
+     * 根据key删除缓存sn列表信息
+     * 
+     * @author qiming.liu
+     * @param key
+     * @return
+     */
+    @Override
+    public void delSnStatistics(String key) {
+        cacheManager.remove(CacheConstants.SN_STATISTICS + key);
     }
     
 }

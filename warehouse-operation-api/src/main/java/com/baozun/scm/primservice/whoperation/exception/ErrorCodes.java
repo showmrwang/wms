@@ -427,6 +427,10 @@ public class ErrorCodes {
     public static final int CREATE_WAVE_ERROR = 11091;
     /** PO单状态不允许审核成功*/
     public static final int BIPO_AUDIT_STATUS_ERROR = 11092; 
+    /** 仓库出库单取消节点异常 */
+    public static final int WAREHOUSE_CANCEL_NODE_ERROR = 11093;
+    /** 出库单不允许取消 */
+    public static final int ODO_CANCEL_ERROR = 11094;
     // 10001-20000 luyimin
 
 
@@ -978,4 +982,9 @@ public class ErrorCodes {
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001; 
     // 120000-130000 zhaozili 
+
+    /** 文件不存在 */
+    public static final int IMPORT_ERROR_FILE_NOT_EXISTS = 60203;
+    /** 导入失败 */
+    public static final int IMPORT_ERROR = 60202;
 }

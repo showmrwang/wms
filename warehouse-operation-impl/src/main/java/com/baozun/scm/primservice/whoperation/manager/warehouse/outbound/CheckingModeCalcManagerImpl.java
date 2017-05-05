@@ -17,6 +17,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.outbound;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,6 +213,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setInvStatus(null == inv.getInvStatus() ? "" : inv.getInvStatus().toString());
                             line.setInvType(inv.getInvType());
                             line.setMfgDate(inv.getMfgDate());
+                            if (StringUtils.isEmpty(inv.getOccupationCode())) {
+                                log.error("odo code is null error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
+                            }
                             WhOdo odo = whOdoDao.findOdoByCodeAndOuId(inv.getOccupationCode(), ouId);
                             if (null == odo) {
                                 log.error("odo is null error, logId is:[{}]", logId);
@@ -369,6 +374,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                 params.setSeedingWallCode(facilityCode);
                 params.setContainerLatticeNo(latticeNo);
                 params.setOutboundboxCode(outboundBoxCode);
+                params.setOuId(ouId);
                 List<WhSkuInventory> invList = whSkuInventoryDao.getSkuInvListGroupUuid(params);
                 if (null != invList && invList.size() > 0) {
                     // 生成复核头

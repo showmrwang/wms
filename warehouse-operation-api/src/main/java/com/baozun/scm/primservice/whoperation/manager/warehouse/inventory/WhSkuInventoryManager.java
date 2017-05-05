@@ -264,7 +264,15 @@ public interface WhSkuInventoryManager extends BaseManager {
      */
     public void replenishmentPutaway(Long locationId,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode,Long turnoverBoxId);
 
-
+    /***
+     * 补货上架(拆箱上架)
+     * @param operationId
+     * @param ouId
+     * @param isTabbInvTotal
+     * @param userId
+     * @param workCode
+     */
+    public void replenishmentSplitContainerPutaway(List<String> cacehSnList,Double skuScanQty,String skuAttrId,Long locationId,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode,Long turnoverBoxId,Long newTurnoverBoxId);
     
     /***
      * 补货中的拣货由库位库存生成容器库存
@@ -274,7 +282,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param insideContainerId
      * @param turnoverBoxId
      */
-    public void replenishmentContainerInventory(Boolean isShortPicking,List<String> snDefectList,String skuAttrIds,Long lcoationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
+    public void replenishmentContainerInventory(Long execLineId,Boolean isShortPicking,List<String> snDefectList,String skuAttrIds,Long lcoationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
     
     /***
      * 库内移动中的拣货由库位库存生成容器库存

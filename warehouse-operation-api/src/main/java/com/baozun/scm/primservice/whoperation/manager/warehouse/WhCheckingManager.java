@@ -4,7 +4,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoC
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 
 
 public interface WhCheckingManager extends BaseManager {
@@ -25,22 +24,34 @@ public interface WhCheckingManager extends BaseManager {
      * @return
      */
     WhCheckingByOdoCommand checkInput(WhCheckingByOdoCommand whCheckingCommand);
-    
+
     /**
      * 
      * @param checkingId
      * @param ouId
      * @return
      */
-    public WhCheckingCommand findWhChecking(Long checkingId,Long ouId);
-    
-    
-    
+    public WhCheckingCommand findWhChecking(Long checkingId, Long ouId);
+
+
+
     /**
      * tangming
      * 按单复合
      * @param checkingLineList
      */
-    public void checkingByOdo(WhCheckingByOdoResultCommand cmd,Boolean isTabbInvTotal,Long userId,Long ouId,Long functionId);
+    public void checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId);
 
+    /**
+     * [业务方法] 通过输入查找复核信息
+     * @param whCheckingCommand
+     * @return
+     */
+    public WhCheckingByOdoCommand retrieveCheckData(WhCheckingCommand whCheckingCommand);
+
+    /**
+     * [业务方法] 更新出库箱
+     * @param whCheckingCommand
+     */
+    public void updateCheckOutboundBox(WhCheckingCommand whCheckingCommand);
 }

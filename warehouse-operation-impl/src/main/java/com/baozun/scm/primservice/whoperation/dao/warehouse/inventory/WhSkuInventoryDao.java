@@ -802,8 +802,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
             @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId);
 
 
-    public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByWave(@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId, @Param("locationId") Long locationId, @Param("operationId") Long operationId);
+    public List<WhSkuInventoryCommand> getWhSkuInventoryCommandByWave(@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId);
 
+    
+    public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByWave(@Param("ouId") Long ouId, @Param("locationId") Long locationId, @Param("operationId") Long operationId);
     /**
      * 校验容器库存(废除)
      * 
@@ -991,4 +993,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     WhSkuInventory findSkuInvByLocationId(@Param("locationId") Long locationId);
+    
+    /**
+     * 根据内部容器查询对应的容器库存信息
+     * 
+     * @param ouid
+     * @param insideContainerid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findWhskuInventoryByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
 }

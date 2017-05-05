@@ -42,12 +42,9 @@ public class WhAsnRcvdSnLog extends BaseModel {
     private String defectReasons;
     /** 对应组织ID */
     private Long ouId;
-  
-    public WhAsnRcvdSnLog() {}
 
-    public WhAsnRcvdSnLog(Long id) {
-        this.id = id;
-    }
+    /** 当前月份 用于归档 */
+    private String sysDate;
 
     public void setAsnRcvdId(Long value) {
         this.asnRcvdId = value;
@@ -97,5 +94,12 @@ public class WhAsnRcvdSnLog extends BaseModel {
         return this.ouId;
     }
 
-}
+    public String getSysDate() {
+        return sysDate;
+    }
 
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+
+}

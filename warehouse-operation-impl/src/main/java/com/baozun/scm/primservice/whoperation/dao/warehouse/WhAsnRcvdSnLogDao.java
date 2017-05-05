@@ -14,7 +14,10 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
 
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -38,5 +41,8 @@ public interface WhAsnRcvdSnLogDao extends BaseDao<WhAsnRcvdSnLog, Long> {
      */
     @QueryPage("findCountByParams")
     Pagination<WhAsnRcvdSnLogCommand> getWhAsnRcvdSnLoglistByParams(Page page, Sort[] sorts, Map<String, Object> param);
+
+
+    List<WhAsnRcvdSnLog> findWhAsnRcvdSnLogByAsnRcvdId(@Param("id") Long id, @Param("ouid") Long ouid);
 
 }

@@ -22,7 +22,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
@@ -34,6 +36,9 @@ public class WhOutboundboxManagerImpl extends BaseManagerImpl implements WhOutbo
 
     @Autowired
     private WhOutboundboxDao whOutboundboxDao;
+
+    @Autowired
+    private CodeManager codeManager;
 
     @Override
     public void saveOrUpdate(WhOutboundboxCommand whOutboundboxCommand) {
@@ -63,5 +68,11 @@ public class WhOutboundboxManagerImpl extends BaseManagerImpl implements WhOutbo
     @Override
     public WhOutboundboxCommand findByOutboundBoxCode(String outboundBoxCode, Long ouId) {
         return whOutboundboxDao.findByOutboundBoxCode(outboundBoxCode, ouId);
+    }
+
+    @Override
+    public String generateCode() {
+        String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
+        return outboundBoxCode;
     }
 }

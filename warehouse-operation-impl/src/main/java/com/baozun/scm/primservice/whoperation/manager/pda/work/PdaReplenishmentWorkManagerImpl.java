@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -60,6 +61,8 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
     private ContainerDao containerDao;
     @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
+    @Autowired
+    private WhOperationExecLineDao whOperationExecLineDao;
     
     /****
      * 确定补货方式和占用模型
@@ -271,26 +274,30 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
      * @param ouId
      * @return
      */
-    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId){
+    public void verificationTurnoverBox(String turnoverBoxCode,Long ouId,Long operationId){
+        //先判断当前作业是否已经占用周装箱状态
         ContainerCommand cmd =  containerDao.getContainerByCode(turnoverBoxCode, ouId);
         if(null == cmd) {
             log.error("pdaPickingRemmendContainer container is null logid: " + logId);
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
-        // 验证容器Lifecycle是否有效
-        if (!cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
-            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        Long count = whOperationExecLineDao.getOperationExecLineCount(operationId, ouId,cmd.getId());
+        if(count == 0) {
+            // 验证容器Lifecycle是否有效
+            if (!cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
+            // 验证容器状态是否是
+            if (!cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
+            //修改周转箱状态
+            Container c = new Container();
+            BeanUtils.copyProperties(cmd, c);
+            c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            containerDao.saveOrUpdateByVersion(c);
         }
-        // 验证容器状态是否是
-        if (!cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
-            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
-        }
-        //修改周转箱状态
-        Container c = new Container();
-        BeanUtils.copyProperties(cmd, c);
-        c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-        c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-        containerDao.saveOrUpdateByVersion(c);
     }
     
     
@@ -306,8 +313,8 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         //1先判断当前周转箱有没有生成容器库存,如果生成容器库存，则不能改变周转箱状态
-        List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, cmd.getId());
-        if(null != skuInvCmdList && skuInvCmdList.size() != 0){
+        int count = whSkuInventoryDao.findAllInventoryCountsByInsideContainerId(ouId, cmd.getId());
+        if(count == 0){
           //修改周转箱状态
             Container c = new Container();
             BeanUtils.copyProperties(cmd, c);

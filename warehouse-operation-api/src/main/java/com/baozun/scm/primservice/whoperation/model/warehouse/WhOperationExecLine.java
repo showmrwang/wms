@@ -119,6 +119,8 @@ public class WhOperationExecLine extends BaseModel {
     private Long operatorId;
     
     private String replenishmentCode;
+    
+    private String uuid;
 
     // columns END
     public Long getOperationId() {
@@ -471,6 +473,14 @@ public class WhOperationExecLine extends BaseModel {
 
     public void setReplenishmentCode(String replenishmentCode) {
         this.replenishmentCode = replenishmentCode;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
 }
