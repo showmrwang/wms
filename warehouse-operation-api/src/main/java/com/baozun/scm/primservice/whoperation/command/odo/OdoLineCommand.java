@@ -152,6 +152,17 @@ public class OdoLineCommand extends BaseCommand {
 
     private List<WhOdoVasCommand> vasList;
 
+    // -------------------------------------------
+    private String storeCode;
+
+
+    public String getStoreCode() {
+        return storeCode;
+    }
+
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
+    }
 
     public List<WhOdoVasCommand> getVasList() {
         return vasList;

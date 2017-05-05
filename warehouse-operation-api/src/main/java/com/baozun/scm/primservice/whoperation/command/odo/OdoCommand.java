@@ -101,6 +101,10 @@ public class OdoCommand extends BaseCommand {
     private Boolean isPermitOutBound = true;
     /** 导出序列 */
     private String odoIndex;
+
+    // ------------------------------------------------------------------------------------
+    private String customerCode;
+    private String storeCode;
     // ------------------------------------------------------------------------------------
     // 自定义字段
     private Long userId;
@@ -147,6 +151,23 @@ public class OdoCommand extends BaseCommand {
     /** 数据来源 */
     private String dataSource;
 
+
+
+    public String getStoreCode() {
+        return storeCode;
+    }
+
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
+    }
+
+    public String getCustomerCode() {
+        return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
+    }
 
     public String getHeadStartOdoStatus() {
         return headStartOdoStatus;
