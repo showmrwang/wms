@@ -351,6 +351,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 已有播种墙或者小车
             return false;
         }
+
         String input = whCheckingCommand.getInput();
         Long ouId = whCheckingCommand.getOuId();
         // 根据播种墙编码查找复核数据
