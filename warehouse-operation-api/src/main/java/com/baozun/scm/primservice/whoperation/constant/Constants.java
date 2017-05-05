@@ -382,7 +382,7 @@ public final class Constants {
     public static final String WMS_ODO_EXT = "WMS_ODO_EXT";
 
     /** 调编码生成器 分配库存WMS占用单据号分组 */
-    public static final String WMS_SKUINVENTORYALLOCATED_OCCUPATION = "WMS_SKUINVENTORYALLOCATED_OCCUPATION";
+    public static final String WMS_SKUINVENTORYALLOCATED_OCCUPATION = "MOVE";
 
     /** 出库单增值服务类型 */
     public static final String ODO_VAS_TYPE_WH = "WH";
