@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 
@@ -60,5 +61,16 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * @return
      */
     public WhFunctionReplenishment findWhFunctionReplenishmentByfunctionId(Long ouId,Long functionId);
+    
+    /**
+     * 扫描sku 
+     * @param operationId
+     * @param locationId
+     * @param command
+     * @return
+     */
+    public ReplenishmentPutawayCommand scanSku(ReplenishmentPutawayCommand command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
+    
+    public ReplenishmentPutawayCommand judgeSkuAttrIdsIsUnique(ReplenishmentPutawayCommand command);
     
 }

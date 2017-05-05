@@ -1033,6 +1033,21 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if(!isOdoCancel){
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
+        // #TODO @mender yimin.lu 2017/5/5 当出库单大于某个状态时候，不允许取消
+        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        if (StringUtils.hasText(wh.getOdoNotCancelNode())) {
+            Long odoStatus = Constants.DEFAULT_LONG;
+            Long cancelNode = Constants.DEFAULT_LONG;
+            try {
+                odoStatus = Long.parseLong(odo.getOdoStatus());
+                cancelNode = Long.parseLong(wh.getOdoNotCancelNode());
+            } catch (Exception ex) {
+                throw new BusinessException(ErrorCodes.WAREHOUSE_CANCEL_NODE_ERROR);
+            }
+            if (odoStatus >= cancelNode) {
+                throw new BusinessException(ErrorCodes.ODO_CANCEL_ERROR);
+            }
+        }
         if(isOdoCancel){
             this.cancelOdo(odo, ouId, logId);
         }else{

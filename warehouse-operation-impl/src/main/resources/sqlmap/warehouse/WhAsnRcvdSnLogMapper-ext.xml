@@ -59,4 +59,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	<select id="findWhAsnRcvdSnLogByAsnRcvdId" resultMap="WhAsnRcvdSnLogResultExt">
+        select
+        <include refid="whAsnRcvdSnLogColumnsExt"/>
+        from
+        t_wh_asn_rcvd_sn_log
+        where
+        asn_rcvd_id = #{id} 
+        and ou_id = #{ouid}
+    </select>
+	
 </mapper>

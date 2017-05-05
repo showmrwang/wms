@@ -129,4 +129,13 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      */
     public List<WhOperationExecLine> getOperationExecLineLst(@Param("operationId") Long operationId, @Param("ouId") Long ouId, @Param("isShortPicking") Boolean isShortPicking);
     
+    /**
+     * 
+     * @param operationId
+     * @param ouId
+     * @param useContainerId
+     * @return
+     */
+    public Long getOperationExecLineCount(@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("useContainerId") Long useContainerId);
+    
 }

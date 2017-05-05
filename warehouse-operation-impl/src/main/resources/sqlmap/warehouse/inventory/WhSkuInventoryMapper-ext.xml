@@ -352,6 +352,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
 				</if>
+                <if test="seedingWallCode!=null and seedingWallCode!=''">
+                    and seeding_wall_code =#{seedingWallCode}
+                </if>
 	       	    <if test="containerLatticeNo!=null">
 					and container_lattice_no = #{containerLatticeNo}
 				</if>
@@ -3344,7 +3347,65 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	                  </if>
     </select>
     
-     <select id="getWhSkuInventoryTobefilledByWave" resultMap="WhSkuInventoryCommandSnResultExt">
+     <select id="getWhSkuInventoryCommandByWave" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					distinct inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		inv.container_lattice_no as containerLatticeNo,
+	                inv.outboundbox_code as outboundboxCode,
+	                inv.temporary_location_id as temporaryLocationId,
+	                inv.occupation_line_id as occupationLineId,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_sku_inventory inv
+					left join 	t_wh_operation_line line on line.odo_line_id = inv.occupation_line_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					left join  t_wh_odo odo on odo.id = line.odo_id and odo.odo_code = inv.occupation_code
+					where 
+					    line.operation_id = #{operationId}
+					    and inv.ou_id = #{ouId}
+	                    and inv.inside_container_id = #{turnoverBoxId}
+    </select>
+    
+      <select id="getWhSkuInventoryTobefilledByWave" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
 					inv.sku_id as skuId,
@@ -3392,6 +3453,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					    and inv.ou_id = #{ouId}
 	                    and inv.inside_container_id = #{turnoverBoxId}
 	                    and inv.location_id = #{locationId}
+	                    and line.operation_id = #{operationId}
     </select>
     
     <select id="checkReplenishmentInventory" resultMap="WhSkuInventoryCommandSnResultExt">
@@ -4502,4 +4564,60 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.outboundbox_code = #{outboundboxCode}
 			GROUP BY inv.uuid
 	</select>
+	
+	    <select id="findWhskuInventoryByInsideContainerId" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.occupation_line_id as invOccupationLineId,
+					inv.on_hand_qty as onHandQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+	        		inv.last_modify_time as lastModifyTime,
+	        		inv.container_lattice_no as containerLatticeNo,
+	            	inv.outboundbox_code as outboundboxCode,
+	            	inv.temporary_location_id as temporaryLocationId,
+	        		sn.id as snId,
+	        		sn.sn as snSn,
+	        		sn.occupation_code as snOccupationCode,
+	        		sn.defect_ware_barcode as snDefectWareBarcode,
+	        		sn.defect_source as snDefectSource,
+	        		sn.defect_type_id as snDefectTypeId,
+	        		sn.defect_reasons_id as snDefectReasonsId,
+	        		sn.status as snStatus,
+	        		sn.inv_attr as snInvAttr,
+	        		sn.uuid as snUuid,
+	        		sn.ou_id as snOuId,
+	        		sn.sys_uuid as snSysUuid
+					from 
+					t_wh_sku_inventory inv
+					left join t_wh_container c on c.id = inv.inside_container_id
+					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
+					where 
+						inv.location_id is null 
+						and inv.on_hand_qty > 0.0
+					    and inv.ou_id = #{ouId}
+						and c.id = #{insideContainerId}
+    </select>
 </mapper>

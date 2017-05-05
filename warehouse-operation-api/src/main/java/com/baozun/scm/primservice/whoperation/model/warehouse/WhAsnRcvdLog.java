@@ -77,12 +77,8 @@ public class WhAsnRcvdLog extends BaseModel {
     /** 操作人Id */
     private Long operatorId;
 
-
-    public WhAsnRcvdLog() {}
-
-    public WhAsnRcvdLog(Long id) {
-        this.id = id;
-    }
+    /** 当前月份 用于归档 */
+    private String sysDate;
 
     public void setAsnId(Long value) {
         this.asnId = value;
@@ -274,6 +270,14 @@ public class WhAsnRcvdLog extends BaseModel {
 
     public void setQtyRcvd(Double qtyRcvd) {
         this.qtyRcvd = qtyRcvd;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
     }
 
 

@@ -22,4 +22,10 @@ public interface WhOutboundboxManager extends BaseManager {
 
     public WhOutboundboxCommand findByOutboundBoxCode(String outboundBoxCode, Long ouId);
 
+    /**
+     * [通用方法] 通过主键服务生成出库箱编码
+     * @return
+     */
+    public String generateCode();
+
 }

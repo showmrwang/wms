@@ -374,6 +374,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                 params.setSeedingWallCode(facilityCode);
                 params.setContainerLatticeNo(latticeNo);
                 params.setOutboundboxCode(outboundBoxCode);
+                params.setOuId(ouId);
                 List<WhSkuInventory> invList = whSkuInventoryDao.getSkuInvListGroupUuid(params);
                 if (null != invList && invList.size() > 0) {
                     // 生成复核头

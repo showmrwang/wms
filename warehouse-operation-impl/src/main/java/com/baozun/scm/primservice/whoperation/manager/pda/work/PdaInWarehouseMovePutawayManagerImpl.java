@@ -146,7 +146,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         if(null == turnoverBoxIds || turnoverBoxIds.size() == 0){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId);
+        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId,locationId);
         Long turnoverBoxId = sRCmd.getTurnoverBoxId();
         String containerCode = this.judeContainer(turnoverBoxId, ouId);
         command.setTipTurnoverBoxCode(containerCode);
@@ -199,8 +199,8 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         }
         Long turnoverBoxId = cmd.getId();
         //缓存上一个周转箱
-        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId);
-        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId);
+        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId);
+        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId,locationId);
         if(sRCmd.getIsNeedScanTurnoverBox()) {  //当前库位对应的周转箱扫描完毕
             Long tipTurnoverBoxId = sRCmd.getTurnoverBoxId();
             String containerCode = this.judeContainer(tipTurnoverBoxId, ouId);
@@ -215,7 +215,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
              //更新工作及作业状态
              this.updateStatus(operationId, workCode, ouId, userId);
              //清除所有缓存
-             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
+             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, false, turnoverBoxId, locationId, true);
         }
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is end");
         return command;

@@ -102,7 +102,7 @@ public class WarehouseCommand extends BaseCommand {
     private String ouName;
 
     private Long ouId;
-    
+
 
     /** 用户分拣是否共享目标容器 */
     private Boolean isSortationContainerAssign = false;
@@ -119,29 +119,29 @@ public class WarehouseCommand extends BaseCommand {
     private Long defaultVolumeUomType;
     /** 面积默认单位类型 */
     private Long defaultAreaUomType;
-    
-    
+
+
     /** 拣货出现差异是否生成盘点任务 */
     private Boolean isGenerateInventoryTask;
-    
+
     /** 是否应用复核台和播种墙推荐逻辑 */
-	private Boolean isApplyFacility;
-	/** 拣货是否提示复核台信息 */
-	private Boolean isDiekingCheckMessage;
-	/** 拣货是否提示播种墙信息 */
-	private Boolean isDiekingSeedingwallMessage;
-	/** 是否校验设施校验码 */
-	private Boolean isFacilityCheckCode;
-	/** 播种模式 */
-	private String seedingMode;
-	/** 播种墙行数 */
-	private Integer xqty;
-	/** 播种墙列数 */
-	private Integer yqty;
-	/** z列数量 */
-	private Integer zqty;
-	/** 播种墙对应单据数 */
-	private Integer seedingOdoQty;
+    private Boolean isApplyFacility;
+    /** 拣货是否提示复核台信息 */
+    private Boolean isDiekingCheckMessage;
+    /** 拣货是否提示播种墙信息 */
+    private Boolean isDiekingSeedingwallMessage;
+    /** 是否校验设施校验码 */
+    private Boolean isFacilityCheckCode;
+    /** 播种模式 */
+    private String seedingMode;
+    /** 播种墙行数 */
+    private Integer xqty;
+    /** 播种墙列数 */
+    private Integer yqty;
+    /** z列数量 */
+    private Integer zqty;
+    /** 播种墙对应单据数 */
+    private Integer seedingOdoQty;
     /** 是否强制校验消费者退货入的包裹登记 */
     private Boolean isCheckReturnedPurchaseReg;
     /** 省名称 */
@@ -152,8 +152,18 @@ public class WarehouseCommand extends BaseCommand {
     private String district;
     /** 市名称 */
     private String city;
-    
-    
+    /** 出库单不可取消节点 */
+    private String odoNotCancelNode;
+
+    public String getOdoNotCancelNode() {
+        return odoNotCancelNode;
+    }
+
+    public void setOdoNotCancelNode(String odoNotCancelNode) {
+        this.odoNotCancelNode = odoNotCancelNode;
+    }
+
+
     public Boolean getIsCheckReturnedPurchaseReg() {
         return isCheckReturnedPurchaseReg;
     }
@@ -169,8 +179,8 @@ public class WarehouseCommand extends BaseCommand {
     public void setIsGenerateInventoryTask(Boolean isGenerateInventoryTask) {
         this.isGenerateInventoryTask = isGenerateInventoryTask;
     }
-    
-    
+
+
     public Long getDefaultLengthUomType() {
         return defaultLengthUomType;
     }
@@ -203,10 +213,7 @@ public class WarehouseCommand extends BaseCommand {
         this.defaultAreaUomType = defaultAreaUomType;
     }
 
-    
-    
-    
-    
+
 
     public Boolean getIsSortationContainerAssign() {
         return isSortationContainerAssign;
@@ -231,11 +238,8 @@ public class WarehouseCommand extends BaseCommand {
     public void setIsTabbInvTotal(Boolean isTabbInvTotal) {
         this.isTabbInvTotal = isTabbInvTotal;
     }
-    
-    
-    
-    
-    
+
+
 
     public Long getId() {
         return id;
@@ -613,77 +617,77 @@ public class WarehouseCommand extends BaseCommand {
         this.skuMixNumber = skuMixNumber;
     }
 
-	public Boolean getIsApplyFacility() {
-		return isApplyFacility;
-	}
+    public Boolean getIsApplyFacility() {
+        return isApplyFacility;
+    }
 
-	public void setIsApplyFacility(Boolean isApplyFacility) {
-		this.isApplyFacility = isApplyFacility;
-	}
+    public void setIsApplyFacility(Boolean isApplyFacility) {
+        this.isApplyFacility = isApplyFacility;
+    }
 
-	public Boolean getIsDiekingCheckMessage() {
-		return isDiekingCheckMessage;
-	}
+    public Boolean getIsDiekingCheckMessage() {
+        return isDiekingCheckMessage;
+    }
 
-	public void setIsDiekingCheckMessage(Boolean isDiekingCheckMessage) {
-		this.isDiekingCheckMessage = isDiekingCheckMessage;
-	}
+    public void setIsDiekingCheckMessage(Boolean isDiekingCheckMessage) {
+        this.isDiekingCheckMessage = isDiekingCheckMessage;
+    }
 
-	public Boolean getIsDiekingSeedingwallMessage() {
-		return isDiekingSeedingwallMessage;
-	}
+    public Boolean getIsDiekingSeedingwallMessage() {
+        return isDiekingSeedingwallMessage;
+    }
 
-	public void setIsDiekingSeedingwallMessage(Boolean isDiekingSeedingwallMessage) {
-		this.isDiekingSeedingwallMessage = isDiekingSeedingwallMessage;
-	}
+    public void setIsDiekingSeedingwallMessage(Boolean isDiekingSeedingwallMessage) {
+        this.isDiekingSeedingwallMessage = isDiekingSeedingwallMessage;
+    }
 
-	public String getSeedingMode() {
-		return seedingMode;
-	}
+    public String getSeedingMode() {
+        return seedingMode;
+    }
 
-	public void setSeedingMode(String seedingMode) {
-		this.seedingMode = seedingMode;
-	}
+    public void setSeedingMode(String seedingMode) {
+        this.seedingMode = seedingMode;
+    }
 
-	public Integer getXqty() {
-		return xqty;
-	}
+    public Integer getXqty() {
+        return xqty;
+    }
 
-	public void setXqty(Integer xqty) {
-		this.xqty = xqty;
-	}
+    public void setXqty(Integer xqty) {
+        this.xqty = xqty;
+    }
 
-	public Integer getYqty() {
-		return yqty;
-	}
+    public Integer getYqty() {
+        return yqty;
+    }
 
-	public void setYqty(Integer yqty) {
-		this.yqty = yqty;
-	}
+    public void setYqty(Integer yqty) {
+        this.yqty = yqty;
+    }
 
-	public Integer getZqty() {
-		return zqty;
-	}
+    public Integer getZqty() {
+        return zqty;
+    }
 
-	public void setZqty(Integer zqty) {
-		this.zqty = zqty;
-	}
+    public void setZqty(Integer zqty) {
+        this.zqty = zqty;
+    }
 
-	public Integer getSeedingOdoQty() {
-		return seedingOdoQty;
-	}
+    public Integer getSeedingOdoQty() {
+        return seedingOdoQty;
+    }
 
-	public void setSeedingOdoQty(Integer seedingOdoQty) {
-		this.seedingOdoQty = seedingOdoQty;
-	}
+    public void setSeedingOdoQty(Integer seedingOdoQty) {
+        this.seedingOdoQty = seedingOdoQty;
+    }
 
-	public Boolean getIsFacilityCheckCode() {
-		return isFacilityCheckCode;
-	}
+    public Boolean getIsFacilityCheckCode() {
+        return isFacilityCheckCode;
+    }
 
-	public void setIsFacilityCheckCode(Boolean isFacilityCheckCode) {
-		this.isFacilityCheckCode = isFacilityCheckCode;
-	}
+    public void setIsFacilityCheckCode(Boolean isFacilityCheckCode) {
+        this.isFacilityCheckCode = isFacilityCheckCode;
+    }
 
     public String getProvince() {
         return province;

@@ -24,7 +24,7 @@ public final class Constants {
 
     /** 调编码生成器租户编码 */
     public static final String WMS = "wms";
-    
+
     public static final String WMS4 = "WMS4";
 
     /** 调编码生成器 po单实体标识 */
@@ -371,7 +371,7 @@ public final class Constants {
 
     /** 调编码生成器作业头实体标识 */
     public static final String WHOPERATION_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation";
-    
+
     /** 调编码生成器分配库存实体标识 */
     public static final String WHSKUINVENTORYALLOCATED_MODEL_URL = "com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated";
 
@@ -380,7 +380,7 @@ public final class Constants {
 
     /** 调编码生成器 出库单WMS外部单号分组 */
     public static final String WMS_ODO_EXT = "WMS_ODO_EXT";
-    
+
     /** 调编码生成器 分配库存WMS占用单据号分组 */
     public static final String WMS_SKUINVENTORYALLOCATED_OCCUPATION = "WMS_SKUINVENTORYALLOCATED_OCCUPATION";
 
@@ -861,11 +861,11 @@ public final class Constants {
     
     public static final Double PICKING_NUM = 1.0;  //拣货数量
 
-    public static final String IMPORT_BIPO_EXCEL_CONFIG_ID = "BiPo";// 入库单导入
+    public static final String IMPORT_BIPO_EXCEL_CONFIG_ID = "biPo";// 入库单导入
 
     public static final int IMPORT_BIPO_TITLE_INDEX = 0;// 入库单导入读取行
 
-    public static final String IMPORT_BIPOLINE_EXCEL_CONFIG_ID = "BiPoLine";// 入库单导入
+    public static final String IMPORT_BIPOLINE_EXCEL_CONFIG_ID = "biPoLine";// 入库单导入
 
     public static final int IMPORT_BIPOLINE_TITLE_INDEX = 0;// 入库单导入读取行
 }

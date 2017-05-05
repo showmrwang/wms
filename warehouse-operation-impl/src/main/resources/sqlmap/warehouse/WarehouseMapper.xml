@@ -120,7 +120,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        	mgmt.y_qty as yqty,
        	mgmt.z_qty as zqty,
        	mgmt.seeding_odo_qty as seedingOdoQty,
-       	mgmt.is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
+       	mgmt.is_check_returned_purchase_reg as isCheckReturnedPurchaseReg,
+		mgmt.odo_not_cancel_node as odoNotCancelNode
 	</sql>
 	
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->

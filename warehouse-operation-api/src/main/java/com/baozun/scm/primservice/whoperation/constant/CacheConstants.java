@@ -61,6 +61,8 @@ public final class CacheConstants {
 
     public static final String SCAN_SKU_QUEUE_SN = "SCAN_SKU_QUEUE_SN";
     
+    public static final String SCAN_SKU_QUEUE_SN_COUNT = "SCAN_SKU_QUEUE_SN_COUNT";
+    
     public static final String SUGGEST_SCAN_SKU_QUEUE_SN = "SUGGEST_SCAN_SKU_QUEUE_SN";
     
     /***
@@ -93,7 +95,8 @@ public final class CacheConstants {
     public static final String OPERATIONLINE_STATISTICS = "OPERATIONLINE_STATISTICS";
     /*** pda补货和库内移动，作业执行明细统计 */
     public static final String OPERATIONEXEC_STATISTICS = "OPERATIONEXEC_STATISTICS";
-
+    /*** 库内移动sn列表上传修改 */
+    public static final String SN_STATISTICS = "SN_STATISTICS";
 
     /*** 缓存库位 */
     public static final String CACHE_LOCATION = "CACHE_LOCATION";
@@ -121,6 +124,12 @@ public final class CacheConstants {
     
     /** pda拣货:有小车的情况已经扫描的sku */
     public static final String PDA_PICKING_SCAN_SKU_LATTICE_NO = "PDA_PICKING_SCAN_SKU_LATTICE_NO_";
+    
+    /**缓存sku*/
+    public static final String PDA_REPLENISH_PUTAWAY_SCAN_SKU = "PDA_REPLENISH_PUTAWAY_SCAN_SKU";
+    
+    /**缓存sku*/
+    public static final String PDA_REPLENISH_PUTAWAY_SCAN_SN= "PDA_REPLENISH_PUTAWAY_SCAN_SN";
 
     /************************************* 播种缓存 ***********************************/
 
