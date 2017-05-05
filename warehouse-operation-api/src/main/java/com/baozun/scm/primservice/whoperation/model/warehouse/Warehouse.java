@@ -194,6 +194,16 @@ public class Warehouse extends BaseModel {
     private Boolean isCheckConsumableSkuBarcode;
     /** 是否自动化仓 */
     private Boolean isAutomaticWarehouse;
+    /** 出库单不可取消节点 */
+    private String odoNotCancelNode;
+
+    public String getOdoNotCancelNode() {
+        return odoNotCancelNode;
+    }
+
+    public void setOdoNotCancelNode(String odoNotCancelNode) {
+        this.odoNotCancelNode = odoNotCancelNode;
+    }
 
     public Boolean getIsCheckReturnedPurchaseReg() {
         return isCheckReturnedPurchaseReg;
