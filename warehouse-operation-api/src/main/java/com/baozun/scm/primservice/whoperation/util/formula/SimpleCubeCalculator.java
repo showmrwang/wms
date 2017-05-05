@@ -76,7 +76,7 @@ public class SimpleCubeCalculator {
     private String[] uomCache = new String[] {sysUom};
     private static int uomSize = 1;
     private Map<String, Double> uomConversion = new HashMap<String, Double>();
-    // 容器系统单位体积
+    // 容器系统单位体积 
     private Double _volume;
     // 容器原始单位体积
     private Double _rawVolume;
