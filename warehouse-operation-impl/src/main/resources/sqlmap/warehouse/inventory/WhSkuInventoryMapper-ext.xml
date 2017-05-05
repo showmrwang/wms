@@ -352,6 +352,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
 				</if>
+                <if test="seedingWallCode!=null and seedingWallCode!=''">
+                    and seeding_wall_code =#{seedingWallCode}
+                </if>
 	       	    <if test="containerLatticeNo!=null">
 					and container_lattice_no = #{containerLatticeNo}
 				</if>
