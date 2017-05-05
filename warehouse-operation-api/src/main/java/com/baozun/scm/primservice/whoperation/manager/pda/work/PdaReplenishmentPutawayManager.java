@@ -72,5 +72,19 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
     public ReplenishmentPutawayCommand scanSku(ReplenishmentPutawayCommand command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
     
     public ReplenishmentPutawayCommand judgeSkuAttrIdsIsUnique(ReplenishmentPutawayCommand command);
+ 
+//    /***
+//     * 扫sku抛出异常时,删除sku缓存
+//     * @param locationId
+//     * @param turnoverBoxId
+//     * @param skuId
+//     */
+//    public void removeCacheSku(Long locationId,Long turnoverBoxId,Long skuId);
     
+    /***
+     * 删除缓存(如果存在s)
+     * @param operationId
+     * @param ouId
+     */
+     public void removeCache(Long operationId);
 }

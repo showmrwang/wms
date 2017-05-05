@@ -225,6 +225,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     }
 
     
+    /* (non-Javadoc)
+     * @see com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentPutawayManager#putawayScanTurnoverBox(com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand, java.lang.Boolean)
+     */
     @Override
     public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command,Boolean isTabbInvTotal) {
         // TODO Auto-generated method stub
@@ -262,6 +265,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
        }
        command.setTipSkuBarCode(skuCmd.getBarCode()); // 提示sku
+       command.setSkuId(skuId);
        command.setIsOnlyLocation(true);
        command.setIsNeedScanSku(true);
        log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is end");
@@ -1271,6 +1275,35 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         log.info("PdaPickingWorkManagerImpl judgeSkuAttrIdsIsUnique is end");
 
         return command;
-
     }
+    
+    /***
+     * 删除缓存(如果存在s)
+     * @param operationId
+     * @param ouId
+     */
+     public void removeCache(Long operationId){
+         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
+         if(null != opExecLineCmd){
+             Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
+             List<Long> locationIds = opExecLineCmd.getLocationIds();
+             Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
+             for(Long locationId:locationIds){
+                 Set<Long> turnoverBoxIds = locTurnoverBoxIds.get(locationId);
+                 for(Long turnoverBoxId:turnoverBoxIds){
+                     String key = locationId.toString()+turnoverBoxId;
+                     Set<Long> skuIds = locSkuIds.get(key);
+                     for(Long skuId:skuIds){
+                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                     }
+                     cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnoverBoxId.toString());
+                 }
+             }
+             cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());
+             cacheManager.remove(CacheConstants.OPERATIONEXEC_STATISTICS+operationId.toString());
+         }
+        
+     }
 }

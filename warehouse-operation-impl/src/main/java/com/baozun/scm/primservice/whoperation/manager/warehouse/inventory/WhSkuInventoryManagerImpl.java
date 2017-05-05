@@ -7225,7 +7225,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 //        if(null == workCmd) {
 //            throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
 //        }
-        List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, turnoverBoxId,operationId);
+        List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, turnoverBoxId);
         if (null == invList || 0 == invList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
         }
@@ -7396,12 +7396,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     public void replenishmentSplitContainerPutaway(List<String> cacehSnList,Double skuScanQty,String skuAttrId,Long locationId,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode,Long turnoverBoxId,Long newTurnoverBoxId){
         //获取容器库存
-        List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, turnoverBoxId,operationId);
+        List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, turnoverBoxId);
         if (null == invList || 0 == invList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
         }
         //获取待移入库存
-        List<WhSkuInventoryCommand>  invTobefilledList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, turnoverBoxId,operationId);
+        List<WhSkuInventoryCommand>  invTobefilledList = whSkuInventoryDao.getWhSkuInventoryTobefilledByWave(ouId, locationId,operationId);
         if (null == invList || 0 == invList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
         }
