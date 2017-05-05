@@ -332,6 +332,13 @@ public interface OdoManager extends BaseManager {
      * @version 2017年5月3日
      */
     void updateOdoIndexByBatch(Map<String, List<Long>> batchMap, Long ouId);
+    
+    /**
+     * 按批次给odo排序ext
+     * @author kai.zhu
+     * @version 2017年5月3日
+     */
+    void updateOdoIndexByBatchExt(Map<String, Map<String, List<Long>>> batchPrintConditionMap, Long ouId);
 
     /**
      * 打印销售清单的出库单集合【有排序】
