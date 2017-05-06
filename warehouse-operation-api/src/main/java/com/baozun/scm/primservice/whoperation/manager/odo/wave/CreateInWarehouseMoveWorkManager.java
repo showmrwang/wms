@@ -45,7 +45,7 @@ public interface CreateInWarehouseMoveWorkManager extends BaseManager {
      * @param 
      * @return
      */
-    public List<WhSkuInventorySn> executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey);
+    public List<WhSkuInventorySn> executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, List<WhSkuInventorySn> skuInventorySnLst);
 
     /**
      * [业务方法] 缓存sn列表

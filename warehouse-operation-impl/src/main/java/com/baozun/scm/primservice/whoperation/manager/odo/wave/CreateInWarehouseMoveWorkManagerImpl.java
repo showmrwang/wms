@@ -174,11 +174,10 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             whSkuInventoryAllocatedCommand.setInvAttr3(whSkuInventoryCommand.getInvAttr3());
             whSkuInventoryAllocatedCommand.setInvAttr4(whSkuInventoryCommand.getInvAttr4());
             whSkuInventoryAllocatedCommand.setInvAttr5(whSkuInventoryCommand.getInvAttr5());
-            whSkuInventoryAllocatedCommand.setUuid(null);
+            whSkuInventoryAllocatedCommand.setUuid(whSkuInventoryCommand.getUuid()); 
             whSkuInventoryAllocatedCommand.setOuId(whSkuInventoryCommand.getOuId());
             whSkuInventoryAllocatedCommand.setLastModifyTime(whSkuInventoryCommand.getLastModifyTime());
             whSkuInventoryAllocatedCommand.setReplenishmentRuleId(whSkuInventoryCommand.getReplenishmentRuleId());
-            whSkuInventoryAllocatedCommand.setUuid(whSkuInventoryCommand.getUuid()); 
             WhSkuInventoryAllocated whSkuInventoryAllocated = new WhSkuInventoryAllocated();
             // 复制数据        
             BeanUtils.copyProperties(whSkuInventoryAllocatedCommand, whSkuInventoryAllocated);
@@ -882,32 +881,63 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @return
      */
     @Override
-    public List<WhSkuInventorySn> executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey) {
-        // 获取工作头信息        
-        WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(inWarehouseMoveWorkCode, ouId);
-        WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWorkCommand.getId(), ouId);
-        List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), ouId);
-        //根据key获取缓存sn列表            
-        List<WhSkuInventorySn> skuInventorySnLst = this.getSnStatistics(snKey);
-        
-        for(WhOperationLineCommand operationLineCommand : whOperationLineCommandLst){
-            WhOperationExecLine operationExecLine = new WhOperationExecLine();
-            // 将operationLineCommand基本信息复制到operationExecLine中
-            BeanUtils.copyProperties(operationLineCommand, operationExecLine);
-            // 是否短拣
-            operationExecLine.setIsShortPicking(false);
-            // 是否使用新的出库箱/周转箱
-            operationExecLine.setIsUseNew(false);
-            whOperationExecLineDao.insert(operationExecLine);
-            //根据uuid和invMoveCode获取待移入库存
-            WhSkuInventoryAllocated skuInventoryAllocated = new WhSkuInventoryAllocated();
-            List<WhSkuInventoryAllocated> skuInventoryAllocatedLst =  skuInventoryAllocatedDao.findskuInventoryAllocateds(skuInventoryAllocated);
-            //根据uuid获取库存
-            WhSkuInventory skuInventory = new WhSkuInventory();
-            List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findWhSkuInventoryByPramas(skuInventory);
-            //根据invMoveCode获取待移入库存 
-            WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
-            List<WhSkuInventoryTobefilled> skuInventoryTobefilledLst  = skuInventoryTobefilledDao.findskuInventoryTobefilleds(skuInventoryTobefilled);
+    public List<WhSkuInventorySn> executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, List<WhSkuInventorySn> skuInventorySnLst) {
+        try {
+            // 获取工作头信息        
+            WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(inWarehouseMoveWorkCode, ouId);
+            WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWorkCommand.getId(), ouId);
+            List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), ouId);
+            //根据key获取缓存sn列表            
+            for(WhOperationLineCommand operationLineCommand : whOperationLineCommandLst){
+                WhOperationExecLine operationExecLine = new WhOperationExecLine();
+                // 将operationLineCommand基本信息复制到operationExecLine中
+                BeanUtils.copyProperties(operationLineCommand, operationExecLine);
+                // 是否短拣
+                operationExecLine.setIsShortPicking(false);
+                // 是否使用新的出库箱/周转箱
+                operationExecLine.setIsUseNew(false);
+                whOperationExecLineDao.insert(operationExecLine);
+                //根据uuid和invMoveCode获取待移入库存
+                WhSkuInventoryAllocated skuInventoryAllocated = new WhSkuInventoryAllocated();
+                skuInventoryAllocated.setOccupationCode(operationLineCommand.getInvMoveCode());
+                List<WhSkuInventoryAllocated> skuInventoryAllocatedLst =  skuInventoryAllocatedDao.findskuInventoryAllocateds(skuInventoryAllocated);
+                if(null == skuInventoryAllocatedLst || 0 == skuInventoryAllocatedLst.size()){
+                    
+                }
+                Double allocatedQty = skuInventoryAllocatedLst.get(0).getQty();
+                //根据uuid获取库存
+                WhSkuInventory skuInventory = new WhSkuInventory();
+                skuInventory.setUuid(operationLineCommand.getUuid());
+                List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findWhSkuInventoryByPramas(skuInventory);
+                for(WhSkuInventory whSkuInventory : skuInventoryLst){
+                    if(null == whSkuInventory.getOccupationCode() && 0 != allocatedQty.compareTo(0.00)){
+                        if(allocatedQty < whSkuInventory.getOnHandQty()){
+                            whSkuInventory.setOnHandQty(whSkuInventory.getOnHandQty() - allocatedQty); 
+                            skuInventoryDao.update(whSkuInventory);
+                            break;
+                        }else{
+                            allocatedQty = allocatedQty - whSkuInventory.getOnHandQty();
+                            skuInventoryDao.delete(whSkuInventory.getId());
+                        }
+                    }
+                }
+                skuInventoryAllocatedDao.delete(skuInventoryAllocatedLst.get(0).getId());
+                //根据invMoveCode获取待移入库存 
+                WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
+                skuInventoryTobefilled.setOccupationCode(operationLineCommand.getInvMoveCode());
+                List<WhSkuInventoryTobefilled> skuInventoryTobefilledLst  = skuInventoryTobefilledDao.findskuInventoryTobefilleds(skuInventoryTobefilled);
+                if(null == skuInventoryTobefilledLst || 0 == skuInventoryTobefilledLst.size()){
+                    
+                }
+                WhSkuInventory whSkuInventory = new WhSkuInventory();
+                BeanUtils.copyProperties(skuInventoryTobefilledLst.get(0), whSkuInventory);
+                whSkuInventory.setOccupationCode(null);
+                whSkuInventory.setOnHandQty(skuInventoryTobefilledLst.get(0).getQty());
+                skuInventoryDao.insert(whSkuInventory);
+                skuInventoryTobefilledDao.delete(skuInventoryTobefilledLst.get(0).getId());
+            }
+        } catch (Exception e) {
+            log.error("", e);
         }
         return skuInventorySnLst;
     }
