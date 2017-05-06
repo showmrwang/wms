@@ -506,6 +506,10 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                              inv.setInsideContainerId(insideContainerId);    
                          }
                      } 
+                     
+                     //待确认                     
+                     inv.setOccupationCode(null);
+                     
                      if (false == isBM) {
                            inv.setBatchNumber(null);
                      }
@@ -538,7 +542,6 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                      insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
                      // 记录入库库存日志(这个实现的有问题)
                      insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
-                     whSkuInventoryTobefilledDao.deleteByExt(invCmd.getId(), ouId);  //删除当前待移入库存
                  } else {
                      WhSkuInventory inv = new WhSkuInventory();
                      BeanUtils.copyProperties(invCmd, inv);
@@ -555,7 +558,11 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                          }else{
                              inv.setInsideContainerId(insideContainerId);    
                          }
-                     } 
+                     }
+                     
+                     //待确认                     
+                     inv.setOccupationCode(null);
+                     
                      if (false == isBM) {
                            inv.setBatchNumber(null);
                      }
@@ -604,7 +611,10 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                       // 记录SN日志(这个实现的有问题)
                        insertSkuInventorySnLog(inv.getUuid(), ouId);
                      }
-                     whSkuInventoryTobefilledDao.deleteByExt(invCmd.getId(), ouId);  //删除当前待移入库存
+                    List<WhSkuInventoryCommand> skuInventoryCommandLst = whSkuInventoryTobefilledDao.findListByOccupationCode(invCmd.getOccupationCode(), ouId);
+                    for( WhSkuInventoryCommand whSkuInventoryCommand : skuInventoryCommandLst){
+                        whSkuInventoryTobefilledDao.deleteByExt(whSkuInventoryCommand.getId(), ouId);  //删除当前待移入库存    
+                    } 
                      if(isTV) {
                          //如果库位跟踪容器号,修改容器状态
                          if(null != outerContainerId) {  //修改托盘
@@ -641,16 +651,8 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                 }
            }
-           //删除库位库存表中的容器库存
-           //1.根据周转箱id,查询容器库存记录
-           List<WhSkuInventoryCommand> skuInvCmdList = new ArrayList<WhSkuInventoryCommand>();  
-           if(null != outerContainerId){
-               skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, outerContainerId);
-           }else{
-               skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, insideContainerId);
-           }
            //循环删除容器库存记录
-           for (WhSkuInventoryCommand invCmd : skuInvCmdList) {
+           for (WhSkuInventoryCommand invCmd : invList) {
                String uuid = invCmd.getUuid();
                Double oldQty = 0.0;
                if (true == isTabbInvTotal) {
