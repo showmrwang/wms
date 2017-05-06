@@ -882,7 +882,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @return
      */
     @Override
-    public void executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey) {
+    public List<WhSkuInventorySn> executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey) {
         // 获取工作头信息        
         WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(inWarehouseMoveWorkCode, ouId);
         WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWorkCommand.getId(), ouId);
@@ -909,6 +909,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
             List<WhSkuInventoryTobefilled> skuInventoryTobefilledLst  = skuInventoryTobefilledDao.findskuInventoryTobefilleds(skuInventoryTobefilled);
         }
+        return skuInventorySnLst;
     }
     
     /**

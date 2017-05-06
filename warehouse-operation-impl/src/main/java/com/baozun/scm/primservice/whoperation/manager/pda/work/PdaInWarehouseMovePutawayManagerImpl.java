@@ -436,19 +436,25 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         command.setIsScanFinsh(true);
-        Set<Long> containers = new HashSet<Long>();
+        Set<Long> insideContainerIds = new HashSet<Long>();
+        Set<Long> outerContainerIds = new HashSet<Long>();
         if(false == opExecLineCmd.getIsWholeCase()){
-            containers = opExecLineCmd.getTurnoverBoxIds().get(locationId);
+            insideContainerIds = opExecLineCmd.getTurnoverBoxIds().get(locationId);
         }else{
-            if(null == opExecLineCmd.getPallets()){
-                containers = opExecLineCmd.getPallets();    
+            if(null != opExecLineCmd.getPallets()){
+                outerContainerIds = opExecLineCmd.getPallets();    
             }else{
-                containers = opExecLineCmd.getContainers();    
+                insideContainerIds = opExecLineCmd.getContainers();    
             }
         }
-        
-        for(Long container : containers){
-            this.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode, container);    
+        if(0 != outerContainerIds.size()){
+            for(Long outerContainerId : outerContainerIds){
+                this.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode, outerContainerId, null);    
+            }
+        }else{
+            for(Long insideContainerId : insideContainerIds){
+                this.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode, null, insideContainerId);    
+            }    
         }
         //更新工作及作业状态
         this.updateStatus(operationId, workCode, ouId, userId);
@@ -457,8 +463,14 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         return command;
     }
     
-    public void replenishmentPutaway(Long locationId,Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId,String workCode,Long turnoverBoxId) {
-        List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, turnoverBoxId);
+    public void replenishmentPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long outerContainerId, Long insideContainerId) {
+        List<WhSkuInventoryCommand> invList = new ArrayList<WhSkuInventoryCommand>();  
+        if(null != outerContainerId){
+            invList = whSkuInventoryDao.getWhSkuInventoryCommandByOuterContainerId(ouId, outerContainerId);    
+        }else{
+            invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, insideContainerId);
+        }
+        
         if (null == invList || 0 == invList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
         }
@@ -487,7 +499,12 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                           inv.setOuterContainerId(null);
                           inv.setInsideContainerId(null);
                      }else{
-                           inv.setInsideContainerId(turnoverBoxId);  //当前周转箱
+                         if(null != outerContainerId){
+                             inv.setOuterContainerId(outerContainerId);
+                             inv.setInsideContainerId(invCmd.getInsideContainerId());
+                         }else{
+                             inv.setInsideContainerId(insideContainerId);    
+                         }
                      } 
                      if (false == isBM) {
                            inv.setBatchNumber(null);
@@ -529,10 +546,15 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                      inv.setOnHandQty(invCmd.getOnHandQty());// 在库库存
                      inv.setFrozenQty(0.0);
                      if (false == isTV) {
-                           inv.setOuterContainerId(null);
-                           inv.setInsideContainerId(null);
+                         inv.setOuterContainerId(null);
+                         inv.setInsideContainerId(null);
                      }else{
-                           inv.setInsideContainerId(turnoverBoxId);  //当前周转箱
+                         if(null != outerContainerId){
+                             inv.setOuterContainerId(outerContainerId);
+                             inv.setInsideContainerId(invCmd.getInsideContainerId());
+                         }else{
+                             inv.setInsideContainerId(insideContainerId);    
+                         }
                      } 
                      if (false == isBM) {
                            inv.setBatchNumber(null);
@@ -583,11 +605,24 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                        insertSkuInventorySnLog(inv.getUuid(), ouId);
                      }
                      whSkuInventoryTobefilledDao.deleteByExt(invCmd.getId(), ouId);  //删除当前待移入库存
+                     if(isTV) {
+                         //如果库位跟踪容器号,修改容器状态
+                         if(null != outerContainerId) {  //修改托盘
+                            Container container =  containerDao.findByIdExt(invCmd.getInsideContainerId(), ouId);
+                            if(null == container) {
+                                throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS );
+                            }
+                            container.setLifecycle(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                         }
+                     } 
            }
            if(isTV) {
                //如果库位跟踪容器号,修改容器状态
-               if(null != turnoverBoxId) {  //修改托盘
-                      Container container =  containerDao.findByIdExt(turnoverBoxId, ouId);
+               if(null == outerContainerId && null != insideContainerId) {  //修改内部容器
+                      Container container =  containerDao.findByIdExt(insideContainerId, ouId);
                       if(null == container) {
                                throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS );
                       }
@@ -595,11 +630,25 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                       container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
                       containerDao.saveOrUpdateByVersion(container);
                       insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
-               }
+               }else if(null != outerContainerId) {  //修改外部容器
+                   Container container =  containerDao.findByIdExt(outerContainerId, ouId);
+                   if(null == container) {
+                       throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS );
+                   }
+                   container.setLifecycle(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                   container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                   containerDao.saveOrUpdateByVersion(container);
+                   insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
            }
            //删除库位库存表中的容器库存
            //1.根据周转箱id,查询容器库存记录
-           List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, turnoverBoxId);
+           List<WhSkuInventoryCommand> skuInvCmdList = new ArrayList<WhSkuInventoryCommand>();  
+           if(null != outerContainerId){
+               skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerId(ouId, outerContainerId);
+           }else{
+               skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, insideContainerId);
+           }
            //循环删除容器库存记录
            for (WhSkuInventoryCommand invCmd : skuInvCmdList) {
                String uuid = invCmd.getUuid();
