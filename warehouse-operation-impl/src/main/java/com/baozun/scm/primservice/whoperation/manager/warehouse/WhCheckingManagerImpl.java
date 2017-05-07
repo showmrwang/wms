@@ -382,6 +382,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingCommand checking = new WhCheckingCommand();
         List<WhCheckingCommand> checkingList = new ArrayList<WhCheckingCommand>();
         checking.setOutboundboxCode(input);
+        checking.setOuId(whCheckingCommand.getOuId());
         checkingList = whCheckingDao.findListByParamExt(checking);
         if (null != checkingList && !checkingList.isEmpty()) {
             // 扫描出库箱编码
