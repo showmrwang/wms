@@ -49,7 +49,7 @@ public interface WhOdoPackageInfoDao extends BaseDao<WhOdoPackageInfo, Long> {
      * @param ouId
      * @return
      */
-    WhOdoPackageInfo findByOdoIdAndOutboundBoxId(@Param("odoId") Long odoId, @Param("outboundBoxId") Long outboundBoxId, @Param("ouId") Long ouId);
+    WhOdoPackageInfo findByOdoIdAndOutboundBoxCode(@Param("odoId") Long odoId, @Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 
     /**
      * [通用方法] 通过出出库箱编码, 组织id查找出库单打包信息
@@ -58,6 +58,6 @@ public interface WhOdoPackageInfoDao extends BaseDao<WhOdoPackageInfo, Long> {
      * @param ouId
      * @return
      */
-    WhOdoPackageInfo findByOutboundBoxCode(@Param("outboundboxCode") String outboundboxCode,@Param("ouId") Long ouId);
+    WhOdoPackageInfo findByOutboundBoxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
 }
