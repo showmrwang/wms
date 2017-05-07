@@ -23,7 +23,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_id as createId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	ou_id as ouId
 	    ]]>
 	</sql>
 	
@@ -176,6 +177,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
+				</if>
+
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
 				</if>
 		</where>
 	</sql>

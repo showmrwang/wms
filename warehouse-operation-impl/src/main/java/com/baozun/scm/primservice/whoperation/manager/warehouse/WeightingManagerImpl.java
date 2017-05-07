@@ -88,8 +88,10 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
     private WeightingCommand findInputResponse(WeightingCommand command) {
         if (StringUtils.hasLength(command.getWaybillCode())) {
+            // 通过运单号查找待称重信息
             command = whCheckingDao.findByWaybillCode(command.getWaybillCode(), command.getOuId());
         } else {
+            // 通过出库箱号查找带称重信息
             command = whCheckingDao.findByOutboundBoxCode(command.getOutboundBoxCode(), command.getOuId());
         }
         return command;
