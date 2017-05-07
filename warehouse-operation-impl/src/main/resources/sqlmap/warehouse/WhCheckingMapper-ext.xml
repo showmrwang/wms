@@ -201,8 +201,19 @@
 
      <select id="findByOutboundBoxCode" resultMap="WeightingCommand" flushCache="false">
         select
+        info.actual_weight as actualWeight,
+		info.calc_weight as calcWeight,
+		info.floats as floats,
+		odo.odo_code as odoCode,
+		odo.id as odoId,
+		info.outboundbox_id as outboundBoxId,
+		del.waybill_code as waybillCode,
+		sku.bar_code as skuCode,
         <include refid="whCheckWeightingExt"/>
-        from t_wh_checking ch 
+        from t_wh_checking ch left join t_wh_odo_package_info info on ch.outboundbox_code = info.outboundbox_code
+		left join t_wh_odo odo on info.odo_id = odo.id
+		left join t_wh_odo_delivery_info del on ch.outboundbox_code = del.outboundbox_code
+		left join t_wh_sku sku on ch.outboundbox_id = sku.id
 		where ch.outboundbox_code = #{outboundBoxCode} and ch.ou_id = #{ouId}
     </select>
 
