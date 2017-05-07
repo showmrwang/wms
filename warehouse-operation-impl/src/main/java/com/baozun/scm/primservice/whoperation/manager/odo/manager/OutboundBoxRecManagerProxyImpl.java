@@ -887,6 +887,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 将箱子添加到箱子列表
                 packingBoxList.add(newBox);
 
+            } else {
+                break;
             }
         }
     }

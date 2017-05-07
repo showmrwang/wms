@@ -1053,7 +1053,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 // 验证商品信息完整及是否存在重复商品
                 this.validateBiPoLines(biPoLinesExcelImportResult, poLineList, locale, poCommand, userId, logId);
             }
-            if (ExcelImportResult.READ_STATUS_FAILED == biPoExcelImportResult.getReadstatus() | ExcelImportResult.READ_STATUS_FAILED == biPoLinesExcelImportResult.getReadstatus()) {
+            if (ExcelImportResult.READ_STATUS_FAILED == biPoExcelImportResult.getReadstatus() || ExcelImportResult.READ_STATUS_FAILED == biPoLinesExcelImportResult.getReadstatus()) {
                 Workbook workbook = biPoExcelImportResult.getWorkbook();
                 ExcelImport.exportImportErroeMsg(workbook, biPoExcelImportResult.getRootExcelException());
                 ExcelImport.exportImportErroeMsg(workbook, biPoLinesExcelImportResult.getRootExcelException());
@@ -1169,40 +1169,41 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             if (StringUtils.isEmpty(excelPo.getExtCode())) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("入库单外接编码不能为空", null, rowNum, null));
             }
-            if (StringUtils.isEmpty(excelPo.getExtCode())) {
+            if (StringUtils.isEmpty(excelPo.getCustomerCode())) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("入库单客户编码不能为空", null, rowNum, null));
             }
             Customer customer = this.customerManager.findCustomerbyCode(excelPo.getCustomerCode());
             if (customer == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("客户编码有误，找不到对应的客户信息", null, rowNum, null));
-            }
-            Long customerId = customer.getId();
-            excelPo.setCustomerId(customerId);
-            if (StringUtils.isEmpty(excelPo.getStoreCode())) {
-                rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码不能为空", null, rowNum, null));
             } else {
-                Store store = this.storeManager.findStoreByCode(excelPo.getStoreCode());
-                if (store == null) {
-                    rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码找不到对应的店铺信息", null, rowNum, null));
+                Long customerId = customer.getId();
+                excelPo.setCustomerId(customerId);
+                if (StringUtils.isEmpty(excelPo.getStoreCode())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码不能为空", null, rowNum, null));
                 } else {
-                    if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
-                        rootExcelException.getExcelExceptions().add(new ExcelException("店铺无效", null, rowNum, null));
-                    }
-                    if (!customer.getId().equals(store.getCustomerId())) {
-                        rootExcelException.getExcelExceptions().add(new ExcelException("客户-店铺不对应", null, rowNum, null));
-                    }
-                    Long storeId = store.getId();
-                    excelPo.setStoreId(storeId);
-                    Boolean customerStoreUserFlag = this.storeManager.checkCustomerStoreUser(customerId, storeId, userId);
-                    if (!customerStoreUserFlag) {
-                        rootExcelException.getExcelExceptions().add(new ExcelException("用户不具有此客户-店铺权限", null, rowNum, null));
-                    }
-                    // 校验ExtCode: ext_code与storeId 唯一性
-                    if (StringUtils.hasText(excelPo.getExtCode())) {
-                        List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByStoreIdExtCode(storeId, excelPo.getExtCode());
-                        if (null == checkExtCodeBiPoList || checkExtCodeBiPoList.size() > 0) {
-                            log.warn("check extcode returns failure when createPo!");
-                            rootExcelException.getExcelExceptions().add(new ExcelException("PO单校验相关单据号失败，同一个店铺下有相同的相关单据号", null, rowNum, null));
+                    Store store = this.storeManager.findStoreByCode(excelPo.getStoreCode());
+                    if (store == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码找不到对应的店铺信息", null, rowNum, null));
+                    } else {
+                        if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("店铺无效", null, rowNum, null));
+                        }
+                        if (!customer.getId().equals(store.getCustomerId())) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("客户-店铺不对应", null, rowNum, null));
+                        }
+                        Long storeId = store.getId();
+                        excelPo.setStoreId(storeId);
+                        Boolean customerStoreUserFlag = this.storeManager.checkCustomerStoreUser(customerId, storeId, userId);
+                        if (!customerStoreUserFlag) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("用户不具有此客户-店铺权限", null, rowNum, null));
+                        }
+                        // 校验ExtCode: ext_code与storeId 唯一性
+                        if (StringUtils.hasText(excelPo.getExtCode())) {
+                            List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByStoreIdExtCode(storeId, excelPo.getExtCode());
+                            if (null == checkExtCodeBiPoList || checkExtCodeBiPoList.size() > 0) {
+                                log.warn("check extcode returns failure when createPo!");
+                                rootExcelException.getExcelExceptions().add(new ExcelException("PO单校验相关单据号失败，同一个店铺下有相同的相关单据号", null, rowNum, null));
+                            }
                         }
                     }
                 }

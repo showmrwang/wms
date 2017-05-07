@@ -1,8 +1,8 @@
 package com.baozun.scm.primservice.whoperation.manager.odo;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -22,8 +22,6 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +40,8 @@ import com.baozun.scm.primservice.logistics.model.SuggestTransResult.LpCodeList;
 import com.baozun.scm.primservice.logistics.model.TransVasList;
 import com.baozun.scm.primservice.logistics.model.VasTransResult;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
+import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
+import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
 import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
@@ -66,6 +66,7 @@ import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
+import com.baozun.scm.primservice.whoperation.excel.ExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.ExcelImport;
 import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
@@ -73,6 +74,7 @@ import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException
 import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.bi.OutPutStreamToServersManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoAddressManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
@@ -82,10 +84,14 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
+import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.RegionManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.SupplierManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
@@ -95,6 +101,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ma.DistributionTargetManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
+import com.baozun.scm.primservice.whoperation.model.bi.ImportExcel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
@@ -108,9 +115,12 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Region;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -168,6 +178,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private DistributionTargetManager distributionTargetManager;
     @Autowired
     private WhWaveManager whWaveManager;
+    @Autowired
+    private CustomerManager customerManager;
+    @Autowired
+    private StoreManager storeManager;
+    @Autowired
+    private SysDictionaryManager sysDictionaryManager;
+    @Autowired
+    private OutPutStreamToServersManager outPutStreamToServersManager;
+    @Autowired
+    private BiPoLineManager biPoLineManager;
+
+    @Autowired
+    private MaTransportManager maTransportManager;
 
     @Override
     public Pagination<OdoResultCommand> findOdoListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -223,26 +246,20 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     private WhOdoAddress createOdoAddress(WhOdoAddress sourceAddress, String outboundTargetType, String outboundTarget) {
-        if (StringUtils.hasText(outboundTarget)) {
-            if (Constants.AIMTYPE_1.equals(outboundTargetType)) {// 供应商
-                if (sourceAddress == null) {
-                    sourceAddress = new WhOdoAddress();
-                }
-               return this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
+        if (sourceAddress == null) {
+            sourceAddress = new WhOdoAddress();
+            if (StringUtils.hasText(outboundTarget)) {
+                if (Constants.AIMTYPE_1.equals(outboundTargetType)) {// 供应商
+                    return this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
 
-            } else if (Constants.AIMTYPE_5.equals(outboundTargetType)) {
-                if (sourceAddress == null) {
-                    sourceAddress = new WhOdoAddress();
-                }
-                return this.createOdoAddressByWh(sourceAddress, outboundTarget);
+                } else if (Constants.AIMTYPE_5.equals(outboundTargetType)) {
+                    return this.createOdoAddressByWh(sourceAddress, outboundTarget);
 
-            } else if (Constants.AIMTYPE_7.equals(outboundTargetType)) {
-                if (sourceAddress == null) {
-                    sourceAddress = new WhOdoAddress();
+                } else if (Constants.AIMTYPE_7.equals(outboundTargetType)) {
+                    return this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
                 }
-                return this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
+
             }
-
         }
         return sourceAddress;
     }
@@ -250,6 +267,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
     private WhOdoAddress createOdoAddressByDistributionTarget(WhOdoAddress sourceAddress, String outboundTarget) {
         DistributionTarget search = new DistributionTarget();
+        search.setCode(outboundTarget);
         List<DistributionTarget> targetList = this.distributionTargetManager.findDistributionTargetByParams(search);
         if (targetList == null || targetList.size() == 0) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -1033,7 +1051,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if(!isOdoCancel){
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        // #TODO @mender yimin.lu 2017/5/5 当出库单大于某个状态时候，不允许取消
+        // @mender yimin.lu 2017/5/5 当出库单大于某个状态时候，不允许取消
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
         if (StringUtils.hasText(wh.getOdoNotCancelNode())) {
             Long odoStatus = Constants.DEFAULT_LONG;
@@ -1812,171 +1830,508 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     @Override
-    public Workbook importWhOdo(String url, String errorUrl, String fileName, Locale locale, Long ouId, Long userId) {
+    public ResponseMsg importWhOdo(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId) {
 
-        String inPath = url + "/" + fileName;
-        String outPath = null;// errorUrl + "\\/" + fileName;
-        if (locale == null) {
-            locale = Locale.CHINESE;
+
+        File importExcelFile = new File(url, fileName);
+        if (!importExcelFile.exists()) {
+            throw new BusinessException(ErrorCodes.IMPORT_ERROR_FILE_NOT_EXISTS);
         }
-        String[] excelIdArray = new String[] {"whOdo", "whOdoLine", "whOdoAddress", "whOdoTransportMgmt", "whOdoVas"};
 
-        Workbook workbook;
         try {
-            ExcelImportResult odoResult = this.readExcelSheet(inPath, excelIdArray[0], locale);
-            workbook = odoResult.getWorkbook();
+            // 创建excel上下文实例,它的构成需要配置文件的路径
+            ExcelContext context = new ExcelContext("excel-config.xml");
 
-            ExcelImportResult odoLineResult = this.readExcelSheet(inPath, excelIdArray[1], locale);
 
-            ExcelImportResult odoAddressResult = this.readExcelSheet(inPath, excelIdArray[2], locale);
+            Map<String, OdoGroupCommand> odoGroupCommandMap = new HashMap<String, OdoGroupCommand>();// 出库单
 
-            ExcelImportResult transportMgmtResult = this.readExcelSheet(inPath, excelIdArray[3], locale);
+            // 出库单头信息
+            ExcelImportResult odoExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_WHODO_EXCEL_CONFIG_ID, Constants.IMPORT_WHODO_TITLE_INDEX);
+            if (ExcelImportResult.READ_STATUS_SUCCESS == odoExcelImportResult.getReadstatus()) {
+                this.validateOdo(odoExcelImportResult, odoGroupCommandMap, locale, userId, ouId);
+            }
+            if(odoGroupCommandMap.size()==0){
+                Workbook workbook = odoExcelImportResult.getWorkbook();
+                ExcelImport.exportImportErroeMsg(workbook, odoExcelImportResult.getRootExcelException());
 
-            ExcelImportResult odoVasResult = this.readExcelSheet(inPath, excelIdArray[4], locale);
+                ImportExcel importExcel = new ImportExcel();
+                importExcel.setImportType("WH_ODO");
+                importExcel.setWorkbook(workbook);
+                importExcel.setUserImportExcelId(userImportExcelId);
+                importExcel.setUserId(userId);
+                importExcel.setOuId(ouId);
 
+                // 调用异常输出接口，生成错误信息
+                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+
+                ResponseMsg msg = new ResponseMsg();
+                msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                msg.setMsg(errorFileName);
+                return msg;
+            }
+
+            // 出库单明细信息
+            ExcelImportResult linesExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_WHODO_LINE_EXCEL_CONFIG_ID, Constants.IMPORT_WHODO_LINE_TITLE_INDEX);
+            if (ExcelImportResult.READ_STATUS_SUCCESS == linesExcelImportResult.getReadstatus()) {
+                this.validateLines(linesExcelImportResult, odoGroupCommandMap, locale, userId, ouId, logId);
+            }
+
+            // 出库单运输服务信息
+            ExcelImportResult transExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_WHODO_TRANSPORTMGMT_EXCEL_CONFIG_ID, Constants.IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX);
+            if (ExcelImportResult.READ_STATUS_SUCCESS == transExcelImportResult.getReadstatus()) {
+                this.validateTrans(transExcelImportResult, odoGroupCommandMap, locale, userId, ouId, logId);
+            }
+
+            // 出库单地址信息
+            ExcelImportResult addressExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_WHODO_ADDRESS_EXCEL_CONFIG_ID, Constants.IMPORT_WHODO_ADDRESS_TITLE_INDEX);
+            if (ExcelImportResult.READ_STATUS_SUCCESS == addressExcelImportResult.getReadstatus()) {
+                this.validateAddress(addressExcelImportResult, odoGroupCommandMap, locale, userId, ouId, logId);
+            }
+
+            if (ExcelImportResult.READ_STATUS_FAILED == odoExcelImportResult.getReadstatus() || ExcelImportResult.READ_STATUS_FAILED == linesExcelImportResult.getReadstatus()
+                    || ExcelImportResult.READ_STATUS_FAILED == transExcelImportResult.getReadstatus() || ExcelImportResult.READ_STATUS_FAILED == addressExcelImportResult.getReadstatus()) {
+                Workbook workbook = odoExcelImportResult.getWorkbook();
+                ExcelImport.exportImportErroeMsg(workbook, odoExcelImportResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, linesExcelImportResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, transExcelImportResult.getRootExcelException());
+                ExcelImport.exportImportErroeMsg(workbook, addressExcelImportResult.getRootExcelException());
+
+                ImportExcel importExcel = new ImportExcel();
+                importExcel.setImportType("WH_ODO");
+                importExcel.setWorkbook(workbook);
+                importExcel.setUserImportExcelId(userImportExcelId);
+                importExcel.setUserId(userId);
+                importExcel.setOuId(ouId);
+
+                // 调用异常输出接口，生成错误信息
+                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+
+                ResponseMsg msg = new ResponseMsg();
+                msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+                msg.setMsg(errorFileName);
+                return msg;
+            }
+            // 如果校验成功，则进行导入
             List<OdoGroupCommand> groupList = new ArrayList<OdoGroupCommand>();
 
-            this.checkAndPackageOdoForImport(odoResult, odoLineResult, odoAddressResult, transportMgmtResult, odoVasResult, groupList, workbook);
-
-            this.odoManager.createOdo(groupList, ouId, userId);
-
-            return workbook;
-
-
-
-        } catch (EncryptedDocumentException e) {
-            log.error("", e);
-        } catch (InvalidFormatException e) {
-            log.error("", e);
-        } catch (RootExcelException e) {
-            System.out.println(e.getMessage() + " [" + e.getSheetName() + "]");
-            for (ExcelException ee : e.getExcelExceptions()) {
-                System.out.println(e.getSheetName() + ":第[" + ee.getRow() + "]行 [" + ee.getTitleName() + "] " + ee.getErrorCode() + " " + ee.getMessage());
+            Iterator<OdoGroupCommand> it = odoGroupCommandMap.values().iterator();
+            while (it.hasNext()) {
+                OdoGroupCommand entry = it.next();
+                groupList.add(entry);
             }
-        } catch (BusinessException bex) {
-            bex.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            log.error("", e);
+
+            this.createOdo(groupList, ouId, userId);
+
         } catch (Exception e) {
             e.printStackTrace();
+            throw new BusinessException(ErrorCodes.IMPORT_ERROR);
         }
-
-
-
-        return null;
+        ResponseMsg msg = new ResponseMsg();
+        msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        msg.setMsg("SUCCESS");
+        return msg;
     }
 
-    private void checkAndPackageOdoForImport(ExcelImportResult odoResult, ExcelImportResult odoLineResult, ExcelImportResult odoAddressResult, ExcelImportResult transportMgmtResult, ExcelImportResult odoVasResult, List<OdoGroupCommand> groupList,
-            Workbook workbook) {
-        boolean checkFlag = true;
 
-        List<OdoCommand> odoCommandList = odoResult.getListBean();
-        List<OdoLineCommand> odoLineCommandList = odoLineResult.getListBean();
-        List<OdoAddressCommand> odoAddressList = odoAddressResult.getListBean();
-        List<OdoTransportMgmtCommand> transportMgmtCommandList = transportMgmtResult.getListBean();
-        List<WhOdoVasCommand> whOdoVasCommandList = odoVasResult.getListBean();
-        
-        Map<String, OdoGroupCommand> groupMap = new HashMap<String, OdoGroupCommand>();
-
-        for (int i = 0; i < odoCommandList.size(); i++) {
-            OdoCommand odoCommand = odoCommandList.get(i);
-            if (groupMap.containsKey(odoCommand.getExtCode())) {
-                odoResult.addRowException("出库单有重复的编码", "", i + 1);
-                if (checkFlag) {
-                    checkFlag = false;
-                }
+    private void validateTrans(ExcelImportResult excelImportResult, Map<String, OdoGroupCommand> odoGroupCommandMap, Locale locale, Long userId, Long ouId, String logId) {
+        List<OdoTransportMgmtCommand> transCommandList = excelImportResult.getListBean();
+        RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+        for (int index = 0; index < transCommandList.size(); index++) {
+            int rowNum = index + Constants.IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX + 1;
+            OdoTransportMgmtCommand trans = transCommandList.get(index);
+            if (StringUtils.isEmpty(trans.getOdoExtCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("入库单外接编码不能为空", null, rowNum, null));
             } else {
-                OdoGroupCommand group = new OdoGroupCommand();
-                group.setOdo(odoCommand);
-                groupMap.put(odoCommand.getExtCode(), group);
-            }
-        }
+                if (!odoGroupCommandMap.containsKey(trans.getOdoExtCode())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("找不到对应的出库单或出库单有重大的错误不进行校验", null, rowNum, null));
+                } else {
+                    if (StringUtils.hasText(trans.getModeOfTransport())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.TRANSPORT_MODE, trans.getModeOfTransport());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("运输方式编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(trans.getTransportServiceProvider())) {
+                        MaTransport port = new MaTransport();
+                        port.setCode(trans.getTransportServiceProvider());
+                        List<MaTransport> portList = this.maTransportManager.findMaTransport(port);
+                        if (portList == null || portList.size() == 0) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("运输服务商编码错误", null, rowNum, null));
+                        }
+                        // #TODO 快递服务类型
+                    }
+                    if (StringUtils.hasText(trans.getOutboundTargetType())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.ODO_AIM_TYPE, trans.getOutboundTargetType());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("出库目标类型编码错误", null, rowNum, null));
+                        }else{
+                            
+                            if(StringUtils.isEmpty(trans.getOutboundTarget())){
+                                rootExcelException.getExcelExceptions().add(new ExcelException("出库目标不允许为空", null, rowNum, null));
+                            } else {
+                                if (Constants.AIMTYPE_1.equals(trans.getOutboundTargetType())) {// 供应商
+                                    Supplier supplierSearch = new Supplier();
+                                    supplierSearch.setCode(trans.getOutboundTarget());
+                                    List<Supplier> supplierList = this.supplierManager.findListByParam(supplierSearch);
+                                    if (supplierList == null || supplierList.size() == 0) {
+                                        rootExcelException.getExcelExceptions().add(new ExcelException("出库目标类型为供应商时候，出库目标找不到对应的供应商", null, rowNum, null));
+                                    }
+                                } else if (Constants.AIMTYPE_5.equals(trans.getOutboundTargetType())) {
+                                    Warehouse wh = this.warehouseManager.findWarehouseByCode(trans.getOutboundTarget());
+                                    if (wh == null) {
+                                        rootExcelException.getExcelExceptions().add(new ExcelException("出库目标类型为仓库时候，出库目标找不到对应的仓库", null, rowNum, null));
+                                    }
 
-        for (int i = 0; i < odoLineCommandList.size(); i++) {
-            OdoLineCommand lineCommand = odoLineCommandList.get(i);
-            
-            if (groupMap.containsKey(lineCommand.getOdoExtCode())) {
-                groupMap.get(lineCommand.getOdoExtCode()).getOdoLineList().add(lineCommand);
-            } else {
-                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
-                if (checkFlag) {
-                    checkFlag = false;
-                }
-            }
-            
-        }
-
-        for (int i = 0; i < odoAddressList.size(); i++) {
-            OdoAddressCommand odoAddressCommand = odoAddressList.get(i);
-            if (groupMap.containsKey(odoAddressCommand.getOdoExtCode())) {
-                WhOdoAddress address = new WhOdoAddress();
-                BeanUtils.copyProperties(odoAddressCommand, address);
-                groupMap.get(odoAddressCommand.getOdoExtCode()).setWhOdoAddress(address);
-            } else {
-                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
-                if (checkFlag) {
-                    checkFlag = false;
-                }
-            }
-
-        }
-
-        for (int i = 0; i < transportMgmtCommandList.size(); i++) {
-            OdoTransportMgmtCommand transportMgmtCommand = transportMgmtCommandList.get(i);
-            if (groupMap.containsKey(transportMgmtCommand.getOdoExtCode())) {
-                groupMap.get(transportMgmtCommand.getOdoExtCode()).setTransPortMgmt(transportMgmtCommand);
-            } else {
-                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
-                if (checkFlag) {
-                    checkFlag = false;
-                }
-            }
-
-        }
-
-        for (int i = 0; i < whOdoVasCommandList.size(); i++) {
-            WhOdoVasCommand vasCommand = whOdoVasCommandList.get(i);
-            if (groupMap.containsKey(vasCommand.getOdoExtCode())) {
-
-                groupMap.get(vasCommand.getOdoExtCode()).getOdoVasList().add(vasCommand);
-            } else {
-                odoLineResult.addRowException("出库单明细找不到对应的出库单", "", i + 1);
-                if (checkFlag) {
-                    checkFlag = false;
+                                } else if (Constants.AIMTYPE_7.equals(trans.getOutboundTargetType())) {
+                                    DistributionTarget search = new DistributionTarget();
+                                    search.setCode(trans.getOutboundTarget());
+                                    List<DistributionTarget> targetList = this.distributionTargetManager.findDistributionTargetByParams(search);
+                                    if (targetList == null || targetList.size() == 0) {
+                                        rootExcelException.getExcelExceptions().add(new ExcelException("出库目标类型为收货单位时候，出库目标找不到对应的收货单位", null, rowNum, null));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    OdoGroupCommand group = odoGroupCommandMap.get(trans.getOdoExtCode());
+                    group.setTransPortMgmt(trans);
+                    odoGroupCommandMap.put(trans.getOdoExtCode(), group);
                 }
             }
-
         }
+    }
 
-        if (checkFlag) {
-            workbook = null;
-        } else {
-            try {
-                ExcelImport.exportImportErroeMsg(workbook, odoResult.getRootExcelException());
-                ExcelImport.exportImportErroeMsg(workbook, odoLineResult.getRootExcelException());
-                ExcelImport.exportImportErroeMsg(workbook, odoAddressResult.getRootExcelException());
-                ExcelImport.exportImportErroeMsg(workbook, transportMgmtResult.getRootExcelException());
-                ExcelImport.exportImportErroeMsg(workbook, odoVasResult.getRootExcelException());
-            } catch (EncryptedDocumentException e) {
-                log.error("", e);
-            } catch (InvalidFormatException e) {
-                log.error("", e);
-            } catch (IOException e) {
-                log.error("", e);
+
+    private void validateAddress(ExcelImportResult excelImportResult, Map<String, OdoGroupCommand> odoGroupCommandMap, Locale locale, Long userId, Long ouId, String logId) {
+        List<OdoAddressCommand> addressCommandList = excelImportResult.getListBean();
+        RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+        for (int index = 0; index < addressCommandList.size(); index++) {
+            int rowNum = index + Constants.IMPORT_WHODO_ADDRESS_TITLE_INDEX + 1;
+            OdoAddressCommand addressCommand = addressCommandList.get(index);
+            if (StringUtils.isEmpty(addressCommand.getOdoExtCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("入库单外接编码不能为空", null, rowNum, null));
+            } else {
+                if (!odoGroupCommandMap.containsKey(addressCommand.getOdoExtCode())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("找不到对应的出库单或出库单有重大的错误不进行校验", null, rowNum, null));
+                } else {
+                    if (StringUtils.isEmpty(addressCommand.getDistributionTargetTelephone()) && StringUtils.isEmpty(addressCommand.getDistributionTargetTelephoneNumber())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("配送对象电话和手机必填一个", null, rowNum, null));
+                    }
+                    if (StringUtils.isEmpty(addressCommand.getDistributionTargetName())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("配送对象姓名不能为空", null, rowNum, null));
+                    }
+                    if (StringUtils.isEmpty(addressCommand.getDistributionTargetCountry())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("配送对象国家不能为空", null, rowNum, null));
+                    } else {
+                        Region country = this.regionManager.findRegionByNameAndParentId(addressCommand.getDistributionTargetCountry(), Constants.ROOT_REGION);
+                        if (country == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("配送对象国家名称不在配置的地址表内", null, rowNum, null));
+                        }else{
+                            Long countryId=country.getId();
+                            
+                            if (StringUtils.isEmpty(addressCommand.getDistributionTargetAddress())) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("配送对象详细地址不能为空", null, rowNum, null));
+                            }
+
+                            if(StringUtils.isEmpty(addressCommand.getDistributionTargetProvince())){
+                                rootExcelException.getExcelExceptions().add(new ExcelException("配送对象省不能为空", null, rowNum, null));
+                            } else {
+
+                                Region province = this.regionManager.findRegionByNameAndParentId(addressCommand.getDistributionTargetProvince(), countryId);
+                                if (province == null) {
+                                    rootExcelException.getExcelExceptions().add(new ExcelException("配送对象省名称不在配置的地址表内", null, rowNum, null));
+                                } else {
+                                    Long provinceId = province.getId();
+                                    if (StringUtils.isEmpty(addressCommand.getDistributionTargetCity())) {
+                                        rootExcelException.getExcelExceptions().add(new ExcelException("配送对象市不能为空", null, rowNum, null));
+                                    } else {
+
+                                        Region city = this.regionManager.findRegionByNameAndParentId(addressCommand.getDistributionTargetCity(), provinceId);
+                                        if (city == null) {
+                                            rootExcelException.getExcelExceptions().add(new ExcelException("配送对象市名称不在配置的地址表内", null, rowNum, null));
+                                        } else {
+                                            Long cityId = city.getId();
+                                            if (StringUtils.isEmpty(addressCommand.getDistributionTargetDistrict())) {
+                                                rootExcelException.getExcelExceptions().add(new ExcelException("配送对象区不能为空", null, rowNum, null));
+                                            } else {
+                                                Region district = this.regionManager.findRegionByNameAndParentId(addressCommand.getDistributionTargetDistrict(), cityId);
+                                                if (district == null) {
+                                                    rootExcelException.getExcelExceptions().add(new ExcelException("配送对象区名称不在配置的地址表内", null, rowNum, null));
+                                                } else {
+                                                    Long districtId = district.getId();
+                                                    if (StringUtils.isEmpty(addressCommand.getDistributionTargetVillagesTowns())) {
+
+                                                    } else {
+                                                        Region town = this.regionManager.findRegionByNameAndParentId(addressCommand.getDistributionTargetDistrict(), districtId);
+                                                        if (town == null) {
+                                                            rootExcelException.getExcelExceptions().add(new ExcelException("配送对象乡镇名称不在配置的地址表内", null, rowNum, null));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (StringUtils.isEmpty(addressCommand.getConsigneeTargetProvince())) {} else {
+                                Region province = this.regionManager.findRegionByNameAndParentId(addressCommand.getConsigneeTargetProvince(), countryId);
+                                if (province == null) {} else {
+                                    Long provinceId = province.getId();
+                                    if (StringUtils.isEmpty(addressCommand.getConsigneeTargetCity())) {} else {
+
+                                        Region city = this.regionManager.findRegionByNameAndParentId(addressCommand.getConsigneeTargetCity(), provinceId);
+                                        if (city == null) {
+                                            rootExcelException.getExcelExceptions().add(new ExcelException("配送对象市名称不在配置的地址表内", null, rowNum, null));
+                                        } else {
+                                            Long cityId = city.getId();
+                                            if (StringUtils.isEmpty(addressCommand.getConsigneeTargetDistrict())) {} else {
+                                                Region district = this.regionManager.findRegionByNameAndParentId(addressCommand.getConsigneeTargetDistrict(), cityId);
+                                                if (district == null) {
+                                                    rootExcelException.getExcelExceptions().add(new ExcelException("配送对象区名称不在配置的地址表内", null, rowNum, null));
+                                                } else {
+                                                    Long districtId = district.getId();
+                                                    if (StringUtils.isEmpty(addressCommand.getConsigneeTargetVillagesTowns())) {
+
+                                                    } else {
+                                                        Region town = this.regionManager.findRegionByNameAndParentId(addressCommand.getConsigneeTargetDistrict(), districtId);
+                                                        if (town == null) {
+                                                            rootExcelException.getExcelExceptions().add(new ExcelException("配送对象乡镇名称不在配置的地址表内", null, rowNum, null));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    OdoGroupCommand group = odoGroupCommandMap.get(addressCommand.getOdoExtCode());
+                    WhOdoAddress address = new WhOdoAddress();
+                    BeanUtils.copyProperties(addressCommand, address);
+                    group.setWhOdoAddress(address);
+                    odoGroupCommandMap.put(addressCommand.getOdoExtCode(), group);
+                }
+
             }
         }
-        Iterator<Entry<String, OdoGroupCommand>> groupMapIt = groupMap.entrySet().iterator();
-        while (groupMapIt.hasNext()) {
 
-            if (groupList == null) {
-                groupList = new ArrayList<OdoGroupCommand>();
+    }
+
+
+    private void validateLines(ExcelImportResult excelImportResult, Map<String, OdoGroupCommand> odoGroupCommandMap, Locale locale, Long userId, Long ouId, String logId) {
+        List<OdoLineCommand> lineCommandList = excelImportResult.getListBean();
+
+        RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+        Map<Long, String> invMap = this.getInvStatusMap();
+        for (int index = 0; index < lineCommandList.size(); index++) {
+            int rowNum = index + Constants.IMPORT_WHODO_LINE_TITLE_INDEX + 1;
+            OdoLineCommand line = lineCommandList.get(index);
+            if (StringUtils.isEmpty(line.getOdoExtCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("入库单外接编码不能为空", null, rowNum, null));
+            } else {
+                if (!odoGroupCommandMap.containsKey(line.getOdoExtCode())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("明细行找不到对应的出库单或出库单有重大的错误不进行校验", null, rowNum, null));
+                } else {
+                    OdoGroupCommand group = odoGroupCommandMap.get(line.getOdoExtCode());
+                    OdoCommand odo = group.getOdo();
+                    if (StringUtils.isEmpty(line.getStoreCode())) {
+                        line.setStoreId(odo.getStoreId());
+                    } else {
+                        Store store = this.storeManager.findStoreByCode(odo.getStoreCode());
+                        if (store == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码找不到对应的店铺信息", null, rowNum, null));
+                        } else {
+                            if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("店铺无效", null, rowNum, null));
+                            }
+                            if (!odo.getCustomerId().equals(store.getCustomerId())) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("客户-店铺不对应", null, rowNum, null));
+                            }
+                            Long storeId = store.getId();
+                            line.setStoreId(storeId);
+                            Boolean customerStoreUserFlag = this.storeManager.checkCustomerStoreUser(odo.getCustomerId(), storeId, userId);
+                            if (!customerStoreUserFlag) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("用户不具有此客户-店铺权限", null, rowNum, null));
+                            }
+
+
+                        }
+                    }
+                    Sku sku = this.biPoLineManager.findSkuByBarCode(line.getSkuBarCode(), odo.getCustomerId(), logId);
+                    if (sku == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("条码找不到对应的商品", null, rowNum, null));
+                    }
+                    line.setSkuId(sku.getId());
+                    if (line.getInvStatus() == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
+                    } else {
+                        if (!invMap.containsKey(line.getInvStatus())) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("库存状态编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(line.getInvType())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_TYPE, line.getInvType());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("库存类型编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(line.getInvAttr1())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_1, line.getInvAttr1());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("库存属性1编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(line.getInvAttr2())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_2, line.getInvAttr2());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("库存属性2编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(line.getInvAttr3())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_3, line.getInvAttr3());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("库存属性3编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(line.getInvAttr4())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_4, line.getInvAttr4());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("库存属性4编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(line.getInvAttr5())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_5, line.getInvAttr5());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("库存属性5编码错误", null, rowNum, null));
+                        }
+                    }
+                    if (StringUtils.hasText(line.getPartOutboundStrategy())) {
+                        SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.PART_OUTBOUND_STRATEGY, line.getInvAttr5());
+                        if (dic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("部分出库策略编码错误", null, rowNum, null));
+                        }
+                    }
+
+                    List<OdoLineCommand> lineList = group.getOdoLineList();
+                    if (lineList == null) {
+                        lineList = new ArrayList<OdoLineCommand>();
+                    }
+                    lineList.add(line);
+                    group.setOdoLineList(lineList);
+                    odoGroupCommandMap.put(line.getOdoExtCode(), group);
+                }
             }
-            Entry<String, OdoGroupCommand> entry = groupMapIt.next();
-            groupList.add(entry.getValue());
+
+        }
+        if (rootExcelException.isException()) {
+            excelImportResult.setRootExcelException(rootExcelException);
+            excelImportResult.setReadstatus(ExcelImportResult.READ_STATUS_FAILED);
         }
 
+    }
+
+
+    private Map<Long, String> getInvStatusMap() {
+        List<InventoryStatus> invStatusList = this.inventoryStatusManager.findAllInventoryStatus();
+        Map<Long, String> invStatusMap = new HashMap<Long, String>();
+        if (invStatusList != null && invStatusList.size() > 0) {
+            for (InventoryStatus invStatus : invStatusList) {
+                invStatusMap.put(invStatus.getId(), invStatus.getName());
+            }
+        }
+        return invStatusMap;
+    }
+
+
+    private void validateOdo(ExcelImportResult excelImportResult, Map<String, OdoGroupCommand> odoGroupCommandMap, Locale locale, Long userId, Long ouId) {
+        List<OdoCommand> lineCommandList = excelImportResult.getListBean();
+        RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+        OdoGroupCommand group = new OdoGroupCommand();
+        for (int index = 0; index < lineCommandList.size(); index++) {
+            int rowNum = index + Constants.IMPORT_WHODO_TITLE_INDEX + 1;
+            OdoCommand odo = lineCommandList.get(index);
+            boolean isAdd = false;
+            if (StringUtils.isEmpty(odo.getExtCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("出库单外接编码不能为空", null, rowNum, null));
+            } else if (odoGroupCommandMap.containsKey(odo.getExtCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("excel中有重复的外接编码", null, rowNum, null));
+            } else {
+                if (StringUtils.isEmpty(odo.getCustomerCode())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("入库单客户编码不能为空", null, rowNum, null));
+                }
+                Customer customer = this.customerManager.findCustomerbyCode(odo.getCustomerCode());
+                if (customer == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("客户编码有误，找不到对应的客户信息", null, rowNum, null));
+                } else {
+
+                    Long customerId = customer.getId();
+                    odo.setCustomerId(customerId);
+
+                    if (StringUtils.isEmpty(odo.getStoreCode())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码不能为空", null, rowNum, null));
+                    } else {
+                        Store store = this.storeManager.findStoreByCode(odo.getStoreCode());
+                        if (store == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码找不到对应的店铺信息", null, rowNum, null));
+                        } else {
+                            if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("店铺无效", null, rowNum, null));
+                            }
+                            if (!customer.getId().equals(store.getCustomerId())) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("客户-店铺不对应", null, rowNum, null));
+                            }
+                            Long storeId = store.getId();
+                            odo.setStoreId(storeId);
+                            Boolean customerStoreUserFlag = this.storeManager.checkCustomerStoreUser(customerId, storeId, userId);
+                            if (!customerStoreUserFlag) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("用户不具有此客户-店铺权限", null, rowNum, null));
+                            }
+                            // 校验ExtCode: ext_code与storeId 唯一性
+                            WhOdo checkOdo = this.odoManager.findByExtCodeStoreIdOuId(odo.getExtCode(), storeId, ouId);
+                            if (checkOdo != null) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("出库单校验相关单据号失败，同一个店铺下有相同的相关单据号", null, rowNum, null));
+                            } else {
+                                isAdd = true;
+                            }
+
+                        }
+                    }
+                }
+
+            }
+
+            if (StringUtils.isEmpty(odo.getOdoType())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("出库单类型不能为空", null, rowNum, null));
+            } else {
+                SysDictionary poTypeDic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.ODO_TYPE, odo.getOdoType() + "");
+                if (poTypeDic == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("系统参数出库单类型不正确", null, rowNum, null));
+                }
+            }
+            // 只有关键元素校验通过了才会进行后续的校验
+            if (isAdd) {
+                group.setOdo(odo);
+                odoGroupCommandMap.put(odo.getExtCode(), group);
+            }
+
+        }
+        if (rootExcelException.isException()) {
+            excelImportResult.setRootExcelException(rootExcelException);
+            excelImportResult.setReadstatus(ExcelImportResult.READ_STATUS_FAILED);
+        }
+    }
+
+
+    private ExcelImportResult readSheetFromExcel(ExcelContext context, File importExcelFile, Locale locale, String sheetName, int index) throws Exception {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(importExcelFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new BusinessException("文件读取异常");
+        }
+        return context.readExcel(sheetName, index, inputStream, locale);
     }
 
     private void createOdo(List<OdoGroupCommand> groupList, Long ouId, Long userId) {

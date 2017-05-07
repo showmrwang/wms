@@ -803,6 +803,9 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
 
     public List<WhSkuInventoryCommand> getWhSkuInventoryCommandByWave(@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId);
+    
+    public List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
+    
 
     
     public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByWave(@Param("ouId") Long ouId, @Param("locationId") Long locationId, @Param("operationId") Long operationId);

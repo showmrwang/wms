@@ -20,23 +20,7 @@ public interface PdaInWarehouseMovePutawayManager extends BaseManager {
      * @param command
      * @return
      */
-    public ReplenishmentPutawayCommand putawayScanLocation(ReplenishmentPutawayCommand command);
-    
-    /***
-     * 扫描周转箱
-     * @param command
-     * @return
-     */
-    public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command,Boolean isTabbInvTotal);
-    
-    /***
-     * 更新工作及作业状态
-     * @param operationId
-     * @param workCode
-     * @param ouId
-     * @param userId
-     */
-    public void updateStatus(Long operationId,String workCode,Long ouId,Long userId);
+    public ReplenishmentPutawayCommand putawayScanLocation(ReplenishmentPutawayCommand command,Boolean isTabbInvTotal);
     
     /**
      * [通用方法] 统计分析作业执行明细并缓存
@@ -46,19 +30,5 @@ public interface PdaInWarehouseMovePutawayManager extends BaseManager {
      * @return
      */
     OperationExecStatisticsCommand getOperationExecForGroup(ReplenishmentPutawayCommand replenishmentPutawayCommand);
-    
-    /***
-     * 补货上架取消
-     * @param operationId
-     */
-    public void cancelPattern(Long operationId,Integer cancelPattern);
-    
-    /**
-     * 获取补货功能参数
-     * @param ouId
-     * @param functionId
-     * @return
-     */
-    public WhFunctionInventoryMove findWhFunctionInventoryMoveByfunctionId(Long ouId,Long functionId);
     
 }
