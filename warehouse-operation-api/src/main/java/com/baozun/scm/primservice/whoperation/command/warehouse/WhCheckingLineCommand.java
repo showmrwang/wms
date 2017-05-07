@@ -109,6 +109,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String mfgDateStr = new String();
     /** 失效日期str*/
     private String expDateStr = new String();
+    /** 周转箱编码*/
+    private String containerCode;
 
     public Long getId() {
         return id;
@@ -444,6 +446,14 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setOuterContainerCode(String outerContainerCode) {
         this.outerContainerCode = outerContainerCode;
+    }
+
+    public String getContainerCode() {
+        return containerCode;
+    }
+
+    public void setContainerCode(String containerCode) {
+        this.containerCode = containerCode;
     }
 
 }

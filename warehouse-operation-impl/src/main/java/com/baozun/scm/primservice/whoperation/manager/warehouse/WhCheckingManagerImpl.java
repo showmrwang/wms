@@ -383,6 +383,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingCommand checking = new WhCheckingCommand();
         List<WhCheckingCommand> checkingList = new ArrayList<WhCheckingCommand>();
         checking.setOutboundboxCode(input);
+        checking.setOuId(whCheckingCommand.getOuId());
         checkingList = whCheckingDao.findListByParamExt(checking);
         if (null != checkingList && !checkingList.isEmpty()) {
             // 扫描出库箱编码
@@ -559,7 +560,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingCommand whCheckingCommand = command.getCheckingCommand();
         String input = whCheckingCommand.getInput();
         Long ouId = whCheckingCommand.getOuId();
-        WhChecking checking = new WhChecking();
         WhCheckingCommand checkingCommand = new WhCheckingCommand();
         List<WhCheckingCommand> whCheckingList = whCheckingDao.findListByContainerCode(input, ouId);
         if (null != whCheckingList && !whCheckingList.isEmpty()) {
@@ -579,10 +579,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     return true;
                 }
                 // 可以执行复核操作
-                BeanUtils.copyProperties(checkingCommand, checking);
+                BeanUtils.copyProperties(checkingCommand, whCheckingCommand);
                 List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(checkingCommand);
                 command.setCheckingLineCommandList(whCheckingLineList);
-                whCheckingCommand.setContainerId(checking.getContainerId());
                 /** 按单复核方式:周转箱流程*/
                 whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);

@@ -119,13 +119,14 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         Long funcId = command.getFuncId();
         Long ouId = command.getOuId();
         Long odoId = command.getOdoId();
-        Long outboundBoxId = command.getOutboundBoxId();
+        // Long outboundBoxId = command.getOutboundBoxId();
+        String outboundBoxCode = command.getOutboundBoxCode();
         // 1.判断是否校验称重和计量
         WhFunctionOutBound outbound = this.whFunctionOutBoundDao.findByFunctionIdExt(funcId, ouId);
         if (null == outbound) {
             throw new BusinessException("no function");
         }
-        WhOdoPackageInfo packageInfo = whOdoPackageInfoDao.findByOdoIdAndOutboundBoxId(odoId, outboundBoxId, ouId);
+        WhOdoPackageInfo packageInfo = whOdoPackageInfoDao.findByOdoIdAndOutboundBoxCode(odoId, outboundBoxCode, ouId);
         // 2.判断称重集中是否满足浮动百分比
         if (outbound.getIsValidateWeight()) {
             Long actualWeight = command.getActualWeight();

@@ -130,14 +130,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 	</select>
 
-	<select id="findByOdoIdAndOutboundBoxId"
+	<select id="findByOdoIdAndOutboundBoxCode"
 		resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo">
 		select
 		<include refid="whOdoPackageInfoColumnsExt" />
 		    <![CDATA[
 			    from t_wh_odo_package_info 
 		        where 
-		        outboundbox_id = #{outboundBoxId} 
+		        outboundbox_code = #{outboundBoxCode} 
 		        and odo_id = #{odoId}
 		        and ou_id = #{ouId}
 		    ]]>
