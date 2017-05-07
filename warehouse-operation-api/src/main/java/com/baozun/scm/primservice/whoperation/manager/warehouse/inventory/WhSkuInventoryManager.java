@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 /**
@@ -282,7 +283,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param insideContainerId
      * @param turnoverBoxId
      */
-    public void replenishmentContainerInventory(Long execLineId,Boolean isShortPicking,List<String> snDefectList,String skuAttrIds,Long lcoationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
+    public void replenishmentContainerInventory(List<WhOperationExecLine> execLineList,Boolean isShortPicking,List<String> snDefectList,String skuAttrIds,Long lcoationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty);
     
     /***
      * 库内移动中的拣货由库位库存生成容器库存

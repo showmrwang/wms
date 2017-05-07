@@ -39,7 +39,7 @@ public class WeightingCommand extends BaseCommand {
     private Long difference;
 
     /** 可接受百分比*/
-    private Long floats;
+    private Integer floats;
 
     /** 波次号*/
     private String waveCode;
@@ -126,14 +126,6 @@ public class WeightingCommand extends BaseCommand {
         this.calcWeighting = calcWeighting;
     }
 
-    public Long getFloats() {
-        return floats;
-    }
-
-    public void setFloats(Long floats) {
-        this.floats = floats;
-    }
-
     public String getWaveCode() {
         return waveCode;
     }
@@ -198,4 +190,14 @@ public class WeightingCommand extends BaseCommand {
         this.difference = difference;
     }
 
+    public Integer getFloats() {
+        return floats;
+    }
+
+    public void setFloats(Integer floats) {
+        this.floats = floats;
+    }
+
+    
+    
 }

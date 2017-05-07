@@ -87,4 +87,11 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * @param ouId
      */
      public void removeCache(Long operationId);
+     
+     /**
+      * 判断是否是单库位
+      * @param operationId
+      * @return
+      */
+     public Boolean judgeIsOnlyLocation(Long operationId);
 }

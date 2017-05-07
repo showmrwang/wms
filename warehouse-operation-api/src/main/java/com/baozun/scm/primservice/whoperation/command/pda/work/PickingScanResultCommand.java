@@ -205,7 +205,6 @@ public class PickingScanResultCommand extends BaseCommand {
 
     private Boolean isScanOutBoundBox = false; // 是否已经扫描出库箱
     
-    private Boolean scanOutBoundBox = false; // 是否已经扫描出库箱 isPicking= 2时使用
 
     private Double scanSkuQty; // 扫描数量
     /** 是否继续扫描sn明细 */
@@ -1142,14 +1141,6 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setSkuInvStatusName(String skuInvStatusName) {
         this.skuInvStatusName = skuInvStatusName;
-    }
-
-    public Boolean getScanOutBoundBox() {
-        return scanOutBoundBox;
-    }
-
-    public void setScanOutBoundBox(Boolean scanOutBoundBox) {
-        this.scanOutBoundBox = scanOutBoundBox;
     }
 
     public Integer getInWarehouseMoveWay() {

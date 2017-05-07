@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
@@ -725,7 +726,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合
      * @param checkingLineList
      */
-    public void checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
+    public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
+        WeightingCommand command = null;
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         Long outboundboxId = cmd.getOutboundboxId();
         String outboundbox = cmd.getOutboundBoxCode();
@@ -746,6 +748,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 更新出库单状态
             this.updateOdoStatusByOdo(odoId, ouId);
         }
+        command = whCheckingDao.findByOutboundBoxCode(outboundbox, ouId);
+        return command;
     }
 
 
