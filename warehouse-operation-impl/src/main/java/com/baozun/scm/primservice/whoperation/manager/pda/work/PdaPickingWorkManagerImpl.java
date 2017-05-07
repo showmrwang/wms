@@ -1103,9 +1103,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if(null == latticeList){
               latticeList = new ArrayDeque<Integer>();
         }
-        if(!latticeList.contains(lattice)) {
-            latticeList.addFirst(lattice);
-        }
+        latticeList.addFirst(lattice);
         cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
     }
 
@@ -1431,6 +1429,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Boolean isShortPickingEnd = command.getIsShortPickingEnd(); // 拣货完成
         String outerContainer = command.getOuterContainer();
         Integer lattice = command.getUseContainerLatticeNo(); //当前货格
+        Long tipSkuQty = command.getTipSkuQty();
         Long containerId = null;
         if (!StringUtils.isEmpty(outerContainer)) {
             ContainerCommand cmd = containerDao.getContainerByCode(outerContainer, ouId);
@@ -1595,10 +1594,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Map<Long,Map<String,Long>>  insideSkuAttrIdsQty = latticeInsideSkuAttrIdsQty.get(key);
                     latticeInsideSkuQty = insideSkuAttrIdsQty.get(insideContainerId);
                     insideSkuAttrIdsLattice = insideSkuAttrIdsContainerLattice.get(insideContainerId);
-                }else{
-                    latticeSkuQty = latticeSkuAttrIdsQty.get(key);
-                    skuAttrIdsLattice = skuAttrIdsContainerLattice.get(locationId);
                 }
+                latticeSkuQty = latticeSkuAttrIdsQty.get(key);
+                skuAttrIdsLattice = skuAttrIdsContainerLattice.get(locationId);
             }
         }
         Set<Long> insideContainerIds = null;
@@ -2103,12 +2101,12 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 }
             } else {
                 // 非整托整箱
-                if(oLCmd.getCompleteQty().equals(oLCmd.getQty())){
+                if(oLCmd.getCompleteQty().doubleValue() == oLCmd.getQty().doubleValue()){
                     continue;
                 }
                 String lineioIds = (oLCmd.getFromOuterContainerId() == null ? "┊" : oLCmd.getFromOuterContainerId() + "┊") + (oLCmd.getFromInsideContainerId() == null ? "︴" : oLCmd.getFromInsideContainerId() + "︴");
                 String opLskuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(oLCmd);
-                if (skuAttrId.equals(opLskuAttrId) && locationId.longValue() == oLCmd.getFromLocationId().longValue() && ioIds.equals(lineioIds) && qty != oLCmd.getCompleteQty()) {
+                if (skuAttrId.equals(opLskuAttrId) && locationId.longValue() == oLCmd.getFromLocationId().longValue() && ioIds.equals(lineioIds)) {
                     operationLineId = oLCmd.getId(); // 获取当前作业明细id
                     WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
                     whOperationExecLine.setQty(qty.longValue());
