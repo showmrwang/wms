@@ -3805,7 +3805,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         }
         if (!StringUtils.isEmpty(insideContainerCode)) {
             icCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
-            if (null == ocCmd) {
+            if (null == icCmd) {
                 // 容器信息不存在
                 log.error("container is not exists, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
