@@ -66,6 +66,15 @@ public class WhHandoverStationCommand extends BaseModel {
     private java.lang.String Status;
     /** 是否提示交接 */
     private boolean isTipHandover;
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public java.lang.String getStatus() {
         return Status;
