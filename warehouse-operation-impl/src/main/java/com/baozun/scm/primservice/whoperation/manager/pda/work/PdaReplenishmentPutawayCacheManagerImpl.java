@@ -19,8 +19,8 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStat
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishScanTipSkuCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentScanResultComamnd;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -33,6 +33,8 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
     protected static final Logger log = LoggerFactory.getLogger(PdaReplenishmentPutawayCacheManagerImpl.class);
     @Autowired
     private CacheManager cacheManager;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
     
     @Override
     public ReplenishmentScanResultComamnd tipLocation(List<Long> locationIds, Long operationId) {
@@ -152,43 +154,48 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
      * @param operationId
      * @param locationId
      */
-    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId,Long locationId){
-        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
-        if(null == replenishment){
-            replenishment = new ReplenishmentPutawayCacheCommand();
-            Map<Long,ArrayDeque<Long>> tipMapTurnoverBoxIds = new HashMap<Long,ArrayDeque<Long>>();
-            ArrayDeque<Long> tipTurnoverBoxIds = new ArrayDeque<Long>();
-            tipTurnoverBoxIds.addFirst(turnoverBoxId);
-            tipMapTurnoverBoxIds.put(locationId, tipTurnoverBoxIds);
-            replenishment.setTipTurnoverBoxIds(tipMapTurnoverBoxIds);
-            cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
-        }else{
-            Map<Long,ArrayDeque<Long>> tipMapTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
-            if(null == tipMapTurnoverBoxIds || tipMapTurnoverBoxIds.size() == 0){
-                tipMapTurnoverBoxIds = new HashMap<Long,ArrayDeque<Long>>();
+    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId,Long locationId,Long ouId){
+        //先判断此周转箱是否还存在容器库存
+        int allCounts = whSkuInventoryDao.findAllInventoryCountsByInsideContainerId(ouId,turnoverBoxId);
+        if(allCounts == 0) {
+            ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+            if(null == replenishment){
+                replenishment = new ReplenishmentPutawayCacheCommand();
+                Map<Long,ArrayDeque<Long>> tipMapTurnoverBoxIds = new HashMap<Long,ArrayDeque<Long>>();
                 ArrayDeque<Long> tipTurnoverBoxIds = new ArrayDeque<Long>();
                 tipTurnoverBoxIds.addFirst(turnoverBoxId);
                 tipMapTurnoverBoxIds.put(locationId, tipTurnoverBoxIds);
                 replenishment.setTipTurnoverBoxIds(tipMapTurnoverBoxIds);
                 cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
             }else{
-                ArrayDeque<Long> tipTurnoverBoxIds = tipMapTurnoverBoxIds.get(locationId);
-                if(null == tipTurnoverBoxIds || tipTurnoverBoxIds.isEmpty()) {
-                    tipTurnoverBoxIds = new ArrayDeque<Long>();
+                Map<Long,ArrayDeque<Long>> tipMapTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
+                if(null == tipMapTurnoverBoxIds || tipMapTurnoverBoxIds.size() == 0){
+                    tipMapTurnoverBoxIds = new HashMap<Long,ArrayDeque<Long>>();
+                    ArrayDeque<Long> tipTurnoverBoxIds = new ArrayDeque<Long>();
                     tipTurnoverBoxIds.addFirst(turnoverBoxId);
                     tipMapTurnoverBoxIds.put(locationId, tipTurnoverBoxIds);
                     replenishment.setTipTurnoverBoxIds(tipMapTurnoverBoxIds);
                     cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
                 }else{
-                    if(!tipTurnoverBoxIds.contains(turnoverBoxId)) {
+                    ArrayDeque<Long> tipTurnoverBoxIds = tipMapTurnoverBoxIds.get(locationId);
+                    if(null == tipTurnoverBoxIds || tipTurnoverBoxIds.isEmpty()) {
+                        tipTurnoverBoxIds = new ArrayDeque<Long>();
                         tipTurnoverBoxIds.addFirst(turnoverBoxId);
                         tipMapTurnoverBoxIds.put(locationId, tipTurnoverBoxIds);
                         replenishment.setTipTurnoverBoxIds(tipMapTurnoverBoxIds);
                         cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+                    }else{
+                        if(!tipTurnoverBoxIds.contains(turnoverBoxId)) {
+                            tipTurnoverBoxIds.addFirst(turnoverBoxId);
+                            tipMapTurnoverBoxIds.put(locationId, tipTurnoverBoxIds);
+                            replenishment.setTipTurnoverBoxIds(tipMapTurnoverBoxIds);
+                            cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+                        }
                     }
                 }
             }
         }
+        
     }
     
     /***
@@ -250,7 +257,7 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
      * @return
      */
     public CheckScanResultCommand pdaReplenishPutWayTipSkuTurnoverBox(List<Long> locationIds,Long skuId,Double scanSkuQty,String skuAttrId,String skuAttrIdNoSn,Boolean isSnLine,Long operationId,Long turnoverBoxId,Set<Long> turnoverIds,Set<Long> skuIds, Map<Long, Map<String, Long>> skuAttrIdsQty,
-                                                                      Map<String, Set<String>> skuAttrIdsSnDefect,Long locationId,ArrayDeque<Long> scanTurnoverBoxIds){
+                                                                      Map<String, Set<String>> skuAttrIdsSnDefect,Long locationId){
         CheckScanResultCommand cssrCmd = new CheckScanResultCommand();
         // 0.先判断当前内部容器是否在缓存中
         boolean icExists = false; 
@@ -281,19 +288,11 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         }
         ArrayDeque<Long> tipLocationIds = replenishment.getTipLocationIds();
         Map<Long,ArrayDeque<Long>> tipMapTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
-        ArrayDeque<Long> cacheTurnoverBoxIds = tipMapTurnoverBoxIds.get(locationId);
-        if (null != cacheTurnoverBoxIds && !cacheTurnoverBoxIds.isEmpty()) {
-          Long value = cacheTurnoverBoxIds.peekFirst();// 队列的第一个
-          if (null == value) value = -1L;
-          if (0 != value.compareTo(turnoverBoxId)) {
-              log.error("tip container is not queue first element exception, logId is:[{}]", logId);
-              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-          }
-        } else {
-          log.error("scan container queue is exception, logId is:[{}]", logId);
-          throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-
+        ArrayDeque<Long> scanTurnoverBoxIds = tipMapTurnoverBoxIds.get(locationId);
+        if(null == scanTurnoverBoxIds || scanTurnoverBoxIds.size() == 0){
+            scanTurnoverBoxIds = new ArrayDeque<Long>();
         }
+        scanTurnoverBoxIds.addFirst(turnoverBoxId);
         Map<String, Long> skuAttrIdQty = skuAttrIdsQty.get(skuId);
         Long skuQty = skuAttrIdQty.get(skuAttrIdNoSn);
         ReplenishScanTipSkuCacheCommand  scanTipSkuCmd = cacheManager.getObject(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnoverBoxId.toString());

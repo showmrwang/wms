@@ -39,7 +39,7 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      * @param operationId
      * @param locationId
      */
-    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId,Long locationId);
+    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId,Long locationId,Long ouId);
     
     /***
      * 提示sku
@@ -59,5 +59,5 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      * @param locationId
      * @return
      */
-    public CheckScanResultCommand pdaReplenishPutWayTipSkuTurnoverBox(List<Long> locationIds,Long skuId,Double scanSkuQty,String skuAttrId,String skuAttrIdNoSn,Boolean isSnLine,Long operationId,Long turnoverId,Set<Long> turnoverIds,Set<Long> skuIds, Map<Long, Map<String, Long>> skuAttrIdsQty,Map<String, Set<String>> skuAttrIdsSnDefect,Long locationId,ArrayDeque<Long> scanTurnoverBoxIds);
+    public CheckScanResultCommand pdaReplenishPutWayTipSkuTurnoverBox(List<Long> locationIds,Long skuId,Double scanSkuQty,String skuAttrId,String skuAttrIdNoSn,Boolean isSnLine,Long operationId,Long turnoverId,Set<Long> turnoverIds,Set<Long> skuIds, Map<Long, Map<String, Long>> skuAttrIdsQty,Map<String, Set<String>> skuAttrIdsSnDefect,Long locationId);
 }
