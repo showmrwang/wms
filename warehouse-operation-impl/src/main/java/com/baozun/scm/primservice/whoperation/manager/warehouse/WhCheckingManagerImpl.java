@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
@@ -382,6 +383,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingCommand checking = new WhCheckingCommand();
         List<WhCheckingCommand> checkingList = new ArrayList<WhCheckingCommand>();
         checking.setOutboundboxCode(input);
+        checking.setOuId(whCheckingCommand.getOuId());
         checkingList = whCheckingDao.findListByParamExt(checking);
         if (null != checkingList && !checkingList.isEmpty()) {
             // 扫描出库箱编码
@@ -558,7 +560,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingCommand whCheckingCommand = command.getCheckingCommand();
         String input = whCheckingCommand.getInput();
         Long ouId = whCheckingCommand.getOuId();
-        WhChecking checking = new WhChecking();
         WhCheckingCommand checkingCommand = new WhCheckingCommand();
         List<WhCheckingCommand> whCheckingList = whCheckingDao.findListByContainerCode(input, ouId);
         if (null != whCheckingList && !whCheckingList.isEmpty()) {
@@ -578,10 +579,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     return true;
                 }
                 // 可以执行复核操作
-                BeanUtils.copyProperties(checkingCommand, checking);
+                BeanUtils.copyProperties(checkingCommand, whCheckingCommand);
                 List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(checkingCommand);
                 command.setCheckingLineCommandList(whCheckingLineList);
-                whCheckingCommand.setContainerId(checking.getContainerId());
                 /** 按单复核方式:周转箱流程*/
                 whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);
@@ -725,7 +725,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合
      * @param checkingLineList
      */
-    public void checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
+    public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
+        WeightingCommand command = null;
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         Long outboundboxId = cmd.getOutboundboxId();
         String outboundbox = cmd.getOutboundBoxCode();
@@ -746,6 +747,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 更新出库单状态
             this.updateOdoStatusByOdo(odoId, ouId);
         }
+        command = whCheckingDao.findByOutboundBoxCode(outboundbox, ouId);
+        return command;
     }
 
 

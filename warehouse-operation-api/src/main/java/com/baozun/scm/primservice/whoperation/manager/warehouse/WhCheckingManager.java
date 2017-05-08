@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
@@ -40,7 +41,7 @@ public interface WhCheckingManager extends BaseManager {
      * 按单复合
      * @param checkingLineList
      */
-    public void checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId);
+    public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId);
 
     /**
      * [业务方法] 通过输入查找复核信息

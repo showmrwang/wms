@@ -245,8 +245,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 throw new BusinessException(ErrorCodes.TIP_CONTAINER_FAIL);
         }
        Long turnoverBoxId = cmd.getId();
-       //周转箱
-       pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId);
        Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
        Map<String, Map<String, Set<String>>> locSkuAttrIdsSnDefect = opExecLineCmd.getSkuAttrIdsSnDefect();
        Map<String, Map<Long, Map<String, Long>>> locSkuAttrIds = opExecLineCmd.getSkuAttrIds();
@@ -603,9 +601,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
-        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
-        Map<Long, ArrayDeque<Long>> tipMapTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
-        ArrayDeque<Long> scanTurnoverBoxIds = tipMapTurnoverBoxIds.get(locationId);
         String key = locationId.toString()+turnoverBoxId;
         List<Long> locationIds = opExecLineCmd.getLocationIds();
         Map<String, Map<Long, Long>> skuQty = opExecLineCmd.getSkuQty();
@@ -653,7 +648,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
         skuCmd.setIsNeedTipSkuDefect(command.getIsNeedScanSkuDefect());
         skuCmd.setIsNeedTipSkuSn(command.getIsNeedScanSkuSn());
-        CheckScanResultCommand csrCmd = pdaReplenishmentPutawayCacheManager.pdaReplenishPutWayTipSkuTurnoverBox(locationIds,skuId,skuCmd.getScanSkuQty(),skuAttrId, skuAttrIdNoSn,isSnLine, operationId, turnoverBoxId, turnoverBoxIds, skuIds, skuAttrIdsQty, skuAttrIdsSnDefect, locationId, scanTurnoverBoxIds);
+        CheckScanResultCommand csrCmd = pdaReplenishmentPutawayCacheManager.pdaReplenishPutWayTipSkuTurnoverBox(locationIds,skuId,skuCmd.getScanSkuQty(),skuAttrId, skuAttrIdNoSn,isSnLine, operationId, turnoverBoxId, turnoverBoxIds, skuIds, skuAttrIdsQty, skuAttrIdsSnDefect, locationId);
         if(csrCmd.getIsContinueScanSn()){
             command.setIsContinueScanSn(true);
             String skuAttrIds = csrCmd.getTipSkuAttrId(); // 提示唯一的sku包含唯一sku
@@ -671,9 +666,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             String skuAttrIds = csrCmd.getTipSkuAttrId(); // 提示唯一的sku包含唯一sku
-            Long skuId1 = SkuCategoryProvider.getSkuId(skuAttrIdNoSn);
+            // 周转箱内部所有sku扫描完毕在缓存
+            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId);
+            Long skuId1 = SkuCategoryProvider.getSkuId(skuAttrIds);
             Map<String, Long> skuAttrIdsQty1 = skuAttrIdsQty.get(skuId1);
-            WhSkuCommand whSkuCmd = whSkuDao.findWhSkuByIdExt(SkuCategoryProvider.getSkuId(skuAttrIdNoSn), ouId);
+            WhSkuCommand whSkuCmd = whSkuDao.findWhSkuByIdExt(SkuCategoryProvider.getSkuId(skuAttrIds), ouId);
             if (null == whSkuCmd) {
                 throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
             }
@@ -686,7 +683,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }else if(csrCmd.getIsNeedTipInsideContainer()){
             List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
-            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, true, turnoverBoxId, locationId,false);
+            // 周转箱内部所有sku扫描完毕在缓存
+            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId);
+            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId, locationId,false);
             //提示一下个周转箱
             Long tipTurnoverBoxId = csrCmd.getTipiInsideContainerId();
             Container c = containerDao.findByIdExt(tipTurnoverBoxId, ouId);
@@ -698,18 +697,22 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }else if(csrCmd.getIsNeedTipLoc()){
             Long tipLoctionid = csrCmd.getTipLocationId();
             Location loc = whLocationDao.findByIdExt(tipLoctionid, ouId);
-            command.setLocationBarCode(loc.getBarCode());
-            command.setLocationCode(loc.getCode());
+            command.setTipLocationBarCode(loc.getBarCode());
+            command.setTipLocationCode(loc.getCode());
+            command.setIsNeedScanLocation(true);
+            command.setLocationId(tipLoctionid);
             List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
-            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, true, turnoverBoxId, locationId,false);
+            // 周转箱内部所有sku扫描完毕在缓存
+            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId);
+            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId, locationId,false);
         }else if(csrCmd.getIsPutaway()){
             command.setIsScanFinsh(true);
             List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             this.updateStatus(operationId, workCode, ouId, userId);
              //清除所有缓存
-            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, true, turnoverBoxId, locationId,true);
+            pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, turnoverBoxId, locationId,true);
         }
         return command;
     }
@@ -1304,5 +1307,21 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
              cacheManager.remove(CacheConstants.OPERATIONEXEC_STATISTICS+operationId.toString());
          }
         
+     }
+     
+     
+     /**
+      * 判断是否是单库位
+      * @param operationId
+      * @return
+      */
+     public Boolean judgeIsOnlyLocation(Long operationId){
+         Boolean result = true;// 默认单库位
+         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
+         List<Long> locationIds = opExecLineCmd.getLocationIds();
+         if(locationIds.size() > 1){//多库位
+             result = false;
+         }
+         return result;
      }
 }
