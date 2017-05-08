@@ -494,6 +494,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                      WhSkuInventory inv = new WhSkuInventory();
                      BeanUtils.copyProperties(invCmd, inv);
                      inv.setId(null);
+                     inv.setLocationId(locationId);
                      inv.setOnHandQty(invCmd.getOnHandQty());// 在库库存
                      if (false == isTV) {  //是否跟踪容器号
                           inv.setOuterContainerId(null);
@@ -546,6 +547,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                      WhSkuInventory inv = new WhSkuInventory();
                      BeanUtils.copyProperties(invCmd, inv);
                      inv.setId(null);
+                     inv.setLocationId(locationId);
                      inv.setOnHandQty(invCmd.getOnHandQty());// 在库库存
                      inv.setFrozenQty(0.0);
                      if (false == isTV) {
