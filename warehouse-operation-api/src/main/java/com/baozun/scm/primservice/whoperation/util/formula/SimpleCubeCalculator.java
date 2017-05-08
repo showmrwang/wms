@@ -332,15 +332,12 @@ public class SimpleCubeCalculator {
         boolean ret = false;
         if (null == actualUom || "".equals(actualUom)) throw new IllegalArgumentException("isUomSupport actual uom is null error!");
         actualUom = actualUom.trim();
-        System.out.println("1");
         for (String u : uomCache) {
             if (u.equals(actualUom)) {
                 ret = true;
-                System.out.println("2");
                 break;
             }
         }
-        System.out.println("3");
         if (false == ret) {
             throw new IllegalArgumentException("isUomSupport actual uom is not support error!");
         }

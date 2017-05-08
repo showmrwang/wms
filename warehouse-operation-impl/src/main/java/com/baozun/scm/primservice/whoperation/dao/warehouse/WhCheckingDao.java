@@ -27,6 +27,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
@@ -81,6 +82,14 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      * @return
      */
     List<WhCheckingCommand> findListByParamExt(WhCheckingCommand checking);
-    
-    public WhCheckingCommand findWhCheckingByIdExt(@Param("id") Long id,@Param("ouId")Long ouId);
+
+    public WhCheckingCommand findWhCheckingByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 查找复核信息
+     * @param batch
+     * @param ouId
+     * @return
+     */
+    public CheckingDisplayCommand findCheckingInfoByBatchAndOuId(@Param("batch") String batch, @Param("ouId") Long ouId);
 }

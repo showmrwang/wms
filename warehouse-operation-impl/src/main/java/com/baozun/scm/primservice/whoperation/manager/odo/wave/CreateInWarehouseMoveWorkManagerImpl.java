@@ -23,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -909,6 +910,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 WhSkuInventory skuInventory = new WhSkuInventory();
                 skuInventory.setUuid(operationLineCommand.getUuid());
                 List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findWhSkuInventoryByPramas(skuInventory);
+                List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
+                whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
                 for(WhSkuInventory whSkuInventory : skuInventoryLst){
                     if(null == whSkuInventory.getOccupationCode() && 0 != allocatedQty.compareTo(0.00)){
                         if(allocatedQty < whSkuInventory.getOnHandQty()){
@@ -934,6 +937,22 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 whSkuInventory.setOccupationCode(null);
                 whSkuInventory.setOnHandQty(skuInventoryTobefilledLst.get(0).getQty());
                 skuInventoryDao.insert(whSkuInventory);
+                int snCount = 0;
+                for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
+                    for( WhSkuInventorySn whSkuInventorySn : skuInventorySnLst){
+                        if(whSkuInventorySn.getSkuId().equals(whSkuInventorySnCommand.getSn()) && whSkuInventorySn.getDefectWareBarcode().equals(whSkuInventorySnCommand.getDefectWareBarcode())){
+                            whSkuInventorySn.setStatus(1);
+                            snCount = snCount + 1;
+                            WhSkuInventorySn skuInventorySn = new WhSkuInventorySn();
+                            BeanUtils.copyProperties(whSkuInventorySnCommand, skuInventorySn);
+                            skuInventorySn.setUuid(whSkuInventory.getUuid());
+                            whSkuInventorySnDao.update(skuInventorySn);
+                        }
+                    }
+                }
+                if (snCount != skuInventoryTobefilledLst.get(0).getQty()) {
+                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
+                }
                 skuInventoryTobefilledDao.delete(skuInventoryTobefilledLst.get(0).getId());
             }
         } catch (Exception e) {

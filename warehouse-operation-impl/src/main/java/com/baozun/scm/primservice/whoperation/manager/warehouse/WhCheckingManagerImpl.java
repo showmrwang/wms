@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
@@ -379,15 +380,15 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      */
     private Boolean scanOutboundBox(WhCheckingByOdoCommand command) {
         WhCheckingCommand whCheckingCommand = command.getCheckingCommand();
-        String input = whCheckingCommand.getInput();
         WhCheckingCommand checking = new WhCheckingCommand();
         List<WhCheckingCommand> checkingList = new ArrayList<WhCheckingCommand>();
+        String input = whCheckingCommand.getInput();
         checking.setOutboundboxCode(input);
         checking.setOuId(whCheckingCommand.getOuId());
         checkingList = whCheckingDao.findListByParamExt(checking);
         if (null != checkingList && !checkingList.isEmpty()) {
             // 扫描出库箱编码
-            checking = checkingList.get(0);
+            checking = checkingList.get(0); // 数据最全
             if (null != checking.getFacilityId() && null == whCheckingCommand.getFacilityId()) {
                 // 如果出库箱在播种墙上 提示扫描播种墙
                 whCheckingCommand.setTip(Constants.TIP_SEEDING_WALL);
@@ -408,7 +409,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     List<WhChecking> chList = this.whCheckingDao.findListByParam(ch);
                     if (null != chList && !chList.isEmpty()) {
                         // 根据已有条件找到复核信息
-                        ch = chList.get(0);
+                        ch = chList.get(0); // 最全
                         if (CheckingStatus.FINISH == ch.getStatus()) {
                             // 找到的复核行状态为10,提示已复核完成
                             whCheckingCommand.setTip(Constants.TIP_FINISH);
@@ -417,11 +418,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             return true;
                         } else {
                             // 可以执行复核操作
-                            whCheckingCommand.setId(ch.getId());
+                            BeanUtils.copyProperties(ch, whCheckingCommand);
+                            // whCheckingCommand.setId(ch.getId());
                             List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
                             command.setCheckingLineCommandList(whCheckingLineList);
-                            whCheckingCommand.setOutboundboxCode(ch.getOutboundboxCode());
-                            whCheckingCommand.setOutboundboxId(ch.getOutboundboxId());
+                            // whCheckingCommand.setOutboundboxCode(ch.getOutboundboxCode());
+                            // whCheckingCommand.setOutboundboxId(ch.getOutboundboxId());
                             if (null != whCheckingCommand.getFacilityId()) {
                                 /** 按单复核方式:播种墙出库箱流程*/
                                 whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_OUTBOUND_BOX);
@@ -913,6 +915,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
             whCheckingByOdoCommand.setCheckingCommand(whCheckingCommand);
             whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
+            whCheckingByOdoCommand = this.findCheckingInfo(whCheckingByOdoCommand);
             return whCheckingByOdoCommand;
         } else {
             throw new BusinessException("check is null");
@@ -931,5 +934,35 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             checking.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
             whCheckingDao.update(checking);
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhCheckingByOdoCommand findCheckingInfo(WhCheckingByOdoCommand whCheckingByOdoCommand) {
+        WhCheckingCommand whCheckingCommand = whCheckingByOdoCommand.getCheckingCommand();
+        CheckingDisplayCommand checkingDisplayCommand = new CheckingDisplayCommand();
+        String odoCode = whCheckingByOdoCommand.getCheckingLineCommandList().get(0).getOdoCode();
+        checkingDisplayCommand.setOdoCode(odoCode);
+        checkingDisplayCommand.setExtCode(whCheckingCommand.getExtCode());
+        checkingDisplayCommand.setWaveCode(whCheckingCommand.getWaveCode());
+        checkingDisplayCommand.setTransportName(whCheckingCommand.getTransportName());
+        checkingDisplayCommand.setProductName(whCheckingCommand.getProductName());
+        checkingDisplayCommand.setTimeEffectName(whCheckingCommand.getTimeEffectName());
+        checkingDisplayCommand.setCustomerName(whCheckingCommand.getCustomerName());
+        checkingDisplayCommand.setStoreName(whCheckingCommand.getStoreName());
+        checkingDisplayCommand.setBatch(whCheckingCommand.getBatch());
+        checkingDisplayCommand.setCheckingMode(whCheckingCommand.getCheckingMode());
+        // CheckingDisplayCommand command =
+        // this.whCheckingDao.findCheckingInfoByBatchAndOuId(whCheckingCommand.getBatch(),
+        // whCheckingCommand.getOuId());
+        // checkingDisplayCommand.setOutboundboxCount(command.getOutboundboxCount());
+        // checkingDisplayCommand.setToBeCheckedOutboundboxCount(command.getToBeCheckedOutboundboxCount());
+        // checkingDisplayCommand.setOdoCount(command.getOdoCount());
+        // checkingDisplayCommand.setToBeCheckedOdoCount(command.getToBeCheckedOdoCount());
+        // checkingDisplayCommand.setSkuCode(command.getSkuCode());
+        // checkingDisplayCommand.setSkuName(command.getSkuName());
+
+        whCheckingByOdoCommand.setCheckingDisplayCommand(checkingDisplayCommand);
+        return whCheckingByOdoCommand;
     }
 }
