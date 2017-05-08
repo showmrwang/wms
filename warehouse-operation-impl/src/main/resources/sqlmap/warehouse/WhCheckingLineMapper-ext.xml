@@ -251,7 +251,8 @@
                 line.ou_id as ouId,
                 line.odo_id as odoId,
                 line.odo_line_id as odoLineId,
-                status.name as invStatusStr
+                status.name as invStatusStr,
+                odo.odo_code as odoCode
         ]]>
     </sql>
     
@@ -259,6 +260,7 @@
         select
         <include refid="whCheckingLineCommandColumnsExt"/>
         from t_wh_checking_line line left join t_wh_inventory_status status on line.inv_status = status.id
+        left join t_wh_odo odo on line.odo_id = odo.id
         <include refid="whCheckingLineCommandDynamicWhereExt"/>
 
     </select>
