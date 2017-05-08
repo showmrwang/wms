@@ -214,7 +214,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (odoGroup.getIsWms() != null && odoGroup.getIsWms()) {
                 sourceOdo.setOdoStatus(OdoStatus.CREATING);
             }
-
             List<OdoLineCommand> sourceOdoLineList = odoGroup.getOdoLineList();
             OdoTransportMgmtCommand sourceOdoTrans = odoGroup.getTransPortMgmt();
             WhOdoAddress sourceAddress = odoGroup.getWhOdoAddress();
@@ -597,6 +596,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (StringUtils.isEmpty(odo.getExtCode())) {
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
+            } else {
+                WhOdo checkOdo = this.odoManager.findByExtCodeStoreIdOuId(odo.getExtCode(), odo.getStoreId(), ouId);
+                if (checkOdo != null) {
+                    throw new BusinessException(ErrorCodes.ODO_EXTCODE_ISEXIST);
+                }
             }
 
             // 匹配配货模式
