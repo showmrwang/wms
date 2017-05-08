@@ -683,7 +683,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                 // 判断商品边长是否符合的计算器
                 SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
-                boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
+                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，添加到下一出库箱范围
                     unmatchedBoxOdoLineList.add(odoLine);
@@ -744,7 +746,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
             // 判断商品边长是否符合的计算器
             SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(odoLineBox.getLength(), odoLineBox.getWidth(), odoLineBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
-            boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+            boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+            boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
+            //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
             if (!isSkuAvailable) {
                 // 商品边长不合适，添加到下一出库箱范围
                 unmatchedBoxOdoLineList.add(odoLine);
@@ -789,7 +793,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
             // 判断商品边长是否符合的计算器
             SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(skuBox.getLength(), skuBox.getWidth(), skuBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
-            boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+            boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+            boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
+            //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
             if (!isSkuAvailable) {
                 // 商品边长不合适，添加到下一出库箱范围
                 unmatchedBoxOdoLineList.add(odoLine);
@@ -887,8 +893,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 将箱子添加到箱子列表
                 packingBoxList.add(newBox);
 
-            } else {
-                break;
             }
         }
     }
@@ -939,8 +943,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 SkuRedisCommand skuRedisCommandTemp = skuRedisManager.findSkuMasterBySkuId(odoLine.getSkuId(), ouId, logId);
                 Sku sku = skuRedisCommandTemp.getSku();
                 // 判断商品边长是否符合的计算器
-                SimpleCubeCalculator skuLengthAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
-                boolean isSkuAvailable = skuLengthAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
+                boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
+                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，下一个明细,该处不移除，需要在下一次遍历中找出合适的箱子
                     continue;
@@ -1470,7 +1476,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 判断商品边长是否符合的计算器
                 SimpleCubeCalculator boxAvailableCalculator =
                         new SimpleCubeCalculator(trolley.getGridLength(), trolley.getGridWidth(), trolley.getGridHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
-                boolean isGridAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                boolean isGridAvailable = boxAvailableCalculator.calculateAvailable();
+                //boolean isGridAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
 
                 // 出库单明细的商品
                 if (!isGridAvailable) {
@@ -2359,8 +2367,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     continue;
                 }
                 // 判断商品边长是否符合的计算器
-                SimpleCubeCalculator skuLengthAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
-                boolean isSkuAvailable = skuLengthAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
+                boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
+                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，下一个明细,该处不移除，需要在下一次遍历中找出合适的箱子
                     continue;
@@ -2865,8 +2875,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     continue;
                 }
                 // 判断商品边长是否符合的计算器
-                SimpleCubeCalculator skuLengthAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
-                boolean isSkuAvailable = skuLengthAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
+                boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
+                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，下一个明细,该处不移除，需要在下一次遍历中找出合适的箱子
                     continue;
