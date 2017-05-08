@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +39,6 @@ import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
-import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -50,7 +47,6 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
-import com.baozun.utilities.DateUtil;
 
 /**
  * 查询PoAsn相关数据
@@ -514,20 +510,24 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
 
     @Override
     public List<WhOdoArchivLineIndexCommand> findOrginalByAsnId(Long asnId, Long ouId) {
-        List<WhOdoArchivLineIndex> lineList = this.whOdoArchivIndexManager.findWhOdoArchivLineIndexListByAsnId(asnId, ouId);
+        List<WhOdoArchivLineIndexCommand> lineList = this.whOdoArchivIndexManager.findWhOdoArchivLineIndexCommandListByAsnId(asnId, ouId);
         if (lineList == null || lineList.size() == 0) {
             return null;
         }
-        List<WhOdoArchivLineIndexCommand> lineCommandList = new ArrayList<WhOdoArchivLineIndexCommand>();
-        for (WhOdoArchivLineIndex line : lineList) {
-            WhOdoArchivLineIndexCommand command = new WhOdoArchivLineIndexCommand();
-            BeanUtils.copyProperties(line, command);
-            command.setMfgDateStr(DateUtil.format(line.getMfgDate(), Constants.DATE_PATTERN_YMD));
-            command.setExpDateStr(DateUtil.format(line.getExpDate(), Constants.DATE_PATTERN_YMD));
-            command.setQtyRcvd(Constants.DEFAULT_INTEGER);
-            lineCommandList.add(command);
+        for (WhOdoArchivLineIndexCommand line : lineList) {
+            SkuRedisCommand skuRedis = this.skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), line.getOuId(), "");
+
+
+            line.setSkuBarCode(skuRedis.getSku().getBarCode());
+            line.setSkuCode(skuRedis.getSku().getCode());
+            line.setSkuName(skuRedis.getSku().getName());
+
+            // line.setColor(skuRedis.getSku().getColor());
+            // line.setSize(skuRedis.getSku().getSize());
+            // line.setStyle(skuRedis.getSku().getStyle());
+
         }
-        return lineCommandList;
+        return lineList;
     }
 
     @Override
