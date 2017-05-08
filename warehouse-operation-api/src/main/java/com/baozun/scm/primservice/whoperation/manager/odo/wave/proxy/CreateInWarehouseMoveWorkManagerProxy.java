@@ -18,7 +18,7 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @param toLocation
      * @return
      */
-    List<WhSkuInventorySn> createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId, String snKey);
+    Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId, String snKey);
     
     /**
      * [业务方法] 导入sn和残次条码
@@ -43,5 +43,12 @@ public interface CreateInWarehouseMoveWorkManagerProxy extends BaseManager {
      * @return
      */
     Integer systemCheck(String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Long toLocationId, Double[] moveQtys, Long ouId);
+    
+    /**
+     * [业务方法] 根据key获取sn结果列表
+     * @param key
+     * @return
+     */
+     List<WhSkuInventorySn> operationSnList(String key);
     
 }
