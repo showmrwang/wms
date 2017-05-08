@@ -3686,17 +3686,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			HAVING
 				sum(qty) != 0
     </select>
-    	<select id="findReplenishmentBylocationId" resultMap="WhSkuInventoryResultExt">
+    	<select id="findReplenishmentBylocationId" resultMap="WhSkuInventoryCommandResultExt">
 		select  <include refid="whSkuInventoryColumnsExt" />
 		from
 		t_wh_sku_inventory
-		left join t_wh_operation_line operLine on operLine.odo_line_id = inv.occupation_line_id 
-		left join t_wh_odo odo.id = operLine.odo_id  and odo.odo_code = inv.occupation_code
-        where   inv.occupation_code is not null 
-			    and inv.ou_id = #{ouId}
-			    and operLine.odo_line_id = #{odoLineId}
-	            and inv.location_id = #{locationId}
-	            and operLine.odo_id = #{odoId}
+		where	    ou_id = #{ouId}
+	            and location_id = #{locationId}
+	            and inside_container_id =#{turnoverBoxId}
 	</select>
 	
 	<select id="findSeedingDataByContainerId" resultMap="WhSeedingCollectionLineResult">
