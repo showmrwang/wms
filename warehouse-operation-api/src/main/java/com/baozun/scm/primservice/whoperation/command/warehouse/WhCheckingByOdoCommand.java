@@ -18,6 +18,8 @@ public class WhCheckingByOdoCommand extends BaseCommand {
     private List<WhCheckingLineCommand> checkingLineCommandList;
     /** 物理仓配置*/
     private Warehouse warehouse;
+    /** 复核页面数据显示*/
+    private CheckingDisplayCommand checkingDisplayCommand;
 
 
     public WhCheckingCommand getCheckingCommand() {
@@ -42,6 +44,14 @@ public class WhCheckingByOdoCommand extends BaseCommand {
 
     public void setWarehouse(Warehouse warehouse) {
         this.warehouse = warehouse;
+    }
+
+    public CheckingDisplayCommand getCheckingDisplayCommand() {
+        return checkingDisplayCommand;
+    }
+
+    public void setCheckingDisplayCommand(CheckingDisplayCommand checkingDisplayCommand) {
+        this.checkingDisplayCommand = checkingDisplayCommand;
     }
 
 }

@@ -55,4 +55,11 @@ public interface WhCheckingManager extends BaseManager {
      * @param whCheckingCommand
      */
     public void updateCheckOutboundBox(WhCheckingCommand whCheckingCommand);
+
+    /**
+     * [业务方法] 复核信息
+     * @param whCheckingByOdoCommand
+     * @return
+     */
+    public WhCheckingByOdoCommand findCheckingInfo(WhCheckingByOdoCommand whCheckingByOdoCommand);
 }
