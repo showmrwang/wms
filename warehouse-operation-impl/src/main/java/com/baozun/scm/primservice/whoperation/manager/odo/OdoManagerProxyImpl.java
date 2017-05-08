@@ -246,16 +246,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     private WhOdoAddress createOdoAddress(WhOdoAddress sourceAddress, String outboundTargetType, String outboundTarget) {
+        // @mender yimin.lu 2017/5/8 现有逻辑：地址为空的时候，才进行 出库目标类型+对象的地址赋值
         if (sourceAddress == null) {
-            sourceAddress = new WhOdoAddress();
             if (StringUtils.hasText(outboundTarget)) {
                 if (Constants.AIMTYPE_1.equals(outboundTargetType)) {// 供应商
+                    sourceAddress = new WhOdoAddress();
                     return this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
 
                 } else if (Constants.AIMTYPE_5.equals(outboundTargetType)) {
+                    sourceAddress = new WhOdoAddress();
                     return this.createOdoAddressByWh(sourceAddress, outboundTarget);
 
                 } else if (Constants.AIMTYPE_7.equals(outboundTargetType)) {
+                    sourceAddress = new WhOdoAddress();
                     return this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
                 }
 
