@@ -864,11 +864,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
     private void packingSingleSkuForSingleBox(OdoLineCommand odoLine, OutInvBoxTypeCommand outInvBoxType, List<OutInvBoxTypeCommand> packingBoxList, OdoCommand odoCommand, Long ouId, String logId) {
         SkuRedisCommand skuRedisCommandTemp = skuRedisManager.findSkuMasterBySkuId(odoLine.getSkuId(), ouId, logId);
         Sku sku = skuRedisCommandTemp.getSku();
-        // 出库箱是否可用计算器
-        SimpleCubeCalculator boxCalculator = new SimpleCubeCalculator(outInvBoxType.getLength(), outInvBoxType.getWidth(), outInvBoxType.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
 
         // 只要商品明细还存在数量就需要继续分配出库箱
         while (odoLine.getQty() > 0) {
+            // 出库箱是否可用计算器
+            SimpleCubeCalculator boxCalculator = new SimpleCubeCalculator(outInvBoxType.getLength(), outInvBoxType.getWidth(), outInvBoxType.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
+
             // 每一次新的遍历都是使用一个新箱子
             OutInvBoxTypeCommand newBox = new OutInvBoxTypeCommand();
             // 复制箱子信息
