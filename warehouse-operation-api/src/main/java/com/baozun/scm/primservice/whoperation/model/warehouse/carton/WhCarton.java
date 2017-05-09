@@ -77,6 +77,10 @@ public class WhCarton extends BaseModel {
     /** 是否caselevel */
     private Boolean isCaselevel = false;
 
+    /** 当前月份 用于归档 */
+    private String sysDate;
+
+
     public Long getAsnId() {
         return asnId;
     }
@@ -267,6 +271,14 @@ public class WhCarton extends BaseModel {
 
     public void setQtyRcvd(Double qtyRcvd) {
         this.qtyRcvd = qtyRcvd;
+    }
+
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
     }
 
 
