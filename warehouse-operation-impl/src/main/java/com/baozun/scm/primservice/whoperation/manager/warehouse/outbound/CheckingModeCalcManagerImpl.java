@@ -360,7 +360,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                 }
             }
         }
-        String batch = "";// 小批次
+        String batch = batchNo;// 小批次
         String waveCode = "";
         if (null != seedingSkuInventoryListGroup && !seedingSkuInventoryListGroup.isEmpty()) {
             // 每组数据分别生成待复核数据
@@ -386,7 +386,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setCustomerCode("");
                     checking.setCustomerName("");
                     checking.setDistributionMode(distributionMode);
-                    checking.setFacilityId(null);
+                    checking.setFacilityId(facilityId);
                     checking.setOuId(ouId);
                     checking.setOutboundboxCode(outboundBoxCode);
                     // checking.setOutboundboxId(outboundBoxId);
