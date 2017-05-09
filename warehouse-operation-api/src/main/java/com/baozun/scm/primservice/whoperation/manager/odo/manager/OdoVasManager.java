@@ -5,6 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 
 public interface OdoVasManager extends BaseManager {
@@ -55,6 +56,6 @@ public interface OdoVasManager extends BaseManager {
      * @version 2017年4月26日
      * @param odoVasLineList 
      */
-    void insertVasList(Long odoId, List<VasLine> vasList, List<WhOdoVas> odoVasLineList, Long ouId);
+    void insertVasList(Long odoId, List<VasLine> vasList, List<WhOdoVas> odoVasLineList, WhOdoTransportMgmt transMgmt, Long ouId);
 
 }

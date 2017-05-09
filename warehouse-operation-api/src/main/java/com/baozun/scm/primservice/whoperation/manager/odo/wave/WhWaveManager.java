@@ -20,6 +20,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMasterPrintCondition;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -351,5 +352,14 @@ public interface WhWaveManager extends BaseManager {
      * @return
      */
     void updateWaveByWhWave(WhWave whWave);
+    
+    List<Long> excuteSortSql(String excuteSql, Long ouId);
+    
+    /**
+     * 查找波次主档销售清单的打印顺序设置
+     * @author kai.zhu
+     * @version 2017年5月3日
+     */
+    WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printOrderType13, Long ouId);
     
 }

@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.baseservice.print.manager.PrintConditionManager;
+import com.baozun.scm.baseservice.print.model.PrintCondition;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.logistics.command.MailnoGetContentCommand;
 import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
@@ -113,6 +115,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMasterPrintCondition;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
@@ -188,7 +191,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private OutPutStreamToServersManager outPutStreamToServersManager;
     @Autowired
     private BiPoLineManager biPoLineManager;
-
+    @Autowired
+    private PrintConditionManager printConditionManager;
     @Autowired
     private MaTransportManager maTransportManager;
 
@@ -2732,7 +2736,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (null != vasResult && vasResult.getStatus() == 1) {
             List<VasLine> vasList = vasResult.getVasList();
             if (null != vasList && !vasList.isEmpty()) {
-                odoVasManager.insertVasList(odoId, vasList, odoVasLineList, ouId);
+                odoVasManager.insertVasList(odoId, vasList, odoVasLineList, transMgmt, ouId);
                 List<TransVasList> transVasList = new ArrayList<TransVasList>();
                 for (VasLine vas : vasList) {
                     TransVasList transVas = new TransVasList();
@@ -2767,7 +2771,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     transMgmt.setTransportServiceProvider(lpCode);
                     transMgmt.setCourierServiceType(expressType);
                     transMgmt.setTimeEffectType(timeEffectType);
-                    int num = odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
+                    int num = odoTransportMgmtManager.updateOdoTransportMgmtExt(transMgmt);
                     if (num < 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
                     }
@@ -2779,8 +2783,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 } else {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, transResult.getMsg(), ouId);
                 }
-                return;
             }
+        }
+        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "TransportServiceProvider is null", ouId);
+            return;
         }
         // 获取运单号
         MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, wh, trans, ouId);
@@ -2847,6 +2854,49 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     @Override
     public WhWave findWaveByIdOuId(Long waveId, Long ouId) {
         return this.whWaveManager.findWaveByIdOuId(waveId, ouId);
+    }
+
+    @Override
+    public void updateOdoIndexByWaveId(Long waveId, Long ouId) {
+        // 查找波次中的包含的批次和对应的odoIdList
+        Map<String, List<Long>> batchMap = odoManager.getBatchNoOdoIdListGroup(waveId, ouId);
+        // 应用打印排序规则
+        WhWaveMasterPrintCondition condition = whWaveManager.findPrintConditionByWaveId(waveId, Constants.PRINT_ORDER_TYPE_13, ouId);
+        if (null != condition) {
+            for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
+                String batchNo = entry.getKey();
+                String odoIdStr = StringUtils.collectionToCommaDelimitedString(entry.getValue());
+                String excuteSql = condition.getPrintSortSql();
+                if (StringUtils.isEmpty(excuteSql)) {
+                    log.error("excuteSql is null, batchNo:{}, odoId:{}", batchNo, odoIdStr);
+                    throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+                }
+                excuteSql = condition.getPrintSortSql().replace(Constants.ODOID_LIST_PLACEHOLDER, odoIdStr);
+                List<Long> sortOdoList = whWaveManager.excuteSortSql(excuteSql, ouId);
+                batchMap.put(batchNo, sortOdoList);
+            }
+            odoManager.updateOdoIndexByBatch(batchMap, ouId);
+        } else {
+            // 波次主档未配置打印顺序, 查找打印条件配置顺序
+            boolean flag = true;
+            Map<String, Map<String, List<Long>>> batchPrintConditionMap = new HashMap<String, Map<String, List<Long>>>();
+            List<PrintCondition> printConditionList = printConditionManager.findConditionListByDocType(Constants.PRINT_ORDER_TYPE_13, ouId);
+            for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
+                String batchNo = entry.getKey();
+                Map<String, List<Long>> printMap = printConditionManager.getSortOdoIndex(printConditionList, entry.getValue(), ouId);
+                if (null == printMap) {
+                    log.error("not have printCondition match to odoList, waveId:{}, batchNo:{}", waveId, batchNo);
+                    flag = false;
+                    break;
+                }
+                batchPrintConditionMap.put(batchNo, printMap);
+            }
+            if (flag) {
+                odoManager.updateOdoIndexByBatchExt(batchPrintConditionMap, ouId);
+            } else {
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+        }
     }
 
 }

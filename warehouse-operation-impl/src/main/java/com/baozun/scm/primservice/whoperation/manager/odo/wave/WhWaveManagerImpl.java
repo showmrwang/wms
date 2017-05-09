@@ -68,6 +68,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMasterPrintCondition;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
@@ -1258,5 +1259,26 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> excuteSortSql(String excuteSql, Long ouId) {
+        List<Long> odoIdList = new ArrayList<Long>();
+        List<Map<String, Object>> list = whWaveMasterDao.excuteSortSql(excuteSql, ouId);
+        for (Map<String, Object> map : list) {
+            odoIdList.add((Long) map.get("id"));
+        }
+        return odoIdList;
+    }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printType, Long ouId) {
+        WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        if (null == wave) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        WhWaveMasterPrintCondition c = whWaveMasterDao.findPrintConditionByWaveMasterId(wave.getWaveMasterId(), printType, ouId);
+        return c;
+    }
 }
