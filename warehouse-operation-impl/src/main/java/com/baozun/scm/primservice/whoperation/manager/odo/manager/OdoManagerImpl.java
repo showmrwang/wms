@@ -31,6 +31,7 @@ import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
 import com.baozun.scm.primservice.logistics.command.TransSkuItemCommand;
 import com.baozun.scm.primservice.logistics.model.TransSkuItem;
 import com.baozun.scm.primservice.logistics.model.TransVasList;
+import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
@@ -71,7 +72,6 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuWhmgmtDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.TransportProviderDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -99,7 +99,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
-import com.baozun.scm.primservice.whoperation.model.warehouse.ma.TransportProvider;
 
 @Service("odoManager")
 @Transactional
@@ -113,8 +112,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhOdoLineSnDao whOdoLineAttrSnDao;
     @Autowired
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
-    @Autowired
-    private TransportProviderDao transportProviderDao;
     @Autowired
     private WhOdoAddressDao whOdoAddressDao;
     @Autowired
@@ -159,6 +156,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhSkuWhmgmtDao whSkuWhmgmtDao;
     @Autowired
     private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
+    @Autowired
+    private MaTransportManager maTransportManager;
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -760,14 +759,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     if (dic4.size() > 0) {
                         map.put(Constants.ODO_PRE_TYPE, new ArrayList<String>(dic4));
                     }
-                    Map<String, TransportProvider> transMap = new HashMap<String, TransportProvider>();
-                    if (transCodeSet.size() > 0) {
-                        for (String transCode : transCodeSet) {
-                            TransportProvider tp = this.transportProviderDao.findByCode(transCode);
-                            transMap.put(transCode, tp);
-                        }
-
-                    }
+                    // Map<String, MaTransport> transMap = new HashMap<String, MaTransport>();
+                    // if (transCodeSet.size() > 0) {
+                    // for (String transCode : transCodeSet) {
+                    // MaTransport tp = this.maTransportManager.find(transCode);
+                    // transMap.put(transCode, tp);
+                    // }
+                    //
+                    // }
 
                     Map<String, SysDictionary> dicMap = map.size() > 0 ? this.findSysDictionaryByRedis(map) : null;
 
@@ -805,13 +804,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                             groupName += "$" + command.getDistributeModeName();
                         }
                         if (StringUtils.hasText(command.getTransportServiceProvider())) {
-                            if (transMap != null) {
-                                if (transMap.containsKey(command.getTransportServiceProvider())) {
-                                    TransportProvider tp = transMap.get(command.getTransportServiceProvider());
-                                    command.setTransportServiceProviderName(tp.getName());
-                                    groupName += "$" + command.getTransportServiceProviderName();
-                                }
-                            }
+                            command.setTransportServiceProviderName(command.getTransportServiceProvider());
+                            // if (transMap != null) {
+                            // if (transMap.containsKey(command.getTransportServiceProvider())) {
+                            // MaTransport tp = transMap.get(command.getTransportServiceProvider());
+                            //
+                            // groupName += "$" + command.getTransportServiceProviderName();
+                            // }
+                            // }
                         }
                         if (StringUtils.hasText(command.getEpistaticSystemsOrderType())) {
                             SysDictionary sys = dicMap.get(Constants.ODO_PRE_TYPE + "_" + command.getEpistaticSystemsOrderType());
