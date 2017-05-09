@@ -239,6 +239,10 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                     handoverStationType = rule.getRuleType();
                     if (HandoverStationType.CHECKING_GROUP_HANDOVER_STATION.equals(handoverStationType)) {
                         // 找一个可用的复核组下交接工位
+
+                        if (null == ruleAffer) {
+                            continue;
+                        }
                         Long checkingFacilityId = ruleAffer.getCheckingFacilityId();
                         if (null == checkingFacilityId) {
                             continue;

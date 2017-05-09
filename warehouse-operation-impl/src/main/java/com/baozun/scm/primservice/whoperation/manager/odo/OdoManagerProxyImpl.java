@@ -214,7 +214,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (odoGroup.getIsWms() != null && odoGroup.getIsWms()) {
                 sourceOdo.setOdoStatus(OdoStatus.CREATING);
             }
-
             List<OdoLineCommand> sourceOdoLineList = odoGroup.getOdoLineList();
             OdoTransportMgmtCommand sourceOdoTrans = odoGroup.getTransPortMgmt();
             WhOdoAddress sourceAddress = odoGroup.getWhOdoAddress();
@@ -232,7 +231,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            msg.setMsg(e.getErrorCode() + ":" + e.getMessage());
+            msg.setMsg(e.getErrorCode() + "");
             return msg;
         } catch (Exception ex) {
             log.error("" + ex);
@@ -246,16 +245,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     private WhOdoAddress createOdoAddress(WhOdoAddress sourceAddress, String outboundTargetType, String outboundTarget) {
+        // @mender yimin.lu 2017/5/8 现有逻辑：地址为空的时候，才进行 出库目标类型+对象的地址赋值
         if (sourceAddress == null) {
-            sourceAddress = new WhOdoAddress();
             if (StringUtils.hasText(outboundTarget)) {
                 if (Constants.AIMTYPE_1.equals(outboundTargetType)) {// 供应商
+                    sourceAddress = new WhOdoAddress();
                     return this.createOdoAddressBySupplier(sourceAddress, outboundTarget);
 
                 } else if (Constants.AIMTYPE_5.equals(outboundTargetType)) {
+                    sourceAddress = new WhOdoAddress();
                     return this.createOdoAddressByWh(sourceAddress, outboundTarget);
 
                 } else if (Constants.AIMTYPE_7.equals(outboundTargetType)) {
+                    sourceAddress = new WhOdoAddress();
                     return this.createOdoAddressByDistributionTarget(sourceAddress, outboundTarget);
                 }
 
@@ -594,6 +596,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (StringUtils.isEmpty(odo.getExtCode())) {
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
+            } else {
+                WhOdo checkOdo = this.odoManager.findByExtCodeStoreIdOuId(odo.getExtCode(), odo.getStoreId(), ouId);
+                if (checkOdo != null) {
+                    throw new BusinessException(ErrorCodes.ODO_EXTCODE_ISEXIST);
+                }
             }
 
             // 匹配配货模式

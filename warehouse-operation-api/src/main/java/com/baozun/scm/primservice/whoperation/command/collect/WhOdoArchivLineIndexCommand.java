@@ -93,6 +93,120 @@ public class WhOdoArchivLineIndexCommand extends BaseCommand {
     private Integer qtyRcvd;
 
 
+    // ---显示
+    /** 库存类型名称 */
+    private String invTypeLabel;
+    /** 库存状态名称 */
+    private String invName;
+    /** 库存属性1 */
+    private String inv1Str;
+    /** 库存属性2 */
+    private String inv2Str;
+    /** 库存属性3 */
+    private String inv3Str;
+    /** 库存属性4 */
+    private String inv4Str;
+    /** 库存属性5 */
+    private String inv5Str;
+    /** 商品编码 */
+    private String skuCode;
+    /** 商品名称 */
+    private String skuName;
+    /** 商品对接码 */
+    private String skuExtCode;
+    /** 商品条码 */
+    private String skuBarCode;
+
+
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
+
+    public String getSkuExtCode() {
+        return skuExtCode;
+    }
+
+    public void setSkuExtCode(String skuExtCode) {
+        this.skuExtCode = skuExtCode;
+    }
+
+    public String getSkuBarCode() {
+        return skuBarCode;
+    }
+
+    public void setSkuBarCode(String skuBarCode) {
+        this.skuBarCode = skuBarCode;
+    }
+
+    public String getInvTypeLabel() {
+        return invTypeLabel;
+    }
+
+    public void setInvTypeLabel(String invTypeLabel) {
+        this.invTypeLabel = invTypeLabel;
+    }
+
+    public String getInvName() {
+        return invName;
+    }
+
+    public void setInvName(String invName) {
+        this.invName = invName;
+    }
+
+    public String getInv1Str() {
+        return inv1Str;
+    }
+
+    public void setInv1Str(String inv1Str) {
+        this.inv1Str = inv1Str;
+    }
+
+    public String getInv2Str() {
+        return inv2Str;
+    }
+
+    public void setInv2Str(String inv2Str) {
+        this.inv2Str = inv2Str;
+    }
+
+    public String getInv3Str() {
+        return inv3Str;
+    }
+
+    public void setInv3Str(String inv3Str) {
+        this.inv3Str = inv3Str;
+    }
+
+    public String getInv4Str() {
+        return inv4Str;
+    }
+
+    public void setInv4Str(String inv4Str) {
+        this.inv4Str = inv4Str;
+    }
+
+    public String getInv5Str() {
+        return inv5Str;
+    }
+
+    public void setInv5Str(String inv5Str) {
+        this.inv5Str = inv5Str;
+    }
+
     public Integer getQtyRcvd() {
         return qtyRcvd;
     }

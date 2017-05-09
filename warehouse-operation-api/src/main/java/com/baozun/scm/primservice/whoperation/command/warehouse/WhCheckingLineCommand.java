@@ -111,6 +111,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String expDateStr = new String();
     /** 周转箱编码*/
     private String containerCode;
+    /** 出库单编码*/
+    private String odoCode;
 
     public Long getId() {
         return id;
@@ -454,6 +456,14 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setContainerCode(String containerCode) {
         this.containerCode = containerCode;
+    }
+
+    public String getOdoCode() {
+        return odoCode;
+    }
+
+    public void setOdoCode(String odoCode) {
+        this.odoCode = odoCode;
     }
 
 }

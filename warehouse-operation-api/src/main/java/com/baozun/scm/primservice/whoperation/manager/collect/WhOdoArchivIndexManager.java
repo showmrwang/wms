@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.collect;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
@@ -71,4 +72,6 @@ public interface WhOdoArchivIndexManager extends BaseManager {
      * @return
      */
     List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexListByAsnId(Long asnId, Long ouId);
+
+    List<WhOdoArchivLineIndexCommand> findWhOdoArchivLineIndexCommandListByAsnId(Long asnId, Long ouId);
 }

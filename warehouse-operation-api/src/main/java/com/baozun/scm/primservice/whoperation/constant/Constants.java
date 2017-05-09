@@ -882,7 +882,12 @@ public final class Constants {
 
     public static final String IMPORT_WHODO_TRANSPORTMGMT_EXCEL_CONFIG_ID = "whOdoTransportMgmt";
     public static final int IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX = 0;
-
+    
+    /**容器拆分移动-整箱移动*/
+    public static final Integer MOVE_PATTERN_WHOLE = 1;
+    /**容器拆分移动-部分移动*/
+    public static final Integer MOVE_PATTERN_PART = 2;
+    
     /** 根地址ID */
     public static final Long ROOT_REGION = 0L;
 

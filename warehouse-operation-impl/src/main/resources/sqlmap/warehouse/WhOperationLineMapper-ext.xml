@@ -306,7 +306,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<where> 
 				ou_id = #{ouId}
 			<if test="locationId!=null">
-				and location_id = #{locationId}
+				and from_location_id = #{locationId}
 			</if>
 		</where>
     </select>
