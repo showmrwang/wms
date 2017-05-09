@@ -73,7 +73,8 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventorySn> createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId, String snKey) {
+    public Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId, String snKey) {
+        Boolean isSuccess = false;
         List<WhSkuInventorySn> skuInventorySnLst = new ArrayList<WhSkuInventorySn>();
         skuInventorySnLst = createInWarehouseMoveWorkManager.getSnStatistics(snKey);
         // 2.将库存行根据原始库位与目标库位进行分组
@@ -92,15 +93,16 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 // 10.是否直接执行
                 if (true == isExecute) {
                     // 11.库内移动工作执行
-                    skuInventorySnLst = createInWarehouseMoveWorkManager.executeInWarehouseMoveWork(inWarehouseMoveWorkCode, ouId, userId, skuInventorySnLst);
+                    isSuccess = createInWarehouseMoveWorkManager.executeInWarehouseMoveWork(inWarehouseMoveWorkCode, ouId, userId, skuInventorySnLst);
                 }
             } catch (Exception e) {
                 log.error(e + "");
+                isSuccess = false;
                 continue;
             }
         }
         // 12.所有统计分组是否都已创建工作
-        return skuInventorySnLst;
+        return isSuccess;
     }
 
     /**
@@ -289,6 +291,13 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             throw new BusinessException("文件读取异常");
         }
         return context.readExcel("whSkuInventorySn", 0, inputStream, locale);
+    }
+
+    @Override
+    public List<WhSkuInventorySn> operationSnList(String key) {
+        List<WhSkuInventorySn> skuInventorySnLst =  createInWarehouseMoveWorkManager.getSnStatistics(key);
+        createInWarehouseMoveWorkManager.delSnStatistics(key);
+        return skuInventorySnLst;
     }
 
 }
