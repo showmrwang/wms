@@ -266,7 +266,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                     useContainerIdSet.add(operationExecLine.getUseContainerId());
                     outerToInside.put(operationExecLine.getUseOuterContainerId(), useContainerIdSet);
                 }
-                String toLocationAndUseContainer = operationExecLine.getToLocationId().toString() + operationExecLine.getUseContainerId().toString();
+                String toLocationAndUseContainer = operationExecLine.getToLocationId().toString() + "-" + operationExecLine.getUseOuterContainerId() + "-" + operationExecLine.getUseContainerId();
                 // 内部容器对应所有sku（整托整箱）
                 if(null != insideSkuIds.get(operationExecLine.getUseContainerId())){
                     insideSkuIds.get(operationExecLine.getUseContainerId()).add(operationExecLine.getSkuId());

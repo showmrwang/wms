@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
@@ -55,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineD
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkOperDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -88,7 +90,10 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLin
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkOper;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
+import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.utilities.type.StringUtil;
 
 /**
@@ -159,6 +164,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
     @Autowired
     private WhOdoLineDao whOdoLineDao;
+    @Autowired
+    private WhSkuInventoryAllocatedDao whSkuInventoryAllocatedDao;
+    
     
 
 
@@ -2537,13 +2545,113 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     public PickingScanResultCommand wholeCaseOperationExecLine(PickingScanResultCommand command, WhSkuCommand skuCmd, Boolean isTabbInvTotal) {
         log.info("PdaPickingWorkManagerImpl scanSku is start");
         
-        if(1 == command.getInWarehouseMoveWay() && (1 == command.getPalletPickingMode() || 2 == command.getPalletPickingMode())){
+        if((2 == command.getInWarehouseMoveWay() && (1 == command.getPalletPickingMode() || 2 == command.getPalletPickingMode())) && (3 == command.getInWarehouseMoveWay() || (3 == command.getContainerPickingMode() || 4 == command.getContainerPickingMode() || 5 == command.getContainerPickingMode()))){
+            // 根据作业id获取作业明细信息
+            List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
+            for(WhOperationLineCommand operationLineCommand : operationLineList){
+                // 生成作业作业明细                
+                WhOperationExecLine whOperationExecLine = new WhOperationExecLine();
+                // 复制数据
+                BeanUtils.copyProperties(operationLineCommand, whOperationExecLine);
+                whOperationExecLine.setIsUseNew(true);
+                whOperationExecLine.setId(null);
+                whOperationExecLine.setIsShortPicking(false);
+                whOperationExecLine.setLastModifyTime(new Date());
+                whOperationExecLine.setCreateTime(new Date());
+                whOperationExecLine.setOperatorId(command.getUserId());
+                whOperationExecLine.setQty(operationLineCommand.getQty().longValue());
+                whOperationExecLineDao.insert(whOperationExecLine);
+                // 根据作业明细查询库存信息
+                Double onHandQty = operationLineCommand.getQty();
+                List<WhSkuInventory> whSkuInventoryLst = this.whSkuInventoryDao.findInventorysByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
+                for(WhSkuInventory oldSkuInventory : whSkuInventoryLst){
+                    if(null == oldSkuInventory.getOccupationCode()){
+                        if(oldSkuInventory.getOnHandQty() > onHandQty){
+                            // 生成容器库存
+                            WhSkuInventory newSkuInventory = new WhSkuInventory();
+                            // 复制数据
+                            BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
+                            newSkuInventory.setLocationId(null);
+                            newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
+                            // 内部对接码
+                            try {
+                                newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
+                            } catch (Exception e) {
+                                log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
+                                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                            }
+                            whSkuInventoryDao.insert(newSkuInventory);
+                            List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
+                            whSkuInventorySnCommandLst = whSkuInventorySnDao.findInvSnByOccupationCodeAndUuid(oldSkuInventory.getOccupationCode(), oldSkuInventory.getUuid(), oldSkuInventory.getOuId());
+                            double count = 0;
+                            for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
+                                WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
+                                // 复制数据
+                                BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
+                                whSkuInventorySn.setUuid(newSkuInventory.getUuid());
+                                whSkuInventorySnDao.update(whSkuInventorySn);
+                                // 判断数量                        
+                                BigDecimal data1 = new BigDecimal(count); 
+                                BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty()); 
+                                if(0 == data1.compareTo(data2)){
+                                    continue;
+                                }
+                                count = count + 1;
+                            }
+                            // 删除原库存
+                            oldSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
+                            whSkuInventoryDao.update(oldSkuInventory);
+                        }else{
+                            // 生成容器库存
+                            WhSkuInventory newSkuInventory = new WhSkuInventory();
+                            // 复制数据
+                            BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
+                            newSkuInventory.setLocationId(null);
+                            // 内部对接码
+                            try {
+                                newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
+                            } catch (Exception e) {
+                                log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
+                                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                            }
+                            whSkuInventoryDao.insert(newSkuInventory);
+                            List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
+                            whSkuInventorySnCommandLst = whSkuInventorySnDao.findInvSnByOccupationCodeAndUuid(oldSkuInventory.getOccupationCode(), oldSkuInventory.getUuid(), oldSkuInventory.getOuId());
+                            double count = 0;
+                            for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
+                                WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
+                                // 复制数据
+                                BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
+                                whSkuInventorySn.setUuid(newSkuInventory.getUuid());
+                                whSkuInventorySnDao.update(whSkuInventorySn);
+                                // 判断数量                        
+                                BigDecimal data1 = new BigDecimal(count); 
+                                BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty()); 
+                                if(0 == data1.compareTo(data2)){
+                                    continue;
+                                }
+                                count = count + 1;
+                            }
+                            // 删除原库存
+                            whSkuInventoryDao.delete(oldSkuInventory.getId());
+                        }    
+                    }
+                }
+                List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst = whSkuInventoryAllocatedDao.findbyOccupationCode(operationLineCommand.getInvMoveCode(), operationLineCommand.getOuId());
+                for(WhSkuInventoryAllocated whSkuInventoryAllocated : whSkuInventoryAllocatedLst){
+                    whSkuInventoryAllocatedDao.delete(whSkuInventoryAllocated.getId());    
+                }
+            }
+            WhOperationCommand operationCmd = whOperationManager.findOperationById(command.getOperationId(), command.getOuId());
+            operationCmd.setIsPickingFinish(true);
+            operationCmd.setModifiedId(command.getUserId());
+            whOperationManager.saveOrUpdate(operationCmd);
+            // 清除缓存
+            pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
+            command.setIsPicking(true);
             return command;    
         }
-        if(1 == command.getInWarehouseMoveWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode() || 5 == command.getPalletPickingMode())){
-            return command;    
-        }
-        if(2 == command.getInWarehouseMoveWay() && (3 == command.getContainerPickingMode() || 4 == command.getContainerPickingMode() || 5 == command.getContainerPickingMode())){
+        if(2 == command.getInWarehouseMoveWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode() || 5 == command.getPalletPickingMode())){
             return command;    
         }
         Long operationId = command.getOperationId();
