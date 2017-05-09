@@ -1686,7 +1686,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                     operationId, ouId, skuCmd.getScanSkuQty());
                     // 添加容器库存
-                    whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), outBoundBoxCode, turnoverBoxId,
+                    whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), execLineList.get(0).getUseOutboundboxCode(), turnoverBoxId,
                             outerContainerId, insideContainerId, isShortPikcing,  execLineList.get(0).getUseContainerLatticeNo(), null);
                 }
             }
@@ -1765,7 +1765,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 添加容器库存
-                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), outBoundBoxCode, turnoverBoxId,
+                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), execLineList.get(0).getUseOutboundboxCode(), turnoverBoxId,
                         outerContainerId, insideContainerId, isShortPikcing, execLineList.get(0).getUseContainerLatticeNo(), null);
             }
             if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
@@ -1802,7 +1802,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 添加容器库存
-                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), outBoundBoxCode, turnoverBoxId,
+                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), execLineList.get(0).getUseOutboundboxCode(), turnoverBoxId,
                         outerContainerId, insideContainerId, isShortPikcing,execLineList.get(0).getUseContainerLatticeNo(), null);
             }
             if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
@@ -1833,7 +1833,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 添加容器库存
-                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), outBoundBoxCode, turnoverBoxId,
+                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), execLineList.get(0).getUseOutboundboxCode(), turnoverBoxId,
                         outerContainerId, insideContainerId, isShortPikcing,execLineList.get(0).getUseContainerLatticeNo(), null);
             }
             if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
@@ -1884,7 +1884,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 添加容器库存
-                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), outBoundBoxCode, turnoverBoxId,
+                whSkuInventoryManager.pickingAddContainerInventory(snList, containerId, locationId, skuAttrIds, operationId, ouId, isTabbInvTotal, userId, pickingWay, command.getScanPattern(), skuCmd.getScanSkuQty(), execLineList.get(0).getUseOutboundboxCode(), turnoverBoxId,
                         outerContainerId, insideContainerId, isShortPikcing, execLineList.get(0).getUseContainerLatticeNo(), null);
                 // 判断是拣完在播，是否是最后一箱
                 List<WhWorkCommand> list = workManager.findWorkByBatch(work.getBatch(), ouId);
