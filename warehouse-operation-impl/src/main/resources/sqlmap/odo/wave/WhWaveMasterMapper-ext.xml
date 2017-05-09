@@ -212,4 +212,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       from t_wh_wave_master
 	       where wave_condition_rule_id=#{waveConditionRuleId}  and ou_id =#{ouId}
     </select>
+    
+    <select id="excuteSortSql" resultType="map">
+    	${excuteSql}
+    </select>
+    
+    <select id="findPrintConditionByWaveMasterId" resultType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMasterPrintCondition">
+    	select
+    		id as id,
+        	wave_master_print_id as waveMasterPrintId,
+        	print_doc_type as printDocType,
+        	print_split_condition_id as printSplitConditionId,
+        	print_split_condition_sql as printSplitConditionSql,
+        	print_sort_sql as printSortSql,
+        	ou_id as ouId
+    	from 
+    		t_wh_wave_master_print_condition
+    	where 
+    		wave_master_print_id = #{waveMasterId}
+			and print_doc_type = #{printType}
+			and ou_id = #{ouId}
+    </select>
 </mapper>

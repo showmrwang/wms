@@ -29,8 +29,7 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
-
-
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMasterPrintCondition;
 
 public interface WhWaveMasterDao extends BaseDao<WhWaveMaster,Long>{
 
@@ -89,6 +88,9 @@ public interface WhWaveMasterDao extends BaseDao<WhWaveMaster,Long>{
      * @return
      */
     public List<WhWaveMaster> findWhWaveMasterConditionId(@Param("waveConditionRuleId") Long waveConditionRuleId,@Param("ouId") Long ouId);
-	
+
+    List<Map<String, Object>> excuteSortSql(@Param("excuteSql") String excuteSql, @Param("ouId") Long ouId);
+
+    WhWaveMasterPrintCondition findPrintConditionByWaveMasterId(@Param("waveMasterId") Long waveMasterId, @Param("printType") String printType, @Param("ouId") Long ouId);
 	
 }

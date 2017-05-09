@@ -420,6 +420,14 @@ public interface OdoManagerProxy extends BaseManager {
     List<Long> findPrintOdoIdList(String code, Long ouId);
 
     WhWave findWaveByIdOuId(Long waveId, Long ouId);
-
+    
+    /**
+     * 
+     * @author kai.zhu
+     * @version 2017年5月9日
+     * @param waveId
+     * @param ouId
+     */
+    void updateOdoIndexByWaveId(Long waveId, Long ouId);
 
 }
