@@ -1063,6 +1063,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                                    Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
                                                                    cssrCmd.setLatticeNo(lattice);
                                                                    cssrCmd.setIsTipNewLattice(true);
+                                                                   cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                                  //缓存上一个托盘内最后扫描的一个内部容器
                                                                    this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
                                                                    //缓存上一个托盘
@@ -1341,6 +1342,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                                   Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
                                                                   cssrCmd.setLatticeNo(lattice);
                                                                   cssrCmd.setIsTipNewLattice(true);
+                                                                  cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                                  //缓存上一个托盘内最后扫描的一个内部容器
                                                                   this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
                                                                   //缓存上一个托盘
@@ -1751,6 +1753,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                           Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
                                                           cssrCmd.setLatticeNo(lattice);
                                                           cssrCmd.setIsTipNewLattice(true);
+                                                          cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                           //缓存上一个托盘内最后扫描的一个内部容器
                                                           this.cacheInsideContainerCode(locationId, insideContainerId, null);
                                                       }
@@ -2014,6 +2017,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                           Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
                                                           cssrCmd.setLatticeNo(lattice);
                                                           cssrCmd.setIsTipNewLattice(true);
+                                                          cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                           //缓存上一个托盘内最后扫描的一个内部容器
                                                           this.cacheInsideContainerCode(locationId, insideContainerId, null);
                                                       }

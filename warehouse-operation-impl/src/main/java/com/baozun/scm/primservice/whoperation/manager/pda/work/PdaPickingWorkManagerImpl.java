@@ -3013,7 +3013,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             Map<Long, Set<Long>> outerInsideId = operatorLine.getOuterToInside();
             Map<Long, Set<Long>> locOuterContainerIds = operatorLine.getOuterContainerIds();
             List<Long> locationIds = operatorLine.getLocationIds();
-            if(null != locOuterContainerIds  && locOuterContainerIds.size() != 0) {
                 for(Long locationId:locationIds) {
                     //先删除托盘上的
                     if(null != locOuterContainerIds  && locOuterContainerIds.size() != 0) {
@@ -3035,6 +3034,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             }
                         }
                     }
+                    
                     //在删库位上的货箱
                     if(null != locInsideContainerIds  && locInsideContainerIds.size() != 0) {
                         Set<Long> insideIds = locInsideContainerIds.get(locationId);
@@ -3070,7 +3070,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     cacheManager.remove(CacheConstants.CACHE_LOCATION+locationId.toString());
                     
                     
-                }
             }
             //清楚作业明细
             cacheManager.remove(CacheConstants.OPERATION_LINE+operationId.toString());
