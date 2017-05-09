@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoSnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdLogDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdSnLogDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.carton.WhCartonDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
@@ -37,6 +38,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
+import com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 
 /**
@@ -75,6 +77,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
     private WhAsnRcvdLogDao whAsnRcvdLogDao;
     @Autowired
     private WhAsnRcvdSnLogDao whAsnRcvdSnLogDao;
+    @Autowired
+    private WhCartonDao whCartonDao;
 
     /** 备份集团/仓库whPo */
     private static final String WhPoInsert = "id,po_code,ext_code,ext_po_code,ou_id,customer_id,store_id,supplier_id,from_location,to_location,logistics_provider,po_type,ext_po_type,status,is_iqc,po_date,eta,delivery_time,"
@@ -338,6 +342,12 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
                     count += rcvdSnLog;
                 }
             }
+            List<WhCarton> whCartons = whCartonDao.findWhCartonListByAsn(asnid, ouid);
+            for (WhCarton whCarton : whCartons) {
+                whCarton.setSysDate(sysDate);
+                int c = poAsnArchivDao.archivWhCartonByShard(whCarton);
+                count += c;
+            }
 
         } catch (Exception e) {
             log.error("PoArchivManagerImpl archivWhAsn error" + e);
@@ -354,6 +364,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
     public int deleteWhAsnByShard(Long asnid, Long ouid) {
         int count = 0;
         try {
+            int carton = poAsnArchivDao.deleteWhCarton(asnid, ouid);
+            count += carton;
             int asnRvcdSn = poAsnArchivDao.deleteAsnRcvdSnLog(asnid, ouid);
             count += asnRvcdSn;
             int asnRvcd = poAsnArchivDao.deleteAsnRcvdLog(asnid, ouid);
@@ -372,19 +384,19 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
         }
         return count;
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public List<Long> findBiPoIdListForArchiv() {
         return poAsnArchivDao.findBiPoIdListForArchiv();
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findWhPoIdListForArchiv(Long ouId) {
         return poAsnArchivDao.findWhPoIdListForArchiv(ouId);
     }
-    
+
     /**
      * 归档和删除Info库下BiPo和WhPo逻辑
      * 
@@ -416,7 +428,7 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
     }
-    
+
     /**
      * 归档和删除Shard库下WhPo和WhAsn逻辑
      * 
@@ -447,5 +459,5 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
     }
-    
+
 }

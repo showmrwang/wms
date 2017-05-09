@@ -428,28 +428,12 @@
 				<config.path>src/main/resources/config/dev</config.path>
 			</properties>
 		</profile>
-
-		<profile>
-			<id>test</id>
-			<properties>
-				<env>test</env>
-				<config.path>src/main/resources/config/test</config.path>
-			</properties>
-		</profile>
 		
 		<profile>
 			<id>uat</id>
 			<properties>
 				<env>uat</env>
 				<config.path>src/main/resources/config/uat</config.path>
-			</properties>
-		</profile>
-		
-		<profile>
-			<id>rd</id>
-			<properties>
-				<env>rd</env>
-				<config.path>src/main/resources/config/rd</config.path>
 			</properties>
 		</profile>
 		

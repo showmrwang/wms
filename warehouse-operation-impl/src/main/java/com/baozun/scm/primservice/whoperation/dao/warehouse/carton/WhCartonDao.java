@@ -107,11 +107,13 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
 
     /**
      * 包含内部容器是caselevel货箱或非caselevel货箱
+     * 
      * @param ouId
      * @param containerIds
      * @return
      */
-    public int findWhCartonCountByContainerId(@Param("ouId") Long ouId,@Param("containerId") Long containerId,@Param("isCaselevel") Boolean isCaselevel);
+    public int findWhCartonCountByContainerId(@Param("ouId") Long ouId, @Param("containerId") Long containerId, @Param("isCaselevel") Boolean isCaselevel);
+
     /**
      * 通用功能
      * 
@@ -126,6 +128,14 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      * @return
      */
     List<WhCarton> findWhCartonListByAsnSkuContainer(@Param("asnid") Long asnid, @Param("containerid") Long containerid, @Param("ouid") Long ouid);
+
+
+    /**
+     * 通过ASN 查询对应箱信息
+     * 
+     * @return
+     */
+    List<WhCarton> findWhCartonListByAsn(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
 
 
     /**
@@ -148,8 +158,8 @@ public interface WhCartonDao extends BaseDao<WhCarton, Long> {
      * @return
      */
     boolean isAsnCaseLevelNeedToRcvd(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
-    
-    
+
+
     /**
      * 查找caselevel箱信息
      * 
