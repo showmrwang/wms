@@ -92,6 +92,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<delete id="deleteAsnRcvdSnLog" parameterType="map">
 			delete from t_wh_asn_rcvd_sn_log where asn_rcvd_id in (select id from t_wh_asn_rcvd_log where asn_id = #{asnid} and ou_id = #{ouid}) and ou_id = #{ouid}
 	 </delete>
+	<delete id="deleteWhCarton" parameterType="map">
+			delete from t_wh_carton where asn_id = #{asnid} and ou_id = #{ouid}
+	 </delete>
 	 
 	 <insert id="archivWhPoByShard" parameterType="com.baozun.scm.primservice.whoperation.model.poasn.WhPo"  
 		 flushCache="true">
@@ -610,6 +613,66 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 
 	</insert>
+	
+	<insert id="archivWhCartonByShard" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.carton.WhCarton" 	 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_carton_archiv${sysDate} (
+		        	id,
+		        	asn_id ,
+		        	asn_line_id ,
+		        	sku_id ,
+		        	container_id ,
+		        	ext_container_code ,
+		        	quantity ,
+		        	qty_rcvd ,
+		        	mfg_date ,
+		        	exp_date ,
+		        	batch_no ,
+		        	country_of_origin ,
+		        	inv_status ,
+		        	inv_attr1 ,
+		        	inv_attr2 ,
+		        	inv_attr3 ,
+		        	inv_attr4 ,
+		        	inv_attr5 ,
+		        	inv_type ,
+		        	ou_id ,
+		        	is_caselevel ,
+		        	create_time ,
+		        	created_id ,
+		        	last_modify_time ,
+		        	modified_id 
+		        ) VALUES (
+		       		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{asnLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{extContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{quantity,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{qtyRcvd,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{mfgDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{expDate,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{batchNo,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{countryOfOrigin,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{invAttr1,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr2,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr3,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{isCaselevel,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+		</insert>
+	
 	
 	<select id="findBiPoIdListForArchiv" resultType="long">
 	<![CDATA[

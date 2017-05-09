@@ -2773,7 +2773,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             log.error("containerId is null error, logId is:[{}]", logId);
                             throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                         }
-                        invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerAndUuid(ouId, containerId, uuid);
+                        invCList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerAndUuid(ouId, containerId, uuid);
                     } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
                         if (null == insideContainerId) {
                             log.error("insideContainerId is null error, logId is:[{}]", logId);
@@ -2782,7 +2782,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                     }
                     if(null == invCList || 0 == invCList.size()){
-                        throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                        throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                     }
                     Double dQty = 0.0;
                     for(WhSkuInventoryCommand cCmd : invCList){
@@ -3803,7 +3803,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 log.error("containerId is null error, logId is:[{}]", logId);
                                 throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                             }
-                            invList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerAndUuid(ouId, containerId, uuid);
+                            invCList = whSkuInventoryDao.findContainerOnHandInventoryByOuterContainerAndUuid(ouId, containerId, uuid);
                         } else if (WhPutawayPatternDetailType.CONTAINER_PUTAWAY == putawayPatternDetailType) {
                             if (null == insideContainerId) {
                                 log.error("insideContainerId is null error, logId is:[{}]", logId);

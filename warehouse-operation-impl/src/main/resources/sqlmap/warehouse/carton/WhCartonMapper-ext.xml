@@ -356,6 +356,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    and container_id = #{containerid}
  </select>
  
+   <select id="findWhCartonListByAsn" resultMap="WhCartonResultExt">
+    	select <include refid="whCartonColumnsExt" />
+		    from t_wh_carton 
+		    where 
+		    ou_id = #{ouid} 
+		    and asn_id = #{asnid} 
+ </select>
+ 
 
 
 
