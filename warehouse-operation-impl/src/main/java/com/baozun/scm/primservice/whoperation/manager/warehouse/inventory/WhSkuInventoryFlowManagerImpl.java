@@ -16,10 +16,12 @@ import com.baozun.scm.primservice.whinterface.model.inventory.WmsSkuInventoryFlo
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryFlowDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryFlow;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryLog;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
@@ -34,6 +36,8 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
     private WhSkuInventoryFlowDao whSkuInventoryFlowDao;
     @Autowired
     private WhOdoDao whOdoDao;
+    @Autowired
+    private WhAsnDao whAsnDao;
 
     /**
      * 保存库存流水信息 bin.hu
@@ -56,12 +60,19 @@ public class WhSkuInventoryFlowManagerImpl implements WhSkuInventoryFlowManager 
             flow.setRevisionQty(log.getRevisionQty());
             // 判断是否存在出库单占用
             if (!StringUtil.isEmpty(log.getOccupationCode())) {
+                flow.setEcOrderCode(log.getOccupationCode());
                 // 查询对应出库单信息
                 WhOdo odo = whOdoDao.findOdoByCodeAndOuId(log.getOccupationCode(), log.getOuId());
                 if (null != odo) {
                     // 有出库单信息 插入电商平台订单号+出库单类型
                     flow.setEcOrderCode(odo.getEcOrderCode());
                     flow.setOdoType(odo.getOdoType());
+                }
+                WhAsn asn = whAsnDao.findAsnByCodeAndOuId(log.getOccupationCode(), log.getOuId());
+                if (null != asn) {
+                    // 有出库单信息 插入上位系统入库单号+入库单类型
+                    flow.setEcOrderCode(asn.getExtCode());
+                    flow.setOdoType(asn.getAsnType().toString());
                 }
             }
             count = whSkuInventoryFlowDao.insert(flow);
