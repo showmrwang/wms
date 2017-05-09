@@ -614,8 +614,9 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     }
 
 	private void createInBoundConfirmData(WhPo po, List<WhPoLine> lineList, Long ouId) {
-		WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, lineList, ouId);
-		whInboundManager.insertWhInboundData(inboundConfirmCommand);
+	    // TODO
+		// WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, lineList, ouId);
+		// whInboundManager.insertWhInboundData(inboundConfirmCommand);
 	}
 
     @Override
@@ -716,7 +717,16 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                 }
             }
         }
-
+        // zhu.kai 收货反馈
+        Store store = storeDao.findById(biPo.getStoreId());
+        if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 1) {
+            // 按PO单反馈, 上位系统单据才反馈
+            if (null != biPo.getIsVmi() && biPo.getIsVmi()) {
+                // this.createInBoundConfirmData(po, lineList, ouId);
+                // WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, lineList, ouId);
+                // whInboundManager.insertWhInboundData(inboundConfirmCommand);
+            }
+        }
     }
 
     private void snycPoToInfoWhenRcvdFinished(WhPo shardPo, List<WhPoLine> lineList) {

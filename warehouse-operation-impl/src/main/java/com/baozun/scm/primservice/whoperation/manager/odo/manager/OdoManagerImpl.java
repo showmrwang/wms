@@ -1412,7 +1412,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         trans.setAddress(address.getDistributionTargetAddress());
         trans.setIsDangerous(odo.getIncludeHazardousCargo() ? 1 : 0);
         trans.setIsBreak(odo.getIncludeFragileCargo() ? 1 : 0);
-        trans.setIntefaceType(StringUtils.isEmpty(store.getExpressRecommendation()) ? "2" : store.getExpressRecommendation());
+        trans.setIntefaceType(StringUtils.isEmpty(store.getExpressRecommendation()) ? "TIME_FIRST" : store.getExpressRecommendation());
         if (null != odo.getOutboundCartonType()) {
             OutBoundBoxType boxType = outBoundBoxTypeDao.findByIdExt(odo.getOutboundCartonType(), ouId);
             trans.setOutboundCartonType(boxType.getCode());

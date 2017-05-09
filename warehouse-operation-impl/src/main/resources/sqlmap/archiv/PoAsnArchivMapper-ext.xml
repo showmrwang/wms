@@ -293,7 +293,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ctn_planned ,
 	        	ctn_rcvd ,
 	        	supplier_id ,
-	        	logistics_provider_id ,
 	        	logistics_provider ,
 	        	asn_type ,
 	        	status ,
@@ -327,7 +326,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	#{ctnPlanned,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{supplierId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	        	#{logisticsProviderId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 	        	#{logisticsProvider,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        	#{asnType,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -612,4 +610,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 
 	</insert>
+	
+	<select id="findBiPoIdListForArchiv" resultType="long">
+	<![CDATA[
+		SELECT
+			po.id
+		FROM
+			t_bi_po po
+		WHERE
+			po.`status` = 10
+			AND po.last_modify_time < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+	]]>
+	</select>
+	
+	<select id="findWhPoIdListForArchiv" resultType="long">
+	<![CDATA[
+		SELECT
+			po.id
+		FROM
+			t_wh_po po
+		WHERE
+			po.`status` = 10
+			and po.last_modify_time < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+			and po.ou_id = #{ouId}
+	]]>
+	</select>
 </mapper>
