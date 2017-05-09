@@ -2311,7 +2311,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     List<WhSkuInventoryCommand> invCList = null;
                     invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                     if(null == invCList || 0 == invCList.size()){
-                        throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                        throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                     }
                     Double dQty = 0.0;
                     for(WhSkuInventoryCommand cCmd : invCList){
@@ -2469,7 +2469,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     List<WhSkuInventoryCommand> invCList = null;
                     invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                     if(null == invCList || 0 == invCList.size()){
-                        throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                        throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                     }
                     Double dQty = 0.0;
                     for(WhSkuInventoryCommand cCmd : invCList){
@@ -2946,7 +2946,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                     }
                     if(null == invCList || 0 == invCList.size()){
-                        throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                        throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                     }
                     Double dQty = 0.0;
                     for(WhSkuInventoryCommand cCmd : invCList){
@@ -3292,7 +3292,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     List<WhSkuInventoryCommand> invCList = null;
                     invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                     if(null == invCList || 0 == invCList.size()){
-                        throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                        throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                     }
                     Double dQty = 0.0;
                     for(WhSkuInventoryCommand cCmd : invCList){
@@ -3475,7 +3475,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     List<WhSkuInventoryCommand> invCList = null;
                     invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                     if(null == invCList || 0 == invCList.size()){
-                        throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                        throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                     }
                     Double dQty = 0.0;
                     for(WhSkuInventoryCommand cCmd : invCList){
@@ -3812,7 +3812,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                         }
                         if(null == invCList || 0 == invCList.size()){
-                            throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                         }
                         Double dQty = 0.0;
                         for(WhSkuInventoryCommand cCmd : invCList){
@@ -3987,7 +3987,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         List<WhSkuInventoryCommand> invCList = null;
                         invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                         if(null == invCList || 0 == invCList.size()){
-                            throw new BusinessException(ErrorCodes.NO_SKU_INVENTORY);
+                            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                         }
                         Double dQty = 0.0;
                         for(WhSkuInventoryCommand cCmd : invCList){
@@ -4498,7 +4498,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory whSkuInventory = whSkuInventoryDao.findWhSkuInventoryById(whskuInventoryId, ouId);
             if(null == whSkuInventory) {
                 log.error("whskuInventoryImpl manPutwayNoLoc whskuInventory id"+whskuInventoryId);
-                throw new BusinessException(ErrorCodes. NO_SKU_INVENTORY);
+                throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
             }
             // 记录入库库存日志
             Double skuInvOnHandQty = invCmd.getOnHandQty() - scanSkuQty;    //上架后库存
@@ -4559,7 +4559,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory whSkuInventory = whSkuInventoryDao.findWhSkuInventoryById(skuInvId, ouId);
             if(null == whSkuInventory) {
                 log.error("whskuInventoryImpl manPutwayNoLoc whskuInventory id"+skuInvId);
-                throw new BusinessException(ErrorCodes. NO_SKU_INVENTORY);
+                throw new BusinessException(ErrorCodes. CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
             }
             // 记录入库库存日志
             Double skuInvOnHandQty = invCmd.getOnHandQty() - scanSkuQty;    //上架后库存
