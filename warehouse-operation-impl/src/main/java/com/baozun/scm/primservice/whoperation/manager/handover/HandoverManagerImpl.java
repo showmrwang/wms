@@ -135,7 +135,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         // 称重
         Long totalActualWeight = 0L;
         for (HandoverCollection handoverCollection : hcList) {
-            WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(handoverCollection.getOutboundboxCode(),ouId);
+            WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(handoverCollection.getOutboundboxCode(), ouId);
             if (null != whOdoPackageInfo) {
                 totalCalcWeight += whOdoPackageInfo.getCalcWeight();
                 totalActualWeight += whOdoPackageInfo.getActualWeight();
@@ -214,7 +214,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             handoverCollection.setHandoverStatus(HandoverCollectionStatus.FINISH);
             handoverCollectionDao.saveOrUpdate(handoverCollection);
             // 5出库箱状态改为已交接
-            outboundbox.setStatus(OutboundboxStatus.HANDOVER_FINISH);
+            outboundbox.setStatus(OutboundboxStatus.FINISH);
             whOutboundboxDao.saveOrUpdate(outboundbox);
             // 6出库单下所有对应的出库箱是否都已经交接 如果都交接了 更新订单状态 订单明细状态
             Long odoId = outboundbox.getOdoId();
