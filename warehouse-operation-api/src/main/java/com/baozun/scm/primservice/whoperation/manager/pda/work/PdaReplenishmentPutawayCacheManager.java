@@ -39,7 +39,7 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      * @param operationId
      * @param locationId
      */
-    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId,Long locationId,Long ouId);
+    public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId,Long locationId,Long ouId,Boolean isOnlyLocation);
     
     /***
      * 提示sku
