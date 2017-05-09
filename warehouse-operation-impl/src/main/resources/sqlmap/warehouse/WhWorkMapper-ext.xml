@@ -272,4 +272,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
+     <select id="findWorkByIdAndOuId" resultMap="WhWorkResultExt">
+        select
+        <include refid="whWorkColumns" />
+        from t_wh_work
+        <where>
+            id = #{id}
+            and ou_id = #{ouId}
+        </where>
+    </select>
+    
 </mapper>
