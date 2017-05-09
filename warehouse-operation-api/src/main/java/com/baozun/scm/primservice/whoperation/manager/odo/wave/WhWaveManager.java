@@ -3,7 +3,6 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
@@ -21,7 +20,6 @@ import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMasterPrintCondition;
-import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
@@ -278,15 +276,11 @@ public interface WhWaveManager extends BaseManager {
      * [业务方法]波次取消
      * 
      * @param wave
-     * @param task
-     * @param workList
-     * @param workToCancelMap
-     * @param workToLazyCancelSet
      * @param odoList
-     * @param odoToLazyFreeSet
+     * @param ouId
      * @param userId
      */
-    public void cancelWaveWithWork(WhWave wave, ReplenishmentTask task, List<WhWork> workList, Set<Long> workToLazyCancelSet, List<WhOdo> odoList, Set<Long> odoToLazyFreeSet, Long userId);
+    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
 
     /**
      * [业务方法]查找延迟创建的波次

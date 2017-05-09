@@ -58,5 +58,7 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
      * @return
      */
     Double getTotalQtyByReplenishmentCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
+
+    List<WhWorkLine> findWorkLineByWorkIdOuId(@Param("workId") Long id, @Param("ouId") Long ouId);
 	
 }

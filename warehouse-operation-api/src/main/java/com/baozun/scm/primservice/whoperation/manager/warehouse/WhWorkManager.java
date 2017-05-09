@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 
@@ -60,6 +59,16 @@ public interface WhWorkManager extends BaseManager{
     List<WhWork> findWorkByWaveWithLock(String code, Long ouId);
 
     /**
+     * [业务方法]波次非锁定工作
+     * 
+     * @param code
+     * @param ouId
+     * @param isLock
+     * @return
+     */
+    List<WhWork> findWorkByWaveWithUnLock(String code, Long ouId);
+
+    /**
      * [业务方法]寻找波次下的工作
      * 
      * @param code
@@ -68,6 +77,16 @@ public interface WhWorkManager extends BaseManager{
      * @return
      */
     List<WhWork> findWorkByWave(String code, Long ouId);
+
+    /**
+     * [业务方法]寻找波次下某种类别的工作
+     * 
+     * @param code
+     * @param workCategory
+     * @param ouId
+     * @return
+     */
+    List<WhWork> findWorkByWaveAndCategory(String code, String workCategory, Long ouId);
 
 
     /**

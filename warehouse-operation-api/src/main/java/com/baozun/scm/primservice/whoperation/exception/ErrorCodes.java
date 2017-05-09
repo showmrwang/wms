@@ -431,6 +431,8 @@ public class ErrorCodes {
     public static final int WAREHOUSE_CANCEL_NODE_ERROR = 11093;
     /** 出库单不允许取消 */
     public static final int ODO_CANCEL_ERROR = 11094;
+    /** 波次已经释放，波次不允许取消 */
+    public static final int WAVE_CANCEL_WORK_ERROR = 11095;
     // 10001-20000 luyimin
 
 

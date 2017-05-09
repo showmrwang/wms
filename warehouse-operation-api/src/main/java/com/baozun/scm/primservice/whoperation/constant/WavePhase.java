@@ -26,4 +26,6 @@ public class WavePhase implements Serializable {
     public static final int CREATE_TASK_NUM = 65; // 创建任务
     public static final int GET_LOGISTICS_INFO_NUM = 70; // 获取物流信息(增值服务,物流商推荐,运单号)
     public static final int CREATE_WORK_NUM = 80; // 创建工作
+
+    public static final int EXECUTED = 100; // 完成
 }

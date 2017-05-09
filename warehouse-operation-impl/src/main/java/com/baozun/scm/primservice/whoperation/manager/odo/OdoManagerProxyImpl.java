@@ -64,10 +64,8 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
-import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
-import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.excel.ExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.ExcelImport;
 import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
@@ -122,7 +120,6 @@ import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Region;
-import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -1774,7 +1771,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // yimin.lu 2016/12/16
         // 取消逻辑：
         // 新建状态下取消：-》取消
-        // 完成状态下取消->取消处理中-》取消
+        // 完成状态下取消->取消处理中-》取消 @mender yimin.lu 2017/5/9 完成状态下，如果已有执行的工作，不允许取消
         Long waveId = waveCommand.getId();
         Long ouId = waveCommand.getOuId();
         Long userId = waveCommand.getUserId();
@@ -1790,40 +1787,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             return;
         }
         // 完成状态下的波次
-        // 取消所有的补货任务
+        // 取消所有的补货任务@mender yimin.lu 2017/5/9 补货任务不取消
         // 取消所有的未执行的补货工作和拣货工作
-        // 如果有正在执行的工作，波次状态置为取消处理中；否则为取消
+        // 如果有正在执行的工作，波次状态置为取消处理中；否则为取消 @mender yimin.lu 2017/5/9 有正在执行的工作，不允许取消波次
         // 库存的回滚
-        Set<Long> odoToLazyFreeSet = new HashSet<Long>();// 需要延后取消的出库单
-        Map<String,Long> odoCodeIdMap=new HashMap<String,Long>();
-        for(WhOdo odo:odoList){
-            odoCodeIdMap.put(odo.getOdoCode(), odo.getId());
-        }
-        // 补货任务
-        ReplenishmentTask task = this.replenishmentTaskManager.findTaskByWaveWithStatus(waveId, ouId, ReplenishmentTaskStatus.REPLENISHMENT_TASK_NEW);
 
-        List<WhWork> workList = this.whWorkManager.findWorkByWave(wave.getCode(), ouId);
-        if (workList == null || workList.size() == 0) {
-        	
+        // @mender yimin.lu 2017/5/9 有正在执行的工作 不允许取消波次
+        List<WhWork> unLockWorkList = this.whWorkManager.findWorkByWaveWithUnLock(wave.getCode(), ouId);
+        if (unLockWorkList != null && unLockWorkList.size() > 0) {
+            throw new BusinessException(ErrorCodes.WAVE_CANCEL_WORK_ERROR);
         }
-        // Map<Long,List<WhWorkLine>> workToCancelMap = new HashMap<Long,List<WhWorkLine>>();
-        Set<Long> workToLazyCancelSet = new HashSet<Long>();
-        if(workList != null){
-            for (WhWork work : workList) {
-                if (WorkStatus.NEW.intValue() == work.getStatus().intValue()) {
-                    // workToCancelMap.put(work.getId(),workLineList);
-                } else {
-                    workToLazyCancelSet.add(work.getId());
-                    // List<WhWorkLine> workLineList =
-                    // this.whWorkLineManager.findListByWorkId(work.getId(), ouId);
-                    if(odoCodeIdMap.containsKey(work.getOrderCode())){
-                        Long l=odoCodeIdMap.get(work.getOrderCode());
-                        odoToLazyFreeSet.add(l);
-                    }
-                }
-            }
-        }
-        this.waveManager.cancelWaveWithWork(wave, task, workList, workToLazyCancelSet, odoList, odoToLazyFreeSet, userId);
+
+
+        this.waveManager.cancelWaveWithWork(wave, odoList, ouId, userId);
         // this.waveManager.cancelWaveWithLazy(wave)
     }
 
