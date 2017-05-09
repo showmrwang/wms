@@ -684,7 +684,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</select>	
 		
-
+	<select id="findWhAsnIdListByPoIdOuId" resultType="long">
+		select 
+			id
+	    from 
+	    	t_wh_asn 
+        where 
+	        po_id = #{poId} 
+	        and ou_id=#{ouId}   
+	</select>
+	
     <select id="findAsnListByStatus" resultMap="whAsnCommand">
         select
             <include refid="whAsnColumnsMapExt" />

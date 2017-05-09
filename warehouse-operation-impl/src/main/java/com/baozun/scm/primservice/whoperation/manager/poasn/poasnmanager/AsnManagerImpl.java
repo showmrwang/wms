@@ -1227,8 +1227,8 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         		if (null != po.getIsVmi() && po.getIsVmi()) {
         			// 根据asnId查找出asnLine, 用WhPoLine封装参数
         			List<WhPoLine> asnLineList = whAsnLineDao.findAsnInboundData(asn.getId(), ouId);
-        			WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, asnLineList, ouId);
-        			whInboundManager.insertWhInboundData(inboundConfirmCommand);
+        			//WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, asnLineList, ouId);
+        			// whInboundManager.insertWhInboundData(inboundConfirmCommand);
         		}
 			}
             

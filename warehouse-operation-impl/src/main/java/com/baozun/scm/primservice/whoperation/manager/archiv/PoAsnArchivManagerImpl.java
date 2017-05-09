@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.archiv.PoAsnArchivDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnSnDao;
@@ -25,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdLogDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhAsnRcvdSnLogDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
@@ -49,6 +51,8 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
 
     protected static final Logger log = LoggerFactory.getLogger(PoAsnArchivManager.class);
 
+    @Autowired
+    private BiPoDao biPoDao;
     @Autowired
     private WhPoDao whPoDao;
     @Autowired
@@ -368,4 +372,80 @@ public class PoAsnArchivManagerImpl implements PoAsnArchivManager {
         }
         return count;
     }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public List<Long> findBiPoIdListForArchiv() {
+        return poAsnArchivDao.findBiPoIdListForArchiv();
+    }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findWhPoIdListForArchiv(Long ouId) {
+        return poAsnArchivDao.findWhPoIdListForArchiv(ouId);
+    }
+    
+    /**
+     * 归档和删除Info库下BiPo和WhPo逻辑
+     * 
+     * kai.zhu
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void archivBiPoById(Long biPoId) {
+        BiPo biPo = biPoDao.findById(biPoId);
+        List<WhPo> whPolist = this.whPoDao.findWhPoByExtCodeStoreIdToInfo(biPo.getExtCode(), biPo.getStoreId());
+        if (null != whPolist) {
+            for (WhPo whPo : whPolist) {
+                // 归档WhPo
+                int archivCount = this.archivWhPoByInfo(whPo.getId());
+                // 删除WhPo
+                int deleteCount = this.deleteWhPoByInfo(whPo.getId());
+                if (archivCount != deleteCount) {
+                    log.error("archivCount != archivCount, WhPoId:" + whPo.getId());
+                    throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                }
+            }
+        }
+        // 归档BiPo
+        int archivCount = this.archivBiPoByInfo(biPoId);
+        // 删除BiPo
+        int deleteCount = this.deleteBiPoByInfo(biPoId);
+        if (archivCount != deleteCount) {
+            log.error("archivCount != archivCount, BiPoId:" + biPoId);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
+    }
+    
+    /**
+     * 归档和删除Shard库下WhPo和WhAsn逻辑
+     * 
+     * kai.zhu
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void archivWhPoById(Long whPoId, Long ouId) {
+        List<Long> whAsnIdList = whAsnDao.findWhAsnIdListByPoIdOuId(whPoId, ouId);
+        if (null != whAsnIdList) {
+            for (Long whAsnId : whAsnIdList) {
+                // 归档WhAsn
+                int archivCount = this.archivWhAsn(whAsnId, ouId);
+                // 删除WhAsn
+                int deleteCount = this.deleteWhAsnByShard(whAsnId, ouId);
+                if (archivCount != deleteCount) {
+                    log.error("archivCount != archivCount, WhAsnId:" + whAsnId);
+                    throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+                }
+            }
+        }
+        // 归档WhPo
+        int archivCount = this.archivWhPoByShard(whPoId, ouId);
+        // 删除WhPo
+        int deleteCount = this.deleteBiPoByShard(whPoId, ouId);
+        if (archivCount != deleteCount) {
+            log.error("archivCount != archivCount, WhPoId:" + whPoId);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
+    }
+    
 }

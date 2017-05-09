@@ -16,6 +16,8 @@ package com.baozun.scm.primservice.whoperation.dao.archiv;
 
 import lark.orm.dao.supports.BaseDao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -28,8 +30,6 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhAsnRcvdSnLog;
-
-
 
 public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
 
@@ -262,5 +262,19 @@ public interface PoAsnArchivDao extends BaseDao<WhPo, Long> {
      * @return
      */
     int deleteAsnRcvdSnLog(@Param("asnid") Long asnid, @Param("ouid") Long ouid);
+    
+    /**
+     * 查找已完成, 一个月之前的BiPo单据
+     * @author kai.zhu
+     * @version 2017年5月8日
+     */
+    List<Long> findBiPoIdListForArchiv();
+    
+    /**
+     * 查找已完成, 一个月之前的WhPo单据
+     * @author kai.zhu
+     * @version 2017年5月8日
+     */
+    List<Long> findWhPoIdListForArchiv(@Param("ouId") Long ouId);
 
 }

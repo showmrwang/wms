@@ -2796,7 +2796,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 String packageCenterName = res.getPackageCenterName();  // 集包地名称
                 transMgmt.setTransBigWord(transBigWord);
                 transMgmt.setTmsCode(tmsCode);
-                transMgmt.setLogisticsCode(logisticsCode);
+                transMgmt.setLogisticsCode(logisticsCode.toUpperCase());
                 transMgmt.setPackageCenterCode(packageCenterCode);
                 transMgmt.setPackageCenterName(packageCenterName);
                 WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();

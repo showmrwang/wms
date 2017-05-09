@@ -604,11 +604,6 @@
 		address.odo_id=odo.id
 		left join t_wh_odo_transport_mgmt transmgmt on
 		transmgmt.odo_id=odo.id
-		left join t_ma_transport_provider transprovider
-		on transmgmt.transport_service_provider=transprovider.code
-		left join
-		t_ma_transport_service_type transType on
-		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
 		left join
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type 
@@ -637,7 +632,7 @@
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
 		transmgmt.transport_service_provider as transportServiceProvider,
-		transprovider.name as transportServiceProviderName,
+		transmgmt.transport_service_provider as transportServiceProviderName,
 		transmgmt.mode_of_transport as modeOfTransport,
 
 		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
@@ -648,10 +643,7 @@
 
 		odo.odo_status as odoStatus,
 
-		transprovider.type as
-		transportServiceProviderType,
-		transType.name as
-		transportServiceProviderTypeName,
+		
 		transmgmt.outbound_target_type as
 		outboundTargetType,
 
@@ -733,13 +725,7 @@
 		left join t_wh_odo_transport_mgmt
 		transmgmt on
 		transmgmt.odo_id=odo.id
-		left join t_ma_transport_provider
-		transprovider
-		on
-		transmgmt.transport_service_provider=transprovider.code
-		left join
-		t_ma_transport_service_type transType on
-		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
+		
 		left join
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type 
@@ -1291,7 +1277,7 @@
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
 		transmgmt.transport_service_provider as transportServiceProvider,
-		transprovider.name as transportServiceProviderName,
+		transmgmt.transport_service_provider as transportServiceProviderName,
 		transmgmt.mode_of_transport as modeOfTransport,
 
 		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
@@ -1305,10 +1291,7 @@
 		odo.order_type as orderType,
 		odo.counter_code as counterCode,
 
-		transprovider.type as
-		transportServiceProviderType,
-		transType.name as
-		transportServiceProviderTypeName,
+		
 		transmgmt.outbound_target_type as
 		outboundTargetType,
 
@@ -1388,13 +1371,7 @@
 		left join t_wh_odo_transport_mgmt
 		transmgmt on
 		transmgmt.odo_id=odo.id
-		left join t_ma_transport_provider
-		transprovider
-		on
-		transmgmt.transport_service_provider=transprovider.code
-		left join
-		t_ma_transport_service_type transType on
-	transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
+		
 		left join
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type
@@ -1807,13 +1784,7 @@
 		left join t_wh_odo_transport_mgmt
 		transmgmt on
 		transmgmt.odo_id=odo.id
-		left join t_ma_transport_provider
-		transprovider
-		on
-		transmgmt.transport_service_provider=transprovider.code
-		left join
-		t_ma_transport_service_type transType on
-		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
+		
 		left join
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type 
@@ -2167,13 +2138,7 @@
 		left join t_wh_odo_transport_mgmt
 		transmgmt on
 		transmgmt.odo_id=odo.id
-		left join t_ma_transport_provider
-		transprovider
-		on
-		transmgmt.transport_service_provider=transprovider.code
-		left join
-		t_ma_transport_service_type transType on
-		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
+		
 		left join
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type 
@@ -2574,7 +2539,7 @@
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
 		transmgmt.transport_service_provider as transportServiceProvider,
-		transprovider.name as transportServiceProviderName,
+		transmgmt.transport_service_provider as transportServiceProviderName,
 		transmgmt.mode_of_transport as modeOfTransport,
 
 		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
@@ -2585,10 +2550,7 @@
 
 		odo.odo_status as odoStatus,
 
-		transprovider.type as
-		transportServiceProviderType,
-		transType.name as
-		transportServiceProviderTypeName,
+		
 		transmgmt.outbound_target_type as
 		outboundTargetType,
 
@@ -2668,13 +2630,7 @@
 		left join t_wh_odo_transport_mgmt
 		transmgmt on
 		transmgmt.odo_id=odo.id
-		left join t_ma_transport_provider
-		transprovider
-		on
-		transmgmt.transport_service_provider=transprovider.code
-		left join
-		t_ma_transport_service_type transType on
-		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
+		
 		left join
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type 
@@ -2806,7 +2762,7 @@
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
 		transmgmt.transport_service_provider as transportServiceProvider,
-		transprovider.name as transportServiceProviderName,
+		transmgmt.transport_service_provider as transportServiceProviderName,
 		transmgmt.mode_of_transport as modeOfTransport,
 
 		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
@@ -2819,10 +2775,7 @@
 		odo.odo_status as odoStatus,
 		odo.order_type as orderType,
 
-		transprovider.type as
-		transportServiceProviderType,
-		transType.name as
-		transportServiceProviderTypeName,
+		
 		transmgmt.outbound_target_type as
 		outboundTargetType,
 
@@ -2903,13 +2856,7 @@
 		left join t_wh_odo_transport_mgmt
 		transmgmt on
 		transmgmt.odo_id=odo.id
-		left join t_ma_transport_provider
-		transprovider
-		on
-		transmgmt.transport_service_provider=transprovider.code
-		left join
-		t_ma_transport_service_type transType on
-		transType. CODE = transmgmt.courier_service_type and transType.tp_id = transprovider.id 
+		
 		left join
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type
