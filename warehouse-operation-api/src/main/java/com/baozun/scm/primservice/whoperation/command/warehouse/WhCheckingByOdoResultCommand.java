@@ -28,7 +28,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     private String outboundBoxCode; // 出库箱编码
 
-    private Long outboundboxId;
+    private Long outboundboxId;  //耗材id
     /** 出库单ID */
     private Long odoId;
     /** 出库单明细ID */
@@ -37,6 +37,9 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private String checkingPattern;
     /** 复核完成*/
     private Boolean checkFinish;
+    private Long functionId;
+    
+    private Long userId;
     /**复合明细集合*/
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
 
@@ -146,5 +149,23 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     public void setCheckFinish(Boolean checkFinish) {
         this.checkFinish = checkFinish;
     }
+
+    public Long getFunctionId() {
+        return functionId;
+    }
+
+    public void setFunctionId(Long functionId) {
+        this.functionId = functionId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    
+    
 
 }

@@ -80,7 +80,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
@@ -89,7 +88,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        print_type = #{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        print_count = #{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} 
 	        WHERE 
-		        id = #{id} 
+		        id = #{id} and ou_id=#{ouId}
 	    ]]>
 		</update>
 	   <delete id="delete" parameterType="java.lang.Long">

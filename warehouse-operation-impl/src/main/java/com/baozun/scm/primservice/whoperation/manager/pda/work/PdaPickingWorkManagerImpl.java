@@ -2001,6 +2001,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         } else {
             if (!snList.contains(snDefect)) {
                 snList.add(snDefect);
+            }else{
+                //多条吗重复
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SN_DOUBLE_ERROR);
             }
         }
         if (null != insideContainerId) {// 有货箱

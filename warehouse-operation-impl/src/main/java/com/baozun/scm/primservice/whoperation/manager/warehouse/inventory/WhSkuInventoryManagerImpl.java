@@ -9269,6 +9269,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                                 skuInvSn.setUuid(uuid);
                                                 whSkuInventorySnDao.saveOrUpdate(skuInvSn);
                                                 insertGlobalLog(GLOBAL_LOG_UPDATE, skuInvSn, ouId, userId, null, null);
+                                                // 记录SN日志
+                                                insertSkuInventorySnLog(skuInvSn.getId(), ouId);
                                             }
                                         }
                                     }

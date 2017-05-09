@@ -41,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingComman
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -57,15 +58,18 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.checking.CheckingManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
@@ -73,6 +77,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("whCheckingManager")
@@ -117,6 +122,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private WhOdoPackageInfoDao whOdoPackageInfoDao;
     @Autowired
     private WhFunctionOutBoundDao whFunctionOutBoundDao;
+    @Autowired
+    private WhPrintInfoDao whPrintInfoDao;
+    @Autowired
+    private CheckingManager checkingManager;
 
     @Override
     public void saveOrUpdate(WhCheckingCommand whCheckingCommand) {
@@ -860,10 +869,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
         Double sum = 0.0;
+        Double result = 0.0;
         for (WhCheckingLineCommand whCheckingLineCommand : checkingLineList) {
             Double actualWeight = 0.0;
             WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
             actualWeight = whSkuCommand.getWeight() * whCheckingLineCommand.getCheckingQty();
+            result = weightCalculator.calculateStuffWeight(whSkuCommand.getWeight());
+            System.out.println("结果值："+result);
             sum += actualWeight;
 
         }
@@ -878,7 +890,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOdoPackageInfo.setOutboundboxId(outboundboxId);
             whOdoPackageInfo.setOutboundboxCode(outboundboxCode);
             whOdoPackageInfo.setStatus(Constants.LIFECYCLE_START);
-            whOdoPackageInfo.setFloats(1);
+            whOdoPackageInfo.setFloats(whFunctionOutBound.getWeightFloatPercentage());
             whOdoPackageInfo.setLifecycle(Constants.LIFECYCLE_START);
             whOdoPackageInfo.setCreateId(userId);
             whOdoPackageInfo.setCreateTime(new Date());
@@ -964,5 +976,107 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
 
         whCheckingByOdoCommand.setCheckingDisplayCommand(checkingDisplayCommand);
         return whCheckingByOdoCommand;
+    }
+    
+    
+    
+
+    /**
+     * 根据复核打印配置打印单据
+     * 
+     * @param whCheckingResultCommand
+     */
+    @Override
+    public Boolean printDefect(WhCheckingByOdoResultCommand cmd) {
+        Boolean isSuccess = true;
+        Long ouId = cmd.getOuId();
+        Long functionId = cmd.getFunctionId();
+        Long userId = cmd.getUserId();
+        List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
+        String outboundBoxCode = cmd.getOutboundBoxCode();
+        Long checkingId =  checkingLineList.get(0).getCheckingId();
+       // 更新复合头状态
+        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+        if (null == checkingCmd) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        // 查询功能是否配置复核打印单据配置        
+        WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
+        String checkingPrint = whFunctionOutBound.getCheckingPrint();
+        if(null != checkingPrint && "".equals(checkingPrint)){
+            String[] checkingPrintArray = checkingPrint.split(",");
+            for (int i = 0; i < checkingPrintArray.length; i++) {
+                List<Long> idsList = new ArrayList<Long>();
+                   List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(outboundBoxCode, checkingPrintArray[i], ouId);
+                   if(null == whPrintInfoLst || 0 == whPrintInfoLst.size()){
+                       idsList.add(checkingCmd.getId());
+                       WhPrintInfo whPrintInfo = new WhPrintInfo();
+                       whPrintInfo.setFacilityId(checkingCmd.getFacilityId());
+                       whPrintInfo.setContainerId(checkingCmd.getContainerId());
+                       Container container = containerDao.findByIdExt(checkingCmd.getContainerId(),checkingCmd.getOuId());
+                       whPrintInfo.setContainerCode(container.getCode());
+                       whPrintInfo.setBatch(checkingCmd.getBatch());
+                       whPrintInfo.setWaveCode(checkingCmd.getWaveCode());
+                       whPrintInfo.setOuId(ouId);
+                       whPrintInfo.setOuterContainerId(checkingCmd.getOuterContainerId());
+                       Container outerContainer = containerDao.findByIdExt(checkingCmd.getOuterContainerId(), ouId);
+                       whPrintInfo.setOuterContainerCode(outerContainer.getCode());
+                       whPrintInfo.setContainerLatticeNo(checkingCmd.getContainerLatticeNo());
+                       whPrintInfo.setOutboundboxId(checkingCmd.getOutboundboxId());
+                       whPrintInfo.setOutboundboxCode(checkingCmd.getOutboundboxCode());
+                       whPrintInfo.setPrintType(checkingPrintArray[i]);
+                       whPrintInfo.setPrintCount(1);//打印次数
+                       whPrintInfoDao.insert(whPrintInfo);
+                       try {
+                           if(CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])){
+                               // 装箱清单
+                               checkingManager.printPackingList(idsList, userId, ouId);    
+                           }
+                           if(CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])){
+                               // 销售清单      
+                               checkingManager.printSalesList(idsList, userId, ouId);   
+                           }
+                           if(CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])){
+                               // 面单
+                               checkingManager.printSinglePlane(idsList,userId, ouId);    
+                           }
+                           if(CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])){
+                               // 箱标签
+                               checkingManager.printBoxLabel(idsList, userId, ouId);    
+                           }
+                       } catch (Exception e) {
+                           log.error("WhCheckingManagerImpl printDefect is execption"+e);
+                       }
+                }else{
+                    Integer printCount = whPrintInfoLst.get(0).getPrintCount();
+                    if(printCount < 1){
+                        WhPrintInfo printfo = whPrintInfoLst.get(0);
+                        printfo.setPrintCount(1);
+                        whPrintInfoDao.saveOrUpdate(printfo);
+                        try {
+                            if(CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])){
+                                // 装箱清单
+                                checkingManager.printPackingList(idsList, userId, ouId);    
+                            }
+                            if(CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])){
+                                // 销售清单      
+                                checkingManager.printSalesList(idsList, userId, ouId);   
+                            }
+                            if(CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])){
+                                // 面单
+                                checkingManager.printSinglePlane(idsList,userId, ouId);    
+                            }
+                            if(CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])){
+                                // 箱标签
+                                checkingManager.printBoxLabel(idsList, userId, ouId);    
+                            }
+                        } catch (Exception e) {
+                            log.error("WhCheckingManagerImpl printDefect is execption"+e);
+                        }
+                    }
+                }
+            }
+        }
+        return isSuccess;
     }
 }

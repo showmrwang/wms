@@ -27,12 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
@@ -42,18 +39,12 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCom
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
-import com.baozun.scm.primservice.whoperation.constant.Constants;
-import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
-import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
-import com.baozun.scm.primservice.whoperation.exception.BusinessException;
-import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
@@ -67,15 +58,11 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManag
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
-import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("checkingManagerProxy")
 public class CheckingManagerProxyImpl extends BaseManagerImpl implements CheckingManagerProxy {

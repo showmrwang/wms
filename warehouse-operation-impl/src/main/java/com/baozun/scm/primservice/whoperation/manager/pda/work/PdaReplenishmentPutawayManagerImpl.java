@@ -261,14 +261,19 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 command.setIsNeedScanTurnoverBox(true);
                 //当前周转箱上架
                 whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
+                //判断当前库位是否有拣货工作
+                this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
             }else{//继续扫描下一个库位
                  command.setIsScanFinsh(true);
                  whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
                  //判断当前补货库位有没有拣货工作
                  //更新工作及作业状态
                  this.updateStatus(operationId, workCode, ouId, userId);
+                 //判断当前库位是否有拣货工作
+                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
                  //清除所有缓存
                  pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId,locationId,true);
+           
             }
         }else{//多个目标库位
             Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();

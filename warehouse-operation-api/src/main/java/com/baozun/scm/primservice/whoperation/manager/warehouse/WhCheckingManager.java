@@ -62,4 +62,7 @@ public interface WhCheckingManager extends BaseManager {
      * @return
      */
     public WhCheckingByOdoCommand findCheckingInfo(WhCheckingByOdoCommand whCheckingByOdoCommand);
+    
+    
+    public Boolean printDefect(WhCheckingByOdoResultCommand cmd);
 }
