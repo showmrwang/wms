@@ -19,6 +19,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	finish_time as finishTime,
 	        	sku_id as skuId,
 	        	qty as qty,
+	        	complete_qty as completeQty,
 	        	inv_status as invStatus,
 	        	inv_type as invType,
 	        	batch_number as batchNumber,
@@ -75,6 +76,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	finish_time ,
 		        	sku_id ,
 		        	qty ,
+		        	complete_qty ,
 		        	inv_status ,
 		        	inv_type ,
 		        	batch_number ,
@@ -120,7 +122,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{completeQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -172,7 +175,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        qty = #{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        complete_qty = #{completeQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -280,11 +284,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="qty!=null">
 					and qty = #{qty}
 				</if>
+				
+				<if test="completeQty!=null">
+					and complete_qty = #{completeQty}
+				</if>
 	       
 				<if test="invStatus!=null">
 					and inv_status = #{invStatus}
 				</if>
-	       
 	       
 		       <if test="invType!=null and invType!=''">
 					and inv_type = #{invType}

@@ -44,7 +44,9 @@ public class WhOperationExecLine extends BaseModel {
     /** 商品ID */
     private Long skuId;
     /** 执行量/完成量 */
-    private Long qty;
+    private Double qty = 0.0;
+    /** 执行量 */
+    private Double completeQty = 0.0;
     /** 库存状态 */
     private Long invStatus;
     /** 库存类型 */
@@ -171,12 +173,20 @@ public class WhOperationExecLine extends BaseModel {
         this.skuId = skuId;
     }
 
-    public Long getQty() {
+    public Double getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(Double qty) {
         this.qty = qty;
+    }
+
+    public Double getCompleteQty() {
+        return completeQty;
+    }
+
+    public void setCompleteQty(Double completeQty) {
+        this.completeQty = completeQty;
     }
 
     public Long getInvStatus() {

@@ -247,9 +247,13 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                 }
             }else{
                 // 所有托盘
-                pallets.add(operationExecLine.getUseOuterContainerId());
+                if(null != operationExecLine.getUseOuterContainerId()){
+                    pallets.add(operationExecLine.getUseOuterContainerId());    
+                }
                 // 所有货箱
-                containers.add(operationExecLine.getUseContainerId());
+                if(null != operationExecLine.getUseContainerId()){
+                    containers.add(operationExecLine.getUseContainerId()); 
+                }
                 // 目标库位对应的所有外部容器（整托整箱）
                 if(null != outerContainerIds.get(operationExecLine.getToLocationId())){
                     outerContainerIds.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseOuterContainerId());

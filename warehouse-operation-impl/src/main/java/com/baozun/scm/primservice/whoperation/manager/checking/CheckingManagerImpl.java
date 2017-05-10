@@ -256,7 +256,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
             //TODO 测试 复核头数据
 
             returnChecking = new WhCheckingCommand();
-            checkingCommand.setId(999L);
+            returnChecking.setId(999L);
             returnChecking.setBatch("testBatch");
             returnChecking.setWaveCode("testWaveCode");
             returnChecking.setCustomerName("testCustomerName");
@@ -388,7 +388,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         WhOutboundFacilityCommand facilityCommand =  whOutboundFacilityDao.findByIdExt(id, ouId);
         /*
         {
-            //TODO 测试
+            //TODO 测试 复核台
             if(null == facilityCommand){
                 facilityCommand = new WhOutboundFacilityCommand();
             }

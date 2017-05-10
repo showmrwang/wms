@@ -42,6 +42,7 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.CommonInboundManager"  ref="commonInboundManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.carton.WhCartonManager" ref="whCartonManager" />  
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaRcvdManagerProxy"  ref="pdaRcvdManagerProxy" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.PdaRcvdRedisManagerProxy"  ref="pdaRcvdRedisManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.PdaPutawayManager"  ref="pdaPutawayManager" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.CheckInManagerProxy"  ref="checkInManagerProxy" />
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.sortation.PdaInboundSortationManager"  ref="pdaInboundSortationManager" />
