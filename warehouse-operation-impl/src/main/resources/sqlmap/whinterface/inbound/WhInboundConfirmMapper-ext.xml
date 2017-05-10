@@ -30,10 +30,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ctn_rcvd as ctnRcvd,
 	        	ext_memo as extMemo,
 	        	data_source as dataSource,
-	        	status as status,
-	        	error_count as errorCount,
-	        	create_time as createTime,
-	        	last_modify_time as lastModifyTime
+	        	create_time as createTime
 	    ]]>
 	</sql>
 	
@@ -128,22 +125,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       <if test="dataSource!=null and dataSource!=''">
 					and data_source = #{dataSource}
 				</if>
-	       
-				<if test="status!=null">
-					and status = #{status}
-				</if>
-	       
-				<if test="errorCount!=null">
-					and error_count = #{errorCount}
-				</if>
+
 	       
 				<if test="createTime!=null">
 					and create_time = #{createTime}
 				</if>
-	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
-				</if>
+
 		</where>
 	</sql>
 	
@@ -168,13 +155,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        ctn_rcvd = #{ctnRcvd,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        ext_memo = #{extMemo,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        error_count = #{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        last_modify_time = now() 
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
 	        WHERE 
 		        id = #{id} 
-		        and last_modify_time	<=  #{lastModifyTime}    
 	    ]]>
 	</update>
 	

@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whinterface.model.inbound;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,6 +68,8 @@ public class WmsInBoundConfirm implements Serializable {
     private String extMemo;
     /** 数据来源 区分上位系统 */
     private String dataSource;
+    /** 入库时间 */
+    private Date inboundTime;
     /** 入库单反馈明细 */
     private List<WmsInBoundLineConfirm> wmsInBoundConfirmLines;
 
@@ -125,7 +128,7 @@ public class WmsInBoundConfirm implements Serializable {
     public void setToLocation(String toLocation) {
         this.toLocation = toLocation;
     }
-    
+
     public String getDeliveryTimeStr() {
         return deliveryTimeStr;
     }
@@ -228,6 +231,14 @@ public class WmsInBoundConfirm implements Serializable {
 
     public void setWmsInBoundConfirmLines(List<WmsInBoundLineConfirm> wmsInBoundConfirmLines) {
         this.wmsInBoundConfirmLines = wmsInBoundConfirmLines;
+    }
+
+    public Date getInboundTime() {
+        return inboundTime;
+    }
+
+    public void setInboundTime(Date inboundTime) {
+        this.inboundTime = inboundTime;
     }
 
 }
