@@ -40,7 +40,11 @@
                 outboundbox_code as outboundboxCode,
                 distribution_mode as distributionMode,
                 picking_mode as pickingMode,
-                checking_mode as checkingMode
+                checking_mode as checkingMode,
+                create_id as createId,
+                create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
         ]]>
     </sql>
 
@@ -188,6 +192,22 @@
             <if test="checkingMode!=null and checkingMode!=''">
                 and checking_mode = #{checkingMode}
             </if>
+            
+            <if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
         </where>
     </sql>
     
@@ -507,6 +527,41 @@
         where ch.ou_id = #{ouId}
         and container.code = #{containerCode}
     </select>
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking">
+        <![CDATA[
+            UPDATE t_wh_checking SET
+                facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                transport_name = #{transportName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                product_code = #{productCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                product_name = #{productName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                time_effect_code = #{timeEffectCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                time_effect_name = #{timeEffectName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} , 
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
+		        last_modify_time = now(),
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} and ou_id=#{ouId}
+                and last_modify_time	=  #{lastModifyTime}  
+        ]]>
+    </update>
     
 
 </mapper>

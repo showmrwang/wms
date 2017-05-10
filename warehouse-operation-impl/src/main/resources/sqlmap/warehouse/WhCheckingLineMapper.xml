@@ -40,7 +40,13 @@
                 uuid as uuid,
                 ou_id as ouId,
                 odo_id as odoId,
-                odo_line_id as odoLineId
+                odo_line_id as odoLineId,
+                create_id as createId,
+                create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode
         ]]>
     </sql>
     <sql id="whCheckingLineConditionWhereExt">
@@ -147,7 +153,13 @@
                     uuid ,
                     ou_id ,
                     odo_id ,
-                    odo_line_id 
+                    odo_line_id ,
+                    create_id,
+                create_time,
+	        	last_modify_time ,
+	        	modified_id ,
+	        	outboundbox_id ,
+	        	outboundbox_code 
                 ) VALUES (
                 #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{checkingId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -175,7 +187,13 @@
                     #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                    #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                    #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 )
             ]]>
 
@@ -208,11 +226,17 @@
                 inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
                 odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-                odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                odo_line_id = #{odoLineId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} , 
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.Long,jdbcType=BIGINT} 
             WHERE 
                 id = #{id} 
+                and ou_id  = #{ouId}
         ]]>
     </update>
     <update id="batchUpdate">
@@ -390,6 +414,30 @@
 
             <if test="odoLineId!=null">
                 and odo_line_id = #{odoLineId}
+            </if>
+            
+            <if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+				
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+				
+				<if test="outboundboxCode!=null and outboundboxCode!=''">
+                and outboundbox_code = #{outboundboxCode}
             </if>
         </where>
     </sql>

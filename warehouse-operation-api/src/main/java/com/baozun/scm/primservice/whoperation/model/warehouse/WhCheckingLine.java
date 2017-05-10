@@ -80,6 +80,18 @@ public class WhCheckingLine extends BaseModel {
     private Long odoId;
     /** 出库单明细ID */
     private Long odoLineId;
+    /** 创建人 */
+    private Long createId;
+    /** 创建时间 */
+    private Date createTime;
+    /** 最后修改时间 */
+    private Date lastModifyTime;
+    /** 操作人ID */
+    private Long modifiedId;
+    /** 耗材ID */
+    private Long outboundboxId;
+    /** 出库箱编码 */
+    private String outboundboxCode;
 
     public Long getCheckingId() {
         return checkingId;
@@ -288,4 +300,53 @@ public class WhCheckingLine extends BaseModel {
     public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
     }
+
+    public Long getCreateId() {
+        return createId;
+    }
+
+    public void setCreateId(Long createId) {
+        this.createId = createId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+
+    public Long getOutboundboxId() {
+        return outboundboxId;
+    }
+
+    public void setOutboundboxId(Long outboundboxId) {
+        this.outboundboxId = outboundboxId;
+    }
+
+    public String getOutboundboxCode() {
+        return outboundboxCode;
+    }
+
+    public void setOutboundboxCode(String outboundboxCode) {
+        this.outboundboxCode = outboundboxCode;
+    }
+
 }

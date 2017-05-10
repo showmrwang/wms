@@ -48,6 +48,9 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
     @CommonQuery
     int saveOrUpdate(WhChecking o);
 
+    @CommonQuery
+    int saveOrUpdateByVersion(WhChecking o);
+
     WeightingCommand findByWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
 
     WeightingCommand findByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
