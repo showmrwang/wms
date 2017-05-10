@@ -574,4 +574,155 @@
          and ou_id = #{ouId}
     </select>
 
+
+
+    <select id="findCheckingBySourceCode" resultMap="WhCheckingCommand">
+        SELECT
+            checking.id AS id,
+            checking.facility_id AS facilityId,
+            checking.container_id AS containerId,
+            checking.batch AS batch,
+            checking.wave_code AS waveCode,
+            checking.customer_code AS customerCode,
+            checking.customer_name AS customerName,
+            checking.store_code AS storeCode,
+            checking.store_name AS storeName,
+            checking.transport_code AS transportCode,
+            checking.transport_name AS transportName,
+            checking.product_code AS productCode,
+            checking.product_name AS productName,
+            checking.time_effect_code AS timeEffectCode,
+            checking.time_effect_name AS timeEffectName,
+            checking. STATUS AS STATUS,
+            checking.ou_id AS ouId,
+            checking.outer_container_id AS outerContainerId,
+            checking.container_lattice_no AS containerLatticeNo,
+            checking.outboundbox_id AS outboundboxId,
+            checking.outboundbox_code AS outboundboxCode,
+            checking.distribution_mode AS distributionMode,
+            checking.picking_mode AS pickingMode,
+            checking.checking_mode AS checkingMode,
+            facility.facility_code AS facilityCode,
+            turnoverBox.code AS turnoverBoxCode,
+            trolley.code AS trolleyCode
+        FROM
+            t_wh_checking AS checking
+            LEFT JOIN t_wh_outbound_facility AS facility ON checking.facility_id = facility.id
+            LEFT JOIN t_wh_container AS turnoverBox ON checking.container_id = turnoverBox.id
+            LEFT JOIN t_wh_container AS trolley ON checking.outer_container_id = trolley.id
+        WHERE
+            checking.ou_id = #{ouId}
+        AND (
+            facility.facility_code = #{checkingSourceCode}
+            OR turnoverBox.code = #{checkingSourceCode}
+            OR trolley.code = #{checkingSourceCode}
+            OR checking.container_lattice_no = #{checkingSourceCode}
+            OR checking.outboundbox_code = #{checkingSourceCode}
+        )
+    </select>
+
+    <select id="findCheckingByBoxCode" resultMap="WhCheckingCommand">
+        SELECT
+            checking.id AS id,
+            checking.facility_id AS facilityId,
+            checking.container_id AS containerId,
+            checking.batch AS batch,
+            checking.wave_code AS waveCode,
+            checking.customer_code AS customerCode,
+            checking.customer_name AS customerName,
+            checking.store_code AS storeCode,
+            checking.store_name AS storeName,
+            checking.transport_code AS transportCode,
+            checking.transport_name AS transportName,
+            checking.product_code AS productCode,
+            checking.product_name AS productName,
+            checking.time_effect_code AS timeEffectCode,
+            checking.time_effect_name AS timeEffectName,
+            checking. STATUS AS STATUS,
+            checking.ou_id AS ouId,
+            checking.outer_container_id AS outerContainerId,
+            checking.container_lattice_no AS containerLatticeNo,
+            checking.outboundbox_id AS outboundboxId,
+            checking.outboundbox_code AS outboundboxCode,
+            checking.distribution_mode AS distributionMode,
+            checking.picking_mode AS pickingMode,
+            checking.checking_mode AS checkingMode,
+            facility.facility_code AS facilityCode,
+            turnoverBox.code AS turnoverBoxCode,
+            trolley.code AS trolleyCode
+        FROM
+            t_wh_checking AS checking
+            LEFT JOIN t_wh_outbound_facility AS facility ON checking.facility_id = facility.id
+            LEFT JOIN t_wh_container AS turnoverBox ON checking.container_id = turnoverBox.id
+            LEFT JOIN t_wh_container AS trolley ON checking.outer_container_id = trolley.id
+        WHERE
+            checking.ou_id = #{ouId}
+            AND (
+                facility.facility_code = #{checkingSourceCode}
+                OR trolley.code = #{checkingSourceCode}
+            )
+            and(
+                 checking.container_lattice_no = #{checkingBoxCode}
+                OR checking.outboundbox_code = #{checkingBoxCode}
+            )
+    </select>
+
+    <select id="findCheckingByParam" resultMap="WhCheckingCommand">
+        select
+            checking.id as id,
+            checking.facility_id as facilityId,
+            checking.container_id as containerId,
+            checking.batch as batch,
+            checking.wave_code as waveCode,
+            checking.customer_code as customerCode,
+            checking.customer_name as customerName,
+            checking.store_code as storeCode,
+            checking.store_name as storeName,
+            checking.transport_code as transportCode,
+            checking.transport_name as transportName,
+            checking.product_code as productCode,
+            checking.product_name as productName,
+            checking.time_effect_code as timeEffectCode,
+            checking.time_effect_name as timeEffectName,
+            checking.status as status,
+            checking.ou_id as ouId,
+            checking.outer_container_id as outerContainerId,
+            checking.container_lattice_no as containerLatticeNo,
+            checking.outboundbox_id as outboundboxId,
+            checking.outboundbox_code as outboundboxCode,
+            checking.distribution_mode as distributionMode,
+            checking.picking_mode as pickingMode,
+            checking.checking_mode as checkingMode,
+            outboundFac.facility_code as facilityCode,
+            container.code as containerCode,
+            outContainer.code as outContainerCode
+        from t_wh_checking as checking
+            left join t_wh_outbound_facility as outboundFac on checking.facility_id = outboundFac.id
+            left join t_wh_container as container on checking.container_id = container.id
+            left join t_wh_container as outContainer on checking.outer_container_id = outContainer.id
+        <where>
+            <if test="id!=null">
+                and checking.id = #{id}
+            </if>
+            <if test="ouId!=null">
+                and checking.ou_id = #{ouId}
+            </if>
+            <if test="facilityCode != null and facilityCode != ''">
+                and outboundFac.facility_code = #{facilityCode}
+            </if>
+            <if test="containerCode != null and containerCode != ''">
+                and container.code = #{containerCode}
+            </if>
+            <if test="outContainerCode != null and outContainerCode != ''">
+                and outContainer.code = #{outContainerCode}
+            </if>
+            <if test="containerLatticeNo != null and containerLatticeNo != ''">
+                and checking.container_lattice_no = #{containerLatticeNo}
+            </if>
+            <if test="outboundboxCode != null and outboundboxCode != ''">
+                and checking.outboundbox_code = #{outboundboxCode}
+            </if>
+        </where>
+    </select>
+
 </mapper>

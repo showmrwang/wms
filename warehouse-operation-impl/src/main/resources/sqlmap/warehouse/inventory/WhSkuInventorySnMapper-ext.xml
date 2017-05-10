@@ -118,6 +118,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
 		<include refid="findListByQueryMapWithPageWhereExt"/>
     </select>
+
+    <select id="findCheckingSkuInvSnByCheckingId" resultMap="WhSkuInventorySnCommandResultExt">
+        select <include refid="findListByQueryMapWithPageCommandExt" />
+            from t_wh_sku_inventory_sn sn
+            left join t_wh_sku_inventory inv on inv.uuid = sn.uuid
+            left join t_wh_sku sku on inv.sku_id = sku.id
+            left join sys_dictionary sys on sn.status = sys.dic_value and sys.group_value = 'INVENTORY_SN_STATUS'
+            left join t_bi_store_defect_type stype on stype.id = sn.defect_type_id
+            left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
+            left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id
+            left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
+            left join t_wh_checking_line as checkingLine on checkingLine.uuid = sn.uuid and checkingLine.odo_line_id = inv.occupation_line_id
+        where
+            checkingLine.checking_id = #{checkingId}
+            and sn.ou_id = #{ouId}
+    </select>
+
     
     <select id="findWhSkuInventoryByUuid" resultMap="WhSkuInventorySnCommandResultExt">
     	select <include refid="whSkuInventorySnColumnsExt" />

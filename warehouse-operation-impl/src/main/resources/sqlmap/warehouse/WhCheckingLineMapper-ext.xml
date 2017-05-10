@@ -208,15 +208,54 @@
 
     <select id="getCheckingLineByCheckingId" resultMap="WhCheckingLineCommand">
         select
-        <include refid="whCheckingLineColumnsExt" />
+            checkingLine.id as id,
+            checkingLine.checking_id as checkingId,
+            checkingLine.sku_code as skuCode,
+            checkingLine.sku_ext_code as skuExtCode,
+            checkingLine.sku_bar_code as skuBarCode,
+            checkingLine.sku_name as skuName,
+            checkingLine.qty as qty,
+            checkingLine.checking_qty as checkingQty,
+            checkingLine.customer_code as customerCode,
+            checkingLine.customer_name as customerName,
+            checkingLine.store_code as storeCode,
+            checkingLine.store_name as storeName,
+            checkingLine.inv_status as invStatus,
+            checkingLine.inv_type as invType,
+            checkingLine.batch_number as batchNumber,
+            checkingLine.mfg_date as mfgDate,
+            checkingLine.exp_date as expDate,
+            checkingLine.country_of_origin as countryOfOrigin,
+            checkingLine.inv_attr1 as invAttr1,
+            checkingLine.inv_attr2 as invAttr2,
+            checkingLine.inv_attr3 as invAttr3,
+            checkingLine.inv_attr4 as invAttr4,
+            checkingLine.inv_attr5 as invAttr5,
+            checkingLine.uuid as uuid,
+            checkingLine.ou_id as ouId,
+            checkingLine.odo_id as odoId,
+            checkingLine.odo_line_id as odoLineId,
+            date_format(checkingLine.mfg_date,'%Y-%m-%d') as mfgDateString,
+            date_format(checkingLine.exp_date,'%Y-%m-%d') as expDateString,
+            invAttr1Sys.dic_label as invAttr1Label,
+            invAttr2Sys.dic_label as invAttr1Labe2,
+            invAttr3Sys.dic_label as invAttr1Labe3,
+            invAttr4Sys.dic_label as invAttr1Labe4,
+            invAttr5Sys.dic_label as invAttr1Labe5,
+            invTypeSys.dic_label as invTypeLabel,
+            invStatus.name as invStatusName
         from
-        t_wh_checking_line
-        <where>
-            ou_id = #{ouId}
-            <if test="checkingId!=null">
-                and checking_id = #{checkingId}
-            </if>
-        </where>
+            t_wh_checking_line as checkingLine
+            left join t_wh_inventory_status as invStatus on invStatus.id = checkingLine.inv_status
+            left join sys_dictionary as invTypeSys on invTypeSys.dic_value = checkingLine.inv_type and invTypeSys.group_value = 'INVENTORY_TYPE'
+            left join sys_dictionary as invAttr1Sys on invAttr1Sys.dic_value = checkingLine.inv_attr1 and invAttr1Sys.group_value = 'INVENTORY_ATTR_1'
+            left join sys_dictionary as invAttr2Sys on invAttr2Sys.dic_value = checkingLine.inv_attr2 and invAttr2Sys.group_value = 'INVENTORY_ATTR_2'
+            left join sys_dictionary as invAttr3Sys on invAttr3Sys.dic_value = checkingLine.inv_attr3 and invAttr3Sys.group_value = 'INVENTORY_ATTR_3'
+            left join sys_dictionary as invAttr4Sys on invAttr4Sys.dic_value = checkingLine.inv_attr4 and invAttr4Sys.group_value = 'INVENTORY_ATTR_4'
+            left join sys_dictionary as invAttr5Sys on invAttr5Sys.dic_value = checkingLine.inv_attr5 and invAttr5Sys.group_value = 'INVENTORY_ATTR_5'
+        where
+            checkingLine.ou_id = #{ouId}
+            and checkingLine.checking_id = #{checkingId}
     </select>
 
     <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine">

@@ -37,8 +37,55 @@ public class WhCheckingLineManagerImpl extends BaseManagerImpl implements WhChec
     
     @Override
     public List<WhCheckingLineCommand> getCheckingLineByCheckingId(Long checkingId, Long ouId) {
-        List<WhCheckingLineCommand> whCheckingLineCommandLst = whCheckingLineDao.getCheckingLineByCheckingId(checkingId, ouId);
-        return whCheckingLineCommandLst;
+        List<WhCheckingLineCommand> checkingLineList = whCheckingLineDao.getCheckingLineByCheckingId(checkingId, ouId);
+        /*
+        {
+            //TODO 测试 复核明细信息
+            if(null == checkingLineList){
+                checkingLineList = new ArrayList<>();
+            }
+            checkingLineList.clear();
+
+            WhCheckingLineCommand checkingLine = new WhCheckingLineCommand();
+            checkingLine.setId(123L);
+            checkingLine.setCheckingId(checkingId);
+            checkingLine.setOuId(ouId);
+            checkingLine.setSkuCode("S7308780916506073943");
+            checkingLine.setSkuExtCode("chtestgoods");
+            checkingLine.setSkuBarCode("chtestgoods");
+            checkingLine.setSkuName("chtestgoods");
+            checkingLine.setBatchNumber("testBatchNumber");
+            checkingLine.setQty(2L);
+            checkingLine.setCheckingQty(0L);
+            checkingLine.setCustomerCode(null);
+            checkingLine.setCustomerName(null);
+            checkingLine.setStoreCode(null);
+            checkingLine.setStoreName(null);
+            checkingLine.setInvStatus("3");
+            checkingLine.setInvStatusName("良品");
+            checkingLine.setInvType("CCP");
+            checkingLine.setInvTypeLabel("残次品");
+            checkingLine.setMfgDate(null);
+            checkingLine.setMfgDateString(null);
+            checkingLine.setExpDate(null);
+            checkingLine.setExpDateString(null);
+            checkingLine.setCountryOfOrigin("testCountry");
+            checkingLine.setInvAttr1("color1");
+            checkingLine.setInvAttr1Label("颜色1");
+            checkingLine.setInvAttr2("weight2");
+            checkingLine.setInvAttr2Label("重量2");
+            checkingLine.setInvAttr3("gweoi");
+            checkingLine.setInvAttr3Label("gweoi");
+            checkingLine.setInvAttr4("big3");
+            checkingLine.setInvAttr4Label("big3");
+            checkingLine.setInvAttr5("mirenTaste");
+            checkingLine.setInvAttr5Label("mirenTaste");
+            checkingLine.setUuid("test-45fb9395a1ec69e962a1412131b74d46");
+
+            checkingLineList.add(checkingLine);
+        }
+        */
+        return checkingLineList;
     }
 
     @Override
