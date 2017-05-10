@@ -74,5 +74,24 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @return
      */
     List<WhOperationLineCommand> findOperationLineByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+    
+    /***
+     * 查询当前货箱内sku的数量
+     * @param ouId
+     * @param insideContainerId
+     * @return
+     */
+    public int findInventoryCountsByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
+    
+    
+    
+    /***
+     * 查询当前托盘内sku的数量
+     * @param ouId
+     * @param outerContainerId
+     * @return
+     */
+    public int findInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("fromOuterContainerId") Long fromOuterContainerId);
+    
 	
 }

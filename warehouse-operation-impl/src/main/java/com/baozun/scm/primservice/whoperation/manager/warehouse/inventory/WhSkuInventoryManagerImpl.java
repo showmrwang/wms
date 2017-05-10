@@ -6877,12 +6877,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param operationId
      * @param ouId
      */
-    public void pickingAddContainerInventory(List<String> snDefectList,Long containerId,Long locationId,String skuAttrIds,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,Integer pickingWay,Integer scanPattern,Double scanSkuQty,String outBoundBox,
-                                             Long turnoverBoxId,Long outerContainerId,Long insideContainerId,Boolean isShortPicking,Integer useContainerLatticeNo,Set<Long> insideContainerIds){
+    public void pickingAddContainerInventory(List<WhOperationExecLine> execLineList,List<String> snDefectList,Long containerId,Long locationId,String skuAttrIds,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,Integer pickingWay,Integer scanPattern,Double scanSkuQty,
+                                             Long turnoverBoxId,Long outerContainerId,Long insideContainerId,Boolean isShortPicking,Set<Long> insideContainerIds){
         
         Set<Long> skuInvCmdList = new HashSet<Long>();
         Set<Long> execLineIds = new HashSet<Long>();
         Set<Long> invSkuIds = new HashSet<Long>();
+        Integer useContainerLatticeNo = execLineList.get(0).getUseContainerLatticeNo();
+        String outBoundBox = execLineList.get(0).getUseOutboundboxCode();
         if(Constants.PICKING_WAY_SIX == pickingWay){   //整箱拣货
             //到库存表中查询
             List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
@@ -6986,17 +6988,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 break;  //跳出当前循环
                         }
             }
-            List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId,outerContainerId,insideContainerId);
-            if(null== operationExecLineList || operationExecLineList.size()==0) {
-                throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
-            }
-            for(WhOperationExecLine opLineExec:operationExecLineList) {
-                String execSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(opLineExec);
-                if(opLineExec.getFromLocationId().equals(locationId) && skuAttrIds.equals(execSkuAttrIds) && scanSkuQty.equals(Double.valueOf(opLineExec.getQty()))){
+            for(WhOperationExecLine opLineExec:execLineList) {
                     Long execid = opLineExec.getId();
                     execLineIds.add(execid);
-                    break;
-                }
             }
         }
         //校验容器/出库箱库存与删除的拣货库位库存时否一致
@@ -7033,7 +7027,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }
         if(!result) {
-            throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+            throw new BusinessException(ErrorCodes.CHECK_CONTAINER_INVENTORY_IS_ERROR);
         }
     }
     

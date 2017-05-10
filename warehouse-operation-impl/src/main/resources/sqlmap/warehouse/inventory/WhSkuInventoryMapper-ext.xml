@@ -4787,4 +4787,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					    and inv.ou_id = #{ouId}
 						and c.id = #{insideContainerId}
     </select>
+    <select id="findInventoryCountsByInsideContainerId" resultType="Integer">
+		select sum(on_hand_qty) from t_wh_sku_inventory inv
+			and inv.ou_id=#{ouId}
+			and inv.inside_container_id=#{insideContainerId} 
+	</select>
+	
+	
+	  <select id="findInventoryCountsByOuterContainerId" resultType="Integer">
+		select sum(on_hand_qty) from t_wh_sku_inventory inv
+			and inv.ou_id=#{ouId}
+			and inv.outer_container_id=#{outerContainerId} 
+	</select>
 </mapper>

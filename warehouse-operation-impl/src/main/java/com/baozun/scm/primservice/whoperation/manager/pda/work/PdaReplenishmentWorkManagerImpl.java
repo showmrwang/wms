@@ -323,4 +323,38 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             containerDao.saveOrUpdateByVersion(c);
         }
     }
+    
+    /***
+     * 判断是否是整箱或者整托
+     * @param outerContainerCode
+     * @param insideCotainerCode
+     * @param ouId
+     * @return
+     */
+    public Boolean judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId){
+        Boolean result = false;// 是整托整箱
+        if(StringUtils.isEmpty(outerContainerCode) && StringUtils.isEmpty(insideCotainerCode)) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)) {
+            ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = cmd.getId();
+        }
+        Long insideContainerId = null;
+        if(!StringUtils.isEmpty(insideCotainerCode)) {
+            ContainerCommand cmd =  containerDao.getContainerByCode(insideCotainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId  = cmd.getId();
+        }
+        int count = whSkuInventoryDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
+        return result;
+    }
 }
