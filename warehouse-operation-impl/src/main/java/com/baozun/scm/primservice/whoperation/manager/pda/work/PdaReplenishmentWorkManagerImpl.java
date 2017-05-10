@@ -144,6 +144,8 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
            psRCmd.setIsScanInvAttr(resplenishment.getIsScanInvAttr());           //是否扫描sku属性
            psRCmd.setIsTipInvAttr(resplenishment.getIsTipInvAttr());  //是否提示sku库存属性
            psRCmd.setScanPattern(resplenishment.getScanPattern());  //扫描模式 
+           psRCmd.setPalletPickingMode(resplenishment.getPalletPickingMode()); //整拖拣货模式
+           psRCmd.setContainerPickingMode(resplenishment.getContainerPickingMode()); //整箱拣货模式
            return psRCmd;
     }
 
