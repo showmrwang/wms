@@ -72,41 +72,10 @@ public class WhCheckingCollection extends BaseModel {
     /** 修改人ID */
     private Long modifiedId;
 
+
     // columns END
     public Long getFacilityId() {
         return facilityId;
-    }
-
-    public Long getCreateId() {
-        return createId;
-    }
-
-    public void setCreateId(Long createId) {
-        this.createId = createId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getLastModifyTime() {
-        return lastModifyTime;
-    }
-
-    public void setLastModifyTime(Date lastModifyTime) {
-        this.lastModifyTime = lastModifyTime;
-    }
-
-    public Long getModifiedId() {
-        return modifiedId;
-    }
-
-    public void setModifiedId(Long modifiedId) {
-        this.modifiedId = modifiedId;
     }
 
     public String getWaveCode() {
@@ -224,4 +193,37 @@ public class WhCheckingCollection extends BaseModel {
     public void setCheckingMode(String checkingMode) {
         this.checkingMode = checkingMode;
     }
+
+    public java.lang.Long getCreateId() {
+        return createId;
+    }
+
+    public void setCreateId(java.lang.Long createId) {
+        this.createId = createId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public java.lang.Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(java.lang.Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+
 }

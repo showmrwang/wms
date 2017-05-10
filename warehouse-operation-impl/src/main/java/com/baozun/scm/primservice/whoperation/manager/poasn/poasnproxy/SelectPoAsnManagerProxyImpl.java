@@ -522,9 +522,9 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
             line.setSkuCode(skuRedis.getSku().getCode());
             line.setSkuName(skuRedis.getSku().getName());
 
-            // line.setColor(skuRedis.getSku().getColor());
-            // line.setSize(skuRedis.getSku().getSize());
-            // line.setStyle(skuRedis.getSku().getStyle());
+            line.setColor(skuRedis.getSku().getColor());
+            line.setSize(skuRedis.getSku().getSize());
+            line.setStyle(skuRedis.getSku().getStyle());
 
         }
         return lineList;

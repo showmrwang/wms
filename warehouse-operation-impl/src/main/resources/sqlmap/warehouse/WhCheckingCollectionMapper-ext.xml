@@ -30,8 +30,8 @@
                 distribution_mode as distributionMode,
                 picking_mode as pickingMode,
                 checking_mode as checkingMode,
-	        	create_id as createId,
-	        	create_time as createTime,
+                create_id as createId,
+                create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	modified_id as modifiedId
         
@@ -105,6 +105,22 @@
             <if test="checkingMode!=null and checkingMode!=''">
                 and checking_mode = #{checkingMode}
             </if>
+            
+            <if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
         </where>
     </sql>
 
