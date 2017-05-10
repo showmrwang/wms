@@ -237,6 +237,32 @@
 		where ch.outboundbox_code = #{outboundBoxCode} and ch.ou_id = #{ouId}
     </select>
 
+     <select id="findByOutboundBoxCodeAndCheckingId" resultMap="WeightingCommand" flushCache="false">
+        select
+        info.actual_weight as actualWeight,
+		info.calc_weight as calcWeight,
+		info.floats as floats,
+		odo.odo_code as odoCode,
+		odo.id as odoId,
+		info.outboundbox_id as outboundBoxId,
+		del.waybill_code as waybillCode,
+		sku.bar_code as skuCode,
+        <include refid="whCheckWeightingExt"/>
+        FROM
+			t_wh_checking ch,
+			t_wh_odo_package_info info,
+			t_wh_odo odo,
+			t_wh_odo_delivery_info del,
+			t_wh_sku sku
+		WHERE
+			ch.id = #{checkingId}
+		and odo.id = info.odo_id
+		AND info.outboundbox_code = #{outboundBoxCode}
+		and del.outboundbox_code = #{outboundBoxCode}
+		and  ch.outboundbox_id = sku.id
+		AND ch.ou_id = #{ouId};
+    </select>
+
      <select id="findListByFacilityCode" resultMap="WhCheckingCommand" flushCache="false">
         select
 	       	 ch.id as id,
