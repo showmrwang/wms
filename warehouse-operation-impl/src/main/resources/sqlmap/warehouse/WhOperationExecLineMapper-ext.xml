@@ -25,6 +25,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	finish_time as finishTime,
 	        	sku_id as skuId,
 	        	qty as qty,
+	        	complete_qty as completeQty,
 	        	inv_status as invStatus,
 	        	inv_type as invType,
 	        	batch_number as batchNumber,
@@ -101,6 +102,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 			<if test="qty!=null">
 				and qty = #{qty}
+			</if>
+			
+			<if test="completeQty!=null">
+				and complete_qty = #{completeQty}
 			</if>
 
 			<if test="invStatus!=null">
@@ -294,6 +299,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="qty!=null">
 				and line.qty = #{qty}
 			</if>
+			
+			<if test="completeQty!=null">
+				and complete_qty = #{completeQty}
+			</if>
 
 			<if test="invStatus!=null">
 				and line.inv_status = #{invStatus}
@@ -461,7 +470,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        qty = #{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	qty = #{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	complete_qty = #{completeQty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 			        inv_status = #{invStatus,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        inv_type = #{invType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        batch_number = #{batchNumber,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -596,6 +606,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	line.finish_time as finishTime,
 		        	line.sku_id as skuId,
 		        	line.qty as qty,
+		        	line.complete_qty as completeQty,
 		        	line.inv_status as invStatus,
 		        	line.inv_type as invType,
 		        	line.batch_number as batchNumber,
@@ -791,6 +802,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	line.finish_time as finishTime,
 	        	line.sku_id as skuId,
 	        	line.qty as qty,
+	        	line.complete_qty as completeQty,
 	        	line.inv_status as invStatus,
 	        	line.inv_type as invType,
 	        	line.batch_number as batchNumber,
@@ -857,6 +869,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	line.finish_time as finishTime,
 	        	line.sku_id as skuId,
 	        	line.qty as qty,
+	        	line.complete_qty as completeQty,
 	        	line.inv_status as invStatus,
 	        	line.inv_type as invType,
 	        	line.batch_number as batchNumber,

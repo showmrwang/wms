@@ -74,15 +74,15 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
      */
     @Override
     public PickingScanResultCommand getReplenishmentForGroup(WhWork whWork, Long ouId) {
-        // 根据工作id获取作业信息        
+        // 根据工作id获取作业信息 
         WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(whWork.getId(), ouId);
-        // 统计分析工作及明细并缓存
+        // 统计分析工作及明细并缓存 
         pdaPickingWorkManager.getOperatioLineForGroup(whOperationCommand);
-        // 获取缓存中的统计分析数据        
+        // 获取缓存中的统计分析数据 
         OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(whOperationCommand.getId(), whOperationCommand.getOuId());
-        // 返回结果初始化        
+        // 返回结果初始化 
         PickingScanResultCommand psRCmd = new PickingScanResultCommand();
-        // 作业id        
+        // 作业id 
         psRCmd.setOperationId(whOperationCommand.getId());
         // 捡货方式           
         if(whOperationCommand.getIsWholeCase() == false){

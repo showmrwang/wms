@@ -2116,7 +2116,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && outerContainerId.equals(oLCmd.getFromOuterContainerId())) {
                     operationLineId = oLCmd.getId(); // 获取当前作业明细id
                     WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
-                    whOperationExecLine.setQty(qty.longValue());
+                    whOperationExecLine.setQty(qty);
                     if (isShortPicking) {// 短拣商品
                         whOperationExecLine.setIsShortPicking(true);
                     }
@@ -2127,7 +2127,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && insideContainerId.equals(oLCmd.getFromInsideContainerId())) {
                     operationLineId = oLCmd.getId(); // 获取当前作业明细id
                     WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
-                    whOperationExecLine.setQty(qty.longValue());
+                    whOperationExecLine.setQty(qty);
                     if (isShortPicking) {// 短拣商品
                         whOperationExecLine.setIsShortPicking(true);
                     }
@@ -2181,7 +2181,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             Double subtract = qty.doubleValue() - sum;
                             if (subtract.doubleValue() > 0) {
                                 line.setCompleteQty(oLCmd.getQty());
-                                whOperationExecLine.setQty(oLCmd.getQty().longValue());
+                                whOperationExecLine.setQty(oLCmd.getQty());
                                 whOperationExecLineDao.insert(whOperationExecLine);
                                 list.add(whOperationExecLine);
                                 // 修改作业明细表
@@ -2192,23 +2192,23 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             }
                             if (subtract.doubleValue() == 0) {
                                 line.setCompleteQty(oLCmd.getQty());
-                                whOperationExecLine.setQty(oLCmd.getQty().longValue());
+                                whOperationExecLine.setQty(oLCmd.getQty());
                                 whOperationExecLineDao.insert(whOperationExecLine);
                                 list.add(whOperationExecLine);
                             }
                             if (subtract.doubleValue() < 0) {
                                 line.setCompleteQty(sum - qty.doubleValue());
-                                whOperationExecLine.setQty(oLCmd.getQty().longValue());
+                                whOperationExecLine.setQty(oLCmd.getQty());
                                 whOperationExecLineDao.insert(whOperationExecLine);
                                 list.add(whOperationExecLine);
                             }
 
                         } else if (qty.doubleValue() < oLCmd.getQty().doubleValue()) {
-                            whOperationExecLine.setQty(qty.longValue());
+                            whOperationExecLine.setQty(qty);
                             whOperationExecLineDao.insert(whOperationExecLine);
                             list.add(whOperationExecLine);
                         } else {
-                            whOperationExecLine.setQty(qty.longValue());
+                            whOperationExecLine.setQty(qty);
                             whOperationExecLineDao.insert(whOperationExecLine);
                             list.add(whOperationExecLine);
                         }
@@ -2229,7 +2229,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if (isShortPickingEnd) { // 拣货完成
                 operationLineId = oLCmd.getId(); // 获取当前作业明细id
                 WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
-                whOperationExecLine.setQty(qty.longValue());
+                whOperationExecLine.setQty(qty);
                 whOperationExecLine.setIsShortPicking(true);
                 whOperationExecLineDao.insert(whOperationExecLine);
             }
@@ -2586,7 +2586,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 whOperationExecLine.setLastModifyTime(new Date());
                 whOperationExecLine.setCreateTime(new Date());
                 whOperationExecLine.setOperatorId(command.getUserId());
-                whOperationExecLine.setQty(operationLineCommand.getQty().longValue());
+                whOperationExecLine.setQty(operationLineCommand.getQty());
                 whOperationExecLineDao.insert(whOperationExecLine);
                 // 根据作业明细查询库存信息
                 Double onHandQty = operationLineCommand.getQty();
@@ -3040,7 +3040,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 Long operationLineId = cmd.getId();
                 // 添加作业执行明细
                 WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, null, null);
-                whOperationExecLine.setQty(execLineQty.longValue());
+                whOperationExecLine.setQty(execLineQty);
                 whOperationExecLine.setIsShortPicking(true);
                 whOperationExecLineDao.insert(whOperationExecLine);
             }
