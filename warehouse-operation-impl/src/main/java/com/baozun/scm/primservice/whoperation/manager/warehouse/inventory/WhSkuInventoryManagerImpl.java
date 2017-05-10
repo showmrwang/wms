@@ -7361,6 +7361,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             WhSkuInventorySn sn = new WhSkuInventorySn();
                             BeanUtils.copyProperties(cSnCmd, sn);
                             sn.setUuid(inv.getUuid());
+                            sn.setOccupationCode(skuInvCmd.getOccupationCode());
+                            sn.setOccupationLineId(skuInvCmd.getOccupationId());
                             whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
                             insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
                             if(count >= qty) {

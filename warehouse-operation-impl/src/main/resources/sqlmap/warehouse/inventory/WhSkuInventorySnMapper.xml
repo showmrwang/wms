@@ -17,6 +17,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id as id,
 	        	sn as sn,
 	        	occupation_code as occupationCode,
+	            occupation_line_id as occupationLineId,
 	        	defect_ware_barcode as defectWareBarcode,
 	        	defect_source as defectSource,
 	        	defect_type_id as defectTypeId,
@@ -116,7 +117,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	inv_attr ,
 		        	uuid ,
 		        	ou_id ,
-		        	sys_uuid
+		        	sys_uuid,
+		        	occupation_line_id
 		        ) VALUES (
 		     	    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -129,7 +131,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{occupationLineId,javaType=java.lang.String,jdbcType=VARCHAR}  
 		        )
 		    ]]>
 
@@ -148,7 +151,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        inv_attr = #{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        sys_uuid = #{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        sys_uuid = #{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR},
+		        occupation_line_id= #{occupationLineId,javaType=java.lang.String,jdbcType=VARCHAR}  
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
