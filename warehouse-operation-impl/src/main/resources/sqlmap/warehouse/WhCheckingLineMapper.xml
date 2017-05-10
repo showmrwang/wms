@@ -193,7 +193,7 @@
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{outboundboxCode,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.Long,jdbcType=BIGINT} 
                 )
             ]]>
 
