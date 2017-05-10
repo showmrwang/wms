@@ -4799,4 +4799,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id=#{ouId}
 			and inv.outer_container_id=#{outerContainerId} 
 	</select>
+	
+	<select id="getInvSatusByName" resultType="long">
+		select 
+			id 
+		from 
+			t_wh_inventory_status
+		where 
+			name = #{invStatus}
+			and lifecycle = 1
+	</select>
 </mapper>

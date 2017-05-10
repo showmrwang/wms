@@ -89,6 +89,8 @@
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo</value>
                     <value>com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundSnLineConfirm</value>
                     <value>com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoTransportMgmt</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt</value>
 				</list>
 			</property>
 			

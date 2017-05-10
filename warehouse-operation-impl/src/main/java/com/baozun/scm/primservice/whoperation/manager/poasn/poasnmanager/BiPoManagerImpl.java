@@ -206,7 +206,7 @@ public class BiPoManagerImpl extends BaseManagerImpl implements BiPoManager {
         // 插入BiPoTransportMgmt
         if (null != whPoTm) {
         	BiPoTransportMgmt biPoTransportMgmt = new BiPoTransportMgmt();
-			BeanUtils.copyProperties(whPoTm, biPoTransportMgmt);
+			BeanUtils.copyProperties(whPoTm, biPoTransportMgmt, "id");
 			biPoTransportMgmt.setPoId(biPo.getId());
 			long insertCount = biPoTransportMgmtDao.insert(biPoTransportMgmt);
 			if (insertCount <= 0) {

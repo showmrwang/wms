@@ -9999,4 +9999,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         
         return whSkuInventoryDao.findOutboundboxInventory(outboundbox, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public Long getInvSatusByName(String invStatus) {
+        if (StringUtils.isEmpty(invStatus)) {
+            return null;
+        }
+        return whSkuInventoryDao.getInvSatusByName(invStatus);
+    }
 }
