@@ -107,7 +107,6 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
     
 
 
-    public WhCheckingCommand findWhCheckingByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
 
 
