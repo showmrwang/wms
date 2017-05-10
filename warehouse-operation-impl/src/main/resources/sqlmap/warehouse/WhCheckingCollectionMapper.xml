@@ -29,7 +29,11 @@
                 outboundbox_code as outboundboxCode,
                 distribution_mode as distributionMode,
                 picking_mode as pickingMode,
-                checking_mode as checkingMode
+                checking_mode as checkingMode,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
         ]]>
     </sql>
 
@@ -136,7 +140,11 @@
                     outboundbox_code ,
                     distribution_mode ,
                     picking_mode ,
-                    checking_mode 
+                    checking_mode ,
+		        	create_id as createId,
+		        	create_time as createTime,
+		        	last_modify_time as lastModifyTime,
+		        	modified_id as modifiedId
                 ) VALUES (
              	    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -153,7 +161,11 @@
                     #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                     #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                    #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+                    #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR}  ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
                 )
         ]]>
 
@@ -176,7 +188,11 @@
                 outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
                 picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-                checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+                checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR},
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}  
             WHERE 
                 id = #{id}
         ]]>

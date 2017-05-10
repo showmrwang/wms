@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -209,7 +210,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void insertIntoCheckingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work) {
+    public void insertIntoCheckingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work, Long useId) {
         // 拣货作业执行明细分组
         List<WhOperationExecLineCommand> operationExecLineGroup = new ArrayList<WhOperationExecLineCommand>();
         if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
@@ -237,6 +238,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
                 whCheckingCollection.setCollectionStatus(CollectionStatus.NEW);
+                whCheckingCollection.setCreateId(useId);
+                whCheckingCollection.setCreateTime(new Date());
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
                 insertIntoCheckingCollectionLine(whCheckingCollection);
             }

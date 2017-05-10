@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -61,10 +63,50 @@ public class WhCheckingCollection extends BaseModel {
     private String pickingMode;
     /** 复核模式 */
     private String checkingMode;
+    /** 创建人ID */
+    private Long createId;
+    /** 创建时间 */
+    private Date createTime;
+    /** 最后修改时间 */
+    private Date lastModifyTime;
+    /** 修改人ID */
+    private Long modifiedId;
 
     // columns END
     public Long getFacilityId() {
         return facilityId;
+    }
+
+    public Long getCreateId() {
+        return createId;
+    }
+
+    public void setCreateId(Long createId) {
+        this.createId = createId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
     }
 
     public String getWaveCode() {
