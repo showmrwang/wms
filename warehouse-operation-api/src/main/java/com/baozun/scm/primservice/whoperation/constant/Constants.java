@@ -843,9 +843,9 @@ public final class Constants {
     public static final String WAY_3 = "way3";
     /**按单复核模式4 播种墙+货格*/
     public static final String WAY_4 = "way4";
-    /**按单复核模式5 只有出库箱*/
+    /**按单复核模式5 周转箱*/
     public static final String WAY_5 = "way5";
-    /**按单复核模式6 周转箱*/
+    /**按单复核模式6 出库箱*/
     public static final String WAY_6 = "way6";
 
     // 字典表 值

@@ -60,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -126,6 +127,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private WhPrintInfoDao whPrintInfoDao;
     @Autowired
     private CheckingManager checkingManager;
+    @Autowired
+    private WhSkuDao skuDao;
 
     @Override
     public void saveOrUpdate(WhCheckingCommand whCheckingCommand) {
@@ -739,8 +742,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
         WeightingCommand command = null;
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
-        Long outboundboxId = cmd.getOutboundboxId();
         String outboundbox = cmd.getOutboundBoxCode();
+        String skuBarCode = cmd.getSkuBarCode();
+        WhSkuCommand skuCmd = skuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
+        if(null == skuCmd ){
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        Long outboundboxId = skuCmd.getId();
         // 更新复合明细表
         Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId);
         cmd.setOuId(ouId);
@@ -869,13 +877,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
         Double sum = 0.0;
-        Double result = 0.0;
         for (WhCheckingLineCommand whCheckingLineCommand : checkingLineList) {
             Double actualWeight = 0.0;
             WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
-            actualWeight = whSkuCommand.getWeight() * whCheckingLineCommand.getCheckingQty();
-            result = weightCalculator.calculateStuffWeight(whSkuCommand.getWeight());
-            System.out.println("结果值："+result);
+            actualWeight = weightCalculator.calculateStuffWeight(whSkuCommand.getWeight()) * whCheckingLineCommand.getCheckingQty();
             sum += actualWeight;
 
         }

@@ -9761,7 +9761,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
        String seedingWallCode = cmd.getSeedingWallCode(); // 播种墙编码
        String turnoverBoxCode = cmd.getTurnoverBoxCode(); // 周转箱
        Long turnoverBoxId = null;
-       if(Constants.WAY_6.equals(checkingPattern)) {
+       if(Constants.WAY_5.equals(checkingPattern)) {
            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
            if(null == c) {
                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
@@ -9801,11 +9801,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId,odoId,ouId,null, null, outboundboxCode, null, seedingWallCode);
            }  
            //周转箱
-           if(Constants.WAY_6.equals(checkingPattern)) {
+           if(Constants.WAY_5.equals(checkingPattern)) {
                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId,odoId,ouId, null, null, null, turnoverBoxId, null);
            } 
            //只有出库箱
-           if(Constants.WAY_5.equals(checkingPattern)) {
+           if(Constants.WAY_6.equals(checkingPattern)) {
                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId,odoId,ouId,null, null, outboundboxCode, null,null);
            }
            for(WhSkuInventoryCommand invCmd:skuInvList){//一单多箱的情况库存记录大于复合明细记录,
@@ -9849,7 +9849,20 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            whSkuInventoryDao.insert(skuInv);
                            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
                            // 记录入库库存日志(这个实现的有问题)
-                           insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,null);
+                           insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.CHECK);
+                           String uuid1 = invCmd.getUuid();
+                           Double oldQty1 = 0.0;
+                           if (true == isTabbInvTotal) {
+                                 try {
+                                         oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
+                                 } catch (Exception e) {
+                                         log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                                         throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                                 }
+                           } else {
+                                     oldQty1 = 0.0;
+                           }
+                           insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId,InvTransactionType.CHECK);
                            //删除原来的库存
                            whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
                        }
@@ -9891,7 +9904,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                            whSkuInventoryDao.insert(skuInv);
                            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
                            // 记录入库库存日志(这个实现的有问题)
-                           insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,null);
+                           insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.CHECK);
+                           insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.CHECK);
+                           String uuid1 = invCmd.getUuid();
+                           Double oldQty1 = 0.0;
+                           if (true == isTabbInvTotal) {
+                                 try {
+                                         oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
+                                 } catch (Exception e) {
+                                         log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                                         throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                                 }
+                           } else {
+                                     oldQty1 = 0.0;
+                           }
+                           insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId,InvTransactionType.CHECK);
                            //删除原来的库存
                            whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
                            //操作sn/残次信息
