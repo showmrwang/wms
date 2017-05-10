@@ -770,6 +770,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             pSRcmd.setScanPattern(picking.getScanPattern());// 扫描模式
             pSRcmd.setIsTipInvAttr(picking.getIsTipInvAttr());// 是否提示商品库存属性
             pSRcmd.setPalletPickingMode(picking.getPalletPickingMode());// 整拖拣货模式
+            pSRcmd.setContainerPickingMode(picking.getContainerPickingMode()); //整箱拣货模式
             OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
             List<Long> locationIds = operatorLine.getLocationIds();
             CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.tipLocation(operationId, locationIds);
