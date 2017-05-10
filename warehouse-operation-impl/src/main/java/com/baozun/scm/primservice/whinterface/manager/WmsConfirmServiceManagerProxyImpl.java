@@ -377,6 +377,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             WmsInBoundConfirm inbound = new WmsInBoundConfirm();
             BeanUtils.copyProperties(whInboundConfirm, inbound);
             inbound.setDeliveryTimeStr(DateUtil.formatDate(whInboundConfirm.getDeliveryTime(), DateUtil.DEFAULT_DATE_TIME_FORMAT_NEW));
+            inbound.setInboundTime(whInboundConfirm.getCreateTime());
             // 获取入库单反馈明细数据
             List<WmsInBoundLineConfirm> wmsInboundLineConfirms = new ArrayList<WmsInBoundLineConfirm>();
             List<WhInboundLineConfirm> whInboundLineConfirms = whInboundConfirm.getWhInboundLineConfirms();

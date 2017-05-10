@@ -70,8 +70,9 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param execLineCommandList
      * @param ouId
      * @param work
+     * @param userId
      */
-    void insertIntoCheckingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work);
+    void insertIntoCheckingCollection(String batch, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, WhWorkCommand work, Long userId);
 
 
     /**
@@ -280,6 +281,7 @@ public interface PdaConcentrationManager extends BaseManager {
 
     /**
      * [业务方法] 根据索引剔除缓存数据
+     * 
      * @param index
      * @param userId
      * @param batch

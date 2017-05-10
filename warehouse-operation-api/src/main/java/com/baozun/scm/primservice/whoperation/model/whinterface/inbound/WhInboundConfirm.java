@@ -64,22 +64,11 @@ public class WhInboundConfirm extends BaseModel {
     private String extMemo;
     /** 数据来源 区分上位系统 */
     private String dataSource;
-    /** 状态 */
-    private Integer status;
-    /** 失败次数 */
-    private Integer errorCount;
     /** 创建时间 */
     private Date createTime;
-    /** 最后修改时间 */
-    private Date lastModifyTime;
     /** 入库单明细信息 */
     private List<WhInboundLineConfirm> whInboundLineConfirms;
 
-    public WhInboundConfirm() {}
-
-    public WhInboundConfirm(Long id) {
-        this.id = id;
-    }
 
     public String getUuid() {
         return uuid;
@@ -225,36 +214,12 @@ public class WhInboundConfirm extends BaseModel {
         this.dataSource = dataSource;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Integer getErrorCount() {
-        return errorCount;
-    }
-
-    public void setErrorCount(Integer errorCount) {
-        this.errorCount = errorCount;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    public Date getLastModifyTime() {
-        return lastModifyTime;
-    }
-
-    public void setLastModifyTime(Date lastModifyTime) {
-        this.lastModifyTime = lastModifyTime;
     }
 
     public List<WhInboundLineConfirm> getWhInboundLineConfirms() {
