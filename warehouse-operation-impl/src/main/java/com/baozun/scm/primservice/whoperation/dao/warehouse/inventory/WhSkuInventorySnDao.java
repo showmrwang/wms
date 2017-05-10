@@ -137,4 +137,6 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
 	 * @return
 	 */
 	public long findCountSnByuuid(@Param("uuid") String uuid,@Param("ouId")Long ouId);
+
+    public List<WhSkuInventorySnCommand> findCheckingSkuInvSnByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
 }

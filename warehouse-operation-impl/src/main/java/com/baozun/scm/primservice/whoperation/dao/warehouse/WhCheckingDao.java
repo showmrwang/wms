@@ -48,6 +48,9 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
     @CommonQuery
     int saveOrUpdate(WhChecking o);
 
+    @CommonQuery
+    int saveOrUpdateByVersion(WhChecking o);
+
     WeightingCommand findByWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
 
     WeightingCommand findByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
@@ -92,4 +95,34 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      * @return
      */
     public CheckingDisplayCommand findCheckingInfoByBatchAndOuId(@Param("batch") String batch, @Param("ouId") Long ouId);
+
+    
+    public WhCheckingCommand findWhCheckingByIdExt(@Param("id") Long id,@Param("ouId")Long ouId);
+    
+    public WhCheckingCommand findWhCheckingByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode,@Param("ouId")Long ouId);
+    
+
+
+    /**
+     * 根据条件查找复核头
+     *
+     * @author mingwei.xie
+     * @param checkingSourceCode
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCommand> findCheckingBySourceCode(@Param("checkingSourceCode") String checkingSourceCode, @Param("ouId") Long ouId);
+
+    List<WhCheckingCommand> findCheckingByBoxCode(@Param("checkingSourceCode") String checkingSourceCode, @Param("checkingBoxCode") String checkingBoxCode, @Param("ouId") Long ouId);
+
+    /**
+     * 根据条件查找复核头
+     *
+     * @author mingwei.xie
+     * @param checkingCommand
+     * @return
+     */
+    WhCheckingCommand findCheckingByParam(WhCheckingCommand checkingCommand);
+
+
 }

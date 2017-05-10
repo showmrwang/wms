@@ -28,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
@@ -40,11 +41,19 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLin
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineSnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
+import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
@@ -59,7 +68,9 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -101,6 +112,14 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     private ContainerDao containerDao;
     @Autowired
     private UomDao uomDao;
+    @Autowired
+    private CacheManager cacheManager;
+    @Autowired
+    private WhOutboundFacilityDao whOutboundFacilityDao;
+    @Autowired
+    private WhSkuInventorySnDao whSkuInventorySnDao;
+    @Autowired
+    private InventoryStatusDao inventoryStatusDao;
 
 
     /**
@@ -425,7 +444,111 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundboxLineSnManager.saveOrUpdate(whOutboundboxLineSnCommand);
     }
     
+    /**
+     * tangming
+     * 按单复合更新复合表
+     * @param checkingLineList
+     */
+    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList,Long ouId){
+        for(WhCheckingLineCommand cmd:checkingLineList){
+            Long id = cmd.getId();  //复合明细id
+            Long checkingQty = cmd.getCheckingQty();  //复合明细数量
+            WhCheckingLineCommand lineCmd =  whCheckingLineManager.getCheckingLineById(id, ouId);
+            WhCheckingLine line = new WhCheckingLine();
+            BeanUtils.copyProperties(lineCmd, line);
+            line.setCheckingQty(checkingQty);
+            whCheckingLineManager.saveOrUpdateByVersion(line);
+        }
+        Long checkingId = null;
+        for(WhCheckingLineCommand lineCmd:checkingLineList){
+             checkingId = lineCmd.getCheckingId(); //复合头id
+             break;
+        }
+        //更新复合头状态
+        WhCheckingCommand  checking = whCheckingManager.findWhChecking(checkingId, ouId);
+        if(null == checking) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        checking.setStatus(CheckingStatus.FINISH);
+        whCheckingManager.saveOrUpdate(checking);
+        
+        return checkingId;
+    }
     
     
     
+
+    /**
+     * 根据ID查找出库设施
+     *
+     * @author mingwei.xie
+     * @param id
+     * @param ouId
+     * @return
+     */
+    @Override
+    public WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId) {
+        return whOutboundFacilityDao.findByIdExt(id, ouId);
+    }
+
+
+    public List<WhSkuInventorySnCommand> findSkuInvSnByUUID(String uuid, Long ouId) {
+        return whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, uuid);
+    }
+
+
+    public List<WhSkuInventorySnCommand> findCheckingSkuInvSnByCheckingId(Long checkingId, Long ouId){
+        return whSkuInventorySnDao.findCheckingSkuInvSnByCheckingId(checkingId, ouId);
+    }
+
+
+    public List<WhCheckingLineCommand> getCheckingLineFromCache(Long checkingId, Long ouId, String logId) {
+        List<WhCheckingLineCommand> whCheckingLineCommandList = null;
+
+        String cacheKey = CacheKeyConstant.WMS_CACHE_CHECKING_CHECKING_LINE_PREFIX + checkingId + "-" + ouId;
+
+        try {
+            whCheckingLineCommandList = cacheManager.getObject(cacheKey);
+        } catch (Exception e) {
+            log.error("getCheckingLineBySkuFromCache cacheManager.getObject error e is:[{}], logId is:[{}]", e, logId);
+            // throw new BusinessException("复核缓存操作异常");
+        }
+        if (null == whCheckingLineCommandList || whCheckingLineCommandList.isEmpty()) {
+            List<WhCheckingLineCommand> checkingListList = whCheckingLineManager.getCheckingLineByCheckingId(checkingId, ouId);
+
+            try {
+                cacheManager.setObject(cacheKey, checkingListList, CacheKeyConstant.CACHE_ONE_DAY);
+                whCheckingLineCommandList = cacheManager.getObject(cacheKey);
+            } catch (Exception e) {
+                log.error("getCheckingLineBySkuFromCache cacheManager.setMapObject error e is:[{}], logId is:[{}]", e, logId);
+            }
+            if (null == whCheckingLineCommandList || whCheckingLineCommandList.isEmpty()) {
+                whCheckingLineCommandList = checkingListList;
+            }
+        }
+        return whCheckingLineCommandList;
+    }
+
+
+    /**
+     * 获取系统参数
+     *
+     * @author mingwei.xie
+     * @param groupValue
+     * @param lifecycle
+     * @return
+     */
+    @Override
+    public List<SysDictionary> getSysDictionaryByGroupValue(String groupValue, Integer lifecycle) {
+        List<SysDictionary> sysDictionaryList = this.findSysDictionaryByGroupValueAndRedis(groupValue, lifecycle);
+        return sysDictionaryList;
+    }
+
+    //@Override
+    //public List<InventoryStatus> getAllInventoryStatus() {
+    //    InventoryStatus status = new InventoryStatus();
+    //    status.setLifecycle(1);
+    //    return this.inventoryStatusDao.findListByParam(status);
+    //}
+
 }

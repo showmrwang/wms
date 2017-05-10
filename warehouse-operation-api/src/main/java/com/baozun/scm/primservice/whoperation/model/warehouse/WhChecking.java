@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -71,6 +73,14 @@ public class WhChecking extends BaseModel {
     private String pickingMode;
     /** 复核模式 */
     private String checkingMode;
+    /** 创建人 */
+    private java.lang.Long createId;
+    /** 创建时间 */
+    private Date createTime;
+    /** 最后修改时间 */
+    private Date lastModifyTime;
+    /** 操作人ID */
+    private java.lang.Long modifiedId;
 
     public Long getFacilityId() {
         return facilityId;
@@ -255,4 +265,37 @@ public class WhChecking extends BaseModel {
     public void setCheckingMode(String checkingMode) {
         this.checkingMode = checkingMode;
     }
+
+    public java.lang.Long getCreateId() {
+        return createId;
+    }
+
+    public void setCreateId(java.lang.Long createId) {
+        this.createId = createId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public java.lang.Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(java.lang.Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+
 }

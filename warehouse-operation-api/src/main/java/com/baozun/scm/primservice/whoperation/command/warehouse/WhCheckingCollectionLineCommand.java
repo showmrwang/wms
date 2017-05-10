@@ -12,24 +12,22 @@
  * DERIVATIVES.
  *
  */
-package com.baozun.scm.primservice.whoperation.model.warehouse;
+package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import java.util.Date;
 
-import com.baozun.scm.primservice.whoperation.model.BaseModel;
-
-/**
- * 
- * @author larkark
- *
- */
-public class WhCheckingLine extends BaseModel {
+import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 
-    private static final long serialVersionUID = 8445574838852334250L;
+public class WhCheckingCollectionLineCommand extends BaseCommand {
 
-    /** 复核ID */
-    private Long checkingId;
+
+    private static final long serialVersionUID = 5117939476048382364L;
+
+    /** 主键ID */
+    private Long id;
+    /** 集货ID */
+    private Long checkingCollectionId;
     /** 商品编码 */
     private String skuCode;
     /** 商品外部编码 */
@@ -40,8 +38,8 @@ public class WhCheckingLine extends BaseModel {
     private String skuName;
     /** 计划数量 */
     private Long qty;
-    /** 已复核数量 */
-    private Long checkingQty;
+    /** 已播种数量 */
+    private Long seedingQty;
     /** 客户CODE */
     private String customerCode;
     /** 客户名称 */
@@ -80,25 +78,21 @@ public class WhCheckingLine extends BaseModel {
     private Long odoId;
     /** 出库单明细ID */
     private Long odoLineId;
-    /** 创建人 */
-    private Long createId;
-    /** 创建时间 */
-    private Date createTime;
-    /** 最后修改时间 */
-    private Date lastModifyTime;
-    /** 操作人ID */
-    private Long modifiedId;
-    /** 耗材ID */
-    private Long outboundboxId;
-    /** 出库箱编码 */
-    private String outboundboxCode;
 
-    public Long getCheckingId() {
-        return checkingId;
+    public Long getId() {
+        return id;
     }
 
-    public void setCheckingId(Long checkingId) {
-        this.checkingId = checkingId;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCheckingCollectionId() {
+        return checkingCollectionId;
+    }
+
+    public void setCheckingCollectionId(Long checkingCollectionId) {
+        this.checkingCollectionId = checkingCollectionId;
     }
 
     public String getSkuCode() {
@@ -141,12 +135,12 @@ public class WhCheckingLine extends BaseModel {
         this.qty = qty;
     }
 
-    public Long getCheckingQty() {
-        return checkingQty;
+    public Long getSeedingQty() {
+        return seedingQty;
     }
 
-    public void setCheckingQty(Long checkingQty) {
-        this.checkingQty = checkingQty;
+    public void setSeedingQty(Long seedingQty) {
+        this.seedingQty = seedingQty;
     }
 
     public String getCustomerCode() {
@@ -300,53 +294,4 @@ public class WhCheckingLine extends BaseModel {
     public void setOdoLineId(Long odoLineId) {
         this.odoLineId = odoLineId;
     }
-
-    public Long getCreateId() {
-        return createId;
-    }
-
-    public void setCreateId(Long createId) {
-        this.createId = createId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getLastModifyTime() {
-        return lastModifyTime;
-    }
-
-    public void setLastModifyTime(Date lastModifyTime) {
-        this.lastModifyTime = lastModifyTime;
-    }
-
-    public Long getModifiedId() {
-        return modifiedId;
-    }
-
-    public void setModifiedId(Long modifiedId) {
-        this.modifiedId = modifiedId;
-    }
-
-    public Long getOutboundboxId() {
-        return outboundboxId;
-    }
-
-    public void setOutboundboxId(Long outboundboxId) {
-        this.outboundboxId = outboundboxId;
-    }
-
-    public String getOutboundboxCode() {
-        return outboundboxCode;
-    }
-
-    public void setOutboundboxCode(String outboundboxCode) {
-        this.outboundboxCode = outboundboxCode;
-    }
-
 }

@@ -896,4 +896,24 @@ public final class Constants {
 
     public static final String WORK_CATEGORY_REPLENISHMENT = "REPLENISHMENT";
 
+
+    /** 按箱复核数据源 复核集货 */
+    public static final String OUTBOUND_BOX_CHECKING_SOURCE_CHECKING = "checking";
+    /** 按箱复核数据源 播种集货 */
+    public static final String OUTBOUND_BOX_CHECKING_SOURCE_SEEDING = "seeding";
+
+
+    /** 按箱复核类型 小车出库箱 */
+    public static final String OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_BOX = "trolley_box";
+    /** 按箱复核类型 小车货格 */
+    public static final String OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID = "trolley_grid";
+    /** 按箱复核类型 播种墙出库箱 */
+    public static final String OUTBOUND_BOX_CHECKING_TYPE_SEEDING_BOX = "seeding_box";
+    /** 按箱复核类型 播种墙货格 */
+    public static final String OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID = "seeding_grid";
+    /** 按箱复核类型 周转箱 */
+    public static final String OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX = "turnover_box";
+    /** 按箱复核类型 出库箱 */
+    public static final String OUTBOUND_BOX_CHECKING_TYPE_OUTBOUND_BOX = "outbound_box";
+
 }

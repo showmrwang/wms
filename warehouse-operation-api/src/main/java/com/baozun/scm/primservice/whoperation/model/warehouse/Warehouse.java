@@ -196,6 +196,10 @@ public class Warehouse extends BaseModel {
     private Boolean isAutomaticWarehouse;
     /** 出库单不可取消节点 */
     private String odoNotCancelNode;
+    /** 打印服务器端口号 */
+    private String printHttpPort;
+    /** 打印服务器IP */
+    private String printHttpUrl;
 
     public String getOdoNotCancelNode() {
         return odoNotCancelNode;
@@ -819,6 +823,22 @@ public class Warehouse extends BaseModel {
 
     public void setIsAutomaticWarehouse(Boolean isAutomaticWarehouse) {
         this.isAutomaticWarehouse = isAutomaticWarehouse;
+    }
+
+    public String getPrintHttpPort() {
+        return printHttpPort;
+    }
+
+    public void setPrintHttpPort(String printHttpPort) {
+        this.printHttpPort = printHttpPort;
+    }
+
+    public String getPrintHttpUrl() {
+        return printHttpUrl;
+    }
+
+    public void setPrintHttpUrl(String printHttpUrl) {
+        this.printHttpUrl = printHttpUrl;
     }
 
 }

@@ -16,7 +16,10 @@
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+
 /**
  * 
  * @author larkark
@@ -73,6 +76,12 @@ public class WhOutboundboxCommand extends BaseModel {
 	private java.lang.String pickingMode;
 	/** 复核模式 */
 	private java.lang.String checkingMode;
+
+    /** =====================复核用====================== */
+    /** 耗材条码 */
+    private String consumableCode;
+    /** 复核完成的装箱明细 */
+    private List<WhCheckingLineCommand> checkingLineList;
 	
 	//columns END
 	
@@ -203,5 +212,20 @@ public class WhOutboundboxCommand extends BaseModel {
         this.id = id;
     }
 
+    public String getConsumableCode() {
+        return consumableCode;
+    }
+
+    public void setConsumableCode(String consumableCode) {
+        this.consumableCode = consumableCode;
+    }
+
+    public List<WhCheckingLineCommand> getCheckingLineList() {
+        return checkingLineList;
+    }
+
+    public void setCheckingLineList(List<WhCheckingLineCommand> checkingLineList) {
+        this.checkingLineList = checkingLineList;
+    }
 }
 

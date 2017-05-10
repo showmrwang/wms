@@ -14,8 +14,11 @@
 
 package com.baozun.scm.primservice.whoperation.manager.checking;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import lark.common.annotation.MoreDB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,8 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCo
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -55,6 +60,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     private WhSkuManager whSkuManager;
     @Autowired
     private WhOutboundFacilityDao whOutboundFacilityDao;
+    @Autowired
+    private WhCheckingDao whCheckingDao;
 
     @Override
     public void printPackingList(List<Long> facilityIdsList, Long userId, Long ouId) {
@@ -114,6 +121,175 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId){
+        List<WhCheckingCommand> checkingList = whCheckingDao.findCheckingBySourceCode(checkingSourceCode, ouId);
+        /*
+        {
+            //TODO 测试 复核头数据
+            if(null == checkingList){
+                checkingList = new ArrayList<>();
+            }
+            checkingList.clear();
+            WhCheckingCommand checkingCommand = new WhCheckingCommand();
+            checkingCommand.setId(999L);
+            checkingCommand.setBatch("testBatch");
+            checkingCommand.setWaveCode("testWaveCode");
+            checkingCommand.setCustomerName("testCustomerName");
+            checkingCommand.setCustomerCode("testCustomerCode");
+            checkingCommand.setStoreName("testStoreName");
+            checkingCommand.setStoreCode("testStoreCode");
+            checkingCommand.setStatus(1);
+            checkingCommand.setOuId(ouId);
+
+            //播种墙
+            checkingCommand.setFacilityId(222L);
+            //checkingCommand.setFacilityCode("testFacilityCode");
+            checkingCommand.setFacilityCode(checkingSourceCode);
+
+            //小车
+            //checkingCommand.setOuterContainerId(11L);
+            //checkingCommand.setOuterContainerCode("testOutContainerCode");
+
+            //货格
+            //checkingCommand.setContainerLatticeNo(1);
+
+            //出库箱
+            //checkingCommand.setOutboundboxId(1L);
+            //checkingCommand.setOutboundboxCode("testOutboundBoxCode");
+
+            //周转箱
+            //checkingCommand.setContainerId(2L);
+            //checkingCommand.setContainerCode("testContainerCode");
+
+            checkingCommand.setCheckingMode("CHECK_BY_CONTAINER");
+
+            checkingList.add(checkingCommand);
+        }
+        */
+        return checkingList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhCheckingCommand> findCheckingByBoxCode(String checkingSourceCode, String checkingBoxCode, Long ouId){
+        List<WhCheckingCommand> checkingList = whCheckingDao.findCheckingByBoxCode(checkingSourceCode, checkingBoxCode, ouId);
+        /*
+        {
+            //TODO 测试 复核头数据
+            if(null == checkingList){
+                checkingList = new ArrayList<>();
+            }
+            checkingList.clear();
+            WhCheckingCommand checkingCommand = new WhCheckingCommand();
+            checkingCommand.setId(999L);
+            checkingCommand.setBatch("testBatch");
+            checkingCommand.setWaveCode("testWaveCode");
+            checkingCommand.setCustomerName("testCustomerName");
+            checkingCommand.setCustomerCode("testCustomerCode");
+            checkingCommand.setStoreName("testStoreName");
+            checkingCommand.setStoreCode("testStoreCode");
+            checkingCommand.setStatus(1);
+            checkingCommand.setOuId(ouId);
+
+            //播种墙
+            checkingCommand.setFacilityId(222L);
+            //checkingCommand.setFacilityCode("testFacilityCode");
+            checkingCommand.setFacilityCode(checkingSourceCode);
+
+            //小车
+            //checkingCommand.setOuterContainerId(11L);
+            //checkingCommand.setOuterContainerCode("testOutContainerCode");
+
+            //货格
+            checkingCommand.setContainerLatticeNo(1);
+
+            //出库箱
+            checkingCommand.setOutboundboxId(1L);
+            checkingCommand.setOutboundboxCode(checkingBoxCode);
+
+            //周转箱
+            //checkingCommand.setContainerId(2L);
+            //checkingCommand.setContainerCode("testContainerCode");
+
+            checkingCommand.setCheckingMode("CHECK_BY_CONTAINER");
+
+            checkingList.add(checkingCommand);
+        }
+        */
+        return checkingList;
+    }
+
+    /**
+     * 根据条件查找复核头
+     *
+     * @author mingwei.xie
+     * @param checkingCommand
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhCheckingCommand findCheckingByParam(WhCheckingCommand checkingCommand) {
+        return whCheckingDao.findCheckingByParam(checkingCommand);
+    }
+
+    /**
+     * 根据条件查找复核头
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhCheckingCommand findCheckingById(Long checkingId, Long ouId) {
+        WhCheckingCommand checkingCommand = new WhCheckingCommand();
+        checkingCommand.setId(checkingId);
+        checkingCommand.setOuId(ouId);
+        WhCheckingCommand returnChecking = whCheckingDao.findCheckingByParam(checkingCommand);
+        /*
+        {
+            //TODO 测试 复核头数据
+
+            returnChecking = new WhCheckingCommand();
+            checkingCommand.setId(999L);
+            returnChecking.setBatch("testBatch");
+            returnChecking.setWaveCode("testWaveCode");
+            returnChecking.setCustomerName("testCustomerName");
+            returnChecking.setCustomerCode("testCustomerCode");
+            returnChecking.setStoreName("testStoreName");
+            returnChecking.setStoreCode("testStoreCode");
+            returnChecking.setStatus(1);
+            returnChecking.setOuId(ouId);
+
+            //播种墙
+            returnChecking.setFacilityId(222L);
+            //checkingCommand.setFacilityCode("testFacilityCode");
+            //returnChecking.setFacilityCode(checkingSourceCode);
+
+            //小车
+            //checkingCommand.setOuterContainerId(11L);
+            //checkingCommand.setOuterContainerCode("testOutContainerCode");
+
+            //货格
+            returnChecking.setContainerLatticeNo(1);
+
+            //出库箱
+            returnChecking.setOutboundboxId(1L);
+            //returnChecking.setOutboundboxCode(checkingBoxCode);
+
+            //周转箱
+            //checkingCommand.setContainerId(2L);
+            //checkingCommand.setContainerCode("testContainerCode");
+
+            returnChecking.setCheckingMode("CHECK_BY_CONTAINER");
+        }
+        */
+        return returnChecking;
     }
 
     /**
@@ -209,8 +385,23 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
     @Override
     public WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId) {
-        
-        return whOutboundFacilityDao.findByIdExt(id, ouId);
+        WhOutboundFacilityCommand facilityCommand =  whOutboundFacilityDao.findByIdExt(id, ouId);
+        /*
+        {
+            //TODO 测试
+            if(null == facilityCommand){
+                facilityCommand = new WhOutboundFacilityCommand();
+            }
+            facilityCommand.setId(111L);
+            facilityCommand.setFacilityCode("testFacilityCode");
+            facilityCommand.setFacilityName("testFacilityName");
+            facilityCommand.setFacilityType(null);
+            facilityCommand.setOperatorId(ouId);
+            facilityCommand.setFacilityLowerLimit(2);
+            facilityCommand.setFacilityUpperLimit(10);
+        }
+        */
+        return facilityCommand;
     }
     
 }

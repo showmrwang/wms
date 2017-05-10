@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhLocationSkuVolumeCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationSkuVolumeDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -31,4 +32,21 @@ public class WhLocationSkuVolumeManagerImpl extends BaseManagerImpl implements W
         }
         return whLocationSkuVolumeList.get(0);
     }
+
+    /**
+     * 根据复核台ID查找库位商品容量信息
+     *
+     * @author mingwei.xie
+     * @param facilityId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhLocationSkuVolumeCommand> findLocSkuVolumeByFacilityId(Long facilityId, Long ouId) {
+        //TODO 保存在缓存中，整箱复核完成前，所有的修改都在缓存中的数据上修改
+        return whLocationSkuVolumeDao.findLocSkuVolumeByFacilityId(facilityId, ouId);
+    }
+
+
 }

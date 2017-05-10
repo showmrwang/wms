@@ -26,7 +26,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	outboundbox_code as outboundboxCode,
 	        	distribution_mode as distributionMode,
 	        	picking_mode as pickingMode,
-	        	checking_mode as checkingMode
+	        	checking_mode as checkingMode,
+	        	create_id as createId,
+                create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
 	    ]]>
 	</sql>
 	
@@ -54,7 +58,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	outboundbox_code,
 		        	distribution_mode,
 		        	picking_mode,
-		        	checking_mode 
+		        	checking_mode ,
+		        	create_id,
+                create_time,
+	        	last_modify_time,
+	        	modified_id
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -71,7 +79,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
 
@@ -94,7 +106,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} , 
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
@@ -204,6 +220,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 		       <if test="checkingMode!=null and checkingMode!=''">
 					and checking_mode = #{checkingMode}
+				</if>
+				
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
 				</if>
 		</where>
 	</sql>

@@ -177,10 +177,13 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager" ref="whInvoiceConfirmManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.confirm.inbound.WhInboundConfirmManager" ref="whInboundConfirmManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.HandoverCollectionRuleManager" ref="handoverCollectionRuleManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionOutBoundManager" ref="whFunctionOutBoundManager" />
 	<!-- 按单复核 -->
 	<!--<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager" ref="whCheckingManager" />-->
 	
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager" ref="whCheckingManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.checking.CheckingManager" ref="checkingManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager" ref="whCheckingLineManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.checking.CheckingManagerProxy" ref="checkingManagerProxy" />
 	
 	<!-- 物流服务 -->
