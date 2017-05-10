@@ -40,8 +40,6 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private Long functionId;
     
     private Long userId;
-    
-    private String skuBarCode; //耗材条码
     /**复合明细集合*/
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
 
@@ -167,15 +165,5 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
-
-    public String getSkuBarCode() {
-        return skuBarCode;
-    }
-
-    public void setSkuBarCode(String skuBarCode) {
-        this.skuBarCode = skuBarCode;
-    }
-    
-    
 
 }

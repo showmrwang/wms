@@ -961,6 +961,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         //根据作业id获取作业明细信息  
         List<WhOperationExecLine> operationExecLineList = whOperationExecLineDao.getOperationExecLineLst(replenishmentPutawayCommand.getOperationId(), replenishmentPutawayCommand.getOuId(), false);
         for(WhOperationExecLine operationExecLine : operationExecLineList){
+            // 计划量减执行量
+            int lineQty = operationExecLine.getQty().compareTo(operationExecLine.getCompleteQty());
+            // 如果计划量减执行量等于0，跳出循环
+            if (0 == lineQty) {
+                continue;
+            }
             //获取内部容器唯一sku
             String onlySku = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(operationExecLine);
             //根据库存UUID查找对应SN/残次信息
@@ -990,15 +996,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     Map<Long, Long> useContainerIdAndSkuQtyMap = new HashMap<Long, Long>();
                     useContainerIdAndSkuQtyMap = skuQty.get(operationExecLine.getUseContainerId());
                     if(null != useContainerIdAndSkuQtyMap.get(operationExecLine.getSkuId())){
-                        Long qty =  useContainerIdAndSkuQtyMap.get(operationExecLine.getSkuId()) + operationExecLine.getQty().longValue();
+                        Long qty =  useContainerIdAndSkuQtyMap.get(operationExecLine.getSkuId()) + (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty());
                         useContainerIdAndSkuQtyMap.put(operationExecLine.getSkuId(), qty);
                     }else{
-                        useContainerIdAndSkuQtyMap.put(operationExecLine.getSkuId(), operationExecLine.getQty().longValue());
+                        useContainerIdAndSkuQtyMap.put(operationExecLine.getSkuId(), (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                     }
                     skuQty.put(toLocationAndUseContainer, useContainerIdAndSkuQtyMap);
                 }else{
                     Map<Long, Long> useContainerIdAndSkuQtyMap = new HashMap<Long, Long>();
-                    useContainerIdAndSkuQtyMap.put(operationExecLine.getSkuId(), operationExecLine.getQty().longValue());
+                    useContainerIdAndSkuQtyMap.put(operationExecLine.getSkuId(), (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                     skuQty.put(toLocationAndUseContainer, useContainerIdAndSkuQtyMap);
                 }
                 // 周转箱每个sku对应的唯一sku及件数
@@ -1008,21 +1014,21 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     if(null != useContainerIdAndOnlySku.get(operationExecLine.getSkuId())){
                         Map<String, Long> skuAttrIdsQty = useContainerIdAndOnlySku.get(operationExecLine.getSkuId());
                         if (null != skuAttrIdsQty.get(onlySku)) {
-                            skuAttrIdsQty.put(onlySku, skuAttrIdsQty.get(onlySku) + operationExecLine.getQty().longValue());
+                            skuAttrIdsQty.put(onlySku, skuAttrIdsQty.get(onlySku) + (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                         } else {
-                            skuAttrIdsQty.put(onlySku, operationExecLine.getQty().longValue());
+                            skuAttrIdsQty.put(onlySku, (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                         }
                         useContainerIdAndOnlySku.put(operationExecLine.getSkuId(), skuAttrIdsQty);
                      }else{
                          Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
-                         insideSkuAttrIdsQty.put(onlySku, operationExecLine.getQty().longValue());
+                         insideSkuAttrIdsQty.put(onlySku, (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                          useContainerIdAndOnlySku.put(operationExecLine.getSkuId(), insideSkuAttrIdsQty);
                      }
                     skuAttrIds.put(toLocationAndUseContainer, useContainerIdAndOnlySku);
                 }else{
                     Map<Long, Map<String, Long>> useContainerIdAndOnlySku  = new HashMap<Long, Map<String, Long>>();
                     Map<String, Long> skuAttrIdsQty = new HashMap<String, Long>();
-                    skuAttrIdsQty.put(onlySku, operationExecLine.getQty().longValue());
+                    skuAttrIdsQty.put(onlySku, (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                     useContainerIdAndOnlySku.put(operationExecLine.getSkuId(), skuAttrIdsQty);
                     skuAttrIds.put(toLocationAndUseContainer, useContainerIdAndOnlySku);
                 }
@@ -1094,15 +1100,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     Map<Long, Long> skuIdAndQtyMap = new HashMap<Long, Long>();
                     skuIdAndQtyMap = insideSkuQty.get(operationExecLine.getUseContainerId());
                     if(null != skuIdAndQtyMap.get(operationExecLine.getSkuId())){
-                        Long insQty =  skuIdAndQtyMap.get(operationExecLine.getSkuId()) + operationExecLine.getQty().longValue();
+                        Long insQty =  skuIdAndQtyMap.get(operationExecLine.getSkuId()) + (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty());
                         skuIdAndQtyMap.put(operationExecLine.getSkuId(), insQty);
                      }else{
-                         skuIdAndQtyMap.put(operationExecLine.getSkuId(), operationExecLine.getQty().longValue());
+                         skuIdAndQtyMap.put(operationExecLine.getSkuId(), (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                      }
                     insideSkuQty.put(toLocationAndUseContainer, skuIdAndQtyMap);
                 }else{
                     Map<Long, Long> skuIdAndQtyMap = new HashMap<Long, Long>();
-                    skuIdAndQtyMap.put(operationExecLine.getSkuId(), operationExecLine.getQty().longValue());
+                    skuIdAndQtyMap.put(operationExecLine.getSkuId(), (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                     insideSkuQty.put(toLocationAndUseContainer, skuIdAndQtyMap);
                 }
                 // 内部容器每个sku对应的唯一sku及件数（整托整箱）
@@ -1112,21 +1118,21 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     if(null != skuIdAndOnlySku.get(operationExecLine.getSkuId())){
                         Map<String, Long> insideSkuAttrIdsQty = skuIdAndOnlySku.get(operationExecLine.getSkuId());
                         if (null != insideSkuAttrIdsQty.get(onlySku)) {
-                            insideSkuAttrIdsQty.put(onlySku, insideSkuAttrIdsQty.get(onlySku) + operationExecLine.getQty().longValue());
+                            insideSkuAttrIdsQty.put(onlySku, insideSkuAttrIdsQty.get(onlySku) + (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                         } else {
-                            insideSkuAttrIdsQty.put(onlySku, operationExecLine.getQty().longValue());
+                            insideSkuAttrIdsQty.put(onlySku, (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                         }
                         skuIdAndOnlySku.put(operationExecLine.getSkuId(), insideSkuAttrIdsQty);
                      }else{
                          Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
-                         insideSkuAttrIdsQty.put(onlySku, operationExecLine.getQty().longValue());
+                         insideSkuAttrIdsQty.put(onlySku, (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                          skuIdAndOnlySku.put(operationExecLine.getSkuId(), insideSkuAttrIdsQty);
                      }
                     insideSkuAttrIds.put(toLocationAndUseContainer, skuIdAndOnlySku);
                 }else{
                     Map<Long, Map<String, Long>> skuIdAndOnlySku = new HashMap<Long, Map<String, Long>>();
                     Map<String, Long> insideSkuAttrIdsQty = new HashMap<String, Long>();
-                    insideSkuAttrIdsQty.put(onlySku, operationExecLine.getQty().longValue());
+                    insideSkuAttrIdsQty.put(onlySku, (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty()));
                     skuIdAndOnlySku.put(operationExecLine.getSkuId(), insideSkuAttrIdsQty);
                     insideSkuAttrIds.put(toLocationAndUseContainer, skuIdAndOnlySku);
                 }
