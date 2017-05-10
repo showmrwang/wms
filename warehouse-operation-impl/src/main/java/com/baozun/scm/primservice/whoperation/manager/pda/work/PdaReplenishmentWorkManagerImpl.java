@@ -25,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionReplenishmentDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -63,6 +64,9 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
     private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
     private WhOperationExecLineDao whOperationExecLineDao;
+    @Autowired
+    private WhOperationLineDao whOperationLineDao;
+    
     
     /****
      * 确定补货方式和占用模型
@@ -144,6 +148,8 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
            psRCmd.setIsScanInvAttr(resplenishment.getIsScanInvAttr());           //是否扫描sku属性
            psRCmd.setIsTipInvAttr(resplenishment.getIsTipInvAttr());  //是否提示sku库存属性
            psRCmd.setScanPattern(resplenishment.getScanPattern());  //扫描模式 
+           psRCmd.setPalletPickingMode(resplenishment.getPalletPickingMode()); //整拖拣货模式
+           psRCmd.setContainerPickingMode(resplenishment.getContainerPickingMode()); //整箱拣货模式
            return psRCmd;
     }
 
@@ -331,11 +337,17 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
      * @param ouId
      * @return
      */
-    public Boolean judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId){
-        Boolean result = false;// 是整托整箱
+    public PickingScanResultCommand judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId,Long functionId){
+        PickingScanResultCommand picking = new PickingScanResultCommand();
         if(StringUtils.isEmpty(outerContainerCode) && StringUtils.isEmpty(insideCotainerCode)) {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
         }
+        WhFunctionReplenishment resplenishment = whFunctionReplenishmentDao.findByFunctionIdExt(ouId, functionId);
+        if(null == resplenishment) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        picking.setPalletPickingMode(resplenishment.getPalletPickingMode());
+        picking.setContainerPickingMode(resplenishment.getContainerPickingMode());
         Long outerContainerId = null;
         if(!StringUtils.isEmpty(outerContainerCode)) {
             ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
@@ -344,6 +356,11 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             outerContainerId = cmd.getId();
+            int countOut = whSkuInventoryDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId);
+            int countOut1 = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId);
+            if(countOut == countOut1){
+                picking.setReplenishWay(Constants.REPLENISH_WAY_TWO);;//当前是整托
+            }
         }
         Long insideContainerId = null;
         if(!StringUtils.isEmpty(insideCotainerCode)) {
@@ -353,8 +370,13 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             insideContainerId  = cmd.getId();
+            int count = whSkuInventoryDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
+            int count1 = whOperationLineDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
+            if(count == count1){
+                picking.setReplenishWay(Constants.REPLENISH_WAY_THREE);
+            }
         }
-        int count = whSkuInventoryDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
-        return result;
+        
+        return picking;
     }
 }

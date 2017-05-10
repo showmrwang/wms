@@ -2582,6 +2582,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 BeanUtils.copyProperties(operationLineCommand, whOperationExecLine);
                 whOperationExecLine.setIsUseNew(true);
                 whOperationExecLine.setId(null);
+                whOperationExecLine.setUseContainerId(operationLineCommand.getFromInsideContainerId());
+                whOperationExecLine.setUseOuterContainerId(operationLineCommand.getFromOuterContainerId());
                 whOperationExecLine.setIsShortPicking(false);
                 whOperationExecLine.setLastModifyTime(new Date());
                 whOperationExecLine.setCreateTime(new Date());

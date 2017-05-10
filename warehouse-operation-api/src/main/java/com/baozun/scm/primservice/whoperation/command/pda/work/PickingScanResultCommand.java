@@ -210,6 +210,8 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 是否继续扫描sn明细 */
     private Boolean isContinueScanSn = false; // 默认不继续扫描sn
     
+    private Integer tempReplenishWay;
+    
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
@@ -1165,6 +1167,14 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsNeedScanLatticeNo(Boolean isNeedScanLatticeNo) {
         this.isNeedScanLatticeNo = isNeedScanLatticeNo;
+    }
+
+    public Integer getTempReplenishWay() {
+        return tempReplenishWay;
+    }
+
+    public void setTempReplenishWay(Integer tempReplenishWay) {
+        this.tempReplenishWay = tempReplenishWay;
     }
 
     
