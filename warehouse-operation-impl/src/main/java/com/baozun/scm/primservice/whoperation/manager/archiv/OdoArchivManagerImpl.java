@@ -157,7 +157,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
                 }
             }
         } catch (Exception e) {
-            log.error("OdoArchivManagerImpl archivOdo error" + e);
+            log.error("OdoArchivManagerImpl archivOdo error", e);
             throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
         }
         return count;
