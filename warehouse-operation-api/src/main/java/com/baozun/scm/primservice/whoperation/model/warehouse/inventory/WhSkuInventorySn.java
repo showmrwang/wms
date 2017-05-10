@@ -57,6 +57,8 @@ public class WhSkuInventorySn extends BaseModel {
     private String sysUuid;
     /**补货编码*/
     private String replenishmentCode;
+    
+    private Long occupationLineId;
 
     public Long getInvId() {
         return invId;
@@ -170,6 +172,14 @@ public class WhSkuInventorySn extends BaseModel {
         this.replenishmentCode = replenishmentCode;
     }
 
+    public Long getOccupationLineId() {
+        return occupationLineId;
+    }
 
+    public void setOccupationLineId(Long occupationLineId) {
+        this.occupationLineId = occupationLineId;
+    }
+
+    
 
 }
