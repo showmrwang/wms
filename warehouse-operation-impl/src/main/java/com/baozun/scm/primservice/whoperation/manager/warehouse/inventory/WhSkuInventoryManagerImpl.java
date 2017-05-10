@@ -9568,11 +9568,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public WhInboundConfirmCommand findInventoryByPo(BiPo po, List<BiPoLine> lineList, Long ouId) {
-    	Collections.sort(lineList, new Comparator<BiPoLine>() {
+    public List<WhInboundLineConfirmCommand> findInventoryByPo(WhPo po, List<WhPoLine> lineList, Long ouId) {
+    	Collections.sort(lineList, new Comparator<WhPoLine>() {
 
 			@Override
-			public int compare(BiPoLine po1, BiPoLine po2) {
+			public int compare(WhPoLine po1, WhPoLine po2) {
 				if (po1.getSkuId() == null || po2.getSkuId() == null) {
 					throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
 				}
@@ -9587,7 +9587,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     	
     	// 根据ASN_CODE查询库存表已收获的数据
     	List<WhSkuInventoryCommand> skuInvs = whSkuInventoryDao.findInventoryByPo(po.getId(), ouId);
-    	for (BiPoLine poLine : lineList) {
+    	for (WhPoLine poLine : lineList) {
     		Long skuId = poLine.getSkuId();
     		WhSkuCommand sku = skuDao.findWhSkuByIdExt(skuId, ouId);
     		WhInboundLineConfirmCommand confirmLine = new WhInboundLineConfirmCommand();
@@ -9608,7 +9608,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     		for (int i = 0; i < skuInvs.size(); i++) {
     			WhSkuInventoryCommand inv = skuInvs.get(i);
     			if (!hasInvAttr(poLine)) {
-					break;
+					continue;
 				}
     			if (checkInvAttrEqual(poLine, inv)) {
     				WhInboundInvLineConfirmCommand invLineConfirm = new WhInboundInvLineConfirmCommand();
@@ -9682,6 +9682,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     						inv.setOnHandQty(inv.getOnHandQty() - qty);
     						qty = Constants.DEFAULT_DOUBLE;
 						}
+    					this.getSnInfo(uuidMap, inv, invLine, whInBoundInvLineConfirmsList, ouId);
     					if (Constants.DEFAULT_DOUBLE.compareTo(qty) == 0) {
 							break;
 						}
@@ -9689,43 +9690,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 				}
 			}
 		}
-    	
-    	WhInboundConfirmCommand inboundConfirm = new WhInboundConfirmCommand();
-    	inboundConfirm.setUuid(UUID.randomUUID().toString());
-    	inboundConfirm.setExtPoCode(po.getExtPoCode());
-    	inboundConfirm.setExtCode(po.getExtCode());
-    	Customer customer = customerManager.getCustomerById(po.getCustomerId());
-    	if (null == customer) {
-			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-		}
-    	inboundConfirm.setCustomerCode(customer.getCustomerCode());
-    	Store store = storeManager.getStoreById(po.getStoreId());
-    	if (null == store) {
-			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-		}
-    	inboundConfirm.setStoreCode(store.getStoreCode());
-    	inboundConfirm.setFromLocation(po.getFromLocation());
-    	inboundConfirm.setToLocation(po.getToLocation());
-    	inboundConfirm.setDeliveryTime(po.getDeliveryTime());
-    	Warehouse wh = warehouseManager.findWarehouseByIdExt(ouId);
-    	if (null == wh) {
-			throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-		}
-    	inboundConfirm.setWhCode(wh.getCode());
-    	inboundConfirm.setPoStatus(po.getStatus().toString());
-    	inboundConfirm.setPoType(po.getPoType().toString());
-    	inboundConfirm.setIsIqc(po.getIsIqc());
-    	inboundConfirm.setQtyPlanned(po.getQtyPlanned());
-    	inboundConfirm.setQtyRcvd(po.getQtyRcvd());
-    	inboundConfirm.setCtnPlanned(po.getCtnPlanned());
-    	inboundConfirm.setCtnRcvd(po.getCtnRcvd());
-    	inboundConfirm.setDataSource(po.getDataSource());
-    	inboundConfirm.setStatus(1);
-    	inboundConfirm.setErrorCount(0);
-    	inboundConfirm.setCreateTime(new Date());
-    	inboundConfirm.setLastModifyTime(new Date());
-    	inboundConfirm.setWhInboundLineConfirmList(confirmLineList);
-    	return inboundConfirm;
+    	return confirmLineList;
     }
 
 	private void getSnInfo(Map<String, Boolean> uuidMap, WhSkuInventoryCommand inv, WhInboundInvLineConfirmCommand invLineConfirm, List<WhInboundInvLineConfirmCommand> invLines, Long ouId) {
@@ -9754,7 +9719,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 		}
 	}
     
-    private boolean hasInvAttr(BiPoLine poLine) {
+    private boolean hasInvAttr(WhPoLine poLine) {
     	if (StringUtils.isEmpty(poLine.getInvType()) && null == poLine.getInvStatus()
     			&& StringUtils.isEmpty(poLine.getInvAttr1()) && StringUtils.isEmpty(poLine.getInvAttr2())
     			&& StringUtils.isEmpty(poLine.getInvAttr3()) && StringUtils.isEmpty(poLine.getInvAttr4())
@@ -9766,7 +9731,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     	return true;
     }
     
-    private boolean checkInvAttrEqual(BiPoLine poLine, WhSkuInventoryCommand inv) {
+    private boolean checkInvAttrEqual(WhPoLine poLine, WhSkuInventoryCommand inv) {
     	if (poLine.getInvType() == null ? inv.getInvType() == null : poLine.getInvType().equals(inv.getInvType())
     			&& poLine.getInvStatus() == null ? inv.getInvStatus() == null : poLine.getInvStatus().equals(inv.getInvStatus())
     			&& poLine.getInvAttr1() == null ? inv.getInvAttr1() == null : poLine.getInvAttr1().equals(inv.getInvAttr1())

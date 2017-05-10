@@ -761,8 +761,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 更新出库单状态
             this.updateOdoStatusByOdo(odoId, ouId);
         }
-        command = whCheckingDao.findByOutboundBoxCode(outboundbox, ouId);
-        return command;
+        List<WeightingCommand> commandList = whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, ouId);
+        if (null != commandList && !commandList.isEmpty()) {
+            return commandList.get(0);
+        } else {
+            return null;
+        }
     }
 
 
@@ -979,9 +983,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         whCheckingByOdoCommand.setCheckingDisplayCommand(checkingDisplayCommand);
         return whCheckingByOdoCommand;
     }
-    
-    
-    
+
+
 
     /**
      * 根据复核打印配置打印单据
@@ -997,13 +1000,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Long userId = cmd.getUserId();
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         String outboundBoxCode = cmd.getOutboundBoxCode();
-        Long checkingId =  checkingLineList.get(0).getCheckingId();
-       // 更新复合头状态
+        Long checkingId = checkingLineList.get(0).getCheckingId();
+        // 更新复合头状态
         WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        // 查询功能是否配置复核打印单据配置        
+        // 查询功能是否配置复核打印单据配置
         WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
         if (null == whFunctionOutBound) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -1084,29 +1087,29 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                        }
                 }else{
                     Integer printCount = whPrintInfoLst.get(0).getPrintCount();
-                    if(printCount < 1){
+                    if (printCount < 1) {
                         WhPrintInfo printfo = whPrintInfoLst.get(0);
                         printfo.setPrintCount(1);
                         whPrintInfoDao.saveOrUpdate(printfo);
                         try {
-                            if(CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])){
+                            if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
                                 // 装箱清单
-                                checkingManager.printPackingList(idsList, userId, ouId);    
+                                checkingManager.printPackingList(idsList, userId, ouId);
                             }
-                            if(CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])){
-                                // 销售清单      
-                                checkingManager.printSalesList(idsList, userId, ouId);   
+                            if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                                // 销售清单
+                                checkingManager.printSalesList(idsList, userId, ouId);
                             }
-                            if(CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])){
+                            if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(idsList,userId, ouId);    
+                                checkingManager.printSinglePlane(idsList, userId, ouId);
                             }
-                            if(CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])){
+                            if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                                 // 箱标签
-                                checkingManager.printBoxLabel(idsList, userId, ouId);    
+                                checkingManager.printBoxLabel(idsList, userId, ouId);
                             }
                         } catch (Exception e) {
-                            log.error("WhCheckingManagerImpl printDefect is execption"+e);
+                            log.error("WhCheckingManagerImpl printDefect is execption" + e);
                         }
                     }
                 }
