@@ -97,7 +97,6 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
     public CheckingDisplayCommand findCheckingInfoByBatchAndOuId(@Param("batch") String batch, @Param("ouId") Long ouId);
 
     
-    public WhCheckingCommand findWhCheckingByIdExt(@Param("id") Long id,@Param("ouId")Long ouId);
     
     public WhCheckingCommand findWhCheckingByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode,@Param("ouId")Long ouId);
     
