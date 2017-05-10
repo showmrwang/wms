@@ -70,10 +70,32 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWork> findWorkByWaveWithUnLock(String waveCode, Long ouId) {
+        WhWork work = new WhWork();
+        work.setWaveCode(waveCode);
+        work.setOuId(ouId);
+        work.setLifecycle(Constants.LIFECYCLE_START);
+        work.setIsLocked(false);
+        return this.whWorkDao.findListByParam(work);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWork> findWorkByWave(String code, Long ouId) {
         WhWork work = new WhWork();
         work.setWaveCode(code);
         work.setOuId(ouId);
+        work.setLifecycle(Constants.LIFECYCLE_START);
+        return this.whWorkDao.findListByParam(work);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWork> findWorkByWaveAndCategory(String code, String workCategory, Long ouId) {
+        WhWork work = new WhWork();
+        work.setWaveCode(code);
+        work.setOuId(ouId);
+        work.setWorkCategory(workCategory);
         work.setLifecycle(Constants.LIFECYCLE_START);
         return this.whWorkDao.findListByParam(work);
     }

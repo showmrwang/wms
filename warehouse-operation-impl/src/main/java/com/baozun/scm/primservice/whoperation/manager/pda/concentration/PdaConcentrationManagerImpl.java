@@ -649,6 +649,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * [业务方法] 更新推荐路径状态
+     * 
      * @param batch
      * @param containerCode
      * @param ouId
@@ -666,11 +667,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
 
     /**
-            * [业务方法] 移动容器
-            * 
-            * @param workCollectionCommand
-            * @return
-            */
+     * [业务方法] 移动容器
+     * 
+     * @param workCollectionCommand
+     * @return
+     */
     private Boolean moveContainer(WorkCollectionCommand workCollectionCommand, String cacheKey) {
         WhFacilityRecPathCommand command = this.findRecFacilityPathCommandByIndex(workCollectionCommand, cacheKey);
         Integer targetType = workCollectionCommand.getTargetType();

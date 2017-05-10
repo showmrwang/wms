@@ -52,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhDistributionPatternRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
@@ -60,6 +61,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -74,7 +76,7 @@ import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
@@ -109,6 +111,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Autowired
     private WhWorkDao whWorkDao;
     @Autowired
+    private WhWorkLineDao whWorkLineDao;
+    @Autowired
     private WhSkuInventoryDao whSkuInventoryDao;
     @Autowired
     private WhSkuInventoryAllocatedDao whSkuInventoryAllocatedDao;
@@ -122,6 +126,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     private PkManager pkManager;
     @Autowired
     private OdoManager odoManager;
+    @Autowired
+    private WarehouseManager warehouseManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -720,49 +726,68 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         if (null == wavePhase) {
             return;
         }
-        // 波次在模板中配置波次编码集合
-        List<Integer> wavePhaseList = whWaveDao.findWavePhaseOrderListByWaveId(waveId, ouId);
+        // @mender yimin.lu 2017/5/9
+        // 库存的操作逻辑：
+        this.releaseInventory(waveId, odoId, wavePhase, odo.getOdoCode(), wh);
+        // 其余额外的操作逻辑
         /** 软分配剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.WEAK_ALLOCATED_NUM && wavePhaseList.contains(wavePhase)) {}
+        if (wavePhase.intValue() >= WavePhase.WEAK_ALLOCATED_NUM) {}
         /** 合并出库单剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.MERGE_ODO_NUM && wavePhaseList.contains(wavePhase)) {}
+        if (wavePhase.intValue() >= WavePhase.MERGE_ODO_NUM) {}
         /** 硬分配剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM && wavePhaseList.contains(wavePhase)) {
+        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {
+        }
+        /** 补货剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
+        }
+        /** 配货模式计算剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM) {}
+        /** 创建出库箱/容器剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.CREATE_OUTBOUND_CARTON_NUM) {}
+        /** 创建工作剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.CREATE_WORK_NUM) {}
+    }
+
+
+
+    private void releaseInventory(Long waveId, Long odoId, Integer wavePhase, String odoCode, Warehouse wh) {
+        Long ouId = wh.getId();
+        /** 硬分配剔除逻辑 */
+        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {
             // 出库单释放库存
-            whSkuInventoryManager.releaseInventoryByOccupyCode(odo.getOdoCode(), wh);
+            whSkuInventoryManager.releaseInventoryByOccupyCode(odoCode, wh);
             // 修改出库单明细已分配数量
             whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
         }
         /** 补货剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM && wavePhaseList.contains(wavePhase)) {
+        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
             WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
             // 删除已分配库存
-            List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odo.getOdoCode(), ouId);
+            List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odoCode, ouId);
             if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
                 for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
                     invAllocated.setOccupationCode(null);
                     invAllocated.setOccupationLineId(null);
-                    this.whSkuInventoryAllocatedDao.deleteExt(invAllocated.getId(), ouId);
+                    int updateCount = this.whSkuInventoryAllocatedDao.saveOrUpdateByVersion(invAllocated);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
                 }
             }
             // 删除待移入库存
-            List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odo.getOdoCode(), ouId);
+            List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odoCode, ouId);
             if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
                 for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
-                    this.whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(), ouId);
+                    invTobefilled.setOccupationCode(null);
+                    invTobefilled.setOccupationLineId(null);
+                    int updateCount = this.whSkuInventoryTobefilledDao.saveOrUpdateByVersion(invTobefilled);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
                 }
             }
-            // @mender yimin.lu 2017/3/15补货任务不回滚 del
-            if (wave.getStatus() == WaveStatus.WAVE_CANCEL) {
-
-            }
         }
-        /** 配货模式计算剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM && wavePhaseList.contains(wavePhase)) {}
-        /** 创建出库箱/容器剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.CREATE_OUTBOUND_CARTON_NUM && wavePhaseList.contains(wavePhase)) {}
-        /** 创建工作剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.CREATE_WORK_NUM && wavePhaseList.contains(wavePhase)) {}
+
     }
 
     @Override
@@ -941,38 +966,16 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void cancelWaveWithWork(WhWave wave, ReplenishmentTask task, List<WhWork> workList, Set<Long> workToLazyCancelSet, List<WhOdo> odoList, Set<Long> odoToLazyFreeSet, Long userId) {
-        Long ouId = wave.getOuId();
-        String waveCode = wave.getCode();
+    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId) {
+        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        Long waveId = wave.getId();
         // 工作的取消：
-        // 1.直接取消:设为取消状态
-        // 2.延迟取消:
-        for (WhWork work : workList) {
-            if (workToLazyCancelSet.contains(work.getId())) {
-                continue;
-            }
-            work.setModifiedId(userId);
-            work.setStatus(WorkStatus.CANCEL);
-            int updateWorkCount = this.whWorkDao.saveOrUpdateByVersion(work);
-            if (updateWorkCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
+        // 1.补货工作：不取消
+        // 2.拣货工作：取消
+        this.releaseReplenishmentFromWave(waveId, wave.getCode(), ouId, userId);
+        this.releasePickingFromWave(wave.getCode(), ouId);
 
-        if (task != null) {
-            task.setStatus(ReplenishmentTaskStatus.REPLENISHMENT_TASK_CANCEL);
-            task.setOperatorId(userId);
-            int updateTaskCount = this.replenishmentTaskDao.saveOrUpdateByVersion(task);
-            if (updateTaskCount <= 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-            }
-        }
-
-        if (workToLazyCancelSet != null && workToLazyCancelSet.size() > 0) {
-            wave.setStatus(WaveStatus.WAVE_CANCELING);
-        } else {
-            wave.setStatus(WaveStatus.WAVE_CANCEL);
-        }
+        wave.setStatus(WaveStatus.WAVE_CANCEL);
         wave.setModifiedId(userId);
         int updateWaveCount = this.whWaveDao.saveOrUpdateByVersion(wave);
         if (updateWaveCount <= 0) {
@@ -980,54 +983,82 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         // 遍历所有的的出库单
         // 当出库单为需要释放的时候，则将带移入和库存都回滚，并将和波次的绑定关系释放，置出库单状态为新建；
-        // 否则则将出库单延迟释放：
-        Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
+        // 否则则将出库单延迟释放：@mender yimin.lu 2017/5/9 不存在延迟取消的出库单
         for (WhOdo odo : odoList) {
-            if (odoToLazyFreeSet.contains(odo.getId())) {
-                continue;
-            }
-            odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
-            // 获得需要回滚的库存：已分配和待移入。
-            List<WhSkuInventory> skuInvList = this.whSkuInventoryDao.findbyOccupationCode(odo.getOdoCode(), ouId);
-            if (skuInvList != null && skuInvList.size() > 0) {
-                for (WhSkuInventory skuInv : skuInvList) {
-                    skuInv.setOccupationCode(null);
-                    skuInv.setOccupationCodeSource(null);
-                    skuInv.setOccupationLineId(null);
-                    int updateSkuInvCount = this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-                    if (updateSkuInvCount <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-            }
-            List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odo.getOdoCode(), ouId);
-            if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
-                for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
-                    this.whSkuInventoryAllocatedDao.deleteExt(invAllocated.getId(), ouId);
-                }
-            }
-            List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odo.getOdoCode(), ouId);
-            if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
-                for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
-                    this.whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(), ouId);
-                }
-            }
-            List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
-            if (odoLineList != null && odoLineList.size() > 0) {
-                for (WhOdoLine odoLine : odoLineList) {
-                    odoLine.setWaveCode(null);
-                    odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
-                    int updateOdoLineCount = this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
-                    if (updateOdoLineCount <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                    }
-                }
-            }
-
+            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), null, wh, WavePhase.EXECUTED);
 
         }
 
-        this.distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+    }
+
+    private void releasePickingFromWave(String waveCode, Long ouId) {
+        WhWork workSearch = new WhWork();
+        workSearch.setWaveCode(waveCode);
+        workSearch.setWorkCategory(Constants.WORK_CATEGORY_PICKING);
+        workSearch.setOuId(ouId);
+
+        workSearch.setLifecycle(Constants.LIFECYCLE_START);
+        List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
+        if (workList != null && workList.size() > 0) {
+            for (WhWork work : workList) {
+                work.setStatus(WorkStatus.CANCEL);
+                int updateWorkCount = this.whWorkDao.saveOrUpdateByVersion(work);
+                if (updateWorkCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+
+    }
+
+    private void releaseReplenishmentFromWave(Long waveId, String waveCode, Long ouId, Long userId) {
+        WhWork workSearch = new WhWork();
+        workSearch.setWaveCode(waveCode);
+        workSearch.setWorkCategory(Constants.WORK_CATEGORY_REPLENISHMENT);
+        workSearch.setOuId(ouId);
+
+        workSearch.setLifecycle(Constants.LIFECYCLE_START);
+        List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
+        if (workList != null && workList.size() > 0) {
+            for (WhWork work : workList) {
+                work.setWaveId(null);
+                work.setWaveCode(null);
+                work.setOrderCode(null);
+                // #TODO
+                work.setIsLocked(false);
+                int updateWorkCount = this.whWorkDao.saveOrUpdateByVersion(work);
+                if (updateWorkCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                List<WhWorkLine> lineList = this.whWorkLineDao.findWorkLineByWorkIdOuId(work.getId(), ouId);
+                if (lineList != null && lineList.size() > 0) {
+                    for (WhWorkLine workLine : lineList) {
+                        workLine.setOdoId(null);
+                        workLine.setOdoLineId(null);
+                        int updateCount = this.whWorkLineDao.saveOrUpdateByVersion(workLine);
+                        if (updateCount <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                    }
+                }
+            }
+        }
+
+        ReplenishmentTask taskSearch = new ReplenishmentTask();
+        taskSearch.setOuId(ouId);
+        taskSearch.setWaveId(waveId);
+        List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(taskSearch);
+        if (result != null && result.size() > 0) {
+            for (ReplenishmentTask task : result) {
+                task.setWaveId(null);// 补货工作不绑定波次
+                task.setOperatorId(userId);
+                int updateTaskCount = this.replenishmentTaskDao.saveOrUpdateByVersion(task);
+                if (updateTaskCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+
     }
 
     @Override
@@ -1199,6 +1230,11 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         log.info("operation:addOdoLineToWaveNew,insert wave_lines,time end at {},costs {},update {} counts", date5, date5.getTime() - date4.getTime(), insertCount);
         Date date6 = new Date();
         log.info("operation:addOdoLineToWaveNew,time end at {},costs {}!", date6, date6.getTime() - date1.getTime());
+
+        if (updateCount == insertCount) {
+            WhWave updateWave = this.whWaveDao.findWaveExtByIdAndOuId(wave.getId(), ouId);
+            this.finishCreateWave(updateWave);
+        }
     }
 
     /**
@@ -1259,26 +1295,17 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }
-    
+
     @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> excuteSortSql(String excuteSql, Long ouId) {
-        List<Long> odoIdList = new ArrayList<Long>();
-        List<Map<String, Object>> list = whWaveMasterDao.excuteSortSql(excuteSql, ouId);
-        for (Map<String, Object> map : list) {
-            odoIdList.add((Long) map.get("id"));
-        }
-        return odoIdList;
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printType, Long ouId) {
-        WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
-        if (null == wave) {
-            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
-        }
-        WhWaveMasterPrintCondition c = whWaveMasterDao.findPrintConditionByWaveMasterId(wave.getWaveMasterId(), printType, ouId);
-        return c;
+    public WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printOrderType13, Long ouId) {
+        // TODO Auto-generated method stub
+        return null;
     }
+
 }

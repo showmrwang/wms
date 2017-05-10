@@ -355,5 +355,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
     
+<select id="findWorkLineByWorkIdOuId" resultMap="WhWorkLineCommandResultExt">
+    	select 
+    		<include refid="whWorkLineColumns" />
+	    from 
+	    	t_wh_work_line
+		<where> 
+			ou_id = #{ouId} and work_id=#{workId}
+		</where>
+    </select>
+    
     
 </mapper>

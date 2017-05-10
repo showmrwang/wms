@@ -891,5 +891,9 @@ public final class Constants {
     /** 根地址ID */
     public static final Long ROOT_REGION = 0L;
 
+    /** 工作类别 */
+    public static final String WORK_CATEGORY_PICKING = "PICKING";
+
+    public static final String WORK_CATEGORY_REPLENISHMENT = "REPLENISHMENT";
 
 }
