@@ -72,50 +72,10 @@ public class WhCheckingCollection extends BaseModel {
     /** 修改人ID */
     private Long modifiedId;
 
-    /** 创建人 */
-    private java.lang.Long createId;
-    /** 创建时间 */
-    private Date createTime;
-    /** 最后修改时间 */
-    private Date lastModifyTime;
-    /** 操作人ID */
-    private java.lang.Long modifiedId;
 
     // columns END
     public Long getFacilityId() {
         return facilityId;
-    }
-
-    public Long getCreateId() {
-        return createId;
-    }
-
-    public void setCreateId(Long createId) {
-        this.createId = createId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getLastModifyTime() {
-        return lastModifyTime;
-    }
-
-    public void setLastModifyTime(Date lastModifyTime) {
-        this.lastModifyTime = lastModifyTime;
-    }
-
-    public Long getModifiedId() {
-        return modifiedId;
-    }
-
-    public void setModifiedId(Long modifiedId) {
-        this.modifiedId = modifiedId;
     }
 
     public String getWaveCode() {
