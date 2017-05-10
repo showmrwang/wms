@@ -1401,7 +1401,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                         }
                         if (null != insideContainerSkuAttrIdsQty.get(icId)) {
                             Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(icId);
-                            if (null != skuAttrIdsQty.get(skuId.toString())) {
+                            if (null != skuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd))) {
                                 skuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), skuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd)) + curerntSkuQty.longValue());
                             } else {
                                 skuAttrIdsQty.put(SkuCategoryProvider.getSkuAttrIdByInv(invCmd), curerntSkuQty.longValue());
