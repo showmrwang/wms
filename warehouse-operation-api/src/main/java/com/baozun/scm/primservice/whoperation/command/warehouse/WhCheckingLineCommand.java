@@ -114,6 +114,26 @@ public class WhCheckingLineCommand extends BaseCommand {
     /** 出库单编码*/
     private String odoCode;
 
+    /** ==================================== */
+    /** 生产日期 */
+    private String mfgDateString;
+    /** 失效日期 */
+    private String expDateString;
+    /** 库存属性1 */
+    private String invAttr1Label;
+    /** 库存属性2 */
+    private String invAttr2Label;
+    /** 库存属性3 */
+    private String invAttr3Label;
+    /** 库存属性4 */
+    private String invAttr4Label;
+    /** 库存属性5 */
+    private String invAttr5Label;
+    /** 库存状态 */
+    private String invStatusName;
+    /** 库存类型 */
+    private String invTypeLabel;
+
     public Long getId() {
         return id;
     }
@@ -466,4 +486,75 @@ public class WhCheckingLineCommand extends BaseCommand {
         this.odoCode = odoCode;
     }
 
+    public String getMfgDateString() {
+        return mfgDateString;
+    }
+
+    public void setMfgDateString(String mfgDateString) {
+        this.mfgDateString = mfgDateString;
+    }
+
+    public String getExpDateString() {
+        return expDateString;
+    }
+
+    public void setExpDateString(String expDateString) {
+        this.expDateString = expDateString;
+    }
+
+    public String getInvAttr1Label() {
+        return invAttr1Label;
+    }
+
+    public void setInvAttr1Label(String invAttr1Label) {
+        this.invAttr1Label = invAttr1Label;
+    }
+
+    public String getInvAttr2Label() {
+        return invAttr2Label;
+    }
+
+    public void setInvAttr2Label(String invAttr2Label) {
+        this.invAttr2Label = invAttr2Label;
+    }
+
+    public String getInvAttr3Label() {
+        return invAttr3Label;
+    }
+
+    public void setInvAttr3Label(String invAttr3Label) {
+        this.invAttr3Label = invAttr3Label;
+    }
+
+    public String getInvAttr4Label() {
+        return invAttr4Label;
+    }
+
+    public void setInvAttr4Label(String invAttr4Label) {
+        this.invAttr4Label = invAttr4Label;
+    }
+
+    public String getInvAttr5Label() {
+        return invAttr5Label;
+    }
+
+    public void setInvAttr5Label(String invAttr5Label) {
+        this.invAttr5Label = invAttr5Label;
+    }
+
+    public String getInvStatusName() {
+        return invStatusName;
+    }
+
+    public void setInvStatusName(String invStatusName) {
+        this.invStatusName = invStatusName;
+    }
+
+    public String getInvTypeLabel() {
+        return invTypeLabel;
+    }
+
+    public void setInvTypeLabel(String invTypeLabel) {
+        this.invTypeLabel = invTypeLabel;
+    }
 }

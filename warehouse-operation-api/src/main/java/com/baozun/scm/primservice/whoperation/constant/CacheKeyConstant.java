@@ -151,4 +151,7 @@ public final class CacheKeyConstant {
     /** 出库箱创建 周转箱类二级容器缓存前缀 */
     public static final String CREATE_OUTBOUND_CARTON_TURNOVERBOX_ORDER_BY_VOLUME_DESC_PREFIX = "CREATE-OUTBOUND-CARTON-TURNOVERBOX-ORDER-BY-VOLUME-DESC-";
 
+    /**  */
+    public static final String WMS_CACHE_CHECKING_CHECKING_LINE_PREFIX = "WMS-CACHE-CHECKING-CHECKING-LINE";
+
 }

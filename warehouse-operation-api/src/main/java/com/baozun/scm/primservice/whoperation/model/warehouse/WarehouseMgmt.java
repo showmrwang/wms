@@ -129,6 +129,16 @@ public class WarehouseMgmt extends BaseModel {
         this.odoNotCancelNode = odoNotCancelNode;
     }
 
+
+    /** 是否管理耗材 */
+    private Boolean isMgmtConsumableSku = false;
+    /** 是否推荐耗材 */
+    private Boolean isRecommandConsumableSku = false;
+    /** 是否强制校验耗材 */
+    private Boolean isCheckConsumableSkuBarcode = false;
+    /** 是否自动化仓 */
+    private Boolean isAutomaticWarehouse = false;
+
     // columns END
 
     public WarehouseMgmt() {}
@@ -503,5 +513,37 @@ public class WarehouseMgmt extends BaseModel {
 
     public void setIsFacilityCheckCode(Boolean isFacilityCheckCode) {
         this.isFacilityCheckCode = isFacilityCheckCode;
+    }
+
+    public Boolean getIsMgmtConsumableSku() {
+        return isMgmtConsumableSku;
+    }
+
+    public void setIsMgmtConsumableSku(Boolean isMgmtConsumableSku) {
+        this.isMgmtConsumableSku = isMgmtConsumableSku;
+    }
+
+    public Boolean getIsRecommandConsumableSku() {
+        return isRecommandConsumableSku;
+    }
+
+    public void setIsRecommandConsumableSku(Boolean isRecommandConsumableSku) {
+        this.isRecommandConsumableSku = isRecommandConsumableSku;
+    }
+
+    public Boolean getIsCheckConsumableSkuBarcode() {
+        return isCheckConsumableSkuBarcode;
+    }
+
+    public void setIsCheckConsumableSkuBarcode(Boolean isCheckConsumableSkuBarcode) {
+        this.isCheckConsumableSkuBarcode = isCheckConsumableSkuBarcode;
+    }
+
+    public Boolean getIsAutomaticWarehouse() {
+        return isAutomaticWarehouse;
+    }
+
+    public void setIsAutomaticWarehouse(Boolean isAutomaticWarehouse) {
+        this.isAutomaticWarehouse = isAutomaticWarehouse;
     }
 }

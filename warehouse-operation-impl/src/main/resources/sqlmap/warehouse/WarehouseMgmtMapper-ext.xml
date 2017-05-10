@@ -58,7 +58,12 @@
                 z_qty as zqty,
                 seeding_odo_qty as seedingOdoQty,
                 is_check_returned_purchase_reg as isCheckReturnedPurchaseReg,
-	        	odo_not_cancel_node as odoNotCancelNode
+	        	odo_not_cancel_node as odoNotCancelNode,
+                is_mgmt_consumable_sku as isMgmtConsumableSku,
+                is_recommand_consumable_sku as isRecommandConsumableSku,
+                is_check_consumable_sku_barcode as isCheckConsumableSkuBarcode,
+                is_automatic_warehouse as isAutomaticWarehouse,
+                is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
         ]]>
     </sql>
 

@@ -67,4 +67,30 @@ public interface CheckingManager extends BaseManager {
      */
     WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId);
     
+
+    List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId);
+
+    List<WhCheckingCommand> findCheckingByBoxCode(String checkingSourceCode, String checkingBoxCode, Long ouId);
+
+    /**
+     * 根据条件查找复核头
+     *
+     * @author mingwei.xie
+     * @param checkingCommand
+     * @return
+     */
+    WhCheckingCommand findCheckingByParam(WhCheckingCommand checkingCommand);
+
+
+    /**
+     * 根据ID查找复核头
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    WhCheckingCommand findCheckingById(Long checkingId, Long ouId);
+
+
 }

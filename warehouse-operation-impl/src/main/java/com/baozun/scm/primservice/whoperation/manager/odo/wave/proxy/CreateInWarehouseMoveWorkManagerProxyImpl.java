@@ -94,6 +94,8 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 if (true == isExecute) {
                     // 11.库内移动工作执行
                     isSuccess = createInWarehouseMoveWorkManager.executeInWarehouseMoveWork(inWarehouseMoveWorkCode, ouId, userId, skuInventorySnLst);
+                }else{
+                    isSuccess = true;
                 }
             } catch (Exception e) {
                 log.error(e + "");

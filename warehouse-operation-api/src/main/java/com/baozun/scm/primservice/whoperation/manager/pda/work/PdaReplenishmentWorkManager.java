@@ -68,4 +68,13 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      */
     public void updateTurnoverBox(String turnoverBoxCode,Long ouId);
     
+    /***
+     * 判断是否是整箱或者整托
+     * @param outerContainerCode
+     * @param insideCotainerCode
+     * @param ouId
+     * @return
+     */
+    public Boolean judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId);
+    
 }

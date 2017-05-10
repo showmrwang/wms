@@ -326,7 +326,19 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public WarehouseMgmt findWhMgmtByOuId(Long ouId) {
-        return warehouseMgmtDao.findByOuId(ouId);
+        WarehouseMgmt warehouseMgmt = warehouseMgmtDao.findByOuId(ouId);
+        /*
+        {
+            //TODO 测试 仓库配置
+            //是否管理耗材
+            warehouseMgmt.setIsMgmtConsumableSku(false);
+            //是否推荐耗材
+            warehouseMgmt.setIsRecommandConsumableSku(false);
+            //是否强制校验耗材
+            warehouseMgmt.setIsCheckConsumableSkuBarcode(false);
+        }
+        */
+        return warehouseMgmt;
     }
 
     /**

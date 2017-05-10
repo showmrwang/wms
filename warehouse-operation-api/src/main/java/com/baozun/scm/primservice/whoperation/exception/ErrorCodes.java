@@ -984,7 +984,11 @@ public class ErrorCodes {
     public static final int RECOMMEND_STATION_DONT_EXSIT = 110018;
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
-    public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001; 
+    public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;
+    /**出库箱不满足容器拆分条件 */
+    public static final int  OUT_BOUND_BOX_NOT_MOVE_CONDITION = 120002;
+    /**目标出库箱出库单号与原始出库箱/货格出库单不一致 */
+    public static final int  OUT_BOUND_BOX_ODO_CODE_NOT_MATCH = 120003;
     // 120000-130000 zhaozili 
 
     /** 文件不存在 */

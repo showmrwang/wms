@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -23,6 +24,9 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhLocationSkuVolumeCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhLocationSkuVolume;
 
 
@@ -39,6 +43,14 @@ public interface WhLocationSkuVolumeDao extends BaseDao<WhLocationSkuVolume, Lon
     @CommonQuery
     int saveOrUpdateByVersion(WhLocationSkuVolume o);
 
-
+    /**
+     * 根据复核台ID查找库位商品容量信息
+     *
+     * @author mingwei.xie
+     * @param facilityId
+     * @param ouId
+     * @return
+     */
+    List<WhLocationSkuVolumeCommand> findLocSkuVolumeByFacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 
 }

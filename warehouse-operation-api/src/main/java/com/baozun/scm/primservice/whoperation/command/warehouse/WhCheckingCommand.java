@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
 
@@ -109,6 +111,28 @@ public class WhCheckingCommand extends BaseCommand {
     /** 周转箱编码*/
     private String containerCode;
 
+
+
+    /****************自定义*********************/
+    /** 耗材编码 */
+    private String consumableCode;
+    /** 复核头ID */
+    private Long checkingId;
+    /** 播种墙/复核台编码 */
+    private String facilityCode;
+    /** 小车编码 */
+    private String outContainerCode;
+    /** 复核类型 复核流程 */
+    private String checkingType;
+    /** 复核数据源编码 */
+    private String checkingSourceCode;
+    /** 复核箱编码 */
+    private String checkingBoxCode;
+    /** 复核数据源类型 播种集货/复核集货 */
+    private String checkingSourceType;
+
+    /**  */
+    List<WhOutboundboxCommand> outboundboxList;
 
     public Long getId() {
         return id;
@@ -447,4 +471,75 @@ public class WhCheckingCommand extends BaseCommand {
         this.containerCode = containerCode;
     }
 
+    public String getConsumableCode() {
+        return consumableCode;
+    }
+
+    public void setConsumableCode(String consumableCode) {
+        this.consumableCode = consumableCode;
+    }
+
+    public Long getCheckingId() {
+        return checkingId;
+    }
+
+    public void setCheckingId(Long checkingId) {
+        this.checkingId = checkingId;
+    }
+
+    public String getFacilityCode() {
+        return facilityCode;
+    }
+
+    public void setFacilityCode(String facilityCode) {
+        this.facilityCode = facilityCode;
+    }
+
+    public String getOutContainerCode() {
+        return outContainerCode;
+    }
+
+    public void setOutContainerCode(String outContainerCode) {
+        this.outContainerCode = outContainerCode;
+    }
+
+    public String getCheckingType() {
+        return checkingType;
+    }
+
+    public void setCheckingType(String checkingType) {
+        this.checkingType = checkingType;
+    }
+
+    public String getCheckingSourceCode() {
+        return checkingSourceCode;
+    }
+
+    public void setCheckingSourceCode(String checkingSourceCode) {
+        this.checkingSourceCode = checkingSourceCode;
+    }
+
+    public String getCheckingBoxCode() {
+        return checkingBoxCode;
+    }
+
+    public void setCheckingBoxCode(String checkingBoxCode) {
+        this.checkingBoxCode = checkingBoxCode;
+    }
+
+    public String getCheckingSourceType() {
+        return checkingSourceType;
+    }
+
+    public void setCheckingSourceType(String checkingSourceType) {
+        this.checkingSourceType = checkingSourceType;
+    }
+
+    public List<WhOutboundboxCommand> getOutboundboxList() {
+        return outboundboxList;
+    }
+
+    public void setOutboundboxList(List<WhOutboundboxCommand> outboundboxList) {
+        this.outboundboxList = outboundboxList;
+    }
 }

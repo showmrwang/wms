@@ -59,6 +59,11 @@
                 seeding_odo_qty as seedingOdoQty,
                 is_check_returned_purchase_reg as isCheckReturnedPurchaseReg,
 	        	odo_not_cancel_node as odoNotCancelNode
+                is_mgmt_consumable_sku as isMgmtConsumableSku,
+                is_recommand_consumable_sku as isRecommandConsumableSku,
+                is_check_consumable_sku_barcode as isCheckConsumableSkuBarcode,
+                is_automatic_warehouse as isAutomaticWarehouse,
+                is_check_returned_purchase_reg as isCheckReturnedPurchaseReg
         ]]>
     </sql>
 
@@ -119,6 +124,11 @@
                     seeding_odo_qty ,
                     is_check_returned_purchase_reg,
 		        	odo_not_cancel_node
+                    is_mgmt_consumable_sku,
+                    is_recommand_consumable_sku,
+                    is_check_consumable_sku_barcode,
+                    is_automatic_warehouse,
+                    is_check_returned_purchase_reg
                 ) VALUES (
                 #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{warehouseId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -168,6 +178,11 @@
                     #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                      #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{odoNotCancelNode,javaType=java.lang.String,jdbcType=VARCHAR} 
+                    #{isMgmtConsumableSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isRecommandConsumableSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isCheckConsumableSkuBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isAutomaticWarehouse,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                    #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT}
                 )
             ]]>
 
@@ -224,6 +239,11 @@
                 seeding_odo_qty = #{seedingOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        odo_not_cancel_node = #{odoNotCancelNode,javaType=java.lang.String,jdbcType=VARCHAR} 
+                is_mgmt_consumable_sku = #{isMgmtConsumableSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_recommand_consumable_sku = #{isRecommandConsumableSku,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_check_consumable_sku_barcode = #{isCheckConsumableSkuBarcode,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_automatic_warehouse = #{isAutomaticWarehouse,javaType=java.lang.Boolean,jdbcType=BIT} ,
+                is_check_returned_purchase_reg = #{isCheckReturnedPurchaseReg,javaType=java.lang.Boolean,jdbcType=BIT}
             WHERE 
                 id = #{id} 
         ]]>
