@@ -743,14 +743,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WeightingCommand command = null;
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         String outboundbox = cmd.getOutboundBoxCode();
-        String skuBarCode = cmd.getSkuBarCode();
-        WhSkuCommand skuCmd = skuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
-        if(null == skuCmd ){
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-        Long outboundboxId = skuCmd.getId();
+        Long outboundboxId = cmd.getOutboundboxId();
         // 更新复合明细表
-        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId);
+        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId,outboundboxId,outboundbox);
         cmd.setOuId(ouId);
         // 生成出库箱库存(sn有问题)
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
@@ -776,7 +771,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合更新复合表
      * @param checkingLineList
      */
-    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId) {
+    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId,Long outboundboxId,String outboundbox ) {
         for (WhCheckingLineCommand cmd : checkingLineList) {
             Long id = cmd.getId(); // 复合明细id
             Long checkingQty = cmd.getCheckingQty(); // 复合明细数量
@@ -784,6 +779,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             WhCheckingLine line = new WhCheckingLine();
             BeanUtils.copyProperties(lineCmd, line);
             line.setCheckingQty(checkingQty);
+            line.setOutboundboxId(outboundboxId);
+            line.setOutboundboxCode(outboundbox);
             whCheckingLineDao.saveOrUpdateByVersion(line);
         }
         Long checkingId = null;
@@ -994,6 +991,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     @Override
     public Boolean printDefect(WhCheckingByOdoResultCommand cmd) {
         Boolean isSuccess = true;
+        String checkingPattern = cmd.getCheckingPattern();  //按单复合模式
         Long ouId = cmd.getOuId();
         Long functionId = cmd.getFunctionId();
         Long userId = cmd.getUserId();
@@ -1007,8 +1005,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         // 查询功能是否配置复核打印单据配置        
         WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
+        if (null == whFunctionOutBound) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         String checkingPrint = whFunctionOutBound.getCheckingPrint();
-        if(null != checkingPrint && "".equals(checkingPrint)){
+        if(!StringUtils.isEmpty(checkingPrint)){
             String[] checkingPrintArray = checkingPrint.split(",");
             for (int i = 0; i < checkingPrintArray.length; i++) {
                 List<Long> idsList = new ArrayList<Long>();
@@ -1016,17 +1017,46 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                    if(null == whPrintInfoLst || 0 == whPrintInfoLst.size()){
                        idsList.add(checkingCmd.getId());
                        WhPrintInfo whPrintInfo = new WhPrintInfo();
-                       whPrintInfo.setFacilityId(checkingCmd.getFacilityId());
-                       whPrintInfo.setContainerId(checkingCmd.getContainerId());
-                       Container container = containerDao.findByIdExt(checkingCmd.getContainerId(),checkingCmd.getOuId());
-                       whPrintInfo.setContainerCode(container.getCode());
+                       //小车加出库箱
+                       if(Constants.WAY_1.equals(checkingPattern)) {
+                           whPrintInfo.setOuterContainerId(checkingCmd.getOuterContainerId());
+                           Container outerContainer = containerDao.findByIdExt(checkingCmd.getOuterContainerId(), ouId);//小车
+                           if (null == outerContainer) {
+                               throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                           }
+                           whPrintInfo.setOuterContainerCode(outerContainer.getCode());
+                       }
+                       //小车加货格
+                       if(Constants.WAY_2.equals(checkingPattern)) {
+                           whPrintInfo.setOuterContainerId(checkingCmd.getOuterContainerId());
+                           Container outerContainer = containerDao.findByIdExt(checkingCmd.getOuterContainerId(), ouId);//小车
+                           if (null == outerContainer) {
+                               throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                           }
+                           whPrintInfo.setOuterContainerCode(outerContainer.getCode());
+                           whPrintInfo.setContainerLatticeNo(checkingCmd.getContainerLatticeNo());
+                       }
+                      //周转箱
+                       if(Constants.WAY_5.equals(checkingPattern)) {
+                           whPrintInfo.setContainerId(checkingCmd.getContainerId()); //周转箱
+                           Container container = containerDao.findByIdExt(checkingCmd.getContainerId(),checkingCmd.getOuId());
+                           if (null == container) {
+                               throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                           }
+                           whPrintInfo.setContainerCode(container.getCode());
+                       } 
+//                         //播种墙出库箱
+                       if(Constants.WAY_3.equals(checkingPattern)) {
+                           whPrintInfo.setFacilityId(checkingCmd.getFacilityId());
+                       }
+                      //播种墙加货格
+                       if(Constants.WAY_4.equals(checkingPattern)){
+                           whPrintInfo.setFacilityId(checkingCmd.getFacilityId());
+                           whPrintInfo.setContainerLatticeNo(checkingCmd.getContainerLatticeNo());
+                       }
                        whPrintInfo.setBatch(checkingCmd.getBatch());
                        whPrintInfo.setWaveCode(checkingCmd.getWaveCode());
                        whPrintInfo.setOuId(ouId);
-                       whPrintInfo.setOuterContainerId(checkingCmd.getOuterContainerId());
-                       Container outerContainer = containerDao.findByIdExt(checkingCmd.getOuterContainerId(), ouId);
-                       whPrintInfo.setOuterContainerCode(outerContainer.getCode());
-                       whPrintInfo.setContainerLatticeNo(checkingCmd.getContainerLatticeNo());
                        whPrintInfo.setOutboundboxId(checkingCmd.getOutboundboxId());
                        whPrintInfo.setOutboundboxCode(checkingCmd.getOutboundboxCode());
                        whPrintInfo.setPrintType(checkingPrintArray[i]);
