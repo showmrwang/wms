@@ -879,6 +879,8 @@ public class ErrorCodes {
 
     /** 待移入库存不存在 */
     public static final int TOBEFILLED_INVENTORY_NO_EXIST = 70062;
+    /**耗材不存在*/
+    public static final int OUT_BOUNDBOX_NO_EXIST=70063;
 
     // 70001-80000 tangming
 
