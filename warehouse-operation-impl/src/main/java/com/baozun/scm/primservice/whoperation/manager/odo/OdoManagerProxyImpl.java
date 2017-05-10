@@ -2859,7 +2859,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             List<PrintCondition> printConditionList = printConditionManager.findConditionListByDocType(Constants.PRINT_ORDER_TYPE_13, ouId);
             for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
                 String batchNo = entry.getKey();
-                Map<String, List<Long>> printMap = printConditionManager.getSortOdoIndex(printConditionList, entry.getValue(), ouId);
+                Map<String, List<Long>> printMap = printConditionManager.getSortIdList(printConditionList, entry.getValue(), ouId);
                 if (null == printMap) {
                     log.error("not have printCondition match to odoList, waveId:{}, batchNo:{}", waveId, batchNo);
                     flag = false;
