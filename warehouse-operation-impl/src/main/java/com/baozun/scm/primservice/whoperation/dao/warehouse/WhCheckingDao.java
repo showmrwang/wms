@@ -85,6 +85,7 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      * @return
      */
     List<WhCheckingCommand> findListByParamExt(WhCheckingCommand checking);
+<<<<<<< Updated upstream
 
     public WhCheckingCommand findWhCheckingByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
@@ -95,4 +96,11 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      * @return
      */
     public CheckingDisplayCommand findCheckingInfoByBatchAndOuId(@Param("batch") String batch, @Param("ouId") Long ouId);
+
+    
+    public WhCheckingCommand findWhCheckingByIdExt(@Param("id") Long id,@Param("ouId")Long ouId);
+    
+    public WhCheckingCommand findWhCheckingByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode,@Param("ouId")Long ouId);
+    
+
 }

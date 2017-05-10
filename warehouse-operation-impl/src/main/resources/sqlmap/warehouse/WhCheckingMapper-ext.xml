@@ -528,6 +528,7 @@
         and container.code = #{containerCode}
     </select>
     
+
     <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking">
         <![CDATA[
             UPDATE t_wh_checking SET
@@ -563,5 +564,14 @@
         ]]>
     </update>
     
+
+
+     <select id="findWhCheckingByOutboundboxCode" resultMap="WhCheckingCommand">
+        select
+        <include refid="whCheckingColumnsExt"/>
+        from t_wh_checking 
+        where outboundbox_code = #{outboundboxCode}
+         and ou_id = #{ouId}
+    </select>
 
 </mapper>
