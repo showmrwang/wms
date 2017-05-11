@@ -593,6 +593,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             insideContainerMap = latticeInsideSkuAttrIdsQty.get(key);
                             if (null != insideContainerMap.get(operationLine.getFromInsideContainerId())) {
                                 Map<String, Long> onlySkuAndQty = new HashMap<String, Long>();
+                                onlySkuAndQty = insideContainerMap.get(operationLine.getFromInsideContainerId());
                                 if (null != onlySkuAndQty.get(onlySku)) {
                                     onlySkuAndQty.put(onlySku, onlySkuAndQty.get(onlySku) + (long) (operationLine.getQty() - operationLine.getCompleteQty()));
                                 } else {
