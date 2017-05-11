@@ -1364,7 +1364,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 		
 		// 退换货逻辑
 		if (whPo.getPoType() == 2) {
-
             Store store = this.storeManager.findStoreById(whPo.getStoreId());
 			// 退货入关联销售出
 			String ecOrderCode = whPo.getOriginalEcOrderCode();

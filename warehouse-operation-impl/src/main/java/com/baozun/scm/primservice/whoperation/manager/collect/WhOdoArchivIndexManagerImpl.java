@@ -169,9 +169,6 @@ public class WhOdoArchivIndexManagerImpl extends BaseManagerImpl implements WhOd
     @Override
     @MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
     public boolean checkWhOdoArchivLineIndexExsits(String ecOrderCode, String dataSource, Long ouId) {
-        if (StringUtils.isEmpty(ecOrderCode)) {
-            return true;
-        }
         String num = HashUtil.serialNumberByHashCode(ecOrderCode);
         int count = whOdoArchivIndexDao.checkWhOdoArchivLineIndexExsits(ecOrderCode, dataSource, num);
         if (count > 0) {

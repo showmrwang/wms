@@ -301,7 +301,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @author kai.zhu
      * @version 2017年3月13日
      */
-    List<WhInboundLineConfirmCommand> findInventoryByPo(WhPo po, List<WhPoLine> lineList, Long ouId);
+    List<WhInboundLineConfirmCommand> findInventoryByPoCode(String poCode, Long ouId);
 
 	void allocationInventoryByLineListNew(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules,
 			Long skuId, Long storeId, Long invStatusId, Warehouse wh, String logId);

@@ -270,9 +270,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
 			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
 		where 
-			occupation_code = #{asnCode}
-			and uuid = #{uuid}
-			and ou_id = #{ouid} 
+			sn.occupation_code = #{asnCode}
+			and sn.uuid = #{uuid}
+			and sn.ou_id = #{ouId} 
 	</select>
 	
 	<select id="findInvSnByOccupationCodeAndUuid" resultMap="WhSkuInventorySnCommandResultExt">

@@ -645,4 +645,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and store_id = #{storeId}
 		</where>
     </select>
+    
+    <select id="findWhPoByCode" resultMap="WhPoResultExt">
+    	select
+    		<include refid="whPoColumns"/>
+    	from
+    		t_wh_po
+    	where
+    		po_code = #{poCode}
+    		and ou_id = #{ouId}
+    </select>
 </mapper>
