@@ -4809,4 +4809,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			name = #{invStatus}
 			and lifecycle = 1
 	</select>
+	
+	<select id="getInvStatusNameById" resultType="string">
+		select 
+			name
+		from 
+			t_wh_inventory_status
+		where 
+			id = #{invStatusId}
+			and lifecycle = 1
+	</select>
 </mapper>
