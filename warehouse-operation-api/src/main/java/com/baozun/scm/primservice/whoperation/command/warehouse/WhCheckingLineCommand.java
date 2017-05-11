@@ -133,6 +133,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String invStatusName;
     /** 库存类型 */
     private String invTypeLabel;
+    /** 耗材id*/
+    private Long outboundboxId;
 
     public Long getId() {
         return id;
@@ -557,4 +559,13 @@ public class WhCheckingLineCommand extends BaseCommand {
     public void setInvTypeLabel(String invTypeLabel) {
         this.invTypeLabel = invTypeLabel;
     }
+
+    public Long getOutboundboxId() {
+        return outboundboxId;
+    }
+
+    public void setOutboundboxId(Long outboundboxId) {
+        this.outboundboxId = outboundboxId;
+    }
+
 }

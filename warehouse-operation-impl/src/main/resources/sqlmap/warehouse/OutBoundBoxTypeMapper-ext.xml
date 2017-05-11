@@ -295,5 +295,40 @@
 
         </where>
     </sql>
+    
+     <sql id="outInventoryBoxTypeColumnsExt1">
+        <![CDATA[
+                type.id as id,
+                type.sku_id as skuId,
+                type.ou_id as ouId,
+                type.code as code,
+                type.name as name,
+                type.description as description,
+                type.lifecycle as lifecycle,
+                type.length as length,
+                type.width as width,
+                type.high as high,
+                type.volume as volume,
+                type.weight as weight,
+                type.length_ext as lengthExt,
+                type.width_ext as widthExt,
+                type.high_ext as highExt,
+                type.volume_ext as volumeExt,
+                type.weight_ext as weightExt,
+                type.create_time as createTime,
+                type.last_modify_time as lastModifyTime,
+                type.created_id as createdId,
+                type.modified_id as modifiedId
+        ]]>
+    </sql>
+    
+     <select id="findBySkuBarcode" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType">
+        select
+        <include refid="outInventoryBoxTypeColumnsExt1"/>
+        from t_wh_outboundbox_type type left JOIN t_wh_sku sku ON type.sku_id = sku.id 
+        WHERE
+        sku.bar_code = #{consumableSkuBarcode} and type.ou_id = #{ouId}
+    </select>
+    
 
 </mapper>

@@ -105,4 +105,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		t_wh_location_sku_volume  lsv  LEFT JOIN t_wh_location  lo on lsv.location_id =lo.id
 			WHERE lsv.location_id = #{locationId} and lsv.sku_id = #{skuId} and lsv.ou_id = #{ouId}
 	</select>
+
+	<select id="findBySkuIdAndFacilityId" resultMap="LocationSkuVolumeResultExt">
+		SELECT
+			<include refid="locationSkuVolumeColumnsExt" /> 
+		FROM
+			t_wh_location_sku_volume lsv LEFT JOIN t_wh_location lo ON lsv.location_id = lo.id
+		WHERE
+			lsv.id IN (
+				SELECT
+					lsv_id
+				FROM
+					t_wh_facility_location_sku_volume
+				WHERE
+					facility_id = #{facilityId}
+				AND ou_id = #{ouId}
+			)
+		and lsv.sku_id = #{skuId}
+	</select>
 </mapper>

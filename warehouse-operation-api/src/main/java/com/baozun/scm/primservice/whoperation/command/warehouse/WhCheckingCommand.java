@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
+import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
@@ -71,6 +72,14 @@ public class WhCheckingCommand extends BaseCommand {
     private String pickingMode;
     /** 复核模式 */
     private String checkingMode;
+    /** 创建人 */
+    private java.lang.Long createId;
+    /** 创建时间 */
+    private Date createTime;
+    /** 最后修改时间 */
+    private Date lastModifyTime;
+    /** 操作人ID */
+    private java.lang.Long modifiedId;
     // /** 复核头集合 */
     // private List<WhCheckingLineCommand> checkingLineCommandLst;
 
@@ -108,6 +117,8 @@ public class WhCheckingCommand extends BaseCommand {
     private String mainSkuName;
     /** 耗材编码*/
     private String consumableSkuBarcode;
+    /** 耗材id*/
+    private Long consumableSkuId;
     /** 周转箱编码*/
     private String containerCode;
 
@@ -130,6 +141,8 @@ public class WhCheckingCommand extends BaseCommand {
     private String checkingBoxCode;
     /** 复核数据源类型 播种集货/复核集货 */
     private String checkingSourceType;
+    /** 复核台id*/
+    private Long checkingFacilityId;
 
     /**  */
     List<WhOutboundboxCommand> outboundboxList;
@@ -542,4 +555,53 @@ public class WhCheckingCommand extends BaseCommand {
     public void setOutboundboxList(List<WhOutboundboxCommand> outboundboxList) {
         this.outboundboxList = outboundboxList;
     }
+
+    public java.lang.Long getCreateId() {
+        return createId;
+    }
+
+    public void setCreateId(java.lang.Long createId) {
+        this.createId = createId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public java.lang.Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(java.lang.Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+
+    public Long getConsumableSkuId() {
+        return consumableSkuId;
+    }
+
+    public void setConsumableSkuId(Long consumableSkuId) {
+        this.consumableSkuId = consumableSkuId;
+    }
+
+    public Long getCheckingFacilityId() {
+        return checkingFacilityId;
+    }
+
+    public void setCheckingFacilityId(Long checkingFacilityId) {
+        this.checkingFacilityId = checkingFacilityId;
+    }
+
 }

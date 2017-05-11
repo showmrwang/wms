@@ -193,7 +193,7 @@
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{outboundboxCode,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
 
@@ -233,7 +233,7 @@
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} , 
 		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        outboundbox_code = #{outboundboxCode,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} 
             WHERE 
                 id = #{id} 
                 and ou_id  = #{ouId}

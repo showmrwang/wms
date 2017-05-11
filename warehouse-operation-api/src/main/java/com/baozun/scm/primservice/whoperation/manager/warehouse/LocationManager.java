@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.LocationProductVolume;
@@ -56,12 +57,20 @@ public interface LocationManager extends BaseManager {
      * [通用方法] 扣减耗材
      * 
      * @param facilityId
-     * @param skuBarcode
+     * @param skuId
      * @param ouId
      * @param userId
+     * @param outboundboxCode
      * @return
      */
-    Long reduceQty(Long facilityId, Long skuId, Long ouId, Long userId);
+    Long reduceQty(Long facilityId, Long skuId, String outboundboxCode, Long ouId, Long userId);
+
+    /**
+     * [业务方法] 扣减耗材并且保存出库箱
+     * @param command
+     * @return
+     */
+    Long reduceQtyAndUpdateOutboundbox(WhCheckingCommand command);
 
 
 
