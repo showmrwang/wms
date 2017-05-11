@@ -54,6 +54,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
@@ -1100,7 +1101,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                          // 查找可用小车，货格数足够，且货格尺寸可用
                         Container2ndCategoryCommand availableTrolley = this.findAvailableTrolley(odoCommand, ouId, logId);
                         // 获取可用容器，设置包裹的outContainerId
-                        Container trolleyContainer = this.getUseAbleContainer(availableTrolley, ouId);
+                        Container trolleyContainer = null;
+                        if(null !=  availableTrolley){
+                            trolleyContainer = this.getUseAbleContainer(availableTrolley, ouId);
+                        }
                         if (null == availableTrolley || null == trolleyContainer) {
                             // 没有可用小车，保存数据
                             if (null != odoCommand.getOutboundBoxList()) {
@@ -3340,7 +3344,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 新建的容器对象
      */
     private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId) {
-
+        if(null == availableContainer){
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         Container searchContainer = new Container();
         searchContainer.setOneLevelType(availableContainer.getOneLevelType());
         searchContainer.setTwoLevelType(availableContainer.getId());
