@@ -548,10 +548,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private void createPoDefault(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, List<WhOdoArchivLineIndex> indexList, Long ouId) {
         Boolean isAutoClose = this.biPoManager.calIsAutoClose(whPo.getStoreId(), ouId);
         whPo.setIsAutoClose(isAutoClose);
+        if (ouId != null) {
+            String whPoCode = this.getUniqueCode();
+        }
         biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
         if (ouId != null) {
             // @mender yimin.lu 2017/5/11 info->shard poCode 一致
-            // whPo.setPoCode(getUniqueCode());
             biPoManager.createPoAndLineToShared(whPo, whPoTm, whPoLines, indexList);
         }
     }
@@ -1040,7 +1042,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 importExcel.setOuId(ouId);
 
                 // 调用异常输出接口，生成错误信息
-                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+                String errorFileName = outPutStreamToServersManager.uploadImportFileErrorToInfo(importExcel);
 
                 ResponseMsg msg = new ResponseMsg();
                 msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -1067,7 +1069,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 importExcel.setOuId(ouId);
 
                 // 调用异常输出接口，生成错误信息
-                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+                String errorFileName = outPutStreamToServersManager.uploadImportFileErrorToInfo(importExcel);
 
                 ResponseMsg msg = new ResponseMsg();
                 msg.setResponseStatus(ResponseMsg.STATUS_ERROR);

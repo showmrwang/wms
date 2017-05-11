@@ -1848,7 +1848,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 importExcel.setOuId(ouId);
 
                 // 调用异常输出接口，生成错误信息
-                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+                String errorFileName = outPutStreamToServersManager.uploadImportFileErrorToShard(importExcel);
 
                 ResponseMsg msg = new ResponseMsg();
                 msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
@@ -1890,7 +1890,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 importExcel.setOuId(ouId);
 
                 // 调用异常输出接口，生成错误信息
-                String errorFileName = outPutStreamToServersManager.uploadImportFileError(importExcel);
+                String errorFileName = outPutStreamToServersManager.uploadImportFileErrorToShard(importExcel);
 
                 ResponseMsg msg = new ResponseMsg();
                 msg.setResponseStatus(ResponseMsg.STATUS_ERROR);

@@ -42,8 +42,6 @@ public class OutPutStreamToServersManagerImpl extends BaseManagerImpl implements
     /**
      * 上传导入验证失败文件到服务器 InputStream in 文件流 importType 文件类型 导入类型
      */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public String uploadImportFileError(ImportExcel ie) {
         String returnString = "";
         String fileName = "";
@@ -93,6 +91,20 @@ public class OutPutStreamToServersManagerImpl extends BaseManagerImpl implements
             }
         }
         return returnString;
+    }
+
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public String uploadImportFileErrorToInfo(ImportExcel ie) {
+        return this.uploadImportFileError(ie);
+    }
+
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public String uploadImportFileErrorToShard(ImportExcel ie) {
+        return this.uploadImportFileError(ie);
     }
 
 }

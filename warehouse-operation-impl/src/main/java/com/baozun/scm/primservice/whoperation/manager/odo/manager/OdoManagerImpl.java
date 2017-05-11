@@ -386,6 +386,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     if (null == odoLine.getLineAmt()) {
                         odoLine.setLineAmt(odoLine.getLinePrice() * odoLine.getQty());
                     }
+                    odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
                     odoLine.setCurrentQty(lineCommand.getCurrentQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCurrentQty());
                     odoLine.setActualQty(lineCommand.getActualQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getActualQty());
                     odoLine.setCancelQty(lineCommand.getCancelQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCancelQty());

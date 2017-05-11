@@ -80,7 +80,7 @@ public interface BiPoManager extends BaseManager {
      * 逻辑:②当创建的PO单有仓库的时候，数据会同步到INFO库的whpo和shard库的whpo;此时不可单独使用
      * 
      * @param whPo
-     * @param whPoTm 
+     * @param whPoTm
      * @param whPoLines
      * @param rm
      * @return
