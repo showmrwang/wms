@@ -359,4 +359,6 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @return
      */
     public List<WhSkuInventoryCommand> findOutboundboxInventory(String outboundbox,Long ouId);
+
+    Long getInvSatusByName(String invStatus);
 }

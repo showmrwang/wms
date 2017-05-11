@@ -1044,5 +1044,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     public int findInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
+
+    Long getInvSatusByName(@Param("invStatus") String invStatus);
     
 }

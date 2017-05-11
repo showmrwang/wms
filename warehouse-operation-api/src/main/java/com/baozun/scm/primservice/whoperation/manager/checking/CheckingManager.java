@@ -66,7 +66,16 @@ public interface CheckingManager extends BaseManager {
      * @param ouId 仓库Id
      */
     WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId);
-    
+
+    /**
+     * 根据绑定的MAC地址查询复核台
+     *
+     * @param macAddr
+     * @param ouId
+     * @return
+     */
+    WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String macAddr, Long ouId);
+
 
     List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId);
 

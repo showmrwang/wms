@@ -1379,6 +1379,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 			        // 代表原来关联过原始单据, 则此订单依旧关联
 			        // 创建到(collect)数据表并生成PoAsn
 			        this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId);
+                } else {
+                    // 复用同一套创建Po的逻辑
+                    this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
                 }
 			}
 		} else {

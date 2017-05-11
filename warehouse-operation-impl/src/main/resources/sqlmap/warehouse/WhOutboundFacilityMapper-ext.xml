@@ -363,4 +363,39 @@
             </if>
         </where>
     </select>
+
+    <select id="findOutboundFacilityByMacAddr" resultMap="WhOutboundFacilityCommand">
+        select
+            f.id as id,
+            f.facility_code as facilityCode,
+            f.facility_name as facilityName,
+            f.facility_type as facilityType,
+            f.outboundbox_type_id as outboundboxTypeId,
+            f.capacity as capacity,
+            f.facility_lower_limit as facilityLowerLimit,
+            f.facility_upper_limit as facilityUpperLimit,
+            f.facility_group as facilityGroup,
+            f.check_code as checkCode,
+            f.create_time as createTime,
+            f.last_modify_time as lastModifyTime,
+            f.operator_id as operatorId,
+            f.lifecycle as lifecycle,
+            f.ou_id as ouId,
+            f.status as status,
+            f.batch as batch,
+            f.mac as mac,
+            sys.dic_label as facilityTypeName,
+            t.name as outboundboxTypeName,
+            g.facility_group_name as facilityGroupName,
+            s.priority as priority
+        from
+        t_wh_outbound_facility f
+            left join sys_dictionary sys on (sys.dic_value = f.facility_type and sys.group_value = 'FACILITY_TYPE')
+            left join t_wh_outboundbox_type t on f.outboundbox_type_id = t.id
+            left join t_wh_outbound_facility_group g on f.facility_group = g.id
+            left join t_wh_outbound_facility_sortorder s on (s.facility_id = f.id and s.facility_type = f.facility_type)
+        where
+            f.ou_id = #{ouId}
+            and f.mac = #{macAddr}
+    </select>
 </mapper>

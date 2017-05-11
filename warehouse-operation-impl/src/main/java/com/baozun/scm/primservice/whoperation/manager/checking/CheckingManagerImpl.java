@@ -403,5 +403,16 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         */
         return facilityCommand;
     }
+
+    /**
+     * 根据绑定的MAC地址查询复核台
+     *
+     * @param macAddr
+     * @param ouId
+     * @return
+     */
+    public WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String macAddr, Long ouId){
+        return whOutboundFacilityDao.findOutboundFacilityByMacAddr(macAddr, ouId);
+    }
     
 }
