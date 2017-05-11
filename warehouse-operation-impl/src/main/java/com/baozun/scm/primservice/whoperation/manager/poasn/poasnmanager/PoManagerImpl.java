@@ -753,11 +753,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                 }
             }
         }
-        // zhu.kai 收货反馈
-        // 按PO单反馈, 上位系统单据才反馈
-        if (null != biPo.getIsVmi() && biPo.getIsVmi()) {
-            this.createInBoundConfirmData(biPo);
-        }
     }
 
     private void snycPoToInfoWhenRcvdFinished(WhPo shardPo, List<WhPoLine> lineList) {
@@ -782,6 +777,11 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         int updateCount = this.biPoDao.saveOrUpdateByVersion(bipo);
         if (updateCount <= 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        // zhu.kai 收货反馈
+        // 按PO单反馈, 上位系统单据才反馈
+        if (null != bipo.getIsVmi() && bipo.getIsVmi()) {
+            this.createInBoundConfirmData(bipo);
         }
     }
 
