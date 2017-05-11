@@ -800,6 +800,9 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         if (null == infoPo.getStartTime()) {
             infoPo.setStartTime(shardPo.getStartTime());
         }
+        if (null == infoPo.getDeliveryTime()) {
+            infoPo.setDeliveryTime(shardPo.getDeliveryTime());
+        }
         infoPo.setQtyRcvd(shardPo.getQtyRcvd());
         // infoPo.setCtnPlanned(shardPo.getCtnPlanned());
         infoPo.setCtnRcvd(shardPo.getCtnRcvd());
@@ -809,6 +812,12 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         BiPo bipo = this.biPoDao.findBiPoByExtCodeStoreId(shardPo.getExtCode(), shardPo.getStoreId());
         if (bipo == null) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (null == bipo.getStartTime()) {
+            bipo.setStartTime(shardPo.getStartTime());
+        }
+        if (null == bipo.getDeliveryTime()) {
+            bipo.setDeliveryTime(shardPo.getDeliveryTime());
         }
         bipo.setQtyRcvd(bipo.getQtyRcvd() + qtyRcvd);
         bipo.setCtnRcvd((bipo.getCtnRcvd() == null ? 0 : bipo.getCtnRcvd()) + ctnRcvd);
