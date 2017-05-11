@@ -772,7 +772,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{skuExtCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{skuBarCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{qty,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{qty,javaType=java.lang.Double,jdbcType=DECIMAL} ,
 		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
