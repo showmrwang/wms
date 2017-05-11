@@ -96,6 +96,12 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
         return whSeedingCollectionDao.getSeedingCollectionById(seedingCollectionId, ouId);
     }
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSeedingCollection findByIdExt(Long seedingCollectionId, Long ouId){
+        return whSeedingCollectionDao.findByIdExt(seedingCollectionId, ouId);
+    }
+
 
     /**
      * 获取播种的周转箱信息
@@ -105,8 +111,8 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void updateByVersion(WhSeedingCollection seedingCollection){
-         whSeedingCollectionDao.saveOrUpdateByVersion(seedingCollection);
+    public int updateByVersion(WhSeedingCollection seedingCollection){
+         return whSeedingCollectionDao.saveOrUpdateByVersion(seedingCollection);
     }
 
     /**

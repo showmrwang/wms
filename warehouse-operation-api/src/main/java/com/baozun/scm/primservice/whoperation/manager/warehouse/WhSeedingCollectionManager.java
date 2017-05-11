@@ -42,9 +42,11 @@ public interface WhSeedingCollectionManager extends BaseManager {
 
     public WhSeedingCollectionCommand getSeedingCollectionById(Long seedingCollectionId, Long ouId);
 
+    public WhSeedingCollection findByIdExt(Long seedingCollectionId, Long ouId);
 
 
-    public void updateByVersion(WhSeedingCollection seedingCollection);
+
+    public int updateByVersion(WhSeedingCollection seedingCollection);
 
     /**
      * 获取播种批次下的出库单信息，用于和播种墙货格绑定

@@ -452,4 +452,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 AND batch_number = #{batchNo}
             )
     </select>
+
+    <select id="findByIdExt" resultMap="WhSeedingCollectionResultExt">
+        SELECT
+            <include refid="whSeedingCollectionColumnsExt"/>
+        FROM
+          t_wh_seeding_collection
+        WHERE
+            id = #{seedingCollectionId}
+            and ou_id = #{ouId}
+    </select>
 </mapper>
