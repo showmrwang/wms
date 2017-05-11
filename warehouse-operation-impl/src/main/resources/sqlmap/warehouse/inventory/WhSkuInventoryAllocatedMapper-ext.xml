@@ -256,16 +256,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t.qty
 	</select>
 	
-	 <select id="findbyOccupationCode" resultMap="WhSkuInventoryAllocatedResult" flushCache="false">
+	<select id="findbyOccupationCode" resultMap="WhSkuInventoryAllocatedResult" flushCache="false">
 			select <include refid="whSkuInventoryAllocatedColumns" />
 		    <![CDATA[
 			    from t_wh_sku_inventory_allocated
 		        where
 		        occupation_code = #{occupationCode} and ou_id=#{ouId}
 		    ]]>
-		</select>
+	</select>
+	
+	<select id="findSkuInventoryAllocatedByUuid" resultMap="WhSkuInventoryAllocatedResult" flushCache="false">
+			select 
+				<include refid="whSkuInventoryAllocatedColumns" />
+		    <![CDATA[
+				from 
+			    	t_wh_sku_inventory_allocated
+		        where
+		        	uuid = #{uuid} 
+		        	and ou_id=#{ouId}
+		    ]]>
+	</select>
 		
-		 <delete id="deleteExt">
+	<delete id="deleteExt">
 	    <![CDATA[
 	        delete from t_wh_sku_inventory_allocated where
 		        id = #{id} and ou_id=#{ouId}

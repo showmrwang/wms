@@ -53,6 +53,8 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
 	List<WhSkuInventoryAllocated> findNotOccupyListBySkuIdAndBhCode(@Param("skuId") Long skuId, @Param("bhCode") String bhCode, @Param("ouId") Long ouId);
 
     List<WhSkuInventoryAllocated> findbyOccupationCode(@Param("occupationCode") String odoCode, @Param("ouId") Long ouId);
+    
+    List<WhSkuInventoryAllocated> findSkuInventoryAllocatedByUuid(@Param("uuid") String uuid, @Param("ouId") Long ouId);
 
     int deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
 	

@@ -2602,6 +2602,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             // 复制数据
                             BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
                             newSkuInventory.setLocationId(null);
+                            if(null != command.getInWarehouseMoveWay()){
+                                newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());   
+                            }
+                            if(null != command.getReplenishWay() || null != command.getPickingWay()){
+                                WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
+                                newSkuInventory.setOccupationCode(whOdo.getOdoCode());   
+                            }
                             newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
                             // 内部对接码
                             try {
@@ -2637,6 +2644,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             // 复制数据
                             BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
                             newSkuInventory.setLocationId(null);
+                            if(null != command.getInWarehouseMoveWay()){
+                                newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());   
+                            }
+                            if(null != command.getReplenishWay() || null != command.getPickingWay()){
+                                WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
+                                newSkuInventory.setOccupationCode(whOdo.getOdoCode());   
+                            }
                             // 内部对接码
                             try {
                                 newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
@@ -2667,7 +2681,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         }
                     }
                 }
-                List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst = whSkuInventoryAllocatedDao.findbyOccupationCode(operationLineCommand.getInvMoveCode(), operationLineCommand.getOuId());
+                List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst = whSkuInventoryAllocatedDao.findSkuInventoryAllocatedByUuid(operationLineCommand.getUuid(), operationLineCommand.getOuId());
                 for (WhSkuInventoryAllocated whSkuInventoryAllocated : whSkuInventoryAllocatedLst) {
                     whSkuInventoryAllocatedDao.delete(whSkuInventoryAllocated.getId());
                 }
