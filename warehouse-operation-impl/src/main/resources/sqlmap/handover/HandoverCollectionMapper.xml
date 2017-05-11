@@ -314,9 +314,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
     <select id="findHandoverCollectionByBatchAndStatus" resultType="long">
 		select count(*) from t_wh_handover_collection  
-		where 
-		handover_batch =#{handoverBatch}
-		and 
-		handover_status=#{status}
+	<where>
+			<if test="handoverBatch!=null">
+				and handover_batch = #{handoverBatch}
+			</if>
+			<if test="status!=null">
+				and handover_status = #{status}
+			</if>
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+	</where>
     </select>
 </mapper>

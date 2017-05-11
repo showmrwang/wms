@@ -62,7 +62,7 @@ public interface WarehouseManager extends BaseManager {
      */
     WarehouseMgmt findWhMgmtByOuId(Long ouId);
 
-    WhHandoverStationCommand findhandoverStationByCode(String recommandHandoverStation);
+    WhHandoverStationCommand findhandoverStationByCode(String recommandHandoverStation, Long ouId);
 
     WarehouseCommand findWarehouseCommandById(Long ouId);
 }

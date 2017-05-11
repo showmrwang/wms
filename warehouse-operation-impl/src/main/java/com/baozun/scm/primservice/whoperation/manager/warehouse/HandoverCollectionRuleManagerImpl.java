@@ -289,6 +289,7 @@ public class HandoverCollectionRuleManagerImpl extends BaseManagerImpl implement
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<HandoverCollectionRuleCommand> findhandoverCollectionRuleList(Long ouId) {
         return handoverCollectionRuleDao.findAllHandoverCollectionRules(ouId);
     }

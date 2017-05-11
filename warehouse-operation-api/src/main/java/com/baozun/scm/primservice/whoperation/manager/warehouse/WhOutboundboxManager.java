@@ -15,7 +15,7 @@ public interface WhOutboundboxManager extends BaseManager {
      */
     void saveOrUpdate(WhOutboundboxCommand whOutboundboxCommand);
 
-    List<WhOutboundbox> getwhOutboundboxByCode(String outboundBoxCode);
+    List<WhOutboundbox> getwhOutboundboxByCode(String outboundBoxCode, Long ouId);
 
     WhOutboundboxCommand getwhOutboundboxCommandByCode(String outboundBoxCode, Long ouId);
 
@@ -24,6 +24,7 @@ public interface WhOutboundboxManager extends BaseManager {
 
     /**
      * [通用方法] 通过主键服务生成出库箱编码
+     * 
      * @return
      */
     public String generateCode();

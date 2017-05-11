@@ -16,6 +16,8 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import java.util.List;
 
+import lark.common.annotation.MoreDB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
@@ -53,19 +56,23 @@ public class WhOutboundboxManagerImpl extends BaseManagerImpl implements WhOutbo
     }
 
     @Override
-    public List<WhOutboundbox> getwhOutboundboxByCode(String outboundBoxCode) {
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOutboundbox> getwhOutboundboxByCode(String outboundBoxCode, Long ouId) {
         WhOutboundbox whOutboundbox = new WhOutboundbox();
         whOutboundbox.setOutboundboxCode(outboundBoxCode);
+        whOutboundbox.setOuId(ouId);
         return whOutboundboxDao.findListByParam(whOutboundbox);
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOutboundboxCommand getwhOutboundboxCommandByCode(String outboundBoxCode, Long ouId) {
         return whOutboundboxDao.getwhOutboundboxCommandByCode(outboundBoxCode, ouId);
     }
 
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOutboundboxCommand findByOutboundBoxCode(String outboundBoxCode, Long ouId) {
         return whOutboundboxDao.findByOutboundBoxCode(outboundBoxCode, ouId);
     }

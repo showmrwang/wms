@@ -89,7 +89,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String findBatchByHandoverStationIdAndStatus(Long handoverStationId, Integer status, Long ouId) {
-        return handoverCollectionDao.findBatchByHandoverStationIdAndStatus(handoverStationId, status);
+        return handoverCollectionDao.findBatchByHandoverStationIdAndStatus(handoverStationId, status, ouId);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         handover.setHandoverStationType(handoverCollectionrecord.getHandoverStationType());
         handover.setOuId(ouId);
         // 总出库箱数
-        Integer totalBox = handoverCollectionDao.findCountByHandoverStationIdAndStatus(hcList.get(0).getHandoverStationId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
+        Integer totalBox = handoverCollectionDao.findCountByHandoverStationIdAndStatus(hcList.get(0).getHandoverStationId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
         handover.setTotalBox(totalBox);
         // 计重
         Long totalCalcWeight = 0L;
@@ -259,13 +259,15 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     }
 
     @Override
-    public Long check(List<HandoverCollection> hcList) {
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Long check(List<HandoverCollection> hcList, Long ouId) {
         // 判断交接批次下出库箱是否全部交接
-        return handoverCollectionDao.findHandoverCollectionByBatchAndStatus(hcList.get(0).getHandoverBatch(), HandoverCollectionStatus.TO_HANDOVER);
+        return handoverCollectionDao.findHandoverCollectionByBatchAndStatus(hcList.get(0).getHandoverBatch(), HandoverCollectionStatus.TO_HANDOVER, ouId);
 
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public HandoverCollection findHandoverCollectionByOutboundboxCode(String outboundBoxCode, Long ouId) {
         return handoverCollectionDao.findByOutboundboxCode(outboundBoxCode, ouId);
     }

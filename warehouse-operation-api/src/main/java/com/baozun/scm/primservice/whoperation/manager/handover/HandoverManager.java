@@ -55,9 +55,10 @@ public interface HandoverManager extends BaseManager {
      * 查看是否都交接完成
      * 
      * @param hcList 该库位下的所有出库箱信息
+     * @param ouId
      * @return
      */
-    Long check(List<HandoverCollection> hcList);
+    Long check(List<HandoverCollection> hcList, Long ouId);
 
     /**
      * 根据出库箱编码找集货信息

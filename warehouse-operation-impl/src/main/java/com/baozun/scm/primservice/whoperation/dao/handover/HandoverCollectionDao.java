@@ -66,9 +66,10 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
      * 
      * @param recommandHandoverStationCode
      * @param status
+     * @param ouId
      * @return
      */
-    Integer findCountByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1, @Param("status") Integer status);
+    Integer findCountByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1, @Param("status") Integer status, @Param("ouId") Long ouId);
 
     /***
      * 查询当前交接批次
@@ -77,7 +78,7 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
      * @param status
      * @return
      */
-    String findBatchByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1, @Param("status") Integer status);
+    String findBatchByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1, @Param("status") Integer status, @Param("ouId") Long ouId);
 
     /***
      * 查询状态
@@ -85,17 +86,18 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
      * @param recommandHandoverStationCode
      * @return
      */
-    String findStatusByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1, @Param("status") Integer status);
+    String findStatusByHandoverStationIdAndStatus(@Param("HandoverStationCode") Long long1, @Param("status") Integer status, @Param("ouId") Long ouId);
 
     /***
      * 
      * 查询指定交接批次下未交接的出库箱数
      * 
      * @param handoverBatch 交接批次
+     * @param ouId
      * @param toHandover 状态
      * @return
      */
-    Long findHandoverCollectionByBatchAndStatus(@Param("handoverBatch") String handoverBatch, @Param("status") String status);
+    Long findHandoverCollectionByBatchAndStatus(@Param("handoverBatch") String handoverBatch, @Param("status") String status, @Param("ouId") Long ouId);
 
     /***
      * 

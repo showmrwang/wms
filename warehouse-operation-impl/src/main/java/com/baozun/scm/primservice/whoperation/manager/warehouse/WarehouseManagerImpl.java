@@ -350,17 +350,17 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public WhHandoverStationCommand findhandoverStationByCode(String recommandHandoverStationCode) {
+    public WhHandoverStationCommand findhandoverStationByCode(String recommandHandoverStationCode, Long ouId) {
         // 根据交接工位编码找出 当前交接批次 出库箱上限 当前出库箱数量
         WhHandoverStationCommand whHandoverStationCommand = handoverCollectionDao.findStationByCode(recommandHandoverStationCode);
         // 当前出库箱数
-        Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
+        Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
         whHandoverStationCommand.setCapacity(capacity);
         // 当前交接批次
-        String batch = handoverCollectionDao.findBatchByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
+        String batch = handoverCollectionDao.findBatchByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
         whHandoverStationCommand.setHandover_batch(batch);
         // 状态
-        String status = handoverCollectionDao.findStatusByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER);
+        String status = handoverCollectionDao.findStatusByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
         whHandoverStationCommand.setStatus(status);
 
         return whHandoverStationCommand;

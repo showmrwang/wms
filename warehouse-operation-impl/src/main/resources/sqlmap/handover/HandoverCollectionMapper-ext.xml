@@ -160,6 +160,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			WHERE
 				handover_station_id = #{HandoverStationCode}
 			AND handover_status = #{status}
+			and ou_id = #{ouId}
     </select>
 	<select id="findBatchByHandoverStationIdAndStatus" resultType="String">
 			     	SELECT
@@ -169,6 +170,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				WHERE
 					handover_station_id = #{HandoverStationCode}
 			AND handover_status = #{status}
+			and ou_id = #{ouId}
 			limit 1
 			
     </select>
@@ -180,6 +182,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				WHERE
 					handover_station_id = #{HandoverStationCode}
 					AND handover_status = #{status}
+					and ou_id = #{ouId}
 						limit 1
     </select>
     <select id="findStationByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
