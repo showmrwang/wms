@@ -405,6 +405,6 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             wmsInboundConfirms.add(inbound);
         }
         log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm end!");
-        return null;
+        return wmsInboundConfirms;
     }
 }
