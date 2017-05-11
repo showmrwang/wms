@@ -346,8 +346,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         if(null == resplenishment) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        picking.setPalletPickingMode(resplenishment.getPalletPickingMode());
-        picking.setContainerPickingMode(resplenishment.getContainerPickingMode());
+               
         Long outerContainerId = null;
         if(!StringUtils.isEmpty(outerContainerCode)) {
             ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
@@ -361,6 +360,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             if(countOut == countOut1){
                 picking.setReplenishWay(Constants.REPLENISH_WAY_TWO);;//当前是整托
             }
+            picking.setPalletPickingMode(resplenishment.getPalletPickingMode());
         }
         Long insideContainerId = null;
         if(!StringUtils.isEmpty(insideCotainerCode)) {
@@ -375,6 +375,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             if(count == count1){
                 picking.setReplenishWay(Constants.REPLENISH_WAY_THREE);
             }
+            picking.setContainerPickingMode(resplenishment.getContainerPickingMode());
         }
         
         return picking;

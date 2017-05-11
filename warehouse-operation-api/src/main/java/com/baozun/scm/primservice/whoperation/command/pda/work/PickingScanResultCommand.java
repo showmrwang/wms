@@ -211,7 +211,7 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isContinueScanSn = false; // 默认不继续扫描sn
     
     private Integer tempReplenishWay;
-    
+
 
     /**
      * 出库箱集合(仅限于有小车,有出库箱的情况)
