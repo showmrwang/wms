@@ -138,6 +138,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 seedingCollection.setContainerId(execLineCommand.getUseContainerId());
                 seedingCollection.setOuId(ouId);
                 seedingCollection.setCollectionStatus(CollectionStatus.NEW);
+                seedingCollection.setCreateTime(new Date());
                 this.whSeedingCollectionDao.insert(seedingCollection);
                 insertIntoSeedingCollectionLine(seedingCollection);
             }
@@ -171,6 +172,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     seedingCollection.setPickingMode(work.getPickingMode());
                     seedingCollection.setCheckingMode(work.getCheckingMode());
                     seedingCollection.setDistributionMode(work.getDistributionMode());
+                    seedingCollection.setCreateTime(new Date());
                     this.whSeedingCollectionDao.insert(seedingCollection);
                     insertIntoSeedingCollectionLine(seedingCollection);
                 }
