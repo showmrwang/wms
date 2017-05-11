@@ -378,6 +378,10 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             picking.setContainerPickingMode(resplenishment.getContainerPickingMode());
         }
         
+        if(null == picking.getReplenishWay()){
+            picking.setReplenishWay(Constants.REPLENISH_WAY_ONE);
+        }
+        
         return picking;
     }
 }
