@@ -1101,8 +1101,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             Sku sku = this.biPoLineManager.findSkuByBarCode(lineCommand.getSkuBarCode(), excelPo.getCustomerId(), logId);
             if (sku == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("条码找不到对应的商品", null, rowNum, null));
+            } else {
+                lineCommand.setSkuId(sku.getId());
             }
-            lineCommand.setSkuId(sku.getId());
             if (lineCommand.getInvStatus() == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
             } else {

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import lark.common.annotation.MoreDB;
+
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.bi.UserImportExcelDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.bi.ImportExcel;
@@ -40,6 +43,7 @@ public class OutPutStreamToServersManagerImpl extends BaseManagerImpl implements
      * 上传导入验证失败文件到服务器 InputStream in 文件流 importType 文件类型 导入类型
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public String uploadImportFileError(ImportExcel ie) {
         String returnString = "";
         String fileName = "";
