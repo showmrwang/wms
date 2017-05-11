@@ -693,7 +693,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		FROM
 			t_wh_po po
 		WHERE
-			po.`status` = 10
+			po.`status` = 20
 			and po.last_modify_time < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
 			and po.ou_id = #{ouId}
 	]]>
