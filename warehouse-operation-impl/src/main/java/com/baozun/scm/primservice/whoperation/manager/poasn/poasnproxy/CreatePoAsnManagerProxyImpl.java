@@ -550,7 +550,8 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         whPo.setIsAutoClose(isAutoClose);
         biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
         if (ouId != null) {
-            whPo.setPoCode(getUniqueCode());
+            // @mender yimin.lu 2017/5/11 info->shard poCode 一致
+            // whPo.setPoCode(getUniqueCode());
             biPoManager.createPoAndLineToShared(whPo, whPoTm, whPoLines, indexList);
         }
     }
@@ -1364,7 +1365,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 		
 		// 退换货逻辑
 		if (whPo.getPoType() == 2) {
-
             Store store = this.storeManager.findStoreById(whPo.getStoreId());
 			// 退货入关联销售出
 			String ecOrderCode = whPo.getOriginalEcOrderCode();

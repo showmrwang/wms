@@ -860,6 +860,27 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     public List<WhSkuInventoryCommand> findListByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
 
+    /**
+     * 出库箱推荐用 根据外部容器查询库存 只用于统计箱内商品种类和数量
+     *
+     * @author mingwei.xie
+     * @param outContainerIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray( List<Long> outContainerIdList,  Long ouId);
+
+
+    /**
+     * 出库箱推荐用 根据内部容器查询库存 只用于统计箱内商品种类和数量
+     *
+     * @author mingwei.xie
+     * @param innerContainerIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList,  Long ouId);
+
 
     /**
      * 根据占用码查询库存
@@ -1046,5 +1067,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     public int findInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
 
     Long getInvSatusByName(@Param("invStatus") String invStatus);
+
+    String getInvStatusNameById(@Param("invStatusId") Long invStatusId);
     
 }

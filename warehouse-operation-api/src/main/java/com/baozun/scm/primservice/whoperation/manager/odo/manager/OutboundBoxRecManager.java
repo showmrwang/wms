@@ -63,7 +63,8 @@ public interface OutboundBoxRecManager extends BaseManager {
 
     public Container2ndCategory findContainer2ndCategoryById(Long id, Long ouId);
 
-    public Long createContainer(Container container, Long ouId);
+
+    public  List<Container> findUseAbleContainerByContainerType(Container container);
 
     public List<WhOutInventoryboxRelationship> getOutInvBoxRelationshipByType(String type, Long relationshipId, Long ouId);
 
@@ -80,6 +81,35 @@ public interface OutboundBoxRecManager extends BaseManager {
      * @return
      */
     public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId);
+
+    /**
+     * 根据外部容器查询库存
+     *
+     * @author mingwei.xie
+     * @param outContainerIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray( List<Long> outContainerIdList,  Long ouId);
+
+
+    /**
+     * 根据内部容器查询库存
+     *
+     * @author mingwei.xie
+     * @param innerContainerIdList
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList,  Long ouId);
+
+    /**
+     * 占用出库箱推荐的容器
+     *
+     * @param container
+     * @return
+     */
+    public int occupationContainerByRecOutboundBox(Container container);
 
     /**
      *根据占用码查询库存

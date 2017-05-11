@@ -681,7 +681,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		FROM
 			t_bi_po po
 		WHERE
-			po.`status` = 10
+			po.`status` = 20
 			AND po.last_modify_time < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
 	]]>
 	</select>

@@ -107,8 +107,15 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
      * @param ouId
      * @return
      */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWorkCommand> findWorkByBatch(String batchNo, Long ouId){
         return whWorkDao.findWorkByBatch(batchNo, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhWork findWorkByWorkId(Long workId, Long ouId) {
+        return this.whWorkDao.findWorkById(workId, ouId);
     }
 
 

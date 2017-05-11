@@ -328,6 +328,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and ou_id = #{ouId}
             and one_level_type = "BOX_TYPE"
             and lifecycle = 1
+            and id in (
+                SELECT
+                    DISTINCT container.two_level_type
+                FROM
+                    t_wh_container AS container
+                WHERE
+                    container.ou_id = #{ouId}
+                    and container.lifecycle = 1
+                    and container.status = 1
+            )
         order by total_grid_num DESC
     </select>
 
@@ -340,7 +350,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and ou_id = #{ouId}
             and one_level_type = "BOX_TYPE"
             and lifecycle = 1
-            order by volume DESC
+            and id in (
+                SELECT
+                    DISTINCT container.two_level_type
+                FROM
+                    t_wh_container AS container
+                WHERE
+                    container.ou_id = #{ouId}
+                    and container.lifecycle = 1
+                    and container.status = 1
+            )
+        order by volume DESC
     </select>
 
 	<select id="findByCodeAndOuId" resultMap="Container2ndCategoryResultExt">

@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whinterface.dao.inbound.WhInboundConfirmDao;
@@ -43,7 +42,6 @@ public class WhInboundManagerImpl implements WhInboundManager {
     
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void insertWhInboundData(WhInboundConfirmCommand inboundConfirmCommand) {
     	// 保存入库反馈头信息
 		WhInboundConfirm inboundConfirm = new WhInboundConfirm();
