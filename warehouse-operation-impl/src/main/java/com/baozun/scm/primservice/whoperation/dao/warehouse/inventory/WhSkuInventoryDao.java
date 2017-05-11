@@ -829,7 +829,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     
 
     
-    public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByWave(@Param("ouId") Long ouId, @Param("locationId") Long locationId, @Param("operationId") Long operationId);
+//    public List<WhSkuInventoryCommand> getWhSkuInventoryTobefilledByWave(@Param("ouId") Long ouId, @Param("locationId") Long locationId, @Param("operationId") Long operationId);
     /**
      * 校验容器库存(废除)
      * 

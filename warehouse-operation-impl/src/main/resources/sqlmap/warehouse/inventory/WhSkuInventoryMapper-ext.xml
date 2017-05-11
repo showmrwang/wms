@@ -3583,7 +3583,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					    inv.ou_id = #{ouId}
 	                    and inv.outer_container_id = #{outerContainerId}
     </select>
-    
+    <!-- 
       <select id="getWhSkuInventoryTobefilledByWave" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
@@ -3611,6 +3611,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.replenishment_code as replenishmentCode,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
@@ -3634,6 +3635,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	                    and inv.location_id = #{locationId}
 	                    and line.operation_id = #{operationId}
     </select>
+     -->
     
     <select id="checkReplenishmentInventory" resultMap="WhSkuInventoryCommandSnResultExt">
       SELECT
