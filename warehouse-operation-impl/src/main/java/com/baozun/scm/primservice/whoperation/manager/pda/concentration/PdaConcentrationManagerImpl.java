@@ -139,6 +139,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 seedingCollection.setOuId(ouId);
                 seedingCollection.setCollectionStatus(CollectionStatus.NEW);
                 seedingCollection.setCreateTime(new Date());
+                seedingCollection.setLastModifyTime(new Date());
                 this.whSeedingCollectionDao.insert(seedingCollection);
                 insertIntoSeedingCollectionLine(seedingCollection);
             }
@@ -173,6 +174,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     seedingCollection.setCheckingMode(work.getCheckingMode());
                     seedingCollection.setDistributionMode(work.getDistributionMode());
                     seedingCollection.setCreateTime(new Date());
+                    seedingCollection.setLastModifyTime(new Date());
                     this.whSeedingCollectionDao.insert(seedingCollection);
                     insertIntoSeedingCollectionLine(seedingCollection);
                 }
@@ -242,6 +244,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setCollectionStatus(CollectionStatus.NEW);
                 whCheckingCollection.setCreateId(useId);
                 whCheckingCollection.setCreateTime(new Date());
+                whCheckingCollection.setLastModifyTime(new Date());
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
                 insertIntoCheckingCollectionLine(whCheckingCollection);
             }
