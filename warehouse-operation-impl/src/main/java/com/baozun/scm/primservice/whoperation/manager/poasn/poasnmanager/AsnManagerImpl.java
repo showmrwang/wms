@@ -1219,18 +1219,6 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             if (updateCountAsn <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            // zhu.kai 收货反馈
-            Store store = storeDao.findById(asn.getStoreId());
-            if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 2) {
-				// 按ASN单反馈, 上位系统单据才反馈
-            	WhPo po = whPoDao.findWhPoById(asn.getPoId(), ouId);
-        		if (null != po.getIsVmi() && po.getIsVmi()) {
-        			// 根据asnId查找出asnLine, 用WhPoLine封装参数
-        			List<WhPoLine> asnLineList = whAsnLineDao.findAsnInboundData(asn.getId(), ouId);
-        			//WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, asnLineList, ouId);
-        			// whInboundManager.insertWhInboundData(inboundConfirmCommand);
-        		}
-			}
             
         } catch (BusinessException ex) {
             throw ex;
