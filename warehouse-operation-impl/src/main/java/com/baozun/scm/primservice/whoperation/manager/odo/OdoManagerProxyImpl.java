@@ -68,7 +68,6 @@ import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.excel.ExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.ExcelImport;
-import com.baozun.scm.primservice.whoperation.excel.context.BiPoDefaultExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
 import com.baozun.scm.primservice.whoperation.excel.exception.RootExcelException;
 import com.baozun.scm.primservice.whoperation.excel.result.ExcelImportResult;
@@ -2148,8 +2147,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     Sku sku = this.biPoLineManager.findSkuByBarCode(line.getSkuBarCode(), odo.getCustomerId(), logId);
                     if (sku == null) {
                         rootExcelException.getExcelExceptions().add(new ExcelException("条码找不到对应的商品", null, rowNum, null));
+                    } else {
+
+                        line.setSkuId(sku.getId());
+                        line.setSkuBarCode(sku.getBarCode());
+                        line.setSkuName(sku.getName());
                     }
-                    line.setSkuId(sku.getId());
                     if (line.getInvStatus() == null) {
                         rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
                     } else {
@@ -2382,16 +2385,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 String extCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_EXT, null, null);
                 odo.setExtCode(extCode);
             }
-            // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
-            if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
-                // 设置计数器编码
-                Set<Long> skuIdSet = new HashSet<Long>();
-                for (OdoLineCommand line : odoLineList) {
-                    skuIdSet.add(line.getSkuId());
-                }
-                String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
-                odo.setCounterCode(counterCode);
-            }
+            // @mender yimin.lu 2017/5/11 不在此处计算
 
             // 匹配配货模式
 
@@ -2399,25 +2393,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
         this.odoManager.createOdo(groupList, ouId, userId);
 
-    }
-
-
-    @SuppressWarnings("rawtypes")
-    private ExcelImportResult readExcelSheet(String inPath, String excelId, Locale locale) throws FileNotFoundException, BusinessException, Exception {
-        // 出库单头信息列表
-        InputStream fis = new FileInputStream(inPath);
-        ExcelImportResult result = BiPoDefaultExcelContext.getContext().readExcel(excelId, fis, null, locale);
-        if (result == null) {
-            throw new BusinessException("Excel解析失败");
-        }
-
-        List list = result.getListBean();
-
-        if (list == null) {
-            throw new BusinessException("EXCEL数据为空");
-        }
-        System.out.println("行数： " + list.size());
-        return result;
     }
 
     @Override
@@ -2873,6 +2848,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
             }
         }
+    }
+
+
+    @Override
+    public WhWork findWorkById(Long workId, Long ouId) {
+        return this.whWorkManager.findWorkByWorkId(workId, ouId);
     }
 
 }

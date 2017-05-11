@@ -98,5 +98,14 @@ public interface WhWorkManager extends BaseManager{
      */
     List<WhWorkCommand> findWorkByBatch(String batchNo, Long ouId);
 
+    /**
+     * [通用方法]查找工作
+     * 
+     * @param workId
+     * @param ouId
+     * @return
+     */
+    WhWork findWorkByWorkId(Long workId, Long ouId);
+
 
 }

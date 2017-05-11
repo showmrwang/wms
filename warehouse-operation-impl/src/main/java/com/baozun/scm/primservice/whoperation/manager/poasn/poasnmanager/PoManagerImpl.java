@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import lark.common.annotation.MoreDB;
 import lark.common.dao.Page;
@@ -25,6 +26,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
@@ -37,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.WhInboundManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
@@ -46,6 +49,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 
 /**
@@ -74,6 +78,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
     private StoreDao storeDao;
+    @Autowired
+    private WarehouseManager warehouseManager;
     /**
      * 读取拆分库PO单数据
      * 
@@ -594,17 +600,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             if (updateCountPo <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            // zhu.kai 收货反馈
-            if (flag) {
-            	Store store = storeDao.findById(po.getStoreId());
-            	if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 1) {
-					// 按PO单反馈, 上位系统单据才反馈
-            		if (null != po.getIsVmi() && po.getIsVmi()) {
-            			this.createInBoundConfirmData(po, lineList, ouId);
-            		}
-				}
-			}
-
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
@@ -613,10 +608,51 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
     }
 
-	private void createInBoundConfirmData(WhPo po, List<WhPoLine> lineList, Long ouId) {
-	    // TODO
-		// WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, lineList, ouId);
-		// whInboundManager.insertWhInboundData(inboundConfirmCommand);
+	private void createInBoundConfirmData(BiPo po) {
+	    List<WhPo> whPoList = whPoDao.findWhPoByExtCodeStoreIdToInfo(po.getExtCode(), po.getStoreId());
+	    WhInboundConfirmCommand inboundConfirm = new WhInboundConfirmCommand();
+	    List<WhInboundLineConfirmCommand> allConfirmLineList = new ArrayList<WhInboundLineConfirmCommand>();
+	    for (WhPo whPo : whPoList) {
+	        List<WhInboundLineConfirmCommand> confirmLineList = whSkuInventoryManager.findInventoryByPoCode(whPo.getPoCode(), whPo.getOuId());
+	        allConfirmLineList.addAll(confirmLineList);
+        }
+        inboundConfirm.setUuid(UUID.randomUUID().toString());
+        inboundConfirm.setExtPoCode(po.getExtPoCode());
+        inboundConfirm.setExtCode(po.getExtCode());
+        Customer customer = this.getCustomerByRedis(po.getCustomerId());
+        if (null == customer) {
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
+        inboundConfirm.setCustomerCode(customer.getCustomerCode());
+        Store store = this.getStoreByRedis(po.getStoreId());
+        if (null == store) {
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
+        inboundConfirm.setStoreCode(store.getStoreCode());
+        inboundConfirm.setFromLocation(po.getFromLocation());
+        inboundConfirm.setToLocation(po.getToLocation());
+        inboundConfirm.setDeliveryTime(po.getDeliveryTime());
+        if (null != po.getOuId()) {
+            Warehouse wh = warehouseManager.findWarehouseById(po.getOuId());
+            if (null == wh) {
+                throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            }
+            inboundConfirm.setWhCode(wh.getCode());
+        }
+        inboundConfirm.setPoStatus(po.getStatus().toString());
+        inboundConfirm.setPoType(po.getPoType().toString());
+        inboundConfirm.setIsIqc(po.getIsIqc());
+        inboundConfirm.setQtyPlanned(po.getQtyPlanned());
+        inboundConfirm.setQtyRcvd(po.getQtyRcvd());
+        inboundConfirm.setCtnPlanned(po.getCtnPlanned());
+        inboundConfirm.setCtnRcvd(po.getCtnRcvd());
+        inboundConfirm.setDataSource(po.getDataSource());
+        inboundConfirm.setStatus(1);
+        inboundConfirm.setErrorCount(0);
+        inboundConfirm.setCreateTime(new Date());
+        inboundConfirm.setLastModifyTime(new Date());
+        inboundConfirm.setWhInboundLineConfirmList(allConfirmLineList);
+		whInboundManager.insertWhInboundData(inboundConfirm);
 	}
 
     @Override
@@ -718,14 +754,9 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             }
         }
         // zhu.kai 收货反馈
-        Store store = storeDao.findById(biPo.getStoreId());
-        if (null != store && null != store.getInboundConfirmOrderType() && store.getInboundConfirmOrderType().intValue() == 1) {
-            // 按PO单反馈, 上位系统单据才反馈
-            if (null != biPo.getIsVmi() && biPo.getIsVmi()) {
-                // this.createInBoundConfirmData(po, lineList, ouId);
-                // WhInboundConfirmCommand inboundConfirmCommand = whSkuInventoryManager.findInventoryByPo(po, lineList, ouId);
-                // whInboundManager.insertWhInboundData(inboundConfirmCommand);
-            }
+        // 按PO单反馈, 上位系统单据才反馈
+        if (null != biPo.getIsVmi() && biPo.getIsVmi()) {
+            this.createInBoundConfirmData(biPo);
         }
     }
 
@@ -829,8 +860,12 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     }
 
-
-
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public void testzk() {
+        BiPo bipo = biPoDao.findById(211100060L);
+        this.createInBoundConfirmData(bipo);
+    }
 
 	
 }

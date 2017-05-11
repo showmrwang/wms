@@ -880,6 +880,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<id property="id" column="snId"/>
 			<result property="sn" column="snSn" />
 			<result property="occupationCode" column="snOccupationCode" />
+			<result property="occupationLineId" column="snOccupationLineId" />
 			<result property="defectWareBarcode" column="snDefectWareBarcode" />
 			<result property="defectSource" column="snDefectSource" />
 			<result property="defectTypeId" column="snDefectTypeId" />
@@ -2261,6 +2262,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.customer_id as customerId,
 					inv.store_id as storeId,
 					inv.occupation_code as invOccupationCode,
+					inv.occupation_line_id as invOccupationLineId,
 					inv.on_hand_qty as onHandQty,
 					inv.allocated_qty as allocatedQty,
 					inv.to_be_filled_qty as toBeFilledQty,
@@ -2288,6 +2290,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
+	        		sn.occupation_line_id  as snOccupationLineId,
 	        		sn.defect_ware_barcode as snDefectWareBarcode,
 	        		sn.defect_source as snDefectSource,
 	        		sn.defect_type_id as snDefectTypeId,
@@ -3314,10 +3317,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.container_lattice_no as containerLatticeNo,
 	                inv.outboundbox_code as outboundboxCode,
 	                inv.temporary_location_id as temporaryLocationId,
-	                inv.occupation_line_id as occupationLineId,
+	                inv.occupation_line_id as invOccupationLineId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
+	        		sn.occupation_line_id  as snOccupationLineId,
 	        		sn.defect_ware_barcode as snDefectWareBarcode,
 	        		sn.defect_source as snDefectSource,
 	        		sn.defect_type_id as snDefectTypeId,
@@ -3436,6 +3440,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
+	        		sn.occupation_line_id  as snOccupationLineId,
 	        		sn.defect_ware_barcode as snDefectWareBarcode,
 	        		sn.defect_source as snDefectSource,
 	        		sn.defect_type_id as snDefectTypeId,
@@ -3501,10 +3506,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.container_lattice_no as containerLatticeNo,
 	                inv.outboundbox_code as outboundboxCode,
 	                inv.temporary_location_id as temporaryLocationId,
-	                inv.occupation_line_id as occupationLineId,
+	                inv.occupation_line_id as invOccupationLineId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
+	        		sn.occupation_line_id  as snOccupationLineId,
 	        		sn.defect_ware_barcode as snDefectWareBarcode,
 	        		sn.defect_source as snDefectSource,
 	        		sn.defect_type_id as snDefectTypeId,
@@ -3556,10 +3562,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		inv.container_lattice_no as containerLatticeNo,
 	                inv.outboundbox_code as outboundboxCode,
 	                inv.temporary_location_id as temporaryLocationId,
-	                inv.occupation_line_id as occupationLineId,
+	                inv.occupation_line_id as invOccupationLineId,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
+	        		sn.occupation_line_id  as snOccupationLineId,
 	        		sn.defect_ware_barcode as snDefectWareBarcode,
 	        		sn.defect_source as snDefectSource,
 	        		sn.defect_type_id as snDefectTypeId,
@@ -3576,7 +3583,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					    inv.ou_id = #{ouId}
 	                    and inv.outer_container_id = #{outerContainerId}
     </select>
-    
+    <!-- 
       <select id="getWhSkuInventoryTobefilledByWave" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
@@ -3587,7 +3594,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.customer_id as customerId,
 					inv.store_id as storeId,
 					inv.occupation_code as invOccupationCode,
-					inv.occupation_line_id as occupationLineId,
+					inv.occupation_line_id as invOccupationLineId,
 					inv.qty as onHandQty,
 					inv.inv_status as invStatus,
 					inv.inv_type as invType,
@@ -3604,9 +3611,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					inv.ou_id as invOuId,
 					inv.occupation_code_source as occupationCodeSource,
 	        		inv.last_modify_time as lastModifyTime,
+	        		inv.replenishment_code as replenishmentCode,
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
+	        		sn.occupation_line_id  as snOccupationLineId,
 	        		sn.defect_ware_barcode as snDefectWareBarcode,
 	        		sn.defect_source as snDefectSource,
 	        		sn.defect_type_id as snDefectTypeId,
@@ -3626,6 +3635,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	                    and inv.location_id = #{locationId}
 	                    and line.operation_id = #{operationId}
     </select>
+     -->
     
     <select id="checkReplenishmentInventory" resultMap="WhSkuInventoryCommandSnResultExt">
       SELECT
@@ -3772,6 +3782,47 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             WHERE
                 skuInv.occupation_code = #{occupationCode}
                 AND skuInv.ou_id = #{ouId}
+    </select>
+
+    <select id="findSkuInvListByWholeTray" resultMap="WhSkuInventoryCommandResultExt">
+
+        SELECT
+            skuInv.sku_id AS skuId,
+            skuInv.location_id AS locationId,
+            skuInv.outer_container_id AS outerContainerId,
+            skuInv.inside_container_id AS insideContainerId,
+            sum(skuInv.on_hand_qty) AS onHandQty,
+            skuInv.ou_id AS ouId
+        FROM
+          t_wh_sku_inventory AS skuInv
+        WHERE
+            skuInv.outer_container_id in
+            <foreach item="item" index="index" collection="outContainerIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            AND skuInv.ou_id = #{ouId}
+        GROUP BY
+          skuInv.outer_container_id,skuInv.inside_container_id,skuInv.sku_id
+    </select>
+
+    <select id="findSkuInvListByWholeContainer" resultMap="WhSkuInventoryCommandResultExt">
+
+        SELECT
+            skuInv.sku_id AS skuId,
+            skuInv.location_id AS locationId,
+            skuInv.inside_container_id AS insideContainerId,
+            sum(skuInv.on_hand_qty) AS onHandQty,
+            skuInv.ou_id AS ouId
+        FROM
+          t_wh_sku_inventory AS skuInv
+        WHERE
+            skuInv.inside_container_id in
+            <foreach item="item" index="index" collection="innerContainerIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+          AND skuInv.ou_id = #{ouId}
+        GROUP BY
+            skuInv.inside_container_id,skuInv.sku_id
     </select>
 
     <select id="findListByOccLineIdListOrderByPickingSort" resultMap="WhSkuInventoryCommandResultExt">
@@ -4228,8 +4279,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inside_container_id as insideContainerId,
 	          inv.customer_id as customerId,
 	          inv.store_id as storeId,
-	          inv.occupation_code as occupationCode,
-	          inv.occupation_line_id as occupationLineId,
+	          inv.occupation_code as invOccupationCode,
+	          inv.occupation_line_id as invOccupationLineId,
 	          inv.replenishment_code as replenishmentCode,
 	          inv.qty as qty,
 	          inv.inv_status as invStatus,
@@ -4243,13 +4294,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inv_attr3 as invAttr3,
 	          inv.inv_attr4 as invAttr4,
 	          inv.inv_attr5 as invAttr5,
-	          inv.uuid as uuid,
-	          inv.ou_id as ouId,
+	          inv.uuid as invUuid,
+	          inv.ou_id as invOuId,
 	          inv.last_modify_time as lastModifyTime,
 	          inv.replenishment_rule_id as replenishmentRuleId,
 	          sn.id AS snId,
 	          sn.sn AS snSn,
 	          sn.occupation_code AS snOccupationCode,
+	          sn.occupation_line_id  as snOccupationLineId,
 	          sn.defect_ware_barcode AS snDefectWareBarcode,
 	          sn.defect_source AS snDefectSource,
 	          sn.defect_type_id AS snDefectTypeId,
@@ -4292,8 +4344,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inside_container_id as insideContainerId,
 	          inv.customer_id as customerId,
 	          inv.store_id as storeId,
-	          inv.occupation_code as occupationCode,
-	          inv.occupation_line_id as occupationLineId,
+	          inv.occupation_code as invOccupationCode,
+	          inv.occupation_line_id as invOccupationLineId,
 	          inv.replenishment_code as replenishmentCode,
 	          inv.qty as qty,
 	          inv.inv_status as invStatus,
@@ -4307,13 +4359,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inv_attr3 as invAttr3,
 	          inv.inv_attr4 as invAttr4,
 	          inv.inv_attr5 as invAttr5,
-	          inv.uuid as uuid,
-	          inv.ou_id as ouId,
+	          inv.uuid as invUuid,
+	          inv.ou_id as invOuId,
 	          inv.last_modify_time as lastModifyTime,
 	          inv.replenishment_rule_id as replenishmentRuleId,
 	          sn.id AS snId,
 	          sn.sn AS snSn,
 	          sn.occupation_code AS snOccupationCode,
+	          sn.occupation_line_id  as snOccupationLineId,
 	          sn.defect_ware_barcode AS snDefectWareBarcode,
 	          sn.defect_source AS snDefectSource,
 	          sn.defect_type_id AS snDefectTypeId,
@@ -4513,8 +4566,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inside_container_id as insideContainerId,
 	          inv.customer_id as customerId,
 	          inv.store_id as storeId,
-	          inv.occupation_code as occupationCode,
-	          inv.occupation_line_id as occupationLineId,
+	          inv.occupation_code as invOccupationCode,
+	          inv.occupation_line_id as invOccupationLineId,
 	          inv.on_hand_qty as onHandQty,
 	          inv.allocated_qty as  allocatedQty,
 	          inv.to_be_filled_qty as toBeFilledQty,
@@ -4530,15 +4583,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inv_attr3 as invAttr3,
 	          inv.inv_attr4 as invAttr4,
 	          inv.inv_attr5 as invAttr5,
-	          inv.uuid as uuid,
+	          inv.uuid as invUuid,
 	          inv.is_locked as  isLocked,
-	          inv.ou_id as ouId,
+	          inv.ou_id as invOuId,
 	          inv.occupation_code_source as occupationCodeSource,
 	          inv.last_modify_time as lastModifyTime,
 	          inv.inbound_time as inboundTime,
 	          sn.id AS snId,
 	          sn.sn AS snSn,
 	          sn.occupation_code AS snOccupationCode,
+	          sn.occupation_line_id  as snOccupationLineId,
 	          sn.defect_ware_barcode AS snDefectWareBarcode,
 	          sn.defect_source AS snDefectSource,
 	          sn.defect_type_id AS snDefectTypeId,
@@ -4605,6 +4659,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          sn.id AS snId,
 	          sn.sn AS snSn,
 	          sn.occupation_code AS snOccupationCode,
+	          sn.occupation_line_id  as snOccupationLineId,
 	          sn.defect_ware_barcode AS snDefectWareBarcode,
 	          sn.defect_source AS snDefectSource,
 	          sn.defect_type_id AS snDefectTypeId,
@@ -4768,6 +4823,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        		sn.id as snId,
 	        		sn.sn as snSn,
 	        		sn.occupation_code as snOccupationCode,
+	        		sn.occupation_line_id  as snOccupationLineId,
 	        		sn.defect_ware_barcode as snDefectWareBarcode,
 	        		sn.defect_source as snDefectSource,
 	        		sn.defect_type_id as snDefectTypeId,
@@ -4798,5 +4854,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select sum(on_hand_qty) from t_wh_sku_inventory inv
 			and inv.ou_id=#{ouId}
 			and inv.outer_container_id=#{outerContainerId} 
+	</select>
+	
+	<select id="getInvSatusByName" resultType="long">
+		select 
+			id 
+		from 
+			t_wh_inventory_status
+		where 
+			name = #{invStatus}
+			and lifecycle = 1
+	</select>
+	
+	<select id="getInvStatusNameById" resultType="string">
+		select 
+			name
+		from 
+			t_wh_inventory_status
+		where 
+			id = #{invStatusId}
+			and lifecycle = 1
 	</select>
 </mapper>

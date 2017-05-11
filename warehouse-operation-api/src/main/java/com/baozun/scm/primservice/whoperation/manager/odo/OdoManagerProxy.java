@@ -28,6 +28,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
 public interface OdoManagerProxy extends BaseManager {
     /**
@@ -429,5 +430,14 @@ public interface OdoManagerProxy extends BaseManager {
      * @param ouId
      */
     void updateOdoIndexByWaveId(Long waveId, Long ouId);
+
+    /**
+     * 工作
+     * 
+     * @param workId
+     * @param ouId
+     * @return
+     */
+    WhWork findWorkById(Long workId, Long ouId);
 
 }

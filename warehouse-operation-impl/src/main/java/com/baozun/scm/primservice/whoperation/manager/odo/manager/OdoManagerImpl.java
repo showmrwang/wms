@@ -381,6 +381,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     BeanUtils.copyProperties(lineCommand, odoLine);
                     odoLine.setOdoId(odoId);
                     odoLine.setOuId(ouId);
+                    // @mender yimin.lu 2017/5/11 qty==playQty
+                    odoLine.setPlanQty(odoLine.getQty());
                     odoLine.setCurrentQty(lineCommand.getCurrentQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCurrentQty());
                     odoLine.setActualQty(lineCommand.getActualQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getActualQty());
                     odoLine.setCancelQty(lineCommand.getCancelQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCancelQty());

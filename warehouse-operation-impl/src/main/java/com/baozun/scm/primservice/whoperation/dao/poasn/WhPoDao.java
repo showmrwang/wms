@@ -149,5 +149,12 @@ public interface WhPoDao extends BaseDao<WhPo, Long> {
      * @return
      */
     List<WhPoCommand> findPoListByExtCodeStoreId(@Param("extCode") String extCode, @Param("storeId") String storeId);
+    
+    /**
+     * 通过PoCode查找Po单
+     * @author kai.zhu
+     * @version 2017年5月11日
+     */
+    WhPo findWhPoByCode(@Param("poCode") String poCode, @Param("ouId") Long ouId);
 
 }

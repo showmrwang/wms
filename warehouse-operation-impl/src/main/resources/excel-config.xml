@@ -47,7 +47,6 @@
 	<field name="orderTime" title="下单时间" pattern="yyyy/MM/dd"/>
 	<field name="epistaticSystemsOrderType" title="上位系统单据类型"/>
 	<field name="outboundCartonType" title="出库箱类型"/>
-	<field name="planDeliverGoodsTime" title="计划发货时间" pattern="yyyy/MM/dd"/>
 </excel>
 <excel id="whOdoLine" class="com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand" sheetname="出库单明细列表" defaultColumnWidth="5000" enableStyle="true">
 	<field name="odoExtCode" title="外部对接编码" isNull="false" nullErrorCode="error.excel.isNull"/>
@@ -108,7 +107,6 @@
 	<field name="consigneeTargetAddress" title="收货人详细地址"/>
 	<field name="consigneeTargetEmail" title="收货人邮箱"/>
 	<field name="consigneeTargetZip" title="收货人邮编"/>
-	<field name="outboundTargetType" title="出库目标对象"/>
 </excel>
 <excel id="whOdoTransportMgmt" class="com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand" sheetname="出库单运输服务商列表" defaultColumnWidth="5000" enableStyle="true">
 	<field name="odoExtCode" title="出库单外接编码" isNull="false" nullErrorCode="error.excel.isNull"/>

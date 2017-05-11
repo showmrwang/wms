@@ -550,7 +550,8 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         whPo.setIsAutoClose(isAutoClose);
         biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
         if (ouId != null) {
-            whPo.setPoCode(getUniqueCode());
+            // @mender yimin.lu 2017/5/11 info->shard poCode 一致
+            // whPo.setPoCode(getUniqueCode());
             biPoManager.createPoAndLineToShared(whPo, whPoTm, whPoLines, indexList);
         }
     }
@@ -1100,8 +1101,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             Sku sku = this.biPoLineManager.findSkuByBarCode(lineCommand.getSkuBarCode(), excelPo.getCustomerId(), logId);
             if (sku == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("条码找不到对应的商品", null, rowNum, null));
+            } else {
+                lineCommand.setSkuId(sku.getId());
             }
-            lineCommand.setSkuId(sku.getId());
             if (lineCommand.getInvStatus() == null) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
             } else {
@@ -1364,7 +1366,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 		
 		// 退换货逻辑
 		if (whPo.getPoType() == 2) {
-
             Store store = this.storeManager.findStoreById(whPo.getStoreId());
 			// 退货入关联销售出
 			String ecOrderCode = whPo.getOriginalEcOrderCode();
@@ -1379,6 +1380,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 			        // 代表原来关联过原始单据, 则此订单依旧关联
 			        // 创建到(collect)数据表并生成PoAsn
 			        this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId);
+                } else {
+                    // 复用同一套创建Po的逻辑
+                    this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
                 }
 			}
 		} else {

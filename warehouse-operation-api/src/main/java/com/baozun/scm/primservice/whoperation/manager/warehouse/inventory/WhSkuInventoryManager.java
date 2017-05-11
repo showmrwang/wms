@@ -27,11 +27,11 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoR
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
-import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
+import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
-import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
-import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -301,7 +301,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @author kai.zhu
      * @version 2017年3月13日
      */
-	WhInboundConfirmCommand findInventoryByPo(BiPo po, List<BiPoLine> lineList, Long ouId);
+    List<WhInboundLineConfirmCommand> findInventoryByPoCode(String poCode, Long ouId);
 
 	void allocationInventoryByLineListNew(List<WhWaveLine> notHaveInvAttrLines, List<AllocateStrategy> rules,
 			Long skuId, Long storeId, Long invStatusId, Warehouse wh, String logId);
@@ -359,4 +359,6 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @return
      */
     public List<WhSkuInventoryCommand> findOutboundboxInventory(String outboundbox,Long ouId);
+
+    Long getInvSatusByName(String invStatus);
 }

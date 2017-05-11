@@ -209,4 +209,6 @@ public interface PoManager extends BaseManager {
 
     public void closeBiPo(Long bipoId);
 
+    void testzk();
+
 }

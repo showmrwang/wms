@@ -325,15 +325,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		group by odo_line_id
     </select>
 	 <select id="findInventoryCountsByInsideContainerId" resultType="Integer">
-		select sum(on_hand_qty) from t_wh_operation_line 
-			and ou_id=#{ouId}
+		select sum(qty) from t_wh_operation_line 
+			where ou_id=#{ouId}
 			and from_inside_container_id=#{fromInsideContainerId} 
 	</select>
 	
 	
 	  <select id="findInventoryCountsByOuterContainerId" resultType="Integer">
-		select sum(on_hand_qty) from t_wh_operation_line 
-			and ou_id=#{ouId}
+		select sum(qty) from t_wh_operation_line 
+			where ou_id=#{ouId}
 			and from_outer_container_id=#{fromOuterContainerId} 
 	</select>
 	

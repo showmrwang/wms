@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse.outbound;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -402,6 +403,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setTransportCode("");
                     checking.setTransportName("");
                     checking.setWaveCode(waveCode);
+                    checking.setCreateId(userId);
+                    checking.setCreateTime(new Date());
+                    checking.setModifiedId(userId);
+                    checking.setLastModifyTime(new Date());
                     whCheckingDao.insert(checking);
                     // 生成复核明细
                     for (WhSkuInventory inv : invList) {
@@ -448,6 +453,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setStoreCode("");
                             line.setStoreName("");
                             line.setUuid(inv.getUuid());
+                            line.setCreateId(userId);
+                            line.setCreateTime(new Date());
+                            line.setModifiedId(userId);
+                            line.setLastModifyTime(new Date());
                             WhCheckingLineDao.insert(line);
                         }
                     }

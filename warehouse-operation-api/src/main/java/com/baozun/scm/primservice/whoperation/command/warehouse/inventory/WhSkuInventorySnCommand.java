@@ -98,6 +98,8 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     private String serialNumberType;
     /** 上架规则 */
     private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
+    
+    private Long occupationLineId;
 
     public Long getId() {
         return id;
@@ -354,4 +356,15 @@ public class WhSkuInventorySnCommand extends BaseCommand {
 	public void setWhDefectReasonsCode(String whDefectReasonsCode) {
 		this.whDefectReasonsCode = whDefectReasonsCode;
 	}
+
+    public Long getOccupationLineId() {
+        return occupationLineId;
+    }
+
+    public void setOccupationLineId(Long occupationLineId) {
+        this.occupationLineId = occupationLineId;
+    }
+	
+	
+	
 }
