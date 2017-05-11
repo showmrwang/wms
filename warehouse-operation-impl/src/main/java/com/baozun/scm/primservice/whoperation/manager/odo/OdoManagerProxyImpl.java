@@ -2875,4 +2875,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
     }
 
+
+    @Override
+    public WhWork findWorkById(Long workId, Long ouId) {
+        return this.whWorkManager.findWorkByWorkId(workId, ouId);
+    }
+
 }

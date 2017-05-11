@@ -261,11 +261,10 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Long createContainer(Container container, Long ouId) {
-        container.setOuId(ouId);
-        Long count = containerDao.insert(container);
-        return count;
+    public List<Container> findUseAbleContainerByContainerType(Container container) {
+        return containerDao.findListByParam(container);
     }
+
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -334,6 +333,8 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
      * @param ouId
      * @return
      */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId){
         List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
         List<WhSkuInventoryCommand> skuInvToBeFillList = whSkuInventoryTobefilledDao.findListByOccupationCode(occupationCode, ouId);
@@ -342,6 +343,50 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
         allSkuInvList.addAll(skuInvToBeFillList);
 
         return allSkuInvList;
+    }
+
+    /**
+     * 根据外部容器查询库存
+     *
+     * @author mingwei.xie
+     * @param outContainerIdList
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray( List<Long> outContainerIdList,  Long ouId){
+        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findSkuInvListByWholeTray(outContainerIdList, ouId);
+
+        return skuInvList;
+    }
+
+    /**
+     * 根据内部容器查询库存
+     *
+     * @author mingwei.xie
+     * @param innerContainerIdList
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList,  Long ouId){
+        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findSkuInvListByWholeContainer(innerContainerIdList, ouId);
+
+        return skuInvList;
+    }
+
+    /**
+     * 占用出库箱推荐的容器
+     *
+     * @param container
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int occupationContainerByRecOutboundBox(Container container){
+        return containerDao.saveOrUpdateByVersion(container);
     }
 
     /**
