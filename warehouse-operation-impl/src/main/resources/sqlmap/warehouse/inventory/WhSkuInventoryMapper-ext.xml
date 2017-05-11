@@ -3782,6 +3782,47 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 AND skuInv.ou_id = #{ouId}
     </select>
 
+    <select id="findSkuInvListByWholeTray" resultMap="WhSkuInventoryCommandResultExt">
+
+        SELECT
+            skuInv.sku_id AS skuId,
+            skuInv.location_id AS locationId,
+            skuInv.outer_container_id AS outerContainerId,
+            skuInv.inside_container_id AS insideContainerId,
+            sum(skuInv.on_hand_qty) AS onHandQty,
+            skuInv.ou_id AS ouId
+        FROM
+          t_wh_sku_inventory AS skuInv
+        WHERE
+            skuInv.outer_container_id in
+            <foreach item="item" index="index" collection="outContainerIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            AND skuInv.ou_id = #{ouId}
+        GROUP BY
+          skuInv.outer_container_id,skuInv.inside_container_id,skuInv.sku_id
+    </select>
+
+    <select id="findSkuInvListByWholeContainer" resultMap="WhSkuInventoryCommandResultExt">
+
+        SELECT
+            skuInv.sku_id AS skuId,
+            skuInv.location_id AS locationId,
+            skuInv.inside_container_id AS insideContainerId,
+            sum(skuInv.on_hand_qty) AS onHandQty,
+            skuInv.ou_id AS ouId
+        FROM
+          t_wh_sku_inventory AS skuInv
+        WHERE
+            skuInv.inside_container_id in
+            <foreach item="item" index="index" collection="innerContainerIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+          AND skuInv.ou_id = #{ouId}
+        GROUP BY
+            skuInv.inside_container_id,skuInv.sku_id
+    </select>
+
     <select id="findListByOccLineIdListOrderByPickingSort" resultMap="WhSkuInventoryCommandResultExt">
             SELECT
                 skuInv.id AS id,
