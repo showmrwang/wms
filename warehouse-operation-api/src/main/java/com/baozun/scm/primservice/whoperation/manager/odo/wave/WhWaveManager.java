@@ -150,13 +150,11 @@ public interface WhWaveManager extends BaseManager {
      * [业务方法]
      * 
      * @param odoList
-     * @param offWaveLineList
-     * @param offOdoLineList
      * @param wave
      * @param ouId
      * @param userId
      */
-    void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId, Warehouse wh);
+    void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh);
 
     /**
      * [通用方法] 根据WavePhaseCode波次编码查找波次ID集合
