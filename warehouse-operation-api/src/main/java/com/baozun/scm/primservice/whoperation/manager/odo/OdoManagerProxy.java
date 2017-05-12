@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
@@ -381,7 +382,7 @@ public interface OdoManagerProxy extends BaseManager {
      * @author kai.zhu
      * @version 2017年4月24日
      */
-    void getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId);
+    WhOdodeliveryInfo getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId);
 
     /**
      * 从一批出库单集合中筛选出可以创建波次的出库单

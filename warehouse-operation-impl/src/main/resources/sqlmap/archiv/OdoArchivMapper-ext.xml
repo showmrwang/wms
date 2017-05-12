@@ -658,6 +658,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <delete id="deleteOdoDeliveryInfo" parameterType="map">
 			delete from t_wh_odo_delivery_info where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
+	 <delete id="deleteWhOdoOutBoundBox" parameterType="map">
+			delete from t_wh_odo_outboundbox where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
 	 
 	 	<insert id="saveOdoArchivIndex" parameterType="com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex" 
 				useGeneratedKeys="true" keyProperty="id" 

@@ -32,16 +32,24 @@ package com.baozun.scm.primservice.whoperation;
 
 
 import org.junit.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import sun.net.www.content.audio.wav;
+
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.CreatePoAsnManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.EditPoAsnManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
+import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundLineConfirm;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 
 
 @ContextConfiguration(locations = {"classpath*:spring.xml"})
@@ -60,22 +68,18 @@ public class TaskTest extends AbstractJUnit4SpringContextTests {
     private EditPoAsnManagerProxy editPoAsnManagerProxy;
     @Autowired
     private CustomerManager customerManager;
+    
+    @Autowired
+    private WhOdoDao whOdoDao;
+    @Autowired
+    private WhOutboundConfirmManager whOutboundConfirmManager;
 
 
     @Test
     public void testExecute() {
         try {
-            WhPoCommand po = new WhPoCommand();
-            // po.setId(22L);
-            po.setStoreId(22L);
-            po.setPoCode("tes22t");
-            po.setPoType(1);
-            po.setStatus(11);
-            po.setIsWms(true);
-            po.setOuId(12L);
-            // createsAsnManager.findWhAsnListByAsnCode("aa", null);
-            // WhPoCommand po = new WhPoCommand();
-            // createPoAsnManagerProxy.CreatePo(po);
+            WhOdo whOdo = whOdoDao.findByIdOuId(12100120L, 119L);
+            whOutboundConfirmManager.saveWhOutboundConfirm(whOdo);
         } catch (Exception e) {
             e.printStackTrace();
         }

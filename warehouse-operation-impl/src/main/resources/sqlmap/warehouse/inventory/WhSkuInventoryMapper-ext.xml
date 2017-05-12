@@ -22,6 +22,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<resultMap id="WhCheckingCollectionLineResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollectionLine">
 	</resultMap>
+    <resultMap id="WhSkuInventoryCommand" type="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
+    </resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whSkuInventoryColumnsExt">
@@ -4921,4 +4923,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			id = #{invStatusId}
 			and lifecycle = 1
 	</select>
+
+    <select id="findAvailableLocationSkuInventory" resultMap="WhSkuInventoryCommand">
+        select
+            <include refid="whSkuInventoryColumnsExt"/>
+        from
+            t_wh_sku_inventory
+        where
+            location_id =#{locationId}
+            and sku_id = #{skuId}
+            and ou_id = #{ouId}
+            and on_hand_qty > 0
+    </select>
+
+    <select id="findSkuInventoryLocationList" resultType="java.lang.Long">
+        select
+            distinct location_id
+        from
+            t_wh_sku_inventory
+        where
+            sku_id = #{skuId}
+            and ou_id = #{ouId}
+    </select>
 </mapper>

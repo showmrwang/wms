@@ -6,6 +6,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -101,5 +102,14 @@ public interface CheckingManager extends BaseManager {
      */
     WhCheckingCommand findCheckingById(Long checkingId, Long ouId);
 
+    /**
+     * 复核 占用耗材库存
+     *
+     * @param skuInventoryCommand
+     * @param outboundBoxCode
+     * @param ouId
+     * @param logId
+     */
+    void occupationConsumableSkuInventory(WhSkuInventoryCommand skuInventoryCommand, String outboundBoxCode, Long ouId, String logId);
 
 }
