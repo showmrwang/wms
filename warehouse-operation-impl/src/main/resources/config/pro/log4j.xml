@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss:SSS z}] %5p %l: %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="debug" />
+			<param name="LevelMax" value="error" />
+			<param name="AcceptOnMatch" value="false" />
+		</filter>
+	</appender>
+
+	<appender name="dfileDebug" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/service/logs/service/production/wms4/warehouse-operation/debug.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH'.log'" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss:SSS z}] %5p %l: %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="debug" />
+			<param name="LevelMax" value="debug" />
+			<param name="AcceptOnMatch" value="false" />
+		</filter>
+
+	</appender>
+
+	<appender name="dfileInfo" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/service/logs/service/production/wms4/warehouse-operation/info.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH'.log'" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss:SSS z}] %5p %l: %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="info" />
+			<param name="LevelMax" value="info" />
+			<param name="AcceptOnMatch" value="false" />
+		</filter>
+
+	</appender>
+
+	<appender name="dfileWarn" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/service/logs/service/production/wms4/warehouse-operation/warn.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH'.log'" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss:SSS z}] %5p %l: %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="warn" />
+			<param name="LevelMax" value="warn" />
+			<param name="AcceptOnMatch" value="false" />
+		</filter>
+
+	</appender>
+
+	<appender name="dfileError" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/service/logs/service/production/wms4/warehouse-operation/error.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH'.log'" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss:SSS z}] %5p %l: %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="error" />
+			<param name="LevelMax" value="error" />
+			<param name="AcceptOnMatch" value="false" />
+		</filter>
+	</appender>
+
+	<category name="org.springframework">
+		<priority value="ERROR" />
+	</category>
+	<category name="org.apache">
+		<priority value="ERROR" />
+	</category>
+	<category name="org.apache.zookeeper">
+		<priority value="INFO" />
+	</category>
+	<category name="com.alibaba">
+		<priority value="ERROR" />
+	</category>
+
+	<root>
+		<level value="INFO" />
+		<!-- <appender-ref ref="CONSOLE" /> -->
+		<appender-ref ref="dfileDebug" />
+		<appender-ref ref="dfileInfo" />
+		<appender-ref ref="dfileWarn" />
+		<appender-ref ref="dfileError" />
+	</root>
+</log4j:configuration>

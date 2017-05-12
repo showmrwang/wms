@@ -14,13 +14,13 @@
 		class="com.baozun.zkpro.ZookeeperConfigurer">
 		<property name="locations">
 			<list>
-				<value>classpath:config/zk.properties</value>
+				<value>classpath:zk.properties</value>
 			</list>
 		</property>
 		<!-- 重写zookeeper中的配置 -->
 		<property name="overrideLocaltions">
 			<list>
-				<value>classpath:config/ext.properties</value>
+				<value>classpath:ext.properties</value>
 			</list>
 		</property>
 	</bean>
