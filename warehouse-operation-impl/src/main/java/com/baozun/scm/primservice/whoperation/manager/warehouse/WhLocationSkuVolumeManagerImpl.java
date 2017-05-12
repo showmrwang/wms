@@ -26,6 +26,8 @@ public class WhLocationSkuVolumeManagerImpl extends BaseManagerImpl implements W
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhLocationSkuVolume findSkuByCheckLocation(Long locationId, Long ouId) {
         WhLocationSkuVolume whLocationSkuVolume = new WhLocationSkuVolume();
+        whLocationSkuVolume.setLocationId(locationId);
+        whLocationSkuVolume.setOuId(ouId);
         List<WhLocationSkuVolume> whLocationSkuVolumeList = this.whLocationSkuVolumeDao.findListByParam(whLocationSkuVolume);
         if (null == whLocationSkuVolumeList || whLocationSkuVolumeList.isEmpty()) {
             throw new BusinessException("没有库位");
@@ -56,7 +58,7 @@ public class WhLocationSkuVolumeManagerImpl extends BaseManagerImpl implements W
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhLocationSkuVolumeCommand findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId){
+    public WhLocationSkuVolumeCommand findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId) {
         return whLocationSkuVolumeDao.findFacilityLocSkuVolumeBySkuId(facilityId, skuId, ouId);
     }
 }
