@@ -53,4 +53,12 @@ public interface WhLocationSkuVolumeDao extends BaseDao<WhLocationSkuVolume, Lon
      */
     List<WhLocationSkuVolumeCommand> findLocSkuVolumeByFacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 
+    /**
+     * 查找商品对应的库位容量信息
+     *
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    WhLocationSkuVolumeCommand findFacilityLocSkuVolumeBySkuId(@Param("facilityId") Long facilityId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 }

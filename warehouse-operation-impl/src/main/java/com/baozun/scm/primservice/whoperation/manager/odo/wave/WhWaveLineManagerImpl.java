@@ -187,6 +187,9 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         WhWaveLine whWaveLine = whWaveLineDao.findWhWaveLineById(id, ouId);
         Double oldAllocateQty = (null == whWaveLine.getAllocateQty() ? 0.0 : whWaveLine.getAllocateQty());
         Double newAllocateQty = allocateQty + oldAllocateQty;
+        if (newAllocateQty.compareTo(whWaveLine.getQty()) == 1) {
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+        }
         whWaveLine.setAllocateQty(newAllocateQty);
         if (-1 == Constants.DEFAULT_DOUBLE.compareTo(containerQty)) {
             whWaveLine.setIsPalletContainer(Boolean.TRUE);

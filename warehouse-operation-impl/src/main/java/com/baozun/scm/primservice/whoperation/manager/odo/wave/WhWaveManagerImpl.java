@@ -610,15 +610,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void matchWaveDisTributionMode(List<WhOdo> odoList, List<WhWaveLine> offWaveLineList, List<WhOdoLine> offOdoLineList, WhWave wave, Long ouId, Long userId, Warehouse wh) {
+    public void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh) {
         // #mender yimin.lu 获取需要提出波次的出库单集合
         Long waveId = wave.getId();
-        List<Long> odoIdList = new ArrayList<Long>();
-        for (WhOdo odo : odoList) {
-            if (StringUtils.isEmpty(odo.getWaveCode())) {
-                odoIdList.add(odo.getId());
-            }
-        }
         // 更新出库单
         boolean flag = false;
         if (odoList != null && odoList.size() > 0) {
