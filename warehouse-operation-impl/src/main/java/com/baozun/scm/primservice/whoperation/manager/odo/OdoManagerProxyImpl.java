@@ -2675,7 +2675,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
 
     @Override
-    public void getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId) {
+    public WhOdodeliveryInfo getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId) {
         // 获取增值服务
         WhOdo odo = odoManager.findOdoByIdOuId(odoId, ouId);
         WhOdoTransportMgmt transMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId);
@@ -2742,7 +2742,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
             odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "TransportServiceProvider is null", ouId);
-            return;
+            return null;
         }
         // 获取运单号
         MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, wh, trans, ouId);
@@ -2773,6 +2773,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 delivery.setTransportServiceType(transMgmt.getCourierServiceType());
                 delivery.setWaybillCode(mailNo);
                 odoTransportMgmtManager.updateOdoTransportMgmtAndSaveDeliveryInfo(transMgmt, delivery);
+                return delivery;
             } else {
                 if (null == res) {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", ouId);
@@ -2781,6 +2782,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 }
             }
         }
+        return null;
     }
 
 
