@@ -1908,7 +1908,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
             this.createOdo(groupList, ouId, userId);
 
+        } catch (BusinessException ex) {
+            throw ex;
         } catch (Exception e) {
+            log.error("", e);
             e.printStackTrace();
             throw new BusinessException(ErrorCodes.IMPORT_ERROR);
         }
@@ -1937,7 +1940,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                             rootExcelException.getExcelExceptions().add(new ExcelException("运输方式编码错误", null, rowNum, null));
                         }
                     }
-                    if (StringUtils.hasText(trans.getTransportServiceProvider())) {
+                    if (StringUtils.hasText(trans.getTransportServiceProvider()) && false) {
                         MaTransport port = new MaTransport();
                         port.setCode(trans.getTransportServiceProvider());
                         List<MaTransport> portList = this.maTransportManager.findMaTransport(port);
@@ -2237,7 +2240,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private void validateOdo(ExcelImportResult excelImportResult, Map<String, OdoGroupCommand> odoGroupCommandMap, Locale locale, Long userId, Long ouId) {
         List<OdoCommand> lineCommandList = excelImportResult.getListBean();
         RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
-        OdoGroupCommand group = new OdoGroupCommand();
+
         for (int index = 0; index < lineCommandList.size(); index++) {
             int rowNum = index + Constants.IMPORT_WHODO_TITLE_INDEX + 1;
             OdoCommand odo = lineCommandList.get(index);
@@ -2301,6 +2304,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             // 只有关键元素校验通过了才会进行后续的校验
             if (isAdd) {
+                OdoGroupCommand group = new OdoGroupCommand();
                 group.setOdo(odo);
                 odoGroupCommandMap.put(odo.getExtCode(), group);
             }
