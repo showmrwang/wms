@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import lark.common.annotation.MoreDB;
 
@@ -58,7 +57,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
-import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundInvLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundSnLineConfirmCommand;
@@ -80,10 +78,8 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrateg
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
@@ -95,23 +91,17 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
-import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
-import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -8644,7 +8634,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param turnoverBoxId
      */
     public void invmoveContainerInventory(Boolean isShortPicking,List<String> snDefectList,String skuAttrIds,Long locationId,Long operationId,Long ouId,Long outerContainerId,Long insideContainerId,Long turnoverBoxId,Boolean isTabbInvTotal,Long userId,String workCode,Double scanSkuQty){
-        List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId,outerContainerId,insideContainerId);
+        List<WhOperationExecLine>  operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId, outerContainerId, insideContainerId);
         if(null== operationExecLineList || operationExecLineList.size()==0) {
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
         }
@@ -8659,7 +8649,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
         }
         //获取待移入库存
-        List<WhSkuInventoryTobefilledCommand> tobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByInvMove(operationId,toLocationId,ouId);
+        List<WhSkuInventoryTobefilledCommand> tobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByInvMove(operationId, toLocationId, ouId);
         if(null == tobefilledList || tobefilledList.size() == 0){
             throw new BusinessException(ErrorCodes.TOBEFILLED_INVENTORY_NO_EXIST);  //分配库存不存在
         }
@@ -10023,5 +10013,30 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             return null;
         }
         return whSkuInventoryDao.getInvSatusByName(invStatus);
+    }
+
+    /**
+     * 查找库位上商品在库库存量大于0的库存
+     *
+     * @param locationId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public List<WhSkuInventoryCommand> findAvailableLocationSkuInventory(Long locationId, Long skuId, Long ouId){
+        return whSkuInventoryDao.findAvailableLocationSkuInventory(locationId, skuId, ouId);
+    }
+
+    /**
+     * 查询商品所在的所有库位
+     *
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    public List<Long> findSkuInventoryLocationList(Long skuId, Long ouId){
+        return whSkuInventoryDao.findSkuInventoryLocationList(skuId, ouId);
     }
 }

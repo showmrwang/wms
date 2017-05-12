@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import java.util.Date;
+import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -114,7 +115,7 @@ public class WhCheckingLineCommand extends BaseCommand {
     /** 出库单编码*/
     private String odoCode;
 
-    /** ==================================== */
+    /** =================复核用=================== */
     /** 生产日期 */
     private String mfgDateString;
     /** 失效日期 */
@@ -135,6 +136,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String invTypeLabel;
     /** 耗材id*/
     private Long outboundboxId;
+    /** 已复核SN/残次信息 */
+    private List<Long> snInventoryIdList;
 
     public Long getId() {
         return id;
@@ -566,6 +569,14 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setOutboundboxId(Long outboundboxId) {
         this.outboundboxId = outboundboxId;
+    }
+
+    public List<Long> getSnInventoryIdList() {
+        return snInventoryIdList;
+    }
+
+    public void setSnInventoryIdList(List<Long> snInventoryIdList) {
+        this.snInventoryIdList = snInventoryIdList;
     }
 
 }

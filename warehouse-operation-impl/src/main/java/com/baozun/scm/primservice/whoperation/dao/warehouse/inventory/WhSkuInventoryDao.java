@@ -1080,4 +1080,25 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<WhSkuInventory> findSkuInvByLocationIdWithOnHandQty(@Param("locationId") Long locationId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
+
+
+    /**
+     * 查找库位上商品在库库存量大于0的库存
+     *
+     * @param locationId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    List<WhSkuInventoryCommand> findAvailableLocationSkuInventory(@Param("locationId") Long locationId, @Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
+    /**
+     * 查询商品所在的所有库位
+     *
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    List<Long> findSkuInventoryLocationList(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
+
 }

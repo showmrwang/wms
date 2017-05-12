@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -62,6 +63,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     private WhOutboundFacilityDao whOutboundFacilityDao;
     @Autowired
     private WhCheckingDao whCheckingDao;
+    @Autowired
+    private WhSkuInventoryDao skuInventoryDao;
 
     @Override
     public void printPackingList(List<Long> facilityIdsList, Long userId, Long ouId) {
@@ -384,6 +387,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId) {
         WhOutboundFacilityCommand facilityCommand =  whOutboundFacilityDao.findByIdExt(id, ouId);
         /*
@@ -411,8 +415,41 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      * @param ouId
      * @return
      */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String macAddr, Long ouId){
         return whOutboundFacilityDao.findOutboundFacilityByMacAddr(macAddr, ouId);
     }
-    
+
+    /**
+     * 复核 占用耗材库存
+     *
+     * @param skuInventoryCommand
+     * @param outboundBoxCode
+     * @param ouId
+     * @param logId
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void occupationConsumableSkuInventory(WhSkuInventoryCommand skuInventoryCommand, String outboundBoxCode, Long ouId, String logId){
+        WhSkuInventory orgSkuInv = new WhSkuInventory();
+        BeanUtils.copyProperties(skuInventoryCommand, orgSkuInv);
+        orgSkuInv.setOnHandQty(orgSkuInv.getOnHandQty() - 1);
+        //更新原始库存数-1
+        int updateCount = skuInventoryDao.saveOrUpdateByVersion(orgSkuInv);
+        if(updateCount != 1){
+            throw new BusinessException("占用耗材库存异常");
+        }
+
+        WhSkuInventory occupationSkuInv = new WhSkuInventory();
+        BeanUtils.copyProperties(skuInventoryCommand, occupationSkuInv);
+        occupationSkuInv.setOnHandQty(1d);
+        occupationSkuInv.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_OUTBOUND_BOX);
+        occupationSkuInv.setOccupationCode(outboundBoxCode);
+        occupationSkuInv.setOccupationLineId(null);
+
+        skuInventoryDao.insert(occupationSkuInv);
+
+    }
+
 }

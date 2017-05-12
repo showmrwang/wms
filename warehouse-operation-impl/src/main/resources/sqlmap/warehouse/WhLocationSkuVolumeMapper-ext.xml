@@ -116,7 +116,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             sku.code as skuCode,
             loc.code as locationCode,
             sku.name as skuName,
-            skuInv.on_hand_qty as onHandQty
+            sum(skuInv.on_hand_qty) as onHandQty
         from
             t_wh_location_sku_volume as ls
             left join t_wh_facility_location_sku_volume as fs on fs.lsv_id = ls.id
@@ -126,6 +126,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where
             fs.facility_id = #{facilityId}
             and fs.ou_id = #{ouId}
+        group by
+            skuInv.location_id,skuInv.sku_id
+    </select>
+
+    <select id="findFacilityLocSkuVolumeBySkuId" resultMap="WhLocationSkuVolumeCommand">
+        select
+            <include refid="whLocationSkuVolumeColumnsExt"/>
+        from
+            t_wh_location_sku_volume as lsv
+            left join t_wh_facility_location_sku_volume as flsv on flsv.lsv_id = lsv.id
+        where
+            lsv.ou_id = #{ouId}
+            and lsv.sku_id = #{skuId}
+            flsv.facility_id = #{facilityId}
     </select>
 
 </mapper>
