@@ -426,6 +426,7 @@
 			<properties>
 				<env>dev</env>
 				<config.path>src/main/resources/config/dev</config.path>
+				<buildPath>build/assembly.xml</buildPath>
 			</properties>
 		</profile>
 		
@@ -434,6 +435,7 @@
 			<properties>
 				<env>uat</env>
 				<config.path>src/main/resources/config/uat</config.path>
+				<buildPath>build/assembly.xml</buildPath>
 			</properties>
 		</profile>
 		
@@ -442,6 +444,7 @@
 			<properties>
 				<env>st</env>
 				<config.path>src/main/resources/config/st</config.path>
+				<buildPath>build/assembly.xml</buildPath>
 			</properties>
 		</profile>
 		
@@ -450,6 +453,7 @@
 			<properties>
 				<env>pro</env>
 				<config.path>src/main/resources/config/pro</config.path>
+				<buildPath>build/pro/assembly.xml</buildPath>
 			</properties>
 		</profile>
 	</profiles>
@@ -460,7 +464,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<descriptor>build/assembly.xml</descriptor>
+					<descriptor>${buildPath}</descriptor>
 				</configuration>
 				<executions>
 					<execution>
