@@ -74,7 +74,7 @@ public class ProductProvider {
 
     public static void main(String[] args) throws Exception {
 
-    	Properties zkPro=ProfileConfigUtil.findCommonPro("config/zk.properties");
+    	Properties zkPro=ProfileConfigUtil.findCommonPro("zk.properties");
 		
 		String zkhost = zkPro.getProperty("zk.host");
 		
