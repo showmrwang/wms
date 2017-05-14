@@ -138,6 +138,10 @@ public class WhCheckingLineCommand extends BaseCommand {
     private Long outboundboxId;
     /** 已复核SN/残次信息 */
     private List<Long> snInventoryIdList;
+    /** 是否是sn商品*/
+    private Boolean isSn = false;
+    /** 待扫描属性*/
+    private String attrIndex;
 
     public Long getId() {
         return id;
@@ -577,6 +581,22 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setSnInventoryIdList(List<Long> snInventoryIdList) {
         this.snInventoryIdList = snInventoryIdList;
+    }
+
+    public Boolean getIsSn() {
+        return isSn;
+    }
+
+    public void setIsSn(Boolean isSn) {
+        this.isSn = isSn;
+    }
+
+    public String getAttrIndex() {
+        return attrIndex;
+    }
+
+    public void setAttrIndex(String attrIndex) {
+        this.attrIndex = attrIndex;
     }
 
 }

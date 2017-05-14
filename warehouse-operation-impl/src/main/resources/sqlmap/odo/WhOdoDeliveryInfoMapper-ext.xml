@@ -112,5 +112,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        	odo_id = #{id} 
        	and ou_id = #{ouid}
     </select>
+
+	<select id="findByOdoIdWithoutOutboundbox" resultMap="OdoDeliveryInfoResultExt">
+        select <include refid="odoDeliveryInfoColumnsExt"/>
+        from t_wh_odo_delivery_info
+       	where 
+       	odo_id = #{id} 
+       	and ou_id = #{ouid}
+       	and outboundbox_code is null
+    </select>
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo">
+	    <![CDATA[
+	        UPDATE t_wh_odo_delivery_info SET
+		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_service_type = #{transportServiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        time_effect_type = #{timeEffectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        delivery_info_id = #{deliveryInfoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		        last_modify_time = #{lastModifyTime}
+	    ]]>
+		</update>
 	
 </mapper>

@@ -259,6 +259,7 @@
 		and odo.id = info.odo_id
 		AND info.outboundbox_code = #{outboundBoxCode}
 		and del.outboundbox_code = #{outboundBoxCode}
+		and del.outboundbox_id = #{outboundboxId}
 		and  ch.outboundbox_id = sku.id
 		AND ch.ou_id = #{ouId};
     </select>

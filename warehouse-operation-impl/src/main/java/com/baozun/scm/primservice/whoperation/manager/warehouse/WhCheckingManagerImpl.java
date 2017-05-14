@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
+import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
@@ -48,6 +50,8 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
@@ -61,6 +65,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -69,6 +74,8 @@ import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCat
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
@@ -79,6 +86,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("whCheckingManager")
@@ -129,6 +137,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private CheckingManager checkingManager;
     @Autowired
     private WhSkuDao skuDao;
+    @Autowired
+    private WhSkuInventorySnDao whSkuInventorySnDao;
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
+    @Autowired
+    private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
+    @Autowired
+    private MaTransportManager maTransportManager;
+    // 分隔符
+    public static final String DV = "┊";
 
     @Override
     public void saveOrUpdate(WhCheckingCommand whCheckingCommand) {
@@ -206,8 +224,35 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
 
     }
 
-    private List<WhCheckingLineCommand> findWhCheckingLineByChecking(WhCheckingCommand checking) {
+    /**
+     * [业务方法] 查找出库单对应的面单号或者是面单类型
+     * @param checking
+     * @return
+     */
+    private WhCheckingCommand findWaybillInfo(WhCheckingCommand checking) {
+        Long odoId = checking.getOdoId();
+        Long ouId = checking.getOuId();
+        List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findByOdoIdWithoutOutboundbox(odoId, ouId);
+        if (null != list && !list.isEmpty()) {
+            checking.setWaybillCode(list.get(0).getWaybillCode());
+        } else {
+            WhOdoTransportMgmt odoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
+            MaTransport port = new MaTransport();
+            port.setCode(odoTransportMgmt.getTransportServiceProvider());
+            List<MaTransport> portList = this.maTransportManager.findMaTransport(port);
+            MaTransport maTransport = new MaTransport();
+            if (null != portList && !portList.isEmpty()) {
+                maTransport = portList.get(0);
+                checking.setWaybillType(maTransport.getWaybillType());
+            }
+        }
+        return checking;
+    }
+
+    private WhCheckingByOdoCommand findWhCheckingLineByChecking(WhCheckingByOdoCommand whCheckingByOdoCommand) {
+        WhCheckingCommand checking = whCheckingByOdoCommand.getCheckingCommand();
         WhCheckingLine whCheckingLine = new WhCheckingLine();
+        List<WhSkuInventorySn> snList = new ArrayList<WhSkuInventorySn>();
         if (null == checking.getId() && null == checking.getOdoId()) {
             // 如果复核id或者出库单id为空,则不应该继续查找复核明细
             throw new BusinessException("不能查找复核明细");
@@ -229,6 +274,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whCheckingLineList = setDicLabel(whCheckingLineList);
             for (WhCheckingLineCommand command : whCheckingLineList) {
                 String skuAttr = SkuCategoryProvider.getSkuAttrIdByCheck(command);
+                String[] skuAttrArray = skuAttr.split(DV);
+                String attrIndex = "";
+                for (String attr : skuAttrArray) {
+                    attrIndex = attrIndex + (StringUtils.hasLength(attr) ? "1" : "0");
+                }
+                command.setAttrIndex(attrIndex);
                 command.setSkuAttr(skuAttr);
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 if (null != command.getMfgDate()) {
@@ -237,12 +288,28 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 if (null != command.getExpDate()) {
                     command.setExpDateStr(format.format(command.getExpDate()));
                 }
-                // if(!StringUtils.hasLength(command.getInvType())){
-                // command.setInvTypeStr("");
-                // }
+                String odoCode = command.getOdoCode();
+                String uuid = command.getUuid();
+                Long ouId = command.getOuId();
+                Long odoLineId = command.getOdoLineId();
+                WhSkuInventorySn sn = new WhSkuInventorySn();
+                sn.setOccupationCode(odoCode);
+                sn.setOuId(ouId);
+                sn.setOccupationLineId(odoLineId);
+                sn.setStatus(1);
+                sn.setUuid(uuid);
+                List<WhSkuInventorySn> list = whSkuInventorySnDao.findListByParam(sn);
+                if (null != list && !list.isEmpty()) {
+                    snList.addAll(list);
+                    command.setIsSn(true);
+                }
             }
         }
-        return whCheckingLineList;
+        whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
+        whCheckingByOdoCommand.setSnList(snList);
+        checking.setOdoId(whCheckingLineList.get(0).getOdoId());
+        checking = findWaybillInfo(checking);
+        return whCheckingByOdoCommand;
     }
 
     // 封装字典表数据
@@ -432,8 +499,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             // 可以执行复核操作
                             BeanUtils.copyProperties(checking, whCheckingCommand);
                             // whCheckingCommand.setId(ch.getId());
-                            List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
-                            command.setCheckingLineCommandList(whCheckingLineList);
                             // whCheckingCommand.setOutboundboxCode(ch.getOutboundboxCode());
                             // whCheckingCommand.setOutboundboxId(ch.getOutboundboxId());
                             if (null != whCheckingCommand.getFacilityId()) {
@@ -446,6 +511,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             }
                             whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                             command.setCheckingCommand(whCheckingCommand);
+                            command = findWhCheckingLineByChecking(command);
                             return true;
                         }
                     } else {
@@ -465,13 +531,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     } else {
                         // 非小车或播种墙的扫描出库箱 直接完成验证 进入复核流程
                         BeanUtils.copyProperties(checking, whCheckingCommand);
-                        List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
-                        command.setCheckingLineCommandList(whCheckingLineList);
+                        // List<WhCheckingLineCommand> whCheckingLineList =
+                        // findWhCheckingLineByChecking(whCheckingCommand);
+                        // command.setCheckingLineCommandList(whCheckingLineList);
+                        command.setCheckingCommand(whCheckingCommand);
                         whCheckingCommand.setOutboundboxCode(input);
                         whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                         /** 按单复核方式:出库箱流程*/
                         whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
                         command.setCheckingCommand(whCheckingCommand);
+                        command = findWhCheckingLineByChecking(command);
                         return true;
                     }
                 }
@@ -528,8 +597,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             } else {
                                 // 可以执行复核操作
                                 whCheckingCommand.setId(ch.getId());
-                                List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
-                                command.setCheckingLineCommandList(whCheckingLineList);
+                                // List<WhCheckingLineCommand> whCheckingLineList =
+                                // findWhCheckingLineByChecking(whCheckingCommand);
+                                // command.setCheckingLineCommandList(whCheckingLineList);
                                 whCheckingCommand.setContainerLatticeNo(containerLatticeNo);
                                 if (null != whCheckingCommand.getFacilityId()) {
                                     /** 按单复核方式:播种墙货格流程*/
@@ -541,6 +611,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                                 }
                                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                                 command.setCheckingCommand(whCheckingCommand);
+                                command = findWhCheckingLineByChecking(command);
                                 return true;
                             }
                         } else {
@@ -596,12 +667,14 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 }
                 // 可以执行复核操作
                 BeanUtils.copyProperties(checkingCommand, whCheckingCommand);
-                List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(checkingCommand);
-                command.setCheckingLineCommandList(whCheckingLineList);
+                // List<WhCheckingLineCommand> whCheckingLineList =
+                // findWhCheckingLineByChecking(checkingCommand);
+                // command.setCheckingLineCommandList(whCheckingLineList);
                 /** 按单复核方式:周转箱流程*/
                 whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                 command.setCheckingCommand(whCheckingCommand);
+                command = findWhCheckingLineByChecking(command);
                 return true;
             }
         }
@@ -636,11 +709,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 }
                 // 可以执行复核操作
                 whCheckingCommand.setId(checking.getId());
-                List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
-                command.setCheckingLineCommandList(whCheckingLineList);
+                // List<WhCheckingLineCommand> whCheckingLineList =
+                // findWhCheckingLineByChecking(whCheckingCommand);
+                // command.setCheckingLineCommandList(whCheckingLineList);
                 whCheckingCommand.setBatch(input);
                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                 command.setCheckingCommand(whCheckingCommand);
+                command = findWhCheckingLineByChecking(command);
                 return true;
             }
         }
@@ -662,10 +737,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             WhDistributionPatternRule distributionPatternRule = whDistributionPatternRuleDao.findByOdoIdAndOuId(odoId, ouId);
             if (null != distributionPatternRule && (Constants.PICKING_MODE_PICKING.equals(distributionPatternRule.getPickingMode()) || Constants.PICKING_MODE_SEED.equals(distributionPatternRule.getPickingMode()))) {
                 whCheckingCommand.setOdoId(odoId);
-                List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
-                command.setCheckingLineCommandList(whCheckingLineList);
+                // List<WhCheckingLineCommand> whCheckingLineList =
+                // findWhCheckingLineByChecking(whCheckingCommand);
+                // command.setCheckingLineCommandList(whCheckingLineList);
                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                 command.setCheckingCommand(whCheckingCommand);
+                command = findWhCheckingLineByChecking(command);
                 return true;
             }
         }
@@ -687,10 +764,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             WhDistributionPatternRule distributionPatternRule = whDistributionPatternRuleDao.findByOdoIdAndOuId(odoId, ouId);
             if (null != distributionPatternRule && (Constants.PICKING_MODE_PICKING.equals(distributionPatternRule.getPickingMode()) || Constants.PICKING_MODE_SEED.equals(distributionPatternRule.getPickingMode()))) {
                 whCheckingCommand.setOdoId(odoId);
-                List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
-                command.setCheckingLineCommandList(whCheckingLineList);
+                // List<WhCheckingLineCommand> whCheckingLineList =
+                // findWhCheckingLineByChecking(whCheckingCommand);
+                // command.setCheckingLineCommandList(whCheckingLineList);
                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                 command.setCheckingCommand(whCheckingCommand);
+                command = findWhCheckingLineByChecking(command);
                 return true;
             }
         }
@@ -712,10 +791,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             WhDistributionPatternRule distributionPatternRule = whDistributionPatternRuleDao.findByOdoIdAndOuId(odoId, ouId);
             if (null != distributionPatternRule && (Constants.PICKING_MODE_PICKING.equals(distributionPatternRule.getPickingMode()) || Constants.PICKING_MODE_SEED.equals(distributionPatternRule.getPickingMode()))) {
                 whCheckingCommand.setOdoId(odoId);
-                List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
-                command.setCheckingLineCommandList(whCheckingLineList);
+                // List<WhCheckingLineCommand> whCheckingLineList =
+                // findWhCheckingLineByChecking(whCheckingCommand);
+                // command.setCheckingLineCommandList(whCheckingLineList);
                 whCheckingCommand.setTip(Constants.TIP_SUCCESS);
                 command.setCheckingCommand(whCheckingCommand);
+                command = findWhCheckingLineByChecking(command);
                 return true;
             }
         }
@@ -763,7 +844,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 更新出库单状态
             this.updateOdoStatusByOdo(odoId, ouId);
         }
-        List<WeightingCommand> commandList = whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, ouId);
+        List<WeightingCommand> commandList = whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId, ouId);
         if (null != commandList && !commandList.isEmpty()) {
             return commandList.get(0);
         } else {
@@ -932,9 +1013,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         List<WhCheckingCommand> checkingList = whCheckingDao.findListByParamExt(whCheckingCommand);
         if (null != checkingList && !checkingList.isEmpty()) {
             whCheckingCommand = checkingList.get(0);
-            List<WhCheckingLineCommand> whCheckingLineList = findWhCheckingLineByChecking(whCheckingCommand);
             whCheckingByOdoCommand.setCheckingCommand(whCheckingCommand);
-            whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
+            // List<WhCheckingLineCommand> whCheckingLineList =
+            // findWhCheckingLineByChecking(whCheckingCommand);
+            // whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
+            whCheckingByOdoCommand = findWhCheckingLineByChecking(whCheckingByOdoCommand);
             whCheckingByOdoCommand = this.findCheckingInfo(whCheckingByOdoCommand);
             return whCheckingByOdoCommand;
         } else {
