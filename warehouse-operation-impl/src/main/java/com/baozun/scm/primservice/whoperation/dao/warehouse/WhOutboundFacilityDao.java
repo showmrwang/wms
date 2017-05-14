@@ -63,7 +63,7 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
      * @param ouId
      * @return
      */
-    WhOutboundFacilityCommand findOutboundFacilityByMacAddr(@Param("macAddr") String macAddr, @Param("ouId") Long ouId);
+    WhOutboundFacilityCommand findOutboundFacilityByMacAddr(@Param("ipAddr") String ipAddr, @Param("macAddr") String macAddr, @Param("ouId") Long ouId);
 
     int checkCodeAndNameUnique(@Param("id") Long id, @Param("code") String code, @Param("name") String name, @Param("ouId") Long ouId);
 

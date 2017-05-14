@@ -144,7 +144,7 @@ public class WhCheckingCommand extends BaseCommand {
     /** 复核台id*/
     private Long checkingFacilityId;
 
-    /**  */
+    /** 复核的出库箱集合 */
     List<WhOutboundboxCommand> outboundboxList;
 
     public Long getId() {

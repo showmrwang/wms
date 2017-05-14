@@ -32,6 +32,7 @@ import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerPr
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -417,8 +418,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String macAddr, Long ouId){
-        return whOutboundFacilityDao.findOutboundFacilityByMacAddr(macAddr, ouId);
+    public WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String ipAddr, String macAddr, Long ouId){
+        return whOutboundFacilityDao.findOutboundFacilityByMacAddr(ipAddr, macAddr, ouId);
     }
 
     /**
@@ -443,13 +444,53 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
         WhSkuInventory occupationSkuInv = new WhSkuInventory();
         BeanUtils.copyProperties(skuInventoryCommand, occupationSkuInv);
+        occupationSkuInv.setId(null);
         occupationSkuInv.setOnHandQty(1d);
-        occupationSkuInv.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_OUTBOUND_BOX);
+        occupationSkuInv.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE);
         occupationSkuInv.setOccupationCode(outboundBoxCode);
-        occupationSkuInv.setOccupationLineId(null);
+        occupationSkuInv.setOccupationLineId(skuInventoryCommand.getId());
 
         skuInventoryDao.insert(occupationSkuInv);
 
     }
 
+    /**
+     * 复核 释放耗材库存
+     *
+     * @param outboundboxList
+     * @param ouId
+     * @param logId
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void releaseConsumableSkuInventory(List<WhOutboundboxCommand> outboundboxList, Long ouId, String logId) {
+        if(null != outboundboxList){
+            for(WhOutboundboxCommand outboundBox : outboundboxList){
+                if(null == outboundBox.getOutboundboxCode() || null == outboundBox.getConsumableSkuId() || null == outboundBox.getConsumableLocationCode()){
+                    throw new BusinessException("耗材信息错误");
+                }
+                WhSkuInventoryCommand boxOccuInv = skuInventoryDao.findCheckingConsumableOccSkuInv(outboundBox.getOutboundboxCode(), outboundBox.getConsumableSkuId(), outboundBox.getConsumableLocationCode(), Constants.SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE, ouId);
+                if(null == boxOccuInv){
+                    throw new BusinessException("未找到耗材占用的库存");
+                }
+                //删除耗材占用的库存
+                int deleteCount = skuInventoryDao.deleteWhSkuInventoryById(boxOccuInv.getId(), ouId);
+                if(1 != deleteCount){
+                    throw new BusinessException("删除耗材占用的库存异常");
+                }
+
+                //还原耗材占用的原始库存
+                WhSkuInventory orgBoxOccuInv = skuInventoryDao.findWhSkuInventoryById(boxOccuInv.getOccupationLineId(), ouId);
+                if(null == orgBoxOccuInv){
+                    throw new BusinessException("未找到耗材占用的原始库存");
+                }
+                orgBoxOccuInv.setOnHandQty(orgBoxOccuInv.getOnHandQty() + 1);
+                int updateCount = skuInventoryDao.saveOrUpdateByVersion(orgBoxOccuInv);
+                if(updateCount != 1){
+                    throw new BusinessException("还原耗材占用库存异常");
+                }
+
+            }
+        }
+    }
 }

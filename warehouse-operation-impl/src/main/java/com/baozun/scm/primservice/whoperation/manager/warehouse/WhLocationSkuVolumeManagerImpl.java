@@ -58,7 +58,20 @@ public class WhLocationSkuVolumeManagerImpl extends BaseManagerImpl implements W
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhLocationSkuVolumeCommand findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId) {
+    public List<WhLocationSkuVolumeCommand> findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId) {
         return whLocationSkuVolumeDao.findFacilityLocSkuVolumeBySkuId(facilityId, skuId, ouId);
+    }
+
+    /**
+     * 查找商品对应的库位容量信息
+     *
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhLocationSkuVolumeCommand findFacilityLocSkuVolumeByLocSku(Long facilityId, Long locationId, Long skuId, Long ouId){
+        return whLocationSkuVolumeDao.findFacilityLocSkuVolumeByLocSku(facilityId, locationId, skuId, ouId);
     }
 }
