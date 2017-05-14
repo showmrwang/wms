@@ -411,8 +411,9 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     // 生成复核明细
                     for (WhSkuInventory inv : invList) {
                         if (null != inv) {
+                            //TODO checkingLine少一个记录小批次的字段，商品本身有一个批次号
                             WhCheckingLine line = new WhCheckingLine();
-                            line.setBatchNumber(batch);
+                            line.setBatchNumber(inv.getBatchNumber());
                             line.setCheckingId(checking.getId());
                             line.setCheckingQty(0L);
                             line.setCountryOfOrigin(inv.getCountryOfOrigin());
