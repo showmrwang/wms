@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.print.command.PrintDataCommand;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
@@ -36,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCom
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -66,6 +68,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     private WhCheckingDao whCheckingDao;
     @Autowired
     private WhSkuInventoryDao skuInventoryDao;
+    @Autowired
+    private WhCheckingCollectionDao checkingCollectionDao;
 
     @Override
     public void printPackingList(List<Long> facilityIdsList, Long userId, Long ouId) {
@@ -492,5 +496,30 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
             }
         }
+    }
+
+    /**
+     * 查询批次下的所有复核集货
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhCheckingCollectionCommand> findCheckingCollectionByBatch(String batchNo, Long ouId) {
+        return checkingCollectionDao.findCheckingCollectionByBatch(batchNo, ouId);
+    }
+
+    /**
+     * 查询批次下复核集货小车的集货数据
+     *
+     * @param batchNo
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhCheckingCollectionCommand> findCheckingCollectionByBatchTrolley(String batchNo, String containerCode, Long ouId) {
+        return checkingCollectionDao.findCheckingCollectionByBatchTrolley(batchNo, containerCode, ouId);
     }
 }

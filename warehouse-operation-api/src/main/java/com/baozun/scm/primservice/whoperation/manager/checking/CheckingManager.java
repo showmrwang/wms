@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
@@ -120,4 +121,27 @@ public interface CheckingManager extends BaseManager {
      * @param logId
      */
     void releaseConsumableSkuInventory( List<WhOutboundboxCommand> outboundboxList, Long ouId, String logId);
+
+
+    /**
+     * 查询批次下的所有复核集货
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCollectionCommand> findCheckingCollectionByBatch(String batchNo, Long ouId);
+
+    /**
+     * 查询批次下复核集货小车的集货数据
+     *
+     * @param batchNo
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCollectionCommand> findCheckingCollectionByBatchTrolley(String batchNo, String containerCode, Long ouId);
+
+
+
 }
