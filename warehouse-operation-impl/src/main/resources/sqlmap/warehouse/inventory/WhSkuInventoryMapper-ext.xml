@@ -4945,4 +4945,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             sku_id = #{skuId}
             and ou_id = #{ouId}
     </select>
+
+    <select id="findCheckingConsumableOccSkuInv" resultMap="WhSkuInventoryCommand">
+        select
+           skuInv.*
+        from
+            t_wh_sku_inventory as skuInv
+            left join t_wh_location as location on location.id = skuInv.location_id
+        where
+            location.code = #{locationCode}
+            and skuInv.sku_id = #{skuId}
+            and skuInv.ou_id = #{ouId}
+            and skuInv.occupation_code = #{outboundBoxCode}
+            and skuInv.occupation_source_code = #{occSourceCode}
+    </select>
+
 </mapper>

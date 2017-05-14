@@ -34,6 +34,17 @@ public interface WhLocationSkuVolumeManager extends BaseManager {
      * @param ouId
      * @return
      */
-    WhLocationSkuVolumeCommand findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId);
+    List<WhLocationSkuVolumeCommand> findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId);
+
+    /**
+     * 查找商品对应的库位容量信息
+     *
+     * @param facilityId
+     * @param locationId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    WhLocationSkuVolumeCommand findFacilityLocSkuVolumeByLocSku(Long facilityId, Long locationId, Long skuId, Long ouId);
 
 }
