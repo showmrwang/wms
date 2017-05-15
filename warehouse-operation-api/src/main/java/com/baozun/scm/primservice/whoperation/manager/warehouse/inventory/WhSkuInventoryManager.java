@@ -266,6 +266,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param userId
      * @param workCode
      */
+    @Deprecated
     public void replenishmentPutaway(Long locationId,Long operationId,Long ouId,Boolean isTabbInvTotal,Long userId,String workCode,Long turnoverBoxId);
 
     /***
@@ -384,4 +385,16 @@ public interface WhSkuInventoryManager extends BaseManager {
      */
     List<Long> findSkuInventoryLocationList(Long skuId, Long ouId);
 
+    
+    /***
+     * 整箱补货上架
+     * @param locationId
+     * @param operationId
+     * @param ouId
+     * @param isTabbInvTotal
+     * @param userId
+     * @param workCode
+     * @param turnoverBoxId
+     */
+    public void replenishmentContianerPutaway(Long locationId,Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId,String workCode,Long turnoverBoxId);
 }

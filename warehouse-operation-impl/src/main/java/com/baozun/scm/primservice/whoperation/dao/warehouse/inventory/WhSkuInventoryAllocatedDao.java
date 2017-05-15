@@ -86,12 +86,20 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
 	Double skuInventoryAllocatedQty (WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand);
 	
 	/***
-     * 到库存分配表中查询分配库存
+     * 到库存分配表中查询分配库存(关联sn的数据)
      * @param ouId
      * @param operationId
      * @return
      */
-    public List<WhSkuInventoryAllocatedCommand> getWhSkuInventoryCommandByOccupationLineId(@Param("locationId") Long locationId,@Param("ouId") Long ouId,@Param("operationId") Long operationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId);
+    public List<WhSkuInventoryAllocatedCommand> getWhSkuInventorySNCommandByOccupationLineId(@Param("locationId") Long locationId,@Param("ouId") Long ouId,@Param("operationId") Long operationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId);
+    
+    /***
+     * 到库存分配表中查询分配库存(没有关联sn的数据)
+     * @param ouId
+     * @param operationId
+     * @return
+     */
+    public List<WhSkuInventoryAllocatedCommand> getWhSkuInventoryCommandByOccupationLineId(@Param("locationId") Long locationId,@Param("ouId") Long ouId,@Param("operationId") Long operationId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId,@Param("uuid") String uuid);
     
     /***
      * 到库存分配表中查询分配库存

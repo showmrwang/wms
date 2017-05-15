@@ -130,5 +130,23 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      */
     WhCheckingCommand findCheckingByParam(WhCheckingCommand checkingCommand);
 
+    /**
+     * 查找批次下所有的复核箱信息
+     *
+     * @author mingwei.xie
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCommand> findCheckingByBatch(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
+
+    /**
+     * 统计批次下待复核总单数
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    int getCheckingOdoQtyByBatch(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
 
 }

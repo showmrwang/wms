@@ -238,10 +238,10 @@
             date_format(checkingLine.mfg_date,'%Y-%m-%d') as mfgDateString,
             date_format(checkingLine.exp_date,'%Y-%m-%d') as expDateString,
             invAttr1Sys.dic_label as invAttr1Label,
-            invAttr2Sys.dic_label as invAttr1Labe2,
-            invAttr3Sys.dic_label as invAttr1Labe3,
-            invAttr4Sys.dic_label as invAttr1Labe4,
-            invAttr5Sys.dic_label as invAttr1Labe5,
+            invAttr2Sys.dic_label as invAttr2Label,
+            invAttr3Sys.dic_label as invAttr3Label,
+            invAttr4Sys.dic_label as invAttr4Label,
+            invAttr5Sys.dic_label as invAttr5Label,
             invTypeSys.dic_label as invTypeLabel,
             invStatus.name as invStatusName
         from

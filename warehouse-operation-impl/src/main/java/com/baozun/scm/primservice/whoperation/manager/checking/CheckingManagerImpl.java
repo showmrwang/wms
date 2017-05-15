@@ -15,8 +15,10 @@
 package com.baozun.scm.primservice.whoperation.manager.checking;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.print.command.PrintDataCommand;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
@@ -36,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCom
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -44,6 +48,8 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
@@ -66,6 +72,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     private WhCheckingDao whCheckingDao;
     @Autowired
     private WhSkuInventoryDao skuInventoryDao;
+    @Autowired
+    private WhCheckingCollectionDao checkingCollectionDao;
 
     @Override
     public void printPackingList(List<Long> facilityIdsList, Long userId, Long ouId) {
@@ -255,45 +263,41 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         checkingCommand.setId(checkingId);
         checkingCommand.setOuId(ouId);
         WhCheckingCommand returnChecking = whCheckingDao.findCheckingByParam(checkingCommand);
-        /*
-        {
-            //TODO 测试 复核头数据
-
-            returnChecking = new WhCheckingCommand();
-            returnChecking.setId(999L);
-            returnChecking.setBatch("testBatch");
-            returnChecking.setWaveCode("testWaveCode");
-            returnChecking.setCustomerName("testCustomerName");
-            returnChecking.setCustomerCode("testCustomerCode");
-            returnChecking.setStoreName("testStoreName");
-            returnChecking.setStoreCode("testStoreCode");
-            returnChecking.setStatus(1);
-            returnChecking.setOuId(ouId);
-
-            //播种墙
-            returnChecking.setFacilityId(222L);
-            //checkingCommand.setFacilityCode("testFacilityCode");
-            //returnChecking.setFacilityCode(checkingSourceCode);
-
-            //小车
-            //checkingCommand.setOuterContainerId(11L);
-            //checkingCommand.setOuterContainerCode("testOutContainerCode");
-
-            //货格
-            returnChecking.setContainerLatticeNo(1);
-
-            //出库箱
-            returnChecking.setOutboundboxId(1L);
-            //returnChecking.setOutboundboxCode(checkingBoxCode);
-
-            //周转箱
-            //checkingCommand.setContainerId(2L);
-            //checkingCommand.setContainerCode("testContainerCode");
-
-            returnChecking.setCheckingMode("CHECK_BY_CONTAINER");
-        }
-        */
         return returnChecking;
+    }
+
+    /**
+     * 查找批次下所有的复核箱信息
+     *
+     * @author mingwei.xie
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhCheckingCommand> findCheckingByBatch(String batchNo, Long ouId){
+        return whCheckingDao.findCheckingByBatch(batchNo, ouId);
+    }
+
+    /**
+     * 统计批次下待复核总单数
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    public int getCheckingOdoQtyByBatch(String batchNo, Long ouId){
+        return whCheckingDao.getCheckingOdoQtyByBatch(batchNo, ouId);
+    }
+
+    public Customer findCustomerByRedis(Long customerId){
+        Map<Long, Customer> customerMap = this.findCustomerByRedis(Collections.singletonList(customerId));
+        return customerMap.get(customerId);
+    }
+
+    public Store findStoreByRedis(Long storeId){
+        Map<Long, Store> storeMap = this.findStoreByRedis(Collections.singletonList(storeId));
+        return storeMap.get(storeId);
     }
 
     /**
@@ -492,5 +496,30 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
             }
         }
+    }
+
+    /**
+     * 查询批次下的所有复核集货
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhCheckingCollectionCommand> findCheckingCollectionByBatch(String batchNo, Long ouId) {
+        return checkingCollectionDao.findCheckingCollectionByBatch(batchNo, ouId);
+    }
+
+    /**
+     * 查询批次下复核集货小车的集货数据
+     *
+     * @param batchNo
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    @Override
+    public List<WhCheckingCollectionCommand> findCheckingCollectionByBatchTrolley(String batchNo, String containerCode, Long ouId) {
+        return checkingCollectionDao.findCheckingCollectionByBatchTrolley(batchNo, containerCode, ouId);
     }
 }
