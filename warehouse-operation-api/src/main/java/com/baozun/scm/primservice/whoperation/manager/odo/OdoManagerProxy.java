@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 
@@ -179,7 +180,7 @@ public interface OdoManagerProxy extends BaseManager {
      */
     void saveOdoExpressVas(Long odoId, Long odoLineId, Long ouId, List<WhOdoVasCommand> odoVasList, String logId);
 
-    
+
     /**
      * [业务方法]出库单操作：整单取消/行取消 @mender yimin.lu 2017/2/24
      * 
@@ -375,13 +376,23 @@ public interface OdoManagerProxy extends BaseManager {
     void finishCreateWave(WhWave wave);
 
     WhOdo findByExtCodeStoreIdOuId(String extOdoCode, Long storeId, Long ouId);
-    
+
+    /**
+     * [业务方法] 复核中绑定出库单与运单号
+     */
+    WhOdodeliveryInfo getLogisticsInfoForCheck(Long odoId, String outboundboxCode, Long consumableSkuId, String logId, Long ouId);
+
+    /**
+     * [业务方法] 复核中绑定出库单与运单号
+     */
+    WhOdodeliveryInfo bindkWaybillCode(Long odoId, String outboundboxCode, Long consumableSkuId, String waybillCode, String logId, Long ouId);
+
     /**
      * 根据出库单Id获取物流相关信息(增值服务,物流商推荐,获取运单号)
      * @author kai.zhu
      * @version 2017年4月24日
      */
-    void getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId);
+    WhOdodeliveryInfo getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId);
 
     /**
      * 从一批出库单集合中筛选出可以创建波次的出库单
@@ -421,7 +432,7 @@ public interface OdoManagerProxy extends BaseManager {
     List<Long> findPrintOdoIdList(String code, Long ouId);
 
     WhWave findWaveByIdOuId(Long waveId, Long ouId);
-    
+
     /**
      * 
      * @author kai.zhu

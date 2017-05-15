@@ -259,6 +259,7 @@
 		and odo.id = info.odo_id
 		AND info.outboundbox_code = #{outboundBoxCode}
 		and del.outboundbox_code = #{outboundBoxCode}
+		and del.outboundbox_id = #{outboundboxId}
 		and  ch.outboundbox_id = sku.id
 		AND ch.ou_id = #{ouId};
     </select>
@@ -619,7 +620,7 @@
             checking.product_name AS productName,
             checking.time_effect_code AS timeEffectCode,
             checking.time_effect_name AS timeEffectName,
-            checking. STATUS AS STATUS,
+            checking.status AS status,
             checking.ou_id AS ouId,
             checking.outer_container_id AS outerContainerId,
             checking.container_lattice_no AS containerLatticeNo,
@@ -664,7 +665,7 @@
             checking.product_name AS productName,
             checking.time_effect_code AS timeEffectCode,
             checking.time_effect_name AS timeEffectName,
-            checking. STATUS AS STATUS,
+            checking.status AS status,
             checking.ou_id AS ouId,
             checking.outer_container_id AS outerContainerId,
             checking.container_lattice_no AS containerLatticeNo,

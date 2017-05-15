@@ -212,5 +212,16 @@ public class OutBoundBoxTypeManagerImpl implements OutBoundBoxTypeManager {
         return outBoundBoxType.get(0);
     }
 
-
+    /**
+     * 复核用 查询耗材条码对应的出库箱类型
+     *
+     * @param skuIdList
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OutInvBoxTypeCommand> findBySkuId(List<Long> skuIdList, Long ouId){
+        return outBoundBoxTypeDao.findBySkuId(skuIdList, ouId);
+    }
 }

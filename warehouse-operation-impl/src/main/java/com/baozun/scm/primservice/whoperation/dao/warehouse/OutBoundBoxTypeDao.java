@@ -86,5 +86,12 @@ public interface OutBoundBoxTypeDao extends BaseDao<OutBoundBoxType, Long> {
      */
     List<OutBoundBoxType> findBySkuBarcode(@Param("ouId") Long ouId, @Param("consumableSkuBarcode") String consumableSkuBarcode);
 
-
+    /**
+     * 复核用 查询耗材条码对应的出库箱类型
+     *
+     * @param skuIdList
+     * @param ouId
+     * @return
+     */
+    List<OutInvBoxTypeCommand> findBySkuId(@Param("skuIdList") List<Long> skuIdList, @Param("ouId") Long ouId);
 }

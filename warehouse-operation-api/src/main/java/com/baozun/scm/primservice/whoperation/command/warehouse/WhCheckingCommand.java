@@ -121,6 +121,10 @@ public class WhCheckingCommand extends BaseCommand {
     private Long consumableSkuId;
     /** 周转箱编码*/
     private String containerCode;
+    /** 面单号*/
+    private String waybillCode;
+    /** 面单类型*/
+    private String waybillType;
 
 
 
@@ -144,7 +148,7 @@ public class WhCheckingCommand extends BaseCommand {
     /** 复核台id*/
     private Long checkingFacilityId;
 
-    /**  */
+    /** 复核的出库箱集合 */
     List<WhOutboundboxCommand> outboundboxList;
 
     public Long getId() {
@@ -602,6 +606,22 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setCheckingFacilityId(Long checkingFacilityId) {
         this.checkingFacilityId = checkingFacilityId;
+    }
+
+    public String getWaybillCode() {
+        return waybillCode;
+    }
+
+    public void setWaybillCode(String waybillCode) {
+        this.waybillCode = waybillCode;
+    }
+
+    public String getWaybillType() {
+        return waybillType;
+    }
+
+    public void setWaybillType(String waybillType) {
+        this.waybillType = waybillType;
     }
 
 }

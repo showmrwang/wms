@@ -3,9 +3,11 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -74,7 +76,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId
      * @return
      */
-    WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String macAddr, Long ouId);
+    WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String ipAddr, String macAddr, Long ouId);
 
 
     List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId);
@@ -100,6 +102,46 @@ public interface CheckingManager extends BaseManager {
      * @return
      */
     WhCheckingCommand findCheckingById(Long checkingId, Long ouId);
+
+    /**
+     * 复核 占用耗材库存
+     *
+     * @param skuInventoryCommand
+     * @param outboundBoxCode
+     * @param ouId
+     * @param logId
+     */
+    void occupationConsumableSkuInventory(WhSkuInventoryCommand skuInventoryCommand, String outboundBoxCode, Long ouId, String logId);
+
+    /**
+     * 复核 释放耗材库存
+     *
+     * @param outboundboxList
+     * @param ouId
+     * @param logId
+     */
+    void releaseConsumableSkuInventory( List<WhOutboundboxCommand> outboundboxList, Long ouId, String logId);
+
+
+    /**
+     * 查询批次下的所有复核集货
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCollectionCommand> findCheckingCollectionByBatch(String batchNo, Long ouId);
+
+    /**
+     * 查询批次下复核集货小车的集货数据
+     *
+     * @param batchNo
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCollectionCommand> findCheckingCollectionByBatchTrolley(String batchNo, String containerCode, Long ouId);
+
 
 
 }

@@ -2571,7 +2571,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         log.info("PdaPickingWorkManagerImpl scanSku is start");
 
         if ((2 == command.getInWarehouseMoveWay() && (1 == command.getPalletPickingMode() || 2 == command.getPalletPickingMode()))
-                && (3 == command.getInWarehouseMoveWay() || (3 == command.getContainerPickingMode() || 4 == command.getContainerPickingMode() || 5 == command.getContainerPickingMode()))) {
+                && (3 == command.getInWarehouseMoveWay() || (3 == command.getContainerPickingMode() || 4 == command.getContainerPickingMode()))) {
             // 根据作业id获取作业明细信息
             List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
             for (WhOperationLineCommand operationLineCommand : operationLineList) {

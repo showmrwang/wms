@@ -20,7 +20,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     private Integer containerLatticeNo; // 货格号
 
-//    private String outboundbox; // 出库箱号
+    // private String outboundbox; // 出库箱号
 
     private String seedingWallCode; // 播种墙编码
 
@@ -28,7 +28,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     private String outboundBoxCode; // 出库箱编码
 
-    private Long outboundboxId;  //耗材id
+    private Long outboundboxId; // 耗材id
     /** 出库单ID */
     private Long odoId;
     /** 出库单明细ID */
@@ -38,10 +38,14 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     /** 复核完成*/
     private Boolean checkFinish;
     private Long functionId;
-    
+    /** 运单号*/
+    private String waybillCode;
+
     private Long userId;
     /**复合明细集合*/
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
+    /** sn列表*/
+    private List<Long> sn;
 
 
     public Integer getContainerLatticeNo() {
@@ -76,13 +80,13 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.checkingLineList = checkingLineList;
     }
 
-//    public String getOutboundbox() {
-//        return outboundbox;
-//    }
-//
-//    public void setOutboundbox(String outboundbox) {
-//        this.outboundbox = outboundbox;
-//    }
+    // public String getOutboundbox() {
+    // return outboundbox;
+    // }
+    //
+    // public void setOutboundbox(String outboundbox) {
+    // this.outboundbox = outboundbox;
+    // }
 
     public Long getOuId() {
         return ouId;
@@ -139,8 +143,8 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     public void setContaierCode(String contaierCode) {
         this.contaierCode = contaierCode;
     }
-    
-    
+
+
 
     public Boolean getCheckFinish() {
         return checkFinish;
@@ -164,6 +168,22 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public List<Long> getSn() {
+        return sn;
+    }
+
+    public void setSn(List<Long> sn) {
+        this.sn = sn;
+    }
+
+    public String getWaybillCode() {
+        return waybillCode;
+    }
+
+    public void setWaybillCode(String waybillCode) {
+        this.waybillCode = waybillCode;
     }
 
 }

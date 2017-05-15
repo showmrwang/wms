@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import lark.common.annotation.MoreDB;
+
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.LocationRecommendResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
@@ -28,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
@@ -362,6 +365,26 @@ public interface WhSkuInventoryManager extends BaseManager {
     public List<WhSkuInventoryCommand> findOutboundboxInventory(String outboundbox,Long ouId);
 
     Long getInvSatusByName(String invStatus);
+
+    /**
+     * 查找库位上商品在库库存量大于0的库存
+     *
+     * @param locationId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    List<WhSkuInventoryCommand> findAvailableLocationSkuInventory(Long locationId, Long skuId, Long ouId);
+
+    /**
+     * 查询商品所在的所有库位
+     *
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    List<Long> findSkuInventoryLocationList(Long skuId, Long ouId);
+
     
     /***
      * 整箱补货上架

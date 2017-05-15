@@ -141,8 +141,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             // 归档odoDeliveryInfo by odoid
             count = archivWhDeliveryInfo(odoid, ouid, sysDate, count);
             // 保存出库单索引数据(仓库) 只限于出库单状态为完成&&数据来源!=WMS
-            if (OdoStatus.FINISH.equals(whOdo.getOdoStatus()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())
-                    && !StringUtils.isEmpty(whOdo.getEcOrderCode())) {
+            if (OdoStatus.FINISH.equals(whOdo.getOdoStatus()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource()) && !StringUtils.isEmpty(whOdo.getEcOrderCode())) {
                 // 保存到shard库的t_wh_odo_archiv_line_index
                 WhOdoArchivIndex oai = new WhOdoArchivIndex();
                 oai.setEcOrderCode(whOdo.getEcOrderCode());
@@ -391,6 +390,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     public int deleteOdo(Long odoid, Long ouid) {
         int count = 0;
         try {
+            odoArchivDao.deleteWhOdoOutBoundBox(odoid, ouid);
             int odoVas = odoArchivDao.deleteOdoVas(odoid, ouid);
             count += odoVas;
             int odoTm = odoArchivDao.deleteOdoTransportMgmt(odoid, ouid);

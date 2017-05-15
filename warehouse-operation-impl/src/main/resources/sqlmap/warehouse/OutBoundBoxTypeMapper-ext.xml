@@ -329,6 +329,19 @@
         WHERE
         sku.bar_code = #{consumableSkuBarcode} and type.ou_id = #{ouId}
     </select>
-    
+
+    <select id="findBySkuId" resultMap="OutCommandResultExt">
+        select
+            <include refid="outInventoryBoxTypeColumnsExt"/>
+        from
+            t_wh_outboundbox_type
+        where
+            ou_id = #{ouId}
+            and sku_id in
+            <foreach item="item" index="index" collection="skuIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </select>
+
 
 </mapper>
