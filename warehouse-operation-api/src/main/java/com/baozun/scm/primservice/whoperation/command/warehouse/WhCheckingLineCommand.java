@@ -114,6 +114,14 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String containerCode;
     /** 出库单编码*/
     private String odoCode;
+    /** 创建人 */
+    private Long createId;
+    /** 创建时间 */
+    private Date createTime;
+    /** 最后修改时间 */
+    private Date lastModifyTime;
+    /** 操作人ID */
+    private Long modifiedId;
 
     /** =================复核用=================== */
     /** 生产日期 */
@@ -597,6 +605,38 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setAttrIndex(String attrIndex) {
         this.attrIndex = attrIndex;
+    }
+
+    public Long getCreateId() {
+        return createId;
+    }
+
+    public void setCreateId(Long createId) {
+        this.createId = createId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
     }
 
 }
