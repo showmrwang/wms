@@ -116,7 +116,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             sku.code as skuCode,
             loc.code as locationCode,
             sku.name as skuName,
-            sum(skuInv.on_hand_qty) as onHandQty
+            sum(IFNULL(skuInv.on_hand_qty,0)) as onHandQty
         from
             t_wh_location_sku_volume as ls
             left join t_wh_facility_location_sku_volume as fs on fs.lsv_id = ls.id
@@ -126,20 +126,34 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where
             fs.facility_id = #{facilityId}
             and fs.ou_id = #{ouId}
+            and skuInv.occupation_code is null
         group by
             skuInv.location_id,skuInv.sku_id
     </select>
 
     <select id="findFacilityLocSkuVolumeBySkuId" resultMap="WhLocationSkuVolumeCommand">
         select
-            <include refid="whLocationSkuVolumeColumnsExt"/>
+            lsv.id as id,
+            lsv.serial_number as serialNumber,
+            lsv.location_id as locationId,
+            lsv.sku_id as skuId,
+            lsv.lower_capacity as lowerCapacity,
+            lsv.upper_capacity as upperCapacity,
+            lsv.ou_id as ouId,
+            lsv.create_time as createTime,
+            lsv.last_modify_time as lastModifyTime,
+            lsv.created_id as createdId,
+            lsv.modified_id as modifiedId,
+            loc.code as locationCode
         from
             t_wh_location_sku_volume as lsv
             left join t_wh_facility_location_sku_volume as flsv on flsv.lsv_id = lsv.id
+            left join t_wh_location as loc on loc.id = lsv.location_id
         where
             lsv.ou_id = #{ouId}
             and lsv.sku_id = #{skuId}
-            flsv.facility_id = #{facilityId}
+            and flsv.facility_id = #{facilityId}
     </select>
+
 
 </mapper>

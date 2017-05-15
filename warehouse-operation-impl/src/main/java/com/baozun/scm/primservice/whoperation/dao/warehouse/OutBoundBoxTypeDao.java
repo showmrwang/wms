@@ -93,5 +93,5 @@ public interface OutBoundBoxTypeDao extends BaseDao<OutBoundBoxType, Long> {
      * @param ouId
      * @return
      */
-    List<OutInvBoxTypeCommand> findBySkuId(List<Long> skuIdList, Long ouId);
+    List<OutInvBoxTypeCommand> findBySkuId(@Param("skuIdList") List<Long> skuIdList, @Param("ouId") Long ouId);
 }

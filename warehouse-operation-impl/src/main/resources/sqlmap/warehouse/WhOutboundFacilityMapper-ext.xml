@@ -383,7 +383,6 @@
             f.ou_id as ouId,
             f.status as status,
             f.batch as batch,
-            f.mac as mac,
             sys.dic_label as facilityTypeName,
             t.name as outboundboxTypeName,
             g.facility_group_name as facilityGroupName,
@@ -394,8 +393,13 @@
             left join t_wh_outboundbox_type t on f.outboundbox_type_id = t.id
             left join t_wh_outbound_facility_group g on f.facility_group = g.id
             left join t_wh_outbound_facility_sortorder s on (s.facility_id = f.id and s.facility_type = f.facility_type)
+            left join t_wh_facility_computer as fc on fc.facility_id = f.id
         where
             f.ou_id = #{ouId}
-            and f.mac = #{macAddr}
+        and
+            (
+                fc.ip_addr = #{ipAddr}
+                or fc.mac_addr = #{macAddr}
+            )
     </select>
 </mapper>

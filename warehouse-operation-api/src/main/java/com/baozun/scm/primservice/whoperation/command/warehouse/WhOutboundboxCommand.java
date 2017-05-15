@@ -80,6 +80,10 @@ public class WhOutboundboxCommand extends BaseModel {
     /** =====================复核用====================== */
     /** 耗材条码 */
     private String consumableCode;
+    /** 耗材商品ID */
+    private Long consumableSkuId;
+    /** 耗材库位编码 */
+    private String consumableLocationCode;
     /** 复核完成的装箱明细 */
     private List<WhCheckingLineCommand> checkingLineList;
 	
@@ -218,6 +222,22 @@ public class WhOutboundboxCommand extends BaseModel {
 
     public void setConsumableCode(String consumableCode) {
         this.consumableCode = consumableCode;
+    }
+
+    public Long getConsumableSkuId() {
+        return consumableSkuId;
+    }
+
+    public void setConsumableSkuId(Long consumableSkuId) {
+        this.consumableSkuId = consumableSkuId;
+    }
+
+    public String getConsumableLocationCode() {
+        return consumableLocationCode;
+    }
+
+    public void setConsumableLocationCode(String consumableLocationCode) {
+        this.consumableLocationCode = consumableLocationCode;
     }
 
     public List<WhCheckingLineCommand> getCheckingLineList() {

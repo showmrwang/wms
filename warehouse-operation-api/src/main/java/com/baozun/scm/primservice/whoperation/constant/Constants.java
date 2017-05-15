@@ -304,7 +304,7 @@ public final class Constants {
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ODO = "ODO";
-    public static final String SKU_INVENTORY_OCCUPATION_SOURCE_OUTBOUND_BOX = "OUTBOUND_BOX";
+    public static final String SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE = "CHECKING_CONSUMABLE";
 
     // 序列号管理类型
     public static final String SERIAL_NUMBER_TYPE_IN = "1";// 入库管

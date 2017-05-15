@@ -10024,7 +10024,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @return
      */
     @Override
-    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventoryCommand> findAvailableLocationSkuInventory(Long locationId, Long skuId, Long ouId){
         return whSkuInventoryDao.findAvailableLocationSkuInventory(locationId, skuId, ouId);
     }
@@ -10036,6 +10036,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param ouId
      * @return
      */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findSkuInventoryLocationList(Long skuId, Long ouId){
         return whSkuInventoryDao.findSkuInventoryLocationList(skuId, ouId);
     }

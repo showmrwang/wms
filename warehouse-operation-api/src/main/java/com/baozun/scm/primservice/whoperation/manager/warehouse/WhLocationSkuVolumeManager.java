@@ -34,6 +34,8 @@ public interface WhLocationSkuVolumeManager extends BaseManager {
      * @param ouId
      * @return
      */
-    WhLocationSkuVolumeCommand findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId);
+    List<WhLocationSkuVolumeCommand> findFacilityLocSkuVolumeBySkuId(Long facilityId, Long skuId, Long ouId);
+
+
 
 }

@@ -4945,4 +4945,52 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             sku_id = #{skuId}
             and ou_id = #{ouId}
     </select>
+
+    <select id="findCheckingConsumableOccSkuInv" resultMap="WhSkuInventoryCommand">
+        select
+            skuInv.id as id,
+            skuInv.sku_id as skuId,
+            skuInv.location_id as locationId,
+            skuInv.outer_container_id as outerContainerId,
+            skuInv.inside_container_id as insideContainerId,
+            skuInv.customer_id as customerId,
+            skuInv.store_id as storeId,
+            skuInv.occupation_code as occupationCode,
+            skuInv.occupation_line_id as occupationLineId,
+            skuInv.on_hand_qty as onHandQty,
+            skuInv.allocated_qty as allocatedQty,
+            skuInv.to_be_filled_qty as toBeFilledQty,
+            skuInv.frozen_qty as frozenQty,
+            skuInv.inv_status as invStatus,
+            skuInv.inv_type as invType,
+            skuInv.batch_number as batchNumber,
+            skuInv.mfg_date as mfgDate,
+            skuInv.exp_date as expDate,
+            skuInv.country_of_origin as countryOfOrigin,
+            skuInv.inv_attr1 as invAttr1,
+            skuInv.inv_attr2 as invAttr2,
+            skuInv.inv_attr3 as invAttr3,
+            skuInv.inv_attr4 as invAttr4,
+            skuInv.inv_attr5 as invAttr5,
+            skuInv.uuid as uuid,
+            skuInv.is_locked as isLocked,
+            skuInv.ou_id as ouId,
+            skuInv.occupation_code_source as occupationCodeSource,
+            skuInv.inbound_time as inboundTime,
+            skuInv.last_modify_time as lastModifyTime,
+            skuInv.seeding_wall_code as seedingWallCode,
+            skuInv.container_lattice_no as containerLatticeNo,
+            skuInv.temporary_location_id as temporaryLocationId,
+            skuInv.outboundbox_code as outboundboxCode
+        from
+            t_wh_sku_inventory as skuInv
+            left join t_wh_location as location on location.id = skuInv.location_id
+        where
+            location.code = #{locationCode}
+            and skuInv.sku_id = #{skuId}
+            and skuInv.ou_id = #{ouId}
+            and skuInv.occupation_code = #{outboundBoxCode}
+            and skuInv.occupation_code_source = #{occSourceCode}
+    </select>
+
 </mapper>

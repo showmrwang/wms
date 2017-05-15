@@ -24,6 +24,9 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
 
 public interface WhCheckingCollectionDao extends BaseDao<WhCheckingCollection, Long> {
@@ -38,6 +41,25 @@ public interface WhCheckingCollectionDao extends BaseDao<WhCheckingCollection, L
     List<WhCheckingCollection> query(QueryCondition cond);
 
     Long queryCount(QueryCondition cond);
+
+    /**
+     * 查询批次下的所有复核集货
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCollectionCommand> findCheckingCollectionByBatch(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
+
+    /**
+     * 查询批次下复核集货小车的集货数据
+     *
+     * @param batchNo
+     * @param containerCode
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCollectionCommand> findCheckingCollectionByBatchTrolley(@Param("batchNo") String batchNo, @Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 
 
 }

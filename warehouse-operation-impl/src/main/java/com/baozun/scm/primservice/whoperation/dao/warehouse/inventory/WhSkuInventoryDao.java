@@ -1101,4 +1101,5 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     List<Long> findSkuInventoryLocationList(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
+    WhSkuInventoryCommand findCheckingConsumableOccSkuInv(@Param("outboundBoxCode") String outboundBoxCode, @Param("skuId") Long skuId, @Param("locationCode") String locationCode, @Param("occSourceCode") String occSourceCode, @Param("ouId") Long ouId);
 }

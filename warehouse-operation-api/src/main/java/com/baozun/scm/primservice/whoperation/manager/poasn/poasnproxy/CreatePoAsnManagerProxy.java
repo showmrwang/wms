@@ -159,8 +159,9 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
 	 * @author kai.zhu
 	 * @version 2017年3月3日
 	 * @param whPoTm 
+	 * @return 
 	 */
-	void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId);
+	ResponseMsg createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId);
 
     /**
      * 构建退换货库存

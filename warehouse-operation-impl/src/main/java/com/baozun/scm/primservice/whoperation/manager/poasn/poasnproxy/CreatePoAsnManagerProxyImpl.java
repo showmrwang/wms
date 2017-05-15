@@ -1364,16 +1364,22 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      * 创建上位系统传入的Po
      */
 	@Override
-	public void createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
-		
+	public ResponseMsg createPoByExt(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, Long ouId) {
+	    ResponseMsg msg = new ResponseMsg();
+	    msg.setResponseStatus(1);
 		// 退换货逻辑
 		if (whPo.getPoType() == 2) {
             Store store = this.storeManager.findStoreById(whPo.getStoreId());
+            if (null == store) {
+                msg.setMsg("store:{" + whPo.getStoreId() + "} not find");
+                msg.setResponseStatus(0);
+                return msg;
+            }
 			// 退货入关联销售出
 			String ecOrderCode = whPo.getOriginalEcOrderCode();
 			String dataSource = whPo.getDataSource();
 			if (null != store.getIsReturnedPurchaseOriginalInvAttr() && store.getIsReturnedPurchaseOriginalInvAttr()) {
-			    this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId);
+			    msg = this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId, msg);
 			} else {
 				// 退货入不关联销售出
 			    // 查询归档(collect)数据表中的数据
@@ -1381,7 +1387,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 			    if (!flag) {
 			        // 代表原来关联过原始单据, 则此订单依旧关联
 			        // 创建到(collect)数据表并生成PoAsn
-			        this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId);
+			        msg = this.createOdoArchivLineIndex(whPo, whPoTm, whPoLines, ecOrderCode, dataSource, ouId, msg);
                 } else {
                     // 复用同一套创建Po的逻辑
                     this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
@@ -1391,14 +1397,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 			// 复用同一套创建Po的逻辑
 			this.createPoDefault(whPo, whPoTm, whPoLines, ouId);
 		}
-		
+		return msg;
 	}
 
-    private void createOdoArchivLineIndex(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, String ecOrderCode, String dataSource, Long ouId) {
+    private ResponseMsg createOdoArchivLineIndex(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, String ecOrderCode, String dataSource, Long ouId, ResponseMsg msg) {
         // 查询归档(collect)数据表中的数据
         List<WhOdoArchivIndex> odoArchivIndexList = whOdoArchivIndexManager.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, dataSource, null, ouId);
         if (null == odoArchivIndexList || odoArchivIndexList.isEmpty()) {
-        	throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
+            msg.setMsg("odoCollectEmpty,ecOrderCode:{" + ecOrderCode + "}");
+            msg.setResponseStatus(0);
+            return msg;
         }
         List<WhOdoArchivLineIndex> whOdoArchivLineIndexList = null;
         for (WhOdoArchivIndex odoArchivIndex : odoArchivIndexList) {
@@ -1414,6 +1422,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         }
         // 创建Po的逻辑
         this.createPoDefault(whPo, whPoTm, whPoLines, whOdoArchivLineIndexList, ouId);
+        return msg;
     }
 
     @Override

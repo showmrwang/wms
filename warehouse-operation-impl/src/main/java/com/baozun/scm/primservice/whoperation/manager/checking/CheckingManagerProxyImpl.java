@@ -505,6 +505,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         String cacheKey = CacheKeyConstant.WMS_CACHE_CHECKING_CHECKING_LINE_PREFIX + checkingId + "-" + ouId;
 
         try {
+            //TODO 测试清除缓存
+            //cacheManager.remonKeys(cacheKey);
+
             whCheckingLineCommandList = cacheManager.getObject(cacheKey);
         } catch (Exception e) {
             log.error("getCheckingLineBySkuFromCache cacheManager.getObject error e is:[{}], logId is:[{}]", e, logId);

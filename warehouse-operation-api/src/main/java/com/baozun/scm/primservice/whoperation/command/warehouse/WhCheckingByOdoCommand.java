@@ -5,6 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 public class WhCheckingByOdoCommand extends BaseCommand {
 
@@ -21,6 +22,8 @@ public class WhCheckingByOdoCommand extends BaseCommand {
     private Warehouse warehouse;
     /** 复核页面数据显示*/
     private CheckingDisplayCommand checkingDisplayCommand;
+    /** sn列表*/
+    private List<WhSkuInventorySn> snList;
     /** 出库功能配置*/
     private WhFunctionOutBound whFunctonOutBound;
 
@@ -63,6 +66,14 @@ public class WhCheckingByOdoCommand extends BaseCommand {
 
     public void setWhFunctonOutBound(WhFunctionOutBound whFunctonOutBound) {
         this.whFunctonOutBound = whFunctonOutBound;
+    }
+
+    public List<WhSkuInventorySn> getSnList() {
+        return snList;
+    }
+
+    public void setSnList(List<WhSkuInventorySn> snList) {
+        this.snList = snList;
     }
 
 }

@@ -124,4 +124,46 @@
         </where>
     </sql>
 
+    <select id="findCheckingCollectionByBatch" resultMap="WhCheckingCollectionCommand">
+        select
+            <include refid="whCheckingCollectionColumnsExt"/>
+        from
+            t_wh_checking_collection
+        where
+            batch = #{batchNo}
+            and ou_id = #{ouId}
+    </select>
+
+    <select id="findCheckingCollectionByBatchTrolley" resultMap="WhCheckingCollectionCommand">
+        select
+            checkingCollection.id as id,
+            checkingCollection.facility_id as facilityId,
+            checkingCollection.temporary_location_id as temporaryLocationId,
+            checkingCollection.location_id as locationId,
+            checkingCollection.container_id as containerId,
+            checkingCollection.batch as batch,
+            checkingCollection.wave_code as waveCode,
+            checkingCollection.collection_status as collectionStatus,
+            checkingCollection.ou_id as ouId,
+            checkingCollection.outer_container_id as outerContainerId,
+            checkingCollection.container_lattice_no as containerLatticeNo,
+            checkingCollection.outboundbox_id as outboundboxId,
+            checkingCollection.outboundbox_code as outboundboxCode,
+            checkingCollection.distribution_mode as distributionMode,
+            checkingCollection.picking_mode as pickingMode,
+            checkingCollection.checking_mode as checkingMode,
+            checkingCollection.create_id as createId,
+            checkingCollection.create_time as createTime,
+            checkingCollection.last_modify_time as lastModifyTime,
+            checkingCollection.modified_id as modifiedId
+        from
+            t_wh_checking_collection as checkingCollection
+            left join t_wh_container as container on container.id = checkingCollection.outer_container_id
+        where
+            checkingCollection.batch = #{batchNo}
+            and checkingCollection.ou_id = #{ouId}
+            and container.code = #{containerCode}
+
+    </select>
+
 </mapper>
