@@ -9,6 +9,8 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacili
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface CheckingManager extends BaseManager {
@@ -102,6 +104,29 @@ public interface CheckingManager extends BaseManager {
      * @return
      */
     WhCheckingCommand findCheckingById(Long checkingId, Long ouId);
+
+    /**
+     * 查找批次下所有的复核箱信息
+     *
+     * @author mingwei.xie
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCommand> findCheckingByBatch(String batchNo, Long ouId);
+
+    /**
+     * 统计批次下待复核总单数
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    int getCheckingOdoQtyByBatch(String batchNo, Long ouId);
+
+    public Customer findCustomerByRedis(Long customerId);
+
+    public Store findStoreByRedis(Long storeId);
 
     /**
      * 复核 占用耗材库存

@@ -752,4 +752,22 @@
         </where>
     </select>
 
+    <select id="findCheckingByBatch" resultMap="WhCheckingCommand">
+        select
+            <include refid="whCheckingColumnsExt"/>
+        from t_wh_checking
+        where batch = #{batchNo}
+        and ou_id = #{ouId}
+    </select>
+
+    <select id="getCheckingOdoQtyByBatch" resultType="java.lang.Integer">
+        select
+            count(distinct checkingLine.odo_id)
+        from
+            t_wh_checking as checking
+            left join t_wh_checking_line as checkingLine on checkingLine.checking_id = checking.id
+        where checking.batch = #{batchNo}
+        and checking.ou_id = #{ouId}
+    </select>
+
 </mapper>
