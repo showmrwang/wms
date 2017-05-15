@@ -88,6 +88,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         CheckScanResultCommand cSRCmd = new CheckScanResultCommand();
         String outBounxBoxCode = null;
         for(WhOperationLineCommand operLineCmd:operatorLineList) {
+            if(operLineCmd.getQty().equals(operLineCmd.getCompleteQty())) {
+                continue;
+            }
             Integer useContainerLatticeNo = operLineCmd.getUseContainerLatticeNo(); 
             outBounxBoxCode = carStockToOutgoingBox.get(useContainerLatticeNo);
             OperationLineCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());

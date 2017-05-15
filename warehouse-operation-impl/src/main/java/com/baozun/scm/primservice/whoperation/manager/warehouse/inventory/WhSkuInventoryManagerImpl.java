@@ -6872,7 +6872,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         Set<Long> invSkuIds = new HashSet<Long>();
         if(Constants.PICKING_WAY_SIX == pickingWay){   //整箱拣货
             //到库存表中查询
-            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventorySNByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
+            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventorySNByOperationId(locationId,ouId, operationId,outerContainerId,insideContainerId);
             if(null == allSkuInvList || allSkuInvList.size() == 0){
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
             }
@@ -6917,7 +6917,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }else if(Constants.PICKING_WAY_FIVE == pickingWay){  //整托拣货
             //到库存表中查询
-            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventorySNByOccupationLineId(locationId,ouId, operationId,outerContainerId,null);
+            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventorySNByOperationId(locationId,ouId, operationId,outerContainerId,null);
             if(null == allSkuInvList || allSkuInvList.size() == 0){
                     throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
             }
@@ -6961,79 +6961,78 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }else{//非整托整箱
             Integer useContainerLatticeNo = execLineList.get(0).getUseContainerLatticeNo();
             String outBoundBox = execLineList.get(0).getUseOutboundboxCode();
-            //到库存表中查询
-            List<WhSkuInventoryCommand> allSkuInvSnList = whSkuInventoryDao.getWhSkuInventorySNByOccupationLineId(locationId,ouId, operationId,outerContainerId,insideContainerId);
-            if(null == allSkuInvSnList || allSkuInvSnList.size() == 0){
-                    throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
-            }  
-            for(WhSkuInventoryCommand skuInvCmd:allSkuInvSnList){
-                String invCmdSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                    //作业执行明细id
-                             if(skuAttrIds.equals(invCmdSkuAttrIds) && skuInvCmd.getLocationId().longValue() == locationId.longValue()){
-                                 List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOccupationLineId(locationId, ouId, operationId, outerContainerId, insideContainerId,skuInvCmd.getUuid());
-                                 Double sum = 0.0;
-                                 for(WhSkuInventoryCommand whSkuCmd:allSkuInvList){
-                                      Double onHandQty = whSkuCmd.getOnHandQty();
-                                      String occupationCode = whSkuCmd.getOccupationCode();
-                                      Long occupationLineId = whSkuCmd.getOccupationLineId();
-                                      Boolean result = false;
-                                      for(WhOperationExecLine execLine:execLineList){
-                                          Long odoLineId = execLine.getOdoLineId();
-                                          if(odoLineId.longValue() == occupationLineId.longValue()){
-                                              result = true;
-                                              break;
-                                          }
-                                      }
-                                      if(!result){
-                                          continue;
-                                      }
-                                      String occupationCodeSource = whSkuCmd.getOccupationCodeSource();
-                                      Boolean isLocked = whSkuCmd.getIsLocked();
-                                      skuInvCmd.setOccupationCode(occupationCode);
-                                      skuInvCmd.setOccupationLineId(occupationLineId);
-                                      skuInvCmd.setOccupationCodeSource(occupationCodeSource);
-                                      skuInvCmd.setIsLocked(isLocked);
-                                      if(onHandQty.doubleValue() >= scanSkuQty.doubleValue()){// 拣的数量小于等于当前行的sku数量
-                                            //添加库存
-                                            Set<Long> temp =  this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, scanSkuQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
-                                            invSkuIds.addAll(temp);
-                                            //删除容器库存
-                                           this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, scanSkuQty, userId, occupationLineId, occupationCode);
+            List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOperationId(locationId, ouId, operationId, outerContainerId, insideContainerId);
+            Double sum = 0.0;
+            Boolean isEnd = false; 
+            for(WhSkuInventoryCommand whSkuCmd:allSkuInvList){
+                       String invSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(whSkuCmd);
+                       if(skuAttrIds.equals(invSkuAttrIds)){
+                             Double onHandQty = whSkuCmd.getOnHandQty();
+                             String occupationCode = whSkuCmd.getOccupationCode();
+                             Long occupationLineId = whSkuCmd.getOccupationLineId();
+                             Boolean result = false;
+                             for(WhOperationExecLine execLine:execLineList){
+                                     Long odoLineId = execLine.getOdoLineId();
+                                     if(odoLineId.longValue() == occupationLineId.longValue()){
+                                            result = true;
+                                            break;
+                                     }
+                             }
+                             if(!result){
+                                     continue;
+                             }
+                             List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findWhSkuInventorySnByOccupationLineId(ouId,occupationCode, occupationLineId, whSkuCmd.getUuid());
+                             for(WhSkuInventoryCommand skuInvCmd:skuInvList){
+                                     String occupationCodeSource = whSkuCmd.getOccupationCodeSource();
+                                     Boolean isLocked = whSkuCmd.getIsLocked();
+                                     skuInvCmd.setOccupationCode(occupationCode);
+                                     skuInvCmd.setOccupationLineId(occupationLineId);
+                                     skuInvCmd.setOccupationCodeSource(occupationCodeSource);
+                                     skuInvCmd.setIsLocked(isLocked);
+                                     if(onHandQty.doubleValue() >= scanSkuQty.doubleValue()){// 拣的数量小于等于当前行的sku数量
+                                                    //添加库存
+                                                   Set<Long> temp =  this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, scanSkuQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
+                                                   invSkuIds.addAll(temp);
+                                                    //删除容器库存
+                                                   this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, scanSkuQty, userId, occupationLineId, occupationCode);
+                                                   isEnd = true;
                                       }
                                       if(scanSkuQty.doubleValue()  > onHandQty.doubleValue()){
-                                          sum += onHandQty;
-                                          if(sum.doubleValue() > scanSkuQty.doubleValue() ){
-                                              Double qty = sum - scanSkuQty;
-//                                              Double tempQty = scanSkuQty-onHandQty;
-                                              //添加容器库存
-//                                              Set<Long> temp = this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, tempQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
-//                                              invSkuIds.addAll(temp);
-                                              //添加库位库存
-                                              this.addLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
-                                            //删除容器库存
-                                              this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, onHandQty, userId, occupationLineId, occupationCode);
-                                          }
-                                          if(scanSkuQty.doubleValue() > sum.doubleValue()){
-                                              //添加库存
-//                                              Set<Long> temp = this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, onHandQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
-//                                              invSkuIds.addAll(temp);
-                                              //删除容器库存
-                                              this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, onHandQty, userId, occupationLineId,occupationCode);
-                                              continue;
-                                          }
-                                          if(scanSkuQty.doubleValue() == sum.doubleValue()){
-//                                              Set<Long> temp = this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, onHandQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
-//                                              invSkuIds.addAll(temp);
-                                              //删除容器库存
-                                              this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, onHandQty, userId, occupationLineId,occupationCode);
-                                          }
-                                          Set<Long> temp = this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, scanSkuQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
-                                          invSkuIds.addAll(temp);
-                                      }
-                                      break;
-                                 }
-                              break;  //跳出当前循环
-                        }
+                                                  sum += onHandQty;
+                                                  if(sum.doubleValue() > scanSkuQty.doubleValue() ){
+                                                      Double qty = sum - scanSkuQty;
+                                                      Double tempQty = scanSkuQty-onHandQty;
+                                                      //添加容器库存
+                                                      Set<Long> temp = this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, tempQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
+                                                      invSkuIds.addAll(temp);
+                                                      //添加库位库存
+                                                      this.addLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
+                                                    //删除容器库存
+                                                      this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, onHandQty, userId, occupationLineId, occupationCode);
+                                                      isEnd = true;
+                                                  }
+                                                  if(scanSkuQty.doubleValue() > sum.doubleValue()){
+                                                      //添加库存
+                                                      Set<Long> temp = this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, onHandQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
+                                                      invSkuIds.addAll(temp);
+                                                      //删除容器库存
+                                                      this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, onHandQty, userId, occupationLineId,occupationCode);
+                                                      break;
+                                                  }
+                                                  if(scanSkuQty.doubleValue() == sum.doubleValue()){
+                                                      Set<Long> temp = this.pickingAddInventory(occupationLineId,occupationCode,snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, onHandQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
+                                                      invSkuIds.addAll(temp);
+                                                      //删除容器库存
+                                                      this.pickingDeleInventory(allSkuInvList, isTabbInvTotal, ouId, onHandQty, userId, occupationLineId,occupationCode);
+                                                      isEnd = true;
+                                                  }
+                                         }
+                               }
+                               if(isEnd) {
+                                   break;
+                                }
+                    }
+                                   
             }
             for(WhOperationExecLine opLineExec:execLineList) {
                     Long execid = opLineExec.getId();
@@ -7452,7 +7451,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
                     
           }
-                insertSkuInventorySnLog(inv.getUuid(), ouId); // 记录sn日志
+          insertSkuInventorySnLog(inv.getUuid(), ouId); // 记录sn日志
         }
         log.info("WhSkuInventoryManagerImpl addContianerInventory is end");
         return invSkuId;

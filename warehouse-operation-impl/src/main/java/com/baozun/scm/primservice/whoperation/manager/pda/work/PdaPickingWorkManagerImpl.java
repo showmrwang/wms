@@ -2189,7 +2189,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                 list.add(whOperationExecLine);
                                 // 修改作业明细表
                                 line.setCompleteQty(oLCmd.getQty());
-                                line.setLastModifyTime(new Date());
                                 whOperationLineDao.saveOrUpdateByVersion(line);
                                 continue;
                             }
@@ -2223,7 +2222,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         if (qty.doubleValue() == oLCmd.getQty().doubleValue()) {
                             line.setCompleteQty(qty);
                         }
-                        line.setLastModifyTime(new Date());
                         whOperationLineDao.saveOrUpdateByVersion(line);
                     }
                     break;
@@ -3114,7 +3112,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     public Boolean isContainerScanSn(String insideContainerCode,Long skuId,Long ouId,Long locationId,Double scanSkuQty,Boolean isContinueScanSn){
         Boolean result = false;
         if (scanSkuQty.equals(Constants.PICKING_NUM)) { // 拣货数量为1
-            result = true;
+            result = false;
         }else{ //扫描数量不为1时
             if(!StringUtils.isEmpty(insideContainerCode)){
                 Long insideContainerId = null;
