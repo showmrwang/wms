@@ -2017,6 +2017,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 String snDefect = SkuCategoryProvider.concatSkuAttrId(skuInvSn.getSn(),skuInvSn.getDefectWareBarcode()); // 拼接sn/残次信息
                 //缓存sn
                 this.cacheSkuSn(locationId, insideContainerId, skuId, snDefect);
+                break;
             }
         }
     }

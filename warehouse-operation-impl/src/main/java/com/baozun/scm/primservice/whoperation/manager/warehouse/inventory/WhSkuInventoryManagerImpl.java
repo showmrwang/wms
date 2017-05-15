@@ -7125,7 +7125,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
           if(null != containerId){ //使用小车(小车加出库箱)
                  Long  invSkuId = null;
                  if(isShortPicking) {  //短拣的商品生成库位库存
-                       this.addLocInventory(skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId);
+                     invSkuId = this.addLocInventory(skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId);
                  }else{
                      if(Constants.PICKING_WAY_ONE == pickingWay){  //小车
                          invSkuId =  this.addContianerInventory(occupationLineId,occupationCode,snDefectList,pickingWay,skuInvCmd, scanSkuQty, isTabbInvTotal, ouId, userId,  null, containerId, useContainerLatticeNo, null,null);  //出库箱模式,添加容器库存
