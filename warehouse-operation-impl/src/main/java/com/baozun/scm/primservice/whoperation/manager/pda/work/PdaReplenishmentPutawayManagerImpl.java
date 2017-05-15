@@ -224,9 +224,10 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         return container.getCode();
     }
 
-    
-    /* (non-Javadoc)
-     * @see com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentPutawayManager#putawayScanTurnoverBox(com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand, java.lang.Boolean)
+    /***
+     * 扫描周转箱
+     * @param command
+     * @return
      */
     @Override
     public ReplenishmentPutawayCommand putawayScanTurnoverBox(ReplenishmentPutawayCommand command,Boolean isTabbInvTotal) {
@@ -260,12 +261,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 command.setTipTurnoverBoxCode(containerCode);
                 command.setIsNeedScanTurnoverBox(true);
                 //当前周转箱上架
-                whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
+                whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
                 //判断当前库位是否有拣货工作
                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
             }else{//继续扫描下一个库位
                  command.setIsScanFinsh(true);
-                 whSkuInventoryManager.replenishmentPutaway(locationId,operationId, ouId, isTabbInvTotal, userId, workCode,turnoverBoxId);
+                 whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
                  //判断当前补货库位有没有拣货工作
                  //更新工作及作业状态
                  this.updateStatus(operationId, workCode, ouId, userId);
@@ -762,6 +763,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }else{
             if(!list.contains(sn)){
                 list.add(sn);
+            }else{
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SN_DOUBLE_ERROR);
             }
         }
         cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString(), list, CacheConstants.CACHE_ONE_DAY);
@@ -1247,11 +1250,43 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
      * 补货上架取消
      * @param operationId
      */
-    public void cancelPattern(Long operationId,Integer cancelPattern){
+    public void cancelPattern(Long operationId,Integer cancelPattern,Long locationId,Long turnoverBoxId){
         if(CancelPattern.PICKING_SCAN_LOC_CANCEL == cancelPattern){
+            //清楚缓存计数器
+            OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
+            if(null == opExecLineCmd){
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            List<Long> locationIds = opExecLineCmd.getLocationIds();
+            Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
+            Map<String, Set<Long>> turnoverBoxSkuIds = opExecLineCmd.getSkuIds();
+            for(Long locId:locationIds){
+                Set<Long> turnoverBoxIds = locTurnoverBoxIds.get(locId);
+                for(Long turnId:turnoverBoxIds){
+                    String key = locationId.toString()+turnId;
+                    Set<Long> skuIds = turnoverBoxSkuIds.get(key);
+                    for(Long skuId:skuIds){
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                    }
+                    cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnId.toString());
+                }
+            }
             cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());
-        }else if(CancelPattern.PICKING_TIP_CAR_CANCEL == cancelPattern){
             cacheManager.remove(CacheConstants.OPERATIONEXEC_STATISTICS+operationId.toString());
+        }else if(CancelPattern.PICKING_TIP_CAR_CANCEL == cancelPattern){
+            String key = locationId.toString()+turnoverBoxId;
+            //清楚缓存计数器
+            OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
+            if(null == opExecLineCmd){
+                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            }
+            Map<String, Set<Long>> turnoverBoxSkuIds = opExecLineCmd.getSkuIds();
+            Set<Long> skuIds = turnoverBoxSkuIds.get(key);
+            for(Long skuId:skuIds){
+                cacheManager.remove( CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+            }
         }
     }
     
@@ -1366,5 +1401,13 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
              result = true;
          }
          return result;
+     }
+     
+     public ContainerCommand findContainerCmdByCode(String containerCode,Long ouId){
+         ContainerCommand cmd =  containerDao.getContainerByCode(containerCode, ouId);
+         if(null == cmd){
+             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+         }
+         return cmd;
      }
 }

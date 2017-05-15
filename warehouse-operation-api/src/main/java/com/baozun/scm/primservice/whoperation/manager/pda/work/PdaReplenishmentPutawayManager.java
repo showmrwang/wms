@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPutawayCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
@@ -52,7 +53,7 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * 补货上架取消
      * @param operationId
      */
-    public void cancelPattern(Long operationId,Integer cancelPattern);
+    public void cancelPattern(Long operationId,Integer cancelPattern,Long locationId,Long turnoverBoxId);
     
     /**
      * 获取补货功能参数
@@ -94,4 +95,7 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
       * @return
       */
      public Boolean judgeIsOnlyLocation(Long operationId);
+     
+     
+     public ContainerCommand findContainerCmdByCode(String containerCode,Long ouId);
 }

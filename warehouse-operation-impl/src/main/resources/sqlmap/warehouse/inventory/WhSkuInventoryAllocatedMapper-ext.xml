@@ -765,17 +765,113 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 	</select>
 	
-	<select id="getWhSkuInventoryCommandByOccupationLineId" resultMap="WhSkuInventoryAllocatedCommandSnResultExt">
+	<select id="getWhSkuInventorySNCommandByOccupationLineId" resultMap="WhSkuInventoryAllocatedCommandSnResultExt">
 	    select
-	          distinct inv.id as alloctedId,
+	          allocated.alloctedId,
+	          allocated.skuId,
+	          allocated.locationId,
+	          allocated.outerContainerId,
+	          allocated.insideContainerId,
+	          allocated.customerId,
+	          allocated.storeId,
+	          allocated.invOccupationCode,
+	          allocated.invOccupationLineId,
+	          allocated.replenishmentCode,
+	          allocated.qty,
+	          allocated.invStatus,
+	          allocated.invType,
+	          allocated.batchNumber,
+	          allocated.mfgDate,
+	          allocated.expDate,
+	          allocated.countryOfOrigin,
+	          allocated.invAttr1,
+	          allocated.invAttr2,
+	          allocated.invAttr3,
+	          allocated.invAttr4,
+	          allocated.invAttr5,
+	          allocated.alloctedUuid,
+	          allocated.alloctedOuId,
+	          allocated.lastModifyTime,
+	          allocated.replenishmentRuleId,
+	          allocated.occupationCodeSource,
+	          sn.id AS snId,
+	          sn.sn AS snSn,
+	          sn.occupation_code AS snOccupationCode,
+	          sn.defect_ware_barcode AS snDefectWareBarcode,
+	          sn.defect_source AS snDefectSource,
+	          sn.defect_type_id AS snDefectTypeId,
+	          sn.defect_reasons_id AS snDefectReasonsId,
+	          sn.status AS snStatus,
+	          sn.inv_attr AS snInvAttr,
+	          sn.uuid AS snUuid,
+	          sn.ou_id AS snOuId,
+	          sn.sys_uuid AS snSysUuid
+			      from (SELECT
+							inv.id AS alloctedId,
+							inv.sku_id AS skuId,
+							inv.location_id AS locationId,
+							inv.outer_container_id AS outerContainerId,
+							inv.inside_container_id AS insideContainerId,
+							inv.customer_id AS customerId,
+							inv.store_id AS storeId,
+							inv.occupation_code AS invOccupationCode,
+							inv.replenishment_code as replenishmentCode,
+							sum(inv.qty) AS qty,
+							inv.inv_status AS invStatus,
+							inv.inv_type AS invType,
+							inv.batch_number AS batchNumber,
+							inv.mfg_date AS mfgDate,
+							inv.exp_date AS expDate,
+							inv.country_of_origin AS countryOfOrigin,
+							inv.inv_attr1 AS invAttr1,
+							inv.inv_attr2 AS invAttr2,
+							inv.inv_attr3 AS invAttr3,
+							inv.inv_attr4 AS invAttr4,
+							inv.inv_attr5 AS invAttr5,
+							inv.uuid AS alloctedUuid,
+							inv.ou_id AS alloctedOuId,
+							inv.occupation_code_source AS occupationCodeSource,
+							inv.replenishment_rule_id as replenishmentRuleId,
+							inv.last_modify_time AS lastModifyTime,
+							inv.occupation_line_id AS invOccupationLineId
+						FROM
+						    t_wh_operation_line operLine,
+							t_wh_sku_inventory_allocated inv
+						WHERE
+							 inv.ou_id = #{ouId}
+							 and operLine.replenishment_code = inv.replenishment_code
+				             and inv.replenishment_code IS NOT NULL
+				             and inv.ou_id = #{ouId}
+				             and operLine.operation_id = #{operationId}
+							 and inv.location_id = #{locationId}
+							 <if test="outerContainerId!=null and outerContainerId!=''">
+					             and inv.outer_container_id = #{outerContainerId}
+							 </if>
+							 <if test="insideContainerId!=null and insideContainerId!=''">
+								and inv.inside_container_id=#{insideContainerId}
+							 </if>
+							 <if test="outerContainerId==null">
+								 and inv.outer_container_id is null
+							 </if>
+							 <if test="insideContainerId==null">
+								 and inv.inside_container_id is null
+							 </if>
+						GROUP BY inv.uuid
+				     ) allocated 
+					left join t_wh_sku_inventory_sn sn on allocated.alloctedUuid = sn.uuid 
+	</select>
+	
+	<select id="getWhSkuInventoryCommandByOccupationLineId" resultMap="WhSkuInventoryAllocatedCommandResultExt">
+	    select
+	          distinct inv.id as id,
 	          inv.sku_id as skuId,
 	          inv.location_id as locationId,
 	          inv.outer_container_id as outerContainerId,
 	          inv.inside_container_id as insideContainerId,
 	          inv.customer_id as customerId,
 	          inv.store_id as storeId,
-	          inv.occupation_code as invOccupationCode,
-	          inv.occupation_line_id as invOccupationLineId,
+	          inv.occupation_code as occupationCode,
+	          inv.occupation_line_id as occupationLineId,
 	          inv.replenishment_code as replenishmentCode,
 	          inv.qty as qty,
 	          inv.inv_status as invStatus,
@@ -789,30 +885,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inv.inv_attr3 as invAttr3,
 	          inv.inv_attr4 as invAttr4,
 	          inv.inv_attr5 as invAttr5,
-	          inv.uuid as alloctedUuid,
-	          inv.ou_id as alloctedOuId,
+	          inv.uuid as uuid,
+	          inv.ou_id as ouId,
 	          inv.last_modify_time as lastModifyTime,
 	          inv.replenishment_rule_id as replenishmentRuleId,
-	          sn.id AS snId,
-	          sn.sn AS snSn,
-	          sn.occupation_code AS snOccupationCode,
-	          sn.defect_ware_barcode AS snDefectWareBarcode,
-	          sn.defect_source AS snDefectSource,
-	          sn.defect_type_id AS snDefectTypeId,
-	          sn.defect_reasons_id AS snDefectReasonsId,
-	          sn.status AS snStatus,
-	          sn.inv_attr AS snInvAttr,
-	          sn.uuid AS snUuid,
-	          sn.ou_id AS snOuId,
-	          sn.sys_uuid AS snSysUuid
+	          inv.occupation_code_source AS occupationCodeSource
 		      from 
 					t_wh_operation_line operLine, 
 					t_wh_sku_inventory_allocated inv
-					left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid 
 			  where
 				    operLine.replenishment_code = inv.replenishment_code
 				and inv.replenishment_code IS NOT NULL
 				and inv.ou_id = #{ouId}
+				and inv.uuid=#{uuid}
 				and operLine.operation_id = #{operationId}
 				and  inv.location_id = #{locationId}
 				<if test="outerContainerId!=null and outerContainerId!=''">
