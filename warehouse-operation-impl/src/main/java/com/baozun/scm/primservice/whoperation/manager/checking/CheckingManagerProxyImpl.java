@@ -506,7 +506,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
         try {
             //TODO 测试清除缓存
-            //cacheManager.remonKeys(cacheKey);
+            cacheManager.remonKeys(cacheKey);
 
             whCheckingLineCommandList = cacheManager.getObject(cacheKey);
         } catch (Exception e) {

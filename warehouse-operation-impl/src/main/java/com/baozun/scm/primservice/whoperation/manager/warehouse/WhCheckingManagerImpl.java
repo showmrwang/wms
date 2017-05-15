@@ -147,6 +147,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private MaTransportManager maTransportManager;
     // 分隔符
     public static final String DV = "┊";
+    // 占位符
+    public static final String PH = "︴";
 
     @Override
     public void saveOrUpdate(WhCheckingCommand whCheckingCommand) {
@@ -239,12 +241,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             WhOdoTransportMgmt odoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
             MaTransport port = new MaTransport();
             port.setCode(odoTransportMgmt.getTransportServiceProvider());
-            List<MaTransport> portList = this.maTransportManager.findMaTransport(port);
-            MaTransport maTransport = new MaTransport();
-            if (null != portList && !portList.isEmpty()) {
-                maTransport = portList.get(0);
-                checking.setWaybillType(maTransport.getWaybillType());
-            }
+            // List<MaTransport> portList = this.maTransportManager.findMaTransport(port);
+            // MaTransport maTransport = new MaTransport();
+            // if (null != portList && !portList.isEmpty()) {
+            // maTransport = portList.get(0);
+            // checking.setWaybillType(maTransport.getWaybillType());
+            // }
+            checking.setWaybillType("1"); // 1为纸质面单
         }
         return checking;
     }
@@ -277,7 +280,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 String[] skuAttrArray = skuAttr.split(DV);
                 String attrIndex = "";
                 for (String attr : skuAttrArray) {
-                    attrIndex = attrIndex + (StringUtils.hasLength(attr) ? "1" : "0");
+                    attrIndex = attrIndex + (PH.equals(attr) ? "0" : "1");
                 }
                 command.setAttrIndex(attrIndex);
                 command.setSkuAttr(skuAttr);
@@ -844,12 +847,15 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 更新出库单状态
             this.updateOdoStatusByOdo(odoId, ouId);
         }
-        List<WeightingCommand> commandList = whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId, ouId);
-        if (null != commandList && !commandList.isEmpty()) {
-            return commandList.get(0);
-        } else {
-            return null;
-        }
+        // List<WeightingCommand> commandList =
+        // whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId,
+        // ouId);
+        // if (null != commandList && !commandList.isEmpty()) {
+        // return commandList.get(0);
+        // } else {
+        // return null;
+        // }
+        return null;
     }
 
 

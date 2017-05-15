@@ -630,8 +630,8 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             facility.facility_code AS facilityCode,
-            turnoverBox.code AS turnoverBoxCode,
-            trolley.code AS trolleyCode
+            turnoverBox.code AS containerCode,
+            trolley.code AS outContainerCode
         FROM
             t_wh_checking AS checking
             LEFT JOIN t_wh_outbound_facility AS facility ON checking.facility_id = facility.id
@@ -675,8 +675,8 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             facility.facility_code AS facilityCode,
-            turnoverBox.code AS turnoverBoxCode,
-            trolley.code AS trolleyCode
+            turnoverBox.code AS containerCode,
+            trolley.code AS outContainerCode
         FROM
             t_wh_checking AS checking
             LEFT JOIN t_wh_outbound_facility AS facility ON checking.facility_id = facility.id
