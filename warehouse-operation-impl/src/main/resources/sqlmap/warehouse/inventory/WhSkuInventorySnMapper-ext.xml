@@ -281,7 +281,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from 
 			t_wh_sku_inventory_sn
 		where 
-			occupation_code = #{occupationCode} 
+			<if test="occupationCode!=null and occupationCode!=''">
+				occupation_code = #{occupationCode}
+			</if>
+			<if test="occupationCode==null or occupationCode==''">
+				occupation_code is null
+			</if>
 			and uuid = #{uuid} 
 			and ou_id = #{ouid} 
     </select>

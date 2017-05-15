@@ -2571,11 +2571,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param isTabbInvTotal
      * @return
      */
+    @Override
     public PickingScanResultCommand wholeCaseOperationExecLine(PickingScanResultCommand command, WhSkuCommand skuCmd, Boolean isTabbInvTotal) {
-        log.info("PdaPickingWorkManagerImpl scanSku is start");
-
+        log.info("PdaPickingWorkManagerImpl wholeCaseOperationExecLine is start");
         if ((2 == command.getInWarehouseMoveWay() && (1 == command.getPalletPickingMode() || 2 == command.getPalletPickingMode()))
-                && (3 == command.getInWarehouseMoveWay() || (3 == command.getContainerPickingMode() || 4 == command.getContainerPickingMode()))) {
+                || (3 == command.getInWarehouseMoveWay() && (3 == command.getContainerPickingMode() || 4 == command.getContainerPickingMode()))) {
             // 根据作业id获取作业明细信息
             List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
             for (WhOperationLineCommand operationLineCommand : operationLineList) {
@@ -2621,7 +2621,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             }
                             whSkuInventoryDao.insert(newSkuInventory);
                             List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
-                            whSkuInventorySnCommandLst = whSkuInventorySnDao.findInvSnByOccupationCodeAndUuid(oldSkuInventory.getOccupationCode(), oldSkuInventory.getUuid(), oldSkuInventory.getOuId());
+                            whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
                             double count = 0;
                             for (WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst) {
                                 WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
@@ -2662,7 +2662,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             }
                             whSkuInventoryDao.insert(newSkuInventory);
                             List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
-                            whSkuInventorySnCommandLst = whSkuInventorySnDao.findInvSnByOccupationCodeAndUuid(oldSkuInventory.getOccupationCode(), oldSkuInventory.getUuid(), oldSkuInventory.getOuId());
+                            whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
                             double count = 0;
                             for (WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst) {
                                 WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
@@ -2695,215 +2695,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             // 清除缓存
             pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
             command.setIsPicking(true);
-            return command;
         }
-        if (2 == command.getInWarehouseMoveWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode() || 5 == command.getPalletPickingMode())) {
-            return command;
+        if (2 == command.getInWarehouseMoveWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode())) {
+            
         }
-        Long operationId = command.getOperationId();
-        Long functionId = command.getFunctionId();
-        Long locationId = command.getLocationId();
-        String outBoundBoxCode = command.getOutBounxBoxCode();
-        Long userId = command.getUserId();
-        Integer pickingWay = command.getPickingWay();
-        Long ouId = command.getOuId();
-        Long skuId = command.getSkuId();
-        String skuBarCode = command.getSkuBarCode();
-        String insideContainerCode = command.getInsideContainerCode();
-        String outerContainerCode = command.getOuterContainerCode();
-        String turnoverBoxCode = command.getTurnoverBoxCode(); // 周转箱
-        Long outBoundBoxId = command.getOutBoundBoxId(); // 出库箱id
-        Boolean isTrunkful = command.getIsTrunkful(); // 是否满箱
-        ContainerCommand turnoverBoxCmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-        if (null == turnoverBoxCmd) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-        }
-        Long turnoverBoxId = turnoverBoxCmd.getId();
-        Long insideContainerId = null;
-        ContainerCommand insideContainerCmd = null;
-        if (!StringUtil.isEmpty(insideContainerCode)) {
-            insideContainerCmd = containerDao.getContainerByCode(insideContainerCode, ouId);
-            if (null == insideContainerCmd) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            insideContainerId = insideContainerCmd.getId();
-        }
-        ContainerCommand outerContainerCmd = null;
-        Long outerContainerId = null;
-        if (!StringUtil.isEmpty(outerContainerCode)) {
-            outerContainerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-            if (null == outerContainerCmd) {
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
-            outerContainerId = outerContainerCmd.getId();
-        }
-        Double scanQty = skuCmd.getScanSkuQty(); // 扫描的商品数量
-        if (null == scanQty || scanQty.longValue() < 1) {
-            log.error("scan sku qty is valid, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_VALID);
-        }
-        if (StringUtils.isEmpty(skuBarCode)) {
-            log.error("sku is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
-        }
-        WhSkuInventoryCommand invSkuCmd = new WhSkuInventoryCommand();
-        invSkuCmd.setSkuId(command.getSkuId());
-        invSkuCmd.setInvType(command.getSkuInvType());
-        invSkuCmd.setBatchNumber(command.getBatchNumber());
-        try {
-            invSkuCmd.setMfgDate(new SimpleDateFormat("yyyyMMddHHmmss").parse(command.getSkuMfgDate()));
-            invSkuCmd.setExpDate(new SimpleDateFormat("yyyyMMddHHmmss").parse(command.getSkuExpDate()));
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        invSkuCmd.setCountryOfOrigin(command.getSkuOrigin());
-        invSkuCmd.setInvAttr1(command.getSkuInvAttr1());
-        invSkuCmd.setInvAttr2(command.getSkuInvAttr2());
-        invSkuCmd.setInvAttr3(command.getSkuInvAttr3());
-        invSkuCmd.setInvAttr4(command.getSkuInvAttr4());
-        invSkuCmd.setInvAttr5(command.getSkuInvAttr5());
-        invSkuCmd.setInvStatus(command.getSkuInvStatus());
-        WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
-        if (null == picking) {
-            log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_FUNCTION_CONF_IS_NULL_ERROR);
-        }
-        Integer scanPattern = (WhScanPatternType.ONE_BY_ONE_SCAN == picking.getScanPattern()) ? WhScanPatternType.ONE_BY_ONE_SCAN : WhScanPatternType.NUMBER_ONLY_SCAN;
-        Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuBarCode, logId); // 获取对应的商品数量,key值是sku
-        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
-        if (null == operatorLine) {
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-        }
-        Map<Long, Set<Long>> insideSkuIds = operatorLine.getInsideSkuIds(); // 内部容器内所有的sku
-        Map<Long, Set<Long>> operLocSkuIds = operatorLine.getSkuIds(); // 库位上所有sku(sku不在任何容器内)
-        Set<Long> locSkuIds = operLocSkuIds.get(locationId);
-        Map<Long, Set<Long>> locOuterContainerIds = operatorLine.getOuterContainerIds();
-        Set<Long> outerContainerIds = locOuterContainerIds.get(locationId); // 当前库位上所有外部容器集合
-        Set<Long> icSkuIds = insideSkuIds.get(insideContainerId);
-        List<Long> locationIds = operatorLine.getLocationIds();
-        Map<Long, Map<Long, Long>> operLocSkuQty = operatorLine.getSkuQty();
-        Map<Long, Long> locSkuQty = operLocSkuQty.get(operationId);
-        Map<Long, Map<Long, Long>> insideSkuQty = operatorLine.getInsideSkuQty(); // 内部容器每个sku总件数
-        Map<Long, Long> insideContainerSkuIdsQty = insideSkuQty.get(insideContainerId);
-        Map<Long, Set<Long>> operLocInsideContainerIds = operatorLine.getInsideContainerIds();// 库位上所有的内部容器(无外部容器情况)
-        Set<Long> locInsideContainerIds = operLocInsideContainerIds.get(locationId);
-        Map<Long, Set<Long>> insideContainerSkuIds = operatorLine.getInsideSkuIds(); // 库位上内部容器对应的所有sku
-        Map<Long, Set<Long>> outerToInsideIds = operatorLine.getOuterToInside(); // (库位上有外部容器的内部容器)
-        Map<Long, Map<String, Set<String>>> skuAttrIdsSnDefect = operatorLine.getSkuAttrIdsSnDefect(); // 库位上每个唯一sku对应的所有sn及残次条码
-        Map<Long, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = operatorLine.getInsideSkuAttrIdsSnDefect(); // 内部容器每个唯一sku对应的所有sn及残次条码
-        Set<Long> insideContainerIds = outerToInsideIds.get(locationId);
-        boolean isSkuExists = false;
-        Integer cacheSkuQty = 1;
-        Integer icSkuQty = 1;
-        for (Long cacheId : cacheSkuIdsQty.keySet()) {
-            if (icSkuIds.contains(cacheId)) {
-                isSkuExists = true;
-            }
-            if (true == isSkuExists) {
-                skuId = cacheId;
-                cacheSkuQty = (null == cacheSkuIdsQty.get(cacheId) ? 1 : cacheSkuIdsQty.get(cacheId));
-                icSkuQty = (null == insideContainerSkuIdsQty.get(cacheId) ? 1 : insideContainerSkuIdsQty.get(cacheId).intValue());
-                break;
-            }
-        }
-        if (false == isSkuExists) {
-            log.error("scan sku is not found in current inside contianer error, ocId is:[{}], icId is:[{}], scanSkuId is:[{}], logId is:[{}]", skuId, logId);
-            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {});
-        }
-        if (cacheSkuQty > 1 && cacheSkuQty <= icSkuQty) {
-            if (0 != (icSkuQty % cacheSkuQty)) {
-                // 取模运算不为零，表示多条码配置的数量无法完成此箱中该商品的数量复合
-                log.error("scan sku may be multi barcode sku, cacheSkuQty is:[{}], icSkuQty is:[{}], logId is:[{}]", cacheSkuQty, icSkuQty, logId);
-                throw new BusinessException(ErrorCodes.COMMON_MULTI_BARCODE_QTY_NOT_SUITABLE);
-            }
-        }
-        if (WhScanPatternType.ONE_BY_ONE_SCAN == scanPattern) {
-            if (0 != new Double("1").compareTo(scanQty)) {
-                log.error("one by one scan qty is not equals 1 error, skuBarcode is:[{}], logId is:[{}]", skuBarCode, logId);
-                throw new BusinessException(ErrorCodes.COMMON_ONE_BY_ONE_SCAN_QTY_ERROR);
-            }
-        }
-        skuCmd.setId(skuId);
-        skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
-        CheckScanResultCommand cSRCmd =
-                pdaPickingWorkCacheManager.pdaPickingyCacheSkuAndCheckContainer(null, null, null, null, null, null, null, null, null, null, null, null, null, scanPattern, locationIds, locSkuQty, locationId, locSkuIds, outerContainerIds,
-                        outerContainerCmd, operationId, insideContainerSkuIdsQty, insideContainerSkuIds, insideContainerIds, locInsideContainerIds, insideContainerCmd, skuCmd);
-        if (cSRCmd.getIsNeedScanSku()) {
-            if (pickingWay == Constants.PICKING_WAY_THREE && isTrunkful) { // 是否出库箱满箱
-                // 跳转到扫描出库箱页面
-                command.setIsUserNewContainer(true);
-                return command;
-            }
-            if (pickingWay == Constants.PICKING_WAY_FOUR && isTrunkful) { // 周转箱是否满箱
-                // 跳转到扫描周转箱页面
-                command.setIsUserNewContainer(true);
-                return command;
-            }
-            command.setIsNeedTipSku(true);
-            Set<Long> skuIds = null;
-            if (null == insideContainerId) { // sku直接放在库位上
-                skuIds = locSkuIds;
-            } else {
-                skuIds = insideSkuIds.get(insideContainerId);
-            }
-            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.pdaPickingTipSku(null, null, skuIds, operationId, locationId, ouId, insideContainerId, skuAttrIdsSnDefect, insideSkuAttrIdsSnDefect);
-            if (cSRCommand.getIsNeedScanSku()) { // 此货箱的sku，还没有扫描完毕
-                String skuAttrId = cSRCmd.getTipSkuAttrId(); // 提示唯一的sku
-                WhSkuCommand whSkuCmd = whSkuDao.findWhSkuByIdExt(SkuCategoryProvider.getSkuId(skuAttrId), ouId);
-                if (null == whSkuCmd) {
-                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
-                }
-                command.setSkuBarCode(whSkuCmd.getBarCode()); // 继续提示sku条码
-            } else {
-                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-            }
-        } else if (cSRCmd.getIsNeedTipInsideContainer()) { // 提示下一个货箱
-            Set<Long> insideIds = null;
-            if (null == outerContainerCmd) {
-                insideIds = locInsideContainerIds;
-            } else {
-                insideIds = outerToInsideIds.get(outerContainerId);
-            }
-            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.pdaPickingTipInsideContainer(insideIds, locationId, outerContainerId);
-            if (cSRCommand.getIsNeedTipInsideContainer()) {
-                Long tipInsideContainerId = cSRCmd.getTipiInsideContainerId();
-                Container ic = containerDao.findByIdExt(tipInsideContainerId, ouId);
-                this.judeContainerStatus(ic);
-                command.setTipInsideContainerCode(ic.getCode());
-                command.setIsNeedTipInsideContainer(true);
-            } else {
-                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-            }
-        } else if (cSRCmd.getIsNeedTipOutContainer()) { // 提示下一个外部容器
-            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.pdaPickingTipOuterContainer(outerContainerIds, locationId);
-            if (cSRCommand.getIsNeedTipOutContainer()) {
-                Long outerId = cSRCmd.getTipOuterContainerId();
-                // 判断外部容器
-                Container c = containerDao.findByIdExt(outerId, ouId);
-                this.judeContainerStatus(c);
-                // 提示外部容器编码
-                command.setTipOuterContainerCode(c.getCode());
-            } else {
-                throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-            }
-        } else if (cSRCmd.getIsNeedTipLoc()) { // 提示下一个库位
-            CheckScanResultCommand cSRCommand = pdaPickingWorkCacheManager.tipLocation(operationId, locationIds);
-            if (cSRCommand.getIsNeedTipLoc()) {
-                Long locId = cSRCmd.getTipLocationId();
-                Location location = whLocationDao.findByIdExt(locId, ouId);
-                if (null == location) {
-                    throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
-                }
-                command.setTipLocationBarCode(location.getBarCode());
-                command.setTipLocationCode(location.getCode());
-            }
-            // 清除缓存
-            pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
-        } else if (cSRCmd.getIsPicking()) {
-            command.setIsPicking(true);
-        }
-        log.info("PdaPickingWorkManagerImpl scanSku is end");
         return command;
     }
 
