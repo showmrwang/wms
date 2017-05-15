@@ -884,7 +884,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param ouId
      * @return
      */
-    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray(List<Long> outContainerIdList, Long ouId);
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray(@Param("outContainerIdList") List<Long> outContainerIdList, @Param("ouId") Long ouId);
 
 
     /**
@@ -895,7 +895,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param ouId
      * @return
      */
-    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList, Long ouId);
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(@Param("innerContainerIdList") List<Long> innerContainerIdList, @Param("ouId") Long ouId);
 
 
     /**

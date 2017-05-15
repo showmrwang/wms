@@ -773,6 +773,64 @@ public class ErrorCodes {
 
 
 
+
+    /** 出库功能不存在 */
+    public static final int CHECKING_FUNCTION_NULL_ERROR = 60300;
+    /** 未找到复核数据 */
+    public static final int CHECKING_CHECKING_INFO_NULL_ERROR = 60301;
+    /** 未找到复核台信息 */
+    public static final int CHECKING_FACILITY_NULL_ERROR = 60302;
+    /** 批次集货未完成 */
+    public static final int CHECKING_BATCH_COLLECTION_ERROR = 60303;
+    /** 复核状态不是新建 */
+    public static final int CHECKING_CHECKING_STATUS_ERROR = 60304;
+    /** 当前功能不支持此复核模式 */
+    public static final int CHECKING_FUNCTION_CHECKING_MODE_ERROR = 60305;
+    /** 请扫描小车编码 */
+    public static final int CHECKING_CHECKING_SOURCE_OUT_CONTAINER_ERROR = 60306;
+    /** 请扫描播种墙编码 */
+    public static final int CHECKING_CHECKING_SOURCE_SEEDING_WALL_ERROR = 60307;
+    /** 请扫描播种墙或者小车 */
+    public static final int CHECKING_CHECKING_SOURCE_ERROR = 60308;
+    /** 批次小车集货未完成 */
+    public static final int CHECKING_CHECKING_COLLECTION_ERROR = 60309;
+    /** 播种墙集货未完成 */
+    public static final int CHECKING_SEEDING_COLLECTION_ERROR = 60310;
+    /** 复核类型错误 */
+    public static final int CHECKING_CHECKING_SOURCE_TYPE_ERROR = 60311;
+    /** 复核明细不存在 */
+    public static final int CHECKING_CHECKING_LINE_NULL_ERROR = 60312;
+    /** 出库单已取消 */
+    public static final int CHECKING_ODO_CANCEL_ERROR = 60313;
+    /** 请扫描小车上的出库箱 */
+    public static final int CHECKING_OUT_CONTAINER_BOX_ERROR = 60314;
+    /** 请扫描播种墙上的出库箱 */
+    public static final int CHECKING_SEEDING_WALL_BOX_ERROR = 60315;
+    /** 功能配置错误,允许引入出库箱但是不扫描出库箱 */
+    public static final int CHECKING_FUNCTION_ERROR = 60316;
+    /** 功能配置错误,不允许引入出库箱也不自动生成出库箱编码 */
+    public static final int CHECKING_FUNCTION_CHECKING_TO_BOX_ERROR = 60317;
+    /** 创建出库箱编码异常 */
+    public static final int CHECKING_CRATE_OUTBOUNDBOX_CODE_ERROR = 60318;
+    /** 出库箱已被使用 */
+    public static final int CHECKING_OUTBOUNDBOX_USED_ERROR = 60319;
+    /** 无此条码商品 */
+    public static final int CHECKING_BARCODE_SKU_NULL_ERROR = 60320;
+    /** 无此商品条码的出库箱 */
+    public static final int CHECKING_BARCODE_SKU_BOX_NULL_ERROR = 60321;
+    /** 无法确认出库箱类型 */
+    public static final int CHECKING_CANNOT_CONFIRM_BOX_ERROR = 60322;
+    /** 未找到耗材库位库存 */
+    public static final int CHECKING_CONSUMABLE_LOCATION_NULL_ERROR = 60323;
+    /** 无可用库存 */
+    public static final int CHECKING_CONSUMABLE_SKUINV_NULL_ERROR = 60324;
+    /** 没有该库位商品信息 */
+    public static final int CHECKING_CONSUMABLE_LOCATION_SKU_NULL_ERROR = 60325;
+
+
+
+
+
     // 60001-70000 xiemingwei
 
     // 70001-80000 tangming

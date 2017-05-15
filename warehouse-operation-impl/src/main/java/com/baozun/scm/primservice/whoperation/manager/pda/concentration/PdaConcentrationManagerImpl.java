@@ -199,7 +199,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setDistributionMode(work.getDistributionMode());
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
-                whCheckingCollection.setCollectionStatus(CollectionStatus.NEW);
+                whCheckingCollection.setCollectionStatus(CollectionStatus.FINISH);
                 this.whCheckingCollectionDao.insert(whCheckingCollection);
             }
         }
@@ -241,7 +241,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 whCheckingCollection.setDistributionMode(work.getDistributionMode());
                 whCheckingCollection.setCheckingMode(work.getCheckingMode());
                 whCheckingCollection.setOuterContainerId(execLineCommand.getUseOuterContainerId());
-                whCheckingCollection.setCollectionStatus(CollectionStatus.NEW);
+                whCheckingCollection.setCollectionStatus(CollectionStatus.FINISH);
                 whCheckingCollection.setCreateId(useId);
                 whCheckingCollection.setCreateTime(new Date());
                 whCheckingCollection.setLastModifyTime(new Date());

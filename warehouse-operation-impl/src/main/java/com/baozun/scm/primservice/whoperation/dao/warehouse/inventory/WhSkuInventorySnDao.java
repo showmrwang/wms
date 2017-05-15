@@ -124,6 +124,7 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
     /**
      * 根据库存UUID查找对应SN/残次信息
      * 
+     * @author qiming.liu
      * @param ouid
      * @param uuid
      * @return

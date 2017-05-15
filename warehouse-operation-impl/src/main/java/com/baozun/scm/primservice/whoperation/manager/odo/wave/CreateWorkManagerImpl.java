@@ -766,6 +766,16 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         } else {
             workLineDao.insert(whWorkLine);
         }
+        // 更新分配库存占用单据号        
+        if(null == skuInventoryAllocatedCommand.getOccupationCode() && null == skuInventoryAllocatedCommand.getOccupationLineId()){
+            skuInventoryAllocatedCommand.setOccupationCode(replenishmentWorkCode);
+            skuInventoryAllocatedCommand.setOccupationLineId(whWorkLine.getId());
+            skuInventoryAllocatedCommand.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_WORK);
+            WhSkuInventoryAllocated skuInventoryAllocated = new WhSkuInventoryAllocated();
+            // 复制数据
+            BeanUtils.copyProperties(skuInventoryAllocatedCommand, skuInventoryAllocated);
+            whSkuInventoryAllocatedDao.update(skuInventoryAllocated);
+        }
     }
 
     /**
@@ -1423,7 +1433,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 使用货格编码数
                 whWorkLineCommand.setUseContainerLatticeNo(whOdoOutBoundBoxCommand.getContainerLatticeNo());
                 // 目标库位 --捡货模式没有
-                whWorkLineCommand.setToLocationId(whSkuInventoryTobefilled.getLocationId());
+                whWorkLineCommand.setToLocationId(null);
                 // 目标库位外部容器 --捡货模式没有
                 whWorkLineCommand.setToOuterContainerId(null);
                 // 目标库位内部容器 --捡货模式没有
