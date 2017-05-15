@@ -9711,8 +9711,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                                     //操作sn/残次信息
                                     for(WhSkuInventorySnCommand snCmd:listSn){
+                                        String snDefect = SkuCategoryProvider.concatSkuAttrId(snCmd.getSn(),snCmd.getDefectWareBarcode()); // 拼接sn/残次信息
                                         for(String sn:snDefectList){
-                                            if(sn.equals(snCmd.getSn()) || sn.equals(snCmd.getDefectWareBarcode())){
+                                            if(sn.equals(snDefect)){
                                                 WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
                                                 BeanUtils.copyProperties(snCmd, skuInvSn);
                                                 skuInvSn.setUuid(uuid);

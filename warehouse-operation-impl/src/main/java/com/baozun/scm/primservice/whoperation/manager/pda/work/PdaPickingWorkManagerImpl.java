@@ -1560,11 +1560,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         pdaPickingWorkCacheManager.cacheSkuAttrIdNoSn(locationId, skuAttrIds, insideContainerId);
         if (!StringUtil.isEmpty(command.getSkuSn()) || !StringUtils.isEmpty(command.getSkuDefect())) {
             // 缓存sn数据
-              String snDefect = SkuCategoryProvider.concatSkuAttrId(command.getSkuSn(),command.getSkuDefect()); // 拼接sn/残次信息
+//              String snDefect = SkuCategoryProvider.concatSkuAttrId(command.getSkuSn(),command.getSkuDefect()); // 拼接sn/残次信息
 //            String skuAttrIdsSn = SkuCategoryProvider.concatSkuAttrId(skuAttrIds, command.getSkuSn(), command.getSkuDefect()); // 拼接sn/残次信息
 //            pdaPickingWorkCacheManager.cacheSkuAttrId(locationId, skuAttrIdsSn, insideContainerId); // 缓存的必须有sn/残次信息
-              this.updateSnDefectOccupation(skuAttrIds, command.getSkuSn(), command.getSkuDefect(), locationId, ouId, operationId, outerContainerId, insideContainerId, operationWay);
-              this.cacheSkuSn(locationId, insideContainerId, skuId, snDefect);
+              this.updateSnDefectOccupation(skuId,skuAttrIds, command.getSkuSn(), command.getSkuDefect(), locationId, ouId, operationId, outerContainerId, insideContainerId, operationWay);
+//              this.cacheSkuSn(locationId, insideContainerId, skuId, snDefect);
         }
         Map<Long, Integer> cacheSkuIdsQty = skuRedisManager.findSkuByBarCode(skuBarCode, logId); // 获取对应的商品数量,key值是sku
         OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
@@ -1989,7 +1989,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         return command;
     }
 
-    private void updateSnDefectOccupation(String skuAttrIds, String sn, String defect, Long locationId, Long ouId, Long operationId, Long outerContainerId, Long insideContainerId, String operationWay) {
+    private void updateSnDefectOccupation(Long skuId,String skuAttrIds, String sn, String defect, Long locationId, Long ouId, Long operationId, Long outerContainerId, Long insideContainerId, String operationWay) {
         if (StringUtils.isEmpty(sn)) {
             sn = defect;
         }
@@ -2014,6 +2014,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (null == skuInvSn) {
                     throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_SN_NULL);
                 }
+                String snDefect = SkuCategoryProvider.concatSkuAttrId(skuInvSn.getSn(),skuInvSn.getDefectWareBarcode()); // 拼接sn/残次信息
+                //缓存sn
+                this.cacheSkuSn(locationId, insideContainerId, skuId, snDefect);
             }
         }
     }
