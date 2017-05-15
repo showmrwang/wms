@@ -124,9 +124,6 @@ public interface CheckingManager extends BaseManager {
      */
     int getCheckingOdoQtyByBatch(String batchNo, Long ouId);
 
-    public Customer findCustomerByRedis(Long customerId);
-
-    public Store findStoreByRedis(Long storeId);
 
     /**
      * 复核 占用耗材库存

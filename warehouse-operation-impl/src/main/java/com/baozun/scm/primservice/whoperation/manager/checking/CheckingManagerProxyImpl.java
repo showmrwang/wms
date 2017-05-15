@@ -17,6 +17,7 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,8 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
@@ -489,9 +492,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
 
-    public List<WhSkuInventorySnCommand> findSkuInvSnByUUID(String uuid, Long ouId) {
-        return whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, uuid);
-    }
+
 
 
     public List<WhSkuInventorySnCommand> findCheckingSkuInvSnByCheckingId(Long checkingId, Long ouId) {
@@ -529,26 +530,15 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return whCheckingLineCommandList;
     }
 
-
-    /**
-     * 获取系统参数
-     *
-     * @author mingwei.xie
-     * @param groupValue
-     * @param lifecycle
-     * @return
-     */
-    @Override
-    public List<SysDictionary> getSysDictionaryByGroupValue(String groupValue, Integer lifecycle) {
-        List<SysDictionary> sysDictionaryList = this.findSysDictionaryByGroupValueAndRedis(groupValue, lifecycle);
-        return sysDictionaryList;
+    public Customer findCustomerByRedis(Long customerId){
+        Map<Long, Customer> customerMap = this.findCustomerByRedis(Collections.singletonList(customerId));
+        return customerMap.get(customerId);
     }
 
-    // @Override
-    // public List<InventoryStatus> getAllInventoryStatus() {
-    // InventoryStatus status = new InventoryStatus();
-    // status.setLifecycle(1);
-    // return this.inventoryStatusDao.findListByParam(status);
-    // }
+    public Store findStoreByRedis(Long storeId){
+        Map<Long, Store> storeMap = this.findStoreByRedis(Collections.singletonList(storeId));
+        return storeMap.get(storeId);
+    }
+
 
 }
