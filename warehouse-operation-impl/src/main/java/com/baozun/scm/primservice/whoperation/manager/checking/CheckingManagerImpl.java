@@ -290,15 +290,6 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         return whCheckingDao.getCheckingOdoQtyByBatch(batchNo, ouId);
     }
 
-    public Customer findCustomerByRedis(Long customerId){
-        Map<Long, Customer> customerMap = this.findCustomerByRedis(Collections.singletonList(customerId));
-        return customerMap.get(customerId);
-    }
-
-    public Store findStoreByRedis(Long storeId){
-        Map<Long, Store> storeMap = this.findStoreByRedis(Collections.singletonList(storeId));
-        return storeMap.get(storeId);
-    }
 
     /**
      * 生成出库箱库存

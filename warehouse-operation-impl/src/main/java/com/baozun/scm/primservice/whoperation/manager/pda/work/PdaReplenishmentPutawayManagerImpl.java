@@ -837,58 +837,106 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 for(WhWorkLineCommand workLineCmd:workLineList) {
                     String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
                     List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId);
+                    Double sum = 0.0;
                     for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
-                           Long outerId = invCmd.getOuterContainerId();
                            Long insideId = invCmd.getInsideContainerId();
                            String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
                            if(workSkuAttrId.equals(skuAttrId)) {
-                                 if(null != outerId && null != insideId) {
-                                     WhWorkLine workLine = new WhWorkLine();
-                                     BeanUtils.copyProperties(workLineCmd, workLine);
-                                     workLine.setFromInsideContainerId(insideId);
-                                     workLine.setFromOuterContainerId(outerId);
-                                     whWorkLineDao.saveOrUpdateByVersion(workLine);
-                                     insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                 Double lineQty = workLineCmd.getQty();
+                                 if(workSkuAttrId.equals(skuAttrId)) {
+                                     Double onHandQty = invCmd.getOnHandQty();
+                                     if(lineQty.doubleValue() > onHandQty.doubleValue()) {
+                                         sum += onHandQty;
+                                         WhWorkLine workLine = new WhWorkLine();
+                                         BeanUtils.copyProperties(workLineCmd, workLine);
+                                         workLine.setFromInsideContainerId(insideId);
+                                         if(lineQty.doubleValue() > sum.doubleValue()){
+                                             workLine.setQty(onHandQty);
+                                         }
+                                         if(lineQty.doubleValue() == sum.doubleValue()){
+                                             workLine.setQty(onHandQty);                                   
+                                         }
+                                         if(lineQty.doubleValue() < sum.doubleValue()){
+                                             Double qty1 = lineQty.doubleValue() -(sum.doubleValue() -onHandQty.doubleValue());
+                                             workLine.setQty(qty1);
+                                         }
+                                         whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                         continue;
+                                  }
+                                  if(lineQty.doubleValue() == onHandQty.doubleValue()){
+                                         WhWorkLine workLine = new WhWorkLine();
+                                         BeanUtils.copyProperties(workLineCmd, workLine);
+                                         workLine.setFromInsideContainerId(insideId);
+                                         workLine.setQty(onHandQty);
+                                         whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                  }
+                                  if(lineQty.doubleValue() < onHandQty.doubleValue()){
+                                         WhWorkLine workLine = new WhWorkLine();
+                                         BeanUtils.copyProperties(workLineCmd, workLine);
+                                         workLine.setFromInsideContainerId(insideId);
+                                         workLine.setQty(lineQty);
+                                         whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
                                  }
-                                 if(null == outerId && null != insideId){
-                                     WhWorkLine workLine = new WhWorkLine();
-                                     BeanUtils.copyProperties(workLineCmd, workLine);
-                                     workLine.setFromInsideContainerId(insideId);
-                                     whWorkLineDao.saveOrUpdateByVersion(workLine);
-                                     insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
                                  }
                            }
                     }
               }
             }
-            //更新到作业明细
+            //先添加作业明细,后删除原始作业明细
             List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId);
             if(null != operLineCmdList && operLineCmdList.size() != 0) {
                 //库位上有拣货工作
                 for(WhOperationLineCommand operLineCmd:operLineCmdList){
+                    Double lineQty = operLineCmd.getQty();
                     String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
                     List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId);
-                    for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
-                           Long outerId = invCmd.getOuterContainerId();
-                           Long insideId = invCmd.getInsideContainerId();
-                           String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
-                           if(workSkuAttrId.equals(skuAttrId)) {
-                                 if(null != outerId && null != insideId) {
-                                     WhOperationLine opLine = new WhOperationLine();
-                                     BeanUtils.copyProperties(operLineCmd, opLine);
-                                     opLine.setFromOuterContainerId(outerId);
-                                     opLine.setFromInsideContainerId(insideId);
-                                     whOperationLineDao.saveOrUpdateByVersion(opLine);
-                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
-                                 }
-                                 if(null == outerId && null != insideId){
-                                     WhOperationLine opLine = new WhOperationLine();
-                                     BeanUtils.copyProperties(operLineCmd, opLine);
-                                     opLine.setFromInsideContainerId(insideId);
-                                     whOperationLineDao.saveOrUpdateByVersion(opLine);
-                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
-                                 }
-                           }
+                    if(null != skuInvCmdList && skuInvCmdList.size() != 0) {
+                        Double sum = 0.0;
+                        for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
+                            Long insideId = invCmd.getInsideContainerId();
+                            String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+                            if(workSkuAttrId.equals(skuAttrId)) {
+                                Double onHandQty = invCmd.getOnHandQty();
+                                if(lineQty.doubleValue() > onHandQty.doubleValue()) {
+                                    sum += onHandQty;
+                                    WhOperationLine opLine = new WhOperationLine();
+                                    BeanUtils.copyProperties(operLineCmd, opLine);
+                                    opLine.setFromInsideContainerId(insideId);
+                                    if(lineQty.doubleValue() > sum.doubleValue()){
+                                        opLine.setQty(onHandQty);
+                                    }
+                                    if(lineQty.doubleValue() == sum.doubleValue()){
+                                        opLine.setQty(onHandQty);                                   
+                                    }
+                                    if(lineQty.doubleValue() < sum.doubleValue()){
+                                        Double qty1 = lineQty.doubleValue() -(sum.doubleValue() -onHandQty.doubleValue());
+                                        opLine.setQty(qty1);
+                                    }
+                                    whOperationLineDao.saveOrUpdateByVersion(opLine);
+                                    insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                    continue;
+                             }
+                             if(lineQty.doubleValue() == onHandQty.doubleValue()){
+                                    WhOperationLine opLine = new WhOperationLine();
+                                    BeanUtils.copyProperties(operLineCmd, opLine);
+                                    opLine.setFromInsideContainerId(insideId);
+                                    opLine.setQty(onHandQty);
+                                    whOperationLineDao.saveOrUpdateByVersion(opLine);
+                                    insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                             }
+                             if(lineQty.doubleValue() < onHandQty.doubleValue()){
+                                    WhOperationLine opLine = new WhOperationLine();
+                                    BeanUtils.copyProperties(operLineCmd, opLine);
+                                    opLine.setFromInsideContainerId(insideId);
+                                    opLine.setQty(lineQty);
+                                    whOperationLineDao.saveOrUpdateByVersion(opLine);
+                                    insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                            }
+                            }
+                     }
                     }
                 }
             }

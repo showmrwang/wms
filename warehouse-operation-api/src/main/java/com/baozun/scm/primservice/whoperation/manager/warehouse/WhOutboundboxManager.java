@@ -29,4 +29,11 @@ public interface WhOutboundboxManager extends BaseManager {
      */
     public String generateCode();
 
+    /**
+     * [通用方法] 通过主键服务生成出交接批次
+     * 
+     * @return
+     */
+    public String generateBatch();
+
 }

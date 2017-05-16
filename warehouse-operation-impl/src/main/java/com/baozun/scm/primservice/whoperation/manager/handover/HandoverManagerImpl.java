@@ -2,7 +2,9 @@ package com.baozun.scm.primservice.whoperation.manager.handover;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -20,11 +23,13 @@ import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
+import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverDao;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -32,6 +37,8 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.handover.Handover;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverLine;
@@ -39,7 +46,9 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("handoverManager")
 @Transactional
@@ -64,6 +73,10 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private WhOdoPackageInfoDao whOdoPackageInfoDao;
     @Autowired
     private WhOutboundConfirmManager whOutboundConfirmManager;
+    @Autowired
+    private UomDao uomDao;
+    @Autowired
+    private WhSkuManager whSkuManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -232,7 +245,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 }
                 // 调用胡斌方法
                 // TODO
-                // whOutboundConfirmManager.saveWhOutboundConfirm(odo);
+                whOutboundConfirmManager.saveWhOutboundConfirm(odo);
                 List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
                 for (WhOdoLine whOdoLine : whOdoLineList) {
                     whOdoLine.setOdoLineStatus(OdoLineStatus.HANDOVER_FINISH);
@@ -270,5 +283,60 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public HandoverCollection findHandoverCollectionByOutboundboxCode(String outboundBoxCode, Long ouId) {
         return handoverCollectionDao.findByOutboundboxCode(outboundBoxCode, ouId);
+    }
+
+
+    /**
+     * 算计重
+     * 
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void packageWeightCalculationByOdo(WhOutboundbox whOutboundbox, Long ouId, Long userId) {
+        List<UomCommand> weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL); // 重量度量单位
+        Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            Double uomRate = 0.0;
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                uomRate = lenUom.getConversionRate();
+                weightUomConversionRate.put(uomCode, uomRate);
+            }
+        }
+        SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
+        Double sum = 0.0;
+        WhSkuInventory whSkuInventory = new WhSkuInventory();
+        whSkuInventory.setOutboundboxCode(whOutboundbox.getOutboundboxCode());
+        whSkuInventory.setOuId(ouId);
+        List<WhSkuInventory> whSkuInventories = whSkuInventoryDao.findListByParam(whSkuInventory);
+        for (WhSkuInventory whSkuInventory2 : whSkuInventories) {
+            Double actualWeight = 0.0;
+            WhSku whSku = whSkuManager.getskuById(whSkuInventory2.getSkuId(), ouId);
+            actualWeight = weightCalculator.calculateStuffWeight(whSku.getWeight()) * whSkuInventory2.getOnHandQty();
+            sum += actualWeight;
+        }
+        WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(whOutboundbox.getOutboundboxCode(), ouId);
+        if (null != odoPackageInfo) {
+            odoPackageInfo.setCalcWeight(sum.longValue());
+            whOdoPackageInfoDao.saveOrUpdateByVersion(odoPackageInfo);
+        } else {
+            // WhFunctionOutBound whFunctionOutBound =
+            // whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
+            WhOdoPackageInfo whOdoPackageInfo = new WhOdoPackageInfo();
+            whOdoPackageInfo.setOdoId(whOutboundbox.getOdoId());
+            whOdoPackageInfo.setOutboundboxId(whOutboundbox.getId());
+            whOdoPackageInfo.setOutboundboxCode(whOutboundbox.getOutboundboxCode());
+            whOdoPackageInfo.setStatus(Constants.LIFECYCLE_START);
+            // whOdoPackageInfo.setFloats(whFunctionOutBound.getWeightFloatPercentage());
+            whOdoPackageInfo.setLifecycle(Constants.LIFECYCLE_START);
+            whOdoPackageInfo.setCreateId(userId);
+            whOdoPackageInfo.setCreateTime(new Date());
+            whOdoPackageInfo.setLastModifyTime(new Date());
+            whOdoPackageInfo.setModifiedId(userId);
+            whOdoPackageInfo.setCalcWeight(sum.longValue());
+            whOdoPackageInfo.setOuId(ouId);
+            whOdoPackageInfoDao.insert(whOdoPackageInfo);
+        }
     }
 }

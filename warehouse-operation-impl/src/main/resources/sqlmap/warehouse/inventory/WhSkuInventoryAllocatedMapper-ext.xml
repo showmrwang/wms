@@ -37,6 +37,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="ouId" column="alloctedOuId"/>
 		<result property="lastModifyTime" column="lastModifyTime"/>
 		<result property="replenishmentRuleId" column="replenishmentRuleId"/>
+		<result property="occupationCodeSource" column="occupationCodeSource"/>
 		<collection property="whSkuInventorySnCommandList"
 			ofType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
 			<id property="id" column="snId"/>
@@ -841,21 +842,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							 inv.ou_id = #{ouId}
 							 and operLine.replenishment_code = inv.replenishment_code
 				             and inv.replenishment_code IS NOT NULL
-				             and inv.ou_id = #{ouId}
 				             and operLine.operation_id = #{operationId}
-							 and inv.location_id = #{locationId}
-							 <if test="outerContainerId!=null and outerContainerId!=''">
-					             and inv.outer_container_id = #{outerContainerId}
-							 </if>
-							 <if test="insideContainerId!=null and insideContainerId!=''">
-								and inv.inside_container_id=#{insideContainerId}
-							 </if>
-							 <if test="outerContainerId==null">
-								 and inv.outer_container_id is null
-							 </if>
-							 <if test="insideContainerId==null">
-								 and inv.inside_container_id is null
-							 </if>
+							 and inv.uuid=#{uuid}
 						GROUP BY inv.uuid
 				     ) allocated 
 					left join t_wh_sku_inventory_sn sn on allocated.alloctedUuid = sn.uuid 
@@ -897,7 +885,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				    operLine.replenishment_code = inv.replenishment_code
 				and inv.replenishment_code IS NOT NULL
 				and inv.ou_id = #{ouId}
-				and inv.uuid=#{uuid}
 				and operLine.operation_id = #{operationId}
 				and  inv.location_id = #{locationId}
 				<if test="outerContainerId!=null and outerContainerId!=''">

@@ -344,15 +344,59 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 <select id="findWorkLineByLocationId" resultMap="WhWorkLineCommandResultExt">
     	select 
-    		<include refid="whWorkLineColumnsExt" />
+    		    line.id as id,
+	        	line.line_code as lineCode,
+	        	line.work_id as workId,
+	        	line.ou_id as ouId,
+	        	line.start_time as startTime,
+	        	line.finish_time as finishTime,
+	        	line.sku_id as skuId,
+	        	line.qty as qty,
+	        	line.complete_qty as completeQty,
+	        	line.cancel_qty as cancelQty,
+	        	line.inv_status as invStatus,
+	        	line.inv_type as invType,
+	        	line.batch_number as batchNumber,
+	        	line.mfg_date as mfgDate,
+	        	line.exp_date as expDate,
+	        	line.min_exp_date as minExpDate,
+	        	line.max_exp_date as maxExpDate,
+	        	line.country_of_origin as countryOfOrigin,
+	        	line.inv_attr1 as invAttr1,
+	        	line.inv_attr2 as invAttr2,
+	        	line.inv_attr3 as invAttr3,
+	        	line.inv_attr4 as invAttr4,
+	        	line.inv_attr5 as invAttr5,
+	        	line.uuid as uuid,
+	        	line.from_location_id as fromLocationId,
+	        	line.from_outer_container_id as fromOuterContainerId,
+	        	line.from_inside_container_id as fromInsideContainerId,
+	        	line.use_outboundbox_id as useOutboundboxId,
+	        	line.use_outboundbox_code as useOutboundboxCode,
+	        	line.use_container_id as useContainerId,
+	        	line.use_outer_container_id as useOuterContainerId,
+	        	line.use_container_lattice_no as useContainerLatticeNo,
+	        	line.to_location_id as toLocationId,
+	        	line.to_outer_container_id as toOuterContainerId,
+	        	line.to_inside_container_id as toInsideContainerId,
+	        	line.is_whole_case as isWholeCase,
+	        	line.odo_id as odoId,
+	        	line.odo_line_id as odoLineId,
+	        	line.replenishment_code as replenishmentCode,
+	        	line.inv_move_code as invMoveCode,
+	        	line.create_time as createTime,
+	        	line.last_modify_time as lastModifyTime,
+	        	line.operator_id as operatorId
 	    from 
-	    	t_wh_work_line
-		<where> 
-			ou_id = #{ouId}
+	    	t_wh_work_line line
+	    	left join t_wh_work work on work.id = line.work_id 
+		where
+			line.ou_id = #{ouId}
+			and work.work_category="PICKING"
+			and work.status = 1
 			<if test="locationId!=null">
-				and from_location_id = #{locationId}
+				and line.from_location_id = #{locationId}
 			</if>
-		</where>
     </select>
     
 <select id="findWorkLineByWorkIdOuId" resultMap="WhWorkLineCommandResultExt">

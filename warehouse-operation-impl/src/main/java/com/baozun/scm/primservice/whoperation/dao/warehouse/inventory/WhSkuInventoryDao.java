@@ -809,12 +809,12 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     Double getUseableQtyByUuid(@Param("uuid") String uuid, @Param("ouId") Long ouId);
 
-    public List<WhSkuInventoryCommand> getWhSkuInventorySNByOccupationLineId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
+    public List<WhSkuInventoryCommand> getWhSkuInventorySNByOperationId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
             @Param("insideContainerId") Long insideContainerId);
     
     
-    public List<WhSkuInventoryCommand> getWhSkuInventoryByOccupationLineId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
-        @Param("insideContainerId") Long insideContainerId,@Param("uuid") String uuid);
+    public List<WhSkuInventoryCommand> getWhSkuInventoryByOperationId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
+        @Param("insideContainerId") Long insideContainerId);
 
     
     public List<WhSkuInventoryCommand> getWhSkuInventoryCmdByOccupationLineId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
@@ -1137,4 +1137,6 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     List<Long> findSkuInventoryLocationList(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
 
     WhSkuInventoryCommand findCheckingConsumableOccSkuInv(@Param("outboundBoxCode") String outboundBoxCode, @Param("skuId") Long skuId, @Param("locationCode") String locationCode, @Param("occSourceCode") String occSourceCode, @Param("ouId") Long ouId);
+    
+    public List<WhSkuInventoryCommand> findWhSkuInventorySnByOccupationLineId(@Param("ouId") Long ouId, @Param("occupationCode")  String occupationCode,@Param("occupationLineId") Long occupationLineId,@Param("uuid") String uuid);
 }

@@ -69,6 +69,9 @@ public interface HandoverManager extends BaseManager {
      */
     HandoverCollection findHandoverCollectionByOutboundboxCode(String outboundBoxCode, Long ouId);
 
+
+    void packageWeightCalculationByOdo(WhOutboundbox whOutboundbox, Long ouId, Long userId);
+
     /**
      * 打印销售清单
      * 
