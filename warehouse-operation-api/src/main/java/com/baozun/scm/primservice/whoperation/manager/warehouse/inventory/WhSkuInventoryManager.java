@@ -312,8 +312,8 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param insideContainerId
      * @param turnoverBoxId
      */
-    public void invmoveContainerInventory(List<WhOperationExecLine> execLineList, Boolean isShortPicking, List<String> snDefectList, String skuAttrIds, Long lcoationId, Long operationId, Long ouId, Long outerContainerId, Long insideContainerId,
-              Long turnoverBoxId, Boolean isTabbInvTotal, Long userId, String workCode, Double scanSkuQty);
+    public void invmoveContainerInventory(Boolean isShortPicking, List<String> snDefectList, String skuAttrIds, Long locationId, Long operationId, Long ouId, Long outerContainerId, Long insideContainerId, Long turnoverBoxId, Boolean isTabbInvTotal,
+            Long userId, String workCode, Double scanSkuQty);
 
 
     /**
