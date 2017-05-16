@@ -2,6 +2,7 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 
 public interface WhSkuManager extends BaseManager {
 
@@ -14,5 +15,7 @@ public interface WhSkuManager extends BaseManager {
      * @return
      */
     WhSkuCommand getSkuBybarCode(String barcode, Long ouId);
-    
+
+    WhSku getskuById(Long skuId, Long ouId);
+
 }

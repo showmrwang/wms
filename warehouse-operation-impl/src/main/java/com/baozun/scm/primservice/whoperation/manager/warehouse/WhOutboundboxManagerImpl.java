@@ -82,4 +82,10 @@ public class WhOutboundboxManagerImpl extends BaseManagerImpl implements WhOutbo
         String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
         return outboundBoxCode;
     }
+
+    @Override
+    public String generateBatch() {
+        String handoverBatch1 = this.codeManager.generateCode(Constants.WMS, Constants.HANDOVER_BATCH, null, null, null);
+        return handoverBatch1;
+    }
 }
