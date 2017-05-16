@@ -71,4 +71,7 @@ public class CancelPattern implements Serializable {
     public static final int PICKING_TIP_LATTICE_NO = 13;  //提示货格号取消
     
     
+    public static final int REPLENISHMENT_NEW_TURNOVERBOX=14;
+    
+    
 }
