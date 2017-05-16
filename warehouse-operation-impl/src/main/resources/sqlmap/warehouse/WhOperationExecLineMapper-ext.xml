@@ -955,4 +955,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and operation_id = #{operationId}
 			and use_container_id=#{useContainerId}
 	</select>
+	
+	
+	<select id="findOperationExecLineByUseContainerId" resultMap="WhOperationExecLineResultExt">
+		select
+		<include refid="whOperationExecLineColumnsExt" />
+		from
+		t_wh_operation_exec_line
+		where
+			ou_id = #{ouId}
+			and operation_id = #{operationId}
+			and use_container_id = #{useContainerId}
+	</select>
 </mapper>

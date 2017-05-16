@@ -2701,6 +2701,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     transVasList.add(transVas);
                 }
                 trans.setTransVasList(transVasList);
+            } else {
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "transVasList is empty", ouId);
             }
         } else {
             // 失败,记录ErrorMessage
@@ -2731,6 +2733,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     if (num < 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
                     }
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "lpList is empty", ouId);
                 }
             } else {
                 // 失败,记录ErrorMessage
@@ -2759,7 +2763,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 String packageCenterName = res.getPackageCenterName(); // 集包地名称
                 transMgmt.setTransBigWord(transBigWord);
                 transMgmt.setTmsCode(tmsCode);
-                transMgmt.setLogisticsCode(logisticsCode.toUpperCase());
+                transMgmt.setLogisticsCode(null == logisticsCode ? null : logisticsCode.toUpperCase());
                 transMgmt.setPackageCenterCode(packageCenterCode);
                 transMgmt.setPackageCenterName(packageCenterName);
                 WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
