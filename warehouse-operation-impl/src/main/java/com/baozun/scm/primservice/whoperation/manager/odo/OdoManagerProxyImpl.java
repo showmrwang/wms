@@ -2701,6 +2701,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     transVasList.add(transVas);
                 }
                 trans.setTransVasList(transVasList);
+            } else {
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "transVasList is empty", ouId);
             }
         } else {
             // 失败,记录ErrorMessage
@@ -2731,6 +2733,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     if (num < 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
                     }
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "lpList is empty", ouId);
                 }
             } else {
                 // 失败,记录ErrorMessage
