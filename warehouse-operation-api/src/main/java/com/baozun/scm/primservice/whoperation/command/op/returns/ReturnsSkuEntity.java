@@ -19,8 +19,18 @@ public class ReturnsSkuEntity implements Serializable {
 
     private List<ReturnsSnEntity> snEntityList = new ArrayList<ReturnsSnEntity>();
 
+    private String validDate;// 有效期天数
+
     private List<Long> lineIdList = new ArrayList<Long>();
 
+
+    public String getValidDate() {
+        return validDate;
+    }
+
+    public void setValidDate(String validDate) {
+        this.validDate = validDate;
+    }
 
     public String getSerialNumberType() {
         return serialNumberType;
