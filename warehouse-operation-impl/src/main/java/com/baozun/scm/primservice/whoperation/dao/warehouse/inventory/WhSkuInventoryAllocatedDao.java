@@ -91,7 +91,7 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
      * @param operationId
      * @return
      */
-    public List<WhSkuInventoryAllocatedCommand> getWhSkuInventorySNCommandByOccupationLineId(@Param("ouId") Long ouId,@Param("operationId") Long operationId,@Param("uuid") String uuid);
+    public List<WhSkuInventoryAllocatedCommand> getWhSkuInventorySNCommandByOccupationLineId(@Param("occupationCode") String occupationCode,@Param("occupationLineId") Long occupationLineId,@Param("ouId") Long ouId,@Param("operationId") Long operationId,@Param("uuid") String uuid);
     
     /***
      * 到库存分配表中查询分配库存(没有关联sn的数据)

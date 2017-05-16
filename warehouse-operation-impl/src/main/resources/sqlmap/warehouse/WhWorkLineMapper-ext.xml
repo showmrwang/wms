@@ -393,6 +393,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 			line.ou_id = #{ouId}
 			and work.work_category="PICKING"
+			and line.from_inside_container_id is null
 			and work.status = 1
 			<if test="locationId!=null">
 				and line.from_location_id = #{locationId}
@@ -409,5 +410,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
     
-    
+   <delete id="deleteByIdExt" parameterType="java.lang.Long">
+	        delete from t_wh_work_line  where
+		        id = #{id} and ou_id=#{ouId}
+	</delete> 
 </mapper>
