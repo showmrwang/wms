@@ -2757,7 +2757,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           
           CheckScanResultCommand cssrCmd = new CheckScanResultCommand();
           LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
-          ArrayDeque<Long> cacheInsideContainerIds = null;
+          ArrayDeque<Long> cacheInsideContainerIds = new ArrayDeque<Long>();
           if (null != cacheContainerCmd) {
               if(null == cacheContainerCmd.getTipOuterInsideContainerIds() ||  cacheContainerCmd.getTipOuterInsideContainerIds().size() == 0){
                   cacheInsideContainerIds = new ArrayDeque<Long>();
@@ -2768,7 +2768,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           cacheInsideContainerIds.add(insideContainerId);
           
           if (isCacheAllExists(insideContainerIds, cacheInsideContainerIds)) {  //返回true ,两者相同
-              
+              cssrCmd.setIsPicking(true);    
           }else{
               //提示下一个内部容器
               Long tipiInsideContainerId = null;

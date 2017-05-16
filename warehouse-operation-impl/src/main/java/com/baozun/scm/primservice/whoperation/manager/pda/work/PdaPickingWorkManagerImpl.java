@@ -2607,7 +2607,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
                 command.setTipInsideContainerCode(ic.getCode());
                 command.setIsNeedTipInsideContainer(true);
-                  
             }
             if(cSRCmd.getIsPicking()){
                 command.setIsPicking(true);
@@ -2746,9 +2745,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         operationCmd.setIsPickingFinish(true);
         operationCmd.setModifiedId(command.getUserId());
         whOperationManager.saveOrUpdate(operationCmd);
-        // 清除缓存
-        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
-        command.setIsPicking(true);
+        if(2 == command.getInWarehouseMoveWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode())){
+            command.setIsPicking(true);
+        }else{
+            // 清除缓存
+            pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());   
+            command.setIsPicking(true);
+        }
         return command;
     }
 
