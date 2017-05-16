@@ -1159,10 +1159,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhOdo> findOdoListByWaveCode(String code, Long ouId) {
-        WhOdo odo = new WhOdo();
-        odo.setWaveCode(code);
-        odo.setOuId(ouId);
-        return this.whOdoDao.findListByParamExt(odo);
+        return this.whOdoDao.findOdoListByWaveCode(code, ouId);
     }
 
     @Override

@@ -3444,5 +3444,15 @@
 			and o.ou_id = #{ouId}
 		order by odo_index
     </select>
+    
+     <select id="findOdoListByWaveCode" resultMap="WhOdoResult" flushCache="false">
+        select
+        <include refid="whOdoColumns"/>
+        <![CDATA[
+                from t_wh_odo 
+                where 
+                wave_code = #{waveCode} and ou_id=#{ouId} 
+            ]]>
+    </select>
 
 </mapper>
