@@ -702,9 +702,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>	
 	
-	<select id="getWhSkuInventoryCommandByInvMove" resultMap="WhSkuInventoryAllocatedCommandResultExt">
+	<select id="getWhSkuInventoryCommandByInvMove" resultMap="WhSkuInventoryAllocatedCommandSnResultExt">
 	    select
-	          distinct inv.id as id,
+	          distinct inv.id as alloctedId,
 	          inv.sku_id as skuId,
 	          inv.location_id as locationId,
 	          inv.outer_container_id as outerContainerId,

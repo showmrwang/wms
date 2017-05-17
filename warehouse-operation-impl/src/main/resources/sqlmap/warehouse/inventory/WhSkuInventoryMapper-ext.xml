@@ -3694,7 +3694,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				left join t_wh_sku_inventory_sn sn on inv.uuid = sn.uuid
 				where 
 				    inv.ou_id = #{ouId}
-		                  and inv.inside_container_id = #{insideContainerId}
+		            and inv.inside_container_id = #{insideContainerId}
     </select>
     
     <select id="getWhSkuInventoryCommandByOuterContainerId" resultMap="WhSkuInventoryCommandSnResultExt">

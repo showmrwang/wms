@@ -8910,7 +8910,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     /***
-     * /*** 补货中的拣货由库位库存生成容器库存
+     * /*** 库内移动中的拣货由库位库存生成容器库存
      * 
      * @param operationId
      * @param ouId
@@ -9099,10 +9099,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         // sn/残次信息
                         for (WhSkuInventorySnCommand snCmd : listSn) {
                             for (String sn : snDefectList) {
-                                if (sn.equals(snCmd.getSn()) || sn.equals(snCmd.getDefectWareBarcode())) {
+                                String snDefect = SkuCategoryProvider.concatSkuAttrId(snCmd.getSn(),snCmd.getDefectWareBarcode()); // 拼接sn/残次信息
+                                if (sn.equals(snDefect)) {
                                     WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
-                                    skuInvSn.setUuid(uuid);
                                     BeanUtils.copyProperties(snCmd, skuInvSn);
+                                    skuInvSn.setUuid(uuid);
                                     whSkuInventorySnDao.saveOrUpdate(skuInvSn);
                                     insertGlobalLog(GLOBAL_LOG_UPDATE, skuInvSn, ouId, userId, null, null);
                                 }
@@ -9366,10 +9367,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         // 操作sn/残次信息
                         for (WhSkuInventorySnCommand snCmd : listSn) {
                             for (String sn : snDefectList) {
-                                if (sn.equals(snCmd.getSn()) || sn.equals(snCmd.getDefectWareBarcode())) {
+                                String snDefect = SkuCategoryProvider.concatSkuAttrId(snCmd.getSn(),snCmd.getDefectWareBarcode()); // 拼接sn/残次信息
+                                if (sn.equals(snDefect)) {
                                     WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
-                                    skuInvSn.setUuid(uuid);
                                     BeanUtils.copyProperties(snCmd, skuInvSn);
+                                    skuInvSn.setUuid(uuid);
                                     whSkuInventorySnDao.saveOrUpdate(skuInvSn);
                                     insertGlobalLog(GLOBAL_LOG_UPDATE, skuInvSn, ouId, userId, null, null);
                                 }
