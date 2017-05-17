@@ -908,6 +908,17 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
             }
+            List<WhOdo> odoList = this.whOdoDao.findOdoListByWaveCode(wave.getCode(), ouId);
+            if (odoList != null && odoList.size() > 0) {
+                for (WhOdo o : odoList) {
+                    o.setOdoStatus(OdoStatus.RELEASE_WORK);
+                    o.setModifiedId(userId);
+                    int updateCount = this.whOdoDao.saveOrUpdateByVersion(o);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                }
+            }
             int updateCount = this.whWaveDao.saveOrUpdateByVersion(wave);
             if (updateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);

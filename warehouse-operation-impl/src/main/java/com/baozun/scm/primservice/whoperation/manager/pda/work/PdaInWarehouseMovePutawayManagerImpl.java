@@ -445,7 +445,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         if(false == opExecLineCmd.getIsWholeCase()){
             insideContainerIds = opExecLineCmd.getTurnoverBoxIds().get(locationId);
         }else{
-            if(null != opExecLineCmd.getPallets()){
+            if(null != opExecLineCmd.getPallets() && 0 < opExecLineCmd.getPallets().size()){
                 outerContainerIds = opExecLineCmd.getPallets();    
             }else{
                 insideContainerIds = opExecLineCmd.getContainers();    

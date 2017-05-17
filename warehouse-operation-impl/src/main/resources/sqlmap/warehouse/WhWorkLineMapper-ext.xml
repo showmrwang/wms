@@ -250,7 +250,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        UPDATE t_wh_work_line SET
 			        line_code = #{lineCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        work_id = #{workId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        sku_id = #{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -288,12 +287,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        replenishment_code = #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        inv_move_code = #{invMoveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time =now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        WHERE 
-			        id = #{id} 
+			        id = #{id}  and ou_id=#{ouId}
 			        
-			        and last_modify_time	<=  #{lastModifyTime}    
+			        and last_modify_time	=  #{lastModifyTime}    
 		    ]]>
 		</update>
 	

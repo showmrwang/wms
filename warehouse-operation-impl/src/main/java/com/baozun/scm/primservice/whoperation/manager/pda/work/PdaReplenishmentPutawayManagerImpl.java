@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishScanTipSkuCacheCommand;
@@ -124,6 +125,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     private SkuRedisManager skuRedisManager;
     @Autowired
     private WhSkuDao whSkuDao;
+    @Autowired
+    private CodeManager codeManager;
     
     
     @Override
@@ -868,8 +871,17 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                              workLine.setId(null);
                                              workLine.setCreateTime(new Date());
                                              workLine.setLastModifyTime(new Date());
+                                             String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                             workLine.setLineCode(workLineCode);
                                              whWorkLineDao.insert(workLine);
                                              insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
+                                             //修改原来的记录
+                                             WhWorkLine workLine1 = new WhWorkLine();
+                                             BeanUtils.copyProperties(workLineCmd, workLine1);
+                                             workLine1.setFromInsideContainerId(null);
+                                             workLine1.setQty(lineQty-onHandQty);
+                                             whWorkLineDao.saveOrUpdateByVersion(workLine1);
+                                             insertGlobalLog(GLOBAL_LOG_UPDATE,workLine1, ouId, userId, null, null);
                                              continue;
                                          }
                                          if(lineQty.doubleValue() == sum.doubleValue()){
@@ -877,6 +889,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                              workLine.setId(null);
                                              workLine.setCreateTime(new Date());
                                              workLine.setLastModifyTime(new Date());
+                                             String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                             workLine.setLineCode(workLineCode);
                                              whWorkLineDao.insert(workLine);
                                              insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
                                              WhWorkLine workLine1 = new WhWorkLine();
@@ -891,6 +905,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                              workLine.setId(null);
                                              workLine.setCreateTime(new Date());
                                              workLine.setLastModifyTime(new Date());
+                                             String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                             workLine.setLineCode(workLineCode);
                                              whWorkLineDao.insert(workLine);
                                              insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
                                              WhWorkLine workLine1 = new WhWorkLine();
@@ -951,6 +967,13 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                         opLine.setLastModifyTime(new Date());
                                         whOperationLineDao.insert(opLine);
                                         insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
+                                        //修改原来的数据
+                                        WhOperationLine opLine1 = new WhOperationLine();
+                                        BeanUtils.copyProperties(operLineCmd, opLine1);
+                                        opLine1.setFromInsideContainerId(null);
+                                        opLine1.setQty(lineQty-onHandQty);
+                                        whOperationLineDao.saveOrUpdateByVersion(opLine1);
+                                        insertGlobalLog(GLOBAL_LOG_UPDATE, opLine1, ouId, userId, null, null);
                                         continue;
                                     }
                                     if(lineQty.doubleValue() == sum.doubleValue()){
