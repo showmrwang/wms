@@ -472,7 +472,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         if(null != outerContainerId){
             invList = whSkuInventoryDao.getWhSkuInventoryCommandByOuterContainerId(ouId, outerContainerId);    
         }else{
-            invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, insideContainerId);
+            invList = whSkuInventoryDao.getWhSkuInventoryCommandByInsideContainerId(ouId, insideContainerId);
         }
         
         if (null == invList || 0 == invList.size()) {

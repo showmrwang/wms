@@ -8874,7 +8874,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param insideContainerId
      * @param turnoverBoxId
      */
-    public void invmoveContainerInventory(Boolean isShortPicking, List<String> snDefectList, String skuAttrIds, Long locationId, Long operationId, Long ouId, Long outerContainerId, Long insideContainerId, Long turnoverBoxId, Boolean isTabbInvTotal,
+    public void invMoveContainerInventory(Boolean isShortPicking, List<String> snDefectList, String skuAttrIds, Long locationId, Long operationId, Long ouId, Long outerContainerId, Long insideContainerId, Long turnoverBoxId, Boolean isTabbInvTotal,
             Long userId, String workCode, Double scanSkuQty) {
         List<WhOperationExecLine> operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId, outerContainerId, insideContainerId);
         if (null == operationExecLineList || operationExecLineList.size() == 0) {
