@@ -126,46 +126,26 @@ public class InventoryOccupyManagerImpl extends BaseInventoryManagerImpl impleme
     
     private boolean occupyInv(Long invId, Double qty, Double oldQty, String occupyCode, String occupySource, Long odoLineId, Warehouse wh) {
     	boolean flag = false;
-    	for (int i = 0; i < 5; i++) {
-    		WhSkuInventory skuInv = inventoryDao.findWhSkuInventoryById(invId, wh.getId());
-    		skuInv.setOnHandQty(qty);
-    		skuInv.setOccupationCode(occupyCode);
-    		skuInv.setOccupationCodeSource(occupySource);
-    		skuInv.setOccupationLineId(odoLineId);
-    		int num = inventoryDao.saveOrUpdateByVersion(skuInv);
-    		if (1 == num) {
-    			insertSkuInventoryLog(invId, occupyCode, occupySource, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L, null);
-    			flag = true;
-    			break;
-			} else {
-				// 修改失败 继续执行
-                log.warn("occupyInv error:invId:{},occupyCode:{},qty:{},logId:{}");
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {}
-			}
+		WhSkuInventory skuInv = inventoryDao.findWhSkuInventoryById(invId, wh.getId());
+		skuInv.setOnHandQty(qty);
+		skuInv.setOccupationCode(occupyCode);
+		skuInv.setOccupationCodeSource(occupySource);
+		skuInv.setOccupationLineId(odoLineId);
+		int num = inventoryDao.saveOrUpdateByVersion(skuInv);
+		if (1 == num) {
+			flag = true;
 		}
     	return flag;
     }
     
     private boolean subtractInv(Long invId, Double qty, Double oldQty, String occupyCode, String occupySource, Warehouse wh) {
     	boolean flag = false;
-    	for (int i = 0; i < 5; i++) {
-	    	WhSkuInventory skuInv = inventoryDao.findWhSkuInventoryById(invId, wh.getId());
-			skuInv.setOnHandQty(skuInv.getOnHandQty() - qty);
-			int num = inventoryDao.saveOrUpdateByVersion(skuInv);
-			if (1 == num) {
-				insertSkuInventoryLog(invId, occupyCode, occupySource, -qty, oldQty, wh.getIsTabbInvTotal(), wh.getId(), 1L, null);
-				flag = true;
-				break;
-			} else {
-				// 修改失败 继续执行
-                log.warn("occupyInv error:invId:{},occupyCode:{},qty:{},logId:{}");
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {}
-			}
-    	}
+    	WhSkuInventory skuInv = inventoryDao.findWhSkuInventoryById(invId, wh.getId());
+		skuInv.setOnHandQty(skuInv.getOnHandQty() - qty);
+		int num = inventoryDao.saveOrUpdateByVersion(skuInv);
+		if (1 == num) {
+			flag = true;
+		}
 		return flag;
 	}
 
