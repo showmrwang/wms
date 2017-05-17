@@ -143,8 +143,9 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
         List<WhOperationExecLineCommand> operationExecLineGroup = new ArrayList<WhOperationExecLineCommand>();
         if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
             for (WhOperationExecLineCommand cmd : execLineCommandList) {
-                String line = ParamsUtil.concatParam((null == cmd.getUseOuterContainerId() ? "" : cmd.getUseOuterContainerId().toString()), (null == cmd.getUseContainerLatticeNo() ? "" : cmd.getUseContainerLatticeNo().toString()),
-                        (null == cmd.getUseContainerId() ? "" : cmd.getUseContainerId().toString()), cmd.getUseOutboundboxCode());
+                String line =
+                        ParamsUtil.concatParam((null == cmd.getUseOuterContainerId() ? "" : cmd.getUseOuterContainerId().toString()), (null == cmd.getUseContainerLatticeNo() ? "" : cmd.getUseContainerLatticeNo().toString()),
+                                (null == cmd.getUseContainerId() ? "" : cmd.getUseContainerId().toString()), cmd.getUseOutboundboxCode());
                 boolean isExists = isExistsOperationExecLineGroup(operationExecLineGroup, line);
                 if (false == isExists) {
                     operationExecLineGroup.add(cmd);
@@ -244,6 +245,8 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setStoreCode("");
                             line.setStoreName("");
                             line.setUuid(inv.getUuid());
+                            line.setCreateTime(new Date());
+                            line.setLastModifyTime(new Date());
                             WhCheckingLineDao.insert(line);
                         }
                     }
@@ -259,8 +262,9 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
         boolean isExists = false;
         if (null != operationExecLineGroup && !operationExecLineGroup.isEmpty()) {
             for (WhOperationExecLineCommand cmd : operationExecLineGroup) {
-                String line = ParamsUtil.concatParam((null == cmd.getUseOuterContainerId() ? "" : cmd.getUseOuterContainerId().toString()), (null == cmd.getUseContainerLatticeNo() ? "" : cmd.getUseContainerLatticeNo().toString()),
-                        (null == cmd.getUseContainerId() ? "" : cmd.getUseContainerId().toString()), cmd.getUseOutboundboxCode());
+                String line =
+                        ParamsUtil.concatParam((null == cmd.getUseOuterContainerId() ? "" : cmd.getUseOuterContainerId().toString()), (null == cmd.getUseContainerLatticeNo() ? "" : cmd.getUseContainerLatticeNo().toString()),
+                                (null == cmd.getUseContainerId() ? "" : cmd.getUseContainerId().toString()), cmd.getUseOutboundboxCode());
                 if (line.equals(execLine)) {
                     isExists = true;
                     break;
@@ -411,7 +415,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     // 生成复核明细
                     for (WhSkuInventory inv : invList) {
                         if (null != inv) {
-                            //TODO checkingLine少一个记录小批次的字段，商品本身有一个批次号
+                            // TODO checkingLine少一个记录小批次的字段，商品本身有一个批次号
                             WhCheckingLine line = new WhCheckingLine();
                             line.setBatchNumber(inv.getBatchNumber());
                             line.setCheckingId(checking.getId());
