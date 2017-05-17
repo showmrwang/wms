@@ -35,6 +35,8 @@ public class WmsOutBoundConfirm implements Serializable {
     private String wmsOdoCode;
     /** 上位系统出库单类型 */
     private String extOdoType;
+    /** 电商平台订单号 */
+    private String ecOrderCode;
     /** 运输服务商-快递单号 */
     private List<String> transportServiceProviders;
     /** 出库单状态 */
@@ -168,6 +170,14 @@ public class WmsOutBoundConfirm implements Serializable {
 
     public void setOutboundTime(Date outboundTime) {
         this.outboundTime = outboundTime;
+    }
+
+    public String getEcOrderCode() {
+        return ecOrderCode;
+    }
+
+    public void setEcOrderCode(String ecOrderCode) {
+        this.ecOrderCode = ecOrderCode;
     }
 
 

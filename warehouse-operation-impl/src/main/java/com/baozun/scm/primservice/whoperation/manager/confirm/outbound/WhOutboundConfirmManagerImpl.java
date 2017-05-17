@@ -108,8 +108,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             log.warn("WhOutboundConfirmManagerImpl.saveWhOutboundConfirm whOdo is null");
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL, new Object[] {"whOdo"});
         }
-        if (!StringUtil.isEmpty(whOdo.getDataSource()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource())) {
-            // 数据来源!=WMS才需要生成反馈数据
+        if (!StringUtil.isEmpty(whOdo.getDataSource())) {
             if (OdoStatus.FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.NEW.equals(whOdo.getOdoStatus())) {
                 // 只有单据状态为新建或者是出库完成才需要生成对应数据
                 Long ouid = whOdo.getOuId();
@@ -144,6 +143,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 ob.setCustomerCode(getCustomerByRedis(whOdo.getCustomerId()).getCustomerCode());
                 ob.setStoreCode(getStoreByRedis(whOdo.getStoreId()).getStoreCode());
                 ob.setOuId(ouid);
+                ob.setEcOrderCode(whOdo.getEcOrderCode());
                 ob.setDataSource(whOdo.getDataSource());
                 // TODO 后续增加是否整单出库完成逻辑
                 ob.setCreateTime(new Date());
