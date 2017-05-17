@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.util.TypeUtils;
 
-import com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.excel.util.ReflectUtil;
 
 /**
@@ -22,7 +22,7 @@ public class ExcelXmlBuild {
 	
 	//快速构建一个XML配置,看不懂直接运行
 	public static void main(String[] args) {
-        String xml = builderXml("whOdoVas", "出库单增值服务列表", true, OdoTransportMgmtCommand.class, 5000);
+        String xml = builderXml("whSkuInventoryInit", "库存初始化列表", true, WhSkuInventoryCommand.class, 5000);
 		System.out.println(xml);
 	}
 	

@@ -454,21 +454,25 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
      */
     @Override
     public String getUniqueCode() {
-        return this.getUniqueCode(null);
+        return this.getUniqueCode(null, Constants.WHPO_MODEL_URL, null, null, null);
     }
-    private String getUniqueCode(Integer threshold) {
+
+    private String getUniqueCode(Integer threshold, String model, String group, String start, String end) {
         // 阙值 3次 如果同一个编码三次生成的条码在库位所在的仓库都有重复，那么则回滚
         threshold = threshold == null ? 0 : threshold;
         if (threshold >= 3) return null;
-        String poCode = codeManager.generateCode(Constants.WMS, Constants.WHPO_MODEL_URL, null, null, null);
+        String poCode = codeManager.generateCode(Constants.WMS, model, group, start, end);
         BiPo biPo = this.biPoManager.findBiPoByPoCode(poCode);
         // 如果本次生成的条码在数据库中有数据的话，则再生成一次。阙值加1
         if (biPo != null) {
-            return getUniqueCode(threshold + 1);
+            return getUniqueCode(threshold + 1, model, group, start, end);
         }
         return poCode;
     }
 
+    private String getUniqueCode(String model, String group, String start, String end) {
+        return this.getUniqueCode(null, model, group, start, end);
+    }
 
     /**
      * 创建BIPO单据
@@ -2007,6 +2011,11 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
         }
         return ctnRcvd;
+    }
+
+    @Override
+    public String generateExtCode() {
+        return this.getUniqueCode(null, Constants.BIPO_MODEL_URL, Constants.WMS_PO_EXT, null, null);
     }
 
 }

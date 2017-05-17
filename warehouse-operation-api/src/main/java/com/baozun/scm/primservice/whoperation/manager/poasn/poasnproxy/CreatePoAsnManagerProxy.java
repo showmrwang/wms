@@ -174,5 +174,10 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      */
     void constructReturnsSkuInventory(List<RcvdCacheCommand> rcvdList, Long ouId, Long userId, String logId, Boolean isReturns);
 
+    /**
+     * [业务方法]生成BIPO相关单据号
+     */
+    String generateExtCode();
+
 
 }

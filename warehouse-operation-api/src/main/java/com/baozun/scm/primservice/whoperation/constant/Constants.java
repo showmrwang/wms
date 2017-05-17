@@ -58,6 +58,9 @@ public final class Constants {
     /** 调编码生成器 ASN单WMS外部单号分组 */
     public static final String WMS_ASN_EXT = "WMS_ASN_EXT";
 
+    /** 调编码生成器 PO单WMS外部单号分组 */
+    public static final String WMS_PO_EXT = "WMS_PO_EXT";
+
     /** 插入全局日志表 */
     public static final String GLOBAL_LOG_INSERT = "INSERT";
 
