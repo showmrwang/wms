@@ -1479,8 +1479,13 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setQuantity(1);   // 获取面单数量1
         mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
-        // mailNoContent.setInsuranceAmount
-        // mailNoContent.setTransFree
+        // 有保价增值服务, 则设置isBj
+        for (TransVasList vas : trans.getTransVasList()) {
+            if ("INSURED".equals(vas.getVasCode())) {
+                mailNoContent.setIsBj(Boolean.TRUE);
+                break;
+            }
+        }
         // 商品信息
         List<TransSkuItemCommand> skuItem = new ArrayList<TransSkuItemCommand>();
         for (WhOdoLine odoLine : odoLineList) {
