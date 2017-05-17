@@ -832,7 +832,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         String outboundbox = cmd.getOutboundBoxCode();
         Long outboundboxId = cmd.getOutboundboxId();
         // 更新复合明细表
-        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId, outboundboxId, outboundbox,userId);
+        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId, outboundboxId, outboundbox, userId);
         cmd.setOuId(ouId);
         // 生成出库箱库存(sn有问题)
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
@@ -840,13 +840,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingLineCommand lineCmd = checkingLineList.get(0);
         Long odoId = lineCmd.getOdoId();
         // 出库箱头信息（t_wh_outboundbox）和出库箱明细
-        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd,outboundboxId,userId);
+        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId);
         // 算包裹计重????
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox);
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if (result) {
             // 更新出库单状态
-            this.updateOdoStatusByOdo(odoId, ouId,userId);
+            this.updateOdoStatusByOdo(odoId, ouId, userId);
         }
         // List<WeightingCommand> commandList =
         // whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId,
@@ -865,7 +865,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合更新复合表
      * @param checkingLineList
      */
-    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox,Long userId) {
+    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId) {
         for (WhCheckingLineCommand cmd : checkingLineList) {
             Long id = cmd.getId(); // 复合明细id
             Long checkingQty = cmd.getCheckingQty(); // 复合明细数量
@@ -903,67 +903,67 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 
      * @param whCheckingResultCommand
      */
-    private void addOutboundbox(Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd,Long outboundboxId,Long userId) {
-        
-            WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
-            if (null == checkingCmd) {
-                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+    private void addOutboundbox(Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId) {
+
+        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+        if (null == checkingCmd) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        WhOutboundboxCommand outboundboxCmd = whOutboundboxDao.getwhOutboundboxCommandByCode(outboundbox, ouId);
+        if (null != outboundboxCmd) {
+            WhOutboundbox whOutboundbox = new WhOutboundbox();
+            BeanUtils.copyProperties(outboundboxCmd, whOutboundbox);
+            whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
+            whOutboundbox.setDistributionMode(checkingCmd.getDistributionMode());
+            whOutboundbox.setPickingMode(checkingCmd.getPickingMode());
+            whOutboundbox.setCheckingMode(checkingCmd.getCheckingMode());
+            whOutboundbox.setOutboundboxId(outboundboxId);
+            whOutboundboxDao.saveOrUpdate(whOutboundbox);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, whOutboundbox, ouId, userId, null, null);
+        } else {
+            WhOutboundbox whOutboundbox = new WhOutboundbox();
+            BeanUtils.copyProperties(checkingCmd, whOutboundbox);
+            whOutboundbox.setOuId(ouId);
+            whOutboundbox.setOdoId(odoId);
+            whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
+            whOutboundbox.setOutboundboxId(outboundboxId);
+            whOutboundboxDao.insert(whOutboundbox);
+            insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
+            // 生成出库想明细信息
+            List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
+            // 添加出库箱明细
+            for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
+                WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
+                outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
+                outboundboxLine.setSkuCode(lineCmd.getSkuCode());
+                outboundboxLine.setSkuExtCode(lineCmd.getSkuExtCode());
+                outboundboxLine.setSkuBarCode(lineCmd.getSkuBarCode());
+                outboundboxLine.setSkuName(lineCmd.getSkuName());
+                outboundboxLine.setQty(skuInvCmd.getOnHandQty());
+                outboundboxLine.setCustomerCode(lineCmd.getCustomerCode());
+                outboundboxLine.setCustomerName(lineCmd.getCustomerName());
+                outboundboxLine.setStoreCode(lineCmd.getStoreCode());
+                outboundboxLine.setStoreName(lineCmd.getStoreName());
+                outboundboxLine.setInvStatus(skuInvCmd.getInvStatus().toString());
+                outboundboxLine.setInvType(skuInvCmd.getInvType());
+                outboundboxLine.setBatchNumber(skuInvCmd.getBatchNumber());
+                outboundboxLine.setMfgDate(skuInvCmd.getMfgDate());
+                outboundboxLine.setExpDate(skuInvCmd.getExpDate());
+                outboundboxLine.setCountryOfOrigin(skuInvCmd.getCountryOfOrigin());
+                outboundboxLine.setInvAttr1(skuInvCmd.getInvAttr1());
+                outboundboxLine.setInvAttr2(skuInvCmd.getInvAttr2());
+                outboundboxLine.setInvAttr3(skuInvCmd.getInvAttr3());
+                outboundboxLine.setInvAttr4(skuInvCmd.getInvAttr4());
+                outboundboxLine.setInvAttr5(skuInvCmd.getInvAttr5());
+                outboundboxLine.setUuid(skuInvCmd.getUuid());
+                outboundboxLine.setOuId(skuInvCmd.getOuId());
+                outboundboxLine.setOdoId(lineCmd.getOdoId());
+                outboundboxLine.setOdoLineId(lineCmd.getOdoLineId());
+                outboundboxLine.setSysDate(String.valueOf(new Date()));
+                whOutboundboxLineDao.insert(outboundboxLine);
+                insertGlobalLog(GLOBAL_LOG_INSERT, outboundboxLine, ouId, userId, null, null);
             }
-            WhOutboundboxCommand outboundboxCmd = whOutboundboxDao.getwhOutboundboxCommandByCode(outboundbox, ouId);
-            if(null == outboundboxCmd) {
-                WhOutboundbox whOutboundbox = new WhOutboundbox();
-                BeanUtils.copyProperties(outboundboxCmd, whOutboundbox);
-                whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
-                whOutboundbox.setDistributionMode(checkingCmd.getDistributionMode());
-                whOutboundbox.setPickingMode(checkingCmd.getPickingMode());
-                whOutboundbox.setCheckingMode(checkingCmd.getCheckingMode());
-                whOutboundbox.setOutboundboxId(outboundboxId);
-                whOutboundboxDao.saveOrUpdate(whOutboundbox);
-                insertGlobalLog(GLOBAL_LOG_UPDATE, whOutboundbox, ouId, userId, null, null);
-            }else{
-                WhOutboundbox whOutboundbox = new WhOutboundbox();
-                BeanUtils.copyProperties(checkingCmd, whOutboundbox);
-                whOutboundbox.setOuId(ouId);
-                whOutboundbox.setOdoId(odoId);
-                whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
-                whOutboundbox.setOutboundboxId(outboundboxId);
-                whOutboundboxDao.insert(whOutboundbox);
-                insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
-                // 生成出库想明细信息
-                List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
-                // 添加出库箱明细
-                for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
-                    WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
-                    outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
-                    outboundboxLine.setSkuCode(lineCmd.getSkuCode());
-                    outboundboxLine.setSkuExtCode(lineCmd.getSkuExtCode());
-                    outboundboxLine.setSkuBarCode(lineCmd.getSkuBarCode());
-                    outboundboxLine.setSkuName(lineCmd.getSkuName());
-                    outboundboxLine.setQty(skuInvCmd.getOnHandQty());
-                    outboundboxLine.setCustomerCode(lineCmd.getCustomerCode());
-                    outboundboxLine.setCustomerName(lineCmd.getCustomerName());
-                    outboundboxLine.setStoreCode(lineCmd.getStoreCode());
-                    outboundboxLine.setStoreName(lineCmd.getStoreName());
-                    outboundboxLine.setInvStatus(skuInvCmd.getInvStatus().toString());
-                    outboundboxLine.setInvType(skuInvCmd.getInvType());
-                    outboundboxLine.setBatchNumber(skuInvCmd.getBatchNumber());
-                    outboundboxLine.setMfgDate(skuInvCmd.getMfgDate());
-                    outboundboxLine.setExpDate(skuInvCmd.getExpDate());
-                    outboundboxLine.setCountryOfOrigin(skuInvCmd.getCountryOfOrigin());
-                    outboundboxLine.setInvAttr1(skuInvCmd.getInvAttr1());
-                    outboundboxLine.setInvAttr2(skuInvCmd.getInvAttr2());
-                    outboundboxLine.setInvAttr3(skuInvCmd.getInvAttr3());
-                    outboundboxLine.setInvAttr4(skuInvCmd.getInvAttr4());
-                    outboundboxLine.setInvAttr5(skuInvCmd.getInvAttr5());
-                    outboundboxLine.setUuid(skuInvCmd.getUuid());
-                    outboundboxLine.setOuId(skuInvCmd.getOuId());
-                    outboundboxLine.setOdoId(lineCmd.getOdoId());
-                    outboundboxLine.setOdoLineId(lineCmd.getOdoLineId());
-                    outboundboxLine.setSysDate(String.valueOf(new Date()));
-                    whOutboundboxLineDao.insert(outboundboxLine);
-                    insertGlobalLog(GLOBAL_LOG_INSERT,outboundboxLine, ouId, userId, null, null);
-                } 
-            }
+        }
     }
 
 
@@ -997,7 +997,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null != odoPackageInfo) {
             odoPackageInfo.setCalcWeight(sum.longValue());
             whOdoPackageInfoDao.saveOrUpdateByVersion(odoPackageInfo);
-            insertGlobalLog(GLOBAL_LOG_UPDATE,odoPackageInfo, ouId, userId, null, null);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, odoPackageInfo, ouId, userId, null, null);
         } else {
             WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
             WhOdoPackageInfo whOdoPackageInfo = new WhOdoPackageInfo();
@@ -1014,7 +1014,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOdoPackageInfo.setCalcWeight(sum.longValue());
             whOdoPackageInfo.setOuId(ouId);
             whOdoPackageInfoDao.insert(whOdoPackageInfo);
-            insertGlobalLog(GLOBAL_LOG_INSERT,whOdoPackageInfo, ouId, userId, null, null);
+            insertGlobalLog(GLOBAL_LOG_INSERT, whOdoPackageInfo, ouId, userId, null, null);
         }
     }
 
@@ -1025,13 +1025,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @author
      * @param whCheckingResultCommand
      */
-    private void updateOdoStatusByOdo(Long odoId, Long ouId,Long userId) {
+    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId) {
         // 修改出库单状态为复核完成状态。
         WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
         // 修改出库单状态为复核完成状态。
         whOdo.setHeadStartOdoStatus(OdoStatus.SEEDING);
         whOdoDao.saveOrUpdateByVersion(whOdo);
-        insertGlobalLog(GLOBAL_LOG_UPDATE,whOdo, ouId, userId, null, null);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
     }
 
     @Override
