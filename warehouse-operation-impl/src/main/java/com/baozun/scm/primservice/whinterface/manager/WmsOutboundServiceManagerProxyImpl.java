@@ -107,14 +107,14 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
             if (odoList == null || odoList.size() == 0) {
                 return new WmsResponse(0, WmsErrorCode.EXTCODE_NO_ERROR, "EXTCODE_NO_ERROR");
             }
-
             if (odoList.size() > 1) {
                 return new WmsResponse(0, WmsErrorCode.EXTCODE_NOT_UNIQUE_ERROR, "EXTCODE_NOT_UNIQUE_ERROR");
             }
             WhOdo odo = odoList.get(0);
-            if (!OdoStatus.NEW.equals(odo.getOdoStatus())) {
-                return new WmsResponse(0, WmsErrorCode.STATUS_CANCEL_ERROR, "ODO_STATUS_CANCEL_ERROR");
-            }
+            // if (!OdoStatus.NEW.equals(odo.getOdoStatus())) {
+            // return new WmsResponse(0, WmsErrorCode.STATUS_CANCEL_ERROR,
+            // "ODO_STATUS_CANCEL_ERROR");
+            // }
             if (wmsOutBoundCancel.getIsOdoCancel().booleanValue()) {
                 this.odoManagerProxy.cancel(odo, ouId, true, null, null, null);
             } else {
