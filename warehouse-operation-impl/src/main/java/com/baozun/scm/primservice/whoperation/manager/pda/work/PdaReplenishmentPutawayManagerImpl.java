@@ -243,6 +243,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Long ouId = command.getOuId();
         Long locationId = command.getLocationId();
         String turnoverBoxCode = command.getTurnoverBoxCode();
+        String newTurnoverBoxCode = command.getNewTurnoverBoxCode();
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -284,6 +285,10 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
            
             }
         }else{//多个目标库位
+            ContainerCommand newCmd = containerDao.getContainerByCode(newTurnoverBoxCode, ouId);
+            if(null == newCmd) {
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
             Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
             Map<String, Map<String, Set<String>>> locSkuAttrIdsSnDefect = opExecLineCmd.getSkuAttrIdsSnDefect();
             Map<String, Map<Long, Map<String, Long>>> locSkuAttrIds = opExecLineCmd.getSkuAttrIds();
