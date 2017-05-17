@@ -844,6 +844,95 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				             and inv.replenishment_code IS NOT NULL
 				             and operLine.operation_id = #{operationId}
 							 and inv.uuid=#{uuid}
+							 <if test="occupationCode!=null and occupationCode!=''">
+					          and inv.occupation_code = #{occupationCode}
+				             </if>
+				             <if test="occupationLineId!=null">
+					          and inv.occupation_line_id = #{occupationLineId}
+				             </if>
+						GROUP BY inv.uuid
+				     ) allocated 
+					left join t_wh_sku_inventory_sn sn on allocated.alloctedUuid = sn.uuid 
+	</select>
+	
+	<select id="getWhSkuInventorySNCommandByInvMove" resultMap="WhSkuInventoryAllocatedCommandSnResultExt">
+	    select
+	          allocated.alloctedId,
+	          allocated.skuId,
+	          allocated.locationId,
+	          allocated.outerContainerId,
+	          allocated.insideContainerId,
+	          allocated.customerId,
+	          allocated.storeId,
+	          allocated.invOccupationCode,
+	          allocated.invOccupationLineId,
+	          allocated.replenishmentCode,
+	          allocated.qty,
+	          allocated.invStatus,
+	          allocated.invType,
+	          allocated.batchNumber,
+	          allocated.mfgDate,
+	          allocated.expDate,
+	          allocated.countryOfOrigin,
+	          allocated.invAttr1,
+	          allocated.invAttr2,
+	          allocated.invAttr3,
+	          allocated.invAttr4,
+	          allocated.invAttr5,
+	          allocated.alloctedUuid,
+	          allocated.alloctedOuId,
+	          allocated.lastModifyTime,
+	          allocated.replenishmentRuleId,
+	          allocated.occupationCodeSource,
+	          sn.id AS snId,
+	          sn.sn AS snSn,
+	          sn.occupation_code AS snOccupationCode,
+	          sn.defect_ware_barcode AS snDefectWareBarcode,
+	          sn.defect_source AS snDefectSource,
+	          sn.defect_type_id AS snDefectTypeId,
+	          sn.defect_reasons_id AS snDefectReasonsId,
+	          sn.status AS snStatus,
+	          sn.inv_attr AS snInvAttr,
+	          sn.uuid AS snUuid,
+	          sn.ou_id AS snOuId,
+	          sn.sys_uuid AS snSysUuid
+			      from (SELECT
+							inv.id AS alloctedId,
+							inv.sku_id AS skuId,
+							inv.location_id AS locationId,
+							inv.outer_container_id AS outerContainerId,
+							inv.inside_container_id AS insideContainerId,
+							inv.customer_id AS customerId,
+							inv.store_id AS storeId,
+							inv.occupation_code AS invOccupationCode,
+							inv.replenishment_code as replenishmentCode,
+							sum(inv.qty) AS qty,
+							inv.inv_status AS invStatus,
+							inv.inv_type AS invType,
+							inv.batch_number AS batchNumber,
+							inv.mfg_date AS mfgDate,
+							inv.exp_date AS expDate,
+							inv.country_of_origin AS countryOfOrigin,
+							inv.inv_attr1 AS invAttr1,
+							inv.inv_attr2 AS invAttr2,
+							inv.inv_attr3 AS invAttr3,
+							inv.inv_attr4 AS invAttr4,
+							inv.inv_attr5 AS invAttr5,
+							inv.uuid AS alloctedUuid,
+							inv.ou_id AS alloctedOuId,
+							inv.occupation_code_source AS occupationCodeSource,
+							inv.replenishment_rule_id as replenishmentRuleId,
+							inv.last_modify_time AS lastModifyTime,
+							inv.occupation_line_id AS invOccupationLineId
+						FROM
+						    t_wh_operation_line operLine,
+							t_wh_sku_inventory_allocated inv
+						WHERE
+							 inv.ou_id = #{ouId}
+							 and operLine.inv_move_code = inv.occupation_code
+				             and inv.occupation_code IS NOT NULL
+				             and operLine.operation_id = #{operationId}
+							 and inv.uuid=#{uuid}
 						GROUP BY inv.uuid
 				     ) allocated 
 					left join t_wh_sku_inventory_sn sn on allocated.alloctedUuid = sn.uuid 

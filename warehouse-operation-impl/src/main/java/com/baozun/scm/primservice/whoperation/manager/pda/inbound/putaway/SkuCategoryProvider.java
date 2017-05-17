@@ -134,8 +134,8 @@ public final class SkuCategoryProvider {
 
     public static String getSkuAttrIdByWhWorkLineCommand(WhWorkLineCommand whWorkLineCmd) {
         String ret = "";
-        // Long skuId = whWorkLineCmd.getSkuId();
-        String skuCode = whWorkLineCmd.getSkuCode();
+         Long skuId = whWorkLineCmd.getSkuId();
+//        String skuCode = whWorkLineCmd.getSkuCode();
         String invType = (StringUtils.isEmpty(whWorkLineCmd.getInvType()) ? PH : whWorkLineCmd.getInvType());
         String invStatus = (StringUtils.isEmpty(whWorkLineCmd.getInvStatus()) ? PH : whWorkLineCmd.getInvStatus() + "");
         String batchNumber = (StringUtils.isEmpty(whWorkLineCmd.getBatchNumber()) ? PH : whWorkLineCmd.getBatchNumber());
@@ -147,7 +147,7 @@ public final class SkuCategoryProvider {
         String invAttr3 = (StringUtils.isEmpty(whWorkLineCmd.getInvAttr3()) ? PH : whWorkLineCmd.getInvAttr3());
         String invAttr4 = (StringUtils.isEmpty(whWorkLineCmd.getInvAttr4()) ? PH : whWorkLineCmd.getInvAttr4());
         String invAttr5 = (StringUtils.isEmpty(whWorkLineCmd.getInvAttr5()) ? PH : whWorkLineCmd.getInvAttr5());
-        ret = skuCode + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
         // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
         // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
         // invAttr4 + DV + invAttr5;

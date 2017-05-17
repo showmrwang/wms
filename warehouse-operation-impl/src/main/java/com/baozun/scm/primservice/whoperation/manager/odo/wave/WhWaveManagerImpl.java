@@ -1302,15 +1302,25 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> excuteSortSql(String excuteSql, Long ouId) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Long> odoIdList = new ArrayList<Long>();
+        List<Map<String, Object>> list = whWaveMasterDao.excuteSortSql(excuteSql, ouId);
+        for (Map<String, Object> map : list) {
+            odoIdList.add((Long) map.get("id"));
+        }
+        return odoIdList;
     }
 
     @Override
-    public WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printOrderType13, Long ouId) {
-        // TODO Auto-generated method stub
-        return null;
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printType, Long ouId) {
+        WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        if (null == wave) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        WhWaveMasterPrintCondition c = whWaveMasterDao.findPrintConditionByWaveMasterId(wave.getWaveMasterId(), printType, ouId);
+        return c;
     }
 
 }

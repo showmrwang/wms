@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.pda.work.CheckScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.OperationExecStatisticsCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishScanTipSkuCacheCommand;
@@ -123,6 +125,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     private SkuRedisManager skuRedisManager;
     @Autowired
     private WhSkuDao whSkuDao;
+    @Autowired
+    private CodeManager codeManager;
     
     
     @Override
@@ -262,12 +266,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 command.setIsNeedScanTurnoverBox(true);
                 //当前周转箱上架
                 whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
+                //修改作业执行明细的执行量
+                this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId);
                 //判断当前库位是否有拣货工作
                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
             }else{//继续扫描下一个库位
                  command.setIsScanFinsh(true);
                  whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
-                 //判断当前补货库位有没有拣货工作
+                 //修改作业执行明细的执行量
+                 this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId);
                  //更新工作及作业状态
                  this.updateStatus(operationId, workCode, ouId, userId);
                  //判断当前库位是否有拣货工作
@@ -303,6 +310,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
        return command;
     }
 
+    private void updateOperationExecLine(Long turnoverBoxId,Long operationId,Long ouId,Long userId){
+        
+        List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(operationId, ouId, turnoverBoxId);
+        for(WhOperationExecLine execLine:execLineList){
+            execLine.setCompleteQty(execLine.getQty());
+            whOperationExecLineDao.saveOrUpdateByVersion(execLine);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, execLine, ouId, userId, null, null);
+        }
+    }
     /***
      * 
      * @param srCmd
@@ -841,7 +857,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
                            Long insideId = invCmd.getInsideContainerId();
                            String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
-                           if(workSkuAttrId.equals(skuAttrId)) {
+                           if(workSkuAttrId.equals(skuAttrId) && invCmd.getOccupationLineId().longValue() == workLineCmd.getOdoLineId().longValue()) {
                                  Double lineQty = workLineCmd.getQty();
                                  if(workSkuAttrId.equals(skuAttrId)) {
                                      Double onHandQty = invCmd.getOnHandQty();
@@ -852,17 +868,53 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setFromInsideContainerId(insideId);
                                          if(lineQty.doubleValue() > sum.doubleValue()){
                                              workLine.setQty(onHandQty);
+                                             workLine.setId(null);
+                                             workLine.setCreateTime(new Date());
+                                             workLine.setLastModifyTime(new Date());
+                                             String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                             workLine.setLineCode(workLineCode);
+                                             whWorkLineDao.insert(workLine);
+                                             insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
+                                             //修改原来的记录
+                                             WhWorkLine workLine1 = new WhWorkLine();
+                                             BeanUtils.copyProperties(workLineCmd, workLine1);
+                                             workLine1.setFromInsideContainerId(null);
+                                             workLine1.setQty(lineQty-onHandQty);
+                                             whWorkLineDao.saveOrUpdateByVersion(workLine1);
+                                             insertGlobalLog(GLOBAL_LOG_UPDATE,workLine1, ouId, userId, null, null);
+                                             continue;
                                          }
                                          if(lineQty.doubleValue() == sum.doubleValue()){
-                                             workLine.setQty(onHandQty);                                   
+                                             workLine.setQty(onHandQty); 
+                                             workLine.setId(null);
+                                             workLine.setCreateTime(new Date());
+                                             workLine.setLastModifyTime(new Date());
+                                             String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                             workLine.setLineCode(workLineCode);
+                                             whWorkLineDao.insert(workLine);
+                                             insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
+                                             WhWorkLine workLine1 = new WhWorkLine();
+                                             BeanUtils.copyProperties(workLineCmd, workLine1);
+                                             whWorkLineDao.deleteByIdExt(workLine1.getId(), ouId);
+                                             insertGlobalLog(GLOBAL_LOG_DELETE, workLine1, ouId, userId, null, null);
+                                             break;
                                          }
                                          if(lineQty.doubleValue() < sum.doubleValue()){
                                              Double qty1 = lineQty.doubleValue() -(sum.doubleValue() -onHandQty.doubleValue());
                                              workLine.setQty(qty1);
+                                             workLine.setId(null);
+                                             workLine.setCreateTime(new Date());
+                                             workLine.setLastModifyTime(new Date());
+                                             String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                             workLine.setLineCode(workLineCode);
+                                             whWorkLineDao.insert(workLine);
+                                             insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
+                                             WhWorkLine workLine1 = new WhWorkLine();
+                                             BeanUtils.copyProperties(workLineCmd, workLine1);
+                                             whWorkLineDao.deleteByIdExt(workLine1.getId(), ouId);
+                                             insertGlobalLog(GLOBAL_LOG_DELETE, workLine1, ouId, userId, null, null);
+                                             break;
                                          }
-                                         whWorkLineDao.saveOrUpdateByVersion(workLine);
-                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
-                                         continue;
                                   }
                                   if(lineQty.doubleValue() == onHandQty.doubleValue()){
                                          WhWorkLine workLine = new WhWorkLine();
@@ -871,6 +923,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setQty(onHandQty);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
                                          insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                         break;
                                   }
                                   if(lineQty.doubleValue() < onHandQty.doubleValue()){
                                          WhWorkLine workLine = new WhWorkLine();
@@ -879,6 +932,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setQty(lineQty);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
                                          insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                         break;
                                  }
                                  }
                            }
@@ -897,8 +951,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         Double sum = 0.0;
                         for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
                             Long insideId = invCmd.getInsideContainerId();
+                            Long occupationId = invCmd.getOccupationLineId();
                             String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
-                            if(workSkuAttrId.equals(skuAttrId)) {
+                            if(workSkuAttrId.equals(skuAttrId) && occupationId.longValue() == operLineCmd.getOdoLineId().longValue()) {
                                 Double onHandQty = invCmd.getOnHandQty();
                                 if(lineQty.doubleValue() > onHandQty.doubleValue()) {
                                     sum += onHandQty;
@@ -907,17 +962,46 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setFromInsideContainerId(insideId);
                                     if(lineQty.doubleValue() > sum.doubleValue()){
                                         opLine.setQty(onHandQty);
+                                        opLine.setId(null);
+                                        opLine.setCreateTime(new Date());
+                                        opLine.setLastModifyTime(new Date());
+                                        whOperationLineDao.insert(opLine);
+                                        insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
+                                        //修改原来的数据
+                                        WhOperationLine opLine1 = new WhOperationLine();
+                                        BeanUtils.copyProperties(operLineCmd, opLine1);
+                                        opLine1.setFromInsideContainerId(null);
+                                        opLine1.setQty(lineQty-onHandQty);
+                                        whOperationLineDao.saveOrUpdateByVersion(opLine1);
+                                        insertGlobalLog(GLOBAL_LOG_UPDATE, opLine1, ouId, userId, null, null);
+                                        continue;
                                     }
                                     if(lineQty.doubleValue() == sum.doubleValue()){
-                                        opLine.setQty(onHandQty);                                   
+                                        opLine.setQty(onHandQty);
+                                        opLine.setId(null);
+                                        opLine.setCreateTime(new Date());
+                                        opLine.setLastModifyTime(new Date());
+                                        whOperationLineDao.insert(opLine);
+                                        insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
+                                        WhOperationLine whOpLine = new WhOperationLine();
+                                        BeanUtils.copyProperties(operLineCmd, whOpLine);
+                                        whOperationLineDao.deleteByIdExt(whOpLine.getId(), ouId);
+                                        insertGlobalLog(GLOBAL_LOG_DELETE, whOpLine, ouId, userId, null, null);
                                     }
                                     if(lineQty.doubleValue() < sum.doubleValue()){
                                         Double qty1 = lineQty.doubleValue() -(sum.doubleValue() -onHandQty.doubleValue());
                                         opLine.setQty(qty1);
+                                        opLine.setId(null);
+                                        opLine.setCreateTime(new Date());
+                                        opLine.setLastModifyTime(new Date());
+                                        whOperationLineDao.insert(opLine);
+                                        insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
+                                        WhOperationLine whOpLine = new WhOperationLine();
+                                        BeanUtils.copyProperties(operLineCmd, whOpLine);
+                                        whOperationLineDao.deleteByIdExt(whOpLine.getId(), ouId);
+                                        insertGlobalLog(GLOBAL_LOG_DELETE, whOpLine, ouId, userId, null, null);
                                     }
-                                    whOperationLineDao.saveOrUpdateByVersion(opLine);
-                                    insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
-                                    continue;
+                                  
                              }
                              if(lineQty.doubleValue() == onHandQty.doubleValue()){
                                     WhOperationLine opLine = new WhOperationLine();
@@ -926,6 +1010,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setQty(onHandQty);
                                     whOperationLineDao.saveOrUpdateByVersion(opLine);
                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                    break;
                              }
                              if(lineQty.doubleValue() < onHandQty.doubleValue()){
                                     WhOperationLine opLine = new WhOperationLine();
@@ -934,6 +1019,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setQty(lineQty);
                                     whOperationLineDao.saveOrUpdateByVersion(opLine);
                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                    break;
                             }
                             }
                      }

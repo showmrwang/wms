@@ -4757,7 +4757,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					 and inv.outer_container_id = #{outerContainerId}
 				</if>
 				<if test="insideContainerId!=null and insideContainerId!=''">
-								 and inv.inside_container_id=#{insideContainerId}
+					and inv.inside_container_id=#{insideContainerId}
 				</if>
 				<if test="outerContainerId==null">
 					 and inv.outer_container_id is null

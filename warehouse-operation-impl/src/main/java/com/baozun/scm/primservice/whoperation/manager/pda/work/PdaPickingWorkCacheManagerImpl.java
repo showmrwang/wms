@@ -1063,9 +1063,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                                    cssrCmd.setIsNeedScanSku(true);
                                                                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                                                    cssrCmd.setIsHaveInsideContainer(false);  //没有货箱
-                                                                   Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
-                                                                   cssrCmd.setLatticeNo(lattice);
-                                                                   cssrCmd.setIsTipNewLattice(true);
+                                                                   if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
+                                                                       Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
+                                                                       cssrCmd.setLatticeNo(lattice);
+                                                                       cssrCmd.setIsTipNewLattice(true);
+                                                                   }
                                                                    cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                                  //缓存上一个托盘内最后扫描的一个内部容器
                                                                    this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
@@ -1342,9 +1344,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                                   cssrCmd.setIsNeedScanSku(true);
                                                                   cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                                                   cssrCmd.setIsHaveInsideContainer(false);
-                                                                  Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
-                                                                  cssrCmd.setLatticeNo(lattice);
-                                                                  cssrCmd.setIsTipNewLattice(true);
+                                                                  if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
+                                                                      Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
+                                                                      cssrCmd.setLatticeNo(lattice);
+                                                                      cssrCmd.setIsTipNewLattice(true);
+                                                                  }
                                                                   cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                                  //缓存上一个托盘内最后扫描的一个内部容器
                                                                   this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
@@ -1753,9 +1757,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                           cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                                           cssrCmd.setIsHaveInsideContainer(false);
                                                           //获取货格号
-                                                          Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
-                                                          cssrCmd.setLatticeNo(lattice);
-                                                          cssrCmd.setIsTipNewLattice(true);
+                                                          if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
+                                                              Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
+                                                              cssrCmd.setLatticeNo(lattice);
+                                                              cssrCmd.setIsTipNewLattice(true);
+                                                          }
                                                           cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                           //缓存上一个托盘内最后扫描的一个内部容器
                                                           this.cacheInsideContainerCode(locationId, insideContainerId, null);
@@ -2017,9 +2023,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                           cssrCmd.setIsNeedScanSku(true);
                                                           cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                                           cssrCmd.setIsHaveInsideContainer(false);
-                                                          Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
-                                                          cssrCmd.setLatticeNo(lattice);
-                                                          cssrCmd.setIsTipNewLattice(true);
+                                                          if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
+                                                              Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, valueLattice);
+                                                              cssrCmd.setLatticeNo(lattice);
+                                                              cssrCmd.setIsTipNewLattice(true);
+                                                          }
                                                           cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
                                                           //缓存上一个托盘内最后扫描的一个内部容器
                                                           this.cacheInsideContainerCode(locationId, insideContainerId, null);
@@ -2745,6 +2753,38 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           return cssrCmd;
       }
       
+      public CheckScanResultCommand palletPickingCacheAndCheck(Long locationId, Set<Long> insideContainerIds, Long outerContainerId, Long insideContainerId){
+          
+          CheckScanResultCommand cssrCmd = new CheckScanResultCommand();
+          LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
+          ArrayDeque<Long> cacheInsideContainerIds = new ArrayDeque<Long>();
+          if (null != cacheContainerCmd) {
+              if(null == cacheContainerCmd.getTipOuterInsideContainerIds() ||  cacheContainerCmd.getTipOuterInsideContainerIds().size() == 0){
+                  cacheInsideContainerIds = new ArrayDeque<Long>();
+              }else{
+                  cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
+              }
+          }
+          cacheInsideContainerIds.add(insideContainerId);
+          
+          if (isCacheAllExists(insideContainerIds, cacheInsideContainerIds)) {  //返回true ,两者相同
+              cssrCmd.setIsPicking(true);    
+          }else{
+              //提示下一个内部容器
+              Long tipiInsideContainerId = null;
+              for(Long icId:insideContainerIds){
+                  if(!cacheInsideContainerIds.contains(icId)) {
+                      tipiInsideContainerId = icId;
+                      break;
+                  }
+              }
+              cssrCmd.setIsNeedTipInsideContainer(true);
+              cssrCmd.setTipiInsideContainerId(tipiInsideContainerId);
+              //缓存上一个托盘内最后扫描的一个内部容器
+              this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId);
+          }
+          return cssrCmd;
+      }
       
       private Integer tipLatticeNo(Long skuId,String skuAttrId,Long insideContainerId,Long operationId,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,long valueLattice,Map<Long,Long> insideContainerSkuIdsQty){
            //先删除缓存计数
