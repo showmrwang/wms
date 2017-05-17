@@ -826,7 +826,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param checkingLineList
      */
     public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
-        WeightingCommand command = null;
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         String outboundbox = cmd.getOutboundBoxCode();
         Long outboundboxId = cmd.getOutboundboxId();
