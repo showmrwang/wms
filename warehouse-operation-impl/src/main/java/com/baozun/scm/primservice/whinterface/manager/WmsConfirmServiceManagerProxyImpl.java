@@ -257,6 +257,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
                     snLineConfirms.add(s);
                 }
                 wmsOutboundLineConfirm.setWmsOutBoundSnLineConfirm(snLineConfirms);
+                lineConfirms.add(wmsOutboundLineConfirm);
             }
             o.setWmsOutBoundLineConfirm(lineConfirms);
             List<WmsOutBoundInvoiceConfirm> invoiceConfirms = new ArrayList<WmsOutBoundInvoiceConfirm>();
@@ -273,6 +274,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
                     BeanUtils.copyProperties(invLine, line);
                     invoiceLine.add(line);
                 }
+                i.setWmsOutBoundConfirmInvoiceLines(invoiceLine);
                 invoiceConfirms.add(i);
             }
             o.setWmsOutBoundInvoiceConfirm(invoiceConfirms);
@@ -389,7 +391,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
                 List<WhInboundInvLineConfirm> whInboundInvLineConfirms = inboundLine.getWhInboundInvLineConfirms();
                 for (WhInboundInvLineConfirm invLine : whInboundInvLineConfirms) {
                     WmsInBoundInvLineConfirm inv = new WmsInBoundInvLineConfirm();
-                    BeanUtils.copyProperties(inboundLine, inv);
+                    BeanUtils.copyProperties(invLine, inv);
                     // 获取入库单反馈明细SN/残次信息
                     List<WmsInBoundSnLineConfirm> wmsSnLineConfirms = new ArrayList<WmsInBoundSnLineConfirm>();
                     List<WhInboundSnLineConfirm> snLineConfirms = invLine.getWhInboundSnLineConfirms();
@@ -398,10 +400,13 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
                         BeanUtils.copyProperties(whInboundSnLineConfirm, sn);
                         wmsSnLineConfirms.add(sn);
                     }
+                    inv.setWmsInBoundSnConfirmLines(wmsSnLineConfirms);
                     inboundInvLine.add(inv);
                 }
+                line.setWmsInBoundInvLineConfirms(inboundInvLine);
                 wmsInboundLineConfirms.add(line);
             }
+            inbound.setWmsInBoundConfirmLines(wmsInboundLineConfirms);
             wmsInboundConfirms.add(inbound);
         }
         log.info("WmsConfirmServiceManagerProxy.wmsInBoundConfirm end!");
