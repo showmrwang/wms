@@ -34,7 +34,6 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -76,8 +75,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     private WhInboundManager whInboundManager;
     @Autowired
     private WhSkuInventoryManager whSkuInventoryManager;
-    @Autowired
-    private StoreDao storeDao;
     @Autowired
     private WarehouseManager warehouseManager;
     /**
@@ -779,10 +776,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         // zhu.kai 收货反馈
-        // 按PO单反馈, 上位系统单据才反馈
-        if (null != bipo.getIsVmi() && bipo.getIsVmi()) {
-            this.createInBoundConfirmData(bipo);
-        }
+        // 按PO单反馈
+        this.createInBoundConfirmData(bipo);
     }
 
     private void snycPoToInfoWhenRcvd(WhPo shardPo, List<WhPoLine> lineList) {
@@ -872,7 +867,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void testzk() {
-        BiPo bipo = biPoDao.findById(211100060L);
+        BiPo bipo = biPoDao.findById(211100090L);
         this.createInBoundConfirmData(bipo);
     }
 
