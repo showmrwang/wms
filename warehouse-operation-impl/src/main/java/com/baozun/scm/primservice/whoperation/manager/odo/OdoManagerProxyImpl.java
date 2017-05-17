@@ -107,6 +107,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoice;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoInvoiceLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -2688,31 +2689,36 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 封装数据匹配物流sql推荐实体
         SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, odoVasLineList, logId, ouId);
         trans.setWhCode(wh.getCode());
-
-        VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
-        if (null != vasResult && vasResult.getStatus() == 1) {
-            List<VasLine> vasList = vasResult.getVasList();
-            if (null != vasList && !vasList.isEmpty()) {
-                odoVasManager.insertVasList(odoId, vasList, odoVasLineList, transMgmt, ouId);
-                List<TransVasList> transVasList = new ArrayList<TransVasList>();
-                for (VasLine vas : vasList) {
-                    TransVasList transVas = new TransVasList();
-                    transVas.setVasCode(vas.getCode());
-                    transVasList.add(transVas);
+        
+        WhOdoTransportService transportService = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
+        // 没有调用过或调用失败, 则调用物流增值服务推荐
+        if (null == transportService || !transportService.getIsVasSuccess()) {
+            VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
+            if (null != vasResult && vasResult.getStatus() == 1) {
+                List<VasLine> vasList = vasResult.getVasList();
+                if (null != vasList && !vasList.isEmpty()) {
+                    odoVasManager.insertVasList(odoId, vasList, odoVasLineList, transMgmt, ouId);
+                    List<TransVasList> transVasList = new ArrayList<TransVasList>();
+                    for (VasLine vas : vasList) {
+                        TransVasList transVas = new TransVasList();
+                        transVas.setVasCode(vas.getCode());
+                        transVasList.add(transVas);
+                    }
+                    trans.setTransVasList(transVasList);
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "transVasList is empty", ouId);
                 }
-                trans.setTransVasList(transVasList);
             } else {
-                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "transVasList is empty", ouId);
-            }
-        } else {
-            // 失败,记录ErrorMessage
-            if (null == vasResult) {
-                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "response is null", ouId);
-            } else {
-                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, vasResult.getErrorCode() + "|" + vasResult.getErrorMassage(), ouId);
+                // 失败,记录ErrorMessage
+                if (null == vasResult) {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "response is null", ouId);
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, vasResult.getErrorCode() + "|" + vasResult.getErrorMassage(), ouId);
+                }
             }
         }
         // 获取推荐物流商
+        // 物流商 或  时效类型 或 产品类型为空则调用
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType()) || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
             SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
             if (null != transResult && transResult.getStatus() == 1) {
