@@ -263,4 +263,10 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
             }
         }
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Location findLocationByCode(String code, Long ouId) {
+        return whLocationDao.findLocationByCode(code, ouId);
+    }
 }

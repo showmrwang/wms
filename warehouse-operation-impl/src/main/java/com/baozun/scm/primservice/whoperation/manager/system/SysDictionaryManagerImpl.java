@@ -6,6 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -20,11 +25,6 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
-
-import lark.common.annotation.MoreDB;
-import lark.common.dao.Page;
-import lark.common.dao.Pagination;
-import lark.common.dao.Sort;
 
 @Transactional
 @Service("sysDictionaryManager")
@@ -346,7 +346,7 @@ public class SysDictionaryManagerImpl extends BaseManagerImpl implements SysDict
      */
     @Override
     public SysDictionary getGroupbyGroupValueAndDicValue(String groupValue, String dicValue) {
-        return sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+        return this.findSysDictionaryByGroupValueAndDicValueAndRedis(groupValue, dicValue);
     }
 
 }

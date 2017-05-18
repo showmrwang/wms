@@ -749,7 +749,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         /** 硬分配剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {
             // 出库单释放库存
-            whSkuInventoryManager.releaseInventoryByOccupyCode(odoCode, wh);
+            whSkuInventoryManager.releaseInventoryByOccupyCode(odoCode, ouId);
             // 修改出库单明细已分配数量
             whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
         }

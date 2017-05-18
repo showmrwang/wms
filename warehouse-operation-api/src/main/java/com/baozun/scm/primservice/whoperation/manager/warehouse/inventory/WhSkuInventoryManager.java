@@ -176,7 +176,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @author kai.zhu
      * @version 2017年3月14日
      */
-    void releaseInventoryByOccupyCode(String occupyCode, Warehouse wh);
+    void releaseInventoryByOccupyCode(String occupyCode, Long ouId);
 
     /**
      * 根据参数查询出库存信息
@@ -415,4 +415,6 @@ public interface WhSkuInventoryManager extends BaseManager {
     public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long turnoverBoxId);
 
     void emptyouterContainerIdAndSeedingWallCode(String outboundboxCode, Long ouId);
+
+    void batchInsert(List<WhSkuInventory> skuInvList, Warehouse wh, Long userId) throws Exception;
 }

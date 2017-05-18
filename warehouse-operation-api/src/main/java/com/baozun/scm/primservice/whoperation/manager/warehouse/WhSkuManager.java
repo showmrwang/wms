@@ -18,4 +18,6 @@ public interface WhSkuManager extends BaseManager {
 
     WhSku getskuById(Long skuId, Long ouId);
 
+    WhSku getSkuBySkuCodeOuId(String skuCode, Long ouId);
+
 }

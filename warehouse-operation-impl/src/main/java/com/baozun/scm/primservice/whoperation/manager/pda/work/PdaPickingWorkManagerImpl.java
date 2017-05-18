@@ -2857,102 +2857,104 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             Double onHandQty = operationLineCommand.getQty();
             List<WhSkuInventory> whSkuInventoryLst = this.whSkuInventoryDao.findInventorysByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
             for (WhSkuInventory oldSkuInventory : whSkuInventoryLst) {
-                if (null == oldSkuInventory.getOccupationCode()) {
-                    if (oldSkuInventory.getOnHandQty() > onHandQty) {
-                        // 生成容器库存
-                        WhSkuInventory newSkuInventory = new WhSkuInventory();
-                        // 复制数据
-                        BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
-                        newSkuInventory.setLocationId(null);
-                        if(null != command.getInWarehouseMoveWay()){
-                            newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());   
-                        }
-                        if(null != command.getReplenishWay() || null != command.getPickingWay()){
-                            WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
-                            newSkuInventory.setOccupationCode(whOdo.getOdoCode());   
-                        }
-                        newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
-                        // 内部对接码
-                        try {
-                            newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
-                        } catch (Exception e) {
-                            log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
-                            throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
-                        }
-                        whSkuInventoryDao.insert(newSkuInventory);
-                        List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
-                        whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
-                        double count = 0;
-                        for (WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst) {
-                            WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
-                            // 复制数据
-                            BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
-                            whSkuInventorySn.setUuid(newSkuInventory.getUuid());
-                            whSkuInventorySnDao.update(whSkuInventorySn);
-                            // 判断数量
-                            BigDecimal data1 = new BigDecimal(count);
-                            BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty());
-                            if (0 == data1.compareTo(data2)) {
-                                continue;
-                            }
-                            count = count + 1;
-                        }
-                        // 删除原库存
-                        oldSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
-                        whSkuInventoryDao.update(oldSkuInventory);
-                    } else {
-                        // 生成容器库存
-                        WhSkuInventory newSkuInventory = new WhSkuInventory();
-                        // 复制数据
-                        BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
-                        newSkuInventory.setLocationId(null);
-                        if(null != command.getInWarehouseMoveWay()){
-                            newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());   
-                        }
-                        if(null != command.getReplenishWay() || null != command.getPickingWay()){
-                            WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
-                            newSkuInventory.setOccupationCode(whOdo.getOdoCode());   
-                        }
-                        // 内部对接码
-                        try {
-                            newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
-                        } catch (Exception e) {
-                            log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
-                            throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
-                        }
-                        whSkuInventoryDao.insert(newSkuInventory);
-                        List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
-                        whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
-                        double count = 0;
-                        for (WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst) {
-                            WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
-                            // 复制数据
-                            BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
-                            whSkuInventorySn.setUuid(newSkuInventory.getUuid());
-                            whSkuInventorySnDao.update(whSkuInventorySn);
-                            // 判断数量
-                            BigDecimal data1 = new BigDecimal(count);
-                            BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty());
-                            if (0 == data1.compareTo(data2)) {
-                                continue;
-                            }
-                            count = count + 1;
-                        }
-                        // 删除原库存
-                        whSkuInventoryDao.delete(oldSkuInventory.getId());
+                if (oldSkuInventory.getOnHandQty() > onHandQty) {
+                    // 生成容器库存
+                    WhSkuInventory newSkuInventory = new WhSkuInventory();
+                    // 复制数据
+                    BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
+                    newSkuInventory.setLocationId(null);
+                    if(null != command.getInWarehouseMoveWay()){
+                        newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());   
                     }
+                    if(null != command.getReplenishWay() || null != command.getPickingWay()){
+                        WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
+                        newSkuInventory.setOccupationCode(whOdo.getOdoCode());   
+                    }
+                    newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
+                    // 内部对接码
+                    try {
+                        newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
+                    } catch (Exception e) {
+                        log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                    }
+                    whSkuInventoryDao.insert(newSkuInventory);
+                    List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
+                    whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
+                    double count = 0;
+                    for (WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst) {
+                        WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
+                        // 复制数据
+                        BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
+                        whSkuInventorySn.setUuid(newSkuInventory.getUuid());
+                        whSkuInventorySnDao.update(whSkuInventorySn);
+                        // 判断数量
+                        BigDecimal data1 = new BigDecimal(count);
+                        BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty());
+                        if (0 == data1.compareTo(data2)) {
+                            continue;
+                        }
+                        count = count + 1;
+                    }
+                    // 删除原库存
+                    oldSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
+                    whSkuInventoryDao.update(oldSkuInventory);
+                } else {
+                    // 生成容器库存
+                    WhSkuInventory newSkuInventory = new WhSkuInventory();
+                    // 复制数据
+                    BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
+                    newSkuInventory.setLocationId(null);
+                    if(null != command.getInWarehouseMoveWay()){
+                        newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());   
+                    }
+                    if(null != command.getReplenishWay() || null != command.getPickingWay()){
+                        WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
+                        newSkuInventory.setOccupationCode(whOdo.getOdoCode());   
+                    }
+                    // 内部对接码
+                    try {
+                        newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
+                    } catch (Exception e) {
+                        log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
+                        throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                    }
+                    whSkuInventoryDao.insert(newSkuInventory);
+                    List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
+                    whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
+                    double count = 0;
+                    for (WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst) {
+                        WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
+                        // 复制数据
+                        BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
+                        whSkuInventorySn.setUuid(newSkuInventory.getUuid());
+                        whSkuInventorySnDao.update(whSkuInventorySn);
+                        // 判断数量
+                        BigDecimal data1 = new BigDecimal(count);
+                        BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty());
+                        if (0 == data1.compareTo(data2)) {
+                            continue;
+                        }
+                        count = count + 1;
+                    }
+                    // 删除原库存
+                    whSkuInventoryDao.delete(oldSkuInventory.getId());
                 }
             }
-            List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst = whSkuInventoryAllocatedDao.findSkuInventoryAllocatedByUuid(operationLineCommand.getUuid(), operationLineCommand.getOuId());
-            for (WhSkuInventoryAllocated whSkuInventoryAllocated : whSkuInventoryAllocatedLst) {
-                whSkuInventoryAllocatedDao.delete(whSkuInventoryAllocated.getId());
+            if(null == command.getPickingWay()){
+                List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst = whSkuInventoryAllocatedDao.findSkuInventoryAllocatedByUuid(operationLineCommand.getUuid(), operationLineCommand.getOuId());
+                for (WhSkuInventoryAllocated whSkuInventoryAllocated : whSkuInventoryAllocatedLst) {
+                    whSkuInventoryAllocatedDao.delete(whSkuInventoryAllocated.getId());
+                }  
             }
         }
         WhOperationCommand operationCmd = whOperationManager.findOperationById(command.getOperationId(), command.getOuId());
         operationCmd.setIsPickingFinish(true);
         operationCmd.setModifiedId(command.getUserId());
         whOperationManager.saveOrUpdate(operationCmd);
-        if(2 == command.getInWarehouseMoveWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode())){
+        if(null != command.getInWarehouseMoveWay() && 2 == command.getInWarehouseMoveWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode())){
+            command.setIsPicking(true);
+        }else if(null != command.getPickingWay() && 5 == command.getPickingWay() && (3 == command.getPalletPickingMode() || 4 == command.getPalletPickingMode())){
             command.setIsPicking(true);
         }else{
             // 清除缓存
