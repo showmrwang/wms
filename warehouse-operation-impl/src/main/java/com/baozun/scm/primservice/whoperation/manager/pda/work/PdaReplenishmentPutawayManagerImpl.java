@@ -1411,9 +1411,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     String key = locationId.toString()+turnId;
                     Set<Long> skuIds = turnoverBoxSkuIds.get(key);
                     for(Long skuId:skuIds){
-                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
-                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
-                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+ turnId.toString() + skuId.toString());
                     }
                     cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnId.toString());
                 }
