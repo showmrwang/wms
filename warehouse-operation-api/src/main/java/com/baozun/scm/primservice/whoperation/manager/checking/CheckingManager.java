@@ -2,7 +2,6 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
@@ -143,11 +142,11 @@ public interface CheckingManager extends BaseManager {
     /**
      * 复核 释放耗材库存
      *
-     * @param outboundboxList
+     * @param outboundbox
      * @param ouId
      * @param logId
      */
-    void releaseConsumableSkuInventory(List<WhOutboundboxCommand> outboundboxList, Long ouId, String logId);
+    void releaseConsumableSkuInventory(WhOutboundboxCommand outboundbox, Long ouId, String logId);
 
 
     /**
@@ -180,7 +179,6 @@ public interface CheckingManager extends BaseManager {
     public List<WhSkuInventory> findCheckingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
 
 
-    public void finishedChecking(WhCheckingCommand orgChecking, Set<WhCheckingLineCommand> toUpdateCheckingLineSet, List<WhOutboundbox> whOutboundboxList, Map<WhOutboundbox, List<WhOutboundboxLine>> outboundboxLineListMap,
-            Map<WhOutboundbox, List<WhSkuInventory>> outboundboxSkuInvListMap, Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, List<WhOdoPackageInfoCommand> odoPackageInfoList, List<WhSkuInventorySnCommand> checkedSnInvList, String checkingType,
-            Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public void finishedChecking(WhCheckingCommand orgChecking, Set<WhCheckingLineCommand> toUpdateCheckingLineSet, WhOutboundbox whOutboundbox, List<WhOutboundboxLine> outboundboxLineList, List<WhSkuInventory> outboundboxSkuInvList,
+            Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, WhOdoPackageInfoCommand odoPackageInfo, List<WhSkuInventorySnCommand> checkedSnInvList, String checkingType, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 }

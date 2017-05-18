@@ -522,152 +522,137 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         // 复核数据中SN/残次信息
         Map<Long, WhSkuInventorySnCommand> orgSnInvMap = this.getLongWhSkuInventorySnCommandMap(orgChecking, ouId);
 
-
         // 已复核的SN
         List<WhSkuInventorySnCommand> checkedSnInvList = new ArrayList<>();
 
         // 创建出库箱信息
-        List<WhOutboundbox> whOutboundboxList = new ArrayList<>();
+        WhOutboundbox whOutboundbox = null;
         // 出库箱装箱明细
-        Map<WhOutboundbox, List<WhOutboundboxLine>> outboundboxLineListMap = new HashMap<>();
+        List<WhOutboundboxLine> outboundboxLineList = new ArrayList<>();
         // 出库单在出库箱中的库存
-        Map<WhOutboundbox, List<WhSkuInventory>> outboundboxSkuInvListMap = new HashMap<>();
+        List<WhSkuInventory> outboundboxSkuInvList = new ArrayList<>();
         // 出库单在原始箱中的库存
         Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet = new HashSet<>();
-        // 装箱包裹计重信息
-        List<WhOdoPackageInfoCommand> odoPackageInfoList = new ArrayList<>();
+
         // 需要更新已复核数量的复核明细集合
         Set<WhCheckingLineCommand> toUpdateCheckingLineSet = new HashSet<>();
 
         // 复核完使用的所有出库箱
-        List<WhOutboundboxCommand> checkedBoxList = checkingCommand.getOutboundboxList();
-        for (WhOutboundboxCommand checkedBox : checkedBoxList) {
-            String checkedBoxCode = checkedBox.getOutboundboxCode();
-            if (warehouseMgmt.getIsMgmtConsumableSku()) {
-                // 管理耗材才会记录这些信息
-                String consumableCode = checkedBox.getConsumableCode();
-                Long consumableSkuId = checkedBox.getConsumableSkuId();
-                String locationCode = checkedBox.getConsumableLocationCode();
+        WhOutboundboxCommand checkedBox = checkingCommand.getOutboundbox();
 
+        String checkedBoxCode = checkedBox.getOutboundboxCode();
+        if (warehouseMgmt.getIsMgmtConsumableSku()) {
+            // 管理耗材才会记录这些信息
+            String consumableCode = checkedBox.getConsumableCode();
+            Long consumableSkuId = checkedBox.getConsumableSkuId();
+            String locationCode = checkedBox.getConsumableLocationCode();
 
-            }
-
-            WhOutboundbox outboundbox = null;
-            if (Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX.equals(checkingType)) {
-                WhOutboundboxCommand outboundboxCommand = whOutboundboxManager.findByOutboundBoxCode(checkedBoxCode, ouId);
-                outboundbox = new WhOutboundbox();
-                BeanUtils.copyProperties(outboundboxCommand, outboundbox);
-            } else {
-                // 小车货格、播种墙货格、周转箱 创建出库箱装箱信息
-                outboundbox = this.createWhOutboundbox(orgChecking, checkedBoxCode, orgCheckingLineList.get(0).getOdoId());
-            }
-            whOutboundboxList.add(outboundbox);
-
-            // 新箱子中的装箱明细集合
-            List<WhOutboundboxLine> outboundboxLineList = new ArrayList<>();
-            // 新箱子中的库存明细集合
-            List<WhSkuInventory> outboundBoxSkuInvList = new ArrayList<>();
-
-            // 包裹计重
-            BigDecimal packageCalcWeight = new BigDecimal(0.00);
-
-            List<WhCheckingLineCommand> checkedLineList = checkedBox.getCheckingLineList();
-            for (WhCheckingLineCommand checkedLine : checkedLineList) {
-                Long checkingLineId = checkedLine.getId();
-                // 已复核数量
-                Long checkingQty = checkedLine.getCheckingQty();
-                // 已复核SN/残次信息列表
-                List<Long> snInvIdList = checkedLine.getSnInventoryIdList();
-
-
-                // 原始复核明细
-                WhCheckingLineCommand orgCheckingLine = orgCheckingLineMap.get(checkingLineId);
-                if (null == orgCheckingLine.getCheckingQty()) {
-                    orgCheckingLine.setCheckingQty(checkingQty);
-                } else {
-                    orgCheckingLine.setCheckingQty(orgCheckingLine.getCheckingQty() + checkingQty);
-                }
-                orgCheckingLine.setModifiedId(userId);
-                toUpdateCheckingLineSet.add(orgCheckingLine);
-
-                // 新出库箱中的复核明细
-                WhCheckingLine newCheckingLine = new WhCheckingLine();
-                BeanUtils.copyProperties(orgCheckingLine, newCheckingLine);
-                newCheckingLine.setCheckingQty(checkingQty);
-
-                // 原始明细lineId_uuid对应的库存集合
-                List<WhSkuInventory> odoOrgSkuInvList = uuidLineSkuInvListMap.get(orgCheckingLine.getOdoLineId() + "_" + orgCheckingLine.getUuid());
-
-                // 新出库箱中的明细库存
-                WhSkuInventory odoSkuInv = this.createWhSkuInventory(odoOrgSkuInvList.get(0), checkedBoxCode, checkingQty, ouId, logId);
-                outboundBoxSkuInvList.add(odoSkuInv);
-
-                // 扣减原始复核明细对应的库存数量
-                Long odoFinishedLineCheckingQty = checkingQty;
-                while (odoFinishedLineCheckingQty > 0) {
-                    for (WhSkuInventory odoOrgSkuInv : odoOrgSkuInvList) {
-                        if (odoOrgSkuInv.getOnHandQty() <= 0) {
-                            log.warn("skuInventory onHandQty is zero, skuInventory is:[{}], logId is:[{}]", odoOrgSkuInv, logId);
-                            continue;
-                        }
-                        if (odoOrgSkuInv.getOnHandQty() >= odoFinishedLineCheckingQty) {
-                            odoOrgSkuInv.setOnHandQty(odoOrgSkuInv.getOnHandQty() - odoFinishedLineCheckingQty);
-                            odoFinishedLineCheckingQty = 0L;
-                        } else {
-                            odoFinishedLineCheckingQty = odoFinishedLineCheckingQty - odoOrgSkuInv.getOnHandQty().longValue();
-                            odoOrgSkuInv.setOnHandQty(0d);
-                        }
-                        // 记录需要更新的原始库存，正常情况最后库存数量都是0，执行删除操作
-                        toUpdateOdoOrgSkuInvSet.add(odoOrgSkuInv);
-                    }
-                    if (odoFinishedLineCheckingQty > 0) {
-                        throw new BusinessException("库存不足");
-                    }
-                }
-
-                // 创建出库箱明细
-                WhOutboundboxLine whOutboundboxLine = this.createWhOutboundboxLine(orgCheckingLine, checkingQty, odoSkuInv);
-                outboundboxLineList.add(whOutboundboxLine);
-
-                // 记录已复核的SN信息
-                if (null != snInvIdList && !snInvIdList.isEmpty()) {
-                    for (Long snInvId : snInvIdList) {
-                        WhSkuInventorySnCommand checkedSnInv = orgSnInvMap.get(snInvId);
-                        if (null == checkedSnInv) {
-                            throw new BusinessException("未找到复核的SN信息");
-                        }
-                        // 更新SN/残次信息的uuid
-                        checkedSnInv.setUuid(odoSkuInv.getUuid());
-                        //TODO 更新状态
-                        // 记录需要更新uuid的SN/残次信息
-                        checkedSnInvList.add(checkedSnInv);
-                    }
-                }
-
-                // 累计包裹重量，计算包裹计重
-                SkuRedisCommand skuRedis = skuRedisManager.findSkuMasterBySkuId(odoSkuInv.getSkuId(), ouId, logId);
-                Sku sku = skuRedis.getSku();
-                packageCalcWeight = packageCalcWeight.add(new BigDecimal(sku.getWeight()).multiply(new BigDecimal(checkingQty)));
-
-            }
-
-            // 记录包裹计重信息
-            WhOdoPackageInfoCommand odoPackageInfo = this.createOdoPackageInfo(function, outboundbox, packageCalcWeight, orgCheckingLineList.get(0).getOdoId(), userId, ouId);
-            odoPackageInfoList.add(odoPackageInfo);
-
-            // 记录出库箱对应的明细集合
-            outboundboxLineListMap.put(outboundbox, outboundboxLineList);
-            // 记录出库箱对应的库存集合
-            outboundboxSkuInvListMap.put(outboundbox, outboundBoxSkuInvList);
 
         }
+
+        if (Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX.equals(checkingType)) {
+            // 小车货格、播种墙货格、周转箱 创建出库箱装箱信息
+            whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBoxCode, orgCheckingLineList.get(0).getOdoId(), userId, ouId, logId);
+        } else {
+            WhOutboundboxCommand outboundboxCommand = whOutboundboxManager.findByOutboundBoxCode(checkedBoxCode, ouId);
+            whOutboundbox = new WhOutboundbox();
+            BeanUtils.copyProperties(outboundboxCommand, whOutboundbox);
+        }
+        whOutboundbox.setStatus(OutboundboxStatus.WEIGHING);
+
+
+        // 包裹计重
+        BigDecimal packageCalcWeight = new BigDecimal(0.00);
+
+        List<WhCheckingLineCommand> checkedLineList = checkedBox.getCheckingLineList();
+        for (WhCheckingLineCommand checkedLine : checkedLineList) {
+            Long checkingLineId = checkedLine.getId();
+            // 已复核数量
+            Long checkingQty = checkedLine.getCheckingQty();
+            // 已复核SN/残次信息列表
+            List<Long> snInvIdList = checkedLine.getSnInventoryIdList();
+
+
+            // 原始复核明细
+            WhCheckingLineCommand orgCheckingLine = orgCheckingLineMap.get(checkingLineId);
+            if (null == orgCheckingLine.getCheckingQty()) {
+                orgCheckingLine.setCheckingQty(checkingQty);
+            } else {
+                orgCheckingLine.setCheckingQty(orgCheckingLine.getCheckingQty() + checkingQty);
+            }
+            orgCheckingLine.setModifiedId(userId);
+            toUpdateCheckingLineSet.add(orgCheckingLine);
+
+            // 新出库箱中的复核明细
+            WhCheckingLine newCheckingLine = new WhCheckingLine();
+            BeanUtils.copyProperties(orgCheckingLine, newCheckingLine);
+            newCheckingLine.setCheckingQty(checkingQty);
+
+            // 原始明细lineId_uuid对应的库存集合
+            List<WhSkuInventory> odoOrgSkuInvList = uuidLineSkuInvListMap.get(orgCheckingLine.getOdoLineId() + "_" + orgCheckingLine.getUuid());
+
+            // 新出库箱中的明细库存
+            WhSkuInventory odoSkuInv = this.createWhSkuInventory(odoOrgSkuInvList.get(0), checkedBoxCode, checkingQty, ouId, logId);
+            outboundboxSkuInvList.add(odoSkuInv);
+
+            // 扣减原始复核明细对应的库存数量
+            Long odoFinishedLineCheckingQty = checkingQty;
+            while (odoFinishedLineCheckingQty > 0) {
+                for (WhSkuInventory odoOrgSkuInv : odoOrgSkuInvList) {
+                    if (odoOrgSkuInv.getOnHandQty() <= 0) {
+                        log.warn("skuInventory onHandQty is zero, skuInventory is:[{}], logId is:[{}]", odoOrgSkuInv, logId);
+                        continue;
+                    }
+                    if (odoOrgSkuInv.getOnHandQty() >= odoFinishedLineCheckingQty) {
+                        odoOrgSkuInv.setOnHandQty(odoOrgSkuInv.getOnHandQty() - odoFinishedLineCheckingQty);
+                        odoFinishedLineCheckingQty = 0L;
+                    } else {
+                        odoFinishedLineCheckingQty = odoFinishedLineCheckingQty - odoOrgSkuInv.getOnHandQty().longValue();
+                        odoOrgSkuInv.setOnHandQty(0d);
+                    }
+                    // 记录需要更新的原始库存，正常情况最后库存数量都是0，执行删除操作
+                    toUpdateOdoOrgSkuInvSet.add(odoOrgSkuInv);
+                }
+                if (odoFinishedLineCheckingQty > 0) {
+                    throw new BusinessException("库存不足");
+                }
+            }
+
+            // 创建出库箱明细
+            WhOutboundboxLine whOutboundboxLine = this.createWhOutboundboxLine(orgCheckingLine, checkingQty, odoSkuInv);
+            outboundboxLineList.add(whOutboundboxLine);
+
+            // 记录已复核的SN信息
+            if (null != snInvIdList && !snInvIdList.isEmpty()) {
+                for (Long snInvId : snInvIdList) {
+                    WhSkuInventorySnCommand checkedSnInv = orgSnInvMap.get(snInvId);
+                    if (null == checkedSnInv) {
+                        throw new BusinessException("未找到复核的SN信息");
+                    }
+                    // 更新SN/残次信息的uuid
+                    checkedSnInv.setUuid(odoSkuInv.getUuid());
+                    // TODO 更新状态
+                    // 记录需要更新uuid的SN/残次信息
+                    checkedSnInvList.add(checkedSnInv);
+                }
+            }
+
+            // 累计包裹重量，计算包裹计重
+            SkuRedisCommand skuRedis = skuRedisManager.findSkuMasterBySkuId(odoSkuInv.getSkuId(), ouId, logId);
+            Sku sku = skuRedis.getSku();
+            packageCalcWeight = packageCalcWeight.add(new BigDecimal(sku.getWeight()).multiply(new BigDecimal(checkingQty)));
+
+        }
+
+        // 装箱包裹计重信息
+        WhOdoPackageInfoCommand odoPackageInfo = this.createOdoPackageInfo(function, whOutboundbox, packageCalcWeight, orgCheckingLineList.get(0).getOdoId(), userId, ouId);
 
         // 设置复核头状态
         this.checkUpdateChecking(orgChecking, orgCheckingLineList, userId);
 
         // 保存复核数据
-        checkingManager.finishedChecking(orgChecking, toUpdateCheckingLineSet, whOutboundboxList, outboundboxLineListMap, outboundboxSkuInvListMap, toUpdateOdoOrgSkuInvSet, odoPackageInfoList, checkedSnInvList, checkingType,
-                warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
+        checkingManager.finishedChecking(orgChecking, toUpdateCheckingLineSet, whOutboundbox, outboundboxLineList, outboundboxSkuInvList, toUpdateOdoOrgSkuInvSet, odoPackageInfo, checkedSnInvList, checkingType, warehouseMgmt.getIsTabbInvTotal(), userId,
+                ouId, logId);
     }
 
     private void checkUpdateChecking(WhCheckingCommand orgChecking, List<WhCheckingLineCommand> orgCheckingLineList, Long userId) {
@@ -756,7 +741,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
 
-    private WhOutboundbox createWhOutboundbox(WhCheckingCommand whChecking, String outboundBoxCode, Long odoId) {
+    private WhOutboundbox createWhOutboundbox(WhCheckingCommand whChecking, String outboundBoxCode, Long odoId, Long userId, Long ouId, String logId) {
         WhOutboundbox whOutboundbox = new WhOutboundbox();
         whOutboundbox.setBatch(whChecking.getBatch());
         whOutboundbox.setWaveCode(whChecking.getWaveCode());
