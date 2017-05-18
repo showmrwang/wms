@@ -445,7 +445,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void finishedChecking(WhCheckingCommand orgCheckingCommand, Set<WhCheckingLineCommand> toUpdateCheckingLineSet, WhOutboundbox whOutboundbox, List<WhOutboundboxLine> outboundboxLineList, List<WhSkuInventory> outboundboxSkuInvList,
-            Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, WhOdoPackageInfoCommand odoPackageInfoCommand, List<WhSkuInventorySnCommand> checkedSnInvList, String checkingType, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
+            Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, WhOdoPackageInfoCommand odoPackageInfoCommand, List<WhSkuInventorySnCommand> checkedSnInvList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
 
         // 更新复核头状态
         this.updateCheckingInfoToDB(orgCheckingCommand);
@@ -454,12 +454,10 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         this.updateCheckingBoxCheckingLineToDB(toUpdateCheckingLineSet);
 
         // 创建出库箱信息和明细信息
-        if (Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX.equals(checkingType)) {
-            // TODO 创建出库箱和明细数据
-            this.createOutboundBoxInfo(whOutboundbox, outboundboxLineList);
-        } else {
-            whOutboundboxDao.saveOrUpdate(whOutboundbox);
-        }
+
+        // TODO 创建出库箱和明细数据
+        this.createOutboundBoxInfo(whOutboundbox, outboundboxLineList);
+
         this.updateCheckingBoxSkuInvToDB(toUpdateOdoOrgSkuInvSet, isTabbInvTotal, userId, ouId);
 
 
@@ -474,7 +472,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         this.saveOdoPackageInfoToDB(odoPackageInfoCommand);
 
 
-        //throw new BusinessException("test error");
+        // throw new BusinessException("test error");
     }
 
     private void updateCheckingInfoToDB(WhCheckingCommand orgCheckingCommand) {

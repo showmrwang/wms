@@ -180,5 +180,5 @@ public interface CheckingManager extends BaseManager {
 
 
     public void finishedChecking(WhCheckingCommand orgChecking, Set<WhCheckingLineCommand> toUpdateCheckingLineSet, WhOutboundbox whOutboundbox, List<WhOutboundboxLine> outboundboxLineList, List<WhSkuInventory> outboundboxSkuInvList,
-            Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, WhOdoPackageInfoCommand odoPackageInfo, List<WhSkuInventorySnCommand> checkedSnInvList, String checkingType, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+            Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, WhOdoPackageInfoCommand odoPackageInfo, List<WhSkuInventorySnCommand> checkedSnInvList,  Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 }

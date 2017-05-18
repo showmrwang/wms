@@ -496,7 +496,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      *
      * @param checkingCommand
      */
-    public void finishedCheckingByContainer(WhFunctionOutBound function, WarehouseMgmt warehouseMgmt, WhCheckingCommand checkingCommand, String checkingType, Long userId, Long ouId, String logId) {
+    public void finishedCheckingByContainer(WhFunctionOutBound function, WarehouseMgmt warehouseMgmt, WhCheckingCommand checkingCommand, Long userId, Long ouId, String logId) {
         // 复核头信息
         WhCheckingCommand orgChecking = checkingManager.findCheckingById(checkingCommand.getId(), ouId);
 
@@ -525,8 +525,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         // 已复核的SN
         List<WhSkuInventorySnCommand> checkedSnInvList = new ArrayList<>();
 
-        // 创建出库箱信息
-        WhOutboundbox whOutboundbox = null;
+
         // 出库箱装箱明细
         List<WhOutboundboxLine> outboundboxLineList = new ArrayList<>();
         // 出库单在出库箱中的库存
@@ -549,15 +548,16 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
 
         }
-
-        if (Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX.equals(checkingType)) {
+        // 创建出库箱信息
+        WhOutboundbox whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBoxCode, orgCheckingLineList.get(0).getOdoId(), userId, ouId, logId);
+        //if (Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX.equals(checkingType)) {
             // 小车货格、播种墙货格、周转箱 创建出库箱装箱信息
-            whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBoxCode, orgCheckingLineList.get(0).getOdoId(), userId, ouId, logId);
-        } else {
-            WhOutboundboxCommand outboundboxCommand = whOutboundboxManager.findByOutboundBoxCode(checkedBoxCode, ouId);
-            whOutboundbox = new WhOutboundbox();
-            BeanUtils.copyProperties(outboundboxCommand, whOutboundbox);
-        }
+            //whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBoxCode, orgCheckingLineList.get(0).getOdoId(), userId, ouId, logId);
+        //} else {
+        //    WhOutboundboxCommand outboundboxCommand = whOutboundboxManager.findByOutboundBoxCode(checkedBoxCode, ouId);
+        //    whOutboundbox = new WhOutboundbox();
+        //    BeanUtils.copyProperties(outboundboxCommand, whOutboundbox);
+        //}
         whOutboundbox.setStatus(OutboundboxStatus.WEIGHING);
 
 
@@ -651,7 +651,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         this.checkUpdateChecking(orgChecking, orgCheckingLineList, userId);
 
         // 保存复核数据
-        checkingManager.finishedChecking(orgChecking, toUpdateCheckingLineSet, whOutboundbox, outboundboxLineList, outboundboxSkuInvList, toUpdateOdoOrgSkuInvSet, odoPackageInfo, checkedSnInvList, checkingType, warehouseMgmt.getIsTabbInvTotal(), userId,
+        checkingManager.finishedChecking(orgChecking, toUpdateCheckingLineSet, whOutboundbox, outboundboxLineList, outboundboxSkuInvList, toUpdateOdoOrgSkuInvSet, odoPackageInfo, checkedSnInvList, warehouseMgmt.getIsTabbInvTotal(), userId,
                 ouId, logId);
     }
 

@@ -110,6 +110,6 @@ public interface CheckingManagerProxy extends BaseManager {
      *
      * @param checkingCommand
      */
-    public void finishedCheckingByContainer(WhFunctionOutBound function ,WarehouseMgmt warehouseMgmt,WhCheckingCommand checkingCommand,  String checkingType,Long userId, Long ouId, String logId);
+    public void finishedCheckingByContainer(WhFunctionOutBound function ,WarehouseMgmt warehouseMgmt,WhCheckingCommand checkingCommand,  Long userId, Long ouId, String logId);
 
 }
