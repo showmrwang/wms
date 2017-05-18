@@ -4713,7 +4713,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 
-    <select id="findSeedingOdoSkuInvByOdoLineIdUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
+    <select id="findOdoSkuInvByOdoLineIdUuid" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory">
         select
             <include refid="whSkuInventoryColumnsExt"/>
         from
@@ -5206,6 +5206,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and sku_id = #{skuId}
             and ou_id = #{ouId}
             and on_hand_qty > 0
+            and occupation_code is null
     </select>
 
     <select id="findSkuInventoryLocationList" resultType="java.lang.Long">

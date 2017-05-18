@@ -14,11 +14,10 @@
 
 package com.baozun.scm.primservice.whoperation.manager.checking;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 
@@ -34,32 +33,44 @@ import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerPr
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryLogDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("checkingManager")
 @Transactional
 public class CheckingManagerImpl extends BaseManagerImpl implements CheckingManager {
-    
+
     public static final Logger log = LoggerFactory.getLogger(CheckingManagerImpl.class);
-    
+
     @Autowired
     private PrintObjectManagerProxy printObjectManagerProxy;
     @Autowired
@@ -74,6 +85,21 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     private WhSkuInventoryDao skuInventoryDao;
     @Autowired
     private WhCheckingCollectionDao checkingCollectionDao;
+    @Autowired
+    private WhCheckingLineDao whCheckingLineDao;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
+    @Autowired
+    private WhOutboundboxDao whOutboundboxDao;
+    @Autowired
+    private WhOutboundboxLineDao whOutboundboxLineDao;
+    @Autowired
+    private WhSkuInventoryLogDao whSkuInventoryLogDao;
+    @Autowired
+    private WhSkuInventorySnDao whSkuInventorySnDao;
+    @Autowired
+    private WhOdoPackageInfoDao whOdoPackageInfoDao;
+
 
     @Override
     public void printPackingList(List<Long> facilityIdsList, Long userId, Long ouId) {
@@ -137,101 +163,17 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId){
+    public List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId) {
         List<WhCheckingCommand> checkingList = whCheckingDao.findCheckingBySourceCode(checkingSourceCode, ouId);
-        /*
-        {
-            //TODO 测试 复核头数据
-            if(null == checkingList){
-                checkingList = new ArrayList<>();
-            }
-            checkingList.clear();
-            WhCheckingCommand checkingCommand = new WhCheckingCommand();
-            checkingCommand.setId(999L);
-            checkingCommand.setBatch("testBatch");
-            checkingCommand.setWaveCode("testWaveCode");
-            checkingCommand.setCustomerName("testCustomerName");
-            checkingCommand.setCustomerCode("testCustomerCode");
-            checkingCommand.setStoreName("testStoreName");
-            checkingCommand.setStoreCode("testStoreCode");
-            checkingCommand.setStatus(1);
-            checkingCommand.setOuId(ouId);
 
-            //播种墙
-            checkingCommand.setFacilityId(222L);
-            //checkingCommand.setFacilityCode("testFacilityCode");
-            checkingCommand.setFacilityCode(checkingSourceCode);
-
-            //小车
-            //checkingCommand.setOuterContainerId(11L);
-            //checkingCommand.setOuterContainerCode("testOutContainerCode");
-
-            //货格
-            //checkingCommand.setContainerLatticeNo(1);
-
-            //出库箱
-            //checkingCommand.setOutboundboxId(1L);
-            //checkingCommand.setOutboundboxCode("testOutboundBoxCode");
-
-            //周转箱
-            //checkingCommand.setContainerId(2L);
-            //checkingCommand.setContainerCode("testContainerCode");
-
-            checkingCommand.setCheckingMode("CHECK_BY_CONTAINER");
-
-            checkingList.add(checkingCommand);
-        }
-        */
         return checkingList;
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhCheckingCommand> findCheckingByBoxCode(String checkingSourceCode, String checkingBoxCode, Long ouId){
+    public List<WhCheckingCommand> findCheckingByBoxCode(String checkingSourceCode, String checkingBoxCode, Long ouId) {
         List<WhCheckingCommand> checkingList = whCheckingDao.findCheckingByBoxCode(checkingSourceCode, checkingBoxCode, ouId);
-        /*
-        {
-            //TODO 测试 复核头数据
-            if(null == checkingList){
-                checkingList = new ArrayList<>();
-            }
-            checkingList.clear();
-            WhCheckingCommand checkingCommand = new WhCheckingCommand();
-            checkingCommand.setId(999L);
-            checkingCommand.setBatch("testBatch");
-            checkingCommand.setWaveCode("testWaveCode");
-            checkingCommand.setCustomerName("testCustomerName");
-            checkingCommand.setCustomerCode("testCustomerCode");
-            checkingCommand.setStoreName("testStoreName");
-            checkingCommand.setStoreCode("testStoreCode");
-            checkingCommand.setStatus(1);
-            checkingCommand.setOuId(ouId);
 
-            //播种墙
-            checkingCommand.setFacilityId(222L);
-            //checkingCommand.setFacilityCode("testFacilityCode");
-            checkingCommand.setFacilityCode(checkingSourceCode);
-
-            //小车
-            //checkingCommand.setOuterContainerId(11L);
-            //checkingCommand.setOuterContainerCode("testOutContainerCode");
-
-            //货格
-            checkingCommand.setContainerLatticeNo(1);
-
-            //出库箱
-            checkingCommand.setOutboundboxId(1L);
-            checkingCommand.setOutboundboxCode(checkingBoxCode);
-
-            //周转箱
-            //checkingCommand.setContainerId(2L);
-            //checkingCommand.setContainerCode("testContainerCode");
-
-            checkingCommand.setCheckingMode("CHECK_BY_CONTAINER");
-
-            checkingList.add(checkingCommand);
-        }
-        */
         return checkingList;
     }
 
@@ -275,7 +217,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      * @return
      */
     @Override
-    public List<WhCheckingCommand> findCheckingByBatch(String batchNo, Long ouId){
+    public List<WhCheckingCommand> findCheckingByBatch(String batchNo, Long ouId) {
         return whCheckingDao.findCheckingByBatch(batchNo, ouId);
     }
 
@@ -286,21 +228,19 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      * @param ouId
      * @return
      */
-    public int getCheckingOdoQtyByBatch(String batchNo, Long ouId){
+    public int getCheckingOdoQtyByBatch(String batchNo, Long ouId) {
         return whCheckingDao.getCheckingOdoQtyByBatch(batchNo, ouId);
     }
 
 
     /**
      * 生成出库箱库存
-     * 
-     * @param userId 用户Id
-     * @param ouId 仓库Id
+     *
      */
     @Override
     public String createOutboundboxInventory(WhCheckingCommand checkingCommand, List<WhSkuInventory> whSkuInventoryLst) {
-        if(null == whSkuInventoryLst){
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);    
+        if (null == whSkuInventoryLst) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         WhSkuInventory whSkuInventory = whSkuInventoryLst.get(0);
         WhSkuInventoryCommand whSkuInventoryCommand = new WhSkuInventoryCommand();
@@ -324,9 +264,9 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         whSkuInventoryCommand.setOnHandQty(null);
         /** 播种墙编码 */
         whSkuInventoryCommand.setSeedingWallCode(null);
-        /**货格号*/
+        /** 货格号 */
         whSkuInventoryCommand.setContainerLatticeNo(null);
-        /**出库箱号*/
+        /** 出库箱号 */
         whSkuInventoryCommand.setOutboundboxCode(checkingCommand.getOutboundboxCode());
         /** 在库可用库存 */
         whSkuInventoryCommand.setOnHandQty(whSkuInventory.getOnHandQty());
@@ -361,7 +301,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         /** 内部对接码 */
         try {
             WhSkuInventory inv = new WhSkuInventory();
-            //复制数据        
+            // 复制数据
             BeanUtils.copyProperties(whSkuInventoryCommand, inv);
             whSkuInventoryCommand.setUuid(SkuInventoryUuid.invUuid(inv));
         } catch (Exception e) {
@@ -385,22 +325,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId) {
-        WhOutboundFacilityCommand facilityCommand =  whOutboundFacilityDao.findByIdExt(id, ouId);
-        /*
-        {
-            //TODO 测试 复核台
-            if(null == facilityCommand){
-                facilityCommand = new WhOutboundFacilityCommand();
-            }
-            facilityCommand.setId(111L);
-            facilityCommand.setFacilityCode("testFacilityCode");
-            facilityCommand.setFacilityName("testFacilityName");
-            facilityCommand.setFacilityType(null);
-            facilityCommand.setOperatorId(ouId);
-            facilityCommand.setFacilityLowerLimit(2);
-            facilityCommand.setFacilityUpperLimit(10);
-        }
-        */
+        WhOutboundFacilityCommand facilityCommand = whOutboundFacilityDao.findByIdExt(id, ouId);
+
         return facilityCommand;
     }
 
@@ -413,7 +339,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String ipAddr, String macAddr, Long ouId){
+    public WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String ipAddr, String macAddr, Long ouId) {
         return whOutboundFacilityDao.findOutboundFacilityByMacAddr(ipAddr, macAddr, ouId);
     }
 
@@ -427,14 +353,14 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void occupationConsumableSkuInventory(WhSkuInventoryCommand skuInventoryCommand, String outboundBoxCode, Long ouId, String logId){
+    public void occupationConsumableSkuInventory(WhSkuInventoryCommand skuInventoryCommand, String outboundBoxCode, Long ouId, String logId) {
         WhSkuInventory orgSkuInv = new WhSkuInventory();
         BeanUtils.copyProperties(skuInventoryCommand, orgSkuInv);
         orgSkuInv.setOnHandQty(orgSkuInv.getOnHandQty() - 1);
-        //更新原始库存数-1
+        // 更新原始库存数-1
         int updateCount = skuInventoryDao.saveOrUpdateByVersion(orgSkuInv);
-        if(updateCount != 1){
-            throw new BusinessException("占用耗材库存异常");
+        if (updateCount != 1) {
+            throw new BusinessException(ErrorCodes.CHECKING_OCCUPATION_CONSUMABLE_ERROR);
         }
 
         WhSkuInventory occupationSkuInv = new WhSkuInventory();
@@ -459,30 +385,31 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void releaseConsumableSkuInventory(List<WhOutboundboxCommand> outboundboxList, Long ouId, String logId) {
-        if(null != outboundboxList){
-            for(WhOutboundboxCommand outboundBox : outboundboxList){
-                if(null == outboundBox.getOutboundboxCode() || null == outboundBox.getConsumableSkuId() || null == outboundBox.getConsumableLocationCode()){
-                    throw new BusinessException("耗材信息错误");
+        if (null != outboundboxList) {
+            for (WhOutboundboxCommand outboundBox : outboundboxList) {
+                if (null == outboundBox.getOutboundboxCode() || null == outboundBox.getConsumableSkuId() || null == outboundBox.getConsumableLocationCode()) {
+                    throw new BusinessException(ErrorCodes.CHECKING_RELEASE_CONSUMABLE_PARAM_ERROR);
                 }
-                WhSkuInventoryCommand boxOccuInv = skuInventoryDao.findCheckingConsumableOccSkuInv(outboundBox.getOutboundboxCode(), outboundBox.getConsumableSkuId(), outboundBox.getConsumableLocationCode(), Constants.SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE, ouId);
-                if(null == boxOccuInv){
-                    throw new BusinessException("未找到耗材占用的库存");
+                WhSkuInventoryCommand boxOccuInv =
+                        skuInventoryDao.findCheckingConsumableOccSkuInv(outboundBox.getOutboundboxCode(), outboundBox.getConsumableSkuId(), outboundBox.getConsumableLocationCode(), Constants.SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE, ouId);
+                if (null == boxOccuInv) {
+                    throw new BusinessException(ErrorCodes.CHECKING_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR);
                 }
-                //删除耗材占用的库存
+                // 删除耗材占用的库存
                 int deleteCount = skuInventoryDao.deleteWhSkuInventoryById(boxOccuInv.getId(), ouId);
-                if(1 != deleteCount){
-                    throw new BusinessException("删除耗材占用的库存异常");
+                if (1 != deleteCount) {
+                    throw new BusinessException(ErrorCodes.CHECKING_DELETE_OCCUPATION_CONSUMABLE_SKUINV_ERROR);
                 }
 
-                //还原耗材占用的原始库存
+                // 还原耗材占用的原始库存
                 WhSkuInventory orgBoxOccuInv = skuInventoryDao.findWhSkuInventoryById(boxOccuInv.getOccupationLineId(), ouId);
-                if(null == orgBoxOccuInv){
-                    throw new BusinessException("未找到耗材占用的原始库存");
+                if (null == orgBoxOccuInv) {
+                    throw new BusinessException(ErrorCodes.CHECKING_ORG_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR);
                 }
                 orgBoxOccuInv.setOnHandQty(orgBoxOccuInv.getOnHandQty() + 1);
                 int updateCount = skuInventoryDao.saveOrUpdateByVersion(orgBoxOccuInv);
-                if(updateCount != 1){
-                    throw new BusinessException("还原耗材占用库存异常");
+                if (updateCount != 1) {
+                    throw new BusinessException(ErrorCodes.CHECKING_RESTORE_ORG_OCCUPATION_CONSUMABLE_SKUINV_ERROR);
                 }
 
             }
@@ -513,4 +440,101 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     public List<WhCheckingCollectionCommand> findCheckingCollectionByBatchTrolley(String batchNo, String containerCode, Long ouId) {
         return checkingCollectionDao.findCheckingCollectionByBatchTrolley(batchNo, containerCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventory> findCheckingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid) {
+        return whSkuInventoryDao.findOdoSkuInvByOdoLineIdUuid(odoLineId, ouId, uuid);
+    }
+
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void finishedChecking(WhCheckingCommand orgChecking, Set<WhCheckingLineCommand> toUpdateCheckingLineSet, List<WhOutboundbox> whOutboundboxList, Map<WhOutboundbox, List<WhOutboundboxLine>> outboundboxLineListMap,
+            Map<WhOutboundbox, List<WhSkuInventory>> outboundboxSkuInvListMap, Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, List<WhOdoPackageInfoCommand> odoPackageInfoList, List<WhSkuInventorySnCommand> checkedSnInvList, String checkingType,
+            Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
+
+        // 更新复核头状态
+        WhChecking whChecking = new WhChecking();
+        BeanUtils.copyProperties(orgChecking, whChecking);
+        whCheckingDao.saveOrUpdateByVersion(whChecking);
+
+        // 更新明细复核数量
+        for (WhCheckingLineCommand whCheckingLineCommand : toUpdateCheckingLineSet) {
+            WhCheckingLine whCheckingLine = new WhCheckingLine();
+            BeanUtils.copyProperties(whCheckingLineCommand, whCheckingLine);
+            whCheckingLineDao.saveOrUpdateByVersion(whCheckingLine);
+        }
+
+        // 创建出库箱信息和明细信息
+        if (Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID.equals(checkingType) || Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX.equals(checkingType)) {
+            // TODO 创建出库箱和明细数据
+            for (WhOutboundbox whOutboundbox : whOutboundboxList) {
+
+                whOutboundboxDao.insert(whOutboundbox);
+
+                List<WhOutboundboxLine> outboundboxLineList = outboundboxLineListMap.get(whOutboundbox);
+                for (WhOutboundboxLine whOutboundboxLine : outboundboxLineList) {
+                    whOutboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
+                    whOutboundboxLineDao.insert(whOutboundboxLine);
+                }
+
+            }
+        }
+
+        // 更新复核箱库存
+        for (WhSkuInventory odoOrgSkuInv : toUpdateOdoOrgSkuInvSet) {
+            if (0 == odoOrgSkuInv.getOnHandQty()) {
+                whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), odoOrgSkuInv.getOuId());
+            } else {
+                whSkuInventoryDao.saveOrUpdateByVersion(odoOrgSkuInv);
+                Double originOnHandQty = 0.0;
+                if (isTabbInvTotal) {
+                    originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(odoOrgSkuInv.getUuid(), odoOrgSkuInv.getOuId());
+                }
+                // 从仓库判断是否需要记录库存数量变化
+                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), odoOrgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
+
+            }
+        }
+
+        // 创建出库箱库存
+        for (WhOutboundbox whOutboundbox : whOutboundboxList) {
+            List<WhSkuInventory> outboundBoxSkuInvList = outboundboxSkuInvListMap.get(whOutboundbox);
+
+            // 创建 库存信息 WhSkuInventory
+            for (WhSkuInventory whSkuInventory : outboundBoxSkuInvList) {
+                Double originOnHandQty = 0.0;
+                if (isTabbInvTotal) {
+                    originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(whSkuInventory.getUuid(), whSkuInventory.getOuId());
+                }
+                // 从仓库判断是否需要记录库存数量变化
+                whSkuInventoryDao.insert(whSkuInventory);
+                // log.warn("SeedingManagerImpl.saveWhSkuInventoryToDB save whSkuInventory to share DB, whSkuInventory is:[{}], logId is:[{}]",
+                // whSkuInventory, logId);
+                this.insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, ouId, userId, null, null);
+                this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
+            }
+        }
+
+
+        if (!checkedSnInvList.isEmpty()) {
+            for (WhSkuInventorySnCommand whSkuInventorySnCommand : checkedSnInvList) {
+
+                WhSkuInventorySn whSkuInventorySn = new WhSkuInventorySn();
+                BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
+                whSkuInventorySnDao.saveOrUpdateByVersion(whSkuInventorySn);
+            }
+        }
+
+        for (WhOdoPackageInfoCommand whOdoPackageInfoCommand : odoPackageInfoList) {
+            WhOdoPackageInfo whOdoPackageInfo = new WhOdoPackageInfo();
+            // 复制数据
+            BeanUtils.copyProperties(whOdoPackageInfoCommand, whOdoPackageInfo);
+            whOdoPackageInfoDao.insert(whOdoPackageInfo);
+        }
+
+
+        throw new BusinessException("test error");
+    }
+
+
 }

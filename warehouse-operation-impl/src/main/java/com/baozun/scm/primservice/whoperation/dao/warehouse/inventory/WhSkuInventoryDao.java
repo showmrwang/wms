@@ -1037,7 +1037,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
 
 
-    public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
+    public List<WhSkuInventory> findOdoSkuInvByOdoLineIdUuid(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId, @Param("uuid") String uuid);
 
     /**
      * 根据库位id查询库存量

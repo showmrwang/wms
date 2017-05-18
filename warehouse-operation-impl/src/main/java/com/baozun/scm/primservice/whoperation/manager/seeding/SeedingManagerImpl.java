@@ -192,7 +192,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     /**
      * 查询播种墙功能配置
-     * 
+     *
      * @param id
      * @param ouId
      * @return
@@ -293,7 +293,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid( Long odoLineId, Long ouId, String uuid){
-        return whSkuInventoryDao.findSeedingOdoSkuInvByOdoLineIdUuid(odoLineId, ouId, uuid);
+        return whSkuInventoryDao.findOdoSkuInvByOdoLineIdUuid(odoLineId, ouId, uuid);
     }
 
     @Override

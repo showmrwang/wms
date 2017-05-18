@@ -2,19 +2,24 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface CheckingManager extends BaseManager {
-    
+
     /**
      * 打印装箱清单
      * 
@@ -22,7 +27,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId 仓库Id
      */
     void printPackingList(List<Long> facilityIdsList, Long userId, Long ouId);
-    
+
     /**
      * 打印销售清单
      * 
@@ -30,7 +35,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId 仓库Id
      */
     void printSalesList(List<Long> facilityIdsList, Long userId, Long ouId);
-    
+
     /**
      * 打印面单
      * 
@@ -38,7 +43,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId 仓库Id
      */
     void printSinglePlane(List<Long> facilityIdsList, Long userId, Long ouId);
-    
+
     /**
      * 打印箱标签
      * 
@@ -46,7 +51,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId 仓库Id
      */
     void printBoxLabel(List<Long> facilityIdsList, Long userId, Long ouId);
-    
+
     /**
      * 打印发票（复核）
      * 
@@ -54,7 +59,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId 仓库Id
      */
     void printInvoiceReview(List<Long> facilityIdsList, Long userId, Long ouId);
-    
+
     /**
      * 生成出库箱库存
      * 
@@ -62,7 +67,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId 仓库Id
      */
     String createOutboundboxInventory(WhCheckingCommand checkingCommand, List<WhSkuInventory> whSkuInventoryLst);
-    
+
     /**
      * 根据id查询播种墙
      * 
@@ -142,7 +147,7 @@ public interface CheckingManager extends BaseManager {
      * @param ouId
      * @param logId
      */
-    void releaseConsumableSkuInventory( List<WhOutboundboxCommand> outboundboxList, Long ouId, String logId);
+    void releaseConsumableSkuInventory(List<WhOutboundboxCommand> outboundboxList, Long ouId, String logId);
 
 
     /**
@@ -164,6 +169,18 @@ public interface CheckingManager extends BaseManager {
      */
     List<WhCheckingCollectionCommand> findCheckingCollectionByBatchTrolley(String batchNo, String containerCode, Long ouId);
 
+    /**
+     * 查询复核出库单的原始明细库存
+     *
+     * @param odoLineId
+     * @param ouId
+     * @param uuid
+     * @return
+     */
+    public List<WhSkuInventory> findCheckingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
 
 
+    public void finishedChecking(WhCheckingCommand orgChecking, Set<WhCheckingLineCommand> toUpdateCheckingLineSet, List<WhOutboundbox> whOutboundboxList, Map<WhOutboundbox, List<WhOutboundboxLine>> outboundboxLineListMap,
+            Map<WhOutboundbox, List<WhSkuInventory>> outboundboxSkuInvListMap, Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, List<WhOdoPackageInfoCommand> odoPackageInfoList, List<WhSkuInventorySnCommand> checkedSnInvList, String checkingType,
+            Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
 }

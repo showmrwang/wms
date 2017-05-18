@@ -206,7 +206,7 @@
         </where>
     </sql>
 
-    <select id="getCheckingLineByCheckingId" resultMap="WhCheckingLineCommand">
+    <select id="getCheckingLineCommandByCheckingId" resultMap="WhCheckingLineCommand">
         select
             checkingLine.id as id,
             checkingLine.checking_id as checkingId,
@@ -493,5 +493,15 @@
               and odo_id = #{odoId}
 
     </select>
-    
+
+    <select id="getCheckingLineByCheckingId" resultMap="WhCheckingLineResultExt">
+      select
+        <include refid="whCheckingLineColumnsExt"/>
+      from
+        t_wh_checking_line
+      where
+        ou_id = #{ouId}
+        and checking_id = #{checkingId}
+    </select>
+
 </mapper>

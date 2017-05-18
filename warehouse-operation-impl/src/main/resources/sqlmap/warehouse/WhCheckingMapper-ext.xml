@@ -452,12 +452,20 @@
         <include refid="whCheckingCommandDynamicWhereExt"/>
     </select>
     
-     <select id="findWhCheckingByIdExt" resultMap="WhCheckingCommand">
+     <select id="findWhCheckingCommandByIdExt" resultMap="WhCheckingCommand">
         select
         <include refid="whCheckingColumnsExt"/>
         from t_wh_checking 
         where id = #{id}
          and ou_id = #{ouId}
+    </select>
+
+    <select id="findWhCheckingByIdExt" resultMap="WhCheckingResultExt">
+        select
+          <include refid="whCheckingColumnsExt"/>
+        from t_wh_checking
+        where id = #{id}
+          and ou_id = #{ouId}
     </select>
 
      <select id="findListByOuterContainerCode" resultMap="WhCheckingCommand">

@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 
 import java.util.List;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
@@ -10,6 +11,8 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 
 public interface CheckingManagerProxy extends BaseManager {
     
@@ -96,15 +99,17 @@ public interface CheckingManagerProxy extends BaseManager {
      * @param logId
      * @return
      */
-    public List<WhCheckingLineCommand> getCheckingLineFromCache(Long checkingId, Long ouId, String logId);
+    public List<WhCheckingLineCommand> getCheckingLineListByChecking(Long checkingId, Long ouId, String logId);
 
     public Customer findCustomerByRedis(Long customerId);
 
     public Store findStoreByRedis(Long storeId);
 
     /**
+     * 完成复核
      *
-     * @return
+     * @param checkingCommand
      */
-    //public List<InventoryStatus> getAllInventoryStatus();
+    public void finishedCheckingByContainer(WhFunctionOutBound function ,WarehouseMgmt warehouseMgmt,WhCheckingCommand checkingCommand,  String checkingType,Long userId, Long ouId, String logId);
+
 }
