@@ -888,6 +888,11 @@ public final class Constants {
     public static final String IMPORT_WHODO_TRANSPORTMGMT_EXCEL_CONFIG_ID = "whOdoTransportMgmt";
     public static final int IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX = 0;
     
+    /** 库存初始化导入 */
+    public static final String IMPORT_SKUINV_INIT_EXCEL_CONFIG_ID = "whSkuInventoryInit";// 库存初始化导入
+    /** 库存初始化导入标题行，从0开始 */
+    public static final int IMPORT_SKUINV_INIT_TITLE_INDEX = 0;// 入库单导入读取行
+
     /**容器拆分移动-整箱移动*/
     public static final Integer MOVE_PATTERN_WHOLE = 1;
     /**容器拆分移动-部分移动*/

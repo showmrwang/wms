@@ -275,5 +275,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		)
 		group by inv.sku_id,inv.inv_type,inv.inv_status,inv.batch_number,inv.country_of_origin,inv.mfg_date,inv.exp_date,inv.inv_attr1,inv.inv_attr2,inv.inv_attr3,inv.inv_attr4,inv.inv_attr5
 	</select>
+	
+	   	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whSkuLocationColumn">
+	    <![CDATA[
+	        	sl.id as id,
+	        	sl.sku_id as skuId,
+	        	sl.location_id as locationId,
+	        	sl.lifecycle as lifecycle,
+	        	sl.modified_id as modifiedId,
+	        	sl.last_modify_time as lastModifyTime,
+	        	sl.ou_id as ouId,
+	        	location.code as locationCode,
+	        	location.is_static as locationIsStatic
+	    ]]>
+	</sql>
+	 <select id="findByOuIdLocationId" resultMap="WhSkuLocationResultExt" parameterType="map">
+	     select <include refid="whSkuLocationColumn" />
+	     from  t_wh_sku_location sl
+	     left join  t_wh_location location on location.id=sl.location_id
+	     where sl.location_id = #{locationId} and sl.ou_id=#{ouId}
+	 </select>
      	
 </mapper>

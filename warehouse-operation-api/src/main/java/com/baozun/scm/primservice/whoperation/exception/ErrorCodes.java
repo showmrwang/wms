@@ -105,6 +105,15 @@ public class ErrorCodes {
     public static final int STORE_EMPTY = 1024;
     /** 商品Id{0},未查询到相应的商品信息! */
     public static final int SKU_IS_NULL_BY_ID = 1045;
+
+    /** 商品数据已经失效！ */
+    public static final int SKU_EXPIRY_ERROR = 1065;
+    /** 库位数据已经失效！ */
+    public static final int LOCATION_EXPIRY_ERROR = 1066;
+    /** 已有重复的数据！ */
+    public static final int DATA_DUPLICATION_ERROR = 1067;
+    /** 超出库位混放数量！ */
+    public static final int LOCATION_MIXCOUNT_ERROR = 1068;
     /** 商品编码 [{0}] 商品名称 [{1}] 状态不可用，请去商品维护页面重新设置 */
     public static final int SKU_IS_LIFECYCLE_ERROR = 1082;
     /** 二级容器不存在 */
@@ -193,6 +202,8 @@ public class ErrorCodes {
 
 
     // 20000-30000 start
+    /** 容器未找到 */
+    public static final int PALLET_CODE_NOT_FIND = 20001;
     /** 未查询到结果！ **/
     public static final Integer OBJECT_IS_NULL = 20004;
     /** ASN单据[{0}]未绑定店铺 **/
@@ -203,6 +214,9 @@ public class ErrorCodes {
     public static final int SKU_NOT_FOUND = 20008;
     /** 商品不在Asn收货明细中 */
     public static final int SKU_NOT_FOUND_IN_ASN = 20011;
+
+   
+
     // 20000-30000 end
 
     // 5001-10000 common start
@@ -433,6 +447,8 @@ public class ErrorCodes {
     public static final int ODO_CANCEL_ERROR = 11094;
     /** 波次已经释放，波次不允许取消 */
     public static final int WAVE_CANCEL_WORK_ERROR = 11095;
+    /** 库存属性标识生成异常 */
+    public static final int UUID_GENERATE_ERROR = 11096;
     // 10001-20000 luyimin
 
 
@@ -834,8 +850,19 @@ public class ErrorCodes {
     // 60001-70000 xiemingwei
 
     // 70001-80000 tangming
+
+    /** 静态库位，如果绑定的第一个商品是不允许混放的商品，则该静态库位不允许再绑定其他商品 */
+    public static final int lOCATION_NO_MIX = 70007;
+
+
     /** 所选商品已绑定出库箱 */
     public static final int EXIST_SKU_BOUND_BOX = 70010;
+    /** 静态库位绑定的所有允许混放的商品混放属性必须一致 */
+    public static final int lOCATION_NO_MIX_ATTR = 70013;
+
+    /** 该库位已经绑定允许混放的商品，但该商品不能混放，不能绑定 */
+    public static final int SKU_NO_MIX = 70014;
+
     /** 当前容器状态不允许上架 */
     public static final int COMMON_CONTAINER__NOT_PUTWAY = 70015;
     /*** 该商品容器中不存在 */
@@ -844,8 +871,6 @@ public class ErrorCodes {
     public static final int LOCATION_SKU_IS_NOT_EXISTS = 70017;
     /*** 内部容器不在托盘内 */
     public static final int INSIDECONTAINER_NOT_EXISTS_OUTCONTAINER = 70020;
-
-
 
     /** 托盘内sku商品种类数量异常 */
     public static final int PDA_MAN_MADE_PUTAWAY_SKU_AMOUNT_ERROR = 70021;
