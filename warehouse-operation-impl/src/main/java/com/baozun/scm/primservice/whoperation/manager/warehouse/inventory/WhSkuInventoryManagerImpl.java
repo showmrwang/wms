@@ -10354,4 +10354,27 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
 
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void batchInsert(List<WhSkuInventory> skuInvList, Warehouse wh, Long userId) throws Exception {
+        for (WhSkuInventory inv : skuInvList) {
+            inv.setUuid(SkuInventoryUuid.invUuid(inv));
+            inv.setAllocatedQty(Constants.DEFAULT_DOUBLE);
+            inv.setToBeFilledQty(Constants.DEFAULT_DOUBLE);
+            inv.setOuId(wh.getId());
+            WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
+            if (null == skuInv) {
+                this.whSkuInventoryDao.insert(inv);
+                this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.RECEIVING);
+            } else {
+                Double oldQty = skuInv.getOnHandQty();
+                skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
+                this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                // 插入库存日志
+                this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty() - oldQty, oldQty, wh.getIsTabbInvTotal(), skuInv.getOuId(), userId, InvTransactionType.RECEIVING);
+            }
+        }
+
+    }
 }

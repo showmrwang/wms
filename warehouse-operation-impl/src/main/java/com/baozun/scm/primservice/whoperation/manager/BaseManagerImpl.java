@@ -531,6 +531,33 @@ public abstract class BaseManagerImpl implements BaseManager {
         return returnList;
     }
 
+    protected SysDictionary findSysDictionaryByGroupValueAndDicValueAndRedis(String groupValue, String dicValue) {
+        String redisKey = CacheKeyConstant.WMS_CACHE_SYS_DICTIONARY;
+        String sysDictionary = null;
+        SysDictionary sys = null;
+        try {
+            // 先查询Redis是否存在对应数据
+            sysDictionary = cacheManager.getValue(redisKey + groupValue + "$" + dicValue);
+            // sys = cacheManager.getObject(redisKey + groupValue + "$" + dicValue);
+        } catch (Exception e) {
+            // redis出错只记录log
+            log.error("findSysDictionaryByGroupValueAndDicValueAndRedis cacheManager.getObject(" + redisKey + groupValue + "$" + dicValue + ") error");
+        }
+        if (StringUtil.isEmpty(sysDictionary)) {
+            // 缓存无对应数据 查询数据库
+            sys = sysDictionaryDao.getGroupbyGroupValueAndDicValue(groupValue, dicValue);
+            try {
+                cacheManager.setValue(redisKey + groupValue + "$" + dicValue, JsonUtil.beanToJson(sys));
+                // cacheManager.setObject(redisKey + groupValue + "$" + dicValue, sys);
+            } catch (Exception e) {
+                // redis出错只记录log
+                log.error("findSysDictionaryByRedis cacheManager.setObject(" + redisKey + groupValue + "$" + dicValue + ") error");
+            }
+        } else {
+            sys = (SysDictionary) JsonUtil.jsonToBean(sysDictionary, SysDictionary.class);
+        }
+        return sys;
+    }
 
     /**
      * 通过客户ID获取客户信息 redis = null查询数据库

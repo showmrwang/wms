@@ -393,4 +393,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		and ou_id = #{ouid}
 	</select>
 	
+	<select id="findSkuBySkuCode"  resultMap="WhSkuResultExt">
+		select
+		<include refid="whSkuColumnsExt" />
+		    <![CDATA[
+			    from t_wh_sku 
+		        where 
+		        code = #{skuCode} and ou_id=#{ouId} 
+		    ]]>
+	</select>
+	
 </mapper>
