@@ -14,7 +14,6 @@ import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundPermit;
 import com.baozun.scm.primservice.whinterface.msg.WmsErrorCode;
 import com.baozun.scm.primservice.whinterface.msg.WmsInterfaceConstant;
 import com.baozun.scm.primservice.whinterface.msg.WmsResponse;
-import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
@@ -111,10 +110,6 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
                 return new WmsResponse(0, WmsErrorCode.EXTCODE_NOT_UNIQUE_ERROR, "EXTCODE_NOT_UNIQUE_ERROR");
             }
             WhOdo odo = odoList.get(0);
-            // if (!OdoStatus.NEW.equals(odo.getOdoStatus())) {
-            // return new WmsResponse(0, WmsErrorCode.STATUS_CANCEL_ERROR,
-            // "ODO_STATUS_CANCEL_ERROR");
-            // }
             if (wmsOutBoundCancel.getIsOdoCancel().booleanValue()) {
                 this.odoManagerProxy.cancel(odo, ouId, true, null, null, null);
             } else {

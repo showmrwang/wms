@@ -192,9 +192,6 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         if (StringUtil.isEmpty(whCode)) {
             throw new BusinessException("whCode is null error");
         }
-        if (StringUtil.isEmpty(dataSource)) {
-            throw new BusinessException("dataSource is null error");
-        }
         if (null == start) {
             throw new BusinessException("start is null error");
         }
@@ -356,9 +353,6 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
         }
         if (null == endTime) {
             throw new BusinessException("endTime is null error");
-        }
-        if (StringUtil.isEmpty(dataSource)) {
-            throw new BusinessException("dataSource is null error");
         }
         if (null == start) {
             throw new BusinessException("start is null error");

@@ -934,11 +934,12 @@ public class ErrorCodes {
     /** 校验容器/出库箱库存 */
     public static final int CHECK_CONTAINER_INVENTORY_IS_ERROR = 70061;
 
-
     /** 待移入库存不存在 */
     public static final int TOBEFILLED_INVENTORY_NO_EXIST = 70062;
     /**耗材不存在*/
     public static final int OUT_BOUNDBOX_NO_EXIST=70063;
+    /** 容器库存不存在 */
+    public static final int CONTAINER_INVENTORY_NO_EXIST = 70064;
 
     // 70001-80000 tangming
 
