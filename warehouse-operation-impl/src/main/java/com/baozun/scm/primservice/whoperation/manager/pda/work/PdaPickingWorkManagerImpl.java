@@ -3286,7 +3286,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
                 }
                 cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString()+locationId.toString());
-                cacheManager.remove(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString()+operationId.toString() + locationId.toString()); // 单个库位的缓存
+                cacheManager.remove(CacheConstants.CACHE_LOC_INVENTORY + operationId.toString() + locationId.toString()); // 单个库位的缓存
                 cacheManager.remove(CacheConstants.CACHE_LOCATION + operationId.toString()+locationId.toString());
 
 

@@ -75,7 +75,7 @@ public interface PdaReplenishmentWorkManager extends BaseManager {
      * @param ouId
      * @return
      */
-    public PickingScanResultCommand judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId,Long functionId);
+    public PickingScanResultCommand judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId,Long functionId,Long operationId);
     
     
 //    public PickingScanResultCommand judge

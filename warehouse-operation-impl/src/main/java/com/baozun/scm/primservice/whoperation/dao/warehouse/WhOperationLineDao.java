@@ -91,7 +91,7 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @param outerContainerId
      * @return
      */
-    public int findInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("fromOuterContainerId") Long fromOuterContainerId);
+    public int findInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("fromOuterContainerId") Long fromOuterContainerId,@Param("operationId") Long operationId);
     
     
     public void deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
