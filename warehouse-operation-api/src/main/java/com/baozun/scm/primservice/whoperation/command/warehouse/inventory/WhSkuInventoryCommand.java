@@ -287,6 +287,27 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 库位拣货顺序 */
     private String pickSort;
 
+    private String customerCode;
+
+    private String storeCode;
+
+
+    public String getCustomerCode() {
+        return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
+    }
+
+    public String getStoreCode() {
+        return storeCode;
+    }
+
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
+    }
+
     public Boolean getIsPalletRcvdFinished() {
         return isPalletRcvdFinished;
     }

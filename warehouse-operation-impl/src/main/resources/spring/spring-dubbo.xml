@@ -77,6 +77,7 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SysThreadDeployManager" ref="sysThreadDeployManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.AllocateStrategyManager" ref="allocateStrategyManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager" ref="whSkuInventoryManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManagerProxy" ref="whSkuInventoryManagerProxy" />
 	<!-- 补货 -->
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentRuleManager" ref="replenishmentRuleManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager" ref="replenishmentTaskManager" />

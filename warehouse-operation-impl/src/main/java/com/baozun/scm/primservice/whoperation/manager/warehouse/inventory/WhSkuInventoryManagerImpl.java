@@ -5435,30 +5435,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         Long ouId = wh.getId();
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         String occupyCode = odo.getOdoCode();
-        this.releaseInventoryByOccupyCode(occupyCode, wh);
+        this.releaseInventoryByOccupyCode(occupyCode, ouId);
     }
 
     @Override
-    public void releaseInventoryByOccupyCode(String occupyCode, Warehouse wh) {
-        Long ouId = wh.getId();
-        List<WhSkuInventory> occupyInventory = whSkuInventoryDao.findOccupyInventory(occupyCode, ouId);
-        // 还原库存日志
-        for (WhSkuInventory skuInv : occupyInventory) {
-            Long invId = skuInv.getId();
-            Double qty = skuInv.getOnHandQty();
-            Double oldQty = 0.0;
-            if (true == wh.getIsTabbInvTotal()) {
-                oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
-            }
-            // 清除库存占用编码
-            skuInv.setOccupationCode(null);
-            skuInv.setOccupationLineId(null);
-            skuInv.setOccupationCodeSource(null);
-            whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-
-            // 还原库存日志
-            insertSkuInventoryLog(invId, qty, oldQty, wh.getIsTabbInvTotal(), ouId, 1L, null);
-        }
+    public void releaseInventoryByOccupyCode(String occupyCode, Long ouId) {
+        whSkuInventoryDao.releaseInventoryOccupyCode(occupyCode, ouId);
     }
 
     /**
@@ -10368,6 +10350,29 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     whSkuInventory.setSeedingWallCode(null);
                     whSkuInventoryDao.saveOrUpdate(whSkuInventory);
                 }
+            }
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void batchInsert(List<WhSkuInventory> skuInvList, Warehouse wh, Long userId) throws Exception {
+        for (WhSkuInventory inv : skuInvList) {
+            inv.setUuid(SkuInventoryUuid.invUuid(inv));
+            inv.setAllocatedQty(Constants.DEFAULT_DOUBLE);
+            inv.setToBeFilledQty(Constants.DEFAULT_DOUBLE);
+            inv.setOuId(wh.getId());
+            WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
+            if (null == skuInv) {
+                this.whSkuInventoryDao.insert(inv);
+                this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.RECEIVING);
+            } else {
+                Double oldQty = skuInv.getOnHandQty();
+                skuInv.setOnHandQty(skuInv.getOnHandQty() + inv.getOnHandQty());
+                this.whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                // 插入库存日志
+                this.insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty() - oldQty, oldQty, wh.getIsTabbInvTotal(), skuInv.getOuId(), userId, InvTransactionType.RECEIVING);
             }
         }
 
