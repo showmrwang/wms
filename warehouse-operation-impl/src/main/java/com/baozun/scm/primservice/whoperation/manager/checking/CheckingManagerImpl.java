@@ -117,7 +117,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         // 打印销售清单
         try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
-            printDataCommand.setIdList(facilityIdsList);
+            printDataCommand.setOdoId(facilityIdsList.get(0));
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_13, userId, ouId);
         } catch (Exception e) {
             e.printStackTrace();

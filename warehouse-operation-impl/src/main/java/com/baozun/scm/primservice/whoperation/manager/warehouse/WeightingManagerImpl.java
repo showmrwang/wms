@@ -1,16 +1,23 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.baseservice.print.command.PrintDataCommand;
+import com.baozun.scm.baseservice.print.constant.Constants;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
+import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -19,17 +26,20 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionOutBoundDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 
 @Service("weightingManager")
 @Transactional
 public class WeightingManagerImpl extends BaseManagerImpl implements WeightingManager {
 
+    public static final Logger log = LoggerFactory.getLogger(WeightingManager.class);
     @Autowired
     private WhOutboundboxDao whOutboundboxDao;
 
@@ -50,6 +60,9 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
     @Autowired
     private WhCheckingDao whCheckingDao;
+
+    @Autowired
+    private WhPrintInfoDao whPrintInfoDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -115,7 +128,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void weighting(WeightingCommand command) {
+    public void weighting(WeightingCommand command, Long userId) {
         Long funcId = command.getFuncId();
         Long ouId = command.getOuId();
         Long odoId = command.getOdoId();
@@ -139,12 +152,15 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         }
         // 3.保存包裹实际重量
         packageInfo.setActualWeight(command.getActualWeight());
+        packageInfo.setModifiedId(userId);
         int cnt = whOdoPackageInfoDao.saveOrUpdateByVersion(packageInfo);
         if (0 > cnt) {
             throw new BusinessException("save fail");
         }
         // 4.打印单据
         // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);
+        // this.print(outbound.getWeighingPrint(), outboundBoxCode, packageInfo.getId(), userId,
+        // ouId);
         // 5.更新出库单状态
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         WhOdoLine line = new WhOdoLine();
@@ -154,12 +170,97 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         if (null != odoLineList && !odoLineList.isEmpty()) {
             for (WhOdoLine odoLine : odoLineList) {
                 odoLine.setOdoLineStatus(OdoStatus.ODOLINE_WEIGHT_FINISH);
+                odoLine.setModifiedId(userId);
                 whOdoLineDao.saveOrUpdateByVersion(odoLine);
             }
         }
         odo.setOdoStatus(OdoStatus.WEIGHING_FINISH);
+        odo.setModifiedId(userId);
         whOdoDao.saveOrUpdateByVersion(odo);
     }
 
+    /**
+     * [业务方法] 称重打印
+     * @param weightingPrint
+     * @param packageInfoId
+     */
+    private void print(String weightingPrint, String outboundBoxCode, Long packageInfoId, Long userId, Long ouId) {
+        if (weightingPrint.indexOf("3") >= 0) {
+            // 面单打印
+            PrintDataCommand data = new PrintDataCommand();
+            List<Long> idsList = Arrays.asList(packageInfoId);
+            data.setIdList(idsList);
+            printObjectManagerProxy.printCommonInterface(data, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
+        }
+        if (weightingPrint.indexOf("4") >= 0) {
+            // 箱标签打印
+            PrintDataCommand data = new PrintDataCommand();
+            List<Long> idsList = Arrays.asList(packageInfoId);
+            data.setIdList(idsList);
+            printObjectManagerProxy.printCommonInterface(data, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
+        }
+    }
 
+    /**
+     * [业务方法] 称重打印2
+     * @param weightingPrint
+     * @param packageInfoId
+     */
+    private void print2(String weightingPrint, String outboundBoxCode, Long packageInfoId, Long userId, Long ouId) {
+        if (!StringUtils.isEmpty(weightingPrint)) {
+            String[] weightingPrintArray = weightingPrint.split(",");
+            for (int i = 0; i < weightingPrintArray.length; i++) {
+                List<Long> idsList = new ArrayList<Long>();
+                List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(outboundBoxCode, weightingPrintArray[i], ouId);
+                if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
+                    idsList.add(packageInfoId);
+                    WhPrintInfo whPrintInfo = new WhPrintInfo();
+                    whPrintInfo.setOutboundboxCode(outboundBoxCode);
+                    whPrintInfo.setOuId(ouId);
+                    whPrintInfo.setPrintType(weightingPrintArray[i]);
+                    whPrintInfo.setPrintCount(1);// 打印次数
+                    whPrintInfoDao.insert(whPrintInfo);
+                    try {
+                        if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
+                            // 面单
+                            PrintDataCommand printDataCommand = new PrintDataCommand();
+                            printDataCommand.setIdList(idsList);
+                            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
+                        }
+                        if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
+                            // 箱标签
+                            PrintDataCommand printDataCommand = new PrintDataCommand();
+                            printDataCommand.setIdList(idsList);
+                            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
+                        }
+                    } catch (Exception e) {
+                        log.error("WhCheckingManagerImpl printDefect is execption" + e);
+                    }
+                } else {
+                    Integer printCount = whPrintInfoLst.get(0).getPrintCount();
+                    if (printCount < 1) {
+                        WhPrintInfo printfo = whPrintInfoLst.get(0);
+                        printfo.setPrintCount(1);
+                        whPrintInfoDao.saveOrUpdate(printfo);
+                        try {
+                            if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
+                                // 面单
+                                PrintDataCommand printDataCommand = new PrintDataCommand();
+                                printDataCommand.setIdList(idsList);
+                                printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
+                            }
+                            if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
+                                // 箱标签
+                                PrintDataCommand printDataCommand = new PrintDataCommand();
+                                printDataCommand.setIdList(idsList);
+                                printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
+                            }
+                        } catch (Exception e) {
+                            log.error("WhCheckingManagerImpl printDefect is execption" + e);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
