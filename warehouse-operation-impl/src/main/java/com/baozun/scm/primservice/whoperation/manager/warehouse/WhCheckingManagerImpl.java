@@ -214,15 +214,15 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             return command;
         }
         // 判断:平台订单号
-        bingo = scanEcOrderCode(command);
-        if (bingo) {
-            return command;
-        }
-        // 判断:外部对接编码
-        bingo = scanExtCode(command);
-        if (bingo) {
-            return command;
-        }
+        // bingo = scanEcOrderCode(command);
+        // if (bingo) {
+        // return command;
+        // }
+        // // 判断:外部对接编码
+        // bingo = scanExtCode(command);
+        // if (bingo) {
+        // return command;
+        // }
 
         return null;
 
