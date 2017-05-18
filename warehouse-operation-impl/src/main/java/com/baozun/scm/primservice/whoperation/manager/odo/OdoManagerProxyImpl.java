@@ -2757,43 +2757,60 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
         // 获取运单号
         MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, wh, trans, ouId);
-        List<MailnoGetResponse> matchingTransNo = transServiceManager.matchingTransNo(mailNoContent, Constants.WMS4);
-        if (null != matchingTransNo && !matchingTransNo.isEmpty()) {
-            MailnoGetResponse res = matchingTransNo.get(0);
-            if (null != res && null != res.getStatus() && res.getStatus() == 1) {
-                String mailNo = res.getMailno(); // 物流单号
-                String transBigWord = res.getTransBigWord(); // 运单大头笔
-                String tmsCode = res.getTmsCode(); // 二级配送公司编码,用于发货回传
-                String logisticsCode = res.getLogisticsCode(); // 物流公司编码,用于发货回传
-                String packageCenterCode = res.getPackageCenterCode(); // 集包地编码
-                String packageCenterName = res.getPackageCenterName(); // 集包地名称
-                transMgmt.setTransBigWord(transBigWord);
-                transMgmt.setTmsCode(tmsCode);
-                transMgmt.setLogisticsCode(null == logisticsCode ? null : logisticsCode.toUpperCase());
-                transMgmt.setPackageCenterCode(packageCenterCode);
-                transMgmt.setPackageCenterName(packageCenterName);
-                WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
-                delivery.setOdoId(odoId);
-                delivery.setCreateTime(new Date());
-                delivery.setLastModifyTime(new Date());
-                delivery.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
-                delivery.setOuId(ouId);
-                delivery.setStatus(1);
-                delivery.setTransportCode(transMgmt.getTransportServiceProvider());
-                delivery.setTimeEffectType(transMgmt.getTimeEffectType());
-                delivery.setTransportServiceType(transMgmt.getCourierServiceType());
-                delivery.setWaybillCode(mailNo);
-                odoTransportMgmtManager.updateOdoTransportMgmtAndSaveDeliveryInfo(transMgmt, delivery);
-                return delivery;
+        // 循环获取5次
+        MailnoGetResponse res = this.getMailnoGetResponse(mailNoContent);
+        if (null != res && null != res.getStatus() && res.getStatus() == 1) {
+            String mailNo = res.getMailno(); // 物流单号
+            String transBigWord = res.getTransBigWord(); // 运单大头笔
+            String tmsCode = res.getTmsCode(); // 二级配送公司编码,用于发货回传
+            String logisticsCode = res.getLogisticsCode(); // 物流公司编码,用于发货回传
+            String packageCenterCode = res.getPackageCenterCode(); // 集包地编码
+            String packageCenterName = res.getPackageCenterName(); // 集包地名称
+            transMgmt.setTransBigWord(transBigWord);
+            transMgmt.setTmsCode(tmsCode);
+            transMgmt.setLogisticsCode(null == logisticsCode ? null : logisticsCode.toUpperCase());
+            transMgmt.setPackageCenterCode(packageCenterCode);
+            transMgmt.setPackageCenterName(packageCenterName);
+            WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
+            delivery.setOdoId(odoId);
+            delivery.setCreateTime(new Date());
+            delivery.setLastModifyTime(new Date());
+            delivery.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+            delivery.setOuId(ouId);
+            delivery.setStatus(1);
+            delivery.setTransportCode(transMgmt.getTransportServiceProvider());
+            delivery.setTimeEffectType(transMgmt.getTimeEffectType());
+            delivery.setTransportServiceType(transMgmt.getCourierServiceType());
+            delivery.setWaybillCode(mailNo);
+            odoTransportMgmtManager.updateOdoTransportMgmtAndSaveDeliveryInfo(transMgmt, delivery);
+            return delivery;
+        } else {
+            if (null == res) {
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", ouId);
             } else {
-                if (null == res) {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", ouId);
-                } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
-                }
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
             }
         }
         return null;
+    }
+    
+    private MailnoGetResponse getMailnoGetResponse(MailnoGetContentCommand mailNoContent) {
+        MailnoGetResponse res = null;
+        for (int i = 0; i < 5; i++) {
+            List<MailnoGetResponse> matchingTransNo = transServiceManager.matchingTransNo(mailNoContent, Constants.WMS4);
+            if (null != matchingTransNo && !matchingTransNo.isEmpty()) {
+                res = matchingTransNo.get(0);
+                if (null != res && null != res.getStatus() && res.getStatus() == 1) {
+                    return res;
+                } else {
+                    if (i == 4) {
+                        res = matchingTransNo.get(0);
+                        break;
+                    }
+                }
+            }
+        }
+        return res;
     }
 
 
