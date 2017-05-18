@@ -315,6 +315,13 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
        return command;
     }
 
+    /**
+     * 整箱更新作业执行明细,执行量
+     * @param turnoverBoxId
+     * @param operationId
+     * @param ouId
+     * @param userId
+     */
     private void updateOperationExecLine(Long turnoverBoxId,Long operationId,Long ouId,Long userId){
         
         List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(operationId, ouId, turnoverBoxId);
@@ -774,7 +781,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }
         return command;
     }
-    
+
     
     private void cahceSkuSn(String sn,Long locationId,Long turnoverBoxId,Long skuId){
         List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
@@ -855,17 +862,17 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             //更新到工作明细
             List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId);
             if(null != workLineList && workLineList.size() != 0) {
-                for(WhWorkLineCommand workLineCmd:workLineList) {
-                    String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
-                    List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId);
-                    Double sum = 0.0;
-                    for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
-                           Long insideId = invCmd.getInsideContainerId();
-                           String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+                List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId);
+                Double sum = 0.0;
+                for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
+                       Long insideId = invCmd.getInsideContainerId();
+                       String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+                       for(WhWorkLineCommand workLineCmd:workLineList) {
+                         String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
                            if(workSkuAttrId.equals(skuAttrId) && invCmd.getOccupationLineId().longValue() == workLineCmd.getOdoLineId().longValue()) {
-                                 Double lineQty = workLineCmd.getQty();
                                  if(workSkuAttrId.equals(skuAttrId)) {
                                      Double onHandQty = invCmd.getOnHandQty();
+                                     Double lineQty = workLineCmd.getQty();
                                      if(lineQty.doubleValue() > onHandQty.doubleValue()) {
                                          sum += onHandQty;
                                          WhWorkLine workLine = new WhWorkLine();
@@ -942,19 +949,18 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                  }
                            }
                     }
-              }
+                }
             }
             //先添加作业明细,后删除原始作业明细
             List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId);
             if(null != operLineCmdList && operLineCmdList.size() != 0) {
-                //库位上有拣货工作
-                for(WhOperationLineCommand operLineCmd:operLineCmdList){
-                    Double lineQty = operLineCmd.getQty();
-                    String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
-                    List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId);
-                    if(null != skuInvCmdList && skuInvCmdList.size() != 0) {
-                        Double sum = 0.0;
-                        for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
+                List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId);
+                if(null != skuInvCmdList && skuInvCmdList.size() != 0) {
+                    Double sum = 0.0;
+                    for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
+                        for(WhOperationLineCommand operLineCmd:operLineCmdList){
+                           Double lineQty = operLineCmd.getQty();
+                           String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
                             Long insideId = invCmd.getInsideContainerId();
                             Long occupationId = invCmd.getOccupationLineId();
                             String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
@@ -1026,11 +1032,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
                                     break;
                             }
-                            }
-                     }
-                    }
+                        }
+                 }
                 }
             }
+        }
     }
     @Override
     public void updateStatus(Long operationId, String workCode,Long ouId,Long userId) {

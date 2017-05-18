@@ -1713,13 +1713,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
                         skuCmd.getScanSkuQty());
             }
-            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
+            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细
                 List<WhOperationExecLine> execLineList =
-                        this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
+                        this.addInvMoveOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 已分配的库位库存转变为容器库存
-                whSkuInventoryManager.invmoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
+                whSkuInventoryManager.invMoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
             }
             command.setIsContinueScanSn(false);
             String skuAttrId = cSRCmd.getTipSkuAttrId(); // 提示唯一的sku包含唯一sku
@@ -1794,14 +1794,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
                         skuCmd.getScanSkuQty());
             }
-            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
+            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细
                 List<WhOperationExecLine> execLineList =
-                        this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
+                        this.addInvMoveOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 已分配的库位库存转变为容器库存
-                whSkuInventoryManager.invmoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
-                
+                whSkuInventoryManager.invMoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
             }
         } else if (cSRCmd.getIsNeedTipOutContainer()) { // 提示下一个外部容器
             command.setIsContinueScanSn(false);
@@ -1835,14 +1834,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
                         skuCmd.getScanSkuQty());
             }
-            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
+            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细
                 List<WhOperationExecLine> execLineList =
-                        this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
+                        this.addInvMoveOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 已分配的库位库存转变为容器库存
-                whSkuInventoryManager.invmoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
-                
+                whSkuInventoryManager.invMoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
             }
         } else if (cSRCmd.getIsNeedTipLoc()) { // 提示下一个库位
             command.setIsContinueScanSn(false);
@@ -1870,13 +1868,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
                         skuCmd.getScanSkuQty());
             }
-            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
+            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细
                 List<WhOperationExecLine> execLineList =
-                        this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
+                        this.addInvMoveOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
                                 operationId, ouId, skuCmd.getScanSkuQty());
                 // 已分配的库位库存转变为容器库存
-                whSkuInventoryManager.invmoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
+                whSkuInventoryManager.invMoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
             }
             // 提示下一个库位之前，缓存上一个库存
             this.cacheLocation(operationId, locationId);
@@ -1974,10 +1972,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细
                 List<WhOperationExecLine> execLineList =
-                        this.addPickingOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId, operationId,
-                            ouId, skuCmd.getScanSkuQty());
+                        this.addInvMoveOperationExecLine(isShortPickingEnd, command.getScanPattern(), pickingWay, skuAttrIds, locationId, isShortPikcing, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId,
+                                operationId, ouId, skuCmd.getScanSkuQty());
                 // 已分配的库位库存转变为容器库存
-                whSkuInventoryManager.invmoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
+                whSkuInventoryManager.invMoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
                 // 清除缓存
@@ -2118,6 +2116,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && outerContainerId.equals(oLCmd.getFromOuterContainerId())) {
                     operationLineId = oLCmd.getId(); // 获取当前作业明细id
                     WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
+                    whOperationExecLine.setUseOuterContainerId(whOperationExecLine.getFromOuterContainerId());
+                    whOperationExecLine.setUseContainerId(whOperationExecLine.getFromInsideContainerId());
                     whOperationExecLine.setQty(qty);
                     if (isShortPicking) {// 短拣商品
                         whOperationExecLine.setIsShortPicking(true);
@@ -2129,11 +2129,217 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && insideContainerId.equals(oLCmd.getFromInsideContainerId())) {
                     operationLineId = oLCmd.getId(); // 获取当前作业明细id
                     WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
+                    whOperationExecLine.setUseOuterContainerId(whOperationExecLine.getFromOuterContainerId());
+                    whOperationExecLine.setUseContainerId(whOperationExecLine.getFromInsideContainerId());
                     whOperationExecLine.setQty(qty);
                     if (isShortPicking) {// 短拣商品
                         whOperationExecLine.setIsShortPicking(true);
                     }
                     whOperationExecLineDao.insert(whOperationExecLine);
+                }
+            } else {
+                // 非整托整箱
+                if (oLCmd.getCompleteQty().doubleValue() == oLCmd.getQty().doubleValue()) {
+                    continue;
+                }
+                String lineioIds = (oLCmd.getFromOuterContainerId() == null ? "┊" : oLCmd.getFromOuterContainerId() + "┊") + (oLCmd.getFromInsideContainerId() == null ? "︴" : oLCmd.getFromInsideContainerId() + "︴");
+                String opLskuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(oLCmd);
+                if (skuAttrId.equals(opLskuAttrId) && locationId.longValue() == oLCmd.getFromLocationId().longValue() && ioIds.equals(lineioIds)) {
+                    operationLineId = oLCmd.getId(); // 获取当前作业明细id
+                    WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
+                    whOperationExecLine.setIsUseNew(false);
+                    if (isShortPicking) {// 短拣商品
+                        whOperationExecLine.setIsShortPicking(true);
+                    }
+                    if (pickingWay == Constants.PICKING_WAY_THREE) {// 出库箱流程
+                        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
+                        if (null == operatorLine) {
+                            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                        }
+                        Set<String> outbounxBoxs = operatorLine.getOutbounxBoxs();
+                        if (!outbounxBoxs.contains(outBoundBoxCode)) {
+                            whOperationExecLine.setIsUseNew(true);
+                            whOperationExecLine.setOldOutboundboxCode(whOperationExecLine.getUseOutboundboxCode());
+                            whOperationExecLine.setUseOutboundboxCode(outBoundBoxCode);
+                        }
+
+                    }
+                    if (pickingWay == Constants.PICKING_WAY_FOUR) {// 周转箱流程
+                        OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
+                        if (null == operatorLine) {
+                            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                        }
+                        Set<Long> turnoverBoxs = operatorLine.getTurnoverBoxs();
+                        if (!turnoverBoxs.contains(turnoverBoxId)) {
+                            whOperationExecLine.setIsUseNew(true);
+                            whOperationExecLine.setOldContainerId(whOperationExecLine.getOldContainerId());
+                            whOperationExecLine.setUseContainerId(turnoverBoxId);
+                        }
+                    }
+                    // 先修改作业执行明细的执行量
+                    if (null != operationLineId) {
+                        WhOperationLine line = new WhOperationLine();
+                        BeanUtils.copyProperties(oLCmd, line);
+                        if (qty.doubleValue() > oLCmd.getQty().doubleValue()) {// 扫描的数量大于计划量
+                            sum += oLCmd.getQty();
+                            Double subtract = qty.doubleValue() - sum;
+                            if (subtract.doubleValue() > 0) {
+                                line.setCompleteQty(oLCmd.getQty());
+                                whOperationExecLine.setQty(oLCmd.getQty());
+                                whOperationExecLineDao.insert(whOperationExecLine);
+                                list.add(whOperationExecLine);
+                                // 修改作业明细表
+                                line.setCompleteQty(oLCmd.getQty());
+                                whOperationLineDao.saveOrUpdateByVersion(line);
+                                continue;
+                            }
+                            if (subtract.doubleValue() == 0) {
+                                line.setCompleteQty(oLCmd.getQty());
+                                whOperationExecLine.setQty(oLCmd.getQty());
+                                whOperationExecLineDao.insert(whOperationExecLine);
+                                list.add(whOperationExecLine);
+                            }
+                            if (subtract.doubleValue() < 0) {
+                                line.setCompleteQty(sum - qty.doubleValue());
+                                whOperationExecLine.setQty(oLCmd.getQty());
+                                whOperationExecLineDao.insert(whOperationExecLine);
+                                list.add(whOperationExecLine);
+                            }
+
+                        } else if (qty.doubleValue() < oLCmd.getQty().doubleValue()) {
+                            whOperationExecLine.setQty(qty);
+                            whOperationExecLineDao.insert(whOperationExecLine);
+                            list.add(whOperationExecLine);
+                        } else {
+                            whOperationExecLine.setQty(qty);
+                            whOperationExecLineDao.insert(whOperationExecLine);
+                            list.add(whOperationExecLine);
+                        }
+                        // 修改作业明细
+                        if (qty.doubleValue() < oLCmd.getQty().doubleValue()) {
+                            Double sumQty = qty + oLCmd.getCompleteQty();
+                            line.setCompleteQty(sumQty);
+                        }
+                        if (qty.doubleValue() == oLCmd.getQty().doubleValue()) {
+                            line.setCompleteQty(qty);
+                        }
+                        whOperationLineDao.saveOrUpdateByVersion(line);
+                    }
+                    break;
+                }
+            }
+            if (isShortPickingEnd) { // 拣货完成
+                operationLineId = oLCmd.getId(); // 获取当前作业明细id
+                WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
+                whOperationExecLine.setQty(qty);
+                whOperationExecLine.setIsShortPicking(true);
+                whOperationExecLineDao.insert(whOperationExecLine);
+            }
+        }
+        List<WhOperationExecLine> execlineList = whOperationExecLineDao.checkOperationExecLine(ouId, operationId);
+        List<WhOperationExecLine> lineList = whOperationExecLineDao.checkOperationLine(ouId, operationId); // 添加作
+        if (execlineList.size() != lineList.size()) {
+            throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+        }
+        Boolean result = false;
+        for (WhOperationExecLine execLine : execlineList) {
+            String execLineAttr = "┊" + execLine.getFromOuterContainerId() + execLine.getFromInsideContainerId() + execLine.getQty() + execLine.getFromLocationId() + "┊";
+            for (WhOperationExecLine line : lineList) {
+                String lineAttr = "┊" + line.getFromOuterContainerId() + line.getFromInsideContainerId() + line.getQty() + line.getFromLocationId() + "┊";
+                if (execLineAttr.equals(lineAttr)) {
+                    result = true;
+                    break;
+                } else {
+                    result = false;
+                }
+            }
+        }
+
+        for (WhOperationExecLine line : lineList) {
+            String lineAttr = "┊" + line.getFromOuterContainerId() + line.getFromInsideContainerId() + line.getQty() + line.getFromLocationId() + "┊";
+            for (WhOperationExecLine execLine : execlineList) {
+                String execLineAttr = "┊" + execLine.getFromOuterContainerId() + execLine.getFromInsideContainerId() + execLine.getQty() + execLine.getFromLocationId() + "┊";
+                if (lineAttr.equals(execLineAttr)) {
+                    result = true;
+                    break;
+                } else {
+                    result = false;
+                }
+            }
+        }
+        if (!result) {
+            throw new BusinessException(ErrorCodes.CHECK_OPERTAION_EXEC_LINE_DIFF);
+        }
+        log.info("PdaPickingWorkManagerImpl addPickingOperationExecLine is end");
+
+        return list;
+    }
+    
+    /****添加作业执行明细
+     * @author tangming
+     * @param outBoundxBoxCode(出库箱)
+     * @param turnoverBoxCode(周转箱)
+     * @param outerContainerCode(外部容器,托盘)
+     * @param insideContainerCode(货箱号)
+     */
+    private List<WhOperationExecLine> addInvMoveOperationExecLine(Boolean isShortPickingEnd, Integer scanPattern, Integer pickingWay, String skuAttrId, Long locationId, Boolean isShortPicking, Long userId, Long outBoundBoxId, String outBoundBoxCode,
+            Long turnoverBoxId, Long outerContainerId, Long insideContainerId, Long operationId, Long ouId, Double qty) {
+        List<WhOperationExecLine> list = new ArrayList<WhOperationExecLine>();
+        log.info("PdaPickingWorkManagerImpl addPickingOperationExecLine is start");
+        List<WhOperationLineCommand> operLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
+        String ioIds = (outerContainerId == null ? "┊" : outerContainerId + "┊") + (insideContainerId == null ? "︴" : insideContainerId + "︴");
+        Double sum = 0.0;
+        for (WhOperationLineCommand oLCmd : operLineList) {
+            Long operationLineId = null; // 获取当前作业明细id
+            // 整托
+            if (pickingWay == Constants.PICKING_WAY_TWO) {
+                if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && outerContainerId.equals(oLCmd.getFromOuterContainerId())) {
+                    operationLineId = oLCmd.getId(); // 获取当前作业明细id
+                    WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
+                    whOperationExecLine.setUseOuterContainerId(whOperationExecLine.getFromOuterContainerId());
+                    whOperationExecLine.setUseContainerId(whOperationExecLine.getFromInsideContainerId());
+                    whOperationExecLine.setQty(qty);
+                    whOperationExecLine.setCompleteQty(oLCmd.getQty());
+                    if (isShortPicking) {// 短拣商品
+                        whOperationExecLine.setIsShortPicking(true);
+                    }
+                    whOperationExecLineDao.insert(whOperationExecLine);
+                    WhOperationLine line = new WhOperationLine();
+                    BeanUtils.copyProperties(oLCmd, line);
+                    // 修改作业明细
+                    if (qty.doubleValue() < oLCmd.getQty().doubleValue()) {
+                        Double sumQty = qty + oLCmd.getCompleteQty();
+                        line.setCompleteQty(sumQty);
+                    }
+                    if (qty.doubleValue() == oLCmd.getQty().doubleValue()) {
+                        line.setCompleteQty(qty);
+                    }
+                    whOperationLineDao.saveOrUpdateByVersion(line);
+                }
+            } else if (pickingWay == Constants.PICKING_WAY_THREE) {
+                // 整箱
+                if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && insideContainerId.equals(oLCmd.getFromInsideContainerId())) {
+                    operationLineId = oLCmd.getId(); // 获取当前作业明细id
+                    WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
+                    whOperationExecLine.setUseOuterContainerId(whOperationExecLine.getFromOuterContainerId());
+                    whOperationExecLine.setUseContainerId(whOperationExecLine.getFromInsideContainerId());
+                    whOperationExecLine.setQty(qty);
+                    whOperationExecLine.setCompleteQty(oLCmd.getQty());
+                    if (isShortPicking) {// 短拣商品
+                        whOperationExecLine.setIsShortPicking(true);
+                    }
+                    whOperationExecLineDao.insert(whOperationExecLine);
+                    WhOperationLine line = new WhOperationLine();
+                    BeanUtils.copyProperties(oLCmd, line);
+                    // 修改作业明细
+                    if (qty.doubleValue() < oLCmd.getQty().doubleValue()) {
+                        Double sumQty = qty + oLCmd.getCompleteQty();
+                        line.setCompleteQty(sumQty);
+                    }
+                    if (qty.doubleValue() == oLCmd.getQty().doubleValue()) {
+                        line.setCompleteQty(qty);
+                    }
+                    whOperationLineDao.saveOrUpdateByVersion(line);
                 }
             } else {
                 // 非整托整箱

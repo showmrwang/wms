@@ -472,7 +472,7 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         if(null != outerContainerId){
             invList = whSkuInventoryDao.getWhSkuInventoryCommandByOuterContainerId(ouId, outerContainerId);    
         }else{
-            invList = whSkuInventoryDao.getWhSkuInventoryCommandByWave(ouId, insideContainerId);
+            invList = whSkuInventoryDao.getWhSkuInventoryCommandByInsideContainerId(ouId, insideContainerId);
         }
         
         if (null == invList || 0 == invList.size()) {
@@ -607,12 +607,11 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                      insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                      // 插入sn
                      for (WhSkuInventorySnCommand snCmd : snList) {
-                               WhSkuInventorySn sn = new WhSkuInventorySn();
-                               BeanUtils.copyProperties(snCmd, sn);
-                               sn.setId(null);
-                               sn.setUuid(inv.getUuid());
-                               whSkuInventorySnDao.insert(sn);
-                               insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
+                           WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
+                           BeanUtils.copyProperties(snCmd, skuInvSn);
+                           skuInvSn.setUuid(inv.getUuid());
+                           whSkuInventorySnDao.saveOrUpdate(skuInvSn);
+                           insertGlobalLog(GLOBAL_LOG_UPDATE, skuInvSn, ouId, userId, null, null);
                       }
                       // 记录SN日志(这个实现的有问题)
                        insertSkuInventorySnLog(inv.getUuid(), ouId);

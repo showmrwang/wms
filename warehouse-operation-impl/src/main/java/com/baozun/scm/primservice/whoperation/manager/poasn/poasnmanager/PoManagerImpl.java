@@ -829,7 +829,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         if (lineList != null && lineList.size() > 0) {
             for (WhPoLine poLine : lineList) {
                 WhPoLine infoPoLine =
-                        this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLine.getPoLineId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD}), infoPo.getId(),
+                        this.whPoLineDao.findPoLineByPolineIdAndStatusListAndPoIdAndOuId(poLine.getPoLineId(), Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD, PoAsnStatus.ASN_RCVD_FINISH}),
+                                infoPo.getId(),
                                 infoPo.getOuId(), null);
 
                 // 本次收货明细收货数量
