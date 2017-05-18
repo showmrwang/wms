@@ -204,6 +204,6 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param ouId
      * @return
      */
-    public Boolean isContainerScanSn(String insideContainerCode,Long skuId,Long ouId,Long locationId,Double scanSkuQty,Boolean isContinueScanSn);
+    public Boolean isContainerScanSn(String insideContainerCode,Long skuId,Long ouId,Long locationId,Double scanSkuQty,Boolean isContinueScanSn,Long operationId);
     
 }

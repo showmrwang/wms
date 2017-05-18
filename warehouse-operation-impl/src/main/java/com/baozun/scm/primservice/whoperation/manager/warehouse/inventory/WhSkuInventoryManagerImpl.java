@@ -6834,7 +6834,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             String outBoundBox = execLineList.get(0).getUseOutboundboxCode();
             List<WhSkuInventoryCommand> allSkuInvList = whSkuInventoryDao.getWhSkuInventoryByOperationId(locationId, ouId, operationId, outerContainerId, insideContainerId);
             Double sum = 0.0;
-            Boolean isEnd = false; 
+            Boolean isEnd = false;
             for(WhSkuInventoryCommand whSkuCmd:allSkuInvList){
                    String invSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(whSkuCmd);
                    if(skuAttrIds.equals(invSkuAttrIds)){
@@ -7298,6 +7298,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.PICKING);
             // uuid发生变更,重新插入sn
             long count = 0;
+            Boolean isUpdateSnEnd = false;
             for (WhSkuInventorySnCommand cSnCmd : snList) {
                 String snDef = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getDefectWareBarcode()); // 拼接sn/残次信息
                 for (String snDefect : snDefectList) {
@@ -7311,9 +7312,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
                         insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
                         if (count >= qty) {
+                            isUpdateSnEnd= true;
                             break;
                         }
                     }
+                }
+                if(isUpdateSnEnd){
+                    break;
                 }
 
             }
@@ -8556,9 +8561,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     this.replenishmentUpdateContainerInventory(invCmd,skuScanQty, isTabbInvTotal, ouId, userId);
                     isPutaway = true;
                 }
-                
+
                 if(skuScanQty.doubleValue() > onHandQty.doubleValue()){
-                     sum+=onHandQty.doubleValue(); 
+                     sum+=onHandQty.doubleValue();
                      if(skuScanQty.doubleValue() == sum.doubleValue()){
                          //添加库位库存
                          this.replenishmentSplitPutaway(occupationLineId,occupationCode,cacehSnList,invTobefilledList,invSnCmd, invCmd, onHandQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, newTurnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
@@ -8582,7 +8587,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                          isPutaway = true;
                      }
                 }
-                 
+
                 if(skuScanQty.doubleValue() < onHandQty.doubleValue()){
                     //添加库位库存
                     this.replenishmentSplitPutaway(occupationLineId,occupationCode,cacehSnList,invTobefilledList,invSnCmd, invCmd, skuScanQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, newTurnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
@@ -8590,7 +8595,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     this.replenishmentUpdateContainerInventory(invCmd,skuScanQty, isTabbInvTotal, ouId, userId);
                     isPutaway = true;
                 }
-             
+
             }
             if(isPutaway){
                 break;
@@ -9596,7 +9601,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     //添加容器库存
                                     this.replenishAddContainer(allocateCmd.getOccupationLineId(),allocateCmd.getOccupationCode(),operationExecLineList, qty,allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList, operationExecLineList);
                                    //删除已分配库存
-                                    this.repplenishDeleLoc(qty,ouId, userId,allocateCmd);   
+                                    this.repplenishDeleLoc(qty,ouId, userId,allocateCmd);
                                     isPickingEnd = true;
                                 }
                                 if(scanSkuQty.doubleValue() > sum.doubleValue()){
@@ -9800,10 +9805,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 // 记录入库库存日志
                 insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId,InvTransactionType.REPLENISHMENT);
                 //操作sn/残次信息
+                Boolean isUpdateSnEnd = false;
+                long count = 0;
                 for(WhSkuInventorySnCommand snCmd:listSn){
                     String snDefect = SkuCategoryProvider.concatSkuAttrId(snCmd.getSn(),snCmd.getDefectWareBarcode()); // 拼接sn/残次信息
                     for(String sn:snDefectList){
                         if(sn.equals(snDefect)){
+                            count++;
                             WhSkuInventorySn skuInvSn = new WhSkuInventorySn();
                             BeanUtils.copyProperties(snCmd, skuInvSn);
                             skuInvSn.setUuid(uuid);
@@ -9811,9 +9819,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertGlobalLog(GLOBAL_LOG_UPDATE, skuInvSn, ouId, userId, null, null);
                             // 记录SN日志
                             insertSkuInventorySnLog(skuInvSn.getId(), ouId);
+                            if (count >= qty) {
+                                isUpdateSnEnd= true;
+                                break;
+                            }
                         }
                     }
+                    if(isUpdateSnEnd){
+                        break;
+                    }
                 }
+                
                 //修改作业执行明细uuid
                 for(WhOperationExecLine opExecLine:operationExecLineList){
                     for(WhOperationExecLine exec:execLineList){
