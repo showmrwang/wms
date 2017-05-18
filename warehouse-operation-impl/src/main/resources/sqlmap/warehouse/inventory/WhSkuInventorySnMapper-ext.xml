@@ -90,7 +90,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				wrea.name as whDefectReasonsName
 	    ]]>
 	</sql>
-	
+
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn">
+        <![CDATA[
+            UPDATE t_wh_sku_inventory_sn SET
+                sn = #{sn,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                occupation_code = #{occupationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                defect_ware_barcode = #{defectWareBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                defect_source = #{defectSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                defect_type_id = #{defectTypeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                defect_reasons_id = #{defectReasonsId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+                inv_attr = #{invAttr,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sys_uuid = #{sysUuid,javaType=java.lang.String,jdbcType=VARCHAR},
+                occupation_line_id= #{occupationLineId,javaType=java.lang.Long,jdbcType=BIGINT}
+            WHERE
+                id = #{id}
+                and ou_id = #{ouId}
+        ]]>
+    </update>
+
 
 	
 	<select id="findListCountByQueryMapExt" resultType="long">

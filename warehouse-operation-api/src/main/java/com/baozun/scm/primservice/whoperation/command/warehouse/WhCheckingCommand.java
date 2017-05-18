@@ -148,8 +148,8 @@ public class WhCheckingCommand extends BaseCommand {
     /** 复核台id*/
     private Long checkingFacilityId;
 
-    /** 复核的出库箱集合 */
-    List<WhOutboundboxCommand> outboundboxList;
+    /** 复核的出库箱 */
+    WhOutboundboxCommand outboundbox;
 
     public Long getId() {
         return id;
@@ -552,12 +552,12 @@ public class WhCheckingCommand extends BaseCommand {
         this.checkingSourceType = checkingSourceType;
     }
 
-    public List<WhOutboundboxCommand> getOutboundboxList() {
-        return outboundboxList;
+    public WhOutboundboxCommand getOutboundbox() {
+        return outboundbox;
     }
 
-    public void setOutboundboxList(List<WhOutboundboxCommand> outboundboxList) {
-        this.outboundboxList = outboundboxList;
+    public void setOutboundbox(WhOutboundboxCommand outboundbox) {
+        this.outboundbox = outboundbox;
     }
 
     public java.lang.Long getCreateId() {

@@ -29,6 +29,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.InventorySnCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
@@ -49,6 +50,9 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhSkuInventorySn o);
+
+    @CommonQuery
+    int saveOrUpdateByVersion(WhSkuInventorySn o);
 
     /**
      * 根据库存UUID查找对应SN/残次信息

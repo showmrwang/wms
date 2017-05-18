@@ -92,7 +92,9 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      */
     List<WhCheckingCommand> findListByParamExt(WhCheckingCommand checking);
 
-    public WhCheckingCommand findWhCheckingByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+    public WhCheckingCommand findWhCheckingCommandByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    public WhChecking findWhCheckingByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * [业务方法] 查找复核信息

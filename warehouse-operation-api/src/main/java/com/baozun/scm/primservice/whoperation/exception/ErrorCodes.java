@@ -842,6 +842,18 @@ public class ErrorCodes {
     public static final int CHECKING_CONSUMABLE_SKUINV_NULL_ERROR = 60324;
     /** 没有该库位商品信息 */
     public static final int CHECKING_CONSUMABLE_LOCATION_SKU_NULL_ERROR = 60325;
+    /** 占用耗材库存异常 */
+    public static final int CHECKING_OCCUPATION_CONSUMABLE_ERROR = 60326;
+    /** 耗材信息错误 */
+    public static final int CHECKING_RELEASE_CONSUMABLE_PARAM_ERROR = 60327;
+    /** 未找到耗材占用的库存 */
+    public static final int CHECKING_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR = 60328;
+    /** 删除耗材占用的库存异常 */
+    public static final int CHECKING_DELETE_OCCUPATION_CONSUMABLE_SKUINV_ERROR = 60329;
+    /** 未找到耗材占用的原始库存 */
+    public static final int CHECKING_ORG_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR = 60330;
+    /** 还原耗材占用库存异常 */
+    public static final int CHECKING_RESTORE_ORG_OCCUPATION_CONSUMABLE_SKUINV_ERROR = 60331;
 
 
 

@@ -55,7 +55,15 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
      * @param ouId
      * @return
      */
-    List<WhCheckingLineCommand> getCheckingLineByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
+    List<WhCheckingLineCommand> getCheckingLineCommandByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
+
+    /**
+     * 根据复核ID查询复核明细
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingLine> getCheckingLineByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
 
     public WhCheckingLineCommand findCheckingLineById(@Param("id") Long id, @Param("ouId") Long ouId);
 

@@ -818,7 +818,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      */
     public WhCheckingCommand findWhChecking(Long checkingId, Long ouId) {
 
-        return whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+        return whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
     }
 
 
@@ -884,7 +884,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             break;
         }
         // 更新复合头状态
-        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -905,7 +905,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      */
     private void addOutboundbox(Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId) {
 
-        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -1127,8 +1127,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         String outboundBoxCode = cmd.getOutboundBoxCode();
         Long checkingId = checkingLineList.get(0).getCheckingId();
-//        // 更新复合头状态
-        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingByIdExt(checkingId, ouId);
+        // 更新复合头状态
+        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
