@@ -113,7 +113,9 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
             ExcelImportResult skuInvExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_SKUINV_INIT_EXCEL_CONFIG_ID, Constants.IMPORT_SKUINV_INIT_TITLE_INDEX);
             if (ExcelImportResult.READ_STATUS_SUCCESS == skuInvExcelImportResult.getReadstatus()) {
                 // 验证商品信息完整及是否存在重复商品
-                this.validateSkuInv(skuInvExcelImportResult, skuInvList, locale, userId, logId, ouId);
+                // this.validateSkuInv(skuInvExcelImportResult, skuInvList, locale, userId, logId,
+                // ouId);
+                this.validateSkuInvSimple(skuInvExcelImportResult, skuInvList, locale, userId, logId, ouId);
             }
 
             if (ExcelImportResult.READ_STATUS_FAILED == skuInvExcelImportResult.getReadstatus()) {
@@ -151,6 +153,190 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
 
     }
 
+    /**
+     * 无库位混放校验逻辑的库存初始化导入
+     * 
+     * @param excelImportResult
+     * @param skuInvList
+     * @param locale
+     * @param userId
+     * @param logId
+     * @param ouId
+     */
+    private void validateSkuInvSimple(ExcelImportResult excelImportResult, List<WhSkuInventory> skuInvList, Locale locale, Long userId, String logId, Long ouId) {
+        List<WhSkuInventoryCommand> readList = excelImportResult.getListBean();
+        RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
+
+        Map<Long, String> invMap = this.getInvStatusMap();
+        Map<String, Long> locationMap = new HashMap<String, Long>();// 【locationCode-location序列】集合
+        Map<String, Long> skuMap = new HashMap<String, Long>();// 【skuCode-skuId】集合
+        for (int index = 0; index < readList.size(); index++) {
+            int rowNum = index + Constants.IMPORT_SKUINV_INIT_TITLE_INDEX + 1;
+            WhSkuInventoryCommand lineCommand = readList.get(index);
+            if (StringUtils.isEmpty(lineCommand.getSkuCode())) {
+                rootExcelException.getExcelExceptions().add(new ExcelException("商品编码不能为空", null, rowNum, null));
+            } else {
+                // 库位校验逻辑
+                if (locationMap.containsKey(lineCommand.getLocationCode())) {
+                    Long locationId = locationMap.get(lineCommand.getLocationCode());
+                    lineCommand.setLocationId(locationId);
+                } else {
+                    Location l = this.locationManager.findLocationByCode(lineCommand.getLocationCode(), ouId);
+                    if (l == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库位编码找不到对应的库位", null, rowNum, null));
+                    } else {
+                        lineCommand.setLocationId(l.getId());
+                        locationMap.put(lineCommand.getLocationCode(), l.getId());
+                    }
+
+                }
+                // 容器校验
+                if (StringUtils.hasText(lineCommand.getOuterContainerCode())) {
+                    ContainerCommand oc = this.containerManager.findContainerByCode(lineCommand.getOuterContainerCode(), ouId);
+                    if (oc == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("外部容器编码找不到对应的容器", null, rowNum, null));
+                    } else {
+                        lineCommand.setOuterContainerId(oc.getId());
+                    }
+                    if (StringUtils.hasText(lineCommand.getInsideContainerCode())) {
+
+                        ContainerCommand ic = this.containerManager.findContainerByCode(lineCommand.getInsideContainerCode(), ouId);
+                        if (ic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("内部容器编码找不到对应的容器", null, rowNum, null));
+                        } else {
+                            lineCommand.setInsideContainerId(ic.getId());
+                        }
+                    } else {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("有外部容器时候，内部容器不能为空", null, rowNum, null));
+                    }
+
+                } else {
+                    if (StringUtils.hasText(lineCommand.getInsideContainerCode())) {
+
+                        ContainerCommand ic = this.containerManager.findContainerByCode(lineCommand.getInsideContainerCode(), ouId);
+                        if (ic == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("内部容器编码找不到对应的容器", null, rowNum, null));
+                        } else {
+                            lineCommand.setInsideContainerId(ic.getId());
+                        }
+                    }
+                }
+                // 店铺客户校验
+                if (StringUtils.isEmpty(lineCommand.getCustomerCode())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("入库单客户编码不能为空", null, rowNum, null));
+                }
+                Customer customer = this.customerManager.findCustomerbyCode(lineCommand.getCustomerCode());
+                if (customer == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("客户编码有误，找不到对应的客户信息", null, rowNum, null));
+                } else {
+
+                    Long customerId = customer.getId();
+                    lineCommand.setCustomerId(customerId);
+
+                    if (StringUtils.isEmpty(lineCommand.getStoreCode())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码不能为空", null, rowNum, null));
+                    } else {
+                        Store store = this.storeManager.findStoreByCode(lineCommand.getStoreCode());
+                        if (store == null) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("店铺编码找不到对应的店铺信息", null, rowNum, null));
+                        } else {
+                            if (!Constants.LIFECYCLE_START.equals(store.getLifecycle())) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("店铺无效", null, rowNum, null));
+                            }
+                            if (!customer.getId().equals(store.getCustomerId())) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("客户-店铺不对应", null, rowNum, null));
+                            }
+                            Long storeId = store.getId();
+                            lineCommand.setStoreId(storeId);
+                            // Boolean customerStoreUserFlag =
+                            // this.storeManager.checkCustomerStoreUser(customerId, storeId,
+                            // userId);
+                            // if (!customerStoreUserFlag) {
+                            // rootExcelException.getExcelExceptions().add(new
+                            // ExcelException("用户不具有此客户-店铺权限", null, rowNum, null));
+                            // }
+
+                        }
+                    }
+                }
+                // 商品校验逻辑
+                if (skuMap.containsKey(lineCommand.getSkuCode())) {
+                    lineCommand.setSkuId(skuMap.get(lineCommand.getSkuCode()));
+                } else {
+                    WhSku sku = this.whSkuManager.getSkuBySkuCodeOuId(lineCommand.getSkuCode(), ouId);
+                    if (sku == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("商品编码找不到对应的商品", null, rowNum, null));
+                    } else {
+                        lineCommand.setSkuId(sku.getId());
+                        skuMap.put(lineCommand.getSkuCode(), lineCommand.getSkuId());
+                    }
+                }
+                if (lineCommand.getInvStatus() == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
+                } else {
+                    if (!invMap.containsKey(lineCommand.getInvStatus())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存状态编码错误", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getInvType())) {
+                    SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_TYPE, lineCommand.getInvType());
+                    if (dic == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存类型编码错误", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getInvAttr1())) {
+                    SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_1, lineCommand.getInvAttr1());
+                    if (dic == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存属性1编码错误", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getInvAttr2())) {
+                    SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_2, lineCommand.getInvAttr2());
+                    if (dic == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存属性2编码错误", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getInvAttr3())) {
+                    SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_3, lineCommand.getInvAttr3());
+                    if (dic == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存属性3编码错误", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getInvAttr4())) {
+                    SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_4, lineCommand.getInvAttr4());
+                    if (dic == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存属性4编码错误", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getInvAttr5())) {
+                    SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_ATTR_5, lineCommand.getInvAttr5());
+                    if (dic == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存属性5编码错误", null, rowNum, null));
+                    }
+                }
+            }
+
+            WhSkuInventory skuInv = new WhSkuInventory();
+            BeanUtils.copyProperties(lineCommand, skuInv);
+            skuInvList.add(skuInv);
+        }
+
+        if (rootExcelException.isException()) {
+            excelImportResult.setRootExcelException(rootExcelException);
+            excelImportResult.setReadstatus(ExcelImportResult.READ_STATUS_FAILED);
+        }
+    }
+
+    /**
+     * 完整校验逻辑的库存初始化导入
+     * 
+     * @param excelImportResult
+     * @param skuInvList
+     * @param locale
+     * @param userId
+     * @param logId
+     * @param ouId
+     */
     private void validateSkuInv(ExcelImportResult excelImportResult, List<WhSkuInventory> skuInvList, Locale locale, Long userId, String logId, Long ouId) {
         List<WhSkuInventoryCommand> readList = excelImportResult.getListBean();
         RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
