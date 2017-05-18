@@ -176,7 +176,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @author kai.zhu
      * @version 2017年3月14日
      */
-    void releaseInventoryByOccupyCode(String occupyCode, Warehouse wh);
+    void releaseInventoryByOccupyCode(String occupyCode, Long ouId);
 
     /**
      * 根据参数查询出库存信息

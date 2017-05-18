@@ -5435,21 +5435,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         Long ouId = wh.getId();
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         String occupyCode = odo.getOdoCode();
-        this.releaseInventoryByOccupyCode(occupyCode, wh);
+        this.releaseInventoryByOccupyCode(occupyCode, ouId);
     }
 
     @Override
-    public void releaseInventoryByOccupyCode(String occupyCode, Warehouse wh) {
-        Long ouId = wh.getId();
-        List<WhSkuInventory> occupyInventory = whSkuInventoryDao.findOccupyInventory(occupyCode, ouId);
-        // 还原库存日志
-        for (WhSkuInventory skuInv : occupyInventory) {
-            // 清除库存占用编码
-            skuInv.setOccupationCode(null);
-            skuInv.setOccupationLineId(null);
-            skuInv.setOccupationCodeSource(null);
-            whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-        }
+    public void releaseInventoryByOccupyCode(String occupyCode, Long ouId) {
+        whSkuInventoryDao.releaseInventoryOccupyCode(occupyCode, ouId);
     }
 
     /**
