@@ -469,7 +469,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // 剔除已取消的出库单
         List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
         if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
-            this.eliminateOdo(cancelOdoIdList, waveId, ouId);
+            this.eliminateOdo(cancelOdoIdList, waveId, null, false, ouId);
             flag = true;
         }
         
@@ -522,7 +522,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     }
                 } else {
                     // 剔除规则中没有静态库位可超分配或空库位的工作单
-                    this.eliminateOdo(new ArrayList<Long>(odoIds), waveId, ouId);
+                    this.eliminateOdo(new ArrayList<Long>(odoIds), waveId, Constants.INVENTORY_SHORTAGE, true, ouId);
                     flag = true;
                     // 计算是否进入补货
                     this.changeWaveByHardAllocation(waveId, waveTempletId, phaseCode, ouId);
@@ -530,7 +530,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             } else {
                 if (!allOdoIds.isEmpty()) {
                     // 剔除库存数量没有分配完全所有工作单
-                    this.eliminateOdo(new ArrayList<Long>(allOdoIds), waveId, ouId);
+                    this.eliminateOdo(new ArrayList<Long>(allOdoIds), waveId, Constants.INVENTORY_SHORTAGE, true, ouId);
                     flag = true;
                 }
                 // 波次进入到下个阶段
@@ -556,11 +556,13 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
     }
 
-    private void eliminateOdo(List<Long> cancelOdoIdList, Long waveId, Long ouId) {
-        whWaveLineManager.deleteWaveLinesByOdoIdList(cancelOdoIdList, waveId, ouId, Constants.INVENTORY_SHORTAGE);
-        for (Long odoId : cancelOdoIdList) {
-            // 释放库存
-            whSkuInventoryManager.releaseInventoryByOdoId(odoId, ouId);
+    private void eliminateOdo(List<Long> cancelOdoIdList, Long waveId, String reason, boolean isReleaseInventory, Long ouId) {
+        whWaveLineManager.deleteWaveLinesByOdoIdList(cancelOdoIdList, waveId, ouId, reason);
+        if (isReleaseInventory) {
+            for (Long odoId : cancelOdoIdList) {
+                // 释放库存
+                whSkuInventoryManager.releaseInventoryByOdoId(odoId, ouId);
+            }
         }
     }
 
