@@ -87,6 +87,15 @@ public interface CheckingManager extends BaseManager {
 
     List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId);
 
+    List<WhCheckingCommand> findCheckingByTrolley(String trolleyCode, Long ouId);
+
+    List<WhCheckingCommand> findCheckingBySeedingFacility(String facilityCode, Long ouId);
+
+    WhCheckingCommand findCheckingByOutboundBox(String outboundBoxCode, Long ouId);
+
+    WhCheckingCommand findCheckingByTurnoverBox(String turnoverBoxCode, Long ouId);
+
+
     List<WhCheckingCommand> findCheckingByBoxCode(String checkingSourceCode, String checkingBoxCode, Long ouId);
 
     /**
