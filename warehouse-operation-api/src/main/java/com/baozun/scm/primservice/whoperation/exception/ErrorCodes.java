@@ -114,6 +114,15 @@ public class ErrorCodes {
     public static final int DATA_DUPLICATION_ERROR = 1067;
     /** 超出库位混放数量！ */
     public static final int LOCATION_MIXCOUNT_ERROR = 1068;
+    /** 获取数据失败，请刷新页面重试！ */
+    public static final int GET_DATA_ERROR = 1069;
+    /** 仓库残次编码[{}]已存在 */
+    public static final int WH_DEFECT_TYPE_CODE_EXISTS = 1078;
+
+    /** 仓库残次名称[{}]已存在 */
+    public static final int WH_DEFECT_TYPE_NAME_EXISTS = 1079;
+    /** 仓库ID空异常 */
+    public static final int OUID_IS_NULL_ERROR = 1080;
     /** 商品编码 [{0}] 商品名称 [{1}] 状态不可用，请去商品维护页面重新设置 */
     public static final int SKU_IS_LIFECYCLE_ERROR = 1082;
     /** 二级容器不存在 */

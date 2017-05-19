@@ -33,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 /**
  * @author lichuan
@@ -416,5 +417,5 @@ public interface WhSkuInventoryManager extends BaseManager {
 
     void emptyouterContainerIdAndSeedingWallCode(String outboundboxCode, Long ouId);
 
-    void batchInsert(List<WhSkuInventory> skuInvList, Warehouse wh, Long userId) throws Exception;
+    void batchInsert(Map<String, WhSkuInventory> uuidInvMap, Map<String, List<WhSkuInventorySn>> uuidSnMap, Warehouse wh, Long userId);
 }

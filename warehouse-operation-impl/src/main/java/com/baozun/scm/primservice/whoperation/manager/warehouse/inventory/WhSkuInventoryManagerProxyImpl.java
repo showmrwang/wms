@@ -32,9 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdWorkFlow;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.conf.basis.WarehouseDefectTypeCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.excel.ExcelContext;
@@ -51,7 +53,11 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreDefectReasonsManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreDefectTypeManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseDefectReasonsManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseDefectTypeManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuLocationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
@@ -65,7 +71,9 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuLocation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.conf.basis.WarehouseDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("whSkuInventoryManagerProxy")
@@ -95,6 +103,16 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
     private StoreManager storeManager;
     @Autowired
     private CustomerManager customerManager;
+    @Autowired
+    private StoreDefectReasonsManager storeDefectReasonsManager;
+    @Autowired
+    private WarehouseDefectReasonsManager warehouseDefectReasonsManager;
+    @Autowired
+    private StoreDefectTypeManager storeDefectTypeManager;
+    @Autowired
+    private WarehouseDefectTypeManager warehouseDefectTypeManager;
+    @Autowired
+    private CodeManager codeManager;
 
     @Override
     public ResponseMsg initSkuInv(String url, String fileName, Long userImportExcelId, Locale locale, Long ouId, Long userId, String logId) {
@@ -107,7 +125,7 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
             // 创建excel上下文实例,它的构成需要配置文件的路径
             ExcelContext context = new ExcelContext("excel-config.xml");
 
-            List<WhSkuInventory> skuInvList = new ArrayList<WhSkuInventory>();
+            List<WhSkuInventoryCommand> skuInvCommandList = new ArrayList<WhSkuInventoryCommand>();
 
             // 入库单头信息
             ExcelImportResult skuInvExcelImportResult = this.readSheetFromExcel(context, importExcelFile, locale, Constants.IMPORT_SKUINV_INIT_EXCEL_CONFIG_ID, Constants.IMPORT_SKUINV_INIT_TITLE_INDEX);
@@ -115,7 +133,7 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                 // 验证商品信息完整及是否存在重复商品
                 // this.validateSkuInv(skuInvExcelImportResult, skuInvList, locale, userId, logId,
                 // ouId);
-                this.validateSkuInvSimple(skuInvExcelImportResult, skuInvList, locale, userId, logId, ouId);
+                this.validateSkuInvSimple(skuInvExcelImportResult, skuInvCommandList, locale, userId, logId, ouId);
             }
 
             if (ExcelImportResult.READ_STATUS_FAILED == skuInvExcelImportResult.getReadstatus()) {
@@ -137,8 +155,73 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                 msg.setMsg(errorFileName);
                 return msg;
             }
+
+            Map<String,WhSkuInventory> uuidInvMap=new HashMap<String,WhSkuInventory>();
+            Map<String, List<WhSkuInventorySn>> uuidSnMap = new HashMap<String, List<WhSkuInventorySn>>();
+            for (WhSkuInventoryCommand command : skuInvCommandList) {
+                WhSkuInventory inv = new WhSkuInventory();
+                BeanUtils.copyProperties(command, inv);
+                inv.setOuId(ouId);
+                String uuid = SkuInventoryUuid.invUuid(inv);
+                if(StringUtils.isEmpty(uuid)){
+                    throw new BusinessException(ErrorCodes.UUID_GENERATE_ERROR);
+                }
+                if(uuidInvMap.containsKey(uuid)){
+                    WhSkuInventory uuidInv=uuidInvMap.get(uuid);
+                    uuidInv.setOnHandQty(uuidInv.getOnHandQty() + inv.getOnHandQty());
+                    uuidInvMap.put(uuid, uuidInv);
+                } else {
+                    inv.setUuid(uuid);
+                    uuidInvMap.put(uuid, inv);
+                }
+                if (command.getDefectTypeId() != null || StringUtils.hasText(command.getSkuSn())) {
+                    if (StringUtils.hasText(command.getSkuSn())) {
+                        WhSkuInventorySn sn = new WhSkuInventorySn();
+                        sn.setSkuId(inv.getSkuId());
+                        sn.setSn(command.getSkuSn());
+                        sn.setDefectSource(Constants.SKU_SN_DEFECT_SOURCE_WH);
+                        sn.setDefectTypeId(command.getDefectTypeId());
+                        sn.setDefectReasonsId(command.getDefectReasonsId());
+                        sn.setDefectWareBarcode(this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null));
+                        sn.setStatus(1);
+                        sn.setUuid(uuid);
+                        sn.setOuId(ouId);
+                        if (uuidSnMap.containsKey(uuid)) {
+                            List<WhSkuInventorySn> snList = uuidSnMap.get(uuid);
+                            snList.add(sn);
+                            uuidSnMap.put(uuid, snList);
+                        } else {
+                            List<WhSkuInventorySn> snList = new ArrayList<WhSkuInventorySn>();
+                            snList.add(sn);
+                            uuidSnMap.put(uuid, snList);
+                        }
+                    } else {
+                        List<WhSkuInventorySn> snList = new ArrayList<WhSkuInventorySn>();
+                        if (uuidSnMap.containsKey(uuid)) {
+                            snList = uuidSnMap.get(uuid);
+                        }
+                        List<String> barCodeList = this.codeManager.generateCodeList(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null, command.getOnHandQty().intValue()).toArray();
+                        for (int i = 0; i < command.getOnHandQty(); i++) {
+                            WhSkuInventorySn sn = new WhSkuInventorySn();
+                            sn.setSkuId(inv.getSkuId());
+                            sn.setDefectSource(Constants.SKU_SN_DEFECT_SOURCE_WH);
+                            sn.setDefectTypeId(command.getDefectTypeId());
+                            sn.setDefectReasonsId(command.getDefectReasonsId());
+                            sn.setDefectWareBarcode(barCodeList.get(i));
+                            sn.setStatus(1);
+                            sn.setUuid(uuid);
+                            sn.setOuId(ouId);
+                            snList.add(sn);
+                        }
+                        uuidSnMap.put(uuid, snList);
+                    }
+                }
+
+                
+            }
+
             Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
-            this.whSkuInventoryManager.batchInsert(skuInvList, wh, userId);
+            this.whSkuInventoryManager.batchInsert(uuidInvMap, uuidSnMap, wh, userId);
 
             ResponseMsg msg = new ResponseMsg();
             msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
@@ -163,19 +246,37 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
      * @param logId
      * @param ouId
      */
-    private void validateSkuInvSimple(ExcelImportResult excelImportResult, List<WhSkuInventory> skuInvList, Locale locale, Long userId, String logId, Long ouId) {
+    private void validateSkuInvSimple(ExcelImportResult excelImportResult, List<WhSkuInventoryCommand> skuInvList, Locale locale, Long userId, String logId, Long ouId) {
         List<WhSkuInventoryCommand> readList = excelImportResult.getListBean();
         RootExcelException rootExcelException = new RootExcelException("", excelImportResult.getSheetName(), excelImportResult.getTitleSize());
 
         Map<Long, String> invMap = this.getInvStatusMap();
         Map<String, Long> locationMap = new HashMap<String, Long>();// 【locationCode-location序列】集合
         Map<String, Long> skuMap = new HashMap<String, Long>();// 【skuCode-skuId】集合
+
+        List<WarehouseDefectTypeCommand> defectTypes = this.warehouseDefectTypeManager.findWarehouseDefectTypeByOuId(ouId, Constants.LIFECYCLE_START);
+
+        Map<String, Long> deTypeMap = new HashMap<String, Long>();// 残次类型
+        if (defectTypes != null && defectTypes.size() > 0) {
+            for (WarehouseDefectTypeCommand whDefectType : defectTypes) {
+                deTypeMap.put(whDefectType.getCode(), whDefectType.getId());
+            }
+        }
+
         for (int index = 0; index < readList.size(); index++) {
             int rowNum = index + Constants.IMPORT_SKUINV_INIT_TITLE_INDEX + 1;
             WhSkuInventoryCommand lineCommand = readList.get(index);
             if (StringUtils.isEmpty(lineCommand.getSkuCode())) {
                 rootExcelException.getExcelExceptions().add(new ExcelException("商品编码不能为空", null, rowNum, null));
             } else {
+                // 数量校验
+                if (lineCommand.getOnHandQty() == null) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("在库库存不能为空", null, rowNum, null));
+                } else {
+                    if (lineCommand.getOnHandQty() <= 0) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("在库库存必须大于0", null, rowNum, null));
+                    }
+                }
                 // 库位校验逻辑
                 if (locationMap.containsKey(lineCommand.getLocationCode())) {
                     Long locationId = locationMap.get(lineCommand.getLocationCode());
@@ -314,11 +415,40 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                         rootExcelException.getExcelExceptions().add(new ExcelException("库存属性5编码错误", null, rowNum, null));
                     }
                 }
+                // sn与残次
+                if (StringUtils.hasText(lineCommand.getSkuSn())) {
+                    if (lineCommand.getOnHandQty() != 1) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("序列号商品对应的在库库存必须为1", null, rowNum, null));
+                    }
+                }
+                //@mender yimin.lu 2017/5/19 初始化时候，残次原因和类型来自于仓库
+                if(StringUtils.hasText(lineCommand.getDefectType())){
+                    if (!deTypeMap.containsKey(lineCommand.getDefectType())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("残次类型编码错误", null, rowNum, null));
+                    } else {
+                        lineCommand.setSnSource(Constants.SKU_SN_DEFECT_SOURCE_WH);
+                        lineCommand.setDefectTypeId(deTypeMap.get(lineCommand.getDefectType()));
+                        if (StringUtils.hasText(lineCommand.getDefectReasons())) {
+                            WarehouseDefectReasons defectReasons = this.warehouseDefectReasonsManager.findWarehouseDefectReasonsByTypeIdAndReasonCode(lineCommand.getDefectTypeId(), lineCommand.getDefectReasons(), ouId);
+                            if (defectReasons == null) {
+                                rootExcelException.getExcelExceptions().add(new ExcelException("残次原因编码错误", null, rowNum, null));
+                            } else {
+                                lineCommand.setDefectReasonsId(defectReasons.getId());
+                            }
+                        } else {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("残次原因不能为空", null, rowNum, null));
+                        }
+                    }
+
+                } else {
+                    if (StringUtils.hasText(lineCommand.getDefectReasons())) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("残次原因不为空时，残次类型不能为空", null, rowNum, null));
+                    }
+                }
+                
             }
 
-            WhSkuInventory skuInv = new WhSkuInventory();
-            BeanUtils.copyProperties(lineCommand, skuInv);
-            skuInvList.add(skuInv);
+            skuInvList.add(lineCommand);
         }
 
         if (rootExcelException.isException()) {

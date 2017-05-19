@@ -192,6 +192,16 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Integer dayOfValidDate;
     /** 残次来源 */
     private String snSource;
+    /** 残次类型 */
+    private String defectType;
+    /** 残次原因 */
+    private String defectReasons;
+    /** 商品序列号 */
+    private String skuSn;
+    /** 残次类型 */
+    private Long defectTypeId;
+    /** 残次原因 */
+    private Long defectReasonsId;
     // --------------------------------------------------------------------------------------------
     
     
@@ -221,6 +231,32 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 是否允许差异收货 */
     private Boolean isInvattrDiscrepancyAllowrcvd;
 
+
+
+    public Long getDefectTypeId() {
+        return defectTypeId;
+    }
+
+    public void setDefectTypeId(Long defectTypeId) {
+        this.defectTypeId = defectTypeId;
+    }
+
+    public Long getDefectReasonsId() {
+        return defectReasonsId;
+    }
+
+    public void setDefectReasonsId(Long defectReasonsId) {
+        this.defectReasonsId = defectReasonsId;
+    }
+
+    public String getSkuSn() {
+        return skuSn;
+    }
+
+    public void setSkuSn(String skuSn) {
+        this.skuSn = skuSn;
+    }
+
     public String getMixAttr() {
         return mixAttr;
     }
@@ -235,6 +271,22 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getDefectType() {
+        return defectType;
+    }
+
+    public void setDefectType(String defectType) {
+        this.defectType = defectType;
+    }
+
+    public String getDefectReasons() {
+        return defectReasons;
+    }
+
+    public void setDefectReasons(String defectReasons) {
+        this.defectReasons = defectReasons;
     }
 
     /**容器类型*/

@@ -134,7 +134,6 @@
 		<field name="customerCode" title="客户编码" isNull="false"/>
 		<field name="storeCode" title="店铺编码" isNull="false"/>
 		<field name="onHandQty" title="在库库存" decimalFormatPattern="###,##0.00" isNull="false" nullErrorCode="error.excel.isNull"  regex="^\d+(\.\d+)?$" regexErrCode="error.excel.isNotNumber"/>
-		<field name="frozenQty" title="冻结库存" decimalFormatPattern="###,##0.00" isNull="false" nullErrorCode="error.excel.isNull"  regex="^\d+(\.\d+)?$" regexErrCode="error.excel.isNotNumber"/>
 		<field name="invStatus" title="库存状态"  regex="^[1-9]\d*$" regexErrCode="error.excel.isNotNumber" isNull="false" nullErrorCode="error.excel.isNull"/>
 		<field name="invType" title="库存类型"/>
 		<field name="batchNumber" title="批次号"/>
@@ -146,7 +145,10 @@
 		<field name="invAttr3" title="库存属性3"/>
 		<field name="invAttr4" title="库存属性4"/>
 		<field name="invAttr5" title="库存属性5"/>
-		<field name="isLocked" title="是否可用" regex="^[01]$" regexErrCode="error.excel.isNotBoolean"/>
+		<field name="skuSn" title="sn" />
+		<field name="defectType" title="残次类型"/>
+		<field name="defectReasons" title="残次原因"/>
 		
 	</excel>
+	
 </excels>
