@@ -369,7 +369,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             }
             insideContainerId  = cmd.getId();
             int count = whSkuInventoryDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
-            int count1 = whOperationLineDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
+            int count1 = whOperationLineDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId,operationId);
             if(count == count1){
                 picking.setReplenishWay(Constants.REPLENISH_WAY_THREE);
             }

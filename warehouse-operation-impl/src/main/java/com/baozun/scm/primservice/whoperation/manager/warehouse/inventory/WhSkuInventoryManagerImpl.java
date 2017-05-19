@@ -7293,6 +7293,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         sn.setOccupationLineId(occupationLineId);
                         whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
                         insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                        insertSkuInventorySnLog(sn.getId(), ouId); // 记录sn日志
                         if (count >= qty) {
                             isUpdateSnEnd= true;
                             break;
@@ -7304,7 +7305,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
 
             }
-            insertSkuInventorySnLog(inv.getUuid(), ouId); // 记录sn日志
         }
         log.info("WhSkuInventoryManagerImpl addContianerInventory is end");
         return invSkuId;
@@ -8018,7 +8018,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
                 List<WhSkuInventoryCommand> invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(ouId, turnoverBoxId, invCmd.getUuid());
                 for (WhSkuInventoryCommand skuInvCmd : invList) {
-                    this.replenishmentAddInventory(skuInvCmd, skuInvCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal);
+                    this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal);
                     String uuid1 = skuInvCmd.getUuid();
                     Double oldQty1 = 0.0;
                     if (true == isTabbInvTotal) {
