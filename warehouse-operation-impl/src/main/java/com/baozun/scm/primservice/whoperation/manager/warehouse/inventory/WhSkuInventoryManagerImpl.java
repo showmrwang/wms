@@ -5431,8 +5431,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     @Override
-    public void releaseInventoryByOdoId(Long odoId, Warehouse wh) {
-        Long ouId = wh.getId();
+    public void releaseInventoryByOdoId(Long odoId, Long ouId) {
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         String occupyCode = odo.getOdoCode();
         this.releaseInventoryByOccupyCode(occupyCode, ouId);

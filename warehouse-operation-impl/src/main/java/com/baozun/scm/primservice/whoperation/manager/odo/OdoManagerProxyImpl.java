@@ -2804,8 +2804,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     return res;
                 } else {
                     if (i == 4) {
-                        res = matchingTransNo.get(0);
-                        break;
+                        return res;
                     }
                 }
             }

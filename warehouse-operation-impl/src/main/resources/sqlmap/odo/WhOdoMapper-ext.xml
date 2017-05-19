@@ -3454,5 +3454,16 @@
                 wave_code = #{waveCode} and ou_id=#{ouId} 
             ]]>
     </select>
-
+	
+	<select id="getCancelOdoIdListByWaveId" resultType="long">
+		select
+			odo.id
+		from 
+			t_wh_odo odo
+			join t_wh_wave wave on (odo.wave_code = wave.`code`)
+		where 
+			wave.id = #{waveId}
+			and (odo.head_start_odo_status = '17' or odo.odo_status = '17')
+			and odo.ou_id = #{ouId}
+	</select>
 </mapper>

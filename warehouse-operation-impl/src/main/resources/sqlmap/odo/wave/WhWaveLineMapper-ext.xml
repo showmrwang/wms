@@ -693,36 +693,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="getWhWaveLinesByWaveId" parameterType="map" resultMap="WhWaveLineResultExt">
 		select 
-			id as id,
-        	wave_id as waveId,
-        	odo_line_id as odoLineId,
-        	odo_id as odoId,
-        	odo_code as odoCode,
-        	allocate_rule_id as allocateRuleId,
-        	store_id as storeId,
-        	sku_id as skuId,
-        	qty as qty,
-        	allocate_qty as allocateQty,
-        	is_whole_order_outbound as isWholeOrderOutbound,
-        	full_line_outbound as fullLineOutbound,
-        	mfg_date as mfgDate,
-        	exp_date as expDate,
-        	min_exp_date as minExpDate,
-        	max_exp_date as maxExpDate,
-        	batch_number as batchNumber,
-        	country_of_origin as countryOfOrigin,
-        	inv_status as invStatus,
-        	inv_type as invType,
-        	inv_attr1 as invAttr1,
-        	inv_attr2 as invAttr2,
-        	inv_attr3 as invAttr3,
-        	inv_attr4 as invAttr4,
-        	inv_attr5 as invAttr5,
-        	ou_id as ouId
+			l.id as id,
+        	l.wave_id as waveId,
+        	l.odo_line_id as odoLineId,
+        	l.odo_id as odoId,
+        	l.odo_code as odoCode,
+        	l.allocate_rule_id as allocateRuleId,
+        	l.store_id as storeId,
+        	l.sku_id as skuId,
+        	l.qty as qty,
+        	l.allocate_qty as allocateQty,
+        	l.is_whole_order_outbound as isWholeOrderOutbound,
+        	l.full_line_outbound as fullLineOutbound,
+        	l.mfg_date as mfgDate,
+        	l.exp_date as expDate,
+        	l.min_exp_date as minExpDate,
+        	l.max_exp_date as maxExpDate,
+        	l.batch_number as batchNumber,
+        	l.country_of_origin as countryOfOrigin,
+        	l.inv_status as invStatus,
+        	l.inv_type as invType,
+        	l.inv_attr1 as invAttr1,
+			l.inv_attr2 as invAttr2,
+        	l.inv_attr3 as invAttr3,
+        	l.inv_attr4 as invAttr4,
+        	l.inv_attr5 as invAttr5,
+        	l.ou_id as ouId
 		from 
 			t_wh_wave_line l 
+			left join t_wh_odo o on (l.odo_id = o.id)
 		where 
 			l.wave_id = #{waveId}
+			AND o.head_start_odo_status != '17'
 			AND l.ou_id = #{ouId}
 	</select>
 
