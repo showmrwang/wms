@@ -63,7 +63,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="status!=null ">
 					and sn.status = #{status}
 				</if>
-		</where>
+		 group by sn.sn
+		</where> 
 	</sql>
 	
 	<sql id="findListByQueryMapWithPageCommandExt">
@@ -138,7 +139,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_bi_store_defect_reasons srea on srea.id = sn.defect_reasons_id
 			left join t_wh_defect_type wtype on wtype.id = sn.defect_type_id 
 			left join t_wh_defect_reasons wrea on wrea.id = sn.defect_reasons_id
-		<include refid="findListByQueryMapWithPageWhereExt"/>
+		<include refid="findListByQueryMapWithPageWhereExt"/> 
     </select>
 
     <select id="findCheckingSkuInvSnByCheckingId" resultMap="WhSkuInventorySnCommandResultExt">
