@@ -469,7 +469,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // 剔除已取消的出库单
         List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
         if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
-            this.eliminateOdo(cancelOdoIdList, waveId, null, false, ouId);
+            this.eliminateOdo(cancelOdoIdList, waveId, Constants.ODO_IS_CANCEL, false, ouId);
             flag = true;
         }
         
