@@ -868,7 +868,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == rec) {
             throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_PATH_ERROR);
         }
-        cacheManager.remonKeys(cacheKey + userId.toString());
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(cacheKey + userId.toString(), batch);
         if (null == recPathList) {
             recPathList = new ArrayList<WhFacilityRecPathCommand>();
@@ -1578,9 +1577,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     }
 
     @Override
-    public boolean checkBatchInTemporaryStorageLocation(String batch, Long ouId) {
+    public boolean checkBatchInTemporaryStorageLocation(String batch, Long userId, Long ouId) {
         int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
-        if (count - 1 == 0) {
+        List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
+        if (null == recPathList) {
+            throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_PATH_ERROR);
+        }
+        if (recPathList.size() == count) {
             return true;
         }
         return false;
