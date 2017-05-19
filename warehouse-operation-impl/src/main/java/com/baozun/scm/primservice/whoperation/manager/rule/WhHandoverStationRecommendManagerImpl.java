@@ -225,7 +225,9 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                         }
                     }
                 }
-                handoverCollections = handoverCollectionDao.findByGroupCondition(groupCondition, ouId);
+                if (StringUtils.isNotEmpty(groupCondition)) {
+                    handoverCollections = handoverCollectionDao.findByGroupCondition(groupCondition, ouId);
+                }
             }
 
 
@@ -235,6 +237,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                 String applyType = rule.getApplyType();
                 if (HandoverApplyType.DESIGNATED_STATION.equals(applyType)) {
                     // 取到规则上指定的交接工位
+                    handoverStationType = rule.getRuleType();
                     handoverStationId = rule.getHandoverStationId();
                     break;
                 } else {
