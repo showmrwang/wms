@@ -224,7 +224,7 @@ public class ErrorCodes {
     /** 商品不在Asn收货明细中 */
     public static final int SKU_NOT_FOUND_IN_ASN = 20011;
 
-   
+
 
     // 20000-30000 end
 
@@ -432,8 +432,9 @@ public class ErrorCodes {
     public static final int ODO_EDIT_ERROR = 11082;
     /** PO单所包含的子Po状态不全为【关闭】，PO单不允许审核成功 */
     public static final int BIPO_AUDIT_SUBSTATUS_ERROR = 11083;
-    /** PO单状态不允许审核成功
-    public static final int BIPO_AUDIT_STATUS_ERROR = 11084; */
+    /**
+     * PO单状态不允许审核成功 public static final int BIPO_AUDIT_STATUS_ERROR = 11084;
+     */
     /** ASN已收货完成 */
     public static final int ASN_RCVD_FINISHED = 11085;
     /** 出库单反馈数据异常 */
@@ -448,8 +449,8 @@ public class ErrorCodes {
     public static final int CREATE_WAVE_MASTER_NULL_ODO_ERROR = 11090;
     /** 创建波次失败 */
     public static final int CREATE_WAVE_ERROR = 11091;
-    /** PO单状态不允许审核成功*/
-    public static final int BIPO_AUDIT_STATUS_ERROR = 11092; 
+    /** PO单状态不允许审核成功 */
+    public static final int BIPO_AUDIT_STATUS_ERROR = 11092;
     /** 仓库出库单取消节点异常 */
     public static final int WAREHOUSE_CANCEL_NODE_ERROR = 11093;
     /** 出库单不允许取消 */
@@ -798,7 +799,6 @@ public class ErrorCodes {
 
 
 
-
     /** 出库功能不存在 */
     public static final int CHECKING_FUNCTION_NULL_ERROR = 60300;
     /** 未找到复核数据 */
@@ -863,8 +863,6 @@ public class ErrorCodes {
     public static final int CHECKING_ORG_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR = 60330;
     /** 还原耗材占用库存异常 */
     public static final int CHECKING_RESTORE_ORG_OCCUPATION_CONSUMABLE_SKUINV_ERROR = 60331;
-
-
 
 
 
@@ -982,8 +980,8 @@ public class ErrorCodes {
 
     /** 待移入库存不存在 */
     public static final int TOBEFILLED_INVENTORY_NO_EXIST = 70062;
-    /**耗材不存在*/
-    public static final int OUT_BOUNDBOX_NO_EXIST=70063;
+    /** 耗材不存在 */
+    public static final int OUT_BOUNDBOX_NO_EXIST = 70063;
     /** 容器库存不存在 */
     public static final int CONTAINER_INVENTORY_NO_EXIST = 70064;
 
@@ -1087,14 +1085,16 @@ public class ErrorCodes {
     public static final int RECOMMEND_FAILED = 110017;
     /** 推荐的交接库位不存在 */
     public static final int RECOMMEND_STATION_DONT_EXSIT = 110018;
+    /** 该电脑没绑定复核台 */
+    public static final int COMPUTER_NOT_CONNECT_FACILITY = 110019;
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;
-    /**出库箱不满足容器拆分条件 */
-    public static final int  OUT_BOUND_BOX_NOT_MOVE_CONDITION = 120002;
-    /**目标出库箱出库单号与原始出库箱/货格出库单不一致 */
-    public static final int  OUT_BOUND_BOX_ODO_CODE_NOT_MATCH = 120003;
-    // 120000-130000 zhaozili 
+    /** 出库箱不满足容器拆分条件 */
+    public static final int OUT_BOUND_BOX_NOT_MOVE_CONDITION = 120002;
+    /** 目标出库箱出库单号与原始出库箱/货格出库单不一致 */
+    public static final int OUT_BOUND_BOX_ODO_CODE_NOT_MATCH = 120003;
+    // 120000-130000 zhaozili
 
     /** 文件不存在 */
     public static final int IMPORT_ERROR_FILE_NOT_EXISTS = 60203;
