@@ -151,7 +151,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(handoverCollection.getOutboundboxCode(), ouId);
             if (null != whOdoPackageInfo) {
                 totalCalcWeight += whOdoPackageInfo.getCalcWeight();
-                totalActualWeight += whOdoPackageInfo.getActualWeight();
+                if (whOdoPackageInfo.getActualWeight() != null) totalActualWeight += whOdoPackageInfo.getActualWeight();
             }
         }
         handover.setTotalActualWeight(totalActualWeight);

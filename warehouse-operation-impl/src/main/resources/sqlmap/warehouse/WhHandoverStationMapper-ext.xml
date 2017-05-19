@@ -177,16 +177,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	hs.last_modify_time as lastModifyTime,
 	        	hs.modified_id as modifiedId
 	           from t_wh_handover_station hs
-	           left join t_wh_handover_collection hc on hs.id = hc.handover_station_id
-	           where (hc.handover_status = 10 or hc.handover_status =17)
-	           and hs.lifecycle = 1
+	           where  hs.lifecycle = 1
 	           and hs.facility_group_id = #{facilityGroupId}
 	           and hs.ou_id = #{ouId}
 	       	   limit 1   
 	</select>
 	
 	<select id="findOneByOuId" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
-	     select hs.id as id,
+	       select hs.id as id,
 	        	hs.type as type,
 	        	hs.serial_number as serialNumber,
 	        	hs.code as code,
@@ -201,9 +199,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	hs.last_modify_time as lastModifyTime,
 	        	hs.modified_id as modifiedId
 	           from t_wh_handover_station hs
-	           left join t_wh_handover_collection hc on hs.id = hc.handover_station_id
-	           where (hc.handover_status = 10	)
-	           and hs.lifecycle = 1
+	           where  hs.lifecycle = 1
 	           and hs.facility_group_id is null
 	           and hs.ou_id = #{ouId}
 	       	   limit 1  
