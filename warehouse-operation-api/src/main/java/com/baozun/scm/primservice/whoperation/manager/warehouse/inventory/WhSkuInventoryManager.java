@@ -415,4 +415,6 @@ public interface WhSkuInventoryManager extends BaseManager {
     public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long turnoverBoxId);
 
     void emptyouterContainerIdAndSeedingWallCode(String outboundboxCode, Long ouId);
+
+    void batchInsert(List<WhSkuInventory> skuInvList, Warehouse wh, Long userId) throws Exception;
 }

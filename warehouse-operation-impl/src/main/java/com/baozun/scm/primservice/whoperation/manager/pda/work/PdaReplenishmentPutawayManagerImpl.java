@@ -1132,17 +1132,17 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 }
                 String toLocationAndUseContainer = operationExecLine.getToLocationId().toString() + operationExecLine.getUseContainerId().toString();
                 // 获取周转箱对应的所有sku
-                if(null != skuIds.get(operationExecLine.getUseContainerId())){
-                    skuIds.get(operationExecLine.getUseContainerId()).add(operationExecLine.getSkuId());
+                if(null != skuIds.get(toLocationAndUseContainer)){
+                    skuIds.get(toLocationAndUseContainer).add(operationExecLine.getSkuId());
                 }else{
                     Set<Long> skuIdSet = new HashSet<Long>();
                     skuIdSet.add(operationExecLine.getSkuId());
                     skuIds.put(toLocationAndUseContainer, skuIdSet);
                 }
                 // 获取周转箱每个sku总件数
-                if(null != skuQty.get(operationExecLine.getUseContainerId())){
+                if(null != skuQty.get(toLocationAndUseContainer)){
                     Map<Long, Long> useContainerIdAndSkuQtyMap = new HashMap<Long, Long>();
-                    useContainerIdAndSkuQtyMap = skuQty.get(operationExecLine.getUseContainerId());
+                    useContainerIdAndSkuQtyMap = skuQty.get(toLocationAndUseContainer);
                     if(null != useContainerIdAndSkuQtyMap.get(operationExecLine.getSkuId())){
                         Long qty =  useContainerIdAndSkuQtyMap.get(operationExecLine.getSkuId()) + (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty());
                         useContainerIdAndSkuQtyMap.put(operationExecLine.getSkuId(), qty);
@@ -1156,9 +1156,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     skuQty.put(toLocationAndUseContainer, useContainerIdAndSkuQtyMap);
                 }
                 // 周转箱每个sku对应的唯一sku及件数
-                if(null != skuAttrIds.get(operationExecLine.getUseContainerId())){
+                if(null != skuAttrIds.get(toLocationAndUseContainer)){
                     Map<Long, Map<String, Long>> useContainerIdAndOnlySku  = new HashMap<Long, Map<String, Long>>();
-                    useContainerIdAndOnlySku = skuAttrIds.get(operationExecLine.getUseContainerId());
+                    useContainerIdAndOnlySku = skuAttrIds.get(toLocationAndUseContainer);
                     if(null != useContainerIdAndOnlySku.get(operationExecLine.getSkuId())){
                         Map<String, Long> skuAttrIdsQty = useContainerIdAndOnlySku.get(operationExecLine.getSkuId());
                         if (null != skuAttrIdsQty.get(onlySku)) {
@@ -1181,10 +1181,10 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     skuAttrIds.put(toLocationAndUseContainer, useContainerIdAndOnlySku);
                 }
                 // 周转箱每个唯一sku对应的所有sn及残次条码
-                if(null != skuAttrIdsSnDefect.get(operationExecLine.getUseContainerId())){
+                if(null != skuAttrIdsSnDefect.get(toLocationAndUseContainer)){
                     Map<String, Set<String>> onlySkuAndSn = new HashMap<String, Set<String>>();
                     Set<String> snSet = new HashSet<String>();
-                    onlySkuAndSn = skuAttrIdsSnDefect.get(operationExecLine.getUseContainerId());
+                    onlySkuAndSn = skuAttrIdsSnDefect.get(toLocationAndUseContainer);
                     if(null != onlySkuAndSn.get(onlySku)){
                         snSet = onlySkuAndSn.get(onlySku);
                         for (int i = 0; i < operationExecLine.getQty(); i++) {
@@ -1236,17 +1236,17 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 }
                 String toLocationAndUseContainer = operationExecLine.getToLocationId().toString() + operationExecLine.getUseContainerId().toString();
                 // 内部容器对应所有sku（整托整箱）
-                if(null != insideSkuIds.get(operationExecLine.getUseContainerId())){
-                    insideSkuIds.get(operationExecLine.getUseContainerId()).add(operationExecLine.getSkuId());
+                if(null != insideSkuIds.get(toLocationAndUseContainer)){
+                    insideSkuIds.get(toLocationAndUseContainer).add(operationExecLine.getSkuId());
                 }else{
                     Set<Long> skuIdSet = new HashSet<Long>();
                     skuIdSet.add(operationExecLine.getSkuId());
                     insideSkuIds.put(toLocationAndUseContainer, skuIdSet);
                 }
                 // 内部容器每个sku总件数（整托整箱）
-                if(null != insideSkuQty.get(operationExecLine.getUseContainerId())){
+                if(null != insideSkuQty.get(toLocationAndUseContainer)){
                     Map<Long, Long> skuIdAndQtyMap = new HashMap<Long, Long>();
-                    skuIdAndQtyMap = insideSkuQty.get(operationExecLine.getUseContainerId());
+                    skuIdAndQtyMap = insideSkuQty.get(toLocationAndUseContainer);
                     if(null != skuIdAndQtyMap.get(operationExecLine.getSkuId())){
                         Long insQty =  skuIdAndQtyMap.get(operationExecLine.getSkuId()) + (long) (operationExecLine.getQty() - operationExecLine.getCompleteQty());
                         skuIdAndQtyMap.put(operationExecLine.getSkuId(), insQty);
@@ -1260,9 +1260,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     insideSkuQty.put(toLocationAndUseContainer, skuIdAndQtyMap);
                 }
                 // 内部容器每个sku对应的唯一sku及件数（整托整箱）
-                if(null != insideSkuAttrIds.get(operationExecLine.getUseContainerId())){
+                if(null != insideSkuAttrIds.get(toLocationAndUseContainer)){
                     Map<Long, Map<String, Long>> skuIdAndOnlySku = new HashMap<Long, Map<String, Long>>();
-                    skuIdAndOnlySku = insideSkuAttrIds.get(operationExecLine.getUseContainerId());
+                    skuIdAndOnlySku = insideSkuAttrIds.get(toLocationAndUseContainer);
                     if(null != skuIdAndOnlySku.get(operationExecLine.getSkuId())){
                         Map<String, Long> insideSkuAttrIdsQty = skuIdAndOnlySku.get(operationExecLine.getSkuId());
                         if (null != insideSkuAttrIdsQty.get(onlySku)) {
@@ -1285,9 +1285,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     insideSkuAttrIds.put(toLocationAndUseContainer, skuIdAndOnlySku);
                 }
                 // 内部容器每个唯一sku对应的所有sn及残次条码
-                if(null != insideSkuAttrIdsSnDefect.get(operationExecLine.getUseContainerId())){
+                if(null != insideSkuAttrIdsSnDefect.get(toLocationAndUseContainer)){
                     Map<String, Set<String>> onlySkuAndSnMap = new HashMap<String, Set<String>>();
-                    onlySkuAndSnMap = insideSkuAttrIdsSnDefect.get(operationExecLine.getUseContainerId());
+                    onlySkuAndSnMap = insideSkuAttrIdsSnDefect.get(toLocationAndUseContainer);
                     if(null != onlySkuAndSnMap.get(onlySku)){
                         Set<String> snSet = new HashSet<String>();
                         snSet = onlySkuAndSnMap.get(onlySku);
@@ -1411,9 +1411,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     String key = locationId.toString()+turnId;
                     Set<Long> skuIds = turnoverBoxSkuIds.get(key);
                     for(Long skuId:skuIds){
-                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
-                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
-                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnId.toString() + skuId.toString());
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+ turnId.toString() + skuId.toString());
                     }
                     cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnId.toString());
                 }

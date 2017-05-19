@@ -23,7 +23,7 @@ public interface WeightingManager extends BaseManager {
      * [业务方法] 称重
      * @param command
      */
-    void weighting(WeightingCommand command);
+    void weighting(WeightingCommand command, Long userId);
 
 
 }

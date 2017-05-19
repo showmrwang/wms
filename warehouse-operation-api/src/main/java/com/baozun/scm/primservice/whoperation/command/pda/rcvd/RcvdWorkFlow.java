@@ -8,6 +8,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuExtattr;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 
 public class RcvdWorkFlow extends BaseCommand {
 
@@ -190,6 +191,27 @@ public class RcvdWorkFlow extends BaseCommand {
                 break;
         }
         return nextCursor;
+    }
+
+    public static String getLocationParams(Location location, String staticSku) {
+        String isStatic = (location.getIsStatic() != null && location.getIsStatic()) ? "1" : "0";
+        String mixSkuCount = null;
+        String mixSkuAttrCount = null;
+        String isMix = (location.getIsMixStacking() != null && location.getIsMixStacking()) ? "1" : "0";
+        if (location.getIsMixStacking() != null && location.getIsMixStacking()) {
+            mixSkuCount = "1";
+            mixSkuAttrCount = "1";
+        } else {
+            mixSkuCount = location.getMixStackingNumber() == null ? "1" : (location.getMixStackingNumber() + "");
+            mixSkuAttrCount = location.getMaxChaosSku() == null ? "1" : (location.getMaxChaosSku() + "");
+        }
+        String locatinOpt = location.getId() + "%" + isStatic + "|" + isMix + "|" + mixSkuCount + "|" + mixSkuAttrCount + "%$" + staticSku + "%$";
+        return locatinOpt;
+    }
+
+    public static String addLocationSku(String locationOpt, Long skuId, String uuid) {
+
+        return locationOpt.endsWith("%$") ? (locationOpt + skuId + "|" + uuid) : (locationOpt + "$" + skuId + "|" + uuid);// $占位符
     }
 
 }

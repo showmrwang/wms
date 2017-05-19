@@ -222,7 +222,7 @@
      <select id="findByOutboundBoxCode" resultMap="WeightingCommand" flushCache="false">
         select
         info.actual_weight as actualWeight,
-		info.calc_weight as calcWeight,
+		info.calc_weight as calcWeighting,
 		info.floats as floats,
 		odo.odo_code as odoCode,
 		odo.id as odoId,
@@ -230,11 +230,14 @@
 		del.waybill_code as waybillCode,
 		sku.bar_code as skuCode,
         <include refid="whCheckWeightingExt"/>
-        from t_wh_checking ch left join t_wh_odo_package_info info on ch.outboundbox_code = info.outboundbox_code
+        from t_wh_checking ch 
+        left join t_wh_checking_line line on ch.id = line.checking_id
+        left join t_wh_odo_package_info info on line.outboundbox_code = info.outboundbox_code
 		left join t_wh_odo odo on info.odo_id = odo.id
-		left join t_wh_odo_delivery_info del on ch.outboundbox_code = del.outboundbox_code
-		left join t_wh_sku sku on ch.outboundbox_id = sku.id
-		where ch.outboundbox_code = #{outboundBoxCode} and ch.ou_id = #{ouId}
+		left join t_wh_odo_delivery_info del on line.outboundbox_code = del.outboundbox_code
+		left join t_wh_sku sku on line.outboundbox_id = sku.id
+		where line.outboundbox_code = #{outboundBoxCode} and ch.ou_id = #{ouId}
+		limit 1
     </select>
 
      <select id="findByOutboundBoxCodeAndCheckingId" resultMap="WeightingCommand" flushCache="false">
@@ -452,12 +455,20 @@
         <include refid="whCheckingCommandDynamicWhereExt"/>
     </select>
     
-     <select id="findWhCheckingByIdExt" resultMap="WhCheckingCommand">
+     <select id="findWhCheckingCommandByIdExt" resultMap="WhCheckingCommand">
         select
         <include refid="whCheckingColumnsExt"/>
         from t_wh_checking 
         where id = #{id}
          and ou_id = #{ouId}
+    </select>
+
+    <select id="findWhCheckingByIdExt" resultMap="WhCheckingResultExt">
+        select
+          <include refid="whCheckingColumnsExt"/>
+        from t_wh_checking
+        where id = #{id}
+          and ou_id = #{ouId}
     </select>
 
      <select id="findListByOuterContainerCode" resultMap="WhCheckingCommand">

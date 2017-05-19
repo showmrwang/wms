@@ -19,12 +19,6 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuLocationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuLocation;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -32,6 +26,12 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuLocationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSkuLocation;
 
 public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
 
@@ -159,4 +159,13 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
      * @return
      */
     List<WhSkuInventoryCommand> findOtherSkuAttrInTobefilledLocation(@Param("ouId") Long ouId, @Param("locId") Long locId, @Param("skuId") Long skuId, @Param("cSql") String cSql);
+
+    /**
+     * 根据库位id和组织id查询商品库位绑定关系
+     * 
+     * @param locationId
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuLocationCommand> findByOuIdLocationId(@Param("locationId") Long locationId, @Param("ouId") Long ouId);
 }

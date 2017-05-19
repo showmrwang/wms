@@ -95,7 +95,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
      * @param locationId
      * @return
      */
-      public CheckScanResultCommand pdaPickingTipOuterContainer(Set<Long> outerContainerIds,Long locationId);
+      public CheckScanResultCommand pdaPickingTipOuterContainer(Set<Long> outerContainerIds,Long locationId,Long operationId);
       
       /***
        * pda拣货提示货箱
@@ -104,7 +104,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param operatorId
        * @return
        */
-      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long locationId,Long outerContainerId);
+      public CheckScanResultCommand pdaPickingTipInsideContainer(Set<Long> insideContainerIds,Long locationId,Long outerContainerId,Long operationId);
       
       /***
        * pda拣货提示sku
@@ -131,10 +131,10 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param skuCmd
        * @return
        */
-      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Map<String, Set<Integer>>  skuAttrIdsLattice,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,Map<Long, Set<Long>> locSkuIds, Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrIds,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> icSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,Map<Long,Long> insideContainerSkuIdsQty,
+      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Map<String, Set<Integer>>  skuAttrIdsLattice,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,Map<Long, Set<Long>> locSkuIds, Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrIds,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> icSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,
                                                                          Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
     
-      public CheckScanResultCommand palletPickingCacheAndCheck(Long locationId, Set<Long> insideContainerIds, Long outerContainerId, Long insideContainerId);
+      public CheckScanResultCommand palletPickingCacheAndCheck(Long locationId, Set<Long> insideContainerIds, Long outerContainerId, Long insideContainerId,Long operationId);
       
       /***
        * 有小车，而且有出库箱的时候，提示出库箱
@@ -196,7 +196,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       * @param skuAttrId
       * @param insideContainerId
       */
-     public void cacheSkuAttrId(Long locationId,String skuAttrId,Long insideContainerId);
+     public void cacheSkuAttrId(Long locationId,String skuAttrId,Long insideContainerId,Long operationId);
      
      /**
       * 缓存唯一sku
@@ -204,7 +204,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       * @param skuAttrId
       * @param insideContainerId
       */
-     public void cacheSkuAttrIdNoSn(Long locationId,String skuAttrId,Long insideContainerId);
+     public void cacheSkuAttrIdNoSn(Long locationId,String skuAttrId,Long insideContainerId,Long operationId);
      
      /***
       * 补货(拣货)取消流程

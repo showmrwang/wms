@@ -24,7 +24,8 @@ public class SkuInventoryUuid {
         // 拼接库存对应字段值
         String forMatString =
                 inv.getSkuId().toString() + "" + (inv.getLocationId() == null ? "" : inv.getLocationId().toString()) + "" + (inv.getOuterContainerId() == null ? "" : inv.getOuterContainerId().toString()) + ""
-                        + (inv.getInsideContainerId() == null ? "" : inv.getInsideContainerId().toString()) + inv.getCustomerId().toString() + inv.getStoreId().toString() + inv.getInvStatus().toString() + ""
+                        + (inv.getInsideContainerId() == null ? "" : inv.getInsideContainerId().toString()) + (inv.getCustomerId() == null ? "" : inv.getCustomerId().toString()) + (inv.getStoreId() == null ? "" : inv.getStoreId().toString())
+                        + (inv.getInvStatus() == null ? "" : inv.getInvStatus().toString()) + ""
                         + (inv.getInvType() == null ? "" : inv.getInvType().trim().toString()) + "" + (inv.getBatchNumber() == null ? "" : inv.getBatchNumber().trim().toString()) + ""
                         + (inv.getMfgDate() == null ? "" : new SimpleDateFormat("yyyyMMddHHmmss").format(inv.getMfgDate())) + "" + (inv.getExpDate() == null ? "" : new SimpleDateFormat("yyyyMMddHHmmss").format(inv.getExpDate())) + ""
                         + (inv.getCountryOfOrigin() == null ? "" : inv.getCountryOfOrigin().trim().toString()) + "" + (inv.getInvAttr1() == null ? "" : inv.getInvAttr1().trim().toString()) + ""

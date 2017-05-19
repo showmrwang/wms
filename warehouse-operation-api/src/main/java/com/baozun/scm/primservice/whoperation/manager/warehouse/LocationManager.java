@@ -72,6 +72,8 @@ public interface LocationManager extends BaseManager {
      */
     Long reduceQtyAndUpdateOutboundbox(WhCheckingCommand command);
 
+    Location findLocationByCode(String locationCode, Long ouId);
+
 
 
 }

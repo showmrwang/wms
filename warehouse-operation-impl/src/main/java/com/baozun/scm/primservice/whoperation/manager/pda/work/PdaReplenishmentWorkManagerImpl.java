@@ -16,8 +16,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.OperatioLineStati
 import com.baozun.scm.primservice.whoperation.command.pda.work.PickingScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -337,7 +335,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
      * @param ouId
      * @return
      */
-    public PickingScanResultCommand judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId,Long functionId){
+    public PickingScanResultCommand judgeIsPalletContainer(String outerContainerCode,String insideCotainerCode,Long ouId,Long functionId,Long operationId){
         PickingScanResultCommand picking = new PickingScanResultCommand();
         if(StringUtils.isEmpty(outerContainerCode) && StringUtils.isEmpty(insideCotainerCode)) {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
@@ -356,7 +354,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             }
             outerContainerId = cmd.getId();
             int countOut = whSkuInventoryDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId);
-            int countOut1 = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId);
+            int countOut1 = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId,operationId);
             if(countOut == countOut1){
                 picking.setReplenishWay(Constants.REPLENISH_WAY_TWO);;//当前是整托
             }
