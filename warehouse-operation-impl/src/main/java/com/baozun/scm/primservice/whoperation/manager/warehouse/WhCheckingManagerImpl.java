@@ -238,7 +238,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Long ouId = checking.getOuId();
         List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findByOdoIdWithoutOutboundbox(odoId, ouId);
         if (null != list && !list.isEmpty()) {
-            checking.setWaybillCode(list.get(0).getWaybillCode());
+            if (StringUtils.hasLength(list.get(0).getOutboundboxCode())) {
+                checking.setWaybillType("1");
+            } else {
+                checking.setWaybillCode(list.get(0).getWaybillCode());
+            }
         } else {
             WhOdoTransportMgmt odoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
             MaTransport port = new MaTransport();
@@ -951,6 +955,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         } else {
             WhOutboundbox whOutboundbox = new WhOutboundbox();
             BeanUtils.copyProperties(checkingCmd, whOutboundbox);
+            whOutboundbox.setOutboundboxCode(outboundbox);
             whOutboundbox.setOuId(ouId);
             whOutboundbox.setOdoId(odoId);
             whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
