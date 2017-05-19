@@ -988,15 +988,15 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (updateCount != 1) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-        if (destinationType == Constants.SEEDING_WALL) {
+        /*if (destinationType == Constants.SEEDING_WALL) {
             String seedingWallCode = rec.getSeedingwallCode();
             // 移到播种墙时保存redis数据
             // SEEDING_(仓库ID)_(播种墙CODE)_(批次号)_(容器CODE)=Map<SkuId_uuid, WhSeedingCollectionLine>
             addSeedingDataIntoCache(seedingWallCode, containerCode, containerId, batch, ouId);
-        }
+        }*/
     }
 
-    private void addSeedingDataIntoCache(String seedingWallCode, String containerCode, Long containerId, String batch, Long ouId) {
+    /*private void addSeedingDataIntoCache(String seedingWallCode, String containerCode, Long containerId, String batch, Long ouId) {
         if (StringUtils.isEmpty(seedingWallCode) || StringUtils.isEmpty(containerCode)) {
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
@@ -1019,7 +1019,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
             cacheManager.setObject(cacheKey, seedingDataMap, CacheConstants.CACHE_ONE_WEEK);
         }
-    }
+    }*/
 
     @Override
     public void removeRecommendResultListCache(String batch, Long userId) {
