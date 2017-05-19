@@ -168,7 +168,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @author kai.zhu
      * @version 2017年3月14日
      */
-    void releaseInventoryByOdoId(Long odoId, Warehouse wh);
+    void releaseInventoryByOdoId(Long odoId, Long ouId);
 
     /**
      * 根据占用码清除库存

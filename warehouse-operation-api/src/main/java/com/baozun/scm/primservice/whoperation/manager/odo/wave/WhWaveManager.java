@@ -126,7 +126,7 @@ public interface WhWaveManager extends BaseManager {
     /**
      * [业务方法] 硬分配-异常释放这一波次库存
      */
-    void releaseInventoryByWaveId(Long waveId, Warehouse wh);
+    void releaseInventoryByWaveId(Long waveId, Long ouId);
 
     /**
      * 查询波次可用的配货模式

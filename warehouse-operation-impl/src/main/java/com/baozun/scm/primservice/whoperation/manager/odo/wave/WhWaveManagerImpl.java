@@ -465,7 +465,14 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
             return;
         }
-
+        boolean flag = false;   // 标记是否需要重新计算波次头信息
+        // 剔除已取消的出库单
+        List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
+        if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
+            this.eliminateOdo(cancelOdoIdList, waveId, null, false, ouId);
+            flag = true;
+        }
+        
         List<WhWaveLine> lines = whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
         // 获取下一个波次阶段编码
         WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
@@ -515,30 +522,24 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     }
                 } else {
                     // 剔除规则中没有静态库位可超分配或空库位的工作单
-                    whWaveLineManager.deleteWaveLinesByOdoIdList(new ArrayList<Long>(odoIds), waveId, ouId, Constants.INVENTORY_SHORTAGE);
-                    for (Long odoId : odoIds) {
-                        // 释放库存
-                        whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
-                    }
-                    // 从波次中剔除出库单后更新波次头统计信息
-                    this.calculateWaveHeadInfo(waveId, ouId);
+                    this.eliminateOdo(new ArrayList<Long>(odoIds), waveId, Constants.INVENTORY_SHORTAGE, true, ouId);
+                    flag = true;
                     // 计算是否进入补货
                     this.changeWaveByHardAllocation(waveId, waveTempletId, phaseCode, ouId);
                 }
             } else {
                 if (!allOdoIds.isEmpty()) {
                     // 剔除库存数量没有分配完全所有工作单
-                    whWaveLineManager.deleteWaveLinesByOdoIdList(new ArrayList<Long>(allOdoIds), waveId, ouId, Constants.INVENTORY_SHORTAGE);
-                    for (Long odoId : allOdoIds) {
-                        // 释放库存
-                        whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
-                    }
-                    // 从波次中剔除出库单后更新波次头统计信息
-                    this.calculateWaveHeadInfo(waveId, ouId);
+                    this.eliminateOdo(new ArrayList<Long>(allOdoIds), waveId, Constants.INVENTORY_SHORTAGE, true, ouId);
+                    flag = true;
                 }
                 // 波次进入到下个阶段
                 this.changeWavePhaseCode(waveId, ouId);
             }
+        }
+        if (flag) {
+            // 从波次中剔除出库单后更新波次头统计信息
+            this.calculateWaveHeadInfo(waveId, ouId);
         }
         // 回写odoLine的分配数量
         WhWaveLine waveLine = new WhWaveLine();
@@ -552,6 +553,16 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             odoLine.setAssignFailReason(null);
             odoLine.setIsAssignSuccess(true);
             whOdoLineDao.saveOrUpdate(odoLine);
+        }
+    }
+
+    private void eliminateOdo(List<Long> cancelOdoIdList, Long waveId, String reason, boolean isReleaseInventory, Long ouId) {
+        whWaveLineManager.deleteWaveLinesByOdoIdList(cancelOdoIdList, waveId, ouId, reason);
+        if (isReleaseInventory) {
+            for (Long odoId : cancelOdoIdList) {
+                // 释放库存
+                whSkuInventoryManager.releaseInventoryByOdoId(odoId, ouId);
+            }
         }
     }
 
@@ -667,12 +678,11 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @Override
-    public void releaseInventoryByWaveId(Long waveId, Warehouse wh) {
-        Long ouId = wh.getId();
+    public void releaseInventoryByWaveId(Long waveId, Long ouId) {
         List<Long> odoIds = whWaveLineDao.findOdoIdByWaveId(waveId, ouId);
         for (Long odoId : odoIds) {
             // 释放库存
-            whSkuInventoryManager.releaseInventoryByOdoId(odoId, wh);
+            whSkuInventoryManager.releaseInventoryByOdoId(odoId, ouId);
         }
     }
 
@@ -749,7 +759,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         /** 硬分配剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {
             // 出库单释放库存
-            whSkuInventoryManager.releaseInventoryByOccupyCode(odoCode, ouId);
+            whSkuInventoryDao.releaseInventoryOccupyCode(odoCode, ouId);
             // 修改出库单明细已分配数量
             whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
         }
