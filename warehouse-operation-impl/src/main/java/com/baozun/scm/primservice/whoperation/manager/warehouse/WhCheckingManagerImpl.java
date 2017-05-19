@@ -856,6 +856,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId);
         // 算包裹计重????
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox);
+        this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId);
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if (result) {
             // 更新出库单状态
@@ -870,6 +871,20 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // return null;
         // }
         return null;
+    }
+
+    private void odoDeliveryInfoUpdate(String waybillCode, String outboundbox, Long odoId, Long ouId) {
+        WhOdodeliveryInfo whOdodeliveryInfo = new WhOdodeliveryInfo();
+        whOdodeliveryInfo.setOdoId(odoId);
+        whOdodeliveryInfo.setTransportCode("SF");
+        whOdodeliveryInfo.setWaybillCode(waybillCode);
+        whOdodeliveryInfo.setOutboundboxCode(outboundbox);
+        whOdodeliveryInfo.setStatus(1);
+        whOdodeliveryInfo.setOuId(ouId);
+        whOdodeliveryInfo.setLifecycle(1);
+        whOdodeliveryInfo.setCreateTime(new Date());
+        whOdodeliveryInfo.setLastModifyTime(new Date());
+        whOdoDeliveryInfoDao.insert(whOdodeliveryInfo);
     }
 
 
