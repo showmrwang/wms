@@ -194,4 +194,9 @@
 	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="maTransportAccountManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.wms4.manager.MaTransportAccountManager" />
 	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="maTransportManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager" />
 	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="maTransportVasManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.wms4.manager.MaTransportVasManager" />
+	
+	
+	<!-- Pda容器拆分移动 start-->
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaOutBoundBoxMoveManager"  ref="pdaOutBoundBoxMoveManager" />
+    <!-- Pda容器拆分移动 end-->
 </beans>
