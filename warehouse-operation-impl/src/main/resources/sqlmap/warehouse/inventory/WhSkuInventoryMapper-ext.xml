@@ -5266,7 +5266,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and skuInv.occupation_code_source = #{occSourceCode}
     </select>
     
-     <select id="findWhSkuInventorySnByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt">
+     <select id="findWhSkuInventorySnByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt" resultType="java.lang.String">
 			select 
 					distinct inventory.invId,
 					inventory.skuId,
@@ -5460,4 +5460,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					     ) inventory
                       	left join t_wh_sku_inventory_sn sn on inventory.invUuid = sn.uuid
     </select>
+
+    <select id="getExistOutboundBoxCode" resultType="String">
+        select
+            distinct outboundbox_code
+        from
+            t_wh_sku_inventory
+        where
+            outboundbox_code = #{outboundBoxCode}
+            and ou_id = #{ouId}
+    </select>
+
+
 </mapper>

@@ -108,4 +108,6 @@ public interface SeedingManager extends BaseManager {
     public void createOutboundBox(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> whOutboundboxLineList);
 
     public int updateOutboundFacility(WhOutboundFacilityCommand facilityCommand, String logId);
+
+    public Boolean isOutboundBoxAlreadyUsed(String outboundBoxCode, Long ouId, String logId);
 }

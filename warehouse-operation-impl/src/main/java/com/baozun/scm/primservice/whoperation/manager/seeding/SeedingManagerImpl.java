@@ -173,7 +173,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     public WhOutboundFacilityCommand getOutboundFacilityById(Long facilityId, Long ouId) {
         WhOutboundFacilityCommand facilityCommand = whOutboundFacilityDao.findByIdExt(facilityId, ouId);
         // TODO 测试 设置播种墙出库箱类型
-        //facilityCommand.setOutboundboxTypeId(23100001L);
+        // facilityCommand.setOutboundboxTypeId(23100001L);
         return facilityCommand;
     }
 
@@ -209,7 +209,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSeedingCollectionLine findSeedingCollectionLineById(Long seedingCollectionLineId, Long ouId){
+    public WhSeedingCollectionLine findSeedingCollectionLineById(Long seedingCollectionLineId, Long ouId) {
         return seedingCollectionLineDao.findByIdExt(seedingCollectionLineId, ouId);
     }
 
@@ -221,7 +221,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int updateSeedingCollectionLineByVersion(WhSeedingCollectionLine seedingCollectionLine){
+    public int updateSeedingCollectionLineByVersion(WhSeedingCollectionLine seedingCollectionLine) {
         return seedingCollectionLineDao.saveOrUpdateByVersion(seedingCollectionLine);
     }
 
@@ -234,7 +234,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
         BeanUtils.copyProperties(facilityCommand, outboundFacility);
         outboundFacility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_5));
         // TODO 测试 不更新播种墙状态
-         whOutboundFacilityDao.saveOrUpdateByVersion(outboundFacility);
+        whOutboundFacilityDao.saveOrUpdateByVersion(outboundFacility);
 
 
         for (WhSeedingCollectionCommand orgSeedingCollection : seedingCollectionList) {
@@ -251,18 +251,19 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
             WhSeedingCollectionLine seedingCollectionLine = new WhSeedingCollectionLine();
             BeanUtils.copyProperties(orgLine, seedingCollectionLine);
             // TODO 测试 不更新播种数量
-             whSeedingCollectionLineDao.saveOrUpdate(seedingCollectionLine);
+            whSeedingCollectionLineDao.saveOrUpdate(seedingCollectionLine);
         }
 
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
-        for(WhSkuInventory odoOrgSkuInv : odoOrgSkuInvList){
-            if(0 == odoOrgSkuInv.getOnHandQty()){
+    public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal,
+            Long userId, Long ouId, String logId) {
+        for (WhSkuInventory odoOrgSkuInv : odoOrgSkuInvList) {
+            if (0 == odoOrgSkuInv.getOnHandQty()) {
                 whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), ouId);
-            }else {
+            } else {
                 whSkuInventoryDao.saveOrUpdateByVersion(odoOrgSkuInv);
                 Double originOnHandQty = 0.0;
                 if (isTabbInvTotal) {
@@ -281,7 +282,8 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList, WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId){
+    public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList, WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId,
+            Long ouId, String logId) {
         whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
         this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
         // 生成复核数据并重计算复核模式
@@ -292,16 +294,16 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid( Long odoLineId, Long ouId, String uuid){
+    public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid) {
         return whSkuInventoryDao.findOdoSkuInvByOdoLineIdUuid(odoLineId, ouId, uuid);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createOutboundBox(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> whOutboundboxLineList){
+    public void createOutboundBox(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> whOutboundboxLineList) {
         whOutboundboxDao.insert(whOutboundbox);
 
-        for(WhOutboundboxLine whOutboundboxLine : whOutboundboxLineList){
+        for (WhOutboundboxLine whOutboundboxLine : whOutboundboxLineList) {
             whOutboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
 
             whOutboundboxLineDao.insert(whOutboundboxLine);
@@ -310,15 +312,26 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int updateOutboundFacility(WhOutboundFacilityCommand facilityCommand, String logId){
+    public int updateOutboundFacility(WhOutboundFacilityCommand facilityCommand, String logId) {
         WhOutboundFacility whOutboundFacility = new WhOutboundFacility();
         BeanUtils.copyProperties(facilityCommand, whOutboundFacility);
         int count = whOutboundFacilityDao.saveOrUpdateByVersion(whOutboundFacility);
-        if(count != 1){
+        if (count != 1) {
             log.error("SeedingManagerImpl update outboundFacility error, facility is:[{}], logId is:[{}]", whOutboundFacility, logId);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
         return count;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean isOutboundBoxAlreadyUsed(String outboundBoxCode, Long ouId, String logId) {
+        String existOutboundboxCode = whSkuInventoryDao.getExistOutboundBoxCode(outboundBoxCode, ouId);
+        Boolean boxAlreadyUsed = false;
+        if (null != existOutboundboxCode) {
+            boxAlreadyUsed = true;
+        }
+        return boxAlreadyUsed;
     }
 
     /**
