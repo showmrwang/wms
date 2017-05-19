@@ -125,11 +125,11 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     @Override
-    public void printSinglePlane(List<Long> facilityIdsList, Long userId, Long ouId) {
+    public void printSinglePlane(String waybillCode, Long userId, Long ouId) {
         // 打印面单
         try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
-            printDataCommand.setIdList(facilityIdsList);
+            printDataCommand.setCode(waybillCode);
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -137,11 +137,11 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     @Override
-    public void printBoxLabel(List<Long> facilityIdsList, Long userId, Long ouId) {
+    public void printBoxLabel(String outBoundBoxCode, Long userId, Long ouId) {
         // 打印箱标签
         try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
-            printDataCommand.setIdList(facilityIdsList);
+            printDataCommand.setCode(outBoundBoxCode);
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
         } catch (Exception e) {
             e.printStackTrace();

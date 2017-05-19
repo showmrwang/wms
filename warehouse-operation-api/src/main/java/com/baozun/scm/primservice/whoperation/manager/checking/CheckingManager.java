@@ -41,7 +41,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printSinglePlane(List<Long> facilityIdsList, Long userId, Long ouId);
+    void printSinglePlane(String waybillCode, Long userId, Long ouId);
 
     /**
      * 打印箱标签
@@ -49,7 +49,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printBoxLabel(List<Long> facilityIdsList, Long userId, Long ouId);
+    void printBoxLabel(String outBoundBoxCode, Long userId, Long ouId);
 
     /**
      * 打印发票（复核）

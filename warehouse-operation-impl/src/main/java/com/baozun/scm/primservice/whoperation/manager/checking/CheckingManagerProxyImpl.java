@@ -184,11 +184,11 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     }
                     if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                         // 面单
-                        checkingManager.printSinglePlane(idsList, whCheckingResultCommand.getUserId(), ouId);
+                        checkingManager.printSinglePlane(null, whCheckingResultCommand.getUserId(), ouId);
                     }
                     if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                         // 箱标签
-                        checkingManager.printBoxLabel(idsList, whCheckingResultCommand.getUserId(), ouId);
+                        checkingManager.printBoxLabel(null, whCheckingResultCommand.getUserId(), ouId);
                     }
                 } catch (Exception e) {
                     log.error(e + "");
