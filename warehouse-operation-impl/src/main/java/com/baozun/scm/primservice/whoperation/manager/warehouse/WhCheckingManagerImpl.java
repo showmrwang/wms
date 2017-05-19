@@ -1139,6 +1139,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Long userId = cmd.getUserId();
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         String outboundBoxCode = cmd.getOutboundBoxCode();
+        String waybillCode = cmd.getWaybillCode();
         Long checkingId = checkingLineList.get(0).getCheckingId();
         // 更新复合头状态
         WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
@@ -1157,7 +1158,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 List<Long> idsList = new ArrayList<Long>();
                 List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(outboundBoxCode, checkingPrintArray[i], ouId);
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
-                    idsList.add(checkingLineList.get(0).getOdoId());
                     WhPrintInfo whPrintInfo = new WhPrintInfo();
                     // 小车加出库箱
                     if (Constants.WAY_1.equals(checkingPattern)) {
@@ -1196,7 +1196,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         whPrintInfo.setFacilityId(checkingCmd.getFacilityId());
                         whPrintInfo.setContainerLatticeNo(checkingCmd.getContainerLatticeNo());
                     }
-                    whPrintInfo.setBatch(checkingCmd.getBatch());
+                    whPrintInfo.setBatch(checkingLineList.get(0).getBatchNumber());
                     whPrintInfo.setWaveCode(checkingCmd.getWaveCode());
                     whPrintInfo.setOuId(ouId);
                     whPrintInfo.setOutboundboxId(checkingCmd.getOutboundboxId());
@@ -1210,16 +1210,17 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             checkingManager.printPackingList(idsList, userId, ouId);
                         }
                         if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                            idsList.add(checkingLineList.get(0).getOdoId());
                             // 销售清单
                             checkingManager.printSalesList(idsList, userId, ouId);
                         }
                         if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(idsList, userId, ouId);
+                            checkingManager.printSinglePlane(waybillCode, userId, ouId);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                             // 箱标签
-                            checkingManager.printBoxLabel(idsList, userId, ouId);
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
                         }
                     } catch (Exception e) {
                         log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -1241,11 +1242,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             }
                             if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(idsList, userId, ouId);
+                                checkingManager.printSinglePlane(waybillCode, userId, ouId);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                                 // 箱标签
-                                checkingManager.printBoxLabel(idsList, userId, ouId);
+                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
                             }
                         } catch (Exception e) {
                             log.error("WhCheckingManagerImpl printDefect is execption" + e);
