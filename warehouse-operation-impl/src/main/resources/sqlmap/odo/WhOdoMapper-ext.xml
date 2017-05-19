@@ -3463,7 +3463,7 @@
 			join t_wh_wave wave on (odo.wave_code = wave.`code`)
 		where 
 			wave.id = #{waveId}
-			and (odo.head_start_odo_status = '17' or odo.odo_status = '17')
+			and (odo.odo_status = '88' or odo.head_start_odo_status = '88')
 			and odo.ou_id = #{ouId}
 	</select>
 </mapper>
