@@ -75,8 +75,6 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Boolean createAndExecuteInWarehouseMoveWork( String[] occupationCodes, Long[] occupationLineIds, String[] uuids, Double[] moveQtys, Long toLocation, Boolean isExecute, Long ouId, Long userId, String snKey) {
         Boolean isSuccess = false;
-        List<WhSkuInventorySn> skuInventorySnLst = new ArrayList<WhSkuInventorySn>();
-        skuInventorySnLst = createInWarehouseMoveWorkManager.getSnStatistics(snKey);
         // 2.将库存行根据原始库位与目标库位进行分组
         InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand = this.getSkuInventoryForGroup(occupationCodes, occupationLineIds, uuids, moveQtys, ouId);
         inWarehouseMoveWorkCommand.setToLocationId(toLocation);
@@ -86,17 +84,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             // 4.获取每个分组的所有库存明细数据
             List<WhSkuInventoryCommand> skuInventoryCommandLst = skuInventoryMap.get(key);
             try {
-                // 5.库存分配（生成分配库存与待移入库存）
-                inWarehouseMoveWorkCommand = createInWarehouseMoveWorkManager.saveAllocatedAndTobefilled(inWarehouseMoveWorkCommand, skuInventoryCommandLst);
-                // 6-9.创建库内移动工作
-                String inWarehouseMoveWorkCode = createInWarehouseMoveWorkManager.createInWarehouseMoveWork(inWarehouseMoveWorkCommand, ouId, userId);
-                // 10.是否直接执行
-                if (true == isExecute) {
-                    // 11.库内移动工作执行
-                    isSuccess = createInWarehouseMoveWorkManager.executeInWarehouseMoveWork(inWarehouseMoveWorkCode, ouId, userId, skuInventorySnLst);
-                }else{
-                    isSuccess = true;
-                }
+                isSuccess = createInWarehouseMoveWorkManager.createAndExecuteInWarehouseMoveWork(inWarehouseMoveWorkCommand, skuInventoryCommandLst, isExecute, ouId, userId, snKey);  
             } catch (Exception e) {
                 log.error(e + "");
                 isSuccess = false;
@@ -277,7 +265,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             // Sn和残次条码
             ExcelImportResult result = this.readSkuFromExcel(context, importExcelFile, locale);
             skuInventorySnsLst = result.getListBean();
-            key = createInWarehouseMoveWorkManager.snStatisticsRedis(skuInventorySnsLst);
+            key = createInWarehouseMoveWorkManager.snStatisticsRedis(skuInventorySnsLst, null);
         } catch (Exception e) {
             e.printStackTrace();
         }

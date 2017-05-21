@@ -22,7 +22,14 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
 public interface CreateInWarehouseMoveWorkManager extends BaseManager {
-
+    /**
+     * [业务方法] 创建库内移动工作并执行
+     * @param whSkuInventoryCommandLst
+     * @param userId
+     * @return
+     */
+    public Boolean createAndExecuteInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, List<WhSkuInventoryCommand> skuInventoryCommandLst, Boolean isExecute, Long ouId, Long userId, String snKey);
+    
     /**
      * [业务方法] 波次中创建补货工作和作业
      * @param whSkuInventoryCommandLst
@@ -45,7 +52,7 @@ public interface CreateInWarehouseMoveWorkManager extends BaseManager {
      * @param 
      * @return
      */
-    public Boolean executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, List<WhSkuInventorySn> skuInventorySnLst);
+    public Boolean executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey);
 
     /**
      * [业务方法] 缓存sn列表
@@ -53,7 +60,7 @@ public interface CreateInWarehouseMoveWorkManager extends BaseManager {
      * @param 
      * @return
      */
-    public String snStatisticsRedis(List<WhSkuInventorySn> skuInventorySnsLst);
+    public String snStatisticsRedis(List<WhSkuInventorySn> skuInventorySnsLst, String key);
     
     /**
      * [业务方法] 获取缓存sn列表
