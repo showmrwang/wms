@@ -9209,7 +9209,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             String allocatedSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(allocated);
             if (skuAttrIds.equals(allocatedSkuAttrId)) { // 是同一条记录
                 List<WhSkuInventorySnCommand> listSn = allocated.getWhSkuInventorySnCommandList();
-                if (null != listSn && listSn.size() != 0) { // 有sn/残次信息
+                if (null != listSn && listSn.size() != 0 && null != listSn.get(0).getId()) { // 有sn/残次信息
                     if (scanSkuQty.doubleValue() > allocated.getQty().doubleValue()) { // 扫描的数量大于当前分配行
                         allocatedQty += allocated.getQty();
                         if (scanSkuQty.doubleValue() == allocatedQty.doubleValue()) {
