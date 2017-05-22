@@ -5266,7 +5266,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and skuInv.occupation_code_source = #{occSourceCode}
     </select>
     
-     <select id="findWhSkuInventorySnByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt" resultType="java.lang.String">
+     <select id="findWhSkuInventorySnByOccupationLineId" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					distinct inventory.invId,
 					inventory.skuId,
