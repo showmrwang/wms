@@ -8,6 +8,7 @@ import lark.common.annotation.MoreDB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +18,12 @@ import com.baozun.scm.baseservice.print.command.PrintDataCommand;
 import com.baozun.scm.baseservice.print.constant.Constants;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionOutBoundDao;
@@ -29,10 +32,13 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.checking.CheckingManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 
 @Service("weightingManager")
@@ -63,6 +69,12 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
     @Autowired
     private WhPrintInfoDao whPrintInfoDao;
+
+    @Autowired
+    private CheckingManager checkingManager;
+
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -140,6 +152,12 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             throw new BusinessException("no function");
         }
         WhOdoPackageInfo packageInfo = whOdoPackageInfoDao.findByOdoIdAndOutboundBoxCode(odoId, outboundBoxCode, ouId);
+
+        WhOdodeliveryInfo whOdodeliveryInfo = new WhOdodeliveryInfo();
+        whOdodeliveryInfo.setOutboundboxCode(outboundBoxCode);
+        List<WhOdodeliveryInfo> whOdodeliveryInfoList = whOdoDeliveryInfoDao.findListByParam(whOdodeliveryInfo);
+        whOdodeliveryInfo = whOdodeliveryInfoList.get(0);
+
         // 2.判断称重集中是否满足浮动百分比
         if (outbound.getIsValidateWeight()) {
             Long actualWeight = command.getActualWeight();
@@ -159,8 +177,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         }
         // 4.打印单据
         // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);
-        // this.print(outbound.getWeighingPrint(), outboundBoxCode, packageInfo.getId(), userId,
-        // ouId);
+        this.print2(outbound.getWeighingPrint(), whOdodeliveryInfo.getWaybillCode(), outboundBoxCode, packageInfo.getId(), userId, ouId);
         // 5.更新出库单状态
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         WhOdoLine line = new WhOdoLine();
@@ -177,6 +194,12 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         odo.setOdoStatus(OdoStatus.WEIGHING_FINISH);
         odo.setModifiedId(userId);
         whOdoDao.saveOrUpdateByVersion(odo);
+        // 6.更新出库箱状态
+        WhOutboundboxCommand whOutboundboxCommand = whOutboundboxDao.findByOutboundBoxCode(outboundBoxCode, ouId);
+        WhOutboundbox whOutboundbox = new WhOutboundbox();
+        BeanUtils.copyProperties(whOutboundboxCommand, whOutboundbox);
+        whOutboundbox.setStatus("9");
+        whOutboundboxDao.update(whOutboundbox);
     }
 
     /**
@@ -184,7 +207,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
      * @param weightingPrint
      * @param packageInfoId
      */
-    private void print(String weightingPrint, String outboundBoxCode, Long packageInfoId, Long userId, Long ouId) {
+    private void print(String weightingPrint, String waybillCode, String outboundBoxCode, Long packageInfoId, Long userId, Long ouId) {
         if (weightingPrint.indexOf("3") >= 0) {
             // 面单打印
             PrintDataCommand data = new PrintDataCommand();
@@ -206,7 +229,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
      * @param weightingPrint
      * @param packageInfoId
      */
-    private void print2(String weightingPrint, String outboundBoxCode, Long packageInfoId, Long userId, Long ouId) {
+    private void print2(String weightingPrint, String waybillCode, String outboundBoxCode, Long packageInfoId, Long userId, Long ouId) {
         if (!StringUtils.isEmpty(weightingPrint)) {
             String[] weightingPrintArray = weightingPrint.split(",");
             for (int i = 0; i < weightingPrintArray.length; i++) {
@@ -223,15 +246,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                     try {
                         if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                             // 面单
-                            PrintDataCommand printDataCommand = new PrintDataCommand();
-                            printDataCommand.setIdList(idsList);
-                            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
+                            checkingManager.printSinglePlane(waybillCode, userId, ouId);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                             // 箱标签
-                            PrintDataCommand printDataCommand = new PrintDataCommand();
-                            printDataCommand.setIdList(idsList);
-                            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
                         }
                     } catch (Exception e) {
                         log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -245,15 +264,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                         try {
                             if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                                 // 面单
-                                PrintDataCommand printDataCommand = new PrintDataCommand();
-                                printDataCommand.setIdList(idsList);
-                                printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
+                                checkingManager.printSinglePlane(waybillCode, userId, ouId);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                                 // 箱标签
-                                PrintDataCommand printDataCommand = new PrintDataCommand();
-                                printDataCommand.setIdList(idsList);
-                                printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
+                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
                             }
                         } catch (Exception e) {
                             log.error("WhCheckingManagerImpl printDefect is execption" + e);

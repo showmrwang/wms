@@ -113,6 +113,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
             throw new BusinessException(ErrorCodes.NO_ODO_FOUND);
         }
         // 交接工位
+        List<HandoverCollection> handoverCollections = null;
         Long handoverStationId = null;
         String handoverStationType = "";
         String groupCondition = "";
@@ -123,115 +124,120 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
             }
             // 根据集货交接规则找到分组条件
             List<HandoverCollectionConditionCommand> conditionList = handoverCollectionConditionDao.findConditionListByRuleIdAndouId(ruleId, ouId);
-            if (null == conditionList || 0 == conditionList.size()) {
-                continue;
-            }
-            for (HandoverCollectionConditionCommand condtion : conditionList) {
-                if (HandoverGroupCondition.STROE.equals(condtion.getRuleCondtionCode())) {
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getStoreCode()))
-                            groupCondition += outboundboxCommand.getStoreCode();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + outboundboxCommand.getStoreCode();
+            if (null != conditionList && conditionList.size() > 0) {
+                for (HandoverCollectionConditionCommand condtion : conditionList) {
+                    if (HandoverGroupCondition.STROE.equals(condtion.getRuleCondtionCode())) {
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            if (!StringUtils.isEmpty(outboundboxCommand.getStoreCode()))
+                                groupCondition += outboundboxCommand.getStoreCode();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + outboundboxCommand.getStoreCode();
+                        }
                     }
-                }
-                if (HandoverGroupCondition.CUSTOMER.equals(condtion.getRuleCondtionCode())) {
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getCustomerCode()))
-                            groupCondition += outboundboxCommand.getCustomerCode();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + outboundboxCommand.getCustomerCode();
+                    if (HandoverGroupCondition.CUSTOMER.equals(condtion.getRuleCondtionCode())) {
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            if (!StringUtils.isEmpty(outboundboxCommand.getCustomerCode()))
+                                groupCondition += outboundboxCommand.getCustomerCode();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + outboundboxCommand.getCustomerCode();
+                        }
                     }
-                }
-                if (HandoverGroupCondition.ORDER_TYPE.equals(condtion.getRuleCondtionCode())) {
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(odo.getOdoType()))
-                            groupCondition += odo.getOdoType();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + odo.getOdoType();
+                    if (HandoverGroupCondition.ORDER_TYPE.equals(condtion.getRuleCondtionCode())) {
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            if (!StringUtils.isEmpty(odo.getOdoType()))
+                                groupCondition += odo.getOdoType();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + odo.getOdoType();
+                        }
                     }
-                }
-                if (HandoverGroupCondition.TRANSPORT_CODE.equals(condtion.getRuleCondtionCode())) {
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getTransportCode()))
-                            groupCondition += outboundboxCommand.getTransportCode();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + outboundboxCommand.getTransportCode();
+                    if (HandoverGroupCondition.TRANSPORT_CODE.equals(condtion.getRuleCondtionCode())) {
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            if (!StringUtils.isEmpty(outboundboxCommand.getTransportCode()))
+                                groupCondition += outboundboxCommand.getTransportCode();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + outboundboxCommand.getTransportCode();
+                        }
                     }
-                }
-                if (HandoverGroupCondition.TIME_EFFECT_TYPE.equals(condtion.getRuleCondtionCode())) {
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
-                            groupCondition += outboundboxCommand.getTimeEffectCode();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
+                    if (HandoverGroupCondition.TIME_EFFECT_TYPE.equals(condtion.getRuleCondtionCode())) {
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
+                                groupCondition += outboundboxCommand.getTimeEffectCode();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
+                        }
                     }
-                }
-                if (HandoverGroupCondition.LINE_INFO.equals(condtion.getRuleCondtionCode())) {
-                    WhOdoTransportMgmt whOdoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
-                    DistributionTarget distributionTarget = distributionTargetDao.findDistributionTargetByCode(whOdoTransportMgmt.getOutboundTarget());
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        // 线路信息
+                    if (HandoverGroupCondition.LINE_INFO.equals(condtion.getRuleCondtionCode())) {
+                        WhOdoTransportMgmt whOdoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
+                        DistributionTarget distributionTarget = distributionTargetDao.findDistributionTargetByCode(whOdoTransportMgmt.getOutboundTarget());
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            // 线路信息
 
-                        if (null != distributionTarget && !StringUtils.isEmpty(distributionTarget.getLineInfo()))
-                            groupCondition += distributionTarget.getLineInfo();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + distributionTarget.getLineInfo();
+                            if (null != distributionTarget && !StringUtils.isEmpty(distributionTarget.getLineInfo()))
+                                groupCondition += distributionTarget.getLineInfo();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + distributionTarget.getLineInfo();
+                        }
+                    }
+                    // if
+                    // (HandoverGroupCondition.TRANSPORT_VAS.equals(condtion.getRuleCondtionCode()))
+                    // {
+                    // if (StringUtils.isEmpty(groupCondition)) {
+                    // if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
+                    // groupCondition += outboundboxCommand.getTimeEffectCode();
+                    // else
+                    // continue;
+                    // } else {
+                    // groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
+                    // }
+                    // }
+                    if (HandoverGroupCondition.TRANSPORT_MODE.equals(condtion.getRuleCondtionCode())) {
+                        WhOdoTransportMgmt whOdoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            // 运输服务
+                            if (null != whOdoTransportMgmt && !StringUtils.isEmpty(whOdoTransportMgmt.getModeOfTransport()))
+                                groupCondition += whOdoTransportMgmt.getModeOfTransport();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + whOdoTransportMgmt.getModeOfTransport();
+                        }
+                    }
+                    if (HandoverGroupCondition.WAVE_CODE.equals(condtion.getRuleCondtionCode())) {
+                        if (StringUtils.isEmpty(groupCondition)) {
+                            if (!StringUtils.isEmpty(outboundboxCommand.getWaveCode()))
+                                groupCondition += outboundboxCommand.getWaveCode();
+                            else
+                                continue;
+                        } else {
+                            groupCondition += "_" + outboundboxCommand.getWaveCode();
+                        }
                     }
                 }
-                // if (HandoverGroupCondition.TRANSPORT_VAS.equals(condtion.getRuleCondtionCode()))
-                // {
-                // if (StringUtils.isEmpty(groupCondition)) {
-                // if (!StringUtils.isEmpty(outboundboxCommand.getTimeEffectCode()))
-                // groupCondition += outboundboxCommand.getTimeEffectCode();
-                // else
-                // continue;
-                // } else {
-                // groupCondition += "_" + outboundboxCommand.getTimeEffectCode();
-                // }
-                // }
-                if (HandoverGroupCondition.TRANSPORT_MODE.equals(condtion.getRuleCondtionCode())) {
-                    WhOdoTransportMgmt whOdoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        // 运输服务
-                        if (null != whOdoTransportMgmt && !StringUtils.isEmpty(whOdoTransportMgmt.getModeOfTransport()))
-                            groupCondition += whOdoTransportMgmt.getModeOfTransport();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + whOdoTransportMgmt.getModeOfTransport();
-                    }
-                }
-                if (HandoverGroupCondition.WAVE_CODE.equals(condtion.getRuleCondtionCode())) {
-                    if (StringUtils.isEmpty(groupCondition)) {
-                        if (!StringUtils.isEmpty(outboundboxCommand.getWaveCode()))
-                            groupCondition += outboundboxCommand.getWaveCode();
-                        else
-                            continue;
-                    } else {
-                        groupCondition += "_" + outboundboxCommand.getWaveCode();
-                    }
+                if (StringUtils.isNotEmpty(groupCondition)) {
+                    handoverCollections = handoverCollectionDao.findByGroupCondition(groupCondition, ouId);
                 }
             }
+
+
             // 根据分组条件找交接集货表中是否存在满足条件的交接工位
-            List<HandoverCollection> handoverCollections = handoverCollectionDao.findByGroupCondition(groupCondition, ouId);
             if (null == handoverCollections || 0 == handoverCollections.size()) {
                 // 判断集货交接应用类型
                 String applyType = rule.getApplyType();
                 if (HandoverApplyType.DESIGNATED_STATION.equals(applyType)) {
                     // 取到规则上指定的交接工位
+                    handoverStationType = rule.getRuleType();
                     handoverStationId = rule.getHandoverStationId();
                     break;
                 } else {
@@ -316,6 +322,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
         } else {
             handoverCollection.setLastModifyTime(new Date());
             handoverCollection.setModifiedId(userId);
+            handoverCollection.setHandoverStationId(handoverStationId);
             handoverCollection.setHandoverStatus(HandoverCollectionStatus.TO_HANDOVER);// 交接状态
             handoverCollectionDao.saveOrUpdate(handoverCollection);
         }

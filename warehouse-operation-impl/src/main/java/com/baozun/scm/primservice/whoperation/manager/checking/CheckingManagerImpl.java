@@ -168,6 +168,41 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         return checkingList;
     }
 
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhCheckingCommand> findCheckingByTrolley(String trolleyCode, Long ouId){
+        List<WhCheckingCommand> checkingList = whCheckingDao.findCheckingByTrolley(trolleyCode, ouId);
+
+        return checkingList;
+    }
+
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhCheckingCommand> findCheckingBySeedingFacility(String facilityCode, Long ouId){
+        List<WhCheckingCommand> checkingList = whCheckingDao.findCheckingBySeedingFacility(facilityCode, ouId);
+
+        return checkingList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhCheckingCommand findCheckingByOutboundBox(String outboundBoxCode, Long ouId){
+        WhCheckingCommand whCheckingCommand = whCheckingDao.findWhCheckingByOutboundboxCode(outboundBoxCode, ouId);
+
+        return whCheckingCommand;
+    }
+
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhCheckingCommand findCheckingByTurnoverBox(String turnoverBoxCode, Long ouId){
+        WhCheckingCommand whCheckingCommand = whCheckingDao.findCheckingByTurnoverBox(turnoverBoxCode, ouId);
+
+        return whCheckingCommand;
+    }
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhCheckingCommand> findCheckingByBoxCode(String checkingSourceCode, String checkingBoxCode, Long ouId) {

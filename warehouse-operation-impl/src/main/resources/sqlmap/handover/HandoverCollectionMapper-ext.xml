@@ -113,7 +113,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select <include refid="handoverCollectionColumnsExt" />
 	    from t_wh_handover_collection 
 		<where>
-	       		handover_status = 1
+	       		( handover_status = 5 or handover_status = 10)  
 		       <if test="groupCondition!=null and groupCondition!=''">
 					and group_condition = #{groupCondition}
 				</if>

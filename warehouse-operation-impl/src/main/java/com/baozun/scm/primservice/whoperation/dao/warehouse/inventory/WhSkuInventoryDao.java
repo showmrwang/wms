@@ -1148,6 +1148,9 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     
     public List<WhSkuInventoryCommand> getWhSkuInventorySnByOccupationLineId(@Param("ouId") Long ouId, @Param("occupationCode")  String occupationCode,@Param("occupationLineId") Long occupationLineId,@Param("uuid") String uuid);
 
+    public String getExistOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
+
+
     public List<WhSkuInventoryCommand> findWhSkuInventorySnContainerPicking(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
         @Param("insideContainerId") Long insideContainerId);
     

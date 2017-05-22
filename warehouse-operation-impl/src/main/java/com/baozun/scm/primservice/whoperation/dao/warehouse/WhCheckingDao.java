@@ -121,6 +121,44 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      */
     List<WhCheckingCommand> findCheckingBySourceCode(@Param("checkingSourceCode") String checkingSourceCode, @Param("ouId") Long ouId);
 
+    /**
+     * 获取小车上的所有复核信息
+     *
+     * @param trolleyCode
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCommand> findCheckingByTrolley(@Param("trolleyCode") String trolleyCode, @Param("ouId") Long ouId);
+
+    /**
+     * 获取播种墙上的所有复核信息
+     *
+     * @param facilityCode
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCommand> findCheckingBySeedingFacility(@Param("facilityCode") String facilityCode, @Param("ouId") Long ouId);
+
+
+    /**
+     * 获取播种墙上的所有复核信息
+     *
+     * @param outboundBoxCode
+     * @param ouId
+     * @return
+     */
+    WhCheckingCommand findCheckingByOutboundBox(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
+
+    /**
+     * 获取播种墙上的所有复核信息
+     *
+     * @param turnoverBoxCode
+     * @param ouId
+     * @return
+     */
+    WhCheckingCommand findCheckingByTurnoverBox(@Param("turnoverBoxCode") String turnoverBoxCode, @Param("ouId") Long ouId);
+
+
     List<WhCheckingCommand> findCheckingByBoxCode(@Param("checkingSourceCode") String checkingSourceCode, @Param("checkingBoxCode") String checkingBoxCode, @Param("ouId") Long ouId);
 
     /**

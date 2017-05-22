@@ -277,7 +277,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @author kai.zhu
      * @version 2017年4月14日
      */
-    boolean checkBatchInTemporaryStorageLocation(String batch, Long ouId);
+    boolean checkBatchInTemporaryStorageLocation(String batch, Long userId, Long ouId);
 
     /**
      * [业务方法] 根据索引剔除缓存数据
