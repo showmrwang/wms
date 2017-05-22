@@ -130,6 +130,9 @@ public final class CacheConstants {
     
     /**缓存sku*/
     public static final String PDA_REPLENISH_PUTAWAY_SCAN_SN= "PDA_REPLENISH_PUTAWAY_SCAN_SN";
+    
+    /**整托/整箱缓存短拣sku*/
+    public static final String PDA_PICKING_SHORTPICKING_SKU="PDA_PICKING_SHORTPICKING_SKU";
 
     /************************************* 播种缓存 ***********************************/
 
