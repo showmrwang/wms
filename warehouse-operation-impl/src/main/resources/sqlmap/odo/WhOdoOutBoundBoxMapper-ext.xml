@@ -226,13 +226,13 @@
 			<if test="wholeCase!=null">
 				and whole_case = #{wholeCase}
 			</if>
-			<if test="outerContainerId!=null and wholeCase==null">
+			<if test="outerContainerId!=null">
 				and outer_container_id = #{outerContainerId}
 			</if>
-			<if test="outerContainerId==null and wholeCase==null and outbounxboxTypeCode!=null and containerId==null">
+			<if test="outerContainerId==null and outbounxboxTypeCode!=null and containerId==null">
 				and outbounxbox_type_code = #{outbounxboxTypeCode}
 			</if>
-			<if test="outerContainerId==null and wholeCase==null and outbounxboxTypeCode==null and containerId!=null">
+			<if test="outerContainerId==null and outbounxboxTypeCode==null and containerId!=null">
 				and container_id = #{containerId}
 			</if>
 		</where>
