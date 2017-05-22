@@ -122,6 +122,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
     @Autowired
     private OutboundBoxRecManager outboundBoxRecManager;
 
+    @Autowired
+    private OdoOutBoundBoxMapper odoOutBoundBoxMapper;
+
     public void recommendOutboundBox(Long ouId, String logId) {
 
         // 创建出库箱阶段的波次列表
@@ -201,6 +204,14 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (!batchOdoPickModeOdoListMap.isEmpty()) {
                 this.packingForBatchOdoPickMode(batchOdoPickModeOdoListMap, odoCommandMap, distributionPatternRuleMap, ouId, logId);
             }
+
+            // 判断是否有出库单未推荐出库箱，但是还在波次内
+            List<Long> afterRecOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
+            List<Long> odoOutboundBoxOdoIdList = odoOutBoundBoxMapper.getWaveOdoIdList(whWaveCommand.getId(), ouId);
+            if(!afterRecOdoIdList.isEmpty() && !odoOutboundBoxOdoIdList.containsAll(afterRecOdoIdList)){
+                throw new BusinessException("波次内遗留出库单未处理");
+            }
+
 
             // 设置波次的波次阶段为下一个阶段
             whWaveManager.changeWavePhaseCode(whWaveCommand.getId(), ouId);
@@ -554,6 +565,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             OdoLineCommand odoLine = sortedOdoLineIterator.next();
             WhWaveLineCommand waveLineCommand = singlePickOdoLineIdWaveLineMap.get(odoLine.getId());
             if (waveLineCommand.getIsPalletContainer()) {
+                //记录整托中的箱子，在整箱中排除
+                Set<Long> wholeTrayInsideContainerIdSet = new HashSet<>();
                 // 判断整托占用
                 if (null != waveLineCommand.getTrayIds() && !"".equals(waveLineCommand.getTrayIds())) {
                     List<Long> outerContainerIdList = new ArrayList<>();
@@ -565,6 +578,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     //一个明细占用的整托，只有一种商品
                     List<WhSkuInventoryCommand> skuInvList = outboundBoxRecManager.findSkuInvListByWholeTray(outerContainerIdList, ouId);
                     for(WhSkuInventoryCommand skuInv : skuInvList){
+                        //记录整托中的箱子，在整箱中排除
+                        wholeTrayInsideContainerIdSet.add(skuInv.getInsideContainerId());
+
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(skuInv.getOnHandQty());
                         odoOutBoundBoxCommand.setOuId(ouId);
@@ -597,7 +613,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     List<Long> innerContainerIdList = new ArrayList<>();
                     List<String> innerContainerIdStrList = Arrays.asList(waveLineCommand.getPackingCaseIds().split(","));
                     for (String innerContainerIdStr : innerContainerIdStrList) {
-                        innerContainerIdList.add(Long.valueOf(innerContainerIdStr));
+                        //只添加不在整托中的箱子
+                        if(!wholeTrayInsideContainerIdSet.contains(Long.valueOf(innerContainerIdStr))){
+                            innerContainerIdList.add(Long.valueOf(innerContainerIdStr));
+                        }
                     }
                     //一个明细占用的整托，只有一种商品
                     List<WhSkuInventoryCommand> skuInvList = outboundBoxRecManager.findSkuInvListByWholeContainer(innerContainerIdList, ouId);
@@ -2431,7 +2450,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         batchSeedDistributeModeOdoList.remove(odoCommand);
                     }
 
-                    if (batchOccLineIdList.isEmpty()) {
+                    if (odoPackedWholeCaseList.isEmpty() && odoPackedWholeTrayList.isEmpty() && batchOccLineIdList.isEmpty()) {
                         continue;
                     }
 
@@ -2439,8 +2458,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     List<Container2ndCategoryCommand> packingTurnoverBoxList = new ArrayList<>();
 
                     // 批次下的库存列表
-                    List<WhSkuInventoryCommand> batchSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
+                    List<WhSkuInventoryCommand> batchSkuInventoryList = new ArrayList<>();
 
+                    if( !batchOccLineIdList.isEmpty()) {
+                        batchSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
+                    }
                     try {
                         packingTurnoverBoxList = this.allocateTurnoverBoxForBatchModeOdo(batchSkuInventoryList, batchSeedOdoLineList, odoLineCommandMap, odoCommandMap, odoLineAvailableTurnoverBoxListMap, ouId, logId);
 
@@ -2459,6 +2481,20 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                                 odoOutboundBox.setBoxBatch(batchNo);
                             }
 
+                        }
+                        if (null != odoPackedWholeTrayList) {
+                            for (ContainerCommand wholeTrayContainer : odoPackedWholeTrayList) {
+                                for (WhOdoOutBoundBoxCommand odoOutBoundBox : wholeTrayContainer.getOdoOutboundBoxCommandList()) {
+                                    odoOutBoundBox.setBoxBatch(batchNo);
+                                }
+                            }
+                        }
+                        if (null != odoPackedWholeCaseList) {
+                            for (ContainerCommand wholeCaseContainer : odoPackedWholeCaseList) {
+                                for (WhOdoOutBoundBoxCommand odoOutBoundBox : wholeCaseContainer.getOdoOutboundBoxCommandList()) {
+                                    odoOutBoundBox.setBoxBatch(batchNo);
+                                }
+                            }
                         }
                         // 还有整托整箱的包裹信息
                         // 在一个事务中保存整个小批次的包裹信息

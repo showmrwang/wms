@@ -315,4 +315,14 @@
 			</if>
 		</where>
 	</select>
+
+    <select id="getWaveOdoIdList" resultType="long">
+        select
+            distinct odo_id
+        from
+            t_wh_odo_outboundbox
+        where
+            wave_id = #{waveId}
+            and ou_id = #{ouId}
+    </select>
 </mapper>

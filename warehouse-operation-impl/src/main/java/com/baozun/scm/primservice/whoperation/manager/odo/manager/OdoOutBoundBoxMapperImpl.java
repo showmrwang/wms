@@ -78,7 +78,7 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
 
     @Override
     public WhOdoOutBoundBoxCommand findWhOdoOutBoundBoxCommandById(Long id, Long ouId) {
-        WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand = this.whOdoOutBoundBoxDao.findWhOdoOutBoundBoxCommandById(id,ouId);
+        WhOdoOutBoundBoxCommand whOdoOutBoundBoxCommand = this.whOdoOutBoundBoxDao.findWhOdoOutBoundBoxCommandById(id, ouId);
         return whOdoOutBoundBoxCommand;
     }
 
@@ -108,5 +108,12 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
      // 查询波次中的所有小批次
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = whOdoOutBoundBoxDao.findPickingWorkWhOdoOutBoundBox(waveId, ouId);
         return whOdoOutBoundBoxList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> getWaveOdoIdList(Long waveId, Long ouId){
+        List<Long> waveOdoIdList = whOdoOutBoundBoxDao.getWaveOdoIdList(waveId, ouId);
+        return waveOdoIdList;
     }
 }

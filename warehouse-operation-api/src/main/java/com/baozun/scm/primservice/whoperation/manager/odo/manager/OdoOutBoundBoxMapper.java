@@ -61,5 +61,15 @@ public interface OdoOutBoundBoxMapper extends BaseManager {
      * @return
      */
     List<WhOdoOutBoundBox> getBoxBatchsForPicking(Long waveId, Long ouId);
-    
+
+
+    /**
+     * 获取波次下所有出库单ID，用于判断波次内出库单是否都已推荐出库箱
+     *
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<Long> getWaveOdoIdList(Long waveId, Long ouId);
+
 }
