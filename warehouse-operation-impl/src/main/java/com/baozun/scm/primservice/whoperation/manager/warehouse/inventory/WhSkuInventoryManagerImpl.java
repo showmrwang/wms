@@ -2384,9 +2384,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                             if (null != snCList && snCList.size() > 0) {
                                 for (WhSkuInventorySnCommand sCmd : snCList) {
-                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                     for (WhSkuInventorySnCommand cSnCmd : snList) {
-                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getWhDefectReasonsCode());
+                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getDefectWareBarcode());
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
@@ -2420,9 +2420,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                             if (null != snCList && snCList.size() > 0) {
                                 for (WhSkuInventorySnCommand sCmd : snCList) {
-                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                     for (WhSkuInventorySnCommand cSnCmd : snList) {
-                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getWhDefectReasonsCode());
+                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getDefectWareBarcode());
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
@@ -2862,9 +2862,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                             if (null != snCList && snCList.size() > 0) {
                                 for (WhSkuInventorySnCommand sCmd : snCList) {
-                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                     for (WhSkuInventorySnCommand cSnCmd : snList) {
-                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getWhDefectReasonsCode());
+                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getDefectWareBarcode());
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
@@ -2898,9 +2898,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                             if (null != snCList && snCList.size() > 0) {
                                 for (WhSkuInventorySnCommand sCmd : snCList) {
-                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                     for (WhSkuInventorySnCommand cSnCmd : snList) {
-                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getWhDefectReasonsCode());
+                                        String snLine = SkuCategoryProvider.concatSkuAttrId(cSnCmd.getSn(), cSnCmd.getDefectWareBarcode());
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
@@ -3392,7 +3392,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             if (null != snCList && snCList.size() > 0) {
                                 Double dCount = 0.0;
                                 for (WhSkuInventorySnCommand sCmd : snCList) {
-                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                     for (String attrId : skuAttrIds) {
                                         String snDefect = SkuCategoryProvider.getSnDefect(attrId);
                                         if (sLine.equals(snDefect)) {
@@ -3432,7 +3432,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             if (null != snCList && snCList.size() > 0) {
                                 Double dCount = 0.0;
                                 for (WhSkuInventorySnCommand sCmd : snCList) {
-                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                    String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                     for (String attrId : skuAttrIds) {
                                         String snDefect = SkuCategoryProvider.getSnDefect(attrId);
                                         if (sLine.equals(snDefect)) {
@@ -3904,7 +3904,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if (null != snCList && snCList.size() > 0) {
                                     Double dCount = 0.0;
                                     for (WhSkuInventorySnCommand sCmd : snCList) {
-                                        String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                        String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                         for (String attrId : skuAttrIds) {
                                             String snDefect = SkuCategoryProvider.getSnDefect(attrId);
                                             if (sLine.equals(snDefect)) {
@@ -3944,7 +3944,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if (null != snCList && snCList.size() > 0) {
                                     Double dCount = 0.0;
                                     for (WhSkuInventorySnCommand sCmd : snCList) {
-                                        String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getWhDefectReasonsCode());
+                                        String sLine = SkuCategoryProvider.concatSkuAttrId(sCmd.getSn(), sCmd.getDefectWareBarcode());
                                         for (String attrId : skuAttrIds) {
                                             String snDefect = SkuCategoryProvider.getSnDefect(attrId);
                                             if (sLine.equals(snDefect)) {
