@@ -6715,7 +6715,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     
-    private void pickingContainerUpdateLocInventory(WhSkuInventoryCommand skuInvCmd,Double qty,Boolean isTabbInvTotal,Long ouId,Long userId){
+    private Long pickingContainerUpdateLocInventory(WhSkuInventoryCommand skuInvCmd,Double qty,Boolean isTabbInvTotal,Long ouId,Long userId){
         
         WhSkuInventory inv = new WhSkuInventory();
         BeanUtils.copyProperties(skuInvCmd, inv);
@@ -6733,6 +6733,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         whSkuInventoryDao.saveOrUpdateByVersion(inv);
         insertGlobalLog(GLOBAL_LOG_UPDATE, inv, ouId, userId, null, null);
         insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.PICKING);
+        return inv.getId();
     }
     
     private Long pickingContainerSaveInventory(WhSkuInventoryCommand skuInvSnCmd,WhSkuInventoryCommand skuInvCmd,Double qty,Boolean isTabbInvTotal,Long ouId,Long userId,Integer pickingWay,Long outerContainerId,Long insideContainerId){
@@ -6887,7 +6888,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     if(execQty.doubleValue() == onHandQty.doubleValue()){
                                         if(!execLine.getIsShortPicking()){ //短拣
                                             //生成容器库存 
-                                            this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            invSkuIds.add(invSkuId);
                                             //删除库位库存
                                             this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
                                             isDap = true;
@@ -6898,7 +6900,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                        //生成容器库存
                                         if(!execLine.getIsShortPicking()){ //短拣
                                             //生成容器库存 
-                                            this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, execQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, execQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            invSkuIds.add(invSkuId);
                                             //修改库位库存数量
                                             Double qty = onHandQty-execQty;
                                             this.pickingContainerUpdateLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
@@ -6908,8 +6911,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     }
                                     if(execQty.doubleValue() > onHandQty.doubleValue()){
                                         //生成容器库存 
-                                        this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
-                                       //删除库位库存
+                                        Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                        invSkuIds.add(invSkuId);
+                                        //删除库位库存
                                         this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
                                         continue;
                                     }
@@ -6944,7 +6948,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     if(execQty.doubleValue() == onHandQty.doubleValue()){
                                         if(!execLine.getIsShortPicking()){ //短拣
                                             //生成容器库存 
-                                            this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            invSkuIds.add(invSkuId);
                                             //删除库位库存
                                             this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
                                             isDap = true;
@@ -6955,7 +6960,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                        //生成容器库存
                                         if(!execLine.getIsShortPicking()){ //短拣
                                             //生成容器库存 
-                                            this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, execQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, execQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            invSkuIds.add(invSkuId);
                                             //修改库位库存数量
                                             Double qty = onHandQty-execQty;
                                             this.pickingContainerUpdateLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
@@ -6965,8 +6971,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     }
                                     if(execQty.doubleValue() > onHandQty.doubleValue()){
                                         //生成容器库存 
-                                        this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
-                                       //删除库位库存
+                                        Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                        invSkuIds.add(invSkuId);
+                                        //删除库位库存
                                         this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
                                         continue;
                                     }

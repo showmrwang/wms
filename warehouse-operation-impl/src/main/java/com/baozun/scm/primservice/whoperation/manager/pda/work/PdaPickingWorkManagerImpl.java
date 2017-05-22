@@ -1674,10 +1674,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         skuCmd.setScanSkuQty(scanQty * cacheSkuQty);// 可能是多条码
         skuCmd.setIsNeedTipSkuDefect(command.getIsNeedScanSkuDefect());
         skuCmd.setIsNeedTipSkuSn(command.getIsNeedScanSkuSn());
-        if (pickingWay == Constants.PICKING_WAY_SIX) {
+        if(Constants.PICKING_WAY_SIX == pickingWay && true == isShortPikcing) {
             this.cacheContainerShortPickingSkuAttrIds(skuAttrIds, operationId, insideContainerId, skuCmd.getScanSkuQty());
         }
-        if(pickingWay == Constants.PICKING_WAY_FIVE){
+        if(Constants.PICKING_WAY_FIVE == pickingWay && true == isShortPikcing){
             this.cachePalletShortPickingSkuAttrIds(skuAttrIds, operationId, insideContainerId, outerContainerId, skuCmd.getScanSkuQty());
         }
         CheckScanResultCommand cSRCmd =
@@ -2365,12 +2365,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 //先更新作业明细行
                 WhOperationLine line = new WhOperationLine();
                 BeanUtils.copyProperties(oLCmd, line);
+                line.setCompleteQty(oLCmd.getQty());
                 whOperationLineDao.saveOrUpdateByVersion(line);
                 insertGlobalLog(GLOBAL_LOG_UPDATE,line, ouId, userId, null, null);
                 if(null == map || map.size() == 0) { //没有短拣sku
                     whOperationExecLine.setQty(oLCmd.getQty());
                     whOperationExecLineDao.insert(whOperationExecLine);
                     insertGlobalLog(GLOBAL_LOG_INSERT,whOperationExecLine, ouId, userId, null, null);
+                    list.add(whOperationExecLine);
                 }else{//当前货箱存在短拣sku
                     String opLskuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(oLCmd);  //当前作业明细唯一sku
                     Map<String,Double> insideMap = map.get(insideContainerId);
@@ -2486,6 +2488,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 //先更新作业明细行
                 WhOperationLine line = new WhOperationLine();
                 BeanUtils.copyProperties(oLCmd, line);
+                line.setCompleteQty(oLCmd.getQty());
                 whOperationLineDao.saveOrUpdateByVersion(line);
                 insertGlobalLog(GLOBAL_LOG_UPDATE,line, ouId, userId, null, null);
                 if(null == map || map.size() == 0) { //没有短拣sku
