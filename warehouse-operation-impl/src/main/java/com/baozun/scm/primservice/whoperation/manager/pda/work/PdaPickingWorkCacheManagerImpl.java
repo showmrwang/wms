@@ -2974,6 +2974,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                }
                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideId.toString());
                            }
+                           cacheManager.remove(CacheConstants.PDA_PICKING_SHORTPICKING_SKU +operationId.toString()+outerId.toString());
                        }
                    }
                }
@@ -2991,6 +2992,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO +operationId.toString()+ insideId.toString() + skuId.toString());
                            }
                            cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideId.toString());
+                           cacheManager.remove(CacheConstants.PDA_PICKING_SHORTPICKING_SKU +operationId.toString()+insideId.toString());
                        }
                    }
                }

@@ -3057,7 +3057,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                       throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                   }
                   tipSkuDetailAspect(isRecommendFail,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
-                  srCmd.setTipSkuBarcode(skuCmd.getBarCode());
+                  srCmd.setTipSkuBarcode(tipSkuCmd.getBarCode());
                   this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
               }
              
