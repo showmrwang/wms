@@ -1958,7 +1958,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 更改出库单状态
                 List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
                 for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
-                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOuId(), null, true, ouId);
+                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOdoId(), null, true, ouId);
                     List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), true, ouId);
                     if (0 == odoOutBoundBoxByOdo.size()) {
                         // 根据出库单code获取出库单信息
@@ -3126,6 +3126,25 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 command.setIsPicking(true);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
+                // 更改出库单状态
+                List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(operationId, command.getOuId());
+                for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
+                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOdoId(), null, true, whOperationLineCommand.getOuId());
+                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), true, whOperationLineCommand.getOuId());
+                    if (0 == odoOutBoundBoxByOdo.size()) {
+                        // 根据出库单code获取出库单信息
+                        WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
+                        odo.setHeadStartOdoStatus(OdoStatus.PICKING_FINISH);
+                        odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
+                        odoDao.update(odo);
+                    }
+                    if (0 == odoOutBoundBoxByOdoLine.size()) {
+                        // 根据出库单code获取出库单信息
+                        WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
+                        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
+                        whOdoLineDao.update(whOdoLine);
+                    }
+                }
             }
             command = this.containerPickingOperationExecLine(command, skuCmd, isTabbInvTotal);
         }
@@ -3146,11 +3165,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 根据作业id获取作业明细信息
         List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
         for (WhOperationLineCommand operationLineCommand : operationLineList) {
+            operationLineCommand.setCompleteQty(operationLineCommand.getQty());
+            whOperationLineManager.saveOrUpdate(operationLineCommand);
             // 生成作业作业明细
             WhOperationExecLine whOperationExecLine = new WhOperationExecLine();
             // 复制数据
             BeanUtils.copyProperties(operationLineCommand, whOperationExecLine);
-            whOperationExecLine.setIsUseNew(true);
+            whOperationExecLine.setIsUseNew(false);
             whOperationExecLine.setId(null);
             whOperationExecLine.setUseContainerId(operationLineCommand.getFromInsideContainerId());
             whOperationExecLine.setUseOuterContainerId(operationLineCommand.getFromOuterContainerId());
@@ -3158,7 +3179,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             whOperationExecLine.setLastModifyTime(new Date());
             whOperationExecLine.setCreateTime(new Date());
             whOperationExecLine.setOperatorId(command.getUserId());
-            whOperationExecLine.setQty(operationLineCommand.getQty());
             whOperationExecLineDao.insert(whOperationExecLine);
             // 根据作业明细查询库存信息
             Double onHandQty = operationLineCommand.getQty();
@@ -3266,6 +3286,25 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }else{
             // 清除缓存
             pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());   
+            // 更改出库单状态
+            List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
+            for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
+                List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOdoId(), null, true, whOperationLineCommand.getOuId());
+                List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), true, whOperationLineCommand.getOuId());
+                if (0 == odoOutBoundBoxByOdo.size()) {
+                    // 根据出库单code获取出库单信息
+                    WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
+                    odo.setHeadStartOdoStatus(OdoStatus.PICKING_FINISH);
+                    odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
+                    odoDao.update(odo);
+                }
+                if (0 == odoOutBoundBoxByOdoLine.size()) {
+                    // 根据出库单code获取出库单信息
+                    WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
+                    whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
+                    whOdoLineDao.update(whOdoLine);
+                }
+            }
             command.setIsPicking(true);
         }
         return command;
