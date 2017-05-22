@@ -184,7 +184,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveWorkOper(Long workId, Long ouId, Long userId) {
         // 根据工作Id和ouId获取作业信息
-        WhOperationCommand WhOperationCommand = whOperationManager.findOperationByWorkId(workId, ouId);
+        WhOperationCommand whOperationCommand = whOperationManager.findOperationByWorkId(workId, ouId);
 
         WhWorkOper whWorkOper = new WhWorkOper();
         // 操作员ID
@@ -194,7 +194,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 仓库组织ID
         whWorkOper.setWorkId(workId);
         // 作业ID
-        whWorkOper.setOperationId(WhOperationCommand.getId());
+        whWorkOper.setOperationId(whOperationCommand.getId());
         // 状态
         whWorkOper.setStatus(WorkStatus.NEW);
         // 是否管理员指派
@@ -211,6 +211,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         whWorkOper.setOperationId(userId);
 
         whWorkOperDao.insert(whWorkOper);
+        
+        // 根据作业id获取作业明细信息
+        List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), whOperationCommand.getOuId());
+        for (WhOperationLineCommand operationLine : operationLineList) {
+            // 根据出库单code获取出库单信息
+            WhOdo odo = odoDao.findByIdOuId(operationLine.getOdoId(), operationLine.getOuId());
+            if (!OdoStatus.PICKING.equals(odo.getHeadStartOdoStatus())) {
+                odo.setHeadStartOdoStatus(OdoStatus.PICKING);
+                odo.setLagOdoStatus(OdoStatus.WAVE_FINISH);
+                odoDao.update(odo);
+            }   
+        }
     }
 
     /**

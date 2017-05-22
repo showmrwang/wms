@@ -166,7 +166,9 @@
 			and is_create_work != 1
 			and whole_case is not null
 		group by
-			whole_case
+			whole_case,
+			outer_container_id,
+			container_id
 		union all
 		select
 			<include refid="whOdoOutBoundBoxColumnsExt"/>
