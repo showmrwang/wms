@@ -4988,7 +4988,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			GROUP BY inv.uuid
 	</select>
 	
-	    <select id="findWhskuInventoryByInsideContainerId" resultMap="WhSkuInventoryCommandSnResultExt">
+	    <select id="findWhskuInventoryByInsideId" resultMap="WhSkuInventoryCommandSnResultExt">
 			select 
 					inv.id as invId,
 					inv.sku_id as skuId,

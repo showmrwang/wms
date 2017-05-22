@@ -1087,6 +1087,8 @@ public class ErrorCodes {
     public static final int RECOMMEND_STATION_DONT_EXSIT = 110018;
     /** 该电脑没绑定复核台 */
     public static final int COMPUTER_NOT_CONNECT_FACILITY = 110019;
+    /** 该出库箱已交接出库 */
+    public static final int OUTBOUNDBOX_ALREADY_HANDOVER = 110020;
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;

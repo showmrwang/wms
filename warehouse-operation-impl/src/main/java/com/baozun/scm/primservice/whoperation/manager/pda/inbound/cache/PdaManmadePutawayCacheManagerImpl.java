@@ -413,10 +413,10 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                   log.error("sys guide pallet putaway container2ndCategory is null error, icId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", containerId, insideContainerCate, logId);
                   throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
               }
-              if (1 != insideContainer2.getLifecycle()) {
-                  log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", containerId, insideContainer2.getId(), logId);
-                  throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
-              }
+//              if (1 != insideContainer2.getLifecycle()) {
+//                  log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", containerId, insideContainer2.getId(), logId);
+//                  throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+//              }
               Double icLength = insideContainer2.getLength();
               Double icWidth = insideContainer2.getWidth();
               Double icHeight = insideContainer2.getHigh();

@@ -797,7 +797,7 @@ public final class Constants {
     public static final String TIP_OUTBOUND_BOX_OR_NO = "OUTBOUND_BOX_OR_NO";
     /** 按单复核:提示已经完成复核 */
     public static final String TIP_FINISH = "FINISH";
-    /** 按单复核:提示扫描批次号*/
+    /** 按单复核:提示扫描批次号 */
     public static final String TIP_BATCH = "BATCH";
 
     /** 按单复核方式:小车出库箱流程 */
@@ -864,8 +864,8 @@ public final class Constants {
     public static final String WEEK_DAY_FRIDAY = "Friday";
     public static final String WEEK_DAY_SATURDAY = "Saturday";
     public static final String WEEK_DAY_SUNDAY = "Sunday";
-    
-    
+
+
     public static final Double PICKING_NUM = 1.0;  //拣货数量
 
     // ------------------导入配置--------------------------------
@@ -889,7 +889,7 @@ public final class Constants {
 
     public static final String IMPORT_WHODO_TRANSPORTMGMT_EXCEL_CONFIG_ID = "whOdoTransportMgmt";
     public static final int IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX = 0;
-    
+
     /** 库存初始化导入 */
     public static final String IMPORT_SKUINV_INIT_EXCEL_CONFIG_ID = "whSkuInventoryInit";// 库存初始化导入
     /** 库存初始化导入标题行，从0开始 */
@@ -899,7 +899,7 @@ public final class Constants {
     public static final Integer MOVE_PATTERN_WHOLE = 1;
     /**容器拆分移动-部分移动*/
     public static final Integer MOVE_PATTERN_PART = 2;
-    
+
     /** 根地址ID */
     public static final Long ROOT_REGION = 0L;
 
@@ -927,5 +927,7 @@ public final class Constants {
     public static final String OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX = "turnover_box";
     /** 按箱复核类型 出库箱 */
     public static final String OUTBOUND_BOX_CHECKING_TYPE_OUTBOUND_BOX = "outbound_box";
+    /** 播种墙推荐规则出库单ID占位符 */
+    public static final String HANDOVER_COLLECTION_RULE_PLACEHOLDER = "${outboundboxCode}";
 
 }

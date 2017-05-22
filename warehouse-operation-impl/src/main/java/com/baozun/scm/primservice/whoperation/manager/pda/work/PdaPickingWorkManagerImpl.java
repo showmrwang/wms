@@ -2013,7 +2013,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      */
     private void cacheContainerShortPickingSkuAttrIds(String skuAttrIds,Long operationId,Long insideContainerId,Double scanSkuQty){
         //整箱
-        Map<String,Double> map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_SCAN_SKU_SN ,operationId.toString()+insideContainerId.toString());
+        Map<String,Double> map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_SHORTPICKING_SKU ,operationId.toString()+insideContainerId.toString());
         if(null== map || map.size() == 0) {
             map = new HashMap<String,Double>();
             map.put(skuAttrIds, scanSkuQty);
@@ -2027,11 +2027,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
            }
         }
         //整箱
-       cacheManager.setMapObject(CacheConstants.PDA_PICKING_SCAN_SKU_SN ,operationId.toString()+insideContainerId.toString(), map, CacheConstants.CACHE_ONE_DAY);
+       cacheManager.setMapObject(CacheConstants.PDA_PICKING_SHORTPICKING_SKU ,operationId.toString()+insideContainerId.toString(), map, CacheConstants.CACHE_ONE_DAY);
     }
     
     private void cachePalletShortPickingSkuAttrIds(String skuAttrIds,Long operationId,Long insideContainerId,Long outerContainerId,Double scanSkuQty){
-       Map<Long,Map<String,Double>> map =  cacheManager.getMapObject(CacheConstants.PDA_PICKING_SCAN_SKU_SN ,operationId.toString()+outerContainerId.toString());
+       Map<Long,Map<String,Double>> map =  cacheManager.getMapObject(CacheConstants.PDA_PICKING_SHORTPICKING_SKU ,operationId.toString()+outerContainerId.toString());
        if(null== map || map.size() == 0){
            map = new HashMap<Long,Map<String,Double>>();
            Map<String,Double> skuAttrIdsMap = new HashMap<String,Double>();
@@ -2053,7 +2053,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
            }
        }
        
-       cacheManager.setMapObject(CacheConstants.PDA_PICKING_SCAN_SKU_SN ,operationId.toString()+outerContainerId.toString(), map, CacheConstants.CACHE_ONE_DAY);
+       cacheManager.setMapObject(CacheConstants.PDA_PICKING_SHORTPICKING_SKU ,operationId.toString()+outerContainerId.toString(), map, CacheConstants.CACHE_ONE_DAY);
     }
     
     private void updateSnDefectOccupation(Long skuId,String skuAttrIds, String sn, String defect, Long locationId, Long ouId, Long operationId, Long outerContainerId, Long insideContainerId, String operationWay) {
@@ -2355,7 +2355,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Boolean isUpdateShort = true;
         List<WhOperationExecLine> list = new ArrayList<WhOperationExecLine>();
         for (WhOperationLineCommand oLCmd : operLineList) {
-            Map<Long,Map<String,Double>>  map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_SCAN_SKU_SN ,operationId.toString()+outerContainerId.toString());
+            Map<Long,Map<String,Double>>  map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_SHORTPICKING_SKU ,operationId.toString()+outerContainerId.toString());
             //整托
             if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && insideContainerId.equals(oLCmd.getFromInsideContainerId())) {
                 Long operationLineId = oLCmd.getId(); // 获取当前作业明细id
@@ -2476,7 +2476,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Boolean isUpdateShort = true;
         List<WhOperationExecLine> list = new ArrayList<WhOperationExecLine>();
         for (WhOperationLineCommand oLCmd : operLineList) {
-            Map<String,Double>  map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_SCAN_SKU_SN ,operationId.toString()+insideContainerId.toString());
+            Map<String,Double>  map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_SHORTPICKING_SKU ,operationId.toString()+insideContainerId.toString());
             // 整箱
             if (locationId.longValue() == oLCmd.getFromLocationId().longValue() && insideContainerId.equals(oLCmd.getFromInsideContainerId())) {
                 Long operationLineId = oLCmd.getId(); // 获取当前作业明细id
