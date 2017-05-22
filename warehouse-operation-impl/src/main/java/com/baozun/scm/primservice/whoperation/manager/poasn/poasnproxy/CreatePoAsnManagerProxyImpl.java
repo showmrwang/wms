@@ -552,9 +552,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private void createPoDefault(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, List<WhOdoArchivLineIndex> indexList, Long ouId) {
         Boolean isAutoClose = this.biPoManager.calIsAutoClose(whPo.getStoreId(), ouId);
         whPo.setIsAutoClose(isAutoClose);
-        if (ouId != null) {
-            String whPoCode = this.getUniqueCode();
-        }
         biPoManager.createPoAndLineToInfo(whPo, whPoTm, whPoLines);
         if (ouId != null) {
             // @mender yimin.lu 2017/5/11 info->shard poCode 一致
@@ -698,7 +695,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(command.getExtCode(), command.getStoreId(), command.getOuId());
         List<Integer> statusList = Arrays.asList(new Integer[] {PoAsnStatus.POLINE_NEW, PoAsnStatus.POLINE_CREATE_ASN, PoAsnStatus.POLINE_RCVD});
         List<WhPoLine> infoPoLineList = this.poLineManager.findWhPoLineListByPoIdOuIdStatusListToInfo(infoPo.getId(), command.getOuId(), statusList);
-        this.poManager.saveSubPoToShard(command.getExtCode(), command.getStoreId(), command.getOuId(), command.getUserId(), this.getUniqueCode(), infoPo, infoPoLineList);
+        this.poManager.saveSubPoToShard(command.getExtCode(), command.getStoreId(), command.getOuId(), command.getUserId(), infoPo.getPoCode(), infoPo, infoPoLineList);
 
     }
 

@@ -2701,6 +2701,8 @@
 			o.is_assign_success = 0,
 			o.assign_fail_reason = #{reason},
 			o.odo_status = 1,
+			o.head_start_odo_status=1,
+			o.lag_odo_status=1,
 			o.wave_code = null
 		where 
 			o.id = #{odoId}

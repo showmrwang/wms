@@ -118,4 +118,7 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      */
     List<WhOdoOutBoundBoxCommand> gethOdoOutBoundBoxLstByOdo(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("isCreateWork") Boolean isCreateWork, @Param("ouId") Long ouId);
 
+
+    public List<Long> getWaveOdoIdList(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+
 }
