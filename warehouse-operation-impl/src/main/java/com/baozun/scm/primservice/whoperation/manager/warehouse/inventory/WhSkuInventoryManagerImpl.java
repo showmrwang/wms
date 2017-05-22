@@ -10051,6 +10051,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     WhInboundInvLineConfirmCommand invLineConfirm = new WhInboundInvLineConfirmCommand();
                     BeanUtils.copyProperties(inv, invLineConfirm, "id");
                     invLineConfirm.setIsIqc(poLine.getIsIqc());
+                    invLineConfirm.setInvStatus(whSkuInventoryDao.getInvStatusNameById(inv.getInvStatus()));
                     if (poLine.getQtyPlanned().compareTo(inv.getOnHandQty()) != -1) {
                         // poLine.getQtyPlanned() >= inv.getOnHandQty()
                         invLineConfirm.setQtyRcvd(inv.getOnHandQty());
@@ -10107,6 +10108,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (skuId.equals(inv.getSkuId())) {
                         WhInboundInvLineConfirmCommand invLine = new WhInboundInvLineConfirmCommand();
                         BeanUtils.copyProperties(inv, invLine, "id");
+                        invLine.setInvStatus(whSkuInventoryDao.getInvStatusNameById(inv.getInvStatus()));
                         if (qty.compareTo(inv.getOnHandQty()) != -1) {
                             // qty >= inv.getOnHandQty()
                             invLine.setQtyRcvd(inv.getOnHandQty());
