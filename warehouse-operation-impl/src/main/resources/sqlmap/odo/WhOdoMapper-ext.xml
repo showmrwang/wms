@@ -3343,13 +3343,15 @@
     </select>
     
     <select id="findOdoArchivData" resultType="long">
+    <![CDATA[
     	select
 			odo.id
 		from
 			t_wh_odo odo
 		where
-			odo.odo_status in (100, 88)
+			(odo.odo_status = '100' or (odo.odo_status = '88' and odo.create_time < DATE_SUB(CURDATE(), INTERVAL 7 DAY)))
 			and odo.ou_id = #{ouId}
+	]]>
     </select>
     
     <select id="countInvoiceInfo" resultType="int">
