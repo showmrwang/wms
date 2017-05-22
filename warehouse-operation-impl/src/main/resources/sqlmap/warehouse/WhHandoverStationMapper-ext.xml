@@ -5,8 +5,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.WhHandoverStationDao">
-	<resultMap id="WhHandoverStationResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation">
-	</resultMap>
+	<resultMap id="WhHandoverStationResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation"></resultMap>
+	<resultMap id="WhHandoverStationCommandExt" type="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand"> </resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whHandoverStationColumnsExt">
@@ -142,7 +142,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	
-	<select id="findByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	<select id="findByCode" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand"  >
 	       select id as id,
 	        	type as type,
 	        	serial_number as serialNumber,
@@ -161,7 +161,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	              where code=#{code}
 	</select>
 	
-	<select id="findOneByFacilityGroupId" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	<select id="findOneByFacilityGroupId" resultMap="WhHandoverStationCommandExt">
 	     select hs.id as id,
 	        	hs.type as type,
 	        	hs.serial_number as serialNumber,
@@ -180,10 +180,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	           where  hs.lifecycle = 1
 	           and hs.facility_group_id = #{facilityGroupId}
 	           and hs.ou_id = #{ouId}
-	       	   limit 1   
 	</select>
 	
-	<select id="findOneByOuId" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	<select id="findOneByOuId" resultMap="WhHandoverStationCommandExt">
 	       select hs.id as id,
 	        	hs.type as type,
 	        	hs.serial_number as serialNumber,
@@ -202,7 +201,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	           where  hs.lifecycle = 1
 	           and hs.facility_group_id is null
 	           and hs.ou_id = #{ouId}
-	       	   limit 1  
 	</select>
 	
 </mapper>

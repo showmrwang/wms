@@ -41,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.dao.handover.WhHandoverStationDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.HandoverCollectionConditionDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.HandoverCollectionRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.DistributionTargetDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -77,6 +78,8 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
     @Autowired
     private DistributionTargetDao distributionTargetDao;
+    @Autowired
+    private HandoverCollectionRuleDao handoverCollectionRuleDao;
 
     /**
      * @author lichuan
@@ -233,58 +236,88 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
 
             // 根据分组条件找交接集货表中是否存在满足条件的交接工位
             if (null == handoverCollections || 0 == handoverCollections.size()) {
-                // 判断集货交接应用类型
-                String applyType = rule.getApplyType();
-                if (HandoverApplyType.DESIGNATED_STATION.equals(applyType)) {
-                    // 取到规则上指定的交接工位
-                    handoverStationType = rule.getRuleType();
-                    handoverStationId = rule.getHandoverStationId();
-                    break;
-                } else {
-                    // 系统推荐
-                    handoverStationType = rule.getRuleType();
-                    if (HandoverStationType.CHECKING_GROUP_HANDOVER_STATION.equals(handoverStationType)) {
-                        // 找一个可用的复核组下交接工位
 
-                        if (null == ruleAffer) {
-                            continue;
-                        }
-                        Long checkingFacilityId = ruleAffer.getCheckingFacilityId();
-                        if (null == checkingFacilityId) {
-                            continue;
-                        }
-                        WhOutboundFacilityCommand cf = whOutboundFacilityDao.findByIdExt(checkingFacilityId, ouId);
-                        if (null == cf) {
-                            log.error("checking facility is null error, logId is:[{}]", logId);
-                            throw new BusinessException(ErrorCodes.RECOMMEND_OUTBOUND_ERROR);
-                        }
-                        Long fgId = cf.getFacilityGroup();
-                        // 找复核台组下一个可用交接工位
-                        List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByFacilityGroupId(fgId, ouId);
-                        if (null == stations || 0 == stations.size()) {
-                            continue;
-                        } else {
-                            WhHandoverStationCommand station = stations.get(0);
-                            if (null != station) {
-                                handoverStationId = station.getId();
+                if (rule.getRule() != null && outboundboxCommand.getOutboundboxCode() != null) {
+                    // 推荐成功的handovercollection保存条件
+                    // TODO
+                    List<Long> executeRuleSql = handoverCollectionRuleDao.executeRuleSql(rule.getRuleSql().replace(Constants.HANDOVER_COLLECTION_RULE_PLACEHOLDER, outboundboxCommand.getOutboundboxCode()), ouId);
+                    if (executeRuleSql.size() < 0)
+                    // 运行规则sql可以的就下一步
+                        continue;
+
+
+                    // 判断集货交接应用类型
+                    String applyType = rule.getApplyType();
+                    if (HandoverApplyType.DESIGNATED_STATION.equals(applyType)) {
+                        // 取到规则上指定的交接工位
+                        handoverStationType = rule.getRuleType();
+                        handoverStationId = rule.getHandoverStationId();
+                        break;
+                    } else {
+                        // 系统推荐
+                        handoverStationType = rule.getRuleType();
+                        if (HandoverStationType.CHECKING_GROUP_HANDOVER_STATION.equals(handoverStationType)) {
+                            // 找一个可用的复核组下交接工位
+
+                            if (null == ruleAffer) {
+                                continue;
+                            }
+                            Long checkingFacilityId = ruleAffer.getCheckingFacilityId();
+                            if (null == checkingFacilityId) {
+                                continue;
+                            }
+                            WhOutboundFacilityCommand cf = whOutboundFacilityDao.findByIdExt(checkingFacilityId, ouId);
+                            if (null == cf) {
+                                log.error("checking facility is null error, logId is:[{}]", logId);
+                                throw new BusinessException(ErrorCodes.RECOMMEND_OUTBOUND_ERROR);
+                            }
+                            Long fgId = cf.getFacilityGroup();
+                            // 找复核台组下一个可用交接工位
+                            List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByFacilityGroupId(22100047L, ouId);
+                            if (null == stations || 0 == stations.size()) {
+                                continue;
+                            } else {
+                                for (WhHandoverStationCommand station : stations) {
+
+                                    if (null != station) {
+                                        // 判断该工位是否已经装满出库箱
+                                        // 当前出库箱数
+                                        Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(station.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
+                                        if (capacity >= station.getUpperCapacity()) {
+                                            continue;
+                                        }
+
+                                        handoverStationId = station.getId();
+                                        break;
+                                    }
+                                }
                                 break;
                             }
-                        }
-                    } else {
-                        // 找一个可用的仓库下交接工位
-                        List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByOuId(ouId);
-                        if (null == stations || 0 == stations.size()) {
-                            continue;
                         } else {
-                            WhHandoverStationCommand station = stations.get(0);
-                            if (null != station) {
-                                handoverStationId = station.getId();
+                            // 找一个可用的仓库下交接工位
+                            List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByOuId(ouId);
+                            if (null == stations || 0 == stations.size()) {
+                                continue;
+                            } else {
+                                for (WhHandoverStationCommand station : stations) {
+
+                                    if (null != station) {
+                                        // 判断该工位是否已经装满出库箱
+                                        // 当前出库箱数
+                                        Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(station.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
+                                        if (capacity >= station.getUpperCapacity()) {
+                                            continue;
+                                        }
+
+                                        handoverStationId = station.getId();
+                                        break;
+                                    }
+                                }
                                 break;
                             }
                         }
                     }
                 }
-
             } else {
                 // 取到已经推荐的交接工位
                 HandoverCollection hc = handoverCollections.get(0);
@@ -359,6 +392,5 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
         }
         return handoverStationCommand;
     }
-
 
 }
