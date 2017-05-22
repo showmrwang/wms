@@ -4317,7 +4317,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
     public void manPutwayNoLoc(List<WhSkuInventorySn> skuSnlist, Warehouse warehouse, Double scanSkuQty, WhSkuInventoryCommand invCmd, Boolean isBM, Boolean isVM, Long locationId, Long userId, Long ouId) {
         String uuid = null;
-        List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
+        List<WhSkuInventorySnCommand> snList =invCmd.getWhSkuInventorySnCommandList();
         if (null == snList || 0 == snList.size()) {
             Long whskuInventoryId = invCmd.getId();
             WhSkuInventory inv = new WhSkuInventory();
@@ -4440,11 +4440,30 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
             if (!uuid.equals(invCmd.getUuid())) {
                 // uuid发生变更,重新插入sn
-                for (WhSkuInventorySn sn : skuSnlist) { // 已经扫描过的sn
-                    if (sn.getUuid().equals(invCmd.getUuid())) {
-                        sn.setUuid(inv.getUuid());
-                        whSkuInventorySnDao.saveOrUpdate(sn);
-                        insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                if(null != skuSnlist){
+                    for (WhSkuInventorySn sn : skuSnlist) { // 已经扫描过的sn
+                        if (sn.getUuid().equals(invCmd.getUuid())) {
+                            sn.setUuid(inv.getUuid());
+                            whSkuInventorySnDao.saveOrUpdate(sn);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                            insertSkuInventorySnLog(sn.getId(), ouId); // 记录sn日志
+                        }
+                    }
+                }else{
+                    Double count = 0.0;
+                    for (WhSkuInventorySnCommand snCmd: snList) { // 已经扫描过的sn
+                        if (snCmd.getUuid().equals(invCmd.getUuid())) {
+                            count++;
+                            WhSkuInventorySn sn = new WhSkuInventorySn();
+                            BeanUtils.copyProperties(snCmd, sn);
+                            sn.setUuid(inv.getUuid());
+                            whSkuInventorySnDao.saveOrUpdate(sn);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
+                            insertSkuInventorySnLog(sn.getId(), ouId); // 记录sn日志
+                            if(count >= scanSkuQty){
+                                break;
+                            }
+                        }
                     }
                 }
                 // 记录SN日志
@@ -4497,34 +4516,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 log.error("insideContainerId is null error, logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
             }
-            // List<WhSkuInventoryCommand> invLocList =
-            // whSkuInventoryDao.findWhSkuInvCmdByLocationContainerIdIsNull(ouId,locationId);
+            String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
             List<WhSkuInventorySn> skuSnlist = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN, insideContainerId.toString() + skuId.toString());
-            // 2.执行上架
-            // Boolean result = false;
-            // String putwaySkuAttrsId = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
-            // WhSkuInventoryCommand whSkuInvLoc = null;
-            // for(WhSkuInventoryCommand whSkuInve:invLocList){
-            // String skuAttrsIdLoc = SkuCategoryProvider.getSkuAttrIdByInv(whSkuInve);
-            // if(invLocList.size() != 0) { //判断是否有库位
-            // if(whSkuInve.getSkuId().longValue() == invSkuCmd.getSkuId().longValue() &&
-            // putwaySkuAttrsId.equals(skuAttrsIdLoc)) {
-            // result = true;
-            // whSkuInvLoc = whSkuInve;
-            // break;
-            // }else{
-            // result = false;
-            // }
-            // }else{
-            // result = false;
-            // }
-            // }
-            // if(result) {
-            // this.manPutwayExistLoc(skuSnlist,warehouse, scanSkuQty, whSkuInvLoc, isBM, isVM,
-            // locationId, userId, ouId,invSkuCmd);
-            // }else{
-            this.manPutwayNoLoc(skuSnlist, warehouse, scanSkuQty, invSkuCmd, isBM, isVM, locationId, userId, ouId);
-            // }
+            //获取当前货箱内所有的容器库存
+            List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, insideContainerId);
+            for(WhSkuInventoryCommand skuInvCmd:skuInvCmdList){
+                String insideSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+                if(skuAttrIds.equals(insideSkuAttrIds)) {
+                    this.manPutwayNoLoc(skuSnlist, warehouse, scanSkuQty, skuInvCmd, isBM, isVM, locationId, userId, ouId);
+                    break;
+                }
+            }
             // 如果不跟踪容器号，则上架后需判断是否释放容器
             if (false == isTV) {
                 // 判断修改内部容器状态
@@ -7528,18 +7530,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                         // 记录出库库存日志(这个实现的有问题)
                         insertSkuInventoryLog(invCmd.getId(), -scanSkuQty, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
-                        if (locSkuQty.equals(0.0)) {// 删除
-                            WhSkuInventory invDelete = new WhSkuInventory();
-                            BeanUtils.copyProperties(invCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
-                            insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
-                        } else { // 修改
-                            WhSkuInventory invDelete = new WhSkuInventory();
-                            BeanUtils.copyProperties(invCmd, invDelete);
-                            invDelete.setOnHandQty(locSkuQty);
-                            whSkuInventoryDao.saveOrUpdateByVersion(invDelete);
-                            insertGlobalLog(GLOBAL_LOG_UPDATE, invDelete, ouId, userId, null, null);
-                        }
+//                        if (locSkuQty.equals(0.0)) {// 删除
+//                            WhSkuInventory invDelete = new WhSkuInventory();
+//                            BeanUtils.copyProperties(invCmd, invDelete);
+//                            whSkuInventoryDao.delete(invDelete.getId());
+//                            insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
+//                        } else { // 修改
+//                            WhSkuInventory invDelete = new WhSkuInventory();
+//                            BeanUtils.copyProperties(invCmd, invDelete);
+//                            invDelete.setOnHandQty(locSkuQty);
+//                            whSkuInventoryDao.saveOrUpdateByVersion(invDelete);
+//                            insertGlobalLog(GLOBAL_LOG_UPDATE, invDelete, ouId, userId, null, null);
+//                        }
                     } else {
                         locSkuQty = invCmd.getToBeFilledQty() - scanSkuQty;
                         if (locSkuQty.equals(0.0)) {// 删除
@@ -7590,18 +7592,18 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
                         // 记录出库库存日志(这个实现的有问题)
                         insertSkuInventoryLog(invCmd.getId(), -scanSkuQty, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
-                        if (locSkuQty.equals(0.0)) {// 删除
-                            WhSkuInventory invDelete = new WhSkuInventory();
-                            BeanUtils.copyProperties(invCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
-                            insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
-                        } else { // 修改
-                            WhSkuInventory invUpdate = new WhSkuInventory();
-                            BeanUtils.copyProperties(invCmd, invUpdate);
-                            invUpdate.setOnHandQty(locSkuQty);
-                            whSkuInventoryDao.saveOrUpdateByVersion(invUpdate);
-                            insertGlobalLog(GLOBAL_LOG_UPDATE, invUpdate, ouId, userId, null, null);
-                        }
+//                        if (locSkuQty.equals(0.0)) {// 删除
+//                            WhSkuInventory invDelete = new WhSkuInventory();
+//                            BeanUtils.copyProperties(invCmd, invDelete);
+//                            whSkuInventoryDao.delete(invDelete.getId());
+//                            insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
+//                        } else { // 修改
+//                            WhSkuInventory invUpdate = new WhSkuInventory();
+//                            BeanUtils.copyProperties(invCmd, invUpdate);
+//                            invUpdate.setOnHandQty(locSkuQty);
+//                            whSkuInventoryDao.saveOrUpdateByVersion(invUpdate);
+//                            insertGlobalLog(GLOBAL_LOG_UPDATE, invUpdate, ouId, userId, null, null);
+//                        }
                     } else {
                         locSkuQty = invCmd.getToBeFilledQty() - scanSkuQty;
                         if (locSkuQty.equals(0.0)) {// 删除
@@ -7707,30 +7709,30 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setLastModifyTime(new Date());
                         whSkuInventoryTobefilledDao.insert(inv);
                         insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
-                        // 待出容器库存（分配容器库存）
-                        Double oldSkuInvOnHandQty = 0.0;
-                        if (true == warehouse.getIsTabbInvTotal()) {
-                            try {
-                                oldSkuInvOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
-                            } catch (Exception e) {
-                                log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-                            }
-                        } else {
-                            oldSkuInvOnHandQty = 0.0;
-                        }
-                        // 记录出库库存日志(这个实现的有问题)
-                        Double qty = 0.0;
-                        if (null == invCmd.getOnHandQty()) { // 待移入
-                            qty = invCmd.getToBeFilledQty();
-                        } else {
-                            qty = invCmd.getOnHandQty();
-                            insertSkuInventoryLog(invCmd.getId(), -qty, oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
-                        }
-                        WhSkuInventory invDelete = new WhSkuInventory();
-                        BeanUtils.copyProperties(invCmd, invDelete);
-                        whSkuInventoryDao.delete(invDelete.getId());
-                        insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
+//                        // 待出容器库存（分配容器库存）
+//                        Double oldSkuInvOnHandQty = 0.0;
+//                        if (true == warehouse.getIsTabbInvTotal()) {
+//                            try {
+//                                oldSkuInvOnHandQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId);
+//                            } catch (Exception e) {
+//                                log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+//                                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+//                            }
+//                        } else {
+//                            oldSkuInvOnHandQty = 0.0;
+//                        }
+//                        // 记录出库库存日志(这个实现的有问题)
+//                        Double qty = 0.0;
+//                        if (null == invCmd.getOnHandQty()) { // 待移入
+//                            qty = invCmd.getToBeFilledQty();
+//                        } else {
+//                            qty = invCmd.getOnHandQty();
+//                            insertSkuInventoryLog(invCmd.getId(), -qty, oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
+//                        }
+//                        WhSkuInventory invDelete = new WhSkuInventory();
+//                        BeanUtils.copyProperties(invCmd, invDelete);
+//                        whSkuInventoryDao.delete(invDelete.getId());
+//                        insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                     }
                 } else {
                     // 只修改待移入库存记录的绑定库位即可
@@ -7797,10 +7799,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             qty = invCmd.getOnHandQty();
                             insertSkuInventoryLog(invCmd.getId(), -qty, oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                         }
-                        WhSkuInventory invDelete = new WhSkuInventory();
-                        BeanUtils.copyProperties(invCmd, invDelete);
-                        whSkuInventoryDao.delete(invDelete.getId());
-                        insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
+//                        WhSkuInventory invDelete = new WhSkuInventory();
+//                        BeanUtils.copyProperties(invCmd, invDelete);
+//                        whSkuInventoryDao.delete(invDelete.getId());
+//                        insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
 
                         // 先添加后删除sn
                         for (WhSkuInventorySnCommand snCmd : snList) {

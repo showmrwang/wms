@@ -1068,7 +1068,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param insideContainerid
      * @return
      */
-    List<WhSkuInventoryCommand> findWhskuInventoryByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
+    List<WhSkuInventoryCommand> findWhskuInventoryByInsideId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
 
     /***
      * 查询当前货箱内sku的数量
