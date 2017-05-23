@@ -14,6 +14,7 @@
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.CommonQuery;
@@ -26,6 +27,7 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 
 
@@ -88,4 +90,14 @@ public interface WhOperationDao extends BaseDao<WhOperation, Long> {
      */
     public WhOperation findByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
 
+    /**
+     * 根据作业头Id和ouId,locationId获取作业明细信息
+     * 
+     * @author qiming.liu
+     * @param odoId
+     * @param isCreateWork
+     * @param ouId
+     * @return
+     */
+    List<WhOperationCommand> findOperationCommandByOdo(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("status") Integer status, @Param("ouId") Long ouId);
 }
