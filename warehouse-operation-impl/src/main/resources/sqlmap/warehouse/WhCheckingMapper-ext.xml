@@ -73,7 +73,7 @@
                 ch.outboundbox_code as outboundboxCode,
                 ch.distribution_mode as distributionMode,
                 ch.picking_mode as pickingMode,
-                checking.last_modify_time as lastModifyTime,
+                ch.last_modify_time as lastModifyTime,
                 ch.checking_mode as checkingMode
         ]]>
     </sql>

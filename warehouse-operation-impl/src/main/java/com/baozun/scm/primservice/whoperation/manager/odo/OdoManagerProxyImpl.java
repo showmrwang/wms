@@ -2756,7 +2756,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             return null;
         }
         // 获取运单号
-        MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, wh, trans, ouId);
+        MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, odoVasLineList, wh);
         // 循环获取5次
         MailnoGetResponse res = this.getMailnoGetResponse(mailNoContent);
         if (null != res && null != res.getStatus() && res.getStatus() == 1) {
@@ -2766,11 +2766,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             String logisticsCode = res.getLogisticsCode(); // 物流公司编码,用于发货回传
             String packageCenterCode = res.getPackageCenterCode(); // 集包地编码
             String packageCenterName = res.getPackageCenterName(); // 集包地名称
-            transMgmt.setTransBigWord(transBigWord);
-            transMgmt.setTmsCode(tmsCode);
-            transMgmt.setLogisticsCode(null == logisticsCode ? null : logisticsCode.toUpperCase());
-            transMgmt.setPackageCenterCode(packageCenterCode);
-            transMgmt.setPackageCenterName(packageCenterName);
             WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
             delivery.setOdoId(odoId);
             delivery.setCreateTime(new Date());
@@ -2782,6 +2777,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             delivery.setTimeEffectType(transMgmt.getTimeEffectType());
             delivery.setTransportServiceType(transMgmt.getCourierServiceType());
             delivery.setWaybillCode(mailNo);
+            delivery.setTransBigWord(transBigWord);
+            delivery.setTmsCode(tmsCode);
+            delivery.setLogisticsCode(null == logisticsCode ? null : logisticsCode.toUpperCase());
+            delivery.setPackageCenterCode(packageCenterCode);
+            delivery.setPackageCenterName(packageCenterName);
             odoTransportMgmtManager.updateOdoTransportMgmtAndSaveDeliveryInfo(transMgmt, delivery);
             return delivery;
         } else {

@@ -301,7 +301,7 @@ public interface OdoManager extends BaseManager {
      * @version 2017年4月26日
      * @param address 
      */
-    MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, WarehouseCommand wh, SuggestTransContentCommand trans, Long ouId);
+    MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, WarehouseCommand wh);
     
     /**
      * 批次号+List<odoId>

@@ -1462,23 +1462,24 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, WarehouseCommand wh, SuggestTransContentCommand trans, Long ouId) {
+    public MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, WarehouseCommand wh) {
         MailnoGetContentCommand mailNoContent = new MailnoGetContentCommand();
         mailNoContent.setOrderCode(odo.getOdoCode());
         mailNoContent.setTradeId(odo.getEcOrderCode());
         mailNoContent.setOrderSource(odo.getDataSource());
         mailNoContent.setWhCode(wh.getCode());
-        mailNoContent.setOwnerCode(trans.getOwnerCode());
+        Store store = this.getStoreByRedis(odo.getStoreId());
+        mailNoContent.setOwnerCode(store.getStoreCode());
         mailNoContent.setLpCode(transMgmt.getTransportServiceProvider());
         mailNoContent.setExpressType(transMgmt.getCourierServiceType());
-        mailNoContent.setTotalActual(trans.getTotalActual());
+        mailNoContent.setTotalActual(new BigDecimal(odo.getAmt().doubleValue()));
         mailNoContent.setTimeType(transMgmt.getTimeEffectType());
         mailNoContent.setQuantity(1);   // 获取面单数量1
         mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
         // 有保价增值服务, 则设置isBj
-        for (TransVasList vas : trans.getTransVasList()) {
-            if ("INSURED".equals(vas.getVasCode())) {
+        for (WhOdoVas vas : odoVasLineList) {
+            if ("INSURED".equals(vas.getExpressVasCode())) {
                 mailNoContent.setIsBj(Boolean.TRUE);
                 break;
             }
@@ -1487,7 +1488,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         List<TransSkuItemCommand> skuItem = new ArrayList<TransSkuItemCommand>();
         for (WhOdoLine odoLine : odoLineList) {
             TransSkuItemCommand item = new TransSkuItemCommand();
-            WhSku sku = whSkuDao.findWhSkuById(odoLine.getSkuId(), ouId);
+            WhSku sku = whSkuDao.findWhSkuById(odoLine.getSkuId(), wh.getId());
             item.setItemId(odoLine.getSkuId().toString());
             item.setItemCode(sku.getCode());
             item.setItemName(sku.getName());
@@ -1496,7 +1497,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             skuItem.add(item);
         }
         mailNoContent.setSkuItem(skuItem);
-        Store store = this.getStoreByRedis(odo.getStoreId());
         // 发件人信息
         MailnoTransInfoCommand send = new MailnoTransInfoCommand();
         send.setProvince(wh.getProvince());

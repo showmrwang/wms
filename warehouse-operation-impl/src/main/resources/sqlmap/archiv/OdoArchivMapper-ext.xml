@@ -495,12 +495,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     is_cod,
                     cod_amt,
                     ou_id ,
-		        	insurance_coverage ,
-		        	trans_big_word ,
-		        	tms_code ,
-		        	logistics_code ,
-		        	package_center_code ,
-		        	package_center_name 
+		        	insurance_coverage 
                 ) VALUES (
                 	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -517,12 +512,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
                     #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{insuranceCoverage,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        	#{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{insuranceCoverage,javaType=java.lang.Double,jdbcType=DECIMAL} 
                 )
             ]]>
     </insert>
@@ -917,7 +907,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	create_id ,
 		        	create_time ,
 		        	last_modify_time ,
-		        	modified_id 
+		        	modified_id ,
+		        	trans_big_word ,
+		        	tms_code ,
+		        	logistics_code ,
+		        	package_center_code ,
+		        	package_center_name 
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -934,7 +929,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		    ]]>
 		</insert>

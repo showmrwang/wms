@@ -29,7 +29,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_id as createId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	trans_big_word as transBigWord,
+	        	tms_code as tmsCode,
+	        	logistics_code as logisticsCode,
+	        	package_center_code as packageCenterCode,
+	        	package_center_name as packageCenterName
 	    ]]>
 	</sql>
 	<sql id="odoDeliveryInfoConditionWhereExt">
@@ -125,7 +130,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	create_id ,
 		        	create_time ,
 		        	last_modify_time ,
-		        	modified_id 
+		        	modified_id ,
+		        	trans_big_word ,
+		        	tms_code ,
+		        	logistics_code ,
+		        	package_center_code ,
+		        	package_center_name
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -142,7 +152,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		    ]]>
 
@@ -166,7 +181,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        trans_big_word = #{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tms_code = #{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        logistics_code = #{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_code = #{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
