@@ -3,10 +3,8 @@ package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import lark.common.annotation.MoreDB;
@@ -988,38 +986,30 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (updateCount != 1) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-        /*if (destinationType == Constants.SEEDING_WALL) {
-            String seedingWallCode = rec.getSeedingwallCode();
-            // 移到播种墙时保存redis数据
-            // SEEDING_(仓库ID)_(播种墙CODE)_(批次号)_(容器CODE)=Map<SkuId_uuid, WhSeedingCollectionLine>
-            addSeedingDataIntoCache(seedingWallCode, containerCode, containerId, batch, ouId);
-        }*/
+        /*
+         * if (destinationType == Constants.SEEDING_WALL) { String seedingWallCode =
+         * rec.getSeedingwallCode(); // 移到播种墙时保存redis数据 //
+         * SEEDING_(仓库ID)_(播种墙CODE)_(批次号)_(容器CODE)=Map<SkuId_uuid, WhSeedingCollectionLine>
+         * addSeedingDataIntoCache(seedingWallCode, containerCode, containerId, batch, ouId); }
+         */
     }
 
-    /*private void addSeedingDataIntoCache(String seedingWallCode, String containerCode, Long containerId, String batch, Long ouId) {
-        if (StringUtils.isEmpty(seedingWallCode) || StringUtils.isEmpty(containerCode)) {
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-        }
-        StringBuilder sb = new StringBuilder(64);
-        sb.append(CacheConstants.CACHE_SEEDING).append("-");
-        sb.append(ouId).append("-");
-        sb.append(seedingWallCode).append("-");
-        sb.append(batch).append("-");
-        sb.append(containerCode);
-        String cacheKey = sb.toString();
-
-        // 查找容器库存
-        List<WhSeedingCollectionLine> dataList = this.whSkuInventoryDao.findSeedingDataByContainerId(containerId, ouId);
-        if (null != dataList && !dataList.isEmpty()) {
-            // 封装集货sku数据
-            Map<String, WhSeedingCollectionLine> seedingDataMap = new HashMap<String, WhSeedingCollectionLine>();
-            for (WhSeedingCollectionLine data : dataList) {
-                String mapKey = data.getSkuId() + "_" + data.getUuid();
-                seedingDataMap.put(mapKey, data);
-            }
-            cacheManager.setObject(cacheKey, seedingDataMap, CacheConstants.CACHE_ONE_WEEK);
-        }
-    }*/
+    /*
+     * private void addSeedingDataIntoCache(String seedingWallCode, String containerCode, Long
+     * containerId, String batch, Long ouId) { if (StringUtils.isEmpty(seedingWallCode) ||
+     * StringUtils.isEmpty(containerCode)) { throw new
+     * BusinessException(ErrorCodes.SYSTEM_EXCEPTION); } StringBuilder sb = new StringBuilder(64);
+     * sb.append(CacheConstants.CACHE_SEEDING).append("-"); sb.append(ouId).append("-");
+     * sb.append(seedingWallCode).append("-"); sb.append(batch).append("-");
+     * sb.append(containerCode); String cacheKey = sb.toString();
+     * 
+     * // 查找容器库存 List<WhSeedingCollectionLine> dataList =
+     * this.whSkuInventoryDao.findSeedingDataByContainerId(containerId, ouId); if (null != dataList
+     * && !dataList.isEmpty()) { // 封装集货sku数据 Map<String, WhSeedingCollectionLine> seedingDataMap =
+     * new HashMap<String, WhSeedingCollectionLine>(); for (WhSeedingCollectionLine data : dataList)
+     * { String mapKey = data.getSkuId() + "_" + data.getUuid(); seedingDataMap.put(mapKey, data); }
+     * cacheManager.setObject(cacheKey, seedingDataMap, CacheConstants.CACHE_ONE_WEEK); } }
+     */
 
     @Override
     public void removeRecommendResultListCache(String batch, Long userId) {
@@ -1527,7 +1517,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     BeanUtils.copyProperties(inv, line);
                     line.setSeedingCollectionId(whSeedingCollection.getId());
                     line.setSeedingQty(0L);
-                    line.setBatchNumber(whSeedingCollection.getBatch());
                     this.whSeedingCollectionLineDao.insert(line);
                 }
             }
