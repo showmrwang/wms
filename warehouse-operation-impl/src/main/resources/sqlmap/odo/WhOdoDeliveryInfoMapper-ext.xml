@@ -26,7 +26,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_id as createId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	trans_big_word as transBigWord,
+	        	tms_code as tmsCode,
+	        	logistics_code as logisticsCode,
+	        	package_center_code as packageCenterCode,
+	        	package_center_name as packageCenterName
 	    ]]>
 	</sql>
 	
@@ -138,7 +143,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = now() ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        trans_big_word = #{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tms_code = #{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        logistics_code = #{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_code = #{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR}  
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}

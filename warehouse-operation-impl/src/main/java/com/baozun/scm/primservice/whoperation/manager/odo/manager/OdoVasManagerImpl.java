@@ -95,6 +95,7 @@ public class OdoVasManagerImpl extends BaseManagerImpl implements OdoVasManager 
                 vas.setExpressVasCode(vasLine.getCode());
                 vas.setVasType(Constants.ODO_VAS_TYPE_EXPRESS);
                 whOdoVasDao.insert(vas);
+                odoVasLineList.add(vas);
             }
         }
         odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 1, null, ouId);

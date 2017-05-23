@@ -74,6 +74,9 @@
                 ch.distribution_mode as distributionMode,
                 ch.picking_mode as pickingMode,
                 ch.last_modify_time as lastModifyTime,
+                ch.create_id as createId,
+                ch.create_time as createTime,
+                ch.modified_id as modifiedId,
                 ch.checking_mode as checkingMode
         ]]>
     </sql>
@@ -294,6 +297,9 @@
 	         ch.distribution_mode as distributionMode,
 	         ch.picking_mode as pickingMode,
             ch.last_modify_time as lastModifyTime,
+            ch.create_id as createId,
+            ch.create_time as createTime,
+            ch.modified_id as modifiedId,
 	         ch.checking_mode as checkingMode
         from t_wh_checking ch left join t_wh_outbound_facility facility on ch.facility_id = facility.id
 		where facility.facility_code = #{facilityCode}
@@ -329,6 +335,9 @@
                 checking.picking_mode as pickingMode,
                 checking.checking_mode as checkingMode,
                 checking.last_modify_time as lastModifyTime,
+                checking.create_id as createId,
+                checking.create_time as createTime,
+                checking.modified_id as modifiedId,
                 sku.bar_code as consumableSkuBarcode
         ]]>
     </sql>
@@ -500,6 +509,9 @@
 	         ch.distribution_mode as distributionMode,
 	         ch.picking_mode as pickingMode,
             ch.last_modify_time as lastModifyTime,
+             ch.create_id as createId,
+             ch.create_time as createTime,
+             ch.modified_id as modifiedId,
 	         ch.checking_mode as checkingMode
         from t_wh_checking ch left join t_wh_container container on ch.outer_container_id = container.id
         where ch.ou_id = #{ouId}
@@ -533,6 +545,9 @@
 	         ch.picking_mode as pickingMode,
 	         ch.checking_mode as checkingMode,
             ch.last_modify_time as lastModifyTime,
+             ch.create_id as createId,
+             ch.create_time as createTime,
+             ch.modified_id as modifiedId,
 	         container.code as containerCode
         from t_wh_checking ch left join t_wh_container container on ch.container_id = container.id
         where ch.ou_id = #{ouId}
@@ -566,6 +581,9 @@
 	         ch.picking_mode as pickingMode,
 	         ch.checking_mode as checkingMode,
             ch.last_modify_time as lastModifyTime,
+             ch.create_id as createId,
+             ch.create_time as createTime,
+             ch.modified_id as modifiedId,
 	         container.code as containerCode
         from t_wh_checking ch left join t_wh_container container on ch.container_id = container.id
         where ch.ou_id = #{ouId}
@@ -647,6 +665,9 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             facility.facility_code AS facilityCode,
             turnoverBox.code AS containerCode,
             trolley.code AS outContainerCode
@@ -693,6 +714,9 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             facility.facility_code AS facilityCode,
             turnoverBox.code AS containerCode,
             trolley.code AS outContainerCode
@@ -740,6 +764,9 @@
             checking.picking_mode as pickingMode,
             checking.checking_mode as checkingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             outboundFac.facility_code as facilityCode,
             container.code as containerCode,
             outContainer.code as outContainerCode
@@ -817,6 +844,9 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             facility.facility_code AS facilityCode,
             turnoverBox.code AS containerCode,
             trolley.code AS outContainerCode
@@ -857,6 +887,9 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             facility.facility_code AS facilityCode,
             turnoverBox.code AS containerCode,
             trolley.code AS outContainerCode
@@ -904,6 +937,9 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             facility.facility_code AS facilityCode,
             turnoverBox.code AS containerCode,
             trolley.code AS outContainerCode
@@ -943,6 +979,9 @@
             checking.distribution_mode AS distributionMode,
             checking.picking_mode AS pickingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             checking.checking_mode AS checkingMode
         FROM
             t_wh_checking AS checking
@@ -978,6 +1017,9 @@
             checking.picking_mode AS pickingMode,
             checking.checking_mode AS checkingMode,
             checking.last_modify_time as lastModifyTime,
+            checking.create_id as createId,
+            checking.create_time as createTime,
+            checking.modified_id as modifiedId,
             turnoverBox.code AS containerCode
         FROM
             t_wh_checking AS checking

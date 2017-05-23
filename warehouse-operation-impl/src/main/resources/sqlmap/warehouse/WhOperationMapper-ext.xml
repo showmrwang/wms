@@ -230,7 +230,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>	
-	
     
 	<select id="findOperationCommandById" resultMap="whOperationCommandResultExt">
     	select 
@@ -244,4 +243,51 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>	
+    
+    <select id="findOperationCommandByOdo" resultMap="whOperationCommandResultExt">
+    	select 
+    		o.id as id,
+        	o.code as code,
+        	o.status as status,
+        	o.work_id as workId,
+        	o.ou_id as ouId,
+        	o.work_type as workType,
+        	o.work_category as workCategory,
+        	o.work_priority as workPriority,
+        	o.batch as batch,
+        	o.start_time as startTime,
+        	o.finish_time as finishTime,
+        	o.wave_id as waveId,
+        	o.wave_code as waveCode,
+        	o.order_code as orderCode,
+        	o.location_code as locationCode,
+        	o.outer_container_code as outerContainerCode,
+        	o.container_code as containerCode,
+        	o.is_whole_case as isWholeCase,
+        	o.is_short_picking as isShortPicking,
+        	o.is_picking_finish as isPickingFinish,
+        	o.is_wave_replenish as isWaveReplenish,
+        	o.is_picking_tobefilled as isPickingTobefilled,
+        	o.create_time as createTime,
+        	o.last_modify_time as lastModifyTime,
+        	o.created_id as createdId,
+        	o.modified_id as modifiedId,
+        	o.operator_id as operatorId,
+        	o.lifecycle as lifecycle
+	    from 
+	    	t_wh_operation o 
+	    left join t_wh_operation_line l on o.id = l.operation_id
+		<where> 
+				o.ou_id = #{ouId}
+			<if test="status!=null">
+				and o.status != #{status}
+			</if>
+			<if test="odoId!=null">
+				and l.odo_id = #{odoId}
+			</if>
+			<if test="odoLineId!=null">
+				and l.odo_line_id = #{odoLineId}
+			</if>
+		</where>
+    </select>
 </mapper>

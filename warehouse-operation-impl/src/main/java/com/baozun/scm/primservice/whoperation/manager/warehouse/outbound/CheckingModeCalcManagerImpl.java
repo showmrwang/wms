@@ -82,7 +82,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
      * @param logId
      */
     @Override
-    public void generateCheckingDataByCollection(WhWorkCommand workCmd, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, String logId) {
+    public void generateCheckingDataByCollection(WhWorkCommand workCmd, List<WhOperationExecLineCommand> execLineCommandList, Long userId, Long ouId, String logId) {
         if (null == workCmd) {
             log.error("work is null error, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
@@ -195,12 +195,16 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setTransportCode("");
                     checking.setTransportName("");
                     checking.setWaveCode(waveCode);
+                    checking.setCreateId(userId);
+                    checking.setCreateTime(new Date());
+                    checking.setModifiedId(userId);
+                    checking.setLastModifyTime(new Date());
                     whCheckingDao.insert(checking);
                     // 生成复核明细
                     for (WhSkuInventory inv : invList) {
                         if (null != inv) {
                             WhCheckingLine line = new WhCheckingLine();
-                            line.setBatchNumber(batch);
+                            line.setBatchNumber(inv.getBatchNumber());
                             line.setCheckingId(checking.getId());
                             line.setCheckingQty(0L);
                             line.setCountryOfOrigin(inv.getCountryOfOrigin());
@@ -245,7 +249,9 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setStoreCode("");
                             line.setStoreName("");
                             line.setUuid(inv.getUuid());
+                            line.setCreateId(userId);
                             line.setCreateTime(new Date());
+                            line.setModifiedId(userId);
                             line.setLastModifyTime(new Date());
                             WhCheckingLineDao.insert(line);
                         }
@@ -415,7 +421,6 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     // 生成复核明细
                     for (WhSkuInventory inv : invList) {
                         if (null != inv) {
-                            // TODO checkingLine少一个记录小批次的字段，商品本身有一个批次号
                             WhCheckingLine line = new WhCheckingLine();
                             line.setBatchNumber(inv.getBatchNumber());
                             line.setCheckingId(checking.getId());

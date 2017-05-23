@@ -1236,7 +1236,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         }
                         if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(waybillCode, userId, ouId);
+                            checkingManager.printSinglePlane(outboundBoxCode,waybillCode, userId, ouId);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                             // 箱标签
@@ -1262,7 +1262,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             }
                             if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(waybillCode, userId, ouId);
+                                checkingManager.printSinglePlane(outboundBoxCode,waybillCode, userId, ouId);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                                 // 箱标签
