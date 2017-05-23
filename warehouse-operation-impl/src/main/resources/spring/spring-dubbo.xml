@@ -189,6 +189,9 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.checking.CheckingManagerProxy" ref="checkingManagerProxy" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager" ref="odoTransportMgmtManager" />
 
+
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundConsumableManager" ref="whOutboundConsumableManager" />
+
 	<!-- 物流服务 -->
 	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="transServiceManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.manager.TransServiceManager" />
 	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="maTransportAccountManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.wms4.manager.MaTransportAccountManager" />

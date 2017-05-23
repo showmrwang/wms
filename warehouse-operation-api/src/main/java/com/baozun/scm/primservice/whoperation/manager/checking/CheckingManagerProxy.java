@@ -15,7 +15,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 
 public interface CheckingManagerProxy extends BaseManager {
-    
+
     /**
      * 根据复核打印配置打印单据
      * 
@@ -24,7 +24,7 @@ public interface CheckingManagerProxy extends BaseManager {
      * @return
      */
     Boolean printDefect(WhCheckingResultCommand whCheckingResultCommand);
-     
+
     /**
      * 更新复核数据
      * 
@@ -33,7 +33,7 @@ public interface CheckingManagerProxy extends BaseManager {
      * @return
      */
     Boolean updateChecking(WhCheckingResultCommand whCheckingResultCommand);
-      
+
     /**
      * 生成出库箱库存与箱数据
      * 
@@ -42,7 +42,7 @@ public interface CheckingManagerProxy extends BaseManager {
      * @return
      */
     Boolean createOutboundbox(WhCheckingResultCommand whCheckingResultCommand);
-      
+
     /**
      * 更新出库单状态
      * 
@@ -51,7 +51,7 @@ public interface CheckingManagerProxy extends BaseManager {
      * @return
      */
     Boolean updateOdoStatus(WhCheckingResultCommand whCheckingResultCommand);
-       
+
     /**
      * 算包裹计重
      * 
@@ -60,17 +60,16 @@ public interface CheckingManagerProxy extends BaseManager {
      * @return
      */
     Boolean packageWeightCalculation(WhCheckingResultCommand whCheckingResultCommand);
-    
-    
-//    /**
-//     * tangming
-//     * 按单复合打印
-//     * @param outBoudBoxCode
-//     * @param 
-//     * @param 
-//     */
-//    public Boolean printDefectByOdo(String outBoudBoxCode,Long ouId,Long functionId);
 
+
+    // /**
+    // * tangming
+    // * 按单复合打印
+    // * @param outBoudBoxCode
+    // * @param
+    // * @param
+    // */
+    // public Boolean printDefectByOdo(String outBoudBoxCode,Long ouId,Long functionId);
 
 
 
@@ -110,6 +109,13 @@ public interface CheckingManagerProxy extends BaseManager {
      *
      * @param checkingCommand
      */
-    public void finishedCheckingByContainer(WhFunctionOutBound function ,WarehouseMgmt warehouseMgmt,WhCheckingCommand checkingCommand,  Long userId, Long ouId, String logId);
+    public void finishedCheckingByContainer(WhFunctionOutBound function, WhOutboundFacilityCommand facilityCommand, WarehouseMgmt warehouseMgmt, WhCheckingCommand checkingCommand, Long userId, Long ouId, String logId);
 
+    public boolean checkBoxCheckingFinished(Long checkingId, Long ouId, String logId);
+
+    public boolean checkFacilityCheckingFinished(String checkingSourceCode, Long ouId, String logId);
+
+    public boolean checkTrolleyCheckingFinished(String checkingSourceCode, Long ouId, String logId);
+
+    public void releaseCheckingSource(Long checkingId, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId);
 }

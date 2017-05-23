@@ -235,6 +235,7 @@
             checkingLine.ou_id as ouId,
             checkingLine.odo_id as odoId,
             checkingLine.odo_line_id as odoLineId,
+            checkingLine.last_modify_time as lastModifyTime,
             date_format(checkingLine.mfg_date,'%Y-%m-%d') as mfgDateString,
             date_format(checkingLine.exp_date,'%Y-%m-%d') as expDateString,
             invAttr1Sys.dic_label as invAttr1Label,
@@ -327,6 +328,7 @@
                 line.ou_id as ouId,
                 line.odo_id as odoId,
                 line.odo_line_id as odoLineId,
+                line.last_modify_time as lastModifyTime,
                 status.name as invStatusStr,
                 odo.odo_code as odoCode
         ]]>
