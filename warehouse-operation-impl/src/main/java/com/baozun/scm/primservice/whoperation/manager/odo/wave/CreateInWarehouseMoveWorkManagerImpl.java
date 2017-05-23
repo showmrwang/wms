@@ -929,6 +929,7 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
                 operationExecLine.setIsShortPicking(false);
                 // 是否使用新的出库箱/周转箱
                 operationExecLine.setIsUseNew(false);
+                operationExecLine.setCompleteQty(operationLineCommand.getQty());
                 whOperationExecLineDao.insert(operationExecLine);
                 //根据uuid和invMoveCode获取待移入库存
                 WhSkuInventoryAllocated skuInventoryAllocated = new WhSkuInventoryAllocated();
@@ -990,6 +991,18 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
                 }
                 skuInventoryTobefilledDao.delete(skuInventoryTobefilledLst.get(0).getId());
             }
+            // 更新工作表
+            WhWork whWork = new WhWork();
+            BeanUtils.copyProperties(whWorkCommand, whWork);
+            whWork.setStatus(10);
+            whWork.setIsLocked(false);
+            workDao.update(whWork);
+            // 更新作业表
+            WhOperation whOperation = new WhOperation();
+            BeanUtils.copyProperties(whOperationCommand, whOperation);
+            whOperation.setStatus(10);
+            operationDao.update(whOperation);
+            // 更新缓存信息            
             this.snStatisticsRedis(skuInventorySnLst, snKey);
         } catch (Exception e) {
             log.error("CreateInWarehouseMoveWorkManagerImpl executeInWarehouseMoveWork error" + e);
