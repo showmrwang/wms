@@ -130,6 +130,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         // 创建出库箱阶段的波次列表
         List<WhWaveCommand> whWaveCommandList = whWaveManager.getWhWaveByPhaseCode(Constants.CREATE_OUTBOUND_CARTON, ouId);
 
+        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
         // 根据波次查询对应的出库单
         for (WhWaveCommand whWaveCommand : whWaveCommandList) {
             // 根据波次获得出库单ID集合
@@ -161,7 +162,6 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 WhDistributionPatternRule rule = distributionPatternRuleMap.get(odoCommand.getDistributeMode());
                 if (null == rule) {
                     // 踢出波次
-                    Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
                     whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_DISTRIBUTE_MODE_ERROR, warehouse);
                     continue;
                 }
@@ -208,8 +208,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 判断是否有出库单未推荐出库箱，但是还在波次内
             List<Long> afterRecOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
             List<Long> odoOutboundBoxOdoIdList = odoOutBoundBoxMapper.getWaveOdoIdList(whWaveCommand.getId(), ouId);
-            if(!afterRecOdoIdList.isEmpty() && !odoOutboundBoxOdoIdList.containsAll(afterRecOdoIdList)){
-                throw new BusinessException("波次内遗留出库单未处理");
+            afterRecOdoIdList.removeAll(odoOutboundBoxOdoIdList);
+            if(!afterRecOdoIdList.isEmpty()){
+                for(Long odoId : afterRecOdoIdList){
+                    whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_UNKNOWN, warehouse);
+                }
             }
 
 
