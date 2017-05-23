@@ -246,7 +246,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                     try {
                         if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(waybillCode, userId, ouId);
+                            checkingManager.printSinglePlane(outboundBoxCode,waybillCode, userId, ouId);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                             // 箱标签
@@ -264,7 +264,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                         try {
                             if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(waybillCode, userId, ouId);
+                                checkingManager.printSinglePlane(outboundBoxCode,waybillCode, userId, ouId);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                                 // 箱标签
