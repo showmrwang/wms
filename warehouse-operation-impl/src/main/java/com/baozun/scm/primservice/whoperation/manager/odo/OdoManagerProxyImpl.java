@@ -2751,6 +2751,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 }
             }
         }
+        odoTransportMgmtManager.updateOdoTransportMgmtExt(transMgmt);
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
             odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "TransportServiceProvider is null", ouId);
             return null;
@@ -2760,12 +2761,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 循环获取5次
         MailnoGetResponse res = this.getMailnoGetResponse(mailNoContent);
         if (null != res && null != res.getStatus() && res.getStatus() == 1) {
-            String mailNo = res.getMailno(); // 物流单号
-            String transBigWord = res.getTransBigWord(); // 运单大头笔
-            String tmsCode = res.getTmsCode(); // 二级配送公司编码,用于发货回传
-            String logisticsCode = res.getLogisticsCode(); // 物流公司编码,用于发货回传
-            String packageCenterCode = res.getPackageCenterCode(); // 集包地编码
-            String packageCenterName = res.getPackageCenterName(); // 集包地名称
             WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
             delivery.setOdoId(odoId);
             delivery.setCreateTime(new Date());
@@ -2776,13 +2771,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             delivery.setTransportCode(transMgmt.getTransportServiceProvider());
             delivery.setTimeEffectType(transMgmt.getTimeEffectType());
             delivery.setTransportServiceType(transMgmt.getCourierServiceType());
-            delivery.setWaybillCode(mailNo);
-            delivery.setTransBigWord(transBigWord);
-            delivery.setTmsCode(tmsCode);
-            delivery.setLogisticsCode(null == logisticsCode ? null : logisticsCode.toUpperCase());
-            delivery.setPackageCenterCode(packageCenterCode);
-            delivery.setPackageCenterName(packageCenterName);
-            odoTransportMgmtManager.updateOdoTransportMgmtAndSaveDeliveryInfo(transMgmt, delivery);
+            delivery.setWaybillCode(res.getMailno());   // 物流单号
+            delivery.setTransBigWord(res.getTransBigWord());    // 运单大头笔
+            delivery.setTmsCode(res.getTmsCode());  // 二级配送公司编码,用于发货回传
+            delivery.setLogisticsCode(res.getLogisticsCode());  // 物流公司编码,用于发货回传
+            delivery.setPackageCenterCode(res.getPackageCenterCode());  // 集包地编码
+            delivery.setPackageCenterName(res.getPackageCenterName());  // 集包地名称
+            odoTransportMgmtManager.insertDeliveryInfoExt(delivery);
             return delivery;
         } else {
             if (null == res) {
