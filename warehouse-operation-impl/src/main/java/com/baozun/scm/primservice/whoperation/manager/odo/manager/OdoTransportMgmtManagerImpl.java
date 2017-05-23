@@ -34,7 +34,7 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int updateOdoTransportMgmt(WhOdoTransportMgmt tranMgmt) {
-        return whOdoTransportMgmtDao.saveOrUpdate(tranMgmt);
+        return whOdoTransportMgmtDao.updateWhOdoTransportMgmt(tranMgmt);
     }
     
     @Override
@@ -76,16 +76,8 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void updateOdoTransportMgmtAndSaveDeliveryInfo(WhOdoTransportMgmt transMgmt, WhOdodeliveryInfo delivery) {
-        whOdoTransportMgmtDao.saveOrUpdate(transMgmt);
-        whOdoDeliveryInfoDao.insert(delivery);
-        this.saveOrUpdateTransportService(transMgmt.getOdoId(), true, 3, null, transMgmt.getOuId());
-    }
-
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int updateOdoTransportMgmtExt(WhOdoTransportMgmt transMgmt) {
-        int num = whOdoTransportMgmtDao.saveOrUpdate(transMgmt);
+        int num = whOdoTransportMgmtDao.updateWhOdoTransportMgmt(transMgmt);
         this.saveOrUpdateTransportService(transMgmt.getOdoId(), true, 2, null, transMgmt.getOuId());
         return num;
     }
@@ -94,6 +86,13 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOdoTransportService findTransportMgmtServiceByOdoIdOuId(Long odoId, Long ouId) {
         return whOdoTransportServiceDao.findByOdoIdAndOuId(odoId, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertDeliveryInfoExt(WhOdodeliveryInfo delivery) {
+        whOdoDeliveryInfoDao.insert(delivery);
+        this.saveOrUpdateTransportService(delivery.getOdoId(), true, 3, null, delivery.getOuId());
     }
 
 }
