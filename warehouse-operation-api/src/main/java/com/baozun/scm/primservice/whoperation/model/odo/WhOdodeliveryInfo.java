@@ -40,6 +40,16 @@ public class WhOdodeliveryInfo extends BaseModel {
     private Date lastModifyTime;
     /** 修改人ID */
     private Long modifiedId;
+    /** 运单大头笔 */
+    private String transBigWord;
+    /** 二级配送公司编码 */
+    private String tmsCode;
+    /** 物流公司编码 */
+    private String logisticsCode;
+    /** 集包地编码 */
+    private String packageCenterCode;
+    /** 集包地名称 */
+    private String packageCenterName;
 
     /** 当前月份 用于归档 */
     private String sysDate;
@@ -170,6 +180,46 @@ public class WhOdodeliveryInfo extends BaseModel {
 
     public void setSysDate(String sysDate) {
         this.sysDate = sysDate;
+    }
+
+    public String getTransBigWord() {
+        return transBigWord;
+    }
+
+    public String getTmsCode() {
+        return tmsCode;
+    }
+
+    public String getLogisticsCode() {
+        return logisticsCode;
+    }
+
+    public String getPackageCenterCode() {
+        return packageCenterCode;
+    }
+
+    public String getPackageCenterName() {
+        return packageCenterName;
+    }
+
+    public void setTransBigWord(String transBigWord) {
+        this.transBigWord = transBigWord;
+    }
+
+    public void setTmsCode(String tmsCode) {
+        this.tmsCode = tmsCode;
+    }
+
+    public void setLogisticsCode(String logisticsCode) {
+        this.logisticsCode = logisticsCode;
+    }
+
+    public void setPackageCenterCode(String packageCenterCode) {
+        this.packageCenterCode = packageCenterCode;
+    }
+
+    public void setPackageCenterName(String packageCenterName) {
+        this.packageCenterName = packageCenterName;
     }
 
 }
