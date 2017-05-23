@@ -464,6 +464,8 @@ public final class Constants {
     public static final String SOFT_ALLOCATION_FAIL = "ERROR012";
     /** 出库单已取消 */
     public static final String ODO_IS_CANCEL = "ERROR013";
+    /** 出库箱推荐 未知原因未推荐出库箱 */
+    public static final String CREATE_OUTBOUND_CARTON_REC_BOX_UNKNOWN = "ERROR014";
 
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出

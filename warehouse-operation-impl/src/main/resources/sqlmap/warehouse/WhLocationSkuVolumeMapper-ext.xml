@@ -101,58 +101,121 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
     <select id="findLocSkuVolumeByFacilityId" resultMap="WhLocationSkuVolumeCommand">
+
         select
-            ls.id as id,
-            ls.serial_number as serialNumber,
-            ls.location_id as locationId,
-            ls.sku_id as skuId,
-            ls.lower_capacity as lowerCapacity,
-            ls.upper_capacity as upperCapacity,
-            ls.ou_id as ouId,
-            ls.create_time as createTime,
-            ls.last_modify_time as lastModifyTime,
-            ls.created_id as createdId,
-            ls.modified_id as modifiedId,
+            facilityLocSkuVolTemp.*,
             sku.code as skuCode,
-            loc.code as locationCode,
             sku.name as skuName,
             sum(IFNULL(skuInv.on_hand_qty,0)) as onHandQty
-        from
-            t_wh_location_sku_volume as ls
-            left join t_wh_facility_location_sku_volume as fs on fs.lsv_id = ls.id
-            left join t_wh_sku_inventory as skuInv on ls.sku_id = skuInv.sku_id and ls.location_id = skuInv.location_id
-            left join t_wh_location as loc on loc.id = ls.location_id
-            left join t_wh_sku as sku on ls.sku_id = sku.id
+        from (
+            SELECT
+                locationSkuVol.id as id,
+                locationSkuVol.serial_number as serialNumber,
+                IFNULL(locationSkuVol.sku_id,facilityGroSkuVol.sku_id) as skuId,
+                locationSkuVol.location_id as locationId,
+                locationSkuVol.lower_capacity as lowerCapacity,
+                locationSkuVol.upper_capacity as upperCapacity,
+                locationSkuVol.ou_id as ouId,
+                locationSkuVol.create_time as createTime,
+                locationSkuVol.last_modify_time as lastModifyTime,
+                locationSkuVol.created_id as createdId,
+                locationSkuVol.modified_id as modifiedId,
+                location.code as locationCode,
+                location.work_area_id as workAreaId,
+                area.area_code as workAreaCode
+            FROM
+                t_wh_outbound_facility AS facility
+                left join t_wh_facility_location_sku_volume as facilityLocSkuVol on facility.id = facilityLocSkuVol.facility_id
+                left join t_wh_location_sku_volume as locationSkuVol on locationSkuVol.id = facilityLocSkuVol.lsv_id
+                left join t_wh_outbound_facility_group as facilityGroup on facility.facility_group = facilityGroup.id
+                left join t_wh_facility_group_sku_volume as facilityGroSkuVol on facilityGroSkuVol.facility_group_id = facilityGroup.id and locationSkuVol.serial_number = facilityGroSkuVol.serial_number
+                left join t_wh_location as location on locationSkuVol.location_id = location.id
+                left join t_wh_area as area on area.id = location.work_area_id
+            WHERE
+                facility.ou_id = #{ouId}
+                and facility.id = #{facilityId}
+                and facility.facility_type = 'checkTable'
+        ) as facilityLocSkuVolTemp
+        left join t_wh_sku_inventory as skuInv on facilityLocSkuVolTemp.skuId = skuInv.sku_id and facilityLocSkuVolTemp.locationId = skuInv.location_id
+        left join t_wh_sku as sku on facilityLocSkuVolTemp.skuId = sku.id
         where
-            fs.facility_id = #{facilityId}
-            and fs.ou_id = #{ouId}
-            and skuInv.occupation_code is null
+            skuInv.occupation_code is null
         group by
             skuInv.location_id,skuInv.sku_id
     </select>
 
     <select id="findFacilityLocSkuVolumeBySkuId" resultMap="WhLocationSkuVolumeCommand">
         select
-            lsv.id as id,
-            lsv.serial_number as serialNumber,
-            lsv.location_id as locationId,
-            lsv.sku_id as skuId,
-            lsv.lower_capacity as lowerCapacity,
-            lsv.upper_capacity as upperCapacity,
-            lsv.ou_id as ouId,
-            lsv.create_time as createTime,
-            lsv.last_modify_time as lastModifyTime,
-            lsv.created_id as createdId,
-            lsv.modified_id as modifiedId,
-            loc.code as locationCode
-        from
-            t_wh_location_sku_volume as lsv
-            left join t_wh_facility_location_sku_volume as flsv on flsv.lsv_id = lsv.id
-            left join t_wh_location as loc on loc.id = lsv.location_id
+            facilityLocSkuVolTemp.*
+        from (
+            SELECT
+                locationSkuVol.id as id,
+                locationSkuVol.serial_number as serialNumber,
+                IFNULL(locationSkuVol.sku_id,facilityGroSkuVol.sku_id) as skuId,
+                locationSkuVol.location_id as locationId,
+                locationSkuVol.lower_capacity as lowerCapacity,
+                locationSkuVol.upper_capacity as upperCapacity,
+                locationSkuVol.ou_id as ouId,
+                locationSkuVol.create_time as createTime,
+                locationSkuVol.last_modify_time as lastModifyTime,
+                locationSkuVol.created_id as createdId,
+                locationSkuVol.modified_id as modifiedId,
+                location.code as locationCode,
+                location.work_area_id as workAreaId,
+                area.area_code as workAreaCode
+            FROM
+                t_wh_outbound_facility AS facility
+                left join t_wh_facility_location_sku_volume as facilityLocSkuVol on facility.id = facilityLocSkuVol.facility_id
+                left join t_wh_location_sku_volume as locationSkuVol on locationSkuVol.id = facilityLocSkuVol.lsv_id
+                left join t_wh_outbound_facility_group as facilityGroup on facility.facility_group = facilityGroup.id
+                left join t_wh_facility_group_sku_volume as facilityGroSkuVol on facilityGroSkuVol.facility_group_id = facilityGroup.id and locationSkuVol.serial_number = facilityGroSkuVol.serial_number
+                left join t_wh_location as location on locationSkuVol.location_id = location.id
+                left join t_wh_area as area on area.id = location.work_area_id
+            where
+                facility.ou_id = #{ouId}
+                and facility.id = #{facilityId}
+                and facility.facility_type = 'checkTable'
+        ) as facilityLocSkuVolTemp
         where
-            lsv.ou_id = #{ouId}
-            and lsv.sku_id = #{skuId}
-            and flsv.facility_id = #{facilityId}
+            facilityLocSkuVolTemp.skuId = #{skuId}
+    </select>
+
+    <select id="findFacilityLocSkuVolumeByLocSku" resultMap="WhLocationSkuVolumeCommand">
+        select
+            facilityLocSkuVolTemp.*
+        from (
+            SELECT
+                locationSkuVol.id as id,
+                locationSkuVol.serial_number as serialNumber,
+                IFNULL(locationSkuVol.sku_id,facilityGroSkuVol.sku_id) as skuId,
+                locationSkuVol.location_id as locationId,
+                locationSkuVol.lower_capacity as lowerCapacity,
+                locationSkuVol.upper_capacity as upperCapacity,
+                locationSkuVol.ou_id as ouId,
+                locationSkuVol.create_time as createTime,
+                locationSkuVol.last_modify_time as lastModifyTime,
+                locationSkuVol.created_id as createdId,
+                locationSkuVol.modified_id as modifiedId,
+                location.code as locationCode,
+                location.work_area_id as workAreaId,
+                area.area_code as workAreaCode
+            FROM
+                t_wh_outbound_facility AS facility
+                left join t_wh_facility_location_sku_volume as facilityLocSkuVol on facility.id = facilityLocSkuVol.facility_id
+                left join t_wh_location_sku_volume as locationSkuVol on locationSkuVol.id = facilityLocSkuVol.lsv_id
+                left join t_wh_outbound_facility_group as facilityGroup on facility.facility_group = facilityGroup.id
+                left join t_wh_facility_group_sku_volume as facilityGroSkuVol on facilityGroSkuVol.facility_group_id = facilityGroup.id and locationSkuVol.serial_number = facilityGroSkuVol.serial_number
+                left join t_wh_location as location on locationSkuVol.location_id = location.id
+                left join t_wh_area as area on area.id = location.work_area_id
+            where
+                facility.ou_id = #{ouId}
+                and facility.id = #{facilityId}
+                and location.code = #{locationCode}
+                and facility.facility_type = 'checkTable'
+        ) as facilityLocSkuVolTemp
+        where
+            facilityLocSkuVolTemp.skuId = #{skuId}
+
     </select>
 
 

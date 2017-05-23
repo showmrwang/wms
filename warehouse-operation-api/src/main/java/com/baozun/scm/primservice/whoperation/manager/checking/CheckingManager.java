@@ -7,12 +7,14 @@ import java.util.Set;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -88,6 +90,8 @@ public interface CheckingManager extends BaseManager {
     List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId);
 
     List<WhCheckingCommand> findCheckingByTrolley(String trolleyCode, Long ouId);
+
+    List<WhCheckingCommand> findCheckingByOdo(Long odoId, Long ouId);
 
     List<WhCheckingCommand> findCheckingBySeedingFacility(String facilityCode, Long ouId);
 
@@ -187,7 +191,13 @@ public interface CheckingManager extends BaseManager {
      */
     public List<WhSkuInventory> findCheckingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
 
+    public Boolean isOutboundBoxAlreadyUsed(String outboundBoxCode, Long ouId, String logId);
 
-    public void finishedChecking(WhCheckingCommand orgChecking, Set<WhCheckingLineCommand> toUpdateCheckingLineSet, WhOutboundbox whOutboundbox, List<WhOutboundboxLine> outboundboxLineList, List<WhSkuInventory> outboundboxSkuInvList,
-            Set<WhSkuInventory> toUpdateOdoOrgSkuInvSet, WhOdoPackageInfoCommand odoPackageInfo, List<WhSkuInventorySnCommand> checkedSnInvList,  Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public WhSkuInventoryCommand getConsumableSkuInventory(WhOutboundboxCommand outboundbox, Long ouId, String logId);
+
+    public void finishedChecking(WhCheckingResultCommand whCheckingResultCommand,  Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+
+    public List<WhSkuInventorySnCommand> findCheckingSkuInvSnByCheckingId(Long checkingId, Long ouId);
+
+    public int releaseSeedingFacility(WhOutboundFacility whOutboundFacility );
 }

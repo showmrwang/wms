@@ -1427,7 +1427,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     }
 
     @Override
-    public void constructReturnsSkuInventory(List<RcvdCacheCommand> commandList, Long ouId, Long userId, String logId, Boolean isReturns) {
+    public ResponseMsg constructReturnsSkuInventory(List<RcvdCacheCommand> commandList, Long ouId, Long userId, String logId, Boolean isReturns) {
         if (commandList == null || commandList.size() == 0) {
             throw new BusinessException(ErrorCodes.RCVD_CONTAINER_FINISH_ERROR);
         }
@@ -1665,9 +1665,17 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         }
         // po.setStopTime(new Date());
         
-
+        // 保存到拆库
         try {
             this.generalRcvdManager.saveScanedSkuWhenGeneralRcvdForPda(saveSnList, saveInvList, saveInvLogList, saveAsnLineList, asn, savePoLineList, po, containerList, saveWhCartonList, wh);
+        } catch (BusinessException ex) {
+            ResponseMsg msg = new ResponseMsg();
+            msg.setMsg(ex.getErrorCode() + "");
+            msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            return msg;
+        }
+        // 反馈数据
+        try {
             WhPo shardPo = this.poManager.findWhPoByIdToShard(po.getId(), ouId);
             // @mender yimin.lu 2017/3/7 自动关单逻辑：仓库下PO单关闭要同步到集团下
             // @mender yimin.lu 同步接口调整
@@ -1678,12 +1686,16 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             } else if (PoAsnStatus.PO_RCVD_FINISH == shardPo.getStatus()) {
                 this.poManager.snycPoToInfo("RCVD_FINISH", shardPo, false, savePoLineList);
             }
-
-        } catch (BusinessException e) {
-            throw e;
         } catch (Exception ex) {
-            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            ResponseMsg msg = new ResponseMsg();
+            msg.setMsg(ErrorCodes.FEEDBACK_RCVD_ERROR + "");
+            msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+            return msg;
         }
+        ResponseMsg msg = new ResponseMsg();
+        msg.setMsg("SUCCESS");
+        msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+        return msg;
     }
 
 

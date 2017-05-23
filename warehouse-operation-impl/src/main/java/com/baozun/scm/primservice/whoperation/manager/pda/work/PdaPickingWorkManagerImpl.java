@@ -2494,6 +2494,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     whOperationExecLine.setQty(oLCmd.getQty());
                     whOperationExecLineDao.insert(whOperationExecLine);
                     insertGlobalLog(GLOBAL_LOG_INSERT,whOperationExecLine, ouId, userId, null, null);
+                    list.add(whOperationExecLine);
                 }else{//当前货箱存在短拣sku
                     String opLskuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(oLCmd);  //当前作业明细唯一sku
                     Set<String> skuAttrIds = map.keySet();   //当前货箱所有短拣的唯一库存属性

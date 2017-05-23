@@ -48,6 +48,12 @@ public class WhLocationSkuVolumeCommand extends BaseModel {
     private String skuName;
     /** 在库库存 */
     private Long onHandQty;
+
+    /**=====================================================*/
+    /** 工作区域ID */
+    private Long workAreaId;
+    /** 工作区域编码 */
+    private String workAreaCode;
     
     public Integer getSerialNumber() {
         return serialNumber;
@@ -136,5 +142,21 @@ public class WhLocationSkuVolumeCommand extends BaseModel {
 
     public void setOnHandQty(Long onHandQty) {
         this.onHandQty = onHandQty;
+    }
+
+    public Long getWorkAreaId() {
+        return workAreaId;
+    }
+
+    public void setWorkAreaId(Long workAreaId) {
+        this.workAreaId = workAreaId;
+    }
+
+    public String getWorkAreaCode() {
+        return workAreaCode;
+    }
+
+    public void setWorkAreaCode(String workAreaCode) {
+        this.workAreaCode = workAreaCode;
     }
 }

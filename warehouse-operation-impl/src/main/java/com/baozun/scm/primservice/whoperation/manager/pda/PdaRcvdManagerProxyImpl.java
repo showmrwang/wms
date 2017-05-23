@@ -49,6 +49,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusM
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
@@ -222,7 +223,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
 
 
     @Override
-    public void saveScanedSkuWhenGeneralRcvdForPda(Long userId, Long ouId, String logId) {
+    public ResponseMsg saveScanedSkuWhenGeneralRcvdForPda(Long userId, Long ouId, String logId) {
 
         // 逻辑:
         // 1.插入库存记录
@@ -236,7 +237,11 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         if (commandList == null || commandList.size() == 0) {
             throw new BusinessException(ErrorCodes.RCVD_CONTAINER_FINISH_ERROR);
         }
-        this.createPoAsnManagerProxy.constructReturnsSkuInventory(commandList, ouId, userId, logId, false);
+        ResponseMsg msg = this.createPoAsnManagerProxy.constructReturnsSkuInventory(commandList, ouId, userId, logId, false);
+
+        if (ResponseMsg.STATUS_ERROR == msg.getResponseStatus() || ResponseMsg.DATA_ERROR == msg.getResponseStatus()) {
+            throw new BusinessException(Integer.parseInt(msg.getMsg()));
+        }
         // 释放容器缓存:如果外部容器为空，则释放缓存；否则不释放
         Long outerContainerId = commandList.get(0).getOuterContainerId();// 托盘ID
         // #TODO @mender yimin.lu 支持多容器收货
@@ -257,6 +262,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         if (asn != null) {
             this.pdaRcvdRedisManagerProxy.cacheAsn(asn);
         }
+        return msg;
     }
 
     private void cacheScanedSkuWhenGeneralRcvd(WhSkuInventoryCommand command, List<RcvdSnCacheCommand> cacheSn) {

@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundConsumableDao">
+    <resultMap id="WhOutboundConsumableResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable">
+    </resultMap>
+    <resultMap id="WhOutboundConsumablePaginationResult" type="lark.common.dao.Pagination">
+        <collection property="items" javaType="ArrayList" resultMap="WhOutboundConsumableResult"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="whOutboundConsumableColumns">
+        <![CDATA[
+                id as id,
+                batch as batch,
+                wave_code as waveCode,
+                customer_code as customerCode,
+                customer_name as customerName,
+                store_code as storeCode,
+                store_name as storeName,
+                odo_id as odoId,
+                odo_code as odoCode,
+                transport_code as transportCode,
+                waybill_code as waybillCode,
+                facility_id as facilityId,
+                facility_code as facilityCode,
+                location_id as locationId,
+                location_code as locationCode,
+                area_id as areaId,
+                area_code as areaCode,
+                qty as qty,
+                consum_order as consumOrder,
+                consum_account as consumAccount,
+                consum_person as consumPerson,
+                ou_id as ouId,
+                outboundbox_id as outboundboxId,
+                outboundbox_code as outboundboxCode,
+                sku_code as skuCode,
+                sku_barcode as skuBarcode,
+                sku_name as skuName,
+                sku_length as skuLength,
+                sku_width as skuWidth,
+                sku_height as skuHeight,
+                sku_volume as skuVolume,
+                sku_weight as skuWeight,
+                create_id as createId,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId
+        ]]>
+    </sql>
+    <sql id="whOutboundConsumableConditionWhereExt">
+        <where>
+            <if test="likeEqualsMap != null">
+                <foreach collection="likeEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} like CONCAT('%',#{value},'%')
+                </foreach>
+            </if>
+            <if test="equalsMap != null">
+                <foreach collection="equalsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} = #{value}
+                </foreach>
+            </if>
+            <if test="notEqualsMap != null">
+                <foreach collection="notEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} != #{value}
+                </foreach>
+            </if>
+            <if test="greateMap != null">
+                <foreach collection="greateMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt; #{value}
+                </foreach>
+            </if>
+            <if test="greateEqualsMap != null">
+                <foreach collection="greateEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="lessMap != null">
+                <foreach collection="lessMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt; #{value}
+                </foreach>
+            </if>
+            <if test="lessEqualsMap != null">
+                <foreach collection="lessEqualsMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="nullMap != null">
+                <foreach collection="nullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is null
+                </foreach>
+            </if>
+            <if test="notNullMap != null">
+                <foreach collection="notNullMap" index="key" item="value" separator="and" open=" and ">
+                    ${key} is not null
+                </foreach>
+            </if>
+            <if test="inMap != null">
+                <foreach collection="inMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="or">
+                        ${key} = #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+            <if test="notInMap != null">
+                <foreach collection="notInMap" index="key" item="value" separator="and" open=" and (" close=")">
+                    <foreach collection="value" item="itemin" index="index" separator="and">
+                        ${key} != #{itemin}
+                    </foreach>
+                </foreach>
+            </if>
+        </where>
+        <if test="sortBy != null">
+            <foreach collection="sortBy" item="item" separator="," open=" order by ">
+                ${item.field} ${item.type}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 如果有自增字段 -->
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable"
+
+            flushCache="true">
+        <![CDATA[
+                INSERT INTO
+                t_wh_outbound_consumable (
+                id,
+                    batch ,
+                    wave_code ,
+                    customer_code ,
+                    customer_name ,
+                    store_code ,
+                    store_name ,
+                    odo_id ,
+                    odo_code ,
+                    transport_code ,
+                    waybill_code ,
+                    facility_id ,
+                    facility_code ,
+                    location_id ,
+                    location_code ,
+                    area_id ,
+                    area_code ,
+                    qty ,
+                    consum_order ,
+                    consum_account ,
+                    consum_person ,
+                    ou_id ,
+                    outboundbox_id ,
+                    outboundbox_code ,
+                    sku_code ,
+                    sku_barcode ,
+                    sku_name ,
+                    sku_length ,
+                    sku_width ,
+                    sku_height ,
+                    sku_volume ,
+                    sku_weight ,
+                    create_id ,
+                    create_time ,
+                    last_modify_time ,
+                    modified_id 
+                ) VALUES (
+                #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{facilityCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{areaCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{qty,javaType=Double,jdbcType=DECIMAL} ,
+                    #{consumOrder,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consumAccount,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{consumPerson,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                    #{skuLength,javaType=Double,jdbcType=DECIMAL} ,
+                    #{skuWidth,javaType=Double,jdbcType=DECIMAL} ,
+                    #{skuHeight,javaType=Double,jdbcType=DECIMAL} ,
+                    #{skuVolume,javaType=Double,jdbcType=DECIMAL} ,
+                    #{skuWeight,javaType=Double,jdbcType=DECIMAL} ,
+                    #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                    #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                    #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+                )
+            ]]>
+
+    </insert>
+
+
+    <update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable">
+        <![CDATA[
+            UPDATE t_wh_outbound_consumable SET
+                batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                facility_code = #{facilityCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                location_id = #{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                location_code = #{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                area_id = #{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                area_code = #{areaCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                qty = #{qty,javaType=Double,jdbcType=DECIMAL} ,
+                consum_order = #{consumOrder,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consum_account = #{consumAccount,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                consum_person = #{consumPerson,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_code = #{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_barcode = #{skuBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_name = #{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+                sku_length = #{skuLength,javaType=Double,jdbcType=DECIMAL} ,
+                sku_width = #{skuWidth,javaType=Double,jdbcType=DECIMAL} ,
+                sku_height = #{skuHeight,javaType=Double,jdbcType=DECIMAL} ,
+                sku_volume = #{skuVolume,javaType=Double,jdbcType=DECIMAL} ,
+                sku_weight = #{skuWeight,javaType=Double,jdbcType=DECIMAL} ,
+                create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+                create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+                modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+            WHERE 
+                id = #{id} 
+        ]]>
+    </update>
+    <update id="batchUpdate">
+        UPDATE t_wh_outbound_consumable SET
+        <foreach collection="batchUpdateMap" index="key" item="value" separator=",">
+            ${key} = #{value}
+        </foreach>
+        <include refid="whOutboundConsumableConditionWhereExt"/>
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_outbound_consumable where
+                id = #{id} 
+        ]]>
+    </delete>
+
+    <delete id="deleteByIds" parameterType="list">
+
+        delete from t_wh_outbound_consumable
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="batchDelete">
+        delete from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableConditionWhereExt"/>
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundConsumableResult" flushCache="false">
+        select
+        <include refid="whOutboundConsumableColumns"/>
+        <![CDATA[
+                from t_wh_outbound_consumable 
+                where 
+                id = #{id} 
+            ]]>
+    </select>
+    <select id="getByIds" parameterType="list" resultMap="WhOutboundConsumableResult" flushCache="false">
+        select
+        <include refid="whOutboundConsumableColumns"/>
+        from t_wh_outbound_consumable
+        where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <sql id="whOutboundConsumableDynamicWhere">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+
+            <if test="batch!=null and batch!=''">
+                and batch = #{batch}
+            </if>
+
+
+            <if test="waveCode!=null and waveCode!=''">
+                and wave_code = #{waveCode}
+            </if>
+
+
+            <if test="customerCode!=null and customerCode!=''">
+                and customer_code = #{customerCode}
+            </if>
+
+
+            <if test="customerName!=null and customerName!=''">
+                and customer_name = #{customerName}
+            </if>
+
+
+            <if test="storeCode!=null and storeCode!=''">
+                and store_code = #{storeCode}
+            </if>
+
+
+            <if test="storeName!=null and storeName!=''">
+                and store_name = #{storeName}
+            </if>
+
+            <if test="odoId!=null">
+                and odo_id = #{odoId}
+            </if>
+
+
+            <if test="odoCode!=null and odoCode!=''">
+                and odo_code = #{odoCode}
+            </if>
+
+
+            <if test="transportCode!=null and transportCode!=''">
+                and transport_code = #{transportCode}
+            </if>
+
+
+            <if test="waybillCode!=null and waybillCode!=''">
+                and waybill_code = #{waybillCode}
+            </if>
+
+            <if test="facilityId!=null">
+                and facility_id = #{facilityId}
+            </if>
+
+
+            <if test="facilityCode!=null and facilityCode!=''">
+                and facility_code = #{facilityCode}
+            </if>
+
+            <if test="locationId!=null">
+                and location_id = #{locationId}
+            </if>
+
+
+            <if test="locationCode!=null and locationCode!=''">
+                and location_code = #{locationCode}
+            </if>
+
+            <if test="areaId!=null">
+                and area_id = #{areaId}
+            </if>
+
+
+            <if test="areaCode!=null and areaCode!=''">
+                and area_code = #{areaCode}
+            </if>
+
+            <if test="qty!=null">
+                and qty = #{qty}
+            </if>
+
+
+            <if test="consumOrder!=null and consumOrder!=''">
+                and consum_order = #{consumOrder}
+            </if>
+
+
+            <if test="consumAccount!=null and consumAccount!=''">
+                and consum_account = #{consumAccount}
+            </if>
+
+
+            <if test="consumPerson!=null and consumPerson!=''">
+                and consum_person = #{consumPerson}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="outboundboxId!=null">
+                and outboundbox_id = #{outboundboxId}
+            </if>
+
+
+            <if test="outboundboxCode!=null and outboundboxCode!=''">
+                and outboundbox_code = #{outboundboxCode}
+            </if>
+
+
+            <if test="skuCode!=null and skuCode!=''">
+                and sku_code = #{skuCode}
+            </if>
+
+
+            <if test="skuBarcode!=null and skuBarcode!=''">
+                and sku_barcode = #{skuBarcode}
+            </if>
+
+
+            <if test="skuName!=null and skuName!=''">
+                and sku_name = #{skuName}
+            </if>
+
+            <if test="skuLength!=null">
+                and sku_length = #{skuLength}
+            </if>
+
+            <if test="skuWidth!=null">
+                and sku_width = #{skuWidth}
+            </if>
+
+            <if test="skuHeight!=null">
+                and sku_height = #{skuHeight}
+            </if>
+
+            <if test="skuVolume!=null">
+                and sku_volume = #{skuVolume}
+            </if>
+
+            <if test="skuWeight!=null">
+                and sku_weight = #{skuWeight}
+            </if>
+
+            <if test="createId!=null">
+                and create_id = #{createId}
+            </if>
+
+            <if test="createTime!=null">
+                and create_time = #{createTime}
+            </if>
+
+            <if test="lastModifyTime!=null">
+                and last_modify_time = #{lastModifyTime}
+            </if>
+
+            <if test="modifiedId!=null">
+                and modified_id = #{modifiedId}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_consumable
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableDynamicWhere"/>
+    </select>
+
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableDynamicWhere"/>
+    </select>
+
+    <!--
+        分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+        因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundConsumableResult">
+        select
+        <include refid="whOutboundConsumableColumns"/>
+        from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByQueryMap" resultMap="WhOutboundConsumableResult">
+        select
+        <include refid="whOutboundConsumableColumns"/>
+        from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableDynamicWhere"/>
+
+    </select>
+
+    <select id="findListByParam" resultMap="WhOutboundConsumableResult">
+        select
+        <include refid="whOutboundConsumableColumns"/>
+        from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableDynamicWhere"/>
+
+    </select>
+
+    <select id="query" resultMap="WhOutboundConsumableResult">
+        select
+        <include refid="whOutboundConsumableColumns"/>
+        from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableConditionWhereExt"/>
+    </select>
+
+    <select id="queryCount" resultType="long">
+        select count(*) from t_wh_outbound_consumable
+        <include refid="whOutboundConsumableConditionWhereExt"/>
+    </select>
+
+
+</mapper>

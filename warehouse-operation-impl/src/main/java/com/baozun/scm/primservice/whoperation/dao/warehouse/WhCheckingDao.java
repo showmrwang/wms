@@ -131,6 +131,15 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
     List<WhCheckingCommand> findCheckingByTrolley(@Param("trolleyCode") String trolleyCode, @Param("ouId") Long ouId);
 
     /**
+     * 获取出库单的所有复核信息
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    List<WhCheckingCommand> findCheckingByOdo(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    /**
      * 获取播种墙上的所有复核信息
      *
      * @param facilityCode
