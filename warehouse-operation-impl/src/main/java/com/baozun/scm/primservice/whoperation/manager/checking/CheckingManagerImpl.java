@@ -139,11 +139,12 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     @Override
-    public void printSinglePlane(String waybillCode, Long userId, Long ouId) {
+    public void printSinglePlane(String outBoundBoxCode,String waybillCode, Long userId, Long ouId) {
         // 打印面单
         try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
             printDataCommand.setCode(waybillCode);
+            printDataCommand.setOutBoundBoxCode(outBoundBoxCode);
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
         } catch (Exception e) {
             e.printStackTrace();

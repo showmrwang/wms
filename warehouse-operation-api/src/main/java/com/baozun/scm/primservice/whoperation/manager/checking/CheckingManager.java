@@ -43,7 +43,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printSinglePlane(String waybillCode, Long userId, Long ouId);
+    void printSinglePlane(String outBoundBoxCode,String waybillCode, Long userId, Long ouId);
 
     /**
      * 打印箱标签
