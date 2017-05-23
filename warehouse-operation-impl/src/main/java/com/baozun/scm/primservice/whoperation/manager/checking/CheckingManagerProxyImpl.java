@@ -60,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionOutBoundManager;
@@ -131,6 +132,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     private WhLocationSkuVolumeManager whLocationSkuVolumeManager;
     @Autowired
     private ContainerManager containerManager;
+    @Autowired
+    private WarehouseManager warehouseManager;
 
 
     /**
@@ -503,15 +506,11 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     /** 按箱复核类型 小车出库箱 */
                 case Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID:
                     /** 按箱复核类型 小车货格 */
-                    boolean isTrolleyCheckingFinished = this.checkTrolleyCheckingFinished(checkingSourceCode, ouId, logId);
+                    boolean isTrolleyCheckingFinished = this.checkTrolleyCheckingFinished(checkingId, checkingSourceCode, ouId, logId);
                     if (isTrolleyCheckingFinished) {
                         try {
                             // 释放小车
-                            Container container = containerManager.getContainerById(checkingCommand.getOuterContainerId(), ouId);
-                            container.setOperatorId(userId);
-                            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                            container.setIsFull(false);
-                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                            Container container = this.releaseTrolleyContainer(checkingCommand, userId, ouId);
 
                             int updateCount = containerManager.saveOrUpdateByVersion(container);
                             if (1 != updateCount) {
@@ -526,18 +525,11 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     /** 按箱复核类型 播种墙出库箱 */
                 case Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID:
                     /** 按箱复核类型 播种墙货格 */
-                    boolean isFacilityCheckingFinished = this.checkFacilityCheckingFinished(checkingSourceCode, ouId, logId);
+                    boolean isFacilityCheckingFinished = this.checkFacilityCheckingFinished(checkingId, checkingSourceCode, ouId, logId);
                     if (isFacilityCheckingFinished) {
                         try {
                             // 释放播种墙
-                            WhOutboundFacilityCommand seedingFacility = this.findOutboundFacilityById(checkingCommand.getFacilityId(), ouId);
-                            WhOutboundFacility whOutboundFacility = new WhOutboundFacility();
-                            BeanUtils.copyProperties(seedingFacility, whOutboundFacility);
-
-                            whOutboundFacility.setOperatorId(userId);
-                            //TODO 待验证状态常量
-                            whOutboundFacility.setStatus(BaseModel.LIFECYCLE_NORMAL.toString());
-                            whOutboundFacility.setBatch(null);
+                            WhOutboundFacility whOutboundFacility = releaseSeedingFacility(checkingCommand, userId, ouId);
 
                             int updateCount = checkingManager.releaseSeedingFacility(whOutboundFacility);
                             if (1 != updateCount) {
@@ -557,11 +549,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     if (isBoxCheckingFinished) {
                         try {
                             // 释放周转箱
-                            Container container = containerManager.getContainerById(checkingCommand.getContainerId(), ouId);
-                            container.setOperatorId(userId);
-                            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                            container.setIsFull(false);
-                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                            Container container = this.releaseTurnoverBox(checkingCommand, userId, ouId);
 
                             int updateCount = containerManager.saveOrUpdateByVersion(container);
                             if (1 != updateCount) {
@@ -578,12 +566,28 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         }
     }
 
+    private WhOutboundFacility releaseSeedingFacility(WhCheckingCommand checkingCommand, Long userId, Long ouId) {
+        WhOutboundFacilityCommand seedingFacility = this.findOutboundFacilityById(checkingCommand.getFacilityId(), ouId);
+        WhOutboundFacility whOutboundFacility = new WhOutboundFacility();
+        BeanUtils.copyProperties(seedingFacility, whOutboundFacility);
+
+        whOutboundFacility.setOperatorId(userId);
+        // TODO 待验证状态常量
+        whOutboundFacility.setStatus(BaseModel.LIFECYCLE_NORMAL.toString());
+        whOutboundFacility.setBatch(null);
+        return whOutboundFacility;
+    }
+
     /**
      * 完成复核
      *
      * @param checkingCommand
      */
-    public void finishedCheckingByContainer(WhFunctionOutBound function, WhOutboundFacilityCommand facilityCommand, WarehouseMgmt warehouseMgmt, WhCheckingCommand checkingCommand, Long userId, Long ouId, String logId) {
+    public void finishedCheckingByContainer(WhFunctionOutBound function, Long outboundFacilityId, WhCheckingCommand checkingCommand, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId) {
+        // 复核台信息
+        WhOutboundFacilityCommand facilityCommand = checkingManager.findOutboundFacilityById(outboundFacilityId, ouId);
+        // 仓库配置信息
+        WarehouseMgmt warehouseMgmt = warehouseManager.findWhMgmtByOuId(ouId);
         // 复核头信息
         WhCheckingCommand orgChecking = checkingManager.findCheckingById(checkingCommand.getId(), ouId);
 
@@ -683,8 +687,59 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
         // 更新出库单
         whOdo = this.updateOdo(checkingCommand.getId(), orgCheckingLineList, whOdo, userId, ouId, logId);
+        // 释放小车
+        Container trolleyContainer = null;
+        // 释放播种墙
+        WhOutboundFacility seedingFacility = null;
+        // 释放周转箱
+        Container turnoverBoxContainer = null;
+
+        boolean isBoxCheckingFinished = this.checkBoxCheckingFinished(orgCheckingLineList);
+        if (isBoxCheckingFinished) {
+            // 完成箱复核,判断小车、播种墙是否完成复核
+            switch (checkingType) {
+                case Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_BOX:
+                case Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID:
+                    // 按箱复核类型 小车
+                    boolean isTrolleyCheckingFinished = this.checkTrolleyCheckingFinished(orgChecking.getId(), checkingSourceCode, ouId, logId);
+                    if (isTrolleyCheckingFinished) {
+                        // 释放小车
+                        trolleyContainer = releaseTrolleyContainer(orgChecking, userId, ouId);
+                    }
+                    break;
+                case Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_BOX:
+                case Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID:
+                    // 按箱复核类型 播种墙
+                    boolean isFacilityCheckingFinished = this.checkFacilityCheckingFinished(orgChecking.getId(), checkingSourceCode, ouId, logId);
+                    if (isFacilityCheckingFinished) {
+                        // 释放播种墙
+                        seedingFacility = this.releaseSeedingFacility(checkingCommand, userId, ouId);
+                    }
+                    break;
+                case Constants.OUTBOUND_BOX_CHECKING_TYPE_OUTBOUND_BOX:
+                    // 按箱复核类型 出库箱
+                    break;
+                case Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX:
+                    // 按箱复核类型 周转箱
+                    // 释放周转箱
+                    turnoverBoxContainer = releaseTurnoverBox(checkingCommand, userId, ouId);
+                    break;
+                default:
+                    throw new BusinessException(ErrorCodes.CHECKING_CHECKING_SOURCE_TYPE_ERROR);
+            }
+        }
+
+
 
         WhCheckingResultCommand whCheckingResultCommand = new WhCheckingResultCommand();
+        if (null != trolleyContainer) {
+            whCheckingResultCommand.setContainer(trolleyContainer);
+        } else if (null != turnoverBoxContainer) {
+            whCheckingResultCommand.setContainer(turnoverBoxContainer);
+        }
+        if (null != seedingFacility) {
+            whCheckingResultCommand.setSeedingFacility(seedingFacility);
+        }
         // 更新复核头
         whCheckingResultCommand.setOrgCheckingCommand(orgChecking);
         // 更新复核明细
@@ -712,11 +767,32 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         checkingManager.finishedChecking(whCheckingResultCommand, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
     }
 
+    private Container releaseTurnoverBox(WhCheckingCommand checkingCommand, Long userId, Long ouId) {
+        Container container = containerManager.getContainerById(checkingCommand.getContainerId(), ouId);
+        container.setOperatorId(userId);
+        container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+        container.setIsFull(false);
+        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        return container;
+    }
 
-    public boolean checkFacilityCheckingFinished(String checkingSourceCode, Long ouId, String logId) {
+    private Container releaseTrolleyContainer(WhCheckingCommand orgChecking, Long userId, Long ouId) {
+        Container container = containerManager.getContainerById(orgChecking.getOuterContainerId(), ouId);
+        container.setOperatorId(userId);
+        container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+        container.setIsFull(false);
+        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        return container;
+    }
+
+
+    public boolean checkFacilityCheckingFinished(Long checkingId, String checkingSourceCode, Long ouId, String logId) {
         List<WhCheckingCommand> facilityCheckingCommandList = checkingManager.findCheckingBySeedingFacility(checkingSourceCode, ouId);
         boolean isFacilityCheckingFinished = true;
         for (WhCheckingCommand whCheckingCommand : facilityCheckingCommandList) {
+            if (whCheckingCommand.getId().equals(checkingId)) {
+                continue;
+            }
             List<WhCheckingLineCommand> trolleyCheckingLineList = this.getCheckingLineListByChecking(whCheckingCommand.getId(), ouId, logId);
             for (WhCheckingLineCommand checkingLine : trolleyCheckingLineList) {
                 if (!checkingLine.getQty().equals(checkingLine.getCheckingQty())) {
@@ -731,10 +807,13 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return isFacilityCheckingFinished;
     }
 
-    public boolean checkTrolleyCheckingFinished(String checkingSourceCode, Long ouId, String logId) {
+    public boolean checkTrolleyCheckingFinished(Long checkingId, String checkingSourceCode, Long ouId, String logId) {
         List<WhCheckingCommand> trolleyCheckingCommandList = checkingManager.findCheckingByTrolley(checkingSourceCode, ouId);
         boolean isTrolleyCheckingFinished = true;
         for (WhCheckingCommand whCheckingCommand : trolleyCheckingCommandList) {
+            if (whCheckingCommand.getId().equals(checkingId)) {
+                continue;
+            }
             List<WhCheckingLineCommand> trolleyCheckingLineList = this.getCheckingLineListByChecking(whCheckingCommand.getId(), ouId, logId);
             for (WhCheckingLineCommand checkingLine : trolleyCheckingLineList) {
                 if (!checkingLine.getQty().equals(checkingLine.getCheckingQty())) {
@@ -791,13 +870,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     /** ============================================================= */
 
     private WhOdo updateOdo(Long checkingId, List<WhCheckingLineCommand> orgCheckingLineList, WhOdo whOdo, Long userId, Long ouId, String logId) {
-        boolean isBoxCheckingFinished = true;
-        for (WhCheckingLineCommand whCheckingLine : orgCheckingLineList) {
-            if (!whCheckingLine.getQty().equals(whCheckingLine.getCheckingQty())) {
-                isBoxCheckingFinished = false;
-                break;
-            }
-        }
+        boolean isBoxCheckingFinished = this.checkBoxCheckingFinished(orgCheckingLineList);
         if (isBoxCheckingFinished) {
             boolean isOdoCheckingFinished = this.checkOdoCheckingFinished(checkingId, whOdo.getId(), ouId, logId);
             if (isOdoCheckingFinished) {
@@ -810,6 +883,17 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             whOdo = null;
         }
         return whOdo;
+    }
+
+    private boolean checkBoxCheckingFinished(List<WhCheckingLineCommand> orgCheckingLineList) {
+        boolean isBoxCheckingFinished = true;
+        for (WhCheckingLineCommand whCheckingLine : orgCheckingLineList) {
+            if (!whCheckingLine.getQty().equals(whCheckingLine.getCheckingQty())) {
+                isBoxCheckingFinished = false;
+                break;
+            }
+        }
+        return isBoxCheckingFinished;
     }
 
 
@@ -908,8 +992,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundConsumable.setSkuLength(sku.getLength());
         whOutboundConsumable.setSkuWidth(sku.getWidth());
         whOutboundConsumable.setSkuHeight(sku.getHeight());
-         whOutboundConsumable.setSkuVolume(sku.getVolume());
-         whOutboundConsumable.setSkuWeight(sku.getWeight());
+        whOutboundConsumable.setSkuVolume(sku.getVolume());
+        whOutboundConsumable.setSkuWeight(sku.getWeight());
         whOutboundConsumable.setCreateId(userId);
         whOutboundConsumable.setCreateTime(new Date());
         whOutboundConsumable.setModifiedId(userId);

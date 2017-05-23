@@ -42,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
@@ -59,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
@@ -108,6 +110,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     private WhOdoDao whOdoDao;
     @Autowired
     private WhOutboundConsumableDao whOutboundConsumableDao;
+    @Autowired
+    private ContainerDao containerDao;
 
 
     @Override
@@ -578,6 +582,10 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         WhOdo whOdo = checkingResultCommand.getWhOdo();
         // 更新已复核的SN/残次信息
         List<WhSkuInventorySnCommand> checkedSnInvList = checkingResultCommand.getCheckedSnInvList();
+        //待释放容器 小车/周转箱
+        Container container = checkingResultCommand.getContainer();
+        //待释放的播种墙
+        WhOutboundFacility seedingFacility = checkingResultCommand.getSeedingFacility();
 
         // 更新复核头状态
         this.updateCheckingInfoToDB(orgCheckingCommand);
@@ -613,6 +621,21 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         if (null != checkedSnInvList && !checkedSnInvList.isEmpty()) {
             this.saveCheckedSnSkuInvToDB(checkedSnInvList);
         }
+
+        if(null != container){
+            int updateCount = containerDao.saveOrUpdateByVersion(container);
+            if (1 != updateCount) {
+                throw new BusinessException("小车/周转箱释放失败");
+            }
+        }
+
+        if(null != seedingFacility){
+            int updateCount = whOutboundFacilityDao.saveOrUpdateByVersion(seedingFacility);
+            if (1 != updateCount) {
+                throw new BusinessException("播种墙释放失败");
+            }
+        }
+
 
 
         throw new BusinessException("test error");

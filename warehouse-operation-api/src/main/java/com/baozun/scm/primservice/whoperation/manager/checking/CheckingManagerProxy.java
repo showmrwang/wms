@@ -11,7 +11,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 
 public interface CheckingManagerProxy extends BaseManager {
@@ -109,13 +108,13 @@ public interface CheckingManagerProxy extends BaseManager {
      *
      * @param checkingCommand
      */
-    public void finishedCheckingByContainer(WhFunctionOutBound function, WhOutboundFacilityCommand facilityCommand, WarehouseMgmt warehouseMgmt, WhCheckingCommand checkingCommand, Long userId, Long ouId, String logId);
+    public void finishedCheckingByContainer(WhFunctionOutBound function, Long outboundFacilityId, WhCheckingCommand checkingCommand, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId);
 
     public boolean checkBoxCheckingFinished(Long checkingId, Long ouId, String logId);
 
-    public boolean checkFacilityCheckingFinished(String checkingSourceCode, Long ouId, String logId);
+    public boolean checkFacilityCheckingFinished(Long checkingId, String checkingSourceCode, Long ouId, String logId);
 
-    public boolean checkTrolleyCheckingFinished(String checkingSourceCode, Long ouId, String logId);
+    public boolean checkTrolleyCheckingFinished(Long checkingId, String checkingSourceCode, Long ouId, String logId);
 
     public void releaseCheckingSource(Long checkingId, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId);
 }
