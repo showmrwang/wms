@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -70,7 +73,7 @@ import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("createInWarehouseMoveWorkManager")
 @Transactional
-public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implements CreateInWarehouseMoveWorkManager {
+public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMoveWorkManager {
 
     public static final Logger log = LoggerFactory.getLogger(CreateInWarehouseMoveWorkManagerImpl.class);
     
@@ -133,9 +136,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     @Override
     public Boolean createAndExecuteInWarehouseMoveWork(InWarehouseMoveWorkCommand inWarehouseMoveWorkCommand, List<WhSkuInventoryCommand> skuInventoryCommandLst, Boolean isExecute, Long ouId, Long userId, String snKey) {
         Boolean isSuccess = false;
-        
         try {
-            
             // 5.库存分配（生成分配库存与待移入库存）
             inWarehouseMoveWorkCommand = this.saveAllocatedAndTobefilled(inWarehouseMoveWorkCommand, skuInventoryCommandLst);
             // 6-9.创建库内移动工作
@@ -148,8 +149,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 isSuccess = true;
             }    
         } catch (Exception e) {
-            log.error(e + "");
-            isSuccess = false;
+            log.error("CreateInWarehouseMoveWorkManagerImpl createAndExecuteInWarehouseMoveWork error" + e);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return isSuccess;
     }
@@ -260,7 +261,6 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 whSkuInventoryTobefilledCommand.setUuid(SkuInventoryUuid.invUuid(whSkuInventoryTobefilled));
                 whSkuInventoryTobefilled.setUuid(whSkuInventoryTobefilledCommand.getUuid());
             } catch (Exception e) {
-                log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
                 throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
             }
             // 插入数据            
@@ -911,10 +911,10 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      * @param 
      * @return
      */
-    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Boolean executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey) {
-        List<WhSkuInventorySn> skuInventorySnLst = new ArrayList<WhSkuInventorySn>();
         try {
+            List<WhSkuInventorySn> skuInventorySnLst = new ArrayList<WhSkuInventorySn>();
             skuInventorySnLst = this.getSnStatistics(snKey);
             // 获取工作头信息        
             WhWorkCommand whWorkCommand = this.workDao.findWorkByWorkCode(inWarehouseMoveWorkCode, ouId);
@@ -973,7 +973,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 int snCount = 0;
                 for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
                     for( WhSkuInventorySn whSkuInventorySn : skuInventorySnLst){
-                        if(whSkuInventorySn.getSkuId().equals(whSkuInventorySnCommand.getSn()) && whSkuInventorySn.getDefectWareBarcode().equals(whSkuInventorySnCommand.getDefectWareBarcode())){
+                        if(((null == whSkuInventorySn.getSn() && null == whSkuInventorySnCommand.getSn()) || whSkuInventorySn.getSn().equals(whSkuInventorySnCommand.getSn())) && ((null == whSkuInventorySn.getDefectWareBarcode() && null == whSkuInventorySnCommand.getDefectWareBarcode()) || whSkuInventorySn.getDefectWareBarcode().equals(whSkuInventorySnCommand.getDefectWareBarcode()))){
                             whSkuInventorySn.setStatus(1);
                             snCount = snCount + 1;
                             WhSkuInventorySn skuInventorySn = new WhSkuInventorySn();
@@ -983,15 +983,17 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                         }
                     }
                 }
-                if (snCount != skuInventoryTobefilledLst.get(0).getQty()) {
+                Double douSn = new Double(snCount);
+                int retval =  douSn.compareTo(skuInventoryTobefilledLst.get(0).getQty());
+                if (0 != retval) {
                     throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
                 }
                 skuInventoryTobefilledDao.delete(skuInventoryTobefilledLst.get(0).getId());
             }
             this.snStatisticsRedis(skuInventorySnLst, snKey);
         } catch (Exception e) {
-            log.error("", e);
-            return false;
+            log.error("CreateInWarehouseMoveWorkManagerImpl executeInWarehouseMoveWork error" + e);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return true;
     }
@@ -1005,11 +1007,16 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      */
     @Override
     public String snStatisticsRedis(List<WhSkuInventorySn> skuInventorySnsLst, String key) {
-        if(null == key){
-            Long time = new Date().getTime();
-            key = time.toString();    
+        try {
+            if(null == key){
+                Long time = new Date().getTime();
+                key = time.toString();    
+            }
+            cacheManager.setObject(CacheConstants.SN_STATISTICS + key, skuInventorySnsLst, CacheConstants.CACHE_ONE_DAY);
+        } catch (Exception e) {
+            log.error("CreateInWarehouseMoveWorkManagerImpl snStatisticsRedis error" + e);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
-        cacheManager.setObject(CacheConstants.SN_STATISTICS + key, skuInventorySnsLst, CacheConstants.CACHE_ONE_DAY);
         return key;
     }
     

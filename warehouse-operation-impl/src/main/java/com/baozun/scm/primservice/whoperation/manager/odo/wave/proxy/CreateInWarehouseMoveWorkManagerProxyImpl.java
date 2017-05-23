@@ -86,9 +86,8 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             try {
                 isSuccess = createInWarehouseMoveWorkManager.createAndExecuteInWarehouseMoveWork(inWarehouseMoveWorkCommand, skuInventoryCommandLst, isExecute, ouId, userId, snKey);  
             } catch (Exception e) {
-                log.error(e + "");
+                log.error("CreateInWarehouseMoveWorkManagerProxyImpl createAndExecuteInWarehouseMoveWork error" + e);
                 isSuccess = false;
-                continue;
             }
         }
         // 12.所有统计分组是否都已创建工作
