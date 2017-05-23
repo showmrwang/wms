@@ -39,7 +39,7 @@ public interface CheckingModeCalcManager extends BaseManager {
      * @param ouId
      * @param logId
      */
-    void generateCheckingDataByCollection(WhWorkCommand workCmd, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, String logId);
+    void generateCheckingDataByCollection(WhWorkCommand workCmd, List<WhOperationExecLineCommand> execLineCommandList, Long userId, Long ouId, String logId);
     
     
     /**

@@ -932,4 +932,12 @@ public final class Constants {
     /** 播种墙推荐规则出库单ID占位符 */
     public static final String HANDOVER_COLLECTION_RULE_PLACEHOLDER = "${outboundboxCode}";
 
+    // 度量单位：日期类型
+
+    public static final String CHECKING = "checking";
+    public static final String WEIGHTING = "weighting";
+    public static final String HANDOVER = "handover";
+    public static final String CHECK = "handover";
+    public static final String CHECK_BY_CONTAINER = "CHECK_BY_CONTAINER";
+    public static final String CHECK_BY_ODO = "CHECK_BY_ODO";
 }

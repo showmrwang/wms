@@ -108,7 +108,7 @@ public interface CheckingManagerProxy extends BaseManager {
      *
      * @param checkingCommand
      */
-    public void finishedCheckingByContainer(WhFunctionOutBound function, Long outboundFacilityId, WhCheckingCommand checkingCommand, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId);
+    public void finishedCheckingByContainer(WhFunctionOutBound function, Long outboundFacilityId, WhCheckingCommand checkingCommand, String checkingSourceCode, String checkingType, Boolean isWeighting, Long userId, Long ouId, String logId);
 
     public boolean checkBoxCheckingFinished(Long checkingId, Long ouId, String logId);
 
