@@ -241,9 +241,11 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                     // 推荐成功的handovercollection保存条件
                     // TODO
                     List<Long> executeRuleSql = handoverCollectionRuleDao.executeRuleSql(rule.getRuleSql().replace(Constants.HANDOVER_COLLECTION_RULE_PLACEHOLDER, "'" + outboundboxCommand.getOutboundboxCode() + "'"), ouId);
-                    if (executeRuleSql.size() < 0)
-                    // 运行规则sql可以的就下一步
+                    if (executeRuleSql.size() <= 0) {
+                        // 运行规则sql可以的就下一步
                         continue;
+                    }
+
 
 
                     // 判断集货交接应用类型
