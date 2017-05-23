@@ -459,6 +459,8 @@ public class ErrorCodes {
     public static final int WAVE_CANCEL_WORK_ERROR = 11095;
     /** 库存属性标识生成异常 */
     public static final int UUID_GENERATE_ERROR = 11096;
+    /** 收货反馈数据失败 */
+    public static final int FEEDBACK_RCVD_ERROR = 11097;
     // 10001-20000 luyimin
 
 

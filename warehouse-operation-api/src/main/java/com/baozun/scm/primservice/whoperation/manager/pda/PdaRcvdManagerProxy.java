@@ -5,6 +5,7 @@ import java.util.List;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
 
@@ -23,7 +24,7 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * 
      * @param commmand
      */
-    void saveScanedSkuWhenGeneralRcvdForPda(Long userId, Long ouId, String logId);
+    ResponseMsg saveScanedSkuWhenGeneralRcvdForPda(Long userId, Long ouId, String logId);
 
     /**
      * 将扫描的临时数据推送到缓存中
