@@ -475,27 +475,69 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return checkingManager.findOutboundFacilityById(id, ouId);
     }
 
+    /**
+     * 获取复核箱内所有商品的SN/残次信息
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
     public List<WhSkuInventorySnCommand> findCheckingSkuInvSnByCheckingId(Long checkingId, Long ouId) {
         return checkingManager.findCheckingSkuInvSnByCheckingId(checkingId, ouId);
     }
 
+    /**
+     * 根据复核头获取所有复核明细
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param ouId
+     * @param logId
+     * @return
+     */
     public List<WhCheckingLineCommand> getCheckingLineListByChecking(Long checkingId, Long ouId, String logId) {
         List<WhCheckingLineCommand> whCheckingLineCommandList = whCheckingLineManager.getCheckingLineByCheckingId(checkingId, ouId);
 
         return whCheckingLineCommandList;
     }
 
+    /**
+     * 从缓存获取客户信息
+     *
+     * @author mingwei.xie
+     * @param customerId
+     * @return
+     */
     public Customer findCustomerByRedis(Long customerId) {
         Map<Long, Customer> customerMap = this.findCustomerByRedis(Collections.singletonList(customerId));
         return customerMap.get(customerId);
     }
 
+    /**
+     * 从缓存获取店铺信息
+     *
+     * @author mingwei.xie
+     * @param storeId
+     * @return
+     */
     public Store findStoreByRedis(Long storeId) {
         Map<Long, Store> storeMap = this.findStoreByRedis(Collections.singletonList(storeId));
         return storeMap.get(storeId);
     }
 
 
+    /**
+     * 释放复核的周转箱、小车、播种墙
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param checkingSourceCode
+     * @param checkingType
+     * @param userId
+     * @param ouId
+     * @param logId
+     */
     public void releaseCheckingSource(Long checkingId, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId) {
         WhCheckingCommand checkingCommand = checkingManager.findCheckingById(checkingId, ouId);
         boolean isCheckingFinished = this.checkBoxCheckingFinished(checkingCommand.getId(), ouId, logId);
@@ -517,7 +559,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                             }
                         } catch (Exception e) {
-                            throw new BusinessException("小车释放失败");
+                            throw new BusinessException(ErrorCodes.CHECKING_RELEASE_TROLLEY_ERROR);
                         }
                     }
                     break;
@@ -536,7 +578,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                             }
                         } catch (Exception e) {
-                            throw new BusinessException("播种墙释放失败");
+                            throw new BusinessException(ErrorCodes.CHECKING_RELEASE_SEEDING_FACILITY_ERROR);
                         }
                     }
                     break;
@@ -556,7 +598,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                             }
                         } catch (Exception e) {
-                            throw new BusinessException("周转箱释放失败");
+                            throw new BusinessException(ErrorCodes.CHECKING_RELEASE_TURNOVERBOX_ERROR);
                         }
                     }
                     break;
@@ -566,6 +608,15 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         }
     }
 
+    /**
+     * 释放播种墙
+     *
+     * @author mingwei.xie
+     * @param checkingCommand
+     * @param userId
+     * @param ouId
+     * @return
+     */
     private WhOutboundFacility releaseSeedingFacility(WhCheckingCommand checkingCommand, Long userId, Long ouId) {
         WhOutboundFacilityCommand seedingFacility = this.findOutboundFacilityById(checkingCommand.getFacilityId(), ouId);
         WhOutboundFacility whOutboundFacility = new WhOutboundFacility();
@@ -579,9 +630,17 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
     /**
-     * 完成复核
+     * 按箱复核完成，保存数据
      *
+     * @author mingwei.xie
+     * @param function
+     * @param outboundFacilityId
      * @param checkingCommand
+     * @param checkingSourceCode
+     * @param checkingType
+     * @param userId
+     * @param ouId
+     * @param logId
      */
     public void finishedCheckingByContainer(WhFunctionOutBound function, Long outboundFacilityId, WhCheckingCommand checkingCommand, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId) {
         // 复核台信息
@@ -592,10 +651,10 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         WhCheckingCommand orgChecking = checkingManager.findCheckingById(checkingCommand.getId(), ouId);
 
         if (null == orgChecking) {
-            throw new BusinessException("未找到复核数据");
+            throw new BusinessException(ErrorCodes.CHECKING_CHECKING_INFO_NULL_ERROR);
         }
-        if (CheckingStatus.NEW != orgChecking.getStatus()) {
-            throw new BusinessException("复核状态错误");
+        if (CheckingStatus.NEW != orgChecking.getStatus() && CheckingStatus.PART_FINISH != orgChecking.getStatus()) {
+            throw new BusinessException(ErrorCodes.CHECKING_CHECKING_STATUS_ERROR);
         }
 
         // 原始复核明细集合 <lineId, line>原始的复核明细集合，方便取数据
@@ -680,7 +739,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         WhOutboundConsumable whOutboundConsumable = null;
         WhSkuInventoryCommand consumableSkuInv = null;
         if (warehouseMgmt.getIsMgmtConsumableSku()) {
-            whOutboundConsumable = this.getCreateOutboundConsumable(facilityCommand, warehouseMgmt, orgChecking, checkedBox, whOdo, userId, ouId, logId);
+            whOutboundConsumable = this.createOutboundConsumable(facilityCommand, warehouseMgmt, orgChecking, checkedBox, whOdo, userId, ouId, logId);
             consumableSkuInv = checkingManager.getConsumableSkuInventory(checkedBox, ouId, logId);
         }
 
@@ -767,6 +826,15 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         checkingManager.finishedChecking(whCheckingResultCommand, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
     }
 
+    /**
+     * 释放复核的周转箱
+     *
+     * @author mingwei.xie
+     * @param checkingCommand
+     * @param userId
+     * @param ouId
+     * @return
+     */
     private Container releaseTurnoverBox(WhCheckingCommand checkingCommand, Long userId, Long ouId) {
         Container container = containerManager.getContainerById(checkingCommand.getContainerId(), ouId);
         container.setOperatorId(userId);
@@ -776,6 +844,15 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return container;
     }
 
+    /**
+     * 释放复核的小车
+     *
+     * @author mingwei.xie
+     * @param orgChecking
+     * @param userId
+     * @param ouId
+     * @return
+     */
     private Container releaseTrolleyContainer(WhCheckingCommand orgChecking, Long userId, Long ouId) {
         Container container = containerManager.getContainerById(orgChecking.getOuterContainerId(), ouId);
         container.setOperatorId(userId);
@@ -786,6 +863,16 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
 
+    /**
+     * 检查播种墙释放复核完成
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param checkingSourceCode
+     * @param ouId
+     * @param logId
+     * @return
+     */
     public boolean checkFacilityCheckingFinished(Long checkingId, String checkingSourceCode, Long ouId, String logId) {
         List<WhCheckingCommand> facilityCheckingCommandList = checkingManager.findCheckingBySeedingFacility(checkingSourceCode, ouId);
         boolean isFacilityCheckingFinished = true;
@@ -807,6 +894,16 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return isFacilityCheckingFinished;
     }
 
+    /**
+     * 检查小车释放复核完成
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param checkingSourceCode
+     * @param ouId
+     * @param logId
+     * @return
+     */
     public boolean checkTrolleyCheckingFinished(Long checkingId, String checkingSourceCode, Long ouId, String logId) {
         List<WhCheckingCommand> trolleyCheckingCommandList = checkingManager.findCheckingByTrolley(checkingSourceCode, ouId);
         boolean isTrolleyCheckingFinished = true;
@@ -828,6 +925,15 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return isTrolleyCheckingFinished;
     }
 
+    /**
+     * 检查复核的箱子是否完成复核
+     *
+     * @author mingwei.xie
+     * @param checkingId
+     * @param ouId
+     * @param logId
+     * @return
+     */
     public boolean checkBoxCheckingFinished(Long checkingId, Long ouId, String logId) {
         List<WhCheckingLineCommand> checkingLineList = this.getCheckingLineListByChecking(checkingId, ouId, logId);
         boolean isCheckingFinished = true;
@@ -841,7 +947,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
     /**
+     * 检查出库单释放完成复核
      *
+     * @author mingwei.xie
      * @param checkingId 正在复核的出库单
      * @param odoId
      * @param ouId
@@ -868,6 +976,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
 
     /** ============================================================= */
+
 
     private WhOdo updateOdo(Long checkingId, List<WhCheckingLineCommand> orgCheckingLineList, WhOdo whOdo, Long userId, Long ouId, String logId) {
         boolean isBoxCheckingFinished = this.checkBoxCheckingFinished(orgCheckingLineList);
@@ -912,7 +1021,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             for (Long snInvId : snInvIdList) {
                 WhSkuInventorySnCommand checkedSnInv = orgSnInvMap.get(snInvId);
                 if (null == checkedSnInv) {
-                    throw new BusinessException("未找到复核的SN信息");
+                    throw new BusinessException(ErrorCodes.CHECKING_CHECKING_SN_ERROR);
                 }
                 // 更新SN/残次信息的uuid
                 checkedSnInv.setUuid(odoSkuInv.getUuid());
@@ -941,12 +1050,12 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 toUpdateOdoOrgSkuInvSet.add(odoOrgSkuInv);
             }
             if (odoFinishedLineCheckingQty > 0) {
-                throw new BusinessException("库存不足");
+                throw new BusinessException(ErrorCodes.CHECKING_SKUINV_INSUFFICIENT_ERROR);
             }
         }
     }
 
-    private WhOutboundConsumable getCreateOutboundConsumable(WhOutboundFacilityCommand facilityCommand, WarehouseMgmt warehouseMgmt, WhCheckingCommand orgChecking, WhOutboundboxCommand checkedBox, WhOdo whOdo, Long userId, Long ouId, String logId) {
+    private WhOutboundConsumable createOutboundConsumable(WhOutboundFacilityCommand facilityCommand, WarehouseMgmt warehouseMgmt, WhCheckingCommand orgChecking, WhOutboundboxCommand checkedBox, WhOdo whOdo, Long userId, Long ouId, String logId) {
 
         WhOutboundConsumable whOutboundConsumable = new WhOutboundConsumable();
 
@@ -957,7 +1066,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
         WhLocationSkuVolumeCommand locationSkuVolume = whLocationSkuVolumeManager.findFacilityLocSkuVolumeByLocSku(facilityCommand.getId(), locationCode, consumableSkuId, ouId);
         if (null == locationSkuVolume) {
-            throw new BusinessException("耗材库位信息未找到");
+            throw new BusinessException(ErrorCodes.CHECKING_CONSUMABLE_SKUINVLOC_ERROR);
         }
 
         // 累计包裹重量，计算包裹计重
@@ -1063,7 +1172,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 // 出库单复核明细的原始库存
                 List<WhSkuInventory> odoOrgSkuInvList = checkingManager.findCheckingOdoSkuInvByOdoLineIdUuid(lineId, ouId, uuid);
                 if (null == odoOrgSkuInvList || odoOrgSkuInvList.isEmpty()) {
-                    throw new BusinessException("周转箱明细原始库存未找到");
+                    throw new BusinessException(ErrorCodes.CHECKING_TURNOVERBOX_ORG_SKUINV_ERROR);
                 }
 
                 uuidLineSkuInvListMap.put(lineId + "_" + uuid, odoOrgSkuInvList);
@@ -1170,8 +1279,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         try {
             uuid = SkuInventoryUuid.invUuid(skuInventory);
         } catch (Exception e) {
-            log.error("seeding createWhSkuInventory error, throw NoSuchAlgorithmException, skuInventory is:[{}], logId is:[{}]", skuInventory, logId);
-            throw new BusinessException("uuid创建失败");
+            log.error("checking createWhSkuInventory error, throw NoSuchAlgorithmException, skuInventory is:[{}], logId is:[{}]", skuInventory, logId);
+            throw new BusinessException(ErrorCodes.CHECKING_BOX_SKUINV_CREATE_UUID_ERROR);
         }
         skuInventory.setUuid(uuid);
         skuInventory.setIsLocked(false);

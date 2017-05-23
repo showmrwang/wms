@@ -606,7 +606,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
             int deleteCount = skuInventoryDao.deleteWhSkuInventoryById(consumableSkuInv.getId(), ouId);
             if(1 != deleteCount){
-                throw new BusinessException("耗材库存删除失败");
+                throw new BusinessException(ErrorCodes.CHECKING_CONSUMABLE_SKUINV_DELETE_ERROR);
             }
         }
 
@@ -614,7 +614,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
             //更新出库单
             int updateCount = whOdoDao.saveOrUpdateByVersion(whOdo);
             if (1 != updateCount) {
-                throw new BusinessException("出库单更新失败");
+                throw new BusinessException(ErrorCodes.CHECKING_ODO_UPDATE_ERROR);
             }
         }
 
@@ -625,20 +625,17 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         if(null != container){
             int updateCount = containerDao.saveOrUpdateByVersion(container);
             if (1 != updateCount) {
-                throw new BusinessException("小车/周转箱释放失败");
+                throw new BusinessException(ErrorCodes.CHECKING_RELEASE_CONTAINER_ERROR);
             }
         }
 
         if(null != seedingFacility){
             int updateCount = whOutboundFacilityDao.saveOrUpdateByVersion(seedingFacility);
             if (1 != updateCount) {
-                throw new BusinessException("播种墙释放失败");
+                throw new BusinessException(ErrorCodes.CHECKING_RELEASE_SEEDING_FACILITY_ERROR);
             }
         }
 
-
-
-        throw new BusinessException("test error");
     }
 
     private void updateCheckingInfoToDB(WhCheckingCommand orgCheckingCommand) {
@@ -646,7 +643,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         BeanUtils.copyProperties(orgCheckingCommand, whChecking);
         int updateCount = whCheckingDao.saveOrUpdateByVersion(whChecking);
         if (1 != updateCount) {
-            throw new BusinessException("复核头更新异常");
+            throw new BusinessException(ErrorCodes.CHECKING_UPDATE_CHECKING_ERROR);
         }
     }
 
@@ -656,7 +653,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
             BeanUtils.copyProperties(whCheckingLineCommand, whCheckingLine);
             int updateCount = whCheckingLineDao.saveOrUpdateByVersion(whCheckingLine);
             if (1 != updateCount) {
-                throw new BusinessException("复核明细更新异常");
+                throw new BusinessException(ErrorCodes.CHECKING_UPDATE_CHECKING_LINE_ERROR);
             }
         }
     }
@@ -676,12 +673,12 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
             if (0 == odoOrgSkuInv.getOnHandQty()) {
                 int deleteCount = whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), odoOrgSkuInv.getOuId());
                 if(0 == deleteCount){
-                    throw new BusinessException("复核箱库存删除失败");
+                    throw new BusinessException(ErrorCodes.CHECKING_CHECKING_SKUINV_DELETE_ERROR);
                 }
             } else {
                 int updateCount = whSkuInventoryDao.saveOrUpdateByVersion(odoOrgSkuInv);
                 if (1 != updateCount) {
-                    throw new BusinessException("复核箱库存更新失败");
+                    throw new BusinessException(ErrorCodes.CHECKING_CHECKING_SKUINV_UPDATE_ERROR);
                 }
                 Double originOnHandQty = 0.0;
                 if (isTabbInvTotal) {
@@ -716,7 +713,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
             BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
             int updateCount = whSkuInventorySnDao.saveOrUpdateByVersion(whSkuInventorySn);
             if (1 != updateCount) {
-                throw new BusinessException("SN更新异常");
+                throw new BusinessException(ErrorCodes.CHECKING_CHECKING_SN_UPDATE_ERROR);
             }
         }
     }

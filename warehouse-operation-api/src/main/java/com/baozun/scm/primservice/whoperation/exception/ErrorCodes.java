@@ -809,7 +809,7 @@ public class ErrorCodes {
     public static final int CHECKING_FACILITY_NULL_ERROR = 60302;
     /** 批次集货未完成 */
     public static final int CHECKING_BATCH_COLLECTION_ERROR = 60303;
-    /** 复核状态不是新建 */
+    /** 复核状态错误 */
     public static final int CHECKING_CHECKING_STATUS_ERROR = 60304;
     /** 当前功能不支持此复核模式 */
     public static final int CHECKING_FUNCTION_CHECKING_MODE_ERROR = 60305;
@@ -865,6 +865,41 @@ public class ErrorCodes {
     public static final int CHECKING_ORG_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR = 60330;
     /** 还原耗材占用库存异常 */
     public static final int CHECKING_RESTORE_ORG_OCCUPATION_CONSUMABLE_SKUINV_ERROR = 60331;
+    /** 该箱已复核完毕 */
+    public static final int CHECKING_BOX_CHECKING_FINISHED_ERROR = 60332;
+    /** 小车释放失败 */
+    public static final int CHECKING_RELEASE_TROLLEY_ERROR = 60333;
+    /** 播种墙释放失败 */
+    public static final int CHECKING_RELEASE_SEEDING_FACILITY_ERROR = 60334;
+    /** 周转箱释放失败 */
+    public static final int CHECKING_RELEASE_TURNOVERBOX_ERROR = 60335;
+    /** 未找到复核的SN信息 */
+    public static final int CHECKING_CHECKING_SN_ERROR = 60336;
+    /** 库存不足 */
+    public static final int CHECKING_SKUINV_INSUFFICIENT_ERROR = 60337;
+    /** 耗材库位信息未找到 */
+    public static final int CHECKING_CONSUMABLE_SKUINVLOC_ERROR = 60338;
+    /** 周转箱明细原始库存未找到 */
+    public static final int CHECKING_TURNOVERBOX_ORG_SKUINV_ERROR = 60339;
+    /** uuid创建失败 */
+    public static final int CHECKING_BOX_SKUINV_CREATE_UUID_ERROR = 60340;
+    /** 耗材库存删除失败 */
+    public static final int CHECKING_CONSUMABLE_SKUINV_DELETE_ERROR = 60341;
+    /** 出库单更新失败 */
+    public static final int CHECKING_ODO_UPDATE_ERROR = 60342;
+    /** 小车/周转箱释放失败 */
+    public static final int CHECKING_RELEASE_CONTAINER_ERROR = 60343;
+    /** 复核头更新异常 */
+    public static final int CHECKING_UPDATE_CHECKING_ERROR = 60344;
+    /** 复核明细更新异常 */
+    public static final int CHECKING_UPDATE_CHECKING_LINE_ERROR = 60345;
+    /** 复核箱库存删除失败 */
+    public static final int CHECKING_CHECKING_SKUINV_DELETE_ERROR = 60346;
+    /** 复核箱库存更新失败 */
+    public static final int CHECKING_CHECKING_SKUINV_UPDATE_ERROR = 60347;
+    /** SN更新异常 */
+    public static final int CHECKING_CHECKING_SN_UPDATE_ERROR = 60348;
+
 
 
 
