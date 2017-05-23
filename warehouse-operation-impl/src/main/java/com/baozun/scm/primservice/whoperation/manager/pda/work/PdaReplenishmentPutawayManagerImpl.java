@@ -268,14 +268,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 //当前周转箱上架
                 whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
                 //修改作业执行明细的执行量
-                this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId);
+                this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId,locationId);
                 //判断当前库位是否有拣货工作
                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
             }else{//继续扫描下一个库位
                  command.setIsScanFinsh(true);
                  whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
                  //修改作业执行明细的执行量
-                 this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId);
+                 this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId,locationId);
                  //更新工作及作业状态
                  this.updateStatus(operationId, workCode, ouId, userId);
                  //判断当前库位是否有拣货工作
@@ -285,9 +285,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
            
             }
         }else{//多个目标库位
-            ContainerCommand newCmd = containerDao.getContainerByCode(newTurnoverBoxCode, ouId);
-            if(null == newCmd) {
-                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            if(!StringUtils.isEmpty(newTurnoverBoxCode)){
+                ContainerCommand newCmd = containerDao.getContainerByCode(newTurnoverBoxCode, ouId);
+                if(null == newCmd) {
+                        throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
             }
             Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
             Map<String, Map<String, Set<String>>> locSkuAttrIdsSnDefect = opExecLineCmd.getSkuAttrIdsSnDefect();
@@ -322,9 +324,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
      * @param ouId
      * @param userId
      */
-    private void updateOperationExecLine(Long turnoverBoxId,Long operationId,Long ouId,Long userId){
+    private void updateOperationExecLine(Long turnoverBoxId,Long operationId,Long ouId,Long userId,Long locationId){
         
-        List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(operationId, ouId, turnoverBoxId);
+        List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(locationId,operationId, ouId, turnoverBoxId);
         for(WhOperationExecLine execLine:execLineList){
             execLine.setCompleteQty(execLine.getQty());
             whOperationExecLineDao.saveOrUpdateByVersion(execLine);

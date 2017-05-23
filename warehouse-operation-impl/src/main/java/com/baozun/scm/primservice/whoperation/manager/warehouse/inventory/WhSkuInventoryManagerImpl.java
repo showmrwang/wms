@@ -8625,7 +8625,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param workCode
      */
     public void replenishmentSplitContainerPutaway(List<String> cacehSnList, Double skuScanQty, String skuAttrId, Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long turnoverBoxId, Long newTurnoverBoxId) {
-        List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(operationId, ouId, turnoverBoxId);
+        List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(locationId,operationId, ouId, turnoverBoxId);
         if(null == execLineList){
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST, new Object[] {});
         }
@@ -8660,6 +8660,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             Long occupationLineId = invCmd.getOccupationLineId();
             String occupationCode = invCmd.getOccupationCode();
+            //更新作业执行明细
             this.updateOperationExecLine(skuScanQty, execLineList, whSkuAttrId, occupationLineId, ouId, userId);
             List<WhSkuInventoryCommand> skuInvSnList = whSkuInventoryDao.findWhSkuInventorySnByOccupationLineId(ouId, occupationCode, occupationLineId, invCmd.getUuid());
             for(WhSkuInventoryCommand  invSnCmd:skuInvSnList){
@@ -8784,7 +8785,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
               } 
               if (execLine.getQty().doubleValue() >= scanSkuQty.doubleValue()) {
-                  execLine.setQty(scanSkuQty);
+                  execLine.setCompleteQty(scanSkuQty);
                   whOperationExecLineDao.saveOrUpdateByVersion(execLine);
                   insertGlobalLog(GLOBAL_LOG_UPDATE, execLine, ouId, userId, null, null);
                   break;

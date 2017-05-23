@@ -966,5 +966,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			ou_id = #{ouId}
 			and operation_id = #{operationId}
 			and use_container_id = #{useContainerId}
+			and to_location_id=#{locationId}
+			and qty != complete_qty
 	</select>
 </mapper>

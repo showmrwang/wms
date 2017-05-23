@@ -1453,7 +1453,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Boolean isShortPickingEnd = command.getIsShortPickingEnd(); // 拣货完成
         String outerContainer = command.getOuterContainer();
         Integer lattice = command.getUseContainerLatticeNo(); // 当前货格
-        Long tipSkuQty = command.getTipSkuQty();
         Long containerId = null;
         if (!StringUtils.isEmpty(outerContainer)) {
             ContainerCommand cmd = containerDao.getContainerByCode(outerContainer, ouId);
@@ -1771,7 +1770,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             command.setTipSkuBarCode(whSkuCmd.getBarCode());
             command.setIsNeedTipSku(true);
-            command.setSkuId(skuId);
+            command.setSkuId(whSkuCmd.getId());
             this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
             command.setIsNeedScanSkuSn(cSRCmd.getIsNeedScanSkuSn());
             if (!cSRCmd.getIsHaveInsideContainer()) { // 判断当前sku有没有货箱
