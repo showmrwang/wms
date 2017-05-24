@@ -304,6 +304,9 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 WhOutboundInvoiceLineConfirm line = new WhOutboundInvoiceLineConfirm();
                 BeanUtils.copyProperties(whInvoiceLine, line);
                 line.setOutboundInvoiceConfirmId(w.getId());
+                if (null != whInvoiceLine.getQty()) {
+                    line.setQty(whInvoiceLine.getQty().doubleValue());
+                }
                 Long lineCount = whOutboundInvoiceLineConfirmDao.insert(line);
                 if (lineCount.intValue() == 0) {
                     log.error("WhOutboundConfirmManagerImpl.saveWhOutboundInvoiceConfirm error");
