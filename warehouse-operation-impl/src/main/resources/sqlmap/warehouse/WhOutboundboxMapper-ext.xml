@@ -169,8 +169,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     		 count(1)
 	   		 from  t_wh_outboundbox 
 	   		 where
-	   		 odo_id != #{odoId}
+	   		 odo_id = #{odoId}
 	   		 and ou_id = #{ouId}
+	   		 and status != '10'
     </select>
 
     <select id="findByOutboundBoxCode" resultMap="WhOutboundboxCommand">

@@ -25,9 +25,8 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
  */
 public class WhOdoTransportMgmt extends BaseModel {
 
-
-    private static final long serialVersionUID = 1876575662717571176L;
-
+    private static final long serialVersionUID = 8030960376393023080L;
+    
     /** 出库单ID */
     private Long odoId;
     /** 运输服务商 */

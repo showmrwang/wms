@@ -232,6 +232,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                     line.setWmsOdoCode(whOdo.getOdoCode());
                     line.setOutboundBoxCode(whOutboundbox.getOutboundboxCode());
                     String trackNumber = tspMap.get(whOutboundbox.getOutboundboxCode());
+                    line.setInvStatus(invMap.get(Long.parseLong(boxLine.getInvStatus())));
                     if (!StringUtil.isEmpty(trackNumber)) {
                         line.setTrackingNumber(trackNumber);
                     }
@@ -239,6 +240,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                     WhOdoLine odoLine = whOdoLineDao.findOdoLineById(boxLine.getOdoLineId(), ouid);
                     line.setQty(odoLine.getPlanQty());
                     line.setActualQty(boxLine.getQty());
+                    line.setExtLineNum(odoLine.getExtLinenum());
                     WhSku sku = whSkuDao.findWhSkuById(odoLine.getSkuId(), ouid);
                     line.setUpc(sku.getExtCode());
                     line.setColor(sku.getColor());

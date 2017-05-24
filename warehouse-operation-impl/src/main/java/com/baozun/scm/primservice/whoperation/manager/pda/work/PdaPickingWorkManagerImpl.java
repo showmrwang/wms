@@ -220,8 +220,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         for (WhOperationLineCommand operationLine : operationLineList) {
             // 根据出库单code获取出库单信息
             WhOdo odo = odoDao.findByIdOuId(operationLine.getOdoId(), operationLine.getOuId());
-            if (!OdoStatus.PICKING.equals(odo.getHeadStartOdoStatus())) {
-                odo.setHeadStartOdoStatus(OdoStatus.PICKING);
+            if (!OdoStatus.PICKING.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.PICKING);
                 odo.setLagOdoStatus(OdoStatus.WAVE_FINISH);
                 odoDao.update(odo);
             }   
@@ -1967,7 +1967,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
                         // 根据出库单code获取出库单信息
                         WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                        odo.setHeadStartOdoStatus(OdoStatus.PICKING_FINISH);
+                        odo.setOdoStatus(OdoStatus.PICKING_FINISH);
                         odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
                         odoDao.update(odo);
                     }
@@ -3145,7 +3145,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
                         // 根据出库单code获取出库单信息
                         WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                        odo.setHeadStartOdoStatus(OdoStatus.PICKING_FINISH);
+                        odo.setOdoStatus(OdoStatus.PICKING_FINISH);
                         odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
                         odoDao.update(odo);
                     }
@@ -3312,7 +3312,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
                     // 根据出库单code获取出库单信息
                     WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                    odo.setHeadStartOdoStatus(OdoStatus.PICKING_FINISH);
+                    odo.setOdoStatus(OdoStatus.PICKING_FINISH);
                     odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
                     odoDao.update(odo);
                 }
@@ -3614,7 +3614,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                 }
                                 cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString()+insideId.toString());
                             }
-                            cacheManager.remove(CacheConstants.PDA_PICKING_SHORTPICKING_SKU +operationId.toString()+outerId.toString());
+                            cacheManager.removeMapValue(CacheConstants.PDA_PICKING_SHORTPICKING_SKU , operationId.toString()+outerId.toString());
                         }
                     }
                 }
@@ -3633,7 +3633,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                 cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO +operationId.toString()+ insideId.toString() + skuId.toString());
                             }
                             cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+insideId.toString());
-                            cacheManager.remove(CacheConstants.PDA_PICKING_SHORTPICKING_SKU +operationId.toString()+insideId.toString());
+                            cacheManager.removeMapValue(CacheConstants.PDA_PICKING_SHORTPICKING_SKU , operationId.toString()+insideId.toString());
                         }
                     }
                 }

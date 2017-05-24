@@ -50,6 +50,8 @@ public class WhOdodeliveryInfo extends BaseModel {
     private String packageCenterCode;
     /** 集包地名称 */
     private String packageCenterName;
+    /** 集包地名称 */
+    private String extId;
 
     /** 当前月份 用于归档 */
     private String sysDate;
@@ -220,6 +222,14 @@ public class WhOdodeliveryInfo extends BaseModel {
 
     public void setPackageCenterName(String packageCenterName) {
         this.packageCenterName = packageCenterName;
+    }
+
+    public String getExtId() {
+        return extId;
+    }
+
+    public void setExtId(String extId) {
+        this.extId = extId;
     }
 
 }

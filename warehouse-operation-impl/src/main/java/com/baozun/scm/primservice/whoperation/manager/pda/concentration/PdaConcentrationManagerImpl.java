@@ -342,7 +342,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         // Boolean flag = false;
         Boolean hasRec = false;
         // TODO 判断是否是播种模式
-        if (Constants.PICKING_MODE_SEED.equals(pickingMode.toString())) {
+        if (Constants.PICKING_MODE_SEED.equals(work.getPickingMode())) {
             hasRec = initRecFacilityPath(workCollectionCommand);
         }
         // TODO flag
