@@ -608,6 +608,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
             // 匹配配货模式
             transportMgmt.setOuId(ouId);
+            if (transportMgmt.getPlanDeliverGoodsTime() == null) {
+                transportMgmt.setPlanDeliverGoodsTime(new Date());
+            }
             try {
 
                 if (StringUtils.hasText(transportMgmt.getDeliverGoodsTimeStr())) {
