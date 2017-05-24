@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
 import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
@@ -85,6 +86,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
@@ -807,7 +809,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if (result) {
             // 更新出库单状态
-            this.updateOdoStatusByOdo(odoId, ouId, userId);
+            this.updateOdoStatusByOdo(odoId, ouId, userId,cmd.getContaierCode(),cmd.getTurnoverBoxCode(),cmd.getSeedingWallCode());
         }
         // List<WeightingCommand> commandList =
         // whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId,
@@ -1001,13 +1003,40 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @author
      * @param whCheckingResultCommand
      */
-    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId) {
+    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId,String outerContainerCode,String turnoverBoxCode,String seedingWallCode) {
         // 修改出库单状态为复核完成状态。
         WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
         // 修改出库单状态为复核完成状态。
         whOdo.setOdoStatus(OdoStatus.SEEDING);
         whOdoDao.saveOrUpdateByVersion(whOdo);
         insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
+        //修改小车
+        ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+        if(null == outerCmd){
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        Container c = new Container();
+        BeanUtils.copyProperties(outerCmd, c);
+        c.setStatus(Constants.LIFECYCLE_START);
+        c.setLifecycle(Constants.LIFECYCLE_START);
+        containerDao.saveOrUpdateByVersion(c);
+        //周转箱状态
+        ContainerCommand turnCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+        if(null == turnCmd){
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        Container turn= new Container();
+        BeanUtils.copyProperties(turnCmd, turn);
+        turn.setStatus(Constants.LIFECYCLE_START);
+        turn.setLifecycle(Constants.LIFECYCLE_START);
+        containerDao.saveOrUpdateByVersion(turn);
+        //修改播种墙状态
+        WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+        if(null == facility){
+            throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+        }
+        facility.setStatus("1");
+        whOutboundFacilityDao.saveOrUpdateByVersion(facility);
     }
 
     @Override
