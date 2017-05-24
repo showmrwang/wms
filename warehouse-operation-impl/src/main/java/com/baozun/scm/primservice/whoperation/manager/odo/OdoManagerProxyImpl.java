@@ -586,9 +586,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 odo.setOdoStatus(OdoStatus.NEW);
             }
             // @mender yimin.lu 2017/4/11 领先、滞后出库单状态
-            if (StringUtils.isEmpty(odo.getHeadStartOdoStatus())) {
-                odo.setHeadStartOdoStatus(OdoStatus.NEW);
-            }
             if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
                 odo.setLagOdoStatus(OdoStatus.NEW);
             }
