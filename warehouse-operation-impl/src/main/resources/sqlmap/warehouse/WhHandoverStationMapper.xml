@@ -24,7 +24,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_id as createId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	facility_id as facilityId
 	    ]]>
 	</sql>
 	
@@ -50,7 +51,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	create_id ,
 		        	create_time ,
 		        	last_modify_time ,
-		        	modified_id 
+		        	modified_id,
+		        	facility_id 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{type,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -65,7 +67,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}, 
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT}
 		        )
 		    ]]>
 
@@ -87,7 +90,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT},
+		        facility_id=#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
 	    ]]>
@@ -181,9 +185,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="lastModifyTime!=null">
 					and last_modify_time = #{lastModifyTime}
 				</if>
-	       
-				<if test="modifiedId!=null">
-					and modified_id = #{modifiedId}
+				<if test="facilityId!=null">
+					and facility_id = #{facilityId}
 				</if>
 		</where>
 	</sql>

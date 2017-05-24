@@ -1800,8 +1800,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             }
             // 根据出库单code获取出库单信息
             WhOdo odo = odoDao.findByIdOuId(whWorkLineCommand.getOdoId(), whWorkLineCommand.getOuId());
-            if (!OdoStatus.PICKING.equals(odo.getHeadStartOdoStatus())) {
-                odo.setHeadStartOdoStatus(OdoStatus.WAVE_FINISH);
+            if (!OdoStatus.PICKING.equals(odo.getOdoStatus())) {
+                odo.setOdoStatus(OdoStatus.WAVE_FINISH);
                 odoDao.update(odo);
             }
         }

@@ -1005,7 +1005,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // 修改出库单状态为复核完成状态。
         WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
         // 修改出库单状态为复核完成状态。
-        whOdo.setHeadStartOdoStatus(OdoStatus.SEEDING);
+        whOdo.setOdoStatus(OdoStatus.SEEDING);
         whOdoDao.saveOrUpdateByVersion(whOdo);
         insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
     }

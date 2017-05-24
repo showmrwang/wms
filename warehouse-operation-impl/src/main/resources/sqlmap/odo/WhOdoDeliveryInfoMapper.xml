@@ -34,7 +34,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	tms_code as tmsCode,
 	        	logistics_code as logisticsCode,
 	        	package_center_code as packageCenterCode,
-	        	package_center_name as packageCenterName
+	        	package_center_name as packageCenterName,
+	        	ext_id as extId
 	    ]]>
 	</sql>
 	<sql id="odoDeliveryInfoConditionWhereExt">
@@ -135,7 +136,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	tms_code ,
 		        	logistics_code ,
 		        	package_center_code ,
-		        	package_center_name
+		        	package_center_name ,
+		        	ext_id
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -157,7 +159,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extId,javaType=java.lang.String,jdbcType=VARCHAR} 
 		        )
 		    ]]>
 
@@ -176,7 +179,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
@@ -186,9 +188,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        tms_code = #{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        logistics_code = #{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        package_center_code = #{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_id = #{extId,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
+		        and ou_id = #{ouId} 
 	    ]]>
 		</update>
 		<update id="batchUpdate">

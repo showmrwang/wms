@@ -727,7 +727,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			left join t_wh_odo o on (l.odo_id = o.id)
 		where 
 			l.wave_id = #{waveId}
-			AND o.head_start_odo_status != '88'
+			AND o.odo_status != '88'
 			AND l.ou_id = #{ouId}
 	</select>
 

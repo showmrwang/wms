@@ -6894,6 +6894,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                             this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
                                             isDap = true;
                                             break;
+                                        }else{
+                                            invSkuIds.add(skuInvCmd.getId());
                                         }
                                     }
                                     if(execQty.doubleValue() < onHandQty.doubleValue()){
@@ -6907,17 +6909,23 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                             this.pickingContainerUpdateLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
                                             isDap = true;
                                             break;
+                                        }else{
+                                            invSkuIds.add(skuInvCmd.getId());
                                         }
                                     }
                                     if(execQty.doubleValue() > onHandQty.doubleValue()){
-                                        //生成容器库存 
-                                        Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
-                                        invSkuIds.add(invSkuId);
-                                        //删除库位库存
-                                        this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
-                                        continue;
+                                        if(!execLine.getIsShortPicking()){
+                                            //生成容器库存 
+                                            Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            invSkuIds.add(invSkuId);
+                                            //删除库位库存
+                                            this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
+                                            continue;
+                                        }else{
+                                            invSkuIds.add(skuInvCmd.getId());
+                                        }
                                     }
-                          }
+                                }
                         }
                         if(isDap) {
                             break;
@@ -6954,6 +6962,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                             this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
                                             isDap = true;
                                             break;
+                                        }else{
+                                            invSkuIds.add(skuInvCmd.getId());
                                         }
                                     }
                                     if(execQty.doubleValue() < onHandQty.doubleValue()){
@@ -6967,15 +6977,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                             this.pickingContainerUpdateLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
                                             isDap = true;
                                             break;
+                                        }else{
+                                            invSkuIds.add(skuInvCmd.getId());
                                         }
                                     }
                                     if(execQty.doubleValue() > onHandQty.doubleValue()){
-                                        //生成容器库存 
-                                        Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
-                                        invSkuIds.add(invSkuId);
-                                        //删除库位库存
-                                        this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
-                                        continue;
+                                        if(!execLine.getIsShortPicking()){
+                                            //生成容器库存 
+                                            Long invSkuId = this.pickingContainerSaveInventory(skuInvSnCmd, skuInvCmd, onHandQty.doubleValue(), isTabbInvTotal, ouId, userId, pickingWay, outerContainerId, insideContainerId);
+                                            invSkuIds.add(invSkuId);
+                                            //删除库位库存
+                                            this.deleteLocInventory(isTabbInvTotal, ouId, userId, skuInvCmd);
+                                            continue;
+                                        }else{
+                                            invSkuIds.add(skuInvCmd.getId());
+                                        }
                                     }
                           }
                         }

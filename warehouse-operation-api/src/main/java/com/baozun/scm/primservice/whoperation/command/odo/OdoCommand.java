@@ -93,8 +93,6 @@ public class OdoCommand extends BaseCommand {
     private java.lang.Boolean isAllowMerge;
     /** 是否货票分离 0:否 1:是 */
     private Boolean isFreightInvoiceSunder;
-    /** 领先出库单状态 */
-    private String headStartOdoStatus;
     /** 滞后出库单状态 */
     private String lagOdoStatus;
     /** 是否允许出库交接 默认是 */
@@ -169,13 +167,6 @@ public class OdoCommand extends BaseCommand {
         this.customerCode = customerCode;
     }
 
-    public String getHeadStartOdoStatus() {
-        return headStartOdoStatus;
-    }
-
-    public void setHeadStartOdoStatus(String headStartOdoStatus) {
-        this.headStartOdoStatus = headStartOdoStatus;
-    }
 
     public String getLagOdoStatus() {
         return lagOdoStatus;

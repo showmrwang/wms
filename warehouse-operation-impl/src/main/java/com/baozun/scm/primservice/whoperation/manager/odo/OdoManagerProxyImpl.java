@@ -586,9 +586,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 odo.setOdoStatus(OdoStatus.NEW);
             }
             // @mender yimin.lu 2017/4/11 领先、滞后出库单状态
-            if (StringUtils.isEmpty(odo.getHeadStartOdoStatus())) {
-                odo.setHeadStartOdoStatus(OdoStatus.NEW);
-            }
             if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
                 odo.setLagOdoStatus(OdoStatus.NEW);
             }
@@ -608,6 +605,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
             // 匹配配货模式
             transportMgmt.setOuId(ouId);
+            if (transportMgmt.getPlanDeliverGoodsTime() == null) {
+                transportMgmt.setPlanDeliverGoodsTime(new Date());
+            }
             try {
 
                 if (StringUtils.hasText(transportMgmt.getDeliverGoodsTimeStr())) {
@@ -2774,6 +2774,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             delivery.setWaybillCode(res.getMailno());   // 物流单号
             delivery.setTransBigWord(res.getTransBigWord());    // 运单大头笔
             delivery.setTmsCode(res.getTmsCode());  // 二级配送公司编码,用于发货回传
+            delivery.setExtId(res.getExtId());      // 物流平台单号
             delivery.setLogisticsCode(res.getLogisticsCode());  // 物流公司编码,用于发货回传
             delivery.setPackageCenterCode(res.getPackageCenterCode());  // 集包地编码
             delivery.setPackageCenterName(res.getPackageCenterName());  // 集包地名称
