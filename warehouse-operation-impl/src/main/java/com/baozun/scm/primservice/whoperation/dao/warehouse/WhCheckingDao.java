@@ -198,4 +198,11 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      */
     int getCheckingOdoQtyByBatch(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法] 查找未完成的复核信息
+     * @param ch
+     * @return
+     */
+    List<WhChecking> findListByParamWithNoFinish(WhChecking ch);
+
 }
