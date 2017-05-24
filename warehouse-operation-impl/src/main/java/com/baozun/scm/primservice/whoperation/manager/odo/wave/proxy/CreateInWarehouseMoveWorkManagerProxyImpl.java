@@ -138,12 +138,20 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             String occupationCode = "";
             Long occupationLineId = 0L;
             if(0 < occupationCodes.length){
-                occupationCode = occupationCodes[i];    
+                if(null == occupationCodes[i] || "".equals(occupationCodes[i])){
+                    occupationCode = null; 
+                }else{
+                    occupationCode = occupationCodes[i];
+                }
             }else{
                 occupationCode = null;
             }
             if(0 < occupationLineIds.length){
-                occupationLineId = occupationLineIds[i];    
+                if(null == occupationLineIds[i]){
+                    occupationLineId = null; 
+                }else{
+                    occupationLineId = occupationLineIds[i];
+                }
             }else{
                 occupationLineId = null;
             }
