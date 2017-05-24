@@ -21,7 +21,7 @@ import com.baozun.scm.primservice.whoperation.util.HashUtil;
 import com.baozun.scm.primservice.whoperation.util.Md5Util;
 
 @Transactional
-@Service("InitManager")
+@Service("initManager")
 public class InitManagerImpl implements InitManager {
 
     @Autowired
