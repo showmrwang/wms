@@ -237,6 +237,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
 
                 WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
                 odo.setOdoStatus(OdoStatus.FINISH);
+                odo.setLagOdoStatus(OdoStatus.FINISH);
                 int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
                 if (0 == odoUpdate) {
                     // 出库单状态更新失败
@@ -248,7 +249,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 whOutboundConfirmManager.saveWhOutboundConfirm(odo);
                 List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
                 for (WhOdoLine whOdoLine : whOdoLineList) {
-                    whOdoLine.setOdoLineStatus(OdoLineStatus.HANDOVER_FINISH);
+                    whOdoLine.setOdoLineStatus(OdoLineStatus.FINISH);
                     int odoLineUpdate = whOdoLineDao.saveOrUpdate(whOdoLine);
                     if (0 == odoLineUpdate) {
                         // 出库单明细状态更新失败
@@ -256,6 +257,31 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                         throw new BusinessException(ErrorCodes.ODOLINE_SAVEORUPDATEBYVERSION_ERROR);
                     }
                 }
+            } else {
+                // 出库单下的出库箱只有部分出库
+                WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
+                odo.setOdoStatus(OdoStatus.FINISH);
+                odo.setLagOdoStatus(OdoStatus.PARTLY_FINISH);
+                int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
+                if (0 == odoUpdate) {
+                    // 出库单状态更新失败
+                    log.error("handover error whOdoDao.saveOrUpdateByVersion  , odoUpdate is:[{}]", odoUpdate);
+                    throw new BusinessException(ErrorCodes.ODO_SAVEORUPDATEBYVERSION_ERROR);
+                }
+                // 调用胡斌方法
+                // TODO
+                whOutboundConfirmManager.saveWhOutboundConfirm(odo);
+                List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
+                for (WhOdoLine whOdoLine : whOdoLineList) {
+                    whOdoLine.setOdoLineStatus(OdoLineStatus.PARTLY_FINISH);
+                    int odoLineUpdate = whOdoLineDao.saveOrUpdate(whOdoLine);
+                    if (0 == odoLineUpdate) {
+                        // 出库单明细状态更新失败
+                        log.error("handover error whOdoLineDao.saveOrUpdateByVersion  , odoUpdate is:[{}]", odoLineUpdate);
+                        throw new BusinessException(ErrorCodes.ODOLINE_SAVEORUPDATEBYVERSION_ERROR);
+                    }
+                }
+
             }
         }
 
