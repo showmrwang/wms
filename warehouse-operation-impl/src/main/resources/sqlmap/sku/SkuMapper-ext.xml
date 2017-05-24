@@ -28,6 +28,32 @@
 	<resultMap id="skuMgmtExt" type="com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt">
 	</resultMap> -->
 
+    <sql id="skuInfoColumns">
+        <![CDATA[
+                id as id,
+                code as code,
+                bar_code as barCode,
+                name as name,
+                en_name as enName,
+                description as description,
+                color as color,
+                length as length,
+                width as width,
+                height as height,
+                volume as volume,
+                weight as weight,
+                brand_id as brandId,
+                customer_id as customerId,
+                create_time as createTime,
+                created_id as createdId,
+                last_modify_time as lastModifyTime,
+                modified_id as modifiedId,
+                style as style,
+                size as size,
+                lifecycle as lifecycle,
+                ext_code as extCode
+        ]]>
+    </sql>
 
 	<!-- 用于select查询公用抽取的列 ，集团下-->
 	<sql id="skuColumnsExt">
@@ -716,5 +742,12 @@
        where sku.bar_code=#{barCode} and sku.customer_id=#{customerId}
     </select>
 	
-
+<select id="findWhSkuByExtCodeAndCustomerId" resultMap="SkuResultExt">
+		select
+		<include refid="skuInfoColumns" />
+		from t_wh_sku
+		where 
+		ext_code = #{extCode} 
+		and customer_id = #{customerId}
+</select>
 </mapper>
