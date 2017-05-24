@@ -489,53 +489,30 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null != checkingList && !checkingList.isEmpty()) {
             // 扫描出库箱编码
             checking = checkingList.get(0); // 数据最全
-            // if (null != checking.getFacilityId() && null == whCheckingCommand.getFacilityId()) {
-            // // 如果出库箱在播种墙上 提示扫描播种墙
-            // whCheckingCommand.setTip(Constants.TIP_SEEDING_WALL);
-            // command.setCheckingCommand(whCheckingCommand);
-            // return true;
-            // } else if (null != checking.getOuterContainerId() && null ==
-            // whCheckingCommand.getOuterContainerId()) {
-            // // 如果出库箱在小车上 提示扫描小车
-            // whCheckingCommand.setTip(Constants.TIP_OUTER_CONTAINER);
-            // command.setCheckingCommand(whCheckingCommand);
-            // return true;
-            // } else {
             if (null != whCheckingCommand.getFacilityId() || null != whCheckingCommand.getOuterContainerId()) {
                 // 已经有小车id或者播种墙id
                 WhChecking ch = new WhChecking();
                 ch.setFacilityId(whCheckingCommand.getFacilityId());
                 ch.setOuterContainerId(whCheckingCommand.getOuterContainerId());
                 ch.setOutboundboxCode(input);
-                List<WhChecking> chList = this.whCheckingDao.findListByParam(ch);
+                List<WhChecking> chList = this.whCheckingDao.findListByParamWithNoFinish(ch);
                 if (null != chList && !chList.isEmpty()) {
                     // 根据已有条件找到复核信息
                     ch = chList.get(0); // 最全
-                    if (CheckingStatus.FINISH == ch.getStatus()) {
-                        // 找到的复核行状态为10,提示已复核完成
-                        whCheckingCommand.setTip(Constants.TIP_FINISH);
-                        // TODO
-                        command.setCheckingCommand(whCheckingCommand);
-                        return true;
-                    } else {
-                        // 可以执行复核操作
-                        BeanUtils.copyProperties(checking, whCheckingCommand);
-                        // whCheckingCommand.setId(ch.getId());
-                        // whCheckingCommand.setOutboundboxCode(ch.getOutboundboxCode());
-                        // whCheckingCommand.setOutboundboxId(ch.getOutboundboxId());
-                        if (null != whCheckingCommand.getFacilityId()) {
-                            /** 按单复核方式:播种墙出库箱流程*/
-                            whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_OUTBOUND_BOX);
-                        }
-                        if (null != whCheckingCommand.getOuterContainerId()) {
-                            /** 按单复核方式:小车出库箱流程*/
-                            whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX);
-                        }
-                        whCheckingCommand.setTip(Constants.TIP_SUCCESS);
-                        command.setCheckingCommand(whCheckingCommand);
-                        command = findWhCheckingLineByChecking(command);
-                        return true;
+                    // 可以执行复核操作
+                    BeanUtils.copyProperties(checking, whCheckingCommand);
+                    if (null != whCheckingCommand.getFacilityId()) {
+                        /** 按单复核方式:播种墙出库箱流程*/
+                        whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_OUTBOUND_BOX);
                     }
+                    if (null != whCheckingCommand.getOuterContainerId()) {
+                        /** 按单复核方式:小车出库箱流程*/
+                        whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX);
+                    }
+                    whCheckingCommand.setTip(Constants.TIP_SUCCESS);
+                    command.setCheckingCommand(whCheckingCommand);
+                    command = findWhCheckingLineByChecking(command);
+                    return true;
                 } else {
                     // 没有找到复核信息, 提示换个出库箱或者货格号扫描
                     whCheckingCommand.setTip(Constants.TIP_OUTBOUND_BOX_OR_NO);
@@ -544,29 +521,17 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 }
             } else {
                 // 查找到的复核信息没有播种墙或者小车
-                if (null != checking.getStatus() && CheckingStatus.FINISH == checking.getStatus()) {
-                    // 找到的复核行状态为10,提示已复核完成
-                    whCheckingCommand.setTip(Constants.TIP_FINISH);
-                    // TODO
-                    command.setCheckingCommand(whCheckingCommand);
-                    return true;
-                } else {
-                    // 非小车或播种墙的扫描出库箱 直接完成验证 进入复核流程
-                    BeanUtils.copyProperties(checking, whCheckingCommand);
-                    // List<WhCheckingLineCommand> whCheckingLineList =
-                    // findWhCheckingLineByChecking(whCheckingCommand);
-                    // command.setCheckingLineCommandList(whCheckingLineList);
-                    command.setCheckingCommand(whCheckingCommand);
-                    whCheckingCommand.setOutboundboxCode(input);
-                    whCheckingCommand.setTip(Constants.TIP_SUCCESS);
-                    /** 按单复核方式:出库箱流程*/
-                    whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
-                    command.setCheckingCommand(whCheckingCommand);
-                    command = findWhCheckingLineByChecking(command);
-                    return true;
-                }
+                // 非小车或播种墙的扫描出库箱 直接完成验证 进入复核流程
+                BeanUtils.copyProperties(checking, whCheckingCommand);
+                command.setCheckingCommand(whCheckingCommand);
+                whCheckingCommand.setOutboundboxCode(input);
+                whCheckingCommand.setTip(Constants.TIP_SUCCESS);
+                /** 按单复核方式:出库箱流程*/
+                whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
+                command.setCheckingCommand(whCheckingCommand);
+                command = findWhCheckingLineByChecking(command);
+                return true;
             }
-            // }
         }
         return false;
     }
@@ -586,7 +551,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             checking.setContainerLatticeNo(containerLatticeNo);
             checking.setOuterContainerId(whCheckingCommand.getOuterContainerId());
             checking.setFacilityId(whCheckingCommand.getFacilityId());
-            checkingList = whCheckingDao.findListByParam(checking);
+            checkingList = whCheckingDao.findListByParamWithNoFinish(checking);
             if (null != checkingList && !checkingList.isEmpty()) {
                 checking = checkingList.get(0);
                 if (null != checking.getFacilityId() && null == whCheckingCommand.getFacilityId()) {
@@ -606,36 +571,25 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         ch.setFacilityId(whCheckingCommand.getFacilityId());
                         ch.setOuterContainerId(whCheckingCommand.getOuterContainerId());
                         ch.setContainerLatticeNo(containerLatticeNo);
-                        List<WhChecking> chList = this.whCheckingDao.findListByParam(ch);
+                        List<WhChecking> chList = this.whCheckingDao.findListByParamWithNoFinish(ch);
                         if (null != chList && !chList.isEmpty()) {
                             // 根据已有条件找到复核信息
                             ch = chList.get(0);
-                            if (CheckingStatus.FINISH == ch.getStatus()) {
-                                // 找到的复核行状态为10,提示已复核完成
-                                whCheckingCommand.setTip(Constants.TIP_FINISH);
-                                // TODO
-                                command.setCheckingCommand(whCheckingCommand);
-                                return true;
-                            } else {
-                                // 可以执行复核操作
-                                whCheckingCommand.setId(ch.getId());
-                                // List<WhCheckingLineCommand> whCheckingLineList =
-                                // findWhCheckingLineByChecking(whCheckingCommand);
-                                // command.setCheckingLineCommandList(whCheckingLineList);
-                                whCheckingCommand.setContainerLatticeNo(containerLatticeNo);
-                                if (null != whCheckingCommand.getFacilityId()) {
-                                    /** 按单复核方式:播种墙货格流程*/
-                                    whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO);
-                                }
-                                if (null != whCheckingCommand.getOuterContainerId()) {
-                                    /** 按单复核方式:小车货格流程*/
-                                    whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO);
-                                }
-                                whCheckingCommand.setTip(Constants.TIP_SUCCESS);
-                                command.setCheckingCommand(whCheckingCommand);
-                                command = findWhCheckingLineByChecking(command);
-                                return true;
+                            // 可以执行复核操作
+                            whCheckingCommand.setId(ch.getId());
+                            whCheckingCommand.setContainerLatticeNo(containerLatticeNo);
+                            if (null != whCheckingCommand.getFacilityId()) {
+                                /** 按单复核方式:播种墙货格流程*/
+                                whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO);
                             }
+                            if (null != whCheckingCommand.getOuterContainerId()) {
+                                /** 按单复核方式:小车货格流程*/
+                                whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO);
+                            }
+                            whCheckingCommand.setTip(Constants.TIP_SUCCESS);
+                            command.setCheckingCommand(whCheckingCommand);
+                            command = findWhCheckingLineByChecking(command);
+                            return true;
                         } else {
                             // 没有找到复核信息, 提示换个出库箱或者货格号扫描
                             whCheckingCommand.setTip(Constants.TIP_OUTBOUND_BOX_OR_NO);
@@ -673,32 +627,21 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         List<WhCheckingCommand> whCheckingList = whCheckingDao.findListByContainerCode(input, ouId);
         if (null != whCheckingList && !whCheckingList.isEmpty()) {
             checkingCommand = whCheckingList.get(0);
-            if (CheckingStatus.FINISH == checkingCommand.getStatus()) {
-                // 找到的复核行状态为10,提示已复核完成
-                whCheckingCommand.setTip(Constants.TIP_FINISH);
-                // TODO
+            // TODO
+            // 需要判断是否有绑定出库箱, 意味着是否是主副品或者套装.如果有则把出库箱对应的复核明细也缓存到页面
+            if (Constants.PICKING_MODE_BATCH_GROUP.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checkingCommand.getPickingMode())) {
+                whCheckingCommand.setTip(Constants.TIP_BATCH);
                 command.setCheckingCommand(whCheckingCommand);
-                return true;
-            } else {
-                // TODO
-                // 需要判断是否有绑定出库箱, 意味着是否是主副品或者套装.如果有则把出库箱对应的复核明细也缓存到页面
-                if (Constants.PICKING_MODE_BATCH_GROUP.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checkingCommand.getPickingMode())) {
-                    whCheckingCommand.setTip(Constants.TIP_BATCH);
-                    command.setCheckingCommand(whCheckingCommand);
-                    return true;
-                }
-                // 可以执行复核操作
-                BeanUtils.copyProperties(checkingCommand, whCheckingCommand);
-                // List<WhCheckingLineCommand> whCheckingLineList =
-                // findWhCheckingLineByChecking(checkingCommand);
-                // command.setCheckingLineCommandList(whCheckingLineList);
-                /** 按单复核方式:周转箱流程*/
-                whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
-                whCheckingCommand.setTip(Constants.TIP_SUCCESS);
-                command.setCheckingCommand(whCheckingCommand);
-                command = findWhCheckingLineByChecking(command);
                 return true;
             }
+            // 可以执行复核操作
+            BeanUtils.copyProperties(checkingCommand, whCheckingCommand);
+            /** 按单复核方式:周转箱流程*/
+            whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
+            whCheckingCommand.setTip(Constants.TIP_SUCCESS);
+            command.setCheckingCommand(whCheckingCommand);
+            command = findWhCheckingLineByChecking(command);
+            return true;
         }
         return false;
     }
@@ -715,7 +658,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhChecking checking = new WhChecking();
         checking.setBatch(input);
         checking.setOuId(ouId);
-        List<WhChecking> whCheckingList = whCheckingDao.findListByParam(checking);
+        List<WhChecking> whCheckingList = whCheckingDao.findListByParamWithNoFinish(checking);
         if (null != whCheckingList && !whCheckingList.isEmpty()) {
             checking = whCheckingList.get(0);
             if (CheckingStatus.FINISH == checking.getStatus()) {
@@ -1095,7 +1038,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         checking.setFacilityId(whCheckingCommand.getFacilityId());
         checking.setOuId(whCheckingCommand.getOuId());
         checking.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
-        List<WhChecking> checkingList = whCheckingDao.findListByParam(checking);
+        List<WhChecking> checkingList = whCheckingDao.findListByParamWithNoFinish(checking);
         if (null != checkingList && !checkingList.isEmpty()) {
             checking = checkingList.get(0);
             checking.setOutboundboxCode(outboundboxCode);
@@ -1236,7 +1179,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         }
                         if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(outboundBoxCode,waybillCode, userId, ouId);
+                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                             // 箱标签
@@ -1262,7 +1205,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             }
                             if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(outboundBoxCode,waybillCode, userId, ouId);
+                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                                 // 箱标签

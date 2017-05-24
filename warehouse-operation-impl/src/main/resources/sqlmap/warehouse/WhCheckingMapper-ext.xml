@@ -306,6 +306,7 @@
 			and facility.facility_type = "seedingWall"
 			and ch.ou_id = #{ouId}
 			and facility.lifecycle = 1
+			and ch.status != 10
     </select>
     
     <sql id="whCheckingCommandColumnsExt">
@@ -345,7 +346,7 @@
     <sql id="whCheckingCommandDynamicWhereExt">
         <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
         <where>
-
+			checking.status != 10
             <if test="id!=null">
                 and checking.id = #{id}
             </if>
@@ -516,6 +517,7 @@
         from t_wh_checking ch left join t_wh_container container on ch.outer_container_id = container.id
         where ch.ou_id = #{ouId}
         and container.code = #{outerContainerCode}
+        and ch.status != 10
     </select>
 
      <select id="findListByContainerCode" resultMap="WhCheckingCommand">
@@ -552,6 +554,7 @@
         from t_wh_checking ch left join t_wh_container container on ch.container_id = container.id
         where ch.ou_id = #{ouId}
         and container.code = #{containerCode}
+        and ch.status != 10
     </select>
 
      <select id="findCheckingInfoByBatchAndOuId" resultMap="WhCheckingCommand">
@@ -1027,6 +1030,147 @@
         WHERE
             checking.ou_id = #{ouId}
             AND turnoverBox.code = #{turnoverBoxCode}
+    </select>
+    
+    
+    <sql id="whCheckingDynamicWhereWithNoFinish">
+        <!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+        <where>
+			status != 10
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+
+            <if test="facilityId!=null">
+                and facility_id = #{facilityId}
+            </if>
+
+            <if test="containerId!=null">
+                and container_id = #{containerId}
+            </if>
+
+
+            <if test="batch!=null and batch!=''">
+                and batch = #{batch}
+            </if>
+
+
+            <if test="waveCode!=null and waveCode!=''">
+                and wave_code = #{waveCode}
+            </if>
+
+
+            <if test="customerCode!=null and customerCode!=''">
+                and customer_code = #{customerCode}
+            </if>
+
+
+            <if test="customerName!=null and customerName!=''">
+                and customer_name = #{customerName}
+            </if>
+
+
+            <if test="storeCode!=null and storeCode!=''">
+                and store_code = #{storeCode}
+            </if>
+
+
+            <if test="storeName!=null and storeName!=''">
+                and store_name = #{storeName}
+            </if>
+
+
+            <if test="transportCode!=null and transportCode!=''">
+                and transport_code = #{transportCode}
+            </if>
+
+
+            <if test="transportName!=null and transportName!=''">
+                and transport_name = #{transportName}
+            </if>
+
+
+            <if test="productCode!=null and productCode!=''">
+                and product_code = #{productCode}
+            </if>
+
+
+            <if test="productName!=null and productName!=''">
+                and product_name = #{productName}
+            </if>
+
+
+            <if test="timeEffectCode!=null and timeEffectCode!=''">
+                and time_effect_code = #{timeEffectCode}
+            </if>
+
+
+            <if test="timeEffectName!=null and timeEffectName!=''">
+                and time_effect_name = #{timeEffectName}
+            </if>
+
+            <if test="status!=null">
+                and status = #{status}
+            </if>
+
+            <if test="ouId!=null">
+                and ou_id = #{ouId}
+            </if>
+
+            <if test="outerContainerId!=null">
+                and outer_container_id = #{outerContainerId}
+            </if>
+
+            <if test="containerLatticeNo!=null">
+                and container_lattice_no = #{containerLatticeNo}
+            </if>
+
+            <if test="outboundboxId!=null">
+                and outboundbox_id = #{outboundboxId}
+            </if>
+
+
+            <if test="outboundboxCode!=null and outboundboxCode!=''">
+                and outboundbox_code = #{outboundboxCode}
+            </if>
+
+
+            <if test="distributionMode!=null and distributionMode!=''">
+                and distribution_mode = #{distributionMode}
+            </if>
+
+
+            <if test="pickingMode!=null and pickingMode!=''">
+                and picking_mode = #{pickingMode}
+            </if>
+
+
+            <if test="checkingMode!=null and checkingMode!=''">
+                and checking_mode = #{checkingMode}
+            </if>
+            
+            <if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+        </where>
+    </sql>
+     <select id="findListByParamWithNoFinish" resultMap="WhCheckingResultExt">
+        select
+        <include refid="whCheckingColumnsExt"/>
+        from t_wh_checking
+        <include refid="whCheckingDynamicWhereWithNoFinish"/>
     </select>
 
 </mapper>

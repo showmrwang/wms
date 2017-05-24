@@ -41,6 +41,7 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -75,6 +76,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CheckingModeCalcManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -169,6 +171,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private WhOdoLineDao whOdoLineDao;
     @Autowired
     private WhSkuInventoryAllocatedDao whSkuInventoryAllocatedDao;
+    @Autowired
+    private WhSkuInventoryLogManager whSkuInventoryLogManager;
     
     
 
@@ -2406,6 +2410,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                     BeanUtils.copyProperties(whOperationExecLine, execLine);
                                     execLine.setId(null);
                                     execLine.setQty(oLCmd.getQty()-shortQty);
+                                    execLine.setIsShortPicking(false);
                                     whOperationExecLineDao.insert(execLine);
                                     insertGlobalLog(GLOBAL_LOG_INSERT,execLine, ouId, userId, null, null);
                                     list.add(execLine);
@@ -2435,6 +2440,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                           BeanUtils.copyProperties(whOperationExecLine, execLine);
                                           execLine.setId(null);
                                           execLine.setQty(qty1);
+                                          execLine.setIsShortPicking(false);
                                           whOperationExecLineDao.insert(execLine);
                                           insertGlobalLog(GLOBAL_LOG_INSERT,execLine, ouId, userId, null, null);
                                           list.add(execLine);
@@ -2528,6 +2534,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                     BeanUtils.copyProperties(whOperationExecLine, execLine);
                                     execLine.setId(null);
                                     execLine.setQty(oLCmd.getQty()-shortQty);
+                                    execLine.setIsShortPicking(false);
                                     whOperationExecLineDao.insert(execLine);
                                     insertGlobalLog(GLOBAL_LOG_INSERT,execLine, ouId, userId, null, null);
                                     list.add(execLine);
@@ -2557,6 +2564,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                           BeanUtils.copyProperties(whOperationExecLine, execLine);
                                           execLine.setId(null);
                                           execLine.setQty(qty1);
+                                          execLine.setIsShortPicking(false);
                                           whOperationExecLineDao.insert(execLine);
                                           insertGlobalLog(GLOBAL_LOG_INSERT,execLine, ouId, userId, null, null);
                                           list.add(execLine);
@@ -3218,7 +3226,20 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
                         throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                     }
+                    Double oldQty = 0.0;
+                    if (true == isTabbInvTotal) { // 在库存日志是否记录交易前后库存总数 0：否 1：是
+                        try {
+                            oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(newSkuInventory.getUuid(), newSkuInventory.getOuId());
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty = 0.0;
+                    }
                     whSkuInventoryDao.insert(newSkuInventory);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, newSkuInventory, command.getOuId(), command.getUserId(), null, null);
+                    insertSkuInventoryLog(newSkuInventory.getId(), newSkuInventory.getOnHandQty(), oldQty, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
                     List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
                     whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
                     double count = 0;
@@ -3227,7 +3248,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         // 复制数据
                         BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
                         whSkuInventorySn.setUuid(newSkuInventory.getUuid());
+                        whSkuInventorySn.setOccupationCode(newSkuInventory.getOccupationCode());
+                        whSkuInventorySn.setOccupationLineId(newSkuInventory.getOccupationLineId());
                         whSkuInventorySnDao.update(whSkuInventorySn);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventorySn, command.getOuId(), command.getUserId(), null, null);
+                        insertSkuInventorySnLog(whSkuInventorySn.getId(), command.getOuId()); // 记录sn日志
                         // 判断数量
                         BigDecimal data1 = new BigDecimal(count);
                         BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty());
@@ -3259,7 +3284,20 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
                         throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                     }
+                    Double oldQty = 0.0;
+                    if (true == isTabbInvTotal) { // 在库存日志是否记录交易前后库存总数 0：否 1：是
+                        try {
+                            oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(newSkuInventory.getUuid(), newSkuInventory.getOuId());
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty = 0.0;
+                    }
                     whSkuInventoryDao.insert(newSkuInventory);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, newSkuInventory, command.getOuId(), command.getUserId(), null, null);
+                    insertSkuInventoryLog(newSkuInventory.getId(), newSkuInventory.getOnHandQty(), oldQty, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
                     List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
                     whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
                     double count = 0;
@@ -3268,7 +3306,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         // 复制数据
                         BeanUtils.copyProperties(whSkuInventorySnCommand, whSkuInventorySn);
                         whSkuInventorySn.setUuid(newSkuInventory.getUuid());
+                        whSkuInventorySn.setOccupationCode(newSkuInventory.getOccupationCode());
+                        whSkuInventorySn.setOccupationLineId(newSkuInventory.getOccupationLineId());
                         whSkuInventorySnDao.update(whSkuInventorySn);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventorySn, command.getOuId(), command.getUserId(), null, null);
+                        insertSkuInventorySnLog(whSkuInventorySn.getId(), command.getOuId()); // 记录sn日志
                         // 判断数量
                         BigDecimal data1 = new BigDecimal(count);
                         BigDecimal data2 = new BigDecimal(newSkuInventory.getOnHandQty());
@@ -3279,6 +3321,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
                     // 删除原库存
                     whSkuInventoryDao.delete(oldSkuInventory.getId());
+                    insertGlobalLog(GLOBAL_LOG_DELETE, oldSkuInventory, command.getUserId(), command.getUserId(), null, null);
                 }
             }
             if(null == command.getPickingWay()){
