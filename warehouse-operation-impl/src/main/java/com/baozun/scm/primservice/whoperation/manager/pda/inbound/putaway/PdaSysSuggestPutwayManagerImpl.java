@@ -426,6 +426,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 for (Long skuId : skuIds) {
                     // 清除逐件扫描的队列
                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + containerId.toString() + skuId.toString());
+                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + containerId.toString() + skuId.toString());
                 }
             }
             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + containerId.toString());
@@ -3014,6 +3015,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   whSkuInventoryManager.execPutaway(ocCmd, icCmd, locationCode, skuCmd, scanSkuAttrIds, scanQty, warehouse, putawayPatternDetailType, ouId, userId, logId);
                   //拆箱清除缓存
                   this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
+                  this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
                   srCmd.setRecommendFail(true);  //推荐失败
               }else if(isNotUser){
 //                  whSkuInventoryManager.execPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
@@ -3712,35 +3714,36 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             cacheSkuAttrIds = cacheSkuCmd.getScanSkuAttrIds();
         }
         if (null != cacheSkuAttrIds && !cacheSkuAttrIds.isEmpty()) {
-            Boolean result = false;
-            Boolean result1 = false;
-            for(String skuAttrId:skuAttrIds) {
-                for(WhSkuInventoryCommand skuInvCmd:whskuList) {
-                    String skuCmdAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-                    List<WhSkuInventorySnCommand> list = skuInvCmd.getWhSkuInventorySnCommandList();
-                    if(skuAttrId.equals(skuCmdAttrId)) {
-                        if(null == list || list.size() == 0){
-                            tipSku = skuAttrId;
-                            result1 = true;
-                            break;
-                        }else{
+//            Boolean result = false;
+//            Boolean result1 = false;
+//            for(String skuAttrId:skuAttrIds) {
+//                cacheSkuAttrIds.getFirst();
+//                for(WhSkuInventoryCommand skuInvCmd:whskuList) {
+//                    String skuCmdAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+//                    List<WhSkuInventorySnCommand> list = skuInvCmd.getWhSkuInventorySnCommandList();
+//                    if(skuAttrId.equals(skuCmdAttrId)) {
+//                        if(null == list || list.size() == 0){
+//                            tipSku = skuAttrId;
+//                            result1 = true;
+//                            break;
+//                        }else{
                             String valueIds = cacheSkuAttrIds.getFirst();
                             tipSku = valueIds;
-                            result = true;
-                            break;
-                        }
-                    }
-                    if(result) {
-                      result1 = true;
-                      break;
-                    }
-                }
-                if(result1) {
-                    break;
-                }
-            }
-            cacheSkuAttrIds.addFirst(tipSku);   // 
-            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
+//                            result = true;
+//                            break;
+//                        }
+//                    }
+//                    if(result) {
+//                      result1 = true;
+//                      break;
+//                    }
+//                }
+//                if(result1) {
+//                    break;
+//                }
+//            }
+//            cacheSkuAttrIds.addFirst(tipSku);   // 
+//            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + insideContainerId.toString() + locationId.toString(), cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
         } else {
             // 随机提示一个
             for (String sId : skuAttrIds) {
