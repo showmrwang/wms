@@ -6738,7 +6738,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     
     private Long pickingContainerSaveInventory(WhSkuInventoryCommand skuInvSnCmd,WhSkuInventoryCommand skuInvCmd,Double qty,Boolean isTabbInvTotal,Long ouId,Long userId,Integer pickingWay,Long outerContainerId,Long insideContainerId){
         Long invSkuId = null;
-        List<WhSkuInventorySnCommand> snList = skuInvCmd.getWhSkuInventorySnCommandList();
+        List<WhSkuInventorySnCommand> snList = skuInvSnCmd.getWhSkuInventorySnCommandList();
         if (null == snList || snList.size() == 0) {
             String uuid = "";
             WhSkuInventory inv = new WhSkuInventory();
@@ -6823,7 +6823,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     BeanUtils.copyProperties(cSnCmd, sn);
                     sn.setUuid(inv.getUuid());
                     sn.setOccupationCode(skuInvCmd.getOccupationCode());
-                    sn.setOccupationLineId(skuInvCmd.getOccupationId());
+                    sn.setOccupationLineId(skuInvCmd.getOccupationLineId());
                     whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
                     insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
                     insertSkuInventorySnLog(sn.getId(), ouId); // 记录sn日志
