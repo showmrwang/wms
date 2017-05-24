@@ -2777,6 +2777,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             delivery.setWaybillCode(res.getMailno());   // 物流单号
             delivery.setTransBigWord(res.getTransBigWord());    // 运单大头笔
             delivery.setTmsCode(res.getTmsCode());  // 二级配送公司编码,用于发货回传
+            delivery.setExtId(res.getExtId());      // 物流平台单号
             delivery.setLogisticsCode(res.getLogisticsCode());  // 物流公司编码,用于发货回传
             delivery.setPackageCenterCode(res.getPackageCenterCode());  // 集包地编码
             delivery.setPackageCenterName(res.getPackageCenterName());  // 集包地名称
