@@ -5,6 +5,7 @@ import com.baozun.scm.primservice.whoperation.command.pda.work.ReplenishmentPuta
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionReplenishment;
 
 public interface PdaReplenishmentPutawayManager extends BaseManager {
@@ -94,8 +95,16 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
       * @param operationId
       * @return
       */
-     public Boolean judgeIsOnlyLocation(Long operationId);
+     public Boolean judgeIsOnlyLocation(Long operationId,Long locationId,String turnoverBoxCode,Long ouId);
      
      
      public ContainerCommand findContainerCmdByCode(String containerCode,Long ouId);
+     
+     /**
+      * 获取库位信息
+      * @param id
+      * @param ouId
+      * @return
+      */
+     public Location findLocationById(Long id,Long ouId);
 }

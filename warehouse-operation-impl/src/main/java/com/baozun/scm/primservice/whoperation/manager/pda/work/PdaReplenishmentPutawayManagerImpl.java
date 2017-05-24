@@ -256,7 +256,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
         Set<Long> turnoverBoxIds = mapTurnoverBoxIds.get(locationId);
         Long turnoverBoxId = cmd.getId();
-        if(locationIds.size()==1) {//一个目标库位
+        Boolean result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId);
+        if(!result) {//result 为true时，是多库位,为false时是单库位
             //缓存上一个周转箱
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId,true);
             ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId,locationId);
@@ -315,6 +316,24 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }
        log.info("PdaReplenishmentPutawayManagerImpl putawayScanTurnoverBox is end");
        return command;
+    }
+    
+    
+    private Boolean judgeIsManayLoc(List<Long> locationIds, Map<Long, Set<Long>> mapTurnoverBoxIds,Long turnoverBoxId,Long locationId){
+        Boolean result = false;//默认单库位
+        if(locationIds.size() == 1){
+            result = false;  //单库位
+        }else{
+            for(Long locId:locationIds){
+                if(locId.longValue() != locationId.longValue()){
+                    Set<Long> turnoverBoxIds = mapTurnoverBoxIds.get(locId);
+                    if(turnoverBoxIds.contains(turnoverBoxId)){
+                        result = true;  //一个周转箱对应多个库位
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -1538,16 +1557,22 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
       * @param operationId
       * @return
       */
-     public Boolean judgeIsOnlyLocation(Long operationId){
+     public Boolean judgeIsOnlyLocation(Long operationId,Long locationId,String turnoverBoxCode,Long ouId){
          Boolean result = false;// 默认单库位
+         ContainerCommand ic = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+         if (null == ic) {
+             // 容器信息不存在
+             log.error("pdaScanContainer container is null logid: " + logId);
+             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+         }
+         Long turnoverBoxId = ic.getId();
          OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
          if(null == opExecLineCmd){
              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
          }
          List<Long> locationIds = opExecLineCmd.getLocationIds();
-         if(locationIds.size() > 1){//多库位
-             result = true;
-         }
+         Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
+         result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId);
          return result;
      }
      
@@ -1557,5 +1582,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
              throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
          }
          return cmd;
+     }
+     
+     /**
+      * 获取库位信息
+      * @param id
+      * @param ouId
+      * @return
+      */
+     public Location findLocationById(Long id,Long ouId){
+         return whLocationDao.findByIdExt(id, ouId);
      }
 }
