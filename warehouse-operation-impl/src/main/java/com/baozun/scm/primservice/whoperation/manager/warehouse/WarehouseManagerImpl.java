@@ -293,6 +293,12 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
                 }
                 return false;
             }
+            WarehouseMgmt whMgmt = new WarehouseMgmt();
+            whMgmt.setWarehouseId(wh.getId());
+            whMgmt.setSeedingOdoQty(0); // 默认
+            whMgmt.setZqty(1); // 默认
+            whMgmt.setGoodsReceiptMode(1); // 默认
+            warehouseMgmtDao.insert(whMgmt);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("IF: warehouse not null");

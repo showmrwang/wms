@@ -24,7 +24,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_id as createId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	facility_id as facilityId
 	    ]]>
 	</sql>
 	
@@ -86,9 +87,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="lastModifyTime!=null">
 					and last_modify_time = #{lastModifyTime}
 				</if>
-	       
 				<if test="modifiedId!=null">
 					and modified_id = #{modifiedId}
+				</if>
+				<if test="facilityId!=null">
+					and facility_id = #{facilityId}
 				</if>
 		</where>
 	</sql>
@@ -106,10 +109,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        last_modify_time = now() ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT},
+		        facility_id =  #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT},
 	        WHERE 
-		        id = #{id} and ou_id = #{ouId}
+		        id = #{id} and ou_id = #{ouId} and last_modify_time=#{lastModifyTime}
 	    ]]>
 		</update>
 		
@@ -135,7 +139,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	              hd.create_time as createTime,
 	        	  hd.last_modify_time as lastModifyTime,
 	        	  hd.modified_id as modifiedId,
-	        	  hr.rule_code as chrCode
+	        	  hr.rule_code as chrCode,
+	        	  hr.facility_id as facilityId
 	              from t_wh_handover_station hd
 	              left join t_wh_handover_collection_rule hr on hd.chr_id = hr.id
 	              where hd.facility_group_id=#{facilityGroupId} and hd.ou_id = #{ouId} order by hd.serial_number
@@ -156,7 +161,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_id as createId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	facility_id as facilityId
 	              from t_wh_handover_station  
 	              where code=#{code}
 	</select>
@@ -175,7 +181,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	hs.create_id as createId,
 	        	hs.create_time as createTime,
 	        	hs.last_modify_time as lastModifyTime,
-	        	hs.modified_id as modifiedId
+	        	hs.modified_id as modifiedId,
+	        	hs.facility_id as facilityId
 	           from t_wh_handover_station hs
 	           where  hs.lifecycle = 1
 	           and hs.facility_group_id = #{facilityGroupId}
@@ -196,7 +203,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	hs.create_id as createId,
 	        	hs.create_time as createTime,
 	        	hs.last_modify_time as lastModifyTime,
-	        	hs.modified_id as modifiedId
+	        	hs.modified_id as modifiedId,
+	        	hs.facility_id as facilityId
 	           from t_wh_handover_station hs
 	           where  hs.lifecycle = 1
 	           and hs.facility_group_id is null

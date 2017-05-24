@@ -59,6 +59,8 @@ public class WhHandoverStation extends BaseModel {
     private java.util.Date lastModifyTime;
     /** 修改人ID */
     private java.lang.Long modifiedId;
+    /**复合台id*/
+    private java.lang.Long facilityId;
 
     // columns END
 
@@ -220,4 +222,14 @@ public class WhHandoverStation extends BaseModel {
 
         .isEquals();
     }
+
+    public java.lang.Long getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(java.lang.Long facilityId) {
+        this.facilityId = facilityId;
+    }
+    
+    
 }
