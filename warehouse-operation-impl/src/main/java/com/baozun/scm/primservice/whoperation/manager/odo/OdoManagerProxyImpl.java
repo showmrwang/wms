@@ -2751,7 +2751,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 }
             }
         }
-        odoTransportMgmtManager.updateOdoTransportMgmtExt(transMgmt);
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
             odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "TransportServiceProvider is null", ouId);
             return null;
