@@ -899,6 +899,9 @@ public class ErrorCodes {
     public static final int CHECKING_CHECKING_SKUINV_UPDATE_ERROR = 60347;
     /** SN更新异常 */
     public static final int CHECKING_CHECKING_SN_UPDATE_ERROR = 60348;
+    /** 物流推荐失败 */
+    public static final int CHECKING_ODO_TRANSPORT_SERVICE_ERROR = 60349;
+
 
 
 

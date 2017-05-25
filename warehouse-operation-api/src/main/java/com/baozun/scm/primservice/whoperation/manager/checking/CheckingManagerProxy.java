@@ -107,5 +107,4 @@ public interface CheckingManagerProxy extends BaseManager {
 
     public boolean checkTrolleyCheckingFinished(Long checkingId, String checkingSourceCode, Long ouId, String logId);
 
-    public void releaseCheckingSource(Long checkingId, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId);
 }

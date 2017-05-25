@@ -460,86 +460,6 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
 
-    /**
-     * 释放复核的周转箱、小车、播种墙
-     *
-     * @author mingwei.xie
-     * @param checkingId
-     * @param checkingSourceCode
-     * @param checkingType
-     * @param userId
-     * @param ouId
-     * @param logId
-     */
-    public void releaseCheckingSource(Long checkingId, String checkingSourceCode, String checkingType, Long userId, Long ouId, String logId) {
-        WhCheckingCommand checkingCommand = checkingManager.findCheckingById(checkingId, ouId);
-        boolean isCheckingFinished = this.checkBoxCheckingFinished(checkingCommand.getId(), ouId, logId);
-        if (isCheckingFinished) {
-            // 完成箱复核,判断小车、播种墙是否完成复核
-            switch (checkingType) {
-                case Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_BOX:
-                    /** 按箱复核类型 小车出库箱 */
-                case Constants.OUTBOUND_BOX_CHECKING_TYPE_TROLLEY_GRID:
-                    /** 按箱复核类型 小车货格 */
-                    boolean isTrolleyCheckingFinished = this.checkTrolleyCheckingFinished(checkingId, checkingSourceCode, ouId, logId);
-                    if (isTrolleyCheckingFinished) {
-                        try {
-                            // 释放小车
-                            Container container = this.releaseTrolleyContainer(checkingCommand, userId, ouId);
-
-                            int updateCount = containerManager.saveOrUpdateByVersion(container);
-                            if (1 != updateCount) {
-                                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                            }
-                        } catch (Exception e) {
-                            throw new BusinessException(ErrorCodes.CHECKING_RELEASE_TROLLEY_ERROR);
-                        }
-                    }
-                    break;
-                case Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_BOX:
-                    /** 按箱复核类型 播种墙出库箱 */
-                case Constants.OUTBOUND_BOX_CHECKING_TYPE_SEEDING_GRID:
-                    /** 按箱复核类型 播种墙货格 */
-                    boolean isFacilityCheckingFinished = this.checkFacilityCheckingFinished(checkingId, checkingSourceCode, ouId, logId);
-                    if (isFacilityCheckingFinished) {
-                        try {
-                            // 释放播种墙
-                            WhOutboundFacility whOutboundFacility = releaseSeedingFacility(checkingCommand, userId, ouId);
-
-                            int updateCount = checkingManager.releaseSeedingFacility(whOutboundFacility);
-                            if (1 != updateCount) {
-                                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                            }
-                        } catch (Exception e) {
-                            throw new BusinessException(ErrorCodes.CHECKING_RELEASE_SEEDING_FACILITY_ERROR);
-                        }
-                    }
-                    break;
-                case Constants.OUTBOUND_BOX_CHECKING_TYPE_OUTBOUND_BOX:
-                    /** 按箱复核类型 出库箱 */
-                    break;
-                case Constants.OUTBOUND_BOX_CHECKING_TYPE_TURNOVER_BOX:
-                    /** 按箱复核类型 周转箱 */
-                    boolean isBoxCheckingFinished = this.checkBoxCheckingFinished(checkingCommand.getId(), ouId, logId);
-                    if (isBoxCheckingFinished) {
-                        try {
-                            // 释放周转箱
-                            Container container = this.releaseTurnoverBox(checkingCommand, userId, ouId);
-
-                            int updateCount = containerManager.saveOrUpdateByVersion(container);
-                            if (1 != updateCount) {
-                                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                            }
-                        } catch (Exception e) {
-                            throw new BusinessException(ErrorCodes.CHECKING_RELEASE_TURNOVERBOX_ERROR);
-                        }
-                    }
-                    break;
-                default:
-                    throw new BusinessException(ErrorCodes.CHECKING_CHECKING_SOURCE_TYPE_ERROR);
-            }
-        }
-    }
 
     /**
      * 释放播种墙
@@ -724,6 +644,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
 
         WhCheckingResultCommand whCheckingResultCommand = new WhCheckingResultCommand();
+        whCheckingResultCommand.setFunctionId(function.getFunctionId());
+        whCheckingResultCommand.setOuId(ouId);
         if (null != trolleyContainer) {
             whCheckingResultCommand.setContainer(trolleyContainer);
         } else if (null != turnoverBoxContainer) {
@@ -813,14 +735,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             if (whCheckingCommand.getId().equals(checkingId)) {
                 continue;
             }
-            List<WhCheckingLineCommand> trolleyCheckingLineList = this.getCheckingLineListByChecking(whCheckingCommand.getId(), ouId, logId);
-            for (WhCheckingLineCommand checkingLine : trolleyCheckingLineList) {
-                if (!checkingLine.getQty().equals(checkingLine.getCheckingQty())) {
-                    isFacilityCheckingFinished = false;
-                    break;
-                }
-            }
-            if (!isFacilityCheckingFinished) {
+            if (CheckingStatus.FINISH != whCheckingCommand.getStatus()) {
+                isFacilityCheckingFinished = false;
                 break;
             }
         }
@@ -844,14 +760,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             if (whCheckingCommand.getId().equals(checkingId)) {
                 continue;
             }
-            List<WhCheckingLineCommand> trolleyCheckingLineList = this.getCheckingLineListByChecking(whCheckingCommand.getId(), ouId, logId);
-            for (WhCheckingLineCommand checkingLine : trolleyCheckingLineList) {
-                if (!checkingLine.getQty().equals(checkingLine.getCheckingQty())) {
-                    isTrolleyCheckingFinished = false;
-                    break;
-                }
-            }
-            if (!isTrolleyCheckingFinished) {
+            if (CheckingStatus.FINISH != whCheckingCommand.getStatus()) {
+                isTrolleyCheckingFinished = false;
                 break;
             }
         }
@@ -896,12 +806,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             if (whCheckingCommand.getId().equals(checkingId)) {
                 continue;
             }
-            List<WhCheckingLineCommand> checkingLineList = this.getCheckingLineListByChecking(whCheckingCommand.getCheckingId(), ouId, logId);
-            for (WhCheckingLineCommand checkingLine : checkingLineList) {
-                if (!checkingLine.getQty().equals(checkingLine.getCheckingQty())) {
-                    isCheckingFinished = false;
-                    break;
-                }
+            if (CheckingStatus.FINISH != whCheckingCommand.getStatus()) {
+                isCheckingFinished = false;
+                break;
             }
         }
         return isCheckingFinished;

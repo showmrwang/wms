@@ -688,6 +688,8 @@
             OR checking.container_lattice_no = #{checkingSourceCode}
             OR checking.outboundbox_code = #{checkingSourceCode}
         )
+        and ( checking.status = 1 or checking.status = 9)
+
     </select>
 
     <select id="findCheckingByBoxCode" resultMap="WhCheckingCommand">
@@ -738,6 +740,7 @@
                  checking.container_lattice_no = #{checkingBoxCode}
                 OR checking.outboundbox_code = #{checkingBoxCode}
             )
+            and ( checking.status = 1 or checking.status = 9)
     </select>
 
     <select id="findCheckingByParam" resultMap="WhCheckingCommand">
