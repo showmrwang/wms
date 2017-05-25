@@ -67,6 +67,7 @@ public class InitManagerImpl implements InitManager {
         w.setColor(sku.getColor());
         w.setStyle(sku.getStyle());
         w.setSize(sku.getSize());
+        w.setNum(serialNumber);
         if (!StringUtils.isEmpty(d[4])) {
             w.setSn(d[4].trim().toString());
         }
