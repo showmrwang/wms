@@ -550,9 +550,6 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         }
         WhSkuInventoryCommand boxOccuInv =
                 skuInventoryDao.findCheckingConsumableOccSkuInv(outboundbox.getOutboundboxCode(), outboundbox.getConsumableSkuId(), outboundbox.getConsumableLocationCode(), Constants.SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE, ouId);
-        if (null == boxOccuInv) {
-            throw new BusinessException(ErrorCodes.CHECKING_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR);
-        }
         return boxOccuInv;
     }
 
@@ -563,7 +560,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int releaseSeedingFacility(WhOutboundFacility whOutboundFacility ) {
+    public int releaseSeedingFacility(WhOutboundFacility whOutboundFacility) {
         int updateCount = whOutboundFacilityDao.saveOrUpdateByVersion(whOutboundFacility);
         return updateCount;
     }
@@ -744,38 +741,40 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      * @param whCheckingResultCommand
      */
     @Override
-    public Boolean printDefect(WhCheckingResultCommand whCheckingResultCommand) {
-        Boolean isSuccess = true;
+    public void printDefect(WhCheckingResultCommand whCheckingResultCommand) {
         Long ouId = whCheckingResultCommand.getOuId();
         // 查询功能是否配置复核打印单据配置
         WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundManager.findByFunctionIdExt(whCheckingResultCommand.getFunctionId(), ouId);
         String checkingPrint = whFunctionOutBound.getCheckingPrint();
-        if (null != checkingPrint && "".equals(checkingPrint)) {
+        if (null != checkingPrint && !"".equals(checkingPrint)) {
             String[] checkingPrintArray = checkingPrint.split(",");
             for (int i = 0; i < checkingPrintArray.length; i++) {
                 List<Long> idsList = new ArrayList<Long>();
-                for (WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()) {
-                    List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
-                    if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
-                        idsList.add(whCheckingCommand.getId());
-                        WhPrintInfo whPrintInfo = new WhPrintInfo();
-                        whPrintInfo.setFacilityId(whCheckingCommand.getFacilityId());
+                WhCheckingCommand whCheckingCommand = whCheckingResultCommand.getOrgCheckingCommand();
+                List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
+                if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
+                    idsList.add(whCheckingCommand.getId());
+                    WhPrintInfo whPrintInfo = new WhPrintInfo();
+                    whPrintInfo.setFacilityId(whCheckingCommand.getFacilityId());
+                    if(null != whCheckingCommand.getContainerId()){
                         whPrintInfo.setContainerId(whCheckingCommand.getContainerId());
                         Container container = containerDao.findByIdExt(whCheckingCommand.getContainerId(), whCheckingCommand.getOuId());
-                        whPrintInfo.setContainerCode(container.getCode());
-                        whPrintInfo.setBatch(whCheckingCommand.getBatch());
-                        whPrintInfo.setWaveCode(whCheckingCommand.getWaveCode());
-                        whPrintInfo.setOuId(whCheckingCommand.getOuId());
+                        whPrintInfo.setContainerCode(container.getCode());    
+                    }
+                    whPrintInfo.setBatch(whCheckingCommand.getBatch());
+                    whPrintInfo.setWaveCode(whCheckingCommand.getWaveCode());
+                    whPrintInfo.setOuId(whCheckingCommand.getOuId());
+                    if(null != whCheckingCommand.getOuterContainerId()){
                         whPrintInfo.setOuterContainerId(whCheckingCommand.getOuterContainerId());
                         Container outerContainer = containerDao.findByIdExt(whCheckingCommand.getOuterContainerId(), whCheckingCommand.getOuId());
-                        whPrintInfo.setOuterContainerCode(outerContainer.getCode());
-                        whPrintInfo.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
-                        whPrintInfo.setOutboundboxId(whCheckingCommand.getOutboundboxId());
-                        whPrintInfo.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
-                        whPrintInfo.setPrintType(checkingPrintArray[i]);
-                        whPrintInfo.setPrintCount(1);
-                        whPrintInfoDao.insert(whPrintInfo);
+                        whPrintInfo.setOuterContainerCode(outerContainer.getCode());    
                     }
+                    whPrintInfo.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
+                    whPrintInfo.setOutboundboxId(whCheckingCommand.getOutboundboxId());
+                    whPrintInfo.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
+                    whPrintInfo.setPrintType(checkingPrintArray[i]);
+                    whPrintInfo.setPrintCount(1);
+                    whPrintInfoDao.insert(whPrintInfo);
                 }
                 try {
                     if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
@@ -799,7 +798,6 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 }
             }
         }
-        return isSuccess;
     }
 
 

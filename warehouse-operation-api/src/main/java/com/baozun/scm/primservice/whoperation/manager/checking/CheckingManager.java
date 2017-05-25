@@ -208,5 +208,5 @@ public interface CheckingManager extends BaseManager {
      * @param whCheckingResultCommand
      * @return
      */
-    Boolean printDefect(WhCheckingResultCommand whCheckingResultCommand);
+    void printDefect(WhCheckingResultCommand whCheckingResultCommand);
 }
