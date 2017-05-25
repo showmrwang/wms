@@ -594,6 +594,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         if (warehouseMgmt.getIsMgmtConsumableSku()) {
             whOutboundConsumable = this.createOutboundConsumable(facilityCommand, checkedBox.getOutboundboxCode(), orgChecking, checkedBox, whOdo, userId, ouId, logId);
             consumableSkuInv = checkingManager.getConsumableSkuInventory(checkedBox, ouId, logId);
+            if (null == consumableSkuInv) {
+                throw new BusinessException(ErrorCodes.CHECKING_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR);
+            }
         }
 
 

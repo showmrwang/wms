@@ -550,9 +550,6 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         }
         WhSkuInventoryCommand boxOccuInv =
                 skuInventoryDao.findCheckingConsumableOccSkuInv(outboundbox.getOutboundboxCode(), outboundbox.getConsumableSkuId(), outboundbox.getConsumableLocationCode(), Constants.SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE, ouId);
-        if (null == boxOccuInv) {
-            throw new BusinessException(ErrorCodes.CHECKING_OCCUPATION_CONSUMABLE_SKUINV_NULL_ERROR);
-        }
         return boxOccuInv;
     }
 
@@ -563,7 +560,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int releaseSeedingFacility(WhOutboundFacility whOutboundFacility ) {
+    public int releaseSeedingFacility(WhOutboundFacility whOutboundFacility) {
         int updateCount = whOutboundFacilityDao.saveOrUpdateByVersion(whOutboundFacility);
         return updateCount;
     }
