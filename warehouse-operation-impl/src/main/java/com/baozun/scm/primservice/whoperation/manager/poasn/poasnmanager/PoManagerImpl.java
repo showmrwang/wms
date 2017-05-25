@@ -636,6 +636,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             }
             inboundConfirm.setWhCode(wh.getCode());
         }
+        inboundConfirm.setExtPoType(po.getExtPoType());
         inboundConfirm.setPoStatus(po.getStatus().toString());
         inboundConfirm.setPoType(po.getPoType().toString());
         inboundConfirm.setIsIqc(po.getIsIqc());
@@ -868,7 +869,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public void testzk() {
-        BiPo bipo = biPoDao.findById(211100090L);
+        BiPo bipo = biPoDao.findById(211100153L);
         this.createInBoundConfirmData(bipo);
     }
 
