@@ -44,9 +44,6 @@ public class WhCheckingResultCommand extends BaseModel {
     private Long ouId;
     /** 用户Id */
     private Long userId;
-    
-    /** 复核头集合 */
-    private List<WhCheckingCommand> whCheckingCommandLst;
     //columns END
 
     /**==============================复核保存数据=============================*/
@@ -91,12 +88,6 @@ public class WhCheckingResultCommand extends BaseModel {
     }
     public void setOuId(Long ouId) {
         this.ouId = ouId;
-    }
-    public List<WhCheckingCommand> getWhCheckingCommandLst() {
-        return whCheckingCommandLst;
-    }
-    public void setWhCheckingCommandLst(List<WhCheckingCommand> whCheckingCommandLst) {
-        this.whCheckingCommandLst = whCheckingCommandLst;
     }
     public Long getUserId() {
         return userId;
