@@ -16,15 +16,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutBound
 public interface CheckingManagerProxy extends BaseManager {
 
     /**
-     * 根据复核打印配置打印单据
-     * 
-     * @author qiming.liu
-     * @param whCheckingResultCommand
-     * @return
-     */
-    Boolean printDefect(WhCheckingResultCommand whCheckingResultCommand);
-
-    /**
      * 更新复核数据
      * 
      * @author qiming.liu

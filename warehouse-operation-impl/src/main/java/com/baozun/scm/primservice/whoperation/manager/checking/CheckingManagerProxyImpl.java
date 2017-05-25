@@ -46,7 +46,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLin
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
-import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
@@ -85,7 +84,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumab
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
@@ -135,71 +133,6 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     @Autowired
     private WarehouseManager warehouseManager;
 
-
-    /**
-     * 根据复核打印配置打印单据
-     * 
-     * @author qiming.liu
-     * @param whCheckingResultCommand
-     */
-    @Override
-    public Boolean printDefect(WhCheckingResultCommand whCheckingResultCommand) {
-        Boolean isSuccess = true;
-        Long ouId = whCheckingResultCommand.getOuId();
-        // 查询功能是否配置复核打印单据配置
-        WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundManager.findByFunctionIdExt(whCheckingResultCommand.getFunctionId(), ouId);
-        String checkingPrint = whFunctionOutBound.getCheckingPrint();
-        if (null != checkingPrint && "".equals(checkingPrint)) {
-            String[] checkingPrintArray = checkingPrint.split(",");
-            for (int i = 0; i < checkingPrintArray.length; i++) {
-                List<Long> idsList = new ArrayList<Long>();
-                for (WhCheckingCommand whCheckingCommand : whCheckingResultCommand.getWhCheckingCommandLst()) {
-                    List<WhPrintInfo> whPrintInfoLst = whPrintInfoManager.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
-                    if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
-                        idsList.add(whCheckingCommand.getId());
-                        WhPrintInfo whPrintInfo = new WhPrintInfo();
-                        whPrintInfo.setFacilityId(whCheckingCommand.getFacilityId());
-                        whPrintInfo.setContainerId(whCheckingCommand.getContainerId());
-                        Container container = containerDao.findByIdExt(whCheckingCommand.getContainerId(), whCheckingCommand.getOuId());
-                        whPrintInfo.setContainerCode(container.getCode());
-                        whPrintInfo.setBatch(whCheckingCommand.getBatch());
-                        whPrintInfo.setWaveCode(whCheckingCommand.getWaveCode());
-                        whPrintInfo.setOuId(whCheckingCommand.getOuId());
-                        whPrintInfo.setOuterContainerId(whCheckingCommand.getOuterContainerId());
-                        Container outerContainer = containerDao.findByIdExt(whCheckingCommand.getOuterContainerId(), whCheckingCommand.getOuId());
-                        whPrintInfo.setOuterContainerCode(outerContainer.getCode());
-                        whPrintInfo.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
-                        whPrintInfo.setOutboundboxId(whCheckingCommand.getOutboundboxId());
-                        whPrintInfo.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
-                        whPrintInfo.setPrintType(checkingPrintArray[i]);
-                        whPrintInfo.setPrintCount(1);
-                        whPrintInfoManager.saveOrUpdate(whPrintInfo);
-                    }
-                }
-                try {
-                    if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
-                        // 装箱清单
-                        checkingManager.printPackingList(idsList, whCheckingResultCommand.getUserId(), ouId);
-                    }
-                    if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
-                        // 销售清单
-                        checkingManager.printSalesList(idsList, whCheckingResultCommand.getUserId(), ouId);
-                    }
-                    if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
-                        // 面单
-                        checkingManager.printSinglePlane(null, null, whCheckingResultCommand.getUserId(), ouId);
-                    }
-                    if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
-                        // 箱标签
-                        checkingManager.printBoxLabel(null, whCheckingResultCommand.getUserId(), ouId);
-                    }
-                } catch (Exception e) {
-                    log.error(e + "");
-                }
-            }
-        }
-        return isSuccess;
-    }
 
     /**
      * 更新复核数据
