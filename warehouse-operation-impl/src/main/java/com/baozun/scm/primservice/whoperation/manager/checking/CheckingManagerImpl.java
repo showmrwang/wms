@@ -568,7 +568,6 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void finishedChecking(WhCheckingResultCommand checkingResultCommand, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
         
-        printDefect(checkingResultCommand);
         // 更新复核头信息
         WhCheckingCommand orgCheckingCommand = checkingResultCommand.getOrgCheckingCommand();
         // 更新复核明细信息
@@ -644,7 +643,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 throw new BusinessException(ErrorCodes.CHECKING_RELEASE_SEEDING_FACILITY_ERROR);
             }
         }
-
+        printDefect(checkingResultCommand);
     }
 
     private void updateCheckingInfoToDB(WhCheckingCommand orgCheckingCommand) {
@@ -770,8 +769,12 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                         whPrintInfo.setOuterContainerCode(outerContainer.getCode());    
                     }
                     whPrintInfo.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
-                    whPrintInfo.setOutboundboxId(whCheckingCommand.getOutboundboxId());
-                    whPrintInfo.setOutboundboxCode(whCheckingCommand.getOutboundboxCode());
+                    WhOutboundbox whOutboundbox = whCheckingResultCommand.getWhOutboundbox();
+                    if(null == whOutboundbox){
+                        throw new BusinessException(ErrorCodes.PARAMS_ERROR);    
+                    }
+                    whPrintInfo.setOutboundboxId(whOutboundbox.getOutboundboxId());
+                    whPrintInfo.setOutboundboxCode(whOutboundbox.getOutboundboxCode());
                     whPrintInfo.setPrintType(checkingPrintArray[i]);
                     whPrintInfo.setPrintCount(1);
                     whPrintInfoDao.insert(whPrintInfo);
