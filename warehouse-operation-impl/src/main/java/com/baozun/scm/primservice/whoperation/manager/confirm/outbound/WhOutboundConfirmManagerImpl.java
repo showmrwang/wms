@@ -291,7 +291,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
         WhInvoice whInvoice = whInvoiceDao.findWhInvoiceByOdoId(odoCode, ouid);
         if (null != whInvoice) {
             WhOutboundInvoiceConfirm w = new WhOutboundInvoiceConfirm();
-            BeanUtils.copyProperties(whInvoice, w);
+            BeanUtils.copyProperties(whInvoice, w, "id");
             w.setOutboundConfirmId(outboundid);
             Long invCount = whOutboundInvoiceConfirmDao.insert(w);
             if (invCount.intValue() == 0) {
