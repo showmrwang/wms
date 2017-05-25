@@ -3319,6 +3319,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         }
                         count = count + 1;
                     }
+                    Double oldQty1 = 0.0;
+                    if (true == isTabbInvTotal) { // 在库存日志是否记录交易前后库存总数 0：否 1：是
+                        try {
+                            oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(oldSkuInventory.getUuid(), command.getOuId());
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty1 = 0.0;
+                    }
+                    insertSkuInventoryLog(oldSkuInventory.getId(), -oldSkuInventory.getOnHandQty(), oldQty1, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
                     // 删除原库存
                     whSkuInventoryDao.delete(oldSkuInventory.getId());
                     insertGlobalLog(GLOBAL_LOG_DELETE, oldSkuInventory, command.getOuId(), command.getUserId(), null, null);
