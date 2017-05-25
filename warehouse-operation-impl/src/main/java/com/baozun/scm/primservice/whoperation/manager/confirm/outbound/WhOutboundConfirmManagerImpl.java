@@ -302,7 +302,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             List<WhInvoiceLine> whInvoiceLines = whInvoiceLineDao.findWhInvoiceLineByInvoiceId(whInvoice.getId(), ouid);
             for (WhInvoiceLine whInvoiceLine : whInvoiceLines) {
                 WhOutboundInvoiceLineConfirm line = new WhOutboundInvoiceLineConfirm();
-                BeanUtils.copyProperties(whInvoiceLine, line);
+                BeanUtils.copyProperties(whInvoiceLine, line, "id");
                 line.setOutboundInvoiceConfirmId(w.getId());
                 if (null != whInvoiceLine.getQty()) {
                     line.setQty(whInvoiceLine.getQty().doubleValue());
