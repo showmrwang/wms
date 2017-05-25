@@ -328,6 +328,12 @@ public class ContainerPutawayLocationRecommend extends BasePutawayLocationRecomm
                     }
                     // Double volumeRate = al.getVolumeRate();
                     if (WhLocationRecommendType.EMPTY_LOCATION.equals(locationRecommendRule)) {
+                        // 判断当前库位是否存在待移入库存
+                        int invCount = whSkuLocationDao.findInvCountInTobefilledLocation(ouId, locId);
+                        if (invCount > 0) {
+                            // 已存在待移入库存，当前库位不是空库位
+                            continue;
+                        }
                         // 判断当前空库位是否为静态库位
                         Boolean isStatic = al.getIsStatic();
                         if (null != isStatic && true == isStatic) {

@@ -212,6 +212,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where skuList.sku_id is not null
     </select>
     
+    <select id="findInvCountInTobefilledLocation"  resultType="int">
+      select count(1)
+	  	from 
+	  	t_wh_sku_inventory_tobefilled inv
+	  	where inv.ou_id = #{ouId}
+	  	and inv.location_id = #{locId}
+	  	and inv.qty > 0.0
+    </select>
+    
     <select id="findOtherSkuInInvLocation"  resultType="java.lang.Long">
 				select inv.sku_id as sku_id 
 				from t_wh_sku_inventory inv

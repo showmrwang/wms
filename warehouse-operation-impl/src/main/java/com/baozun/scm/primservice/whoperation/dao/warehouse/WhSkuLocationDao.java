@@ -118,6 +118,16 @@ public interface WhSkuLocationDao extends BaseDao<WhSkuLocation,Long>{
     int findAllSkuCountInSkuLocation(@Param("ouId") Long ouId, @Param("locId") Long locId);
     
     /**
+     * 获取是否存在待移入库存
+     * 
+     * @author lichuan
+     * @param ouId
+     * @param locId
+     * @return
+     */
+    int findInvCountInTobefilledLocation(@Param("ouId") Long ouId, @Param("locId") Long locId);
+
+    /**
      * 查询库位上出指定商品之外商品的种类数
      * 
      * @author lichuan
