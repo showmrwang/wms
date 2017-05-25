@@ -22,7 +22,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	store_code as storeCode,
 	        	ou_id as ouId,
 	        	data_source as dataSource,
-	        	is_outbound_finish as isOutboundFinish
+	        	is_outbound_finish as isOutboundFinish,
+	        	create_time as createTime
 	    ]]>
 	</sql>
 	
