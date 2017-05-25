@@ -75,14 +75,6 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
     
     public ReplenishmentPutawayCommand judgeSkuAttrIdsIsUnique(ReplenishmentPutawayCommand command);
  
-//    /***
-//     * 扫sku抛出异常时,删除sku缓存
-//     * @param locationId
-//     * @param turnoverBoxId
-//     * @param skuId
-//     */
-//    public void removeCacheSku(Long locationId,Long turnoverBoxId,Long skuId);
-    
     /***
      * 删除缓存(如果存在s)
      * @param operationId
@@ -107,4 +99,22 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
       * @return
       */
      public Location findLocationById(Long id,Long ouId);
+     
+     /**
+      * 判断引入新容器状态
+      * @param newTurnoverBox
+      * @param locationId
+      * @param ouId
+      * @return
+      */
+     public void judgeNewTurnoverBox(String newTurnoverBox,Long locationId,Long ouId,Long userId);
+     
+     /***
+      * 修改周转箱状态
+      * @param turnoverBoxCode
+      * @param ouId
+      */
+     public void updateTurnoverBox(String turnoverBoxCode,Long ouId);
+     
+     
 }
