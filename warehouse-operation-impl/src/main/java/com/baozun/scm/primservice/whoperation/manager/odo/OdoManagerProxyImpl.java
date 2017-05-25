@@ -2670,7 +2670,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 封装数据匹配物流sql推荐实体
         SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
         trans.setWhCode(wh.getCode());
-        
+
         WhOdoTransportService transportService = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
         // 获取增值服务
         // 没有调用过或调用失败, 则调用物流增值服务推荐
@@ -2681,7 +2681,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         }
         // 获取推荐物流商
-        // 物流商 或  时效类型 或 产品类型为空则调用
+        // 物流商 或 时效类型 或 产品类型为空则调用
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType()) || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
             boolean flag = this.callSuggestTransService(trans, transMgmt, odoId, ouId);
             if (!flag) {
@@ -2729,13 +2729,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 delivery.setTransportCode(transMgmt.getTransportServiceProvider());
                 delivery.setTimeEffectType(transMgmt.getTimeEffectType());
                 delivery.setTransportServiceType(transMgmt.getCourierServiceType());
-                delivery.setWaybillCode(res.getMailno());   // 物流单号
-                delivery.setTransBigWord(res.getTransBigWord());    // 运单大头笔
-                delivery.setTmsCode(res.getTmsCode());  // 二级配送公司编码,用于发货回传
-                delivery.setExtId(res.getExtId());      // 物流平台单号
-                delivery.setLogisticsCode(res.getLogisticsCode());  // 物流公司编码,用于发货回传
-                delivery.setPackageCenterCode(res.getPackageCenterCode());  // 集包地编码
-                delivery.setPackageCenterName(res.getPackageCenterName());  // 集包地名称
+                delivery.setWaybillCode(res.getMailno()); // 物流单号
+                delivery.setTransBigWord(res.getTransBigWord()); // 运单大头笔
+                delivery.setTmsCode(res.getTmsCode()); // 二级配送公司编码,用于发货回传
+                delivery.setExtId(res.getExtId()); // 物流平台单号
+                delivery.setLogisticsCode(res.getLogisticsCode()); // 物流公司编码,用于发货回传
+                delivery.setPackageCenterCode(res.getPackageCenterCode()); // 集包地编码
+                delivery.setPackageCenterName(res.getPackageCenterName()); // 集包地名称
                 odoTransportMgmtManager.insertDeliveryInfoExt(delivery);
                 return delivery;
             } else {
@@ -2831,7 +2831,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             return false;
         }
     }
-    
+
     private MailnoGetResponse getMailnoGetResponse(MailnoGetContentCommand mailNoContent) {
         MailnoGetResponse res = null;
         for (int i = 0; i < 5; i++) {
@@ -2937,9 +2937,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         } else {
             info = infoList.get(0);
         }
-        info.setOutboundboxCode(outboundboxCode);
-        info.setOutboundboxId(consumableSkuId);
-        info = this.whOdoDeliveryInfoManager.saveOrUpdate(info);
+        // info.setOutboundboxCode(outboundboxCode);
+        // info.setOutboundboxId(consumableSkuId);
+        // info = this.whOdoDeliveryInfoManager.saveOrUpdate(info);
         return info;
     }
 

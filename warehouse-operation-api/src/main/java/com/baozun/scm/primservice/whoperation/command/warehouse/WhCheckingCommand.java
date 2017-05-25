@@ -15,7 +15,6 @@
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
 import java.util.Date;
-import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 
@@ -122,7 +121,7 @@ public class WhCheckingCommand extends BaseCommand {
     /** 周转箱编码*/
     private String containerCode;
     /** 面单号*/
-    private String waybillCode;
+    // private String waybillCode;
     /** 面单类型*/
     private String waybillType;
 
@@ -608,13 +607,13 @@ public class WhCheckingCommand extends BaseCommand {
         this.checkingFacilityId = checkingFacilityId;
     }
 
-    public String getWaybillCode() {
-        return waybillCode;
-    }
-
-    public void setWaybillCode(String waybillCode) {
-        this.waybillCode = waybillCode;
-    }
+    // public String getWaybillCode() {
+    // return waybillCode;
+    // }
+    //
+    // public void setWaybillCode(String waybillCode) {
+    // this.waybillCode = waybillCode;
+    // }
 
     public String getWaybillType() {
         return waybillType;

@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
-import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
@@ -55,6 +54,7 @@ import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportServiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
@@ -73,11 +73,11 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.checking.CheckingManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
@@ -153,6 +153,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     public static final String DV = "┊";
     // 占位符
     public static final String PH = "︴";
+    @Autowired
+    private WhOdoTransportServiceDao whOdoTransportServiceDao;
+    @Autowired
+    private OdoManagerProxy odoManagerProxy;
 
     @Override
     public void saveOrUpdate(WhCheckingCommand whCheckingCommand) {
@@ -238,25 +242,31 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private WhCheckingCommand findWaybillInfo(WhCheckingCommand checking) {
         Long odoId = checking.getOdoId();
         Long ouId = checking.getOuId();
-        List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findByOdoIdWithoutOutboundbox(odoId, ouId);
-        if (null != list && !list.isEmpty()) {
-            if (StringUtils.hasLength(list.get(0).getOutboundboxCode())) {
-                checking.setWaybillType("1");
-            } else {
-                checking.setWaybillCode(list.get(0).getWaybillCode());
-            }
-        } else {
-            WhOdoTransportMgmt odoTransportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(odoId, ouId);
-            MaTransport port = new MaTransport();
-            port.setCode(odoTransportMgmt.getTransportServiceProvider());
-            // List<MaTransport> portList = this.maTransportManager.findMaTransport(port);
-            // MaTransport maTransport = new MaTransport();
-            // if (null != portList && !portList.isEmpty()) {
-            // maTransport = portList.get(0);
-            // checking.setWaybillType(maTransport.getWaybillType());
-            // }
-            checking.setWaybillType("1"); // 1为纸质面单
-        }
+        // List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findByOdoIdWithoutOutboundbox(odoId,
+        // ouId);
+        checking.setWaybillType("1"); // 1为纸质面单
+        // WhOdoTransportService odoTransportService =
+        // whOdoTransportServiceDao.findByOdoIdAndOuId(odoId, ouId);
+        // if (null != odoTransportService && odoTransportService.getIsVasSuccess() &&
+        // odoTransportService.getIsTspSuccess() && odoTransportService.getIsWaybillCodeSuccess()) {
+        // if (odoTransportService.getIsOl()) {
+        // checking.setWaybillType("2"); // 2为电子面单
+        // } else {
+        // checking.setWaybillType("1"); // 1为纸质面单
+        // }
+        // } else {
+        // WhOdodeliveryInfo info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, "gianni_test",
+        // ouId);
+        // if (null != info) {
+        // if (null != info.getWaybillCode()) {
+        // checking.setWaybillType("2");
+        // } else {
+        // checking.setWaybillType("1");
+        // }
+        // } else {
+        // throw new BusinessException("获取运单号失败");
+        // }
+        // }
         return checking;
     }
 
@@ -320,6 +330,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         whCheckingByOdoCommand.setSnList(snList);
         checking.setOdoId(whCheckingLineList.get(0).getOdoId());
         checking = findWaybillInfo(checking);
+        whCheckingByOdoCommand.setCheckingCommand(checking);
         return whCheckingByOdoCommand;
     }
 
@@ -809,7 +820,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if (result) {
             // 更新出库单状态
-            this.updateOdoStatusByOdo(odoId, ouId, userId,cmd.getContaierCode(),cmd.getTurnoverBoxCode(),cmd.getSeedingWallCode());
+            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode());
         }
         // List<WeightingCommand> commandList =
         // whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId,
@@ -1003,16 +1014,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @author
      * @param whCheckingResultCommand
      */
-    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId,String outerContainerCode,String turnoverBoxCode,String seedingWallCode) {
+    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode) {
         // 修改出库单状态为复核完成状态。
         WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
         // 修改出库单状态为复核完成状态。
         whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
         whOdoDao.saveOrUpdateByVersion(whOdo);
         insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
-        //修改小车
+        // 修改小车
         ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-        if(null == outerCmd){
+        if (null == outerCmd) {
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         Container c = new Container();
@@ -1020,19 +1031,19 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         c.setStatus(Constants.LIFECYCLE_START);
         c.setLifecycle(Constants.LIFECYCLE_START);
         containerDao.saveOrUpdateByVersion(c);
-        //周转箱状态
+        // 周转箱状态
         ContainerCommand turnCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-        if(null == turnCmd){
+        if (null == turnCmd) {
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
-        Container turn= new Container();
+        Container turn = new Container();
         BeanUtils.copyProperties(turnCmd, turn);
         turn.setStatus(Constants.LIFECYCLE_START);
         turn.setLifecycle(Constants.LIFECYCLE_START);
         containerDao.saveOrUpdateByVersion(turn);
-        //修改播种墙状态
+        // 修改播种墙状态
         WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-        if(null == facility){
+        if (null == facility) {
             throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
         }
         facility.setStatus("1");
@@ -1091,8 +1102,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingCommand whCheckingCommand = whCheckingByOdoCommand.getCheckingCommand();
         CheckingDisplayCommand checkingDisplayCommand = new CheckingDisplayCommand();
         String odoCode = whCheckingByOdoCommand.getCheckingLineCommandList().get(0).getOdoCode();
-        checkingDisplayCommand.setOdoCode(odoCode);
-        checkingDisplayCommand.setExtCode(whCheckingCommand.getExtCode());
+        WhOdo odo = this.whOdoDao.findOdoByCodeAndOuId(odoCode, whCheckingCommand.getOuId());
+        if (null != odo) {
+            checkingDisplayCommand.setOdoCode(odoCode);
+            checkingDisplayCommand.setExtCode(odo.getExtCode());
+        }
         checkingDisplayCommand.setWaveCode(whCheckingCommand.getWaveCode());
         checkingDisplayCommand.setTransportName(whCheckingCommand.getTransportName());
         checkingDisplayCommand.setProductName(whCheckingCommand.getProductName());

@@ -70,7 +70,7 @@ public interface LocationManager extends BaseManager {
      * @param command
      * @return
      */
-    Long reduceQtyAndUpdateOutboundbox(WhCheckingCommand command);
+    LocationSkuVolume reduceQtyAndUpdateOutboundbox(WhCheckingCommand command);
 
     Location findLocationByCode(String locationCode, Long ouId);
 
