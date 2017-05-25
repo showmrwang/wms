@@ -795,16 +795,28 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             // 周转箱内部所有sku扫描完毕在缓存
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId,false);
+            Long insideContainerId = null;
+            if(null != newTurnoverBoxId){
+                insideContainerId = newTurnoverBoxId;
+            }else{
+                insideContainerId = turnoverBoxId;
+            }
             //判断当前库位是否有拣货工作
-            this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
+            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId);
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId, locationId,false);
         }else if(csrCmd.getIsPutaway()){
             command.setIsScanFinsh(true);
             List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             this.updateStatus(operationId, workCode, ouId, userId);
+            Long insideContainerId = null;
+            if(null != newTurnoverBoxId){
+                insideContainerId = newTurnoverBoxId;
+            }else{
+                insideContainerId = turnoverBoxId;
+            }
            //判断当前库位是否有拣货工作
-            this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
+            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId);
              //清除所有缓存
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, turnoverBoxId, locationId,true);
         }

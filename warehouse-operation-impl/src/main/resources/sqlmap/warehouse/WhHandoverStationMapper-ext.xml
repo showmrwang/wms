@@ -185,7 +185,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	hs.facility_id as facilityId
 	           from t_wh_handover_station hs
 	           where  hs.lifecycle = 1
-	           and hs.facility_group_id = #{facilityGroupId}
+	           and hs.facility_id = #{facilityGroupId}
 	           and hs.ou_id = #{ouId}
 	</select>
 	
