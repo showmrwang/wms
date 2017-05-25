@@ -798,6 +798,8 @@ public class ErrorCodes {
     public static final int SEEDING_SEEDING_BATCH_ODO_INFO_NULL_ERROR = 60228;
     /** 库存不足 */
     public static final int SEEDING_SEEDING_SKUINVENTORY_SHORTAGE = 60229;
+    /** 播种墙已完成播种 */
+    public static final int SEEDING_FINISHED = 60230;
 
 
 
