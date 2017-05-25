@@ -906,8 +906,6 @@ public class ErrorCodes {
 
 
 
-
-
     // 60001-70000 xiemingwei
 
     // 70001-80000 tangming
@@ -1026,7 +1024,7 @@ public class ErrorCodes {
     public static final int OUT_BOUNDBOX_NO_EXIST = 70063;
     /** 容器库存不存在 */
     public static final int CONTAINER_INVENTORY_NO_EXIST = 70064;
-    /**引入的新容器不能上架*/
+    /** 引入的新容器不能上架 */
     public static final int NEW_TURNOVERBOX_NO_LOC = 700065;
 
     // 70001-80000 tangming
@@ -1133,6 +1131,12 @@ public class ErrorCodes {
     public static final int COMPUTER_NOT_CONNECT_FACILITY = 110019;
     /** 该出库箱已交接出库 */
     public static final int OUTBOUNDBOX_ALREADY_HANDOVER = 110020;
+    /** 该出库箱尚未计算计重 */
+    public static final int OUTBOUNDBOX_NOT_CALC__WEIGHT = 110021;
+    /** 该出库箱无对应运单信息 */
+    public static final int NO_ODO_DELIVERY_INFO = 110022;
+    /** 该出库箱未绑定运单号或物流商编码 */
+    public static final int NO_WAYBILL_CODE_OR_TRANSPORT_CODE = 110023;
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;
