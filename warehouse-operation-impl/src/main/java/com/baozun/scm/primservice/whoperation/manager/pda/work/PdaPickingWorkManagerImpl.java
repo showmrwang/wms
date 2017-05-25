@@ -3321,7 +3321,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
                     // 删除原库存
                     whSkuInventoryDao.delete(oldSkuInventory.getId());
-                    insertGlobalLog(GLOBAL_LOG_DELETE, oldSkuInventory, command.getUserId(), command.getUserId(), null, null);
+                    insertGlobalLog(GLOBAL_LOG_DELETE, oldSkuInventory, command.getOuId(), command.getUserId(), null, null);
                 }
             }
             if(null == command.getPickingWay()){

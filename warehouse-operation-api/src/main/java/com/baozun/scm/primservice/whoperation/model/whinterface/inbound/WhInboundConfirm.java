@@ -66,6 +66,8 @@ public class WhInboundConfirm extends BaseModel {
     private String dataSource;
     /** 创建时间 */
     private Date createTime;
+    /** 上位系统单据类型 */
+    private String extPoType;
     /** 入库单明细信息 */
     private List<WhInboundLineConfirm> whInboundLineConfirms;
 
@@ -228,6 +230,14 @@ public class WhInboundConfirm extends BaseModel {
 
     public void setWhInboundLineConfirms(List<WhInboundLineConfirm> whInboundLineConfirms) {
         this.whInboundLineConfirms = whInboundLineConfirms;
+    }
+
+    public String getExtPoType() {
+        return extPoType;
+    }
+
+    public void setExtPoType(String extPoType) {
+        this.extPoType = extPoType;
     }
 
 }

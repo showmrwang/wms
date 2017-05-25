@@ -2693,33 +2693,70 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         WhOdoTransportService transportService = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
         // 没有调用过或调用失败, 则调用物流增值服务推荐
         if (null == transportService || !transportService.getIsVasSuccess()) {
-            VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
-            if (null != vasResult && vasResult.getStatus() == 1) {
-                List<VasLine> vasList = vasResult.getVasList();
-                if (null != vasList && !vasList.isEmpty()) {
-                    odoVasManager.insertVasList(odoId, vasList, odoVasLineList, transMgmt, ouId);
-                    List<TransVasList> transVasList = new ArrayList<TransVasList>();
-                    for (VasLine vas : vasList) {
-                        TransVasList transVas = new TransVasList();
-                        transVas.setVasCode(vas.getCode());
-                        transVasList.add(transVas);
-                    }
-                    trans.setTransVasList(transVasList);
-                } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "transVasList is empty", ouId);
-                }
-            } else {
-                // 失败,记录ErrorMessage
-                if (null == vasResult) {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "response is null", ouId);
-                } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, vasResult.getErrorCode() + "|" + vasResult.getErrorMassage(), ouId);
-                }
-            }
+            this.callVasTransService(trans, transMgmt, odoVasLineList, odoId, ouId);
         }
         // 获取推荐物流商
         // 物流商 或  时效类型 或 产品类型为空则调用
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType()) || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
+            this.callSuggestTransService(trans, transMgmt, odoId, ouId);
+        }
+        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "lpCode is null", ouId);
+            return null;
+        }
+        // 获取运单号
+        WhOdodeliveryInfo info = this.getMailNo(odo, transMgmt, address, odoLineList, odoVasLineList, wh, odoId, ouId);
+        return info;
+    }
+
+    /**
+     * 获取运单号
+     */
+    private WhOdodeliveryInfo getMailNo(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, WarehouseCommand wh, Long odoId, Long ouId) {
+        try {
+            // 获取运单号
+            MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, odoVasLineList, wh);
+            // 循环获取5次
+            MailnoGetResponse res = this.getMailnoGetResponse(mailNoContent);
+            if (null != res && null != res.getStatus() && res.getStatus() == 1) {
+                WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
+                delivery.setOdoId(odoId);
+                delivery.setCreateTime(new Date());
+                delivery.setLastModifyTime(new Date());
+                delivery.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+                delivery.setOuId(ouId);
+                delivery.setStatus(1);
+                delivery.setTransportCode(transMgmt.getTransportServiceProvider());
+                delivery.setTimeEffectType(transMgmt.getTimeEffectType());
+                delivery.setTransportServiceType(transMgmt.getCourierServiceType());
+                delivery.setWaybillCode(res.getMailno());   // 物流单号
+                delivery.setTransBigWord(res.getTransBigWord());    // 运单大头笔
+                delivery.setTmsCode(res.getTmsCode());  // 二级配送公司编码,用于发货回传
+                delivery.setExtId(res.getExtId());      // 物流平台单号
+                delivery.setLogisticsCode(res.getLogisticsCode());  // 物流公司编码,用于发货回传
+                delivery.setPackageCenterCode(res.getPackageCenterCode());  // 集包地编码
+                delivery.setPackageCenterName(res.getPackageCenterName());  // 集包地名称
+                odoTransportMgmtManager.insertDeliveryInfoExt(delivery);
+                return delivery;
+            } else {
+                if (null == res) {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", ouId);
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
+                }
+            }
+        } catch (Exception e) {
+            log.error("getMailNo system error, odoId:" + odoId, e);
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "system error", ouId);
+        }
+        return null;
+    }
+
+    /**
+     * 调用物流推荐
+     */
+    private void callSuggestTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, Long odoId, Long ouId) {
+        try {
             SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
             if (null != transResult && transResult.getStatus() == 1) {
                 List<LpCodeList> lpList = transResult.getLpList();
@@ -2750,43 +2787,44 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, transResult.getMsg(), ouId);
                 }
             }
+        } catch (Exception e) {
+            log.error("callSuggestTransService system error, odoId:" + odoId, e);
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "system error", ouId);
         }
-        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
-            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "TransportServiceProvider is null", ouId);
-            return null;
-        }
-        // 获取运单号
-        MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, odoVasLineList, wh);
-        // 循环获取5次
-        MailnoGetResponse res = this.getMailnoGetResponse(mailNoContent);
-        if (null != res && null != res.getStatus() && res.getStatus() == 1) {
-            WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
-            delivery.setOdoId(odoId);
-            delivery.setCreateTime(new Date());
-            delivery.setLastModifyTime(new Date());
-            delivery.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
-            delivery.setOuId(ouId);
-            delivery.setStatus(1);
-            delivery.setTransportCode(transMgmt.getTransportServiceProvider());
-            delivery.setTimeEffectType(transMgmt.getTimeEffectType());
-            delivery.setTransportServiceType(transMgmt.getCourierServiceType());
-            delivery.setWaybillCode(res.getMailno());   // 物流单号
-            delivery.setTransBigWord(res.getTransBigWord());    // 运单大头笔
-            delivery.setTmsCode(res.getTmsCode());  // 二级配送公司编码,用于发货回传
-            delivery.setExtId(res.getExtId());      // 物流平台单号
-            delivery.setLogisticsCode(res.getLogisticsCode());  // 物流公司编码,用于发货回传
-            delivery.setPackageCenterCode(res.getPackageCenterCode());  // 集包地编码
-            delivery.setPackageCenterName(res.getPackageCenterName());  // 集包地名称
-            odoTransportMgmtManager.insertDeliveryInfoExt(delivery);
-            return delivery;
-        } else {
-            if (null == res) {
-                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", ouId);
+    }
+
+    /**
+     * 调用增值服务
+     */
+    private void callVasTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, List<WhOdoVas> odoVasLineList, Long odoId, Long ouId) {
+        try {
+            VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
+            if (null != vasResult && vasResult.getStatus() == 1) {
+                List<VasLine> vasList = vasResult.getVasList();
+                if (null != vasList && !vasList.isEmpty()) {
+                    odoVasManager.insertVasList(odoId, vasList, odoVasLineList, transMgmt, ouId);
+                    List<TransVasList> transVasList = new ArrayList<TransVasList>();
+                    for (VasLine vas : vasList) {
+                        TransVasList transVas = new TransVasList();
+                        transVas.setVasCode(vas.getCode());
+                        transVasList.add(transVas);
+                    }
+                    trans.setTransVasList(transVasList);
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "transVasList is empty", ouId);
+                }
             } else {
-                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
+                // 失败,记录ErrorMessage
+                if (null == vasResult) {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "response is null", ouId);
+                } else {
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, vasResult.getErrorCode() + "|" + vasResult.getErrorMassage(), ouId);
+                }
             }
+        } catch (Exception e) {
+            log.error("callVasTransService system error, odoId:" + odoId, e);
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "system error", ouId);
         }
-        return null;
     }
     
     private MailnoGetResponse getMailnoGetResponse(MailnoGetContentCommand mailNoContent) {

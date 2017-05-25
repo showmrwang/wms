@@ -23,6 +23,7 @@ import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundInvoiceL
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundSnLineConfirm;
 import com.baozun.scm.primservice.whinterface.model.outbound.WmsOutBoundStatusConfirm;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhInvoiceConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.confirm.WhOdoStatusConfirmManager;
@@ -217,7 +218,8 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             // 有数据生成同步数据
             BeanUtils.copyProperties(whOutboundConfirm, o);
             o.setWhCode(whCode);
-            if (whOutboundConfirm.getWmsOdoStatus() != 1) {
+            // 完成单据状态才需要出库时间
+            if (whOutboundConfirm.getWmsOdoStatus() == Integer.parseInt(OdoStatus.FINISH)) {
                 o.setOutboundTime(whOutboundConfirm.getCreateTime());
             }
             // 运输服务商 快递单号数据封装

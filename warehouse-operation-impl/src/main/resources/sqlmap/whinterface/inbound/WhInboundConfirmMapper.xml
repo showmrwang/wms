@@ -14,6 +14,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	id as id,
 	        	uuid as uuid,
 	        	ext_po_code as extPoCode,
+	        	ext_po_type as extPoType,
 	        	ext_code as extCode,
 	        	customer_code as customerCode,
 	        	store_code as storeCode,
@@ -45,6 +46,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        t_wh_inbound_confirm (
 		        	uuid ,
 		        	ext_po_code ,
+		        	ext_po_type ,
 		        	ext_code ,
 		        	customer_code ,
 		        	store_code ,
@@ -65,6 +67,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        ) VALUES (
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -93,6 +96,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        UPDATE t_wh_inbound_confirm SET
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_po_code = #{extPoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_po_type = #{extPoType,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,

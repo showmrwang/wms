@@ -444,12 +444,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         WHERE
             odo.id IN (
                 SELECT DISTINCT
-                    odo_id
+                    colLine.odo_id
                 FROM
-                    t_wh_seeding_collection_line
+                    t_wh_seeding_collection as col
+                    left join t_wh_seeding_collection_line as colLine on colLine.seeding_collection_id = col.id
                 WHERE
-                    ou_id = #{ouId}
-                AND batch_number = #{batchNo}
+                    colLine.ou_id = #{ouId}
+                AND col.batch = #{batchNo}
             )
     </select>
 
