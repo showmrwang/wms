@@ -31,7 +31,6 @@ import com.baozun.scm.primservice.logistics.command.SuggestTransContentCommand;
 import com.baozun.scm.primservice.logistics.command.TransSkuItemCommand;
 import com.baozun.scm.primservice.logistics.model.TransSkuItem;
 import com.baozun.scm.primservice.logistics.model.TransVasList;
-import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
@@ -156,8 +155,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhSkuWhmgmtDao whSkuWhmgmtDao;
     @Autowired
     private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
-    @Autowired
-    private MaTransportManager maTransportManager;
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -1388,7 +1385,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public SuggestTransContentCommand getSuggestTransContent(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, String logId, Long ouId) {
+    public SuggestTransContentCommand getSuggestTransContent(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, boolean isInsured, String logId, Long ouId) {
         SuggestTransContentCommand trans = new SuggestTransContentCommand();
         Store store = this.getStoreByRedis(odo.getStoreId());
         Customer customer = this.getCustomerByRedis(odo.getCustomerId());
@@ -1450,19 +1447,19 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         trans.setTransSkuItem(skuItemList);
         
         // 添加增值服务信息
-        List<TransVasList> transVasList = new ArrayList<TransVasList>();
-        for (WhOdoVas odoVas : odoVasLineList) {
+        if (isInsured) {
+            List<TransVasList> transVasList = new ArrayList<TransVasList>();
             TransVasList transVas = new TransVasList();
-            transVas.setVasCode(odoVas.getExpressVasCode());
+            transVas.setVasCode(Constants.EXPRESS_VAS_INSURED);
             transVasList.add(transVas);
+            trans.setTransVasList(transVasList);
         }
-        trans.setTransVasList(transVasList);
         return trans;
     }
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, WarehouseCommand wh) {
+    public MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, boolean isInsured, WarehouseCommand wh) {
         MailnoGetContentCommand mailNoContent = new MailnoGetContentCommand();
         mailNoContent.setOrderCode(odo.getOdoCode());
         mailNoContent.setTradeId(odo.getEcOrderCode());
@@ -1478,11 +1475,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
         // 有保价增值服务, 则设置isBj
-        for (WhOdoVas vas : odoVasLineList) {
-            if ("INSURED".equals(vas.getExpressVasCode())) {
-                mailNoContent.setIsBj(Boolean.TRUE);
-                break;
-            }
+        if (isInsured) {
+            mailNoContent.setIsBj(Boolean.TRUE);
         }
         // 商品信息
         List<TransSkuItemCommand> skuItem = new ArrayList<TransSkuItemCommand>();

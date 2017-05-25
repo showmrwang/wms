@@ -56,6 +56,6 @@ public interface OdoVasManager extends BaseManager {
      * @version 2017年4月26日
      * @param odoVasLineList 
      */
-    void insertVasList(Long odoId, List<VasLine> vasList, List<WhOdoVas> odoVasLineList, WhOdoTransportMgmt transMgmt, Long ouId);
+    void insertVasList(Long odoId, List<VasLine> vasList, WhOdoTransportMgmt transMgmt, Long ouId);
 
 }
