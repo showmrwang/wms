@@ -378,6 +378,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                             if (log.isInfoEnabled()) {
                                 log.info("putawaySCRL invId is:[{}], ruleId is:[{}], recommand type is:[{}], logId is:[{}], calc aLocs start...", invRule.getId(), ruleId, locationRecommendRule, logId);
                             }
+                            Map<Long, RecommandLocationCommand> rlMaps = new HashMap<Long, RecommandLocationCommand>();
                             for (LocationCommand al : avaliableLocs) {
                                 Long locId = al.getId();
                                 int mixStackingNumber = (null == al.getMixStackingNumber() ? new Integer(1) : al.getMixStackingNumber());
@@ -416,15 +417,34 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             continue;
                                         }
                                     }
+                                    Double volumes = 0.0;//当前体积
+                                    Double weighs = 0.0;//当前重量
+                                    Double rlVolume = 0.0;// 已推荐体积
+                                    Double rlWeigh = 0.0;// 已推荐重量
+                                    if (null != rlMaps.get(locId)) {
+                                        RecommandLocationCommand rlCmd = rlMaps.get(locId);
+                                        rlVolume = rlCmd.getVolumes();
+                                        rlWeigh = rlCmd.getWeighs();
+                                    }
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                     calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
+                                    volumes = calc.getCurrentStuffVolume();
+                                    calc.addStuffVolume(rlVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
                                     // 计算重量
                                     SimpleWeightCalculator weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
                                     weightCal.initStuffWeight(weight, onHandQty, SimpleWeightCalculator.SYS_UOM);
+                                    weighs = weightCal.getStuffWeight();
+                                    weightCal.addStuffWeight(rlWeigh);
                                     boolean weightAvailable = weightCal.calculateAvailable();
                                     if (cubageAvailable & weightAvailable) {
+                                        if (null != rlMaps.get(locId)) {
+                                            RecommandLocationCommand rlCmd = rlMaps.get(locId);
+                                            rlCmd.setLocationId(locId);
+                                        } else {
+
+                                        }
                                         lrrc = new LocationRecommendResultCommand();
                                         lrrc.setPutawayPatternType(WhPutawayPatternType.SYS_GUIDE_PUTAWAY);
                                         lrrc.setPutawayPatternDetailType(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY);
