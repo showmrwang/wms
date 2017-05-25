@@ -77,6 +77,8 @@ public class WhInboundConfirmCommand extends BaseCommand {
 	private Date createTime;
 	/** 最后修改时间 */
 	private Date lastModifyTime;
+	/** 上位系统单据类型 */
+	private String extPoType;
 	/** 收货反馈明细 */
 	private List<WhInboundLineConfirmCommand> whInboundLineConfirmList;
 
@@ -278,5 +280,13 @@ public class WhInboundConfirmCommand extends BaseCommand {
 	public void setWhInboundLineConfirmList(List<WhInboundLineConfirmCommand> whInboundLineConfirmList) {
 		this.whInboundLineConfirmList = whInboundLineConfirmList;
 	}
+
+    public String getExtPoType() {
+        return extPoType;
+    }
+
+    public void setExtPoType(String extPoType) {
+        this.extPoType = extPoType;
+    }
 
 }
