@@ -177,7 +177,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * @param start not null 开始记录数
      * @param pageSize not null 每次多少条
      * @param whCode not null 仓库编码
-     * @param dataSource not null 数据来源 区分上位系统
+     * @param dataSource DEFAULT null 数据来源 区分上位系统
      * @return
      */
     @Override
@@ -343,7 +343,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
      * @param endTime not null 数据结束时间
      * @param start not null 开始记录数
      * @param pageSize not null 每次多少条
-     * @param dataSource not null 数据来源 区分上位系统
+     * @param dataSource DEFAULT null 数据来源 区分上位系统
      * @return
      */
     @Override

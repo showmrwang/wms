@@ -19,6 +19,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	tsp_error_code as tspErrorCode,
 	        	is_waybill_code_success as isWaybillCodeSuccess,
 	        	waybill_code_error_code as waybillCodeErrorCode,
+	        	is_ol as isOl,
 	        	ou_id as ouId
 	    ]]>
 	</sql>
@@ -86,7 +87,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        is_tsp_success = #{isTspSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
 	        tsp_error_code = #{tspErrorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 	        is_waybill_code_success = #{isWaybillCodeSuccess,javaType=java.lang.Boolean,jdbcType=BIT} ,
-	        waybill_code_error_code = #{waybillCodeErrorCode,javaType=java.lang.String,jdbcType=VARCHAR} 
+	        waybill_code_error_code = #{waybillCodeErrorCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	        is_ol = #{isOl,javaType=java.lang.Boolean,jdbcType=BIT} 
         WHERE 
 	        id = #{id} 
 	        and ou_id = #{ouId} 

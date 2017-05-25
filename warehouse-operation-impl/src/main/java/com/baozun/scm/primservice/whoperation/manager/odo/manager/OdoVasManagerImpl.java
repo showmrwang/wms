@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
-import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -71,34 +69,18 @@ public class OdoVasManagerImpl extends BaseManagerImpl implements OdoVasManager 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void insertVasList(Long odoId, List<VasLine> vasList, List<WhOdoVas> odoVasLineList, WhOdoTransportMgmt transMgmt, Long ouId) {
-        // 原来的增值服务编码
-        List<String> vasCodes = new ArrayList<String>();
-        if (null != odoVasLineList && !odoVasLineList.isEmpty()) {
-            for (WhOdoVas odoVas : odoVasLineList) {
-                vasCodes.add(odoVas.getExpressVasCode());
-            }
-        }
+    public void insertVasList(Long odoId, List<VasLine> vasList, WhOdoTransportMgmt transMgmt, Long ouId) {
         for (VasLine vasLine : vasList) {
-            if (vasCodes.isEmpty() || !vasCodes.contains(vasLine.getCode())) {
-                // 保价
-                if ("INSURED".equals(vasLine.getCode())) {
-                    transMgmt.setInsuranceCoverage(vasLine.getInsuranceAmount().doubleValue());
-                    int num = odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
-                    if (num < 1) {
-                        throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
-                    }
+            // 保价
+            if ("INSURED".equals(vasLine.getCode())) {
+                transMgmt.setInsuranceCoverage(vasLine.getInsuranceAmount().doubleValue());
+                int num = odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
+                if (num < 1) {
+                    throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
                 }
-                WhOdoVas vas = new WhOdoVas();
-                vas.setOdoId(odoId);
-                vas.setOuId(ouId);
-                vas.setExpressVasCode(vasLine.getCode());
-                vas.setVasType(Constants.ODO_VAS_TYPE_EXPRESS);
-                whOdoVasDao.insert(vas);
-                odoVasLineList.add(vas);
             }
         }
-        odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 1, null, ouId);
+        odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 1, null, null, ouId);
     }
 
 }

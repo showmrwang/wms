@@ -329,7 +329,7 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
         //工作类别编码 
         whWorkCommand.setWorkCategory("IN_WAREHOUSE_MOVE");
         //是否锁定 默认值：1
-        whWorkCommand.setIsLocked(true);
+        whWorkCommand.setIsLocked(false);
         //是否已迁出        
         whWorkCommand.setIsAssignOut(false);
         //是否短拣--执行时判断

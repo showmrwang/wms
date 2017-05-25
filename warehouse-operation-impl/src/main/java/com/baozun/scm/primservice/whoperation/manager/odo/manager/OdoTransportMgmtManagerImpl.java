@@ -39,7 +39,7 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void saveOrUpdateTransportService(Long odoId, boolean flag, int index, String errorMsg, Long ouId) {
+    public void saveOrUpdateTransportService(Long odoId, boolean flag, int index, String errorMsg, Boolean isOl, Long ouId) {
         WhOdoTransportService transportService = whOdoTransportServiceDao.findByOdoIdAndOuId(odoId, ouId);
         if (null == transportService) {
             transportService = new WhOdoTransportService();
@@ -70,6 +70,9 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
                 transportService.setIsWaybillCodeSuccess(flag);
                 transportService.setWaybillCodeErrorCode(flag ? null : errorMsg);
             }
+            if (null != isOl) {
+                transportService.setIsOl(isOl);
+            }
             whOdoTransportServiceDao.updateWhOdoTransportService(transportService);
         }
     }
@@ -78,7 +81,7 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public int updateOdoTransportMgmtExt(WhOdoTransportMgmt transMgmt) {
         int num = whOdoTransportMgmtDao.updateWhOdoTransportMgmt(transMgmt);
-        this.saveOrUpdateTransportService(transMgmt.getOdoId(), true, 2, null, transMgmt.getOuId());
+        this.saveOrUpdateTransportService(transMgmt.getOdoId(), true, 2, null, null, transMgmt.getOuId());
         return num;
     }
 
@@ -92,7 +95,7 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void insertDeliveryInfoExt(WhOdodeliveryInfo delivery) {
         whOdoDeliveryInfoDao.insert(delivery);
-        this.saveOrUpdateTransportService(delivery.getOdoId(), true, 3, null, delivery.getOuId());
+        this.saveOrUpdateTransportService(delivery.getOdoId(), true, 3, null, true, delivery.getOuId());
     }
 
 }

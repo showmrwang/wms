@@ -74,7 +74,7 @@ public class initTest extends AbstractJUnit4SpringContextTests {
             br = new BufferedReader(isr);
             Set<String> ec = new HashSet<String>();
             int i = 1;
-            String odoCode = "201705000000" + i;
+            String odoCode = "ODO201705000000" + i;
             while ((str = br.readLine()) != null) {
                 String[] s = str.trim().split(",");
                 System.out.println(s[0] + " " + str);

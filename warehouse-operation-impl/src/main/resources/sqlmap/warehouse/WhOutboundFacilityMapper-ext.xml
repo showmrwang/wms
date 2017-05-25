@@ -205,8 +205,8 @@
                     lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER}
                 WHERE 
                     id = #{id} 
-                    and ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
-                    and last_modify_time    <=  #{lastModifyTime}    
+                    and ou_id = #{ouId} 
+                    and last_modify_time =  #{lastModifyTime}    
             ]]>
     </update>
 

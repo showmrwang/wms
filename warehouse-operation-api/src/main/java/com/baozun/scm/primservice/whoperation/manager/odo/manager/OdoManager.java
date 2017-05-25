@@ -293,7 +293,7 @@ public interface OdoManager extends BaseManager {
      * @author kai.zhu
      * @version 2017年4月25日
      */
-    SuggestTransContentCommand getSuggestTransContent(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, String logId, Long ouId);
+    SuggestTransContentCommand getSuggestTransContent(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, boolean isInsured, String logId, Long ouId);
     
     /**
      * 获取运单号实体
@@ -301,7 +301,7 @@ public interface OdoManager extends BaseManager {
      * @version 2017年4月26日
      * @param address 
      */
-    MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, WarehouseCommand wh);
+    MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, boolean isInsured, WarehouseCommand wh);
     
     /**
      * 批次号+List<odoId>

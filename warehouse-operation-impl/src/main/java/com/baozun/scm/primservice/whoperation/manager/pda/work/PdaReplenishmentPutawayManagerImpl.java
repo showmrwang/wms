@@ -256,7 +256,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
         Set<Long> turnoverBoxIds = mapTurnoverBoxIds.get(locationId);
         Long turnoverBoxId = cmd.getId();
-        Boolean result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId);
+        Boolean result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId);
         if(!result) {//result 为true时，是多库位,为false时是单库位
             //缓存上一个周转箱
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId,true);
@@ -319,16 +319,24 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     }
     
     
-    private Boolean judgeIsManayLoc(List<Long> locationIds, Map<Long, Set<Long>> mapTurnoverBoxIds,Long turnoverBoxId,Long locationId){
+    private Boolean judgeIsManayLoc(List<Long> locationIds, Map<Long, Set<Long>> mapTurnoverBoxIds,Long turnoverBoxId,Long locationId,Long operationId){
         Boolean result = false;//默认单库位
         if(locationIds.size() == 1){
             result = false;  //单库位
         }else{
             for(Long locId:locationIds){
+                ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+                if(null != replenishment){
+                    ArrayDeque<Long> tipLocationIds = replenishment.getTipLocationIds();
+                    if(tipLocationIds.contains(locId)){
+                        continue;
+                    }
+                }
                 if(locId.longValue() != locationId.longValue()){
                     Set<Long> turnoverBoxIds = mapTurnoverBoxIds.get(locId);
                     if(turnoverBoxIds.contains(turnoverBoxId)){
                         result = true;  //一个周转箱对应多个库位
+                        break;
                     }
                 }
             }
@@ -787,16 +795,28 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             // 周转箱内部所有sku扫描完毕在缓存
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId,false);
+            Long insideContainerId = null;
+            if(null != newTurnoverBoxId){
+                insideContainerId = newTurnoverBoxId;
+            }else{
+                insideContainerId = turnoverBoxId;
+            }
             //判断当前库位是否有拣货工作
-            this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
+            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId);
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId, locationId,false);
         }else if(csrCmd.getIsPutaway()){
             command.setIsScanFinsh(true);
             List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             this.updateStatus(operationId, workCode, ouId, userId);
+            Long insideContainerId = null;
+            if(null != newTurnoverBoxId){
+                insideContainerId = newTurnoverBoxId;
+            }else{
+                insideContainerId = turnoverBoxId;
+            }
            //判断当前库位是否有拣货工作
-            this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
+            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId);
              //清除所有缓存
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, turnoverBoxId, locationId,true);
         }
@@ -1572,7 +1592,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
          }
          List<Long> locationIds = opExecLineCmd.getLocationIds();
          Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
-         result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId);
+         result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId);
          return result;
      }
      
@@ -1592,5 +1612,63 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
       */
      public Location findLocationById(Long id,Long ouId){
          return whLocationDao.findByIdExt(id, ouId);
+     }
+     
+     
+     /**
+      * 判断引入新容器状态
+      * @param newTurnoverBox
+      * @param locationId
+      * @param ouId
+      * @return
+      */
+     public void judgeNewTurnoverBox(String newTurnoverBox,Long locationId,Long ouId,Long userId){
+         ContainerCommand ic = containerDao.getContainerByCode(newTurnoverBox, ouId);
+         if (null == ic) {
+             // 容器信息不存在
+             log.error("pdaScanContainer container is null logid: " + logId);
+             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+         }
+         // 验证容器状态是否可用
+         if (ic.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE) && ic.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+             //修改容器状态
+             Container c = new Container();
+             BeanUtils.copyProperties(ic, c);
+             c.setStatus(ContainerStatus.CONTAINER_STATUS_PUTAWAY);
+             c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+             containerDao.saveOrUpdateByVersion(c);
+             insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
+         }else if(ic.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED) && ic.getStatus().equals(ContainerStatus.CONTAINER_STATUS_SHEVLED)){
+             Long turnoverBoxId = ic.getId();
+             //判断已上架的容器是否是当前库位上的容器
+             int count = whSkuInventoryDao.countWhSkuInventoryCommandByInsideContainerId(ouId, locationId, turnoverBoxId);
+             if(count == 0) {
+                 throw new BusinessException(ErrorCodes.NEW_TURNOVERBOX_NO_LOC);
+             }
+         }else{
+             throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+         }
+     }
+     
+     /***
+      * 修改周转箱状态
+      * @param turnoverBoxCode
+      * @param ouId
+      */
+     public void updateTurnoverBox(String turnoverBoxCode,Long ouId){
+         ContainerCommand cmd =  containerDao.getContainerByCode(turnoverBoxCode, ouId);
+         if(null == cmd) {
+             log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+         }
+         int count = whSkuInventoryDao.findAllInventoryCountsByInsideContainerId(ouId, cmd.getId());
+         if(count == 0){
+           //修改周转箱状态
+             Container c = new Container();
+             BeanUtils.copyProperties(cmd, c);
+             c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+             c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+             containerDao.saveOrUpdateByVersion(c);
+         }
      }
 }

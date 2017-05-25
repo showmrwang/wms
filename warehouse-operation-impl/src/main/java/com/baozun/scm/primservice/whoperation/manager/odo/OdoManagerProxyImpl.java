@@ -44,7 +44,6 @@ import com.baozun.scm.primservice.logistics.model.VasTransResult;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
 import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
-import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoGroupCommand;
@@ -82,21 +81,16 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
-import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveDistributionModeManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.RegionManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.SupplierManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ma.DistributionTargetManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
@@ -153,21 +147,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
     @Autowired
-    private WaveDistributionModeManagerProxy waveDistributionModeManagerProxy;
-    @Autowired
     private SkuRedisManager skuRedisManager;
     @Autowired
-    private WhDistributionPatternRuleManager whDistributionPatternRuleManager;
-    @Autowired
     private WhWorkManager whWorkManager;
-    @Autowired
-    private WhWorkLineManager whWorkLineManager;
-    @Autowired
-    private ReplenishmentTaskManager replenishmentTaskManager;
-    @Autowired
-    private WhSkuInventoryManager whSkuInventoryManager;
-    @Autowired
-    private OperUserManager operUserManager;
     @Autowired
     private TransServiceManager transServiceManager;
     @Autowired
@@ -2679,43 +2661,61 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
     @Override
     public WhOdodeliveryInfo getLogisticsInfoByOdoId(Long odoId, String logId, Long ouId) {
-        // 获取增值服务
         WhOdo odo = odoManager.findOdoByIdOuId(odoId, ouId);
         WhOdoTransportMgmt transMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId);
         WhOdoAddress address = odoAddressManager.findOdoAddressByOdoId(odoId, ouId);
         List<WhOdoLine> odoLineList = odoLineManager.findOdoLineListByOdoId(odoId, ouId);
-        List<WhOdoVas> odoVasLineList = odoVasManager.findOdoVasByOdoIdOdoLineIdType(odoId, null, Constants.ODO_VAS_TYPE_EXPRESS, ouId);
         WarehouseCommand wh = warehouseManager.findWarehouseCommandById(ouId);
+        boolean isInsured = transMgmt.getInsuranceCoverage() == null ? false : true;
         // 封装数据匹配物流sql推荐实体
-        SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, odoVasLineList, logId, ouId);
+        SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
         trans.setWhCode(wh.getCode());
         
         WhOdoTransportService transportService = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
+        // 获取增值服务
         // 没有调用过或调用失败, 则调用物流增值服务推荐
         if (null == transportService || !transportService.getIsVasSuccess()) {
-            this.callVasTransService(trans, transMgmt, odoVasLineList, odoId, ouId);
+            boolean flag = this.callVasTransService(trans, transMgmt, odoId, ouId);
+            if (!flag) {
+                return null;
+            }
         }
         // 获取推荐物流商
         // 物流商 或  时效类型 或 产品类型为空则调用
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType()) || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
-            this.callSuggestTransService(trans, transMgmt, odoId, ouId);
-        }
-        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
-            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "lpCode is null", ouId);
-            return null;
+            boolean flag = this.callSuggestTransService(trans, transMgmt, odoId, ouId);
+            if (!flag) {
+                return null;
+            }
         }
         // 获取运单号
-        WhOdodeliveryInfo info = this.getMailNo(odo, transMgmt, address, odoLineList, odoVasLineList, wh, odoId, ouId);
+        if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "lpCode is null", null, ouId);
+            return null;
+        }
+        WhOdodeliveryInfo info = this.getMailNo(odo, transMgmt, address, odoLineList, wh, isInsured, odoId, ouId);
         return info;
     }
 
     /**
      * 获取运单号
      */
-    private WhOdodeliveryInfo getMailNo(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, List<WhOdoVas> odoVasLineList, WarehouseCommand wh, Long odoId, Long ouId) {
+    private WhOdodeliveryInfo getMailNo(WhOdo odo, WhOdoTransportMgmt transMgmt, WhOdoAddress address, List<WhOdoLine> odoLineList, WarehouseCommand wh, boolean isInsured, Long odoId, Long ouId) {
         try {
-            // 获取运单号
-            MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, odoVasLineList, wh);
+            MaTransport transport = maTransportManager.findMaTransportByCode(transMgmt.getTransportServiceProvider(), Constants.WMS4);
+            // 纸质面单
+            if (Constants.WAYBILL_TYPE_PAPER.equals(transport.getWaybillType())) {
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 3, null, false, ouId);
+                WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
+                delivery.setTransportCode(transMgmt.getTransportServiceProvider());
+                delivery.setTimeEffectType(transMgmt.getTimeEffectType());
+                delivery.setTransportServiceType(transMgmt.getCourierServiceType());
+                delivery.setOuId(ouId);
+                delivery.setOdoId(odoId);
+                return delivery;
+            }
+            // 电子面单,获取运单号
+            MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, isInsured, wh);
             // 循环获取5次
             MailnoGetResponse res = this.getMailnoGetResponse(mailNoContent);
             if (null != res && null != res.getStatus() && res.getStatus() == 1) {
@@ -2740,14 +2740,14 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 return delivery;
             } else {
                 if (null == res) {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", ouId);
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "response is null", true, ouId);
                 } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), ouId);
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, res.getErrorCode() + "|" + res.getErrorMsg(), true, ouId);
                 }
             }
         } catch (Exception e) {
             log.error("getMailNo system error, odoId:" + odoId, e);
-            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "system error", ouId);
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 3, "system error", true, ouId);
         }
         return null;
     }
@@ -2755,7 +2755,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     /**
      * 调用物流推荐
      */
-    private void callSuggestTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, Long odoId, Long ouId) {
+    private boolean callSuggestTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, Long odoId, Long ouId) {
         try {
             SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
             if (null != transResult && transResult.getStatus() == 1) {
@@ -2776,33 +2776,37 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     if (num < 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
                     }
+                    return true;
                 } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "lpList is empty", ouId);
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "lpList is empty", null, ouId);
+                    return false;
                 }
             } else {
                 // 失败,记录ErrorMessage
                 if (null == transResult) {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "response is null", ouId);
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "response is null", null, ouId);
                 } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, transResult.getMsg(), ouId);
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, transResult.getMsg(), null, ouId);
                 }
+                return false;
             }
         } catch (Exception e) {
             log.error("callSuggestTransService system error, odoId:" + odoId, e);
-            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "system error", ouId);
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 2, "system error", null, ouId);
+            return false;
         }
     }
 
     /**
      * 调用增值服务
      */
-    private void callVasTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, List<WhOdoVas> odoVasLineList, Long odoId, Long ouId) {
+    private boolean callVasTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, Long odoId, Long ouId) {
         try {
             VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
             if (null != vasResult && vasResult.getStatus() == 1) {
                 List<VasLine> vasList = vasResult.getVasList();
                 if (null != vasList && !vasList.isEmpty()) {
-                    odoVasManager.insertVasList(odoId, vasList, odoVasLineList, transMgmt, ouId);
+                    odoVasManager.insertVasList(odoId, vasList, transMgmt, ouId);
                     List<TransVasList> transVasList = new ArrayList<TransVasList>();
                     for (VasLine vas : vasList) {
                         TransVasList transVas = new TransVasList();
@@ -2810,20 +2814,21 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                         transVasList.add(transVas);
                     }
                     trans.setTransVasList(transVasList);
-                } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "transVasList is empty", ouId);
                 }
+                return true;
             } else {
                 // 失败,记录ErrorMessage
                 if (null == vasResult) {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "response is null", ouId);
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "response is null", null, ouId);
                 } else {
-                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, vasResult.getErrorCode() + "|" + vasResult.getErrorMassage(), ouId);
+                    odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, vasResult.getErrorCode() + "|" + vasResult.getErrorMassage(), null, ouId);
                 }
+                return false;
             }
         } catch (Exception e) {
             log.error("callVasTransService system error, odoId:" + odoId, e);
-            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "system error", ouId);
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, false, 1, "system error", null, ouId);
+            return false;
         }
     }
     
