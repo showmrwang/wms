@@ -591,6 +591,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoId(odoLine.getOdoId());
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(skuInv.getInsideContainerId());
+                        odoOutBoundBoxCommand.setOuterContainerId(skuInv.getOuterContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
                         odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
@@ -1678,6 +1679,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         odoOutBoundBoxCommand.setOdoId(odoLine.getOdoId());
                         odoOutBoundBoxCommand.setOdoLineId(odoLine.getId());
                         odoOutBoundBoxCommand.setContainerId(skuInv.getInsideContainerId());
+                        odoOutBoundBoxCommand.setOuterContainerId(skuInv.getOuterContainerId());
                         odoOutBoundBoxCommand.setWholeCase(Constants.ODO_OUTBOUND_BOX_WHOLE_TRAY);
                         odoOutBoundBoxCommand.setIsCreateWork(false);
                         // 添加批次号,批次号在分配小车时创建
