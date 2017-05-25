@@ -200,4 +200,13 @@ public interface CheckingManager extends BaseManager {
     public List<WhSkuInventorySnCommand> findCheckingSkuInvSnByCheckingId(Long checkingId, Long ouId);
 
     public int releaseSeedingFacility(WhOutboundFacility whOutboundFacility );
+    
+    /**
+     * 根据复核打印配置打印单据
+     * 
+     * @author qiming.liu
+     * @param whCheckingResultCommand
+     * @return
+     */
+    void printDefect(WhCheckingResultCommand whCheckingResultCommand);
 }

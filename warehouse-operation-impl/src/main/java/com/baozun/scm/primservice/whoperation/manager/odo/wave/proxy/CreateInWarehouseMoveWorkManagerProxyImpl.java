@@ -209,7 +209,12 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 WhSkuInventoryCommand skuInventoryCommand = new WhSkuInventoryCommand();
                 skuInventoryCommand.setUuid(uuids[i]);
                 if(0 < occupationCodes.length){
-                    skuInventoryCommand.setOccupationCode(occupationCodes[i]);
+                    if("".equals(occupationCodes[i])){
+                        skuInventoryCommand.setOccupationCode(null);
+                    }else{
+                        skuInventoryCommand.setOccupationCode(occupationCodes[i]);
+                    }
+                    
                 }
                 if(0 < occupationLineIds.length){
                     skuInventoryCommand.setOccupationLineId(occupationLineIds[i]);
@@ -217,20 +222,20 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 skuInventoryCommand.setOuId(ouId);
                 List<WhSkuInventoryCommand> whSkuInventoryCommandLst = whSkuInventoryManager.findInvComLstByInWarehouseMove(skuInventoryCommand);
                 for(WhSkuInventoryCommand whSkuInventoryCommand : whSkuInventoryCommandLst){
-                    if (null != skuInventoryMap.get(whSkuInventoryCommand.getLocationCode())) {
-                        skuInventoryCommandLst = skuInventoryMap.get(whSkuInventoryCommand.getLocationCode());
+                    if (null != skuInventoryMap.get(whSkuInventoryCommand.getLocationId())) {
+                        skuInventoryCommandLst = skuInventoryMap.get(whSkuInventoryCommand.getLocationId());
                     }
                     skuInventoryCommandLst.add(whSkuInventoryCommand);
                     skuInventoryMap.put(whSkuInventoryCommand.getLocationId(), skuInventoryCommandLst);    
                 }
-                if(0 < occupationCodes.length){
+                if(0 < occupationCodes.length && !"".equals(occupationCodes[i])){
                     if(0 < occupationLineIds.length){
                         idAndQtyMap.put(occupationCodes[i] + "-" + occupationLineIds[i] + "-" + uuids[i], moveQtys[i]);
                     }else{
                         idAndQtyMap.put(occupationCodes[i] + "-" + "-" + uuids[i], moveQtys[i]);
                     }
                 }else{
-                    if(0 < occupationLineIds.length){
+                    if(0 < occupationLineIds.length && null != occupationLineIds[i]){
                         idAndQtyMap.put("-" + occupationLineIds[i] + "-" + uuids[i], moveQtys[i]);
                     }else{
                         idAndQtyMap.put("-" + "-" + uuids[i], moveQtys[i]);

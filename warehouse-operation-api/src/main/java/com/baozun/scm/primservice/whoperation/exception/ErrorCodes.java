@@ -798,6 +798,8 @@ public class ErrorCodes {
     public static final int SEEDING_SEEDING_BATCH_ODO_INFO_NULL_ERROR = 60228;
     /** 库存不足 */
     public static final int SEEDING_SEEDING_SKUINVENTORY_SHORTAGE = 60229;
+    /** 播种墙已完成播种 */
+    public static final int SEEDING_FINISHED = 60230;
 
 
 
@@ -899,7 +901,8 @@ public class ErrorCodes {
     public static final int CHECKING_CHECKING_SKUINV_UPDATE_ERROR = 60347;
     /** SN更新异常 */
     public static final int CHECKING_CHECKING_SN_UPDATE_ERROR = 60348;
-
+    /** 物流推荐失败 */
+    public static final int CHECKING_ODO_TRANSPORT_SERVICE_ERROR = 60349;
 
 
 
@@ -1021,6 +1024,8 @@ public class ErrorCodes {
     public static final int OUT_BOUNDBOX_NO_EXIST = 70063;
     /** 容器库存不存在 */
     public static final int CONTAINER_INVENTORY_NO_EXIST = 70064;
+    /** 引入的新容器不能上架 */
+    public static final int NEW_TURNOVERBOX_NO_LOC = 700065;
 
     // 70001-80000 tangming
 
@@ -1126,6 +1131,12 @@ public class ErrorCodes {
     public static final int COMPUTER_NOT_CONNECT_FACILITY = 110019;
     /** 该出库箱已交接出库 */
     public static final int OUTBOUNDBOX_ALREADY_HANDOVER = 110020;
+    /** 该出库箱尚未计算计重 */
+    public static final int OUTBOUNDBOX_NOT_CALC__WEIGHT = 110021;
+    /** 该出库箱无对应运单信息 */
+    public static final int NO_ODO_DELIVERY_INFO = 110022;
+    /** 该出库箱未绑定运单号或物流商编码 */
+    public static final int NO_WAYBILL_CODE_OR_TRANSPORT_CODE = 110023;
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;
