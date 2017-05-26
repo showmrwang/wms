@@ -49,6 +49,8 @@ public interface OutboundBoxRecManager extends BaseManager {
 
     public void saveRecOutboundBoxByContainer(List<Container2ndCategoryCommand> containerList);
 
+    public void saveRecOutboundBoxForWholeCaseOdo(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList);
+
     public void saveRecOutboundBoxForSeedBatch(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList);
 
     public List<ContainerAssist> findContainerAssistById(List<Long> containerIdList, Long ouId);

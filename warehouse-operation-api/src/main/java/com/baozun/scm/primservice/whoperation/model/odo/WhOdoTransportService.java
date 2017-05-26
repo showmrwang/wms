@@ -40,6 +40,8 @@ public class WhOdoTransportService extends BaseModel {
     private Boolean isWaybillCodeSuccess;
     /** 获取运单号失败编码 */
     private String waybillCodeErrorCode;
+    /** 是否电子面单 */
+    private Boolean isOl;
     /** 仓库组织ID */
     private Long ouId;
     // columns END
@@ -112,6 +114,14 @@ public class WhOdoTransportService extends BaseModel {
 
     public Long getOuId() {
         return this.ouId;
+    }
+
+    public Boolean getIsOl() {
+        return isOl;
+    }
+
+    public void setIsOl(Boolean isOl) {
+        this.isOl = isOl;
     }
 }
 

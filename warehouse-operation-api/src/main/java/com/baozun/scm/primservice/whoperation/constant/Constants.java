@@ -940,4 +940,12 @@ public final class Constants {
     public static final String CHECK = "handover";
     public static final String CHECK_BY_CONTAINER = "CHECK_BY_CONTAINER";
     public static final String CHECK_BY_ODO = "CHECK_BY_ODO";
+    
+    /** 电子面单 */
+    public static final String WAYBILL_TYPE_ELECTRONIC = "waybill_electronic";
+    /** 纸质面单 */
+    public static final String WAYBILL_TYPE_PAPER = "waybill_paper";
+    /** 保价 */
+    public static final String EXPRESS_VAS_INSURED = "INSURED";
+    
 }

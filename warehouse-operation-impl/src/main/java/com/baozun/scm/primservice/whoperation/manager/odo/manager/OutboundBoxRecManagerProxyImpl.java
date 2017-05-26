@@ -727,6 +727,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
                 // 创建出库箱编码，设置包裹的出库箱编码
                 String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
+                //TODO 校验出库箱编码是否已被使用
                 for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
                     odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
                     newBoxOdoOutboundBoxList.add(odoOutBoundBox);
@@ -906,6 +907,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
                 // 创建出库箱编码，设置包裹的出库箱编码，编码服务未配置
                 String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
+                //TODO 校验出库箱编码是否已被使用
                 for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
                     odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
                     newBoxOdoOutboundBoxList.add(odoOutBoundBox);
@@ -985,6 +987,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
                 // 创建出库箱编码，设置包裹的出库箱编码
                 String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
+                //TODO 校验出库箱编码是否已被使用
                 for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
                     odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
                     newBoxOdoOutboundBoxList.add(odoOutBoundBox);
@@ -1092,7 +1095,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 为出库单推荐小车，找不到小车的移除出列表，直接使用出库箱拣货
                     while (!odoComList.isEmpty()) {
                         OdoCommand odoCommand = odoComList.get(0);
-                        if (null != odoCommand.getWholeTrayList() && !odoCommand.getWholeTrayList().isEmpty()) {
+                        if ((null != odoCommand.getWholeTrayList() && !odoCommand.getWholeTrayList().isEmpty()) || (null != odoCommand.getWholeCaseList() && !odoCommand.getWholeCaseList().isEmpty())) {
                             // 包含整托的，不推荐小车
                             if (null != odoCommand.getOutboundBoxList()) {
                                 for (OutInvBoxTypeCommand outBoundBoxType : odoCommand.getOutboundBoxList()) {
@@ -1221,10 +1224,36 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 while (odoIterator.hasNext()) {
                     OdoCommand odoCommand = odoIterator.next();
                     odoIterator.remove();
+
+                    // 出库单信息<odoLineId, waveLine>
+                    boolean isWholeCase = false;
+                    Map<Long, WhWaveLineCommand> singlePickOdoLineIdWaveLineMap = odoCommand.getOdoLineIdwaveLineMap();
+                    for(WhWaveLineCommand whWaveLineCommand : singlePickOdoLineIdWaveLineMap.values()){
+                        if (whWaveLineCommand.getIsPalletContainer() && (!StringUtil.isEmpty(whWaveLineCommand.getPackingCaseIds()) || !StringUtil.isEmpty(whWaveLineCommand.getTrayIds()))) {
+                           isWholeCase = true;
+                            break;
+                        }
+                    }
+
+                    if(isWholeCase) {
+                        List<OdoCommand> unmatchedTrolleyOdoDistributeList = unmatchedTrolleyOdoListDistributeMap.get(distributeMode);
+                        if (null == unmatchedTrolleyOdoDistributeList) {
+                            unmatchedTrolleyOdoDistributeList = new ArrayList<>();
+                            unmatchedTrolleyOdoListDistributeMap.put(distributeMode, unmatchedTrolleyOdoDistributeList);
+                        }
+                        unmatchedTrolleyOdoDistributeList.add(odoCommand);
+
+                        continue;
+                    }
+
                     batchOdoList.add(odoCommand);
                     if (batchOdoList.size() == rule.getOrdersUpperLimit()) {
                         break;
                     }
+                }
+
+                if(batchOdoList.isEmpty()){
+                    break;
                 }
 
                 // 创建批次号
@@ -1351,8 +1380,20 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         batchOdoListIterator.remove();
                         continue;
                     }
+
+                    // 出库单分配的整箱容器列表
+                    List<ContainerCommand> odoPackedWholeCaseList = new ArrayList<>();
+                    // 出库单分配的整托容器列表
+                    List<ContainerCommand> odoPackedWholeTrayList = new ArrayList<>();
+
+
                     // 出库单明细
                     List<OdoLineCommand> odoLineList = odoLineManager.findOdoLineCommandListByOdoId(odoCommand.getId(), ouId);
+
+                    // 去除整托整箱的明细，暂时只考虑波次明细，即出库单明细整托整箱的情况，多个明细占用整托整箱的计算以后考虑
+                    this.packingWholeCaseLine(odoLineList, odoCommand, odoPackedWholeCaseList, odoPackedWholeTrayList, ouId);
+
+
                     // 各个明细可用的周转箱列表
                     Map<OdoLineCommand, List<Container2ndCategoryCommand>> odoLineAvailableTurnoverBoxListMap = this.getOdoLineAvailableTurnoverBoxMap(odoLineList, allTurnoverBoxList, ouId, logId);
                     // 有明细无法匹配周转箱，则出库单踢出波次
@@ -1394,8 +1435,19 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         continue;
                     }
 
+                    for (ContainerCommand wholeTrayContainer : odoPackedWholeTrayList) {
+                        for (WhOdoOutBoundBoxCommand odoOutBoundBox : wholeTrayContainer.getOdoOutboundBoxCommandList()) {
+                            odoOutBoundBox.setBoxBatch(batchNo);
+                        }
+                    }
+                    for (ContainerCommand wholeCaseContainer : odoPackedWholeCaseList) {
+                        for (WhOdoOutBoundBoxCommand odoOutBoundBox : wholeCaseContainer.getOdoOutboundBoxCommandList()) {
+                            odoOutBoundBox.setBoxBatch(batchNo);
+                        }
+                    }
+
                     // 保存出库单的周转箱装箱信息到数据库
-                    outboundBoxRecManager.saveRecOutboundBoxByContainer(packingTurnoverBoxList);
+                    outboundBoxRecManager.saveRecOutboundBoxForWholeCaseOdo(packingTurnoverBoxList, odoPackedWholeCaseList, odoPackedWholeTrayList);
                 }
 
             }
