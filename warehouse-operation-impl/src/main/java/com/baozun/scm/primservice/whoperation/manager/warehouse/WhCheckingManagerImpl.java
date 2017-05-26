@@ -821,7 +821,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (result) {
             // 更新出库单状态
             this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode());
-        }else{
+        } else {
             WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
             // 修改出库单状态为复核完成状态。
             whOdo.setOdoStatus(OdoStatus.CHECKING);
@@ -857,7 +857,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合更新复合表
      * @param checkingLineList
      */
-    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId,String checkingPattern) {
+    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId, String checkingPattern) {
         Long checkingId = null;
         for (WhCheckingLineCommand lineCmd : checkingLineList) {
             checkingId = lineCmd.getCheckingId(); // 复合头id
@@ -868,7 +868,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern)){
+        if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
                 Long id = cmd.getId(); // 复合明细id
                 Long checkingQty = cmd.getCheckingQty(); // 复合明细数量
@@ -895,7 +895,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     insertLine.setOutboundboxCode(null);
                     whCheckingLineDao.saveOrUpdateByVersion(insertLine);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
-                    
+
                     WhChecking checking = new WhChecking();
                     BeanUtils.copyProperties(checkingCmd, checking);
                     checking.setStatus(CheckingStatus.PART_FINISH);
@@ -905,8 +905,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 if (lineCmd.getQty() < cmd.getCheckingQty()) {
                     throw new BusinessException(ErrorCodes.CHECKING_NUM_IS_EEROR);
                 }
-                if(lineCmd.getQty() == cmd.getCheckingQty()){
-                    
+                if (lineCmd.getQty() == cmd.getCheckingQty()) {
+
                     WhCheckingLine line = new WhCheckingLine();
                     BeanUtils.copyProperties(lineCmd, line);
                     line.setCheckingQty(checkingQty);
@@ -914,7 +914,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     line.setOutboundboxCode(outboundbox);
                     whCheckingLineDao.saveOrUpdateByVersion(line);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
-                    
+
                     WhChecking checking = new WhChecking();
                     BeanUtils.copyProperties(checkingCmd, checking);
                     checking.setStatus(CheckingStatus.FINISH);
@@ -984,7 +984,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 添加出库箱明细
             for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
                 WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
-                // outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
+                outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
                 outboundboxLine.setSkuCode(lineCmd.getSkuCode());
                 outboundboxLine.setSkuExtCode(lineCmd.getSkuExtCode());
                 outboundboxLine.setSkuBarCode(lineCmd.getSkuBarCode());
@@ -1084,31 +1084,31 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
         // 修改小车
         ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-        if (null == outerCmd) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        if (null != outerCmd) {
+            // throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            Container c = new Container();
+            BeanUtils.copyProperties(outerCmd, c);
+            c.setStatus(Constants.LIFECYCLE_START);
+            c.setLifecycle(Constants.LIFECYCLE_START);
+            containerDao.saveOrUpdateByVersion(c);
         }
-        Container c = new Container();
-        BeanUtils.copyProperties(outerCmd, c);
-        c.setStatus(Constants.LIFECYCLE_START);
-        c.setLifecycle(Constants.LIFECYCLE_START);
-        containerDao.saveOrUpdateByVersion(c);
         // 周转箱状态
         ContainerCommand turnCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-        if (null == turnCmd) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        if (null != turnCmd) {
+            // throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            Container turn = new Container();
+            BeanUtils.copyProperties(turnCmd, turn);
+            turn.setStatus(Constants.LIFECYCLE_START);
+            turn.setLifecycle(Constants.LIFECYCLE_START);
+            containerDao.saveOrUpdateByVersion(turn);
+            // 修改播种墙状态
         }
-        Container turn = new Container();
-        BeanUtils.copyProperties(turnCmd, turn);
-        turn.setStatus(Constants.LIFECYCLE_START);
-        turn.setLifecycle(Constants.LIFECYCLE_START);
-        containerDao.saveOrUpdateByVersion(turn);
-        // 修改播种墙状态
         WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-        if (null == facility) {
-            throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+        if (null != facility) {
+            // throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+            facility.setStatus("1");
+            whOutboundFacilityDao.saveOrUpdateByVersion(facility);
         }
-        facility.setStatus("1");
-        whOutboundFacilityDao.saveOrUpdateByVersion(facility);
     }
 
     @Override
