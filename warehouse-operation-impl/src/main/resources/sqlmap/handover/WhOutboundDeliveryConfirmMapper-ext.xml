@@ -285,6 +285,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and modified_id = #{modifiedId}
 				</if>
 		</where>
-	</sql>
+	</sql> 
+	 
+    <select id="findByodoAndWaybillCode" resultType="long">
+		select count(*) from t_wh_outbound_delivery_confirm  
+		where waybill_code =#{waybillCode}	 and odo_id=#{odoId}
+    </select>
 	
 </mapper>

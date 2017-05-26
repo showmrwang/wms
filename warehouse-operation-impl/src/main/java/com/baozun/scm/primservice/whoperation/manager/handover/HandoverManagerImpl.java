@@ -366,7 +366,11 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 whOutboundDeliveryConfirm.setWaybillCode(whOdodeliveryInfo.getWaybillCode());
                 whOutboundDeliveryConfirm.setChildWaybillCodes(whOdodeliveryInfo.getWaybillCode());
                 whOutboundDeliveryConfirm.setType(1);
-                whOutboundDeliveryConfirmDao.insert(whOutboundDeliveryConfirm);
+
+                Long findByodoAndWaybillCode = whOutboundDeliveryConfirmDao.findByodoAndWaybillCode(whOdodeliveryInfo.getWaybillCode(), odoId);
+                if (findByodoAndWaybillCode == 0 || null == findByodoAndWaybillCode) {
+                    whOutboundDeliveryConfirmDao.insert(whOutboundDeliveryConfirm);
+                }
             }
         }
         if (log.isInfoEnabled()) {

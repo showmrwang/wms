@@ -209,4 +209,8 @@
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager" ref="containerManager" />
     <!-- 初始化数据 -->
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.init.InitManager" ref="initManager" />
+
+
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportServiceManager" ref="odoTransportServiceManager" />
+
 </beans>

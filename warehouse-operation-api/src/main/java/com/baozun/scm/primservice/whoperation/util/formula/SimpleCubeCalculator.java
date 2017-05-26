@@ -170,6 +170,19 @@ public class SimpleCubeCalculator {
         setVolume(ret);
         return ret;
     }
+    
+    /**
+     * 扣减指定的体积
+     * 
+     * @param c
+     * @return
+     */
+    public Double subtractStuffVolume(Double c) {
+        Double ret = getVolume();
+        ret -= c;
+        setVolume(ret);
+        return ret;
+    }
 
     /**
      * 获取已填充的总体积

@@ -1412,16 +1412,19 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             msg.setResponseStatus(0);
             return msg;
         }
-        List<WhOdoArchivLineIndex> whOdoArchivLineIndexList = null;
+        List<WhOdoArchivLineIndex> whOdoArchivLineIndexList = new ArrayList<WhOdoArchivLineIndex>();
         for (WhOdoArchivIndex odoArchivIndex : odoArchivIndexList) {
-            if (null != odoArchivIndex.getIsReturnedPurchase() && !odoArchivIndex.getIsReturnedPurchase()) {
+            if (Constants.WMS3.equals(odoArchivIndex.getDataSource())) {
+                whOdoArchivLineIndexList.addAll(whOdoArchivIndexManager.findWhOdoArchivIndexLineByWms3(ecOrderCode, odoArchivIndex, Constants.WMS3, ouId));
+            } else if (null != odoArchivIndex.getIsReturnedPurchase() && !odoArchivIndex.getIsReturnedPurchase()) {
                 // 退货入标记为0时,同步出库单明细到collect
                 String odoCode = odoArchivIndex.getWmsOdoCode();
                 String sysDate = odoArchivIndex.getSysDate();
                 // 查找
-                whOdoArchivLineIndexList = odoArchivManager.findWhOdoLineArchivByOdoCode(odoCode, ouId, sysDate, ecOrderCode, dataSource);
+                List<WhOdoArchivLineIndex> lineIndexList = odoArchivManager.findWhOdoLineArchivByOdoCode(odoCode, ouId, sysDate, ecOrderCode, dataSource);
                 // 保存
-                whOdoArchivLineIndexList = whOdoArchivIndexManager.saveWhOdoLineArchivListIntoCollect(odoArchivIndex, whOdoArchivLineIndexList);
+                lineIndexList = whOdoArchivIndexManager.saveWhOdoLineArchivListIntoCollect(odoArchivIndex, lineIndexList);
+                whOdoArchivLineIndexList.addAll(lineIndexList);
             }
         }
         // 创建Po的逻辑

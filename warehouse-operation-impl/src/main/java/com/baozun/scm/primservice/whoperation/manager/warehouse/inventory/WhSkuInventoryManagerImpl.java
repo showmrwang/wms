@@ -407,8 +407,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     public void execBinding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
         if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
             // 拆箱上架
-            Map<String, Long> invRecommendLocId = new HashMap<String, Long>();
-            Map<String, String> invRecommendLocCode = new HashMap<String, String>();
+            Map<String, Set<Long>> invRecommendLocId = new HashMap<String, Set<Long>>();
+            Map<String, Set<String>> invRecommendLocCode = new HashMap<String, Set<String>>();
             Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
             Map<Long, Map<String, Long>> locSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
             for (LocationRecommendResultCommand lrrCmd : lrrList) {
@@ -439,60 +439,79 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     locSkuAttrIdsQty.put(locationId, allSkuAttrIds);
                 }
                 String locationCode = lrrCmd.getLocationCode();
-                invRecommendLocId.put(lrrCmd.getSkuAttrId(), locationId);
-                invRecommendLocCode.put(lrrCmd.getSkuAttrId(), locationCode);
+                Set<Long> rLocs = invRecommendLocId.get(lrrCmd.getSkuAttrId());
+                if(null != rLocs){
+                    rLocs.add(locationId);
+                }else{
+                    rLocs = new HashSet<Long>();
+                    rLocs.add(locationId);
+                }
+                invRecommendLocId.put(lrrCmd.getSkuAttrId(), rLocs);
+                Set<String> rLocCodes = invRecommendLocCode.get(lrrCmd.getSkuAttrId());
+                if(null != rLocCodes){
+                    rLocCodes.add(locationCode);
+                }else{
+                    rLocCodes = new HashSet<String>();
+                    rLocCodes.add(locationCode);
+                }
+                invRecommendLocCode.put(lrrCmd.getSkuAttrId(), rLocCodes);
             }
             for (WhSkuInventoryCommand invCmd : invList) {
                 List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
                 if (null == snList || 0 == snList.size()) {
                     // 插入待移入库位库存
-                    Long recommendLocId = invRecommendLocId.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
-                    if (null == recommendLocId) {
+                    Set<Long> recommendLocIds = invRecommendLocId.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
+                    if (null == recommendLocIds) {
                         continue;
                     }
                     WhSkuInventoryTobefilled inv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setId(null);
-                    Map<String, Long> allSkuAttrIdsQty = locSkuAttrIdsQty.get(recommendLocId);
-                    Long qty = 0L;
-                    if (null != allSkuAttrIdsQty) {
-                        qty = allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
-                    }
+                    Iterator<Long> iter = recommendLocIds.iterator();
+                    while(iter.hasNext()){
+                        Long recommendLocId = iter.next();
+                        Map<String, Long> allSkuAttrIdsQty = locSkuAttrIdsQty.get(recommendLocId);
+                        Long qty = 0L;
+                        if (null != allSkuAttrIdsQty) {
+                            qty = allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
+                        }
 
-                    inv.setQty(new Double(qty));// 待移入
-                    inv.setLocationId(recommendLocId);
-                    try {
-                        inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
-                    } catch (Exception e) {
-                        log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
-                        throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                        inv.setQty(new Double(qty));// 待移入
+                        inv.setLocationId(recommendLocId);
+                        try {
+                            inv.setUuid(SkuInventoryUuid.invUuid(inv));// UUID
+                        } catch (Exception e) {
+                            log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                            throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                        }
+                        inv.setLastModifyTime(new Date());
+                        whSkuInventoryTobefilledDao.insert(inv);
+                        insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
+                        /*
+                         * // 可能要拆分库存，推荐逻辑明细行数量(目前整行处理) // 待出容器库存（分配容器库存） Double oldQty = 0.0; if (true
+                         * == warehouse.getIsTabbInvTotal()) { try { oldQty =
+                         * whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId); } catch
+                         * (Exception e) { log.error("sum sku inv onHand qty error, logId is:[{}]",
+                         * logId); throw new BusinessException(ErrorCodes.DAO_EXCEPTION); } } else {
+                         * oldQty = 0.0; } // 记录出库库存日志(这个实现的有问题) insertSkuInventoryLog(invCmd.getId(),
+                         * -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId,
+                         * userId,InvTransactionType.SHELF); WhSkuInventory invDelete = new
+                         * WhSkuInventory(); BeanUtils.copyProperties(invCmd, invDelete);
+                         * whSkuInventoryDao.delete(invDelete.getId());
+                         * insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
+                         */
                     }
-                    inv.setLastModifyTime(new Date());
-                    whSkuInventoryTobefilledDao.insert(inv);
-                    insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
-                    /*
-                     * // 可能要拆分库存，推荐逻辑明细行数量(目前整行处理) // 待出容器库存（分配容器库存） Double oldQty = 0.0; if (true
-                     * == warehouse.getIsTabbInvTotal()) { try { oldQty =
-                     * whSkuInventoryLogManager.sumSkuInvOnHandQty(invCmd.getUuid(), ouId); } catch
-                     * (Exception e) { log.error("sum sku inv onHand qty error, logId is:[{}]",
-                     * logId); throw new BusinessException(ErrorCodes.DAO_EXCEPTION); } } else {
-                     * oldQty = 0.0; } // 记录出库库存日志(这个实现的有问题) insertSkuInventoryLog(invCmd.getId(),
-                     * -invCmd.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId,
-                     * userId,InvTransactionType.SHELF); WhSkuInventory invDelete = new
-                     * WhSkuInventory(); BeanUtils.copyProperties(invCmd, invDelete);
-                     * whSkuInventoryDao.delete(invDelete.getId());
-                     * insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
-                     */
                 } else {
                     String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
                     Map<Long, Set<String>> allLocSkuAttrIds = new HashMap<Long, Set<String>>();
                     for (WhSkuInventorySnCommand snCmd : snList) {
                         String defectBarcode = snCmd.getDefectWareBarcode();
                         String snCode = snCmd.getSn();
-                        Long recommendLocId = invRecommendLocId.get(SkuCategoryProvider.concatSkuAttrId(skuAttrId, snCode, defectBarcode));
-                        if (null == recommendLocId) {
+                        Set<Long> recommendLocIds = invRecommendLocId.get(SkuCategoryProvider.concatSkuAttrId(skuAttrId, snCode, defectBarcode));
+                        if (null == recommendLocIds) {
                             continue;
                         }
+                        Long recommendLocId = recommendLocIds.iterator().next();
                         if (null != allLocSkuAttrIds.get(recommendLocId)) {
                             Set<String> allSkuAttrIds = allLocSkuAttrIds.get(recommendLocId);
                             allSkuAttrIds.add(SkuCategoryProvider.concatSkuAttrId(skuAttrId, snCode, defectBarcode));
@@ -503,13 +522,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             allLocSkuAttrIds.put(recommendLocId, allSkuAttrIds);
                         }
                     }
-                    int totalQty = 0;// 已处理数量
                     for (Long locId : allLocSkuAttrIds.keySet()) {
                         Set<String> allSkuAttrIds = allLocSkuAttrIds.get(locId);
                         if (null != allSkuAttrIds && 0 < allSkuAttrIds.size()) {
                             // 插入待移入库位库存
                             int qty = allSkuAttrIds.size();
-                            totalQty += qty;
                             WhSkuInventoryTobefilled inv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, inv);
                             inv.setId(null);
@@ -525,8 +542,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             whSkuInventoryTobefilledDao.insert(inv);
                             insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
                             for (WhSkuInventorySnCommand snCmd : snList) {
-                                Long recommendLocId = invRecommendLocId.get(SkuCategoryProvider.concatSkuAttrId(skuAttrId, snCmd.getSn(), snCmd.getDefectWareBarcode()));
-                                if (null == recommendLocId) {
+                                Set<Long> recommendLocIds = invRecommendLocId.get(SkuCategoryProvider.concatSkuAttrId(skuAttrId, snCmd.getSn(), snCmd.getDefectWareBarcode()));
+                                if (null == recommendLocIds) {
                                     continue;
                                 }
                                 WhSkuInventorySn sn = new WhSkuInventorySn();

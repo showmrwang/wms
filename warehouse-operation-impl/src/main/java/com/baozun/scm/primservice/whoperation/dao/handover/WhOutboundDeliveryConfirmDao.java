@@ -25,6 +25,8 @@ import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm;
 
 public interface WhOutboundDeliveryConfirmDao extends BaseDao<WhOutboundDeliveryConfirm, Long> {
@@ -42,5 +44,9 @@ public interface WhOutboundDeliveryConfirmDao extends BaseDao<WhOutboundDelivery
 
     @CommonQuery
     int saveOrUpdate(WhOutboundDeliveryConfirm o);
+
+    void selectNewOutboundDeliveryConfirm();
+
+    Long findByodoAndWaybillCode(@Param("waybillCode") String waybillCode, @Param("odoId") Long odoId);
 
 }
