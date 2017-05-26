@@ -10549,6 +10549,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setToBeFilledQty(Constants.DEFAULT_DOUBLE);
             inv.setFrozenQty(Constants.DEFAULT_DOUBLE);
             inv.setIsLocked(false);
+            if (inv.getInboundTime() == null) {
+                inv.setInboundTime(new Date());
+            }
             this.whSkuInventoryDao.insert(inv);
             this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.RECEIVING);
             if (uuidSnMap.containsKey(uuid)) {
