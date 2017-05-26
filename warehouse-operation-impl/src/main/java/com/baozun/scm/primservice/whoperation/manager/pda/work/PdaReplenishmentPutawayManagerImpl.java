@@ -1437,7 +1437,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
      * 补货上架取消
      * @param operationId
      */
-    public void cancelPattern(Long operationId,Integer cancelPattern,Long locationId,Long turnoverBoxId){
+    public void cancelPattern(Long operationId,Integer cancelPattern,Long locationId,Long turnoverBoxId,Long tipSkuId){
         if(CancelPattern.PICKING_SCAN_LOC_CANCEL == cancelPattern){
             //清楚缓存计数器
             OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
@@ -1474,6 +1474,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             for(Long skuId:skuIds){
                 cacheManager.remove( CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
             }
+        }else if(CancelPattern.PICKING_SCAN_SKU_DETAIL == cancelPattern){
+            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+ turnoverBoxId.toString() + tipSkuId.toString());
         }
     }
     

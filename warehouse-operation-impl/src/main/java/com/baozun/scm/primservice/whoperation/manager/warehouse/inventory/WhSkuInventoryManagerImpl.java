@@ -8843,7 +8843,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             } else {
                 oldQty = 0.0;
             }
-            insertSkuInventoryLog(invCmd.getId(), invCmd.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
+            insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
             whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
         }
         if (skuScanQty.doubleValue() < invCmd.getOnHandQty().doubleValue()) {
@@ -8859,7 +8859,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             } else {
                 oldQty = 0.0;
             }
-            insertSkuInventoryLog(invCmd.getId(), qty - invCmd.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
+            insertSkuInventoryLog(invCmd.getId(), -skuScanQty, oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
             WhSkuInventory inv = new WhSkuInventory();
             BeanUtils.copyProperties(invCmd, inv);
             inv.setOnHandQty(qty);
@@ -9778,7 +9778,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     String uuid = null;
                     WhSkuInventory skuInv = new WhSkuInventory();
                     BeanUtils.copyProperties(skuInvCmd, skuInv);
-                    Double qty = 0.0;
                     if(scanSkuQty.doubleValue() > skuInvCmd.getOnHandQty().doubleValue()){
                         uuid = skuInvCmd.getUuid();
                         skuInvQty += skuInvCmd.getOnHandQty();
@@ -9797,8 +9796,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(skuInvCmd.getId(), -skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
                             whSkuInventoryDao.deleteWhSkuInventoryById(skuInvCmd.getId(), ouId);
                         }
-                        if (qty.doubleValue() > 0) {
-                            skuInv.setOnHandQty(qty);
+                        if (scanSkuQty.doubleValue() < skuInvQty.doubleValue()) {
+                            Double qty  = scanSkuQty -(skuInvQty-skuInv.getOnHandQty());
+                            skuInv.setOnHandQty(skuInv.getOnHandQty()-qty);
                             try {
                                 uuid = SkuInventoryUuid.invUuid(skuInv);
                                 skuInv.setUuid(uuid);// UUID
@@ -9820,9 +9820,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             } else {
                                 oldQty = 0.0;
                             }
-                            insertSkuInventoryLog(skuInvCmd.getId(), -skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
+                            insertSkuInventoryLog(skuInvCmd.getId(), -qty, oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
                             break;
-                        } else {
+                        } 
+                        if(scanSkuQty.doubleValue() == skuInvQty.doubleValue()){
                             uuid = skuInvCmd.getUuid();
                             Double oldQty = 0.0;
                             if (true == isTabbInvTotal) {
@@ -9882,7 +9883,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         } else {
                             oldQty = 0.0;
                         }
-                        insertSkuInventoryLog(skuInvCmd.getId(), -skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
+                        insertSkuInventoryLog(skuInvCmd.getId(),-scanSkuQty, oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
                         break;
                     }
                 }

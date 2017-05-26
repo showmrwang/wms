@@ -61,6 +61,9 @@ public class WeightingCommand extends BaseCommand {
 
     /** 店铺名称*/
     private String storeName;
+    
+    private Boolean isSuccess;
+    
 
     public Long getFuncId() {
         return funcId;
@@ -196,6 +199,14 @@ public class WeightingCommand extends BaseCommand {
 
     public void setFloats(Integer floats) {
         this.floats = floats;
+    }
+
+    public Boolean getIsSuccess() {
+        return isSuccess;
+    }
+
+    public void setIsSuccess(Boolean isSuccess) {
+        this.isSuccess = isSuccess;
     }
 
     

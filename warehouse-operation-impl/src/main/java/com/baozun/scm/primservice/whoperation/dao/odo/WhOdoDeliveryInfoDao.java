@@ -50,4 +50,15 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
      * @return
      */
     List<WhOdodeliveryInfo> findByOdoIdWithoutOutboundbox(@Param("id") Long id, @Param("ouid") Long ouid);
+    
+    
+
+    /**
+     * 通过出库单ID且出库单号为空的数据
+     * 
+     * @param id
+     * @param ouid
+     * @return
+     */
+    List<WhOdodeliveryInfo> getWhOdodeliveryInfoByOdoId(@Param("odoId") Long odoId, @Param("ouid") Long ouid);
 }
