@@ -499,6 +499,9 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         Long ouId=po.getOuId();
         try {
             checkPoParameter(po);
+            if (StringUtils.isEmpty(po.getDataSource())) {
+                po.setDataSource(Constants.WMS4);
+            }
             //校验ExtCode: ext_code与storeId 唯一性
             List<BiPo> checkExtCodeBiPoList = this.biPoManager.findListByStoreIdExtCode(po.getStoreId(), po.getExtCode());
             if (null == checkExtCodeBiPoList || checkExtCodeBiPoList.size() > 0) {

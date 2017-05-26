@@ -571,6 +571,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
                 odo.setLagOdoStatus(OdoStatus.NEW);
             }
+            if (StringUtils.isEmpty(odo.getDataSource())) {
+                odo.setDataSource(Constants.WMS4);
+            }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
