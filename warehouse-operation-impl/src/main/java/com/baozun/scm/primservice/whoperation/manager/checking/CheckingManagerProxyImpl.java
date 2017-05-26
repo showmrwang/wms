@@ -610,7 +610,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         if (isBoxCheckingFinished) {
             boolean isOdoCheckingFinished = this.checkOdoCheckingFinished(checkingId, whOdo.getId(), ouId, logId);
             if (isOdoCheckingFinished) {
-                if(OdoStatus.CHECKING.equals(whOdo.getOdoStatus())){
+                if(OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.CHECKING.equals(whOdo.getOdoStatus())){
                     whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
                 }
                 whOdo.setLagOdoStatus(OdoStatus.CHECKING_FINISH);
