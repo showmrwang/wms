@@ -5051,7 +5051,11 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             Iterator<String> iter2 = oneByOneScanSkuAttrIds.iterator();
                             while (iter2.hasNext()) {
                                 String skuAttrId = iter2.next();
-                                if (!StringUtils.isEmpty(skuAttrId)) cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                                if (!StringUtils.isEmpty(skuAttrId)){
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuAttrId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icId.toString() + locationId.toString() + skuAttrId);
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icId.toString() + locationId.toString() + skuAttrId);
+                                }
                             }
                         }
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + locationId.toString());

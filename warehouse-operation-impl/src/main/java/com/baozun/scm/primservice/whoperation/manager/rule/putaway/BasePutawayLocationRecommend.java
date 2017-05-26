@@ -86,6 +86,25 @@ public abstract class BasePutawayLocationRecommend extends BaseManagerImpl imple
         return counts;
     }
     
+    protected int invAttrCountAspect(List<WhSkuInventoryCommand> invList, Set<String> skuAttrIds) {
+        int counts = 0;
+        if (null == invList || 0 == invList.size()) {
+            return counts;
+        }
+        Set<String> allSkuAttrs = new HashSet<String>();
+        for (WhSkuInventoryCommand inv : invList) {
+            WhSkuInventoryCommand iv = inv;
+            if (null != iv) {
+                allSkuAttrs.add(SkuCategoryProvider.getSkuAttrIdByInv(iv));
+            }
+        }
+        if (null != skuAttrIds) {
+            allSkuAttrs.addAll(skuAttrIds);
+        }
+        counts = allSkuAttrs.size();
+        return counts;
+    }
+    
     protected void invAttrMgmtAspect(AttrParams attrParams, WhSkuInventoryCommand invCmd) {
         String invAttrMgmt = attrParams.getInvAttrMgmt();
         if (null == attrParams.getIsMixStacking() || false == attrParams.getIsMixStacking()) {

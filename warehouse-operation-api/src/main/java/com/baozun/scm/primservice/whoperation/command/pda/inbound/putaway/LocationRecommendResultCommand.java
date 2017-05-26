@@ -53,6 +53,10 @@ public class LocationRecommendResultCommand extends BaseCommand {
     private String defectBarcode;
     /** 序列号 */
     private String sn;
+    /** 推荐商品总体积 */
+    private Double volumes;
+    /** 推荐商品总重量 */
+    private Double weights;
 
     public int getPutawayPatternType() {
         return putawayPatternType;
@@ -133,7 +137,7 @@ public class LocationRecommendResultCommand extends BaseCommand {
     public void setLocationCode(String locationCode) {
         this.locationCode = locationCode;
     }
-    
+
     public String getLocBarcode() {
         return locBarcode;
     }
@@ -141,7 +145,7 @@ public class LocationRecommendResultCommand extends BaseCommand {
     public void setLocBarcode(String locBarcode) {
         this.locBarcode = locBarcode;
     }
-    
+
     public Double getQty() {
         return qty;
     }
@@ -172,6 +176,22 @@ public class LocationRecommendResultCommand extends BaseCommand {
 
     public void setSn(String sn) {
         this.sn = sn;
+    }
+
+    public Double getVolumes() {
+        return volumes;
+    }
+
+    public void setVolumes(Double volumes) {
+        this.volumes = volumes;
+    }
+
+    public Double getWeights() {
+        return weights;
+    }
+
+    public void setWeights(Double weights) {
+        this.weights = weights;
     }
 
 

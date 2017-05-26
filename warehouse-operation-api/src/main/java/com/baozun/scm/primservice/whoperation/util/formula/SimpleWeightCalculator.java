@@ -34,6 +34,7 @@ public class SimpleWeightCalculator {
     private Double _weight;
     private Double _rawWeight;
     private Double weight = 0.0;
+    private Double currentStuffWeight = 0.0;
     private Double rawWeight;
     private String _uom;
     private String uom;
@@ -104,6 +105,13 @@ public class SimpleWeightCalculator {
         setWeight(weight);
         return weight;
     }
+    
+    public Double subtractStuffWeight(Double w) {
+        Double weight = getStuffWeight();
+        weight -= w;
+        setWeight(weight);
+        return weight;
+    }
 
     public Double getStuffWeight() {
         return getWeight();
@@ -127,6 +135,7 @@ public class SimpleWeightCalculator {
             initStuffWeight(0.0, defaultUom);
         }
         Double rw = uomConversion(actualUom, actualWeight);
+        setCurrentStuffWeight(rw);
         addStuffWeight(rw);
         return getStuffWeight();
     }
@@ -168,6 +177,7 @@ public class SimpleWeightCalculator {
         isWeightSupport(_weight);
         isUomSupport(_uom);
         Double rw = uomConversion(_uom, _weight);
+        setCurrentStuffWeight(rw);
         set_weight(rw);
         setAvailability(1.0);
         setAvailableWeight(get_weight() * getAvailability());
@@ -179,6 +189,7 @@ public class SimpleWeightCalculator {
         isWeightSupport(weight);
         isUomSupport(uom);
         Double rw = uomConversion(uom, weight);
+        setCurrentStuffWeight(rw);
         setWeight(rw);
         setInitStuffWeight(true);
     }
@@ -189,6 +200,7 @@ public class SimpleWeightCalculator {
         isWeightSupport(weight);
         isUomSupport(uom);
         Double rw = uomConversion(uom, weight);
+        setCurrentStuffWeight(rw * qty);
         setWeight(rw * qty);
         setInitStuffWeight(true);
     }
@@ -281,6 +293,14 @@ public class SimpleWeightCalculator {
 
     public void setWeight(Double weight) {
         this.weight = weight;
+    }
+    
+    public Double getCurrentStuffWeight() {
+        return currentStuffWeight;
+    }
+
+    public void setCurrentStuffWeight(Double currentStuffWeight) {
+        this.currentStuffWeight = currentStuffWeight;
     }
 
     public Double getRawWeight() {
