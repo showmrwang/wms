@@ -3142,8 +3142,25 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if(cSRCmd.getIsPicking()){
                 command.setIsPicking(true);
                 command = this.containerPickingOperationExecLine(command, skuCmd, isTabbInvTotal);
+                // 判断是拣完在播，是否是最后一箱
+                WhWorkCommand work = workManager.findWorkByWorkCode(command.getWorkBarCode(), command.getOuId());
+                List<WhWorkCommand> list = workManager.findWorkByBatch(work.getBatch(), command.getOuId());
+                int count = 0;
+                for (WhWorkCommand cmd : list) {
+                    if (!(WorkStatus.FINISH.equals(cmd.getStatus()) || WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))) {
+                        count++;
+                    }
+                }
+                if (count == 1) {// 当前工作是最后一个
+                    command.setIsLastWork(true); // 当前工作是一个小批次下的最后一个工作
+                }
+                long startTime = System.currentTimeMillis(); // 获取开始时间
+                log.info("collection run start time:" + startTime);
                 // 插入集货表
                 String pickingMode = this.insertIntoCollection(command, command.getOuId(), command.getUserId());
+                long endTime = System.currentTimeMillis(); // 获取结束时间
+                log.info("collection run end time:" + endTime);
+                log.info("collection run  time:" + (endTime - startTime));
                 command.setPickingMode(pickingMode);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
@@ -3359,8 +3376,25 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             command.setIsPicking(true);
         }else{
             command.setIsPicking(true);
+            // 判断是拣完在播，是否是最后一箱
+            WhWorkCommand work = workManager.findWorkByWorkCode(command.getWorkBarCode(), command.getOuId());
+            List<WhWorkCommand> list = workManager.findWorkByBatch(work.getBatch(), command.getOuId());
+            int count = 0;
+            for (WhWorkCommand cmd : list) {
+                if (!(WorkStatus.FINISH.equals(cmd.getStatus()) || WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))) {
+                    count++;
+                }
+            }
+            if (count == 1) {// 当前工作是最后一个
+                command.setIsLastWork(true); // 当前工作是一个小批次下的最后一个工作
+            }
+            long startTime = System.currentTimeMillis(); // 获取开始时间
+            log.info("collection run start time:" + startTime);
             // 插入集货表
             String pickingMode = this.insertIntoCollection(command, command.getOuId(), command.getUserId());
+            long endTime = System.currentTimeMillis(); // 获取结束时间
+            log.info("collection run end time:" + endTime);
+            log.info("collection run  time:" + (endTime - startTime));
             command.setPickingMode(pickingMode);
             // 清除缓存
             pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());  
