@@ -717,7 +717,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase) {
-        if (null == waveId || null == odoId || StringUtils.isEmpty(reason) || null == wh) {
+        if (null == waveId || null == odoId || null == wh) {
+            // @mender yimin.lu 取消||tringUtils.isEmpty(reason)
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         Long ouId = wh.getId();

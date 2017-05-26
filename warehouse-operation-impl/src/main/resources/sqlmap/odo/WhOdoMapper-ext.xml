@@ -3403,6 +3403,7 @@
             </foreach>
             AND ou_id = #{ouId}
             and odo_status=1 
+            and is_locked=0
 			and (wave_code is null or wave_code='') 
     </select>
     

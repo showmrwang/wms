@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.logistics.manager.OrderConfirmContentManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -22,14 +23,20 @@ import com.baozun.scm.primservice.whoperation.constant.HandoverCollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.OutboundDeliveryConfirmStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverDao;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverLineDao;
+import com.baozun.scm.primservice.whoperation.dao.handover.WhOutboundDeliveryConfirmDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -42,8 +49,12 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.handover.Handover;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverLine;
+import com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
@@ -77,6 +88,18 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private UomDao uomDao;
     @Autowired
     private WhSkuManager whSkuManager;
+    @Autowired
+    private WhOdoAddressDao whOdoAddressDao;
+    @Autowired
+    private WhOutboundDeliveryConfirmDao whOutboundDeliveryConfirmDao;
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
+    @Autowired
+    private WarehouseDao warehouseDao;
+    @Autowired
+    private OutBoundBoxTypeDao outBoundBoxTypeDao;
+    @Autowired
+    private OrderConfirmContentManager orderConfirmContentManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -232,10 +255,10 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             // 6出库单下所有对应的出库箱是否都已经交接 如果都交接了 更新订单状态 订单明细状态
             Long odoId = outboundbox.getOdoId();
             int a = whOutboundboxDao.findunhandoverBoxByOdoId(odoId, ouId);
+            WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
             if (0 == a) {
 
 
-                WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
                 odo.setOdoStatus(OdoStatus.FINISH);
                 odo.setLagOdoStatus(OdoStatus.FINISH);
                 int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
@@ -245,7 +268,6 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                     throw new BusinessException(ErrorCodes.ODO_SAVEORUPDATEBYVERSION_ERROR);
                 }
                 // 调用胡斌方法
-                // TODO
                 whOutboundConfirmManager.saveWhOutboundConfirm(odo);
                 List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
                 for (WhOdoLine whOdoLine : whOdoLineList) {
@@ -259,9 +281,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 }
             } else {
                 // 出库单下的出库箱只有部分出库
-                WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
-                odo.setOdoStatus(OdoStatus.FINISH);
-                odo.setLagOdoStatus(OdoStatus.PARTLY_FINISH);
+                odo.setOdoStatus(OdoStatus.PARTLY_FINISH);
                 int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
                 if (0 == odoUpdate) {
                     // 出库单状态更新失败
@@ -269,7 +289,6 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                     throw new BusinessException(ErrorCodes.ODO_SAVEORUPDATEBYVERSION_ERROR);
                 }
                 // 调用胡斌方法
-                // TODO
                 whOutboundConfirmManager.saveWhOutboundConfirm(odo);
                 List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
                 for (WhOdoLine whOdoLine : whOdoLineList) {
@@ -283,8 +302,77 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 }
 
             }
-        }
 
+            List<WhOdodeliveryInfo> findWhOdodeliveryInfoByOdoId = whOdoDeliveryInfoDao.findWhOdodeliveryInfoByOdoId(odoId, ouId);
+            for (WhOdodeliveryInfo whOdodeliveryInfo : findWhOdodeliveryInfoByOdoId) {
+                // 插入运单反馈表
+                WhOutboundDeliveryConfirm whOutboundDeliveryConfirm = new WhOutboundDeliveryConfirm();
+                WhOdoAddress whOdoAddress = new WhOdoAddress();
+                whOdoAddress.setOdoId(odoId);
+                List<WhOdoAddress> WhOdoAddress = whOdoAddressDao.findListByParam(whOdoAddress);
+                if (WhOdoAddress.size() > 0) {
+                    whOutboundDeliveryConfirm.setOdoId(odoId);
+                    whOutboundDeliveryConfirm.setConsigneeTargetAddress(WhOdoAddress.get(0).getConsigneeTargetAddress());
+                    whOutboundDeliveryConfirm.setConsigneeTargetCity(WhOdoAddress.get(0).getConsigneeTargetCity());
+                    whOutboundDeliveryConfirm.setConsigneeTargetDistrict(WhOdoAddress.get(0).getConsigneeTargetDistrict());
+                    whOutboundDeliveryConfirm.setConsigneeTargetCountry(WhOdoAddress.get(0).getConsigneeTargetCountry());
+                    whOutboundDeliveryConfirm.setConsigneeTargetEmail(WhOdoAddress.get(0).getConsigneeTargetEmail());
+                    whOutboundDeliveryConfirm.setConsigneeTargetMobilePhone(WhOdoAddress.get(0).getConsigneeTargetMobilePhone());
+                    whOutboundDeliveryConfirm.setConsigneeTargetName(WhOdoAddress.get(0).getConsigneeTargetName());
+                    whOutboundDeliveryConfirm.setConsigneeTargetProvince(WhOdoAddress.get(0).getConsigneeTargetProvince());
+                    whOutboundDeliveryConfirm.setConsigneeTargetTelephone(WhOdoAddress.get(0).getConsigneeTargetTelephone());
+                    whOutboundDeliveryConfirm.setConsigneeTargetVillagesTowns(WhOdoAddress.get(0).getConsigneeTargetVillagesTowns());
+                    whOutboundDeliveryConfirm.setConsigneeTargetZip(WhOdoAddress.get(0).getConsigneeTargetZip());
+                }
+                WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOdoIdAndOutboundBoxCode(odoId, outboundbox.getOutboundboxCode(), ouId);
+                if (null != whOdoPackageInfo) {
+                    whOutboundDeliveryConfirm.setFloats(whOdoPackageInfo.getFloats());
+                    whOutboundDeliveryConfirm.setWeight(whOdoPackageInfo.getCalcWeight());
+                }
+                whOutboundDeliveryConfirm.setEcOrderCode(odo.getEcOrderCode());
+                whOutboundDeliveryConfirm.setExtCode(odo.getExtCode());
+                whOutboundDeliveryConfirm.setOdoCode(odo.getOdoCode());
+                whOutboundDeliveryConfirm.setOuId(ouId);
+                // whOutboundDeliveryConfirm.setOuCode(this.findOuCodeByOuId(ouId));
+                whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.NEW);
+                whOutboundDeliveryConfirm.setCustomerCode(outboundbox.getCustomerCode());
+                whOutboundDeliveryConfirm.setCustomerName(outboundbox.getCustomerName());
+                whOutboundDeliveryConfirm.setStoreCode(outboundbox.getStoreCode());
+                whOutboundDeliveryConfirm.setStoreName(outboundbox.getStoreName());
+
+                if (null != outboundbox.getOutboundboxId()) {
+                    OutBoundBoxType outBoundBoxType = outBoundBoxTypeDao.findById(outboundbox.getOutboundboxId());
+                    if (null != outBoundBoxType) {
+                        whOutboundDeliveryConfirm.setHigh(outBoundBoxType.getHigh());
+                        whOutboundDeliveryConfirm.setWidth(outBoundBoxType.getWidth());
+                        whOutboundDeliveryConfirm.setLength(outBoundBoxType.getLength());
+                    }
+                }
+                whOutboundDeliveryConfirm.setCreateId(userId);
+                whOutboundDeliveryConfirm.setCreateTime(new Date());
+                whOutboundDeliveryConfirm.setExtTransOrderId(whOdodeliveryInfo.getExtId());
+                whOutboundDeliveryConfirm.setLastModifyTime(new Date());
+                whOutboundDeliveryConfirm.setModifiedId(userId);
+                whOutboundDeliveryConfirm.setOutboundboxId(whOdodeliveryInfo.getOutboundboxId());
+                whOutboundDeliveryConfirm.setOutboundboxCode(whOdodeliveryInfo.getOutboundboxCode());
+                whOutboundDeliveryConfirm.setPackageCenterCode(whOdodeliveryInfo.getPackageCenterCode());
+                whOutboundDeliveryConfirm.setPackageCenterName(whOdodeliveryInfo.getPackageCenterName());
+                whOutboundDeliveryConfirm.setLogisticsCode(whOdodeliveryInfo.getLogisticsCode());
+                whOutboundDeliveryConfirm.setTimeEffectType(whOdodeliveryInfo.getTimeEffectType());
+                whOutboundDeliveryConfirm.setTmsCode(whOdodeliveryInfo.getTmsCode());
+                whOutboundDeliveryConfirm.setTransBigWord(whOdodeliveryInfo.getTransBigWord());
+                whOutboundDeliveryConfirm.setTransportCode(whOdodeliveryInfo.getTransportCode());
+                whOutboundDeliveryConfirm.setTransportServiceType(whOdodeliveryInfo.getTransportServiceType());
+                whOutboundDeliveryConfirm.setWaybillCode(whOdodeliveryInfo.getWaybillCode());
+                whOutboundDeliveryConfirm.setChildWaybillCodes(whOdodeliveryInfo.getWaybillCode());
+                whOutboundDeliveryConfirm.setType(1);
+
+                Long findByodoAndWaybillCode = whOutboundDeliveryConfirmDao.findByodoAndWaybillCode(whOdodeliveryInfo.getWaybillCode(), odoId);
+                if (findByodoAndWaybillCode == 0 || null == findByodoAndWaybillCode) {
+                    whOutboundDeliveryConfirmDao.insert(whOutboundDeliveryConfirm);
+                }
+            }
+        }
         if (log.isInfoEnabled()) {
             log.info("HandoverManagerImpl.handover end, logId is:[{}]", logId);
         }
@@ -292,9 +380,9 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     }
 
     @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void print(List<HandoverCollection> hcList) {
-        // 打印出库单据
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public String findOuCodeByOuId(Long ouId) {
+        return warehouseDao.findById(ouId).getCode();
     }
 
     @Override

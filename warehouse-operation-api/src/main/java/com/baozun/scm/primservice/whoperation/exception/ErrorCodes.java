@@ -461,6 +461,8 @@ public class ErrorCodes {
     public static final int UUID_GENERATE_ERROR = 11096;
     /** 收货反馈数据失败 */
     public static final int FEEDBACK_RCVD_ERROR = 11097;
+    /** 消费者退换入请走操作台：退换货入流程 */
+    public static final int PDARECEIVING_RETURNS_NO_ERROR = 11098;
     // 10001-20000 luyimin
 
 
@@ -1025,7 +1027,9 @@ public class ErrorCodes {
     /** 容器库存不存在 */
     public static final int CONTAINER_INVENTORY_NO_EXIST = 70064;
     /** 引入的新容器不能上架 */
-    public static final int NEW_TURNOVERBOX_NO_LOC = 700065;
+    public static final int NEW_TURNOVERBOX_NO_LOC = 70065;
+    /**当前出库箱复合数量不正确*/
+    public static final int CHECKING_NUM_IS_EEROR = 70065;
 
     // 70001-80000 tangming
 

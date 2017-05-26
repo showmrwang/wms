@@ -55,8 +55,6 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     @Autowired
     private WhCheckingLineDao whCheckingLineDao;
 
-    // @Autowired
-    // private LocationSkuVolumeDao locationSkuVolumeDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -158,6 +156,7 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
                         } else {
                             inv.setId(oldInvId);
                             inv.setOnHandQty(newQty);
+                            inv.setOccupationCode(null);
                             this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
                         }
                         return lsv.getLocationId();
@@ -221,7 +220,7 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Long reduceQtyAndUpdateOutboundbox(WhCheckingCommand command) {
+    public LocationSkuVolume reduceQtyAndUpdateOutboundbox(WhCheckingCommand command) {
         Long facilityId = command.getCheckingFacilityId();
         Long skuId = command.getConsumableSkuId();
         Long ouId = command.getOuId();
@@ -230,8 +229,9 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
         // 1.扣减耗材
         Long locationId = this.reduceQty(facilityId, skuId, outboundboxCode, ouId, userId);
         // 2.保存出库箱
-        updateCheckOutboundBox(command);
-        return locationId;
+        // updateCheckOutboundBox(command);
+        LocationSkuVolume lsv = this.getLocationSkuVolumeByLocationIdAndOuid(ouId, locationId);
+        return lsv;
     }
 
     /**

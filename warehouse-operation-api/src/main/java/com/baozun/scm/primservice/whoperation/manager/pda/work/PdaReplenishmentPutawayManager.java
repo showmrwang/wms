@@ -54,7 +54,7 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
      * 补货上架取消
      * @param operationId
      */
-    public void cancelPattern(Long operationId,Integer cancelPattern,Long locationId,Long turnoverBoxId);
+    public void cancelPattern(Long operationId,Integer cancelPattern,Long locationId,Long turnoverBoxId,Long tipSkuId);
     
     /**
      * 获取补货功能参数

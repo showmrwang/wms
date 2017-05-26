@@ -74,4 +74,11 @@ public interface WhOdoArchivIndexManager extends BaseManager {
     List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexListByAsnId(Long asnId, Long ouId);
 
     List<WhOdoArchivLineIndexCommand> findWhOdoArchivLineIndexCommandListByAsnId(Long asnId, Long ouId);
+    
+    /**
+     * 查找wms3的数据
+     * @author kai.zhu
+     * @version 2017年5月26日
+     */
+    List<WhOdoArchivLineIndex> findWhOdoArchivIndexLineByWms3(String ecOrderCode, WhOdoArchivIndex odoArchivIndex, String wms3, Long ouId);
 }

@@ -209,6 +209,52 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void saveRecOutboundBoxForWholeCaseOdo(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList) {
+        if (null != turnoverBoxList) {
+            for (Container2ndCategoryCommand container : turnoverBoxList) {
+                // 整箱中的包裹
+                for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutBoundBoxCommandList()) {
+                    WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
+                    BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
+
+                    odoOutBoundBox.setCreateTime(new Date());
+                    odoOutBoundBox.setLastModifyTime(new Date());
+                    odoOutBoundBoxDao.insert(odoOutBoundBox);
+                }
+            }
+        }
+        if (null != odoPackedWholeCaseList && !odoPackedWholeCaseList.isEmpty()) {
+            for (ContainerCommand container : odoPackedWholeCaseList) {
+                // 整箱中的包裹
+                for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutboundBoxCommandList()) {
+                    WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
+                    BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
+
+                    odoOutBoundBox.setCreateTime(new Date());
+                    odoOutBoundBox.setLastModifyTime(new Date());
+                    odoOutBoundBoxDao.insert(odoOutBoundBox);
+                }
+            }
+        }
+
+        if (null != odoPackedWholeTrayList && !odoPackedWholeTrayList.isEmpty()) {
+            for (ContainerCommand container : odoPackedWholeTrayList) {
+                // 整箱中的包裹
+                for (WhOdoOutBoundBoxCommand odoOutBoundBoxCommand : container.getOdoOutboundBoxCommandList()) {
+                    WhOdoOutBoundBox odoOutBoundBox = new WhOdoOutBoundBox();
+                    BeanUtils.copyProperties(odoOutBoundBoxCommand, odoOutBoundBox);
+
+                    odoOutBoundBox.setCreateTime(new Date());
+                    odoOutBoundBox.setLastModifyTime(new Date());
+                    odoOutBoundBoxDao.insert(odoOutBoundBox);
+                }
+            }
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveRecOutboundBoxForSeedBatch(List<Container2ndCategoryCommand> turnoverBoxList, List<ContainerCommand> odoPackedWholeCaseList, List<ContainerCommand> odoPackedWholeTrayList) {
         if (null != turnoverBoxList) {
             for (Container2ndCategoryCommand container : turnoverBoxList) {

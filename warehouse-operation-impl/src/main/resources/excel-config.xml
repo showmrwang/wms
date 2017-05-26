@@ -132,7 +132,8 @@
 		<field name="outerContainerCode" title="外部容器编码"/>
 		<field name="insideContainerCode" title="内部容器编码"/>
 		<field name="customerCode" title="客户编码" isNull="false"/>
-		<field name="storeCode" title="店铺编码" isNull="false"/>
+		<field name="storeCode" title="店铺编码" isNull="false" />
+		<field name="inboundTime" title="入库时间" isNull="false" pattern="yyyy/MM/dd" nullErrorCode="error.excel.isNull"/>
 		<field name="onHandQty" title="在库库存" decimalFormatPattern="###,##0.00" isNull="false" nullErrorCode="error.excel.isNull"  regex="^\d+(\.\d+)?$" regexErrCode="error.excel.isNotNumber"/>
 		<field name="invStatus" title="库存状态"  regex="^[1-9]\d*$" regexErrCode="error.excel.isNotNumber" isNull="false" nullErrorCode="error.excel.isNull"/>
 		<field name="invType" title="库存类型"/>

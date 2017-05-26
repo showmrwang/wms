@@ -92,6 +92,7 @@
                     <value>com.baozun.scm.primservice.whoperation.model.poasn.BiPoTransportMgmt</value>
                     <value>com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt</value>
                     <value>com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable</value>
+                    <value>com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm</value>
 				</list>
 			</property>
 			
