@@ -300,6 +300,7 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
             this.saveInWarehouseMoveWorkOperationLine(inWarehouseMoveWorkCode, inWarehouseMoveWorkOperationCode, whSkuInventoryAllocatedCommand);
         } catch (Exception e) {
             log.error("", e);
+            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return inWarehouseMoveWorkCode;    
     }
@@ -610,20 +611,33 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
         
         if(null != whWorkLineCommandList &&  whWorkLineCommandList.size() > 0){
             for(WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList){
-                if(count !=  0){
-                    //获取上一次循环的实体类            
-                    WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count-1);
-                    
-                    if (0 == whWorkLineCommandBefor.getFromLocationId().compareTo(whWorkLineCommand.getFromLocationId())) {
+                if (null == whWorkLineCommand.getFromLocationId()) {
+                    isFromLocationId = false;
+                }
+                if (null == whWorkLineCommand.getFromOuterContainerId()) {
+                    isFromOuterContainerId = false;
+                }
+                if (null == whWorkLineCommand.getFromInsideContainerId()) {
+                    isFromInsideContainerId = false;
+                }
+                if (null == whWorkLineCommand.getOdoId()) {
+                    isOdoId = false;
+                }
+                
+                if (count != 0) {
+                    // 获取上一次循环的实体类
+                    WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count - 1);
+
+                    if (null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && 0 != whWorkLineCommandBefor.getFromLocationId().compareTo(whWorkLineCommand.getFromLocationId())) {
                         isFromLocationId = false;
                     }
-                    if (0 == whWorkLineCommandBefor.getFromOuterContainerId().compareTo(whWorkLineCommand.getFromOuterContainerId())) {
+                    if (null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && 0 != whWorkLineCommandBefor.getFromOuterContainerId().compareTo(whWorkLineCommand.getFromOuterContainerId())) {
                         isFromOuterContainerId = false;
                     }
-                    if (0 == whWorkLineCommandBefor.getFromInsideContainerId().compareTo(whWorkLineCommand.getFromInsideContainerId())) {
+                    if (null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && 0 != whWorkLineCommandBefor.getFromInsideContainerId().compareTo(whWorkLineCommand.getFromInsideContainerId())) {
                         isFromInsideContainerId = false;
                     }
-                    if (0 == whWorkLineCommandBefor.getOdoId().compareTo(whWorkLineCommand.getOdoId())) {
+                    if (null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && 0 != whWorkLineCommandBefor.getOdoId().compareTo(whWorkLineCommand.getOdoId())) {
                         isOdoId = false;
                     }
                 }

@@ -358,6 +358,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             if (odo.getIsFreightInvoiceSunder() == null) {
                 odo.setIsFreightInvoiceSunder(Boolean.FALSE);
             }
+            // @mender yimin.lu 2017/5/26 数据来源不能为空
+            if (StringUtils.isEmpty(odo.getDataSource())) {
+                odo.setDataSource(Constants.WMS4);
+            }
             this.whOdoDao.insert(odo);
             odoId = odo.getId();
             // 头增值服务

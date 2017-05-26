@@ -905,6 +905,8 @@ public class ErrorCodes {
     public static final int CHECKING_CHECKING_SN_UPDATE_ERROR = 60348;
     /** 物流推荐失败 */
     public static final int CHECKING_ODO_TRANSPORT_SERVICE_ERROR = 60349;
+    /** 运单号已被使用 */
+    public static final int CHECKING_WAYBILL_CODE_UNUSEABLE_ERROR = 60350;
 
 
 

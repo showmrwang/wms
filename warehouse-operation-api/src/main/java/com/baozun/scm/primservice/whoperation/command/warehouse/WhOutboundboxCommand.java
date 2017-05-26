@@ -78,6 +78,8 @@ public class WhOutboundboxCommand extends BaseModel {
 	private java.lang.String checkingMode;
 
     /** =====================复核用====================== */
+    /** 纸质运单号 */
+    private String waybillCode;
     /** 耗材条码 */
     private String consumableCode;
     /** 耗材商品ID */
@@ -214,6 +216,14 @@ public class WhOutboundboxCommand extends BaseModel {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getWaybillCode() {
+        return waybillCode;
+    }
+
+    public void setWaybillCode(String waybillCode) {
+        this.waybillCode = waybillCode;
     }
 
     public String getConsumableCode() {

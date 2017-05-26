@@ -33,13 +33,13 @@ public class RecommandLocationCommand extends BaseCommand {
     /** 唯一商品 */
     private Set<String> skuAttrIds;
     /** 唯一商品数量 */
-    private Map<String, Long> skuAttrIdQtys;
+    private Map<String, Double> skuAttrIdQtys;
     /** 序列号 */
     private Map<String, Set<String>> snDefects;
     /** 已推荐体积 */
-    private Double volumes;
+    private Double volumes = new Double(0);
     /** 已推荐重量 */
-    private Double weighs;
+    private Double weighs = new Double(0);
 
     public Long getLocationId() {
         return locationId;
@@ -65,11 +65,11 @@ public class RecommandLocationCommand extends BaseCommand {
         this.skuAttrIds = skuAttrIds;
     }
 
-    public Map<String, Long> getSkuAttrIdQtys() {
+    public Map<String, Double> getSkuAttrIdQtys() {
         return skuAttrIdQtys;
     }
 
-    public void setSkuAttrIdQtys(Map<String, Long> skuAttrIdQtys) {
+    public void setSkuAttrIdQtys(Map<String, Double> skuAttrIdQtys) {
         this.skuAttrIdQtys = skuAttrIdQtys;
     }
 

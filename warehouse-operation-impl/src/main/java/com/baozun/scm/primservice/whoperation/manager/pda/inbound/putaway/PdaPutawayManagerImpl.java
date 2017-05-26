@@ -4317,6 +4317,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         boolean isSkuExists = false;
         Integer cacheSkuQty = 1;
         Integer icSkuQty = 1;
+        Integer locSkuAttrQty = 1;
         for(Long cacheId : cacheSkuIdsQty.keySet()){
             if(icSkuIds.contains(cacheId)){
                 isSkuExists = true;
@@ -4331,13 +4332,6 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         if(false == isSkuExists){
             log.error("scan sku is not found in current inside contianer error, ocId is:[{}], icId is:[{}], scanSkuId is:[{}], logId is:[{}]", ocCmd.getId(), icCmd.getId(), sId, logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {icCmd.getCode()});
-        }
-        if(cacheSkuQty > 1 && cacheSkuQty <= icSkuQty){
-            if(0 != (icSkuQty%cacheSkuQty)){
-                // 取模运算不为零，表示多条码配置的数量无法完成此箱中该商品的数量复合
-                log.error("scan sku may be multi barcode sku, cacheSkuQty is:[{}], icSkuQty is:[{}], logId is:[{}]", cacheSkuQty, icSkuQty, logId);
-                throw new BusinessException(ErrorCodes.COMMON_MULTI_BARCODE_QTY_NOT_SUITABLE);
-            }
         }
         skuCmd.setId(sId);
         skuCmd.setScanSkuQty(scanQty*cacheSkuQty);//可能是多条码
@@ -4367,6 +4361,15 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         sku.setInvAttr5(StringUtils.isEmpty(skuCmd.getInvAttr5()) ? "" : skuCmd.getInvAttr5());
         sku.setSkuSn(StringUtils.isEmpty(skuCmd.getSkuSn()) ? "" : skuCmd.getSkuSn());
         sku.setSkuDefect(StringUtils.isEmpty(skuCmd.getSkuDefect()) ? "" : skuCmd.getSkuDefect());
+        String skuAttrId = SkuCategoryProvider.getSkuAttrIdBySkuCmd(sku);
+        locSkuAttrQty = (null == skuAttrIdsQty.get(skuAttrId) ? 1 : skuAttrIdsQty.get(skuAttrId).intValue());
+        if(cacheSkuQty > 1 && cacheSkuQty <= locSkuAttrQty){
+            if(0 != (locSkuAttrQty%cacheSkuQty)){
+                // 取模运算不为零，表示多条码配置的数量无法完成此箱中该商品的数量复合
+                log.error("scan sku may be multi barcode sku, cacheSkuQty is:[{}], icSkuQty is:[{}], logId is:[{}]", cacheSkuQty, icSkuQty, logId);
+                throw new BusinessException(ErrorCodes.COMMON_MULTI_BARCODE_QTY_NOT_SUITABLE);
+            }
+        }
         CheckScanSkuResultCommand cssrCmd = pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSkuOrLocOrContainer(ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerLocSkuAttrIds,
                 insideContainerLocSkuAttrIdsQty, insideContainerLocSort, loc.getId(), sku, scanPattern, logId);
         if (cssrCmd.isNeedTipSkuSn()) {

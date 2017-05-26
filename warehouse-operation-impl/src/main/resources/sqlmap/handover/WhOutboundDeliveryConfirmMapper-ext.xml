@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.WhOutboundDeliveryConfirmDao">
+	<resultMap id="WhOutboundDeliveryConfirmResultExt" type="com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundDeliveryConfirmColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	odo_id as odoId,
+	        	odo_code as odoCode,
+	        	ext_code as extCode,
+	        	ec_order_code as ecOrderCode,
+	        	ext_trans_order_id as extTransOrderId,
+	        	transport_code as transportCode,
+	        	waybill_code as waybillCode,
+	        	child_waybill_codes as childWaybillCodes,
+	        	transport_service_type as transportServiceType,
+	        	time_effect_type as timeEffectType,
+	        	trans_big_word as transBigWord,
+	        	tms_code as tmsCode,
+	        	logistics_code as logisticsCode,
+	        	package_center_code as packageCenterCode,
+	        	package_center_name as packageCenterName,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	customer_code as customerCode,
+	        	customer_name as customerName,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	status as status,
+	        	ou_id as ouId,
+	        	ou_code as ouCode,
+	        	weight as weight,
+	        	floats as floats,
+	        	length as length,
+	        	width as width,
+	        	high as high,
+	        	consignee_target_name as consigneeTargetName,
+	        	consignee_target_mobile_phone as consigneeTargetMobilePhone,
+	        	consignee_target_telephone as consigneeTargetTelephone,
+	        	consignee_target_country as consigneeTargetCountry,
+	        	consignee_target_province as consigneeTargetProvince,
+	        	consignee_target_city as consigneeTargetCity,
+	        	consignee_target_district as consigneeTargetDistrict,
+	        	consignee_target_villages_towns as consigneeTargetVillagesTowns,
+	        	consignee_target_address as consigneeTargetAddress,
+	        	consignee_target_email as consigneeTargetEmail,
+	        	consignee_target_zip as consigneeTargetZip,
+	        	type as type,
+	        	order_source as orderSource,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	
+	<sql id="whOutboundDeliveryConfirmDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+	       
+		       <if test="odoCode!=null and odoCode!=''">
+					and odo_code = #{odoCode}
+				</if>
+	       
+	       
+		       <if test="extCode!=null and extCode!=''">
+					and ext_code = #{extCode}
+				</if>
+	       
+	       
+		       <if test="ecOrderCode!=null and ecOrderCode!=''">
+					and ec_order_code = #{ecOrderCode}
+				</if>
+	       
+	       
+		       <if test="extTransOrderId!=null and extTransOrderId!=''">
+					and ext_trans_order_id = #{extTransOrderId}
+				</if>
+	       
+	       
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
+				</if>
+	       
+	       
+		       <if test="waybillCode!=null and waybillCode!=''">
+					and waybill_code = #{waybillCode}
+				</if>
+	       
+	       
+		       <if test="childWaybillCodes!=null and childWaybillCodes!=''">
+					and child_waybill_codes = #{childWaybillCodes}
+				</if>
+	       
+	       
+		       <if test="transportServiceType!=null and transportServiceType!=''">
+					and transport_service_type = #{transportServiceType}
+				</if>
+	       
+	       
+		       <if test="timeEffectType!=null and timeEffectType!=''">
+					and time_effect_type = #{timeEffectType}
+				</if>
+	       
+	       
+		       <if test="transBigWord!=null and transBigWord!=''">
+					and trans_big_word = #{transBigWord}
+				</if>
+	       
+	       
+		       <if test="tmsCode!=null and tmsCode!=''">
+					and tms_code = #{tmsCode}
+				</if>
+	       
+	       
+		       <if test="logisticsCode!=null and logisticsCode!=''">
+					and logistics_code = #{logisticsCode}
+				</if>
+	       
+	       
+		       <if test="packageCenterCode!=null and packageCenterCode!=''">
+					and package_center_code = #{packageCenterCode}
+				</if>
+	       
+	       
+		       <if test="packageCenterName!=null and packageCenterName!=''">
+					and package_center_name = #{packageCenterName}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="customerName!=null and customerName!=''">
+					and customer_name = #{customerName}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and store_name = #{storeName}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="ouCode!=null and ouCode!=''">
+					and ou_code = #{ouCode}
+				</if>
+	       
+				<if test="weight!=null">
+					and weight = #{weight}
+				</if>
+	       
+				<if test="floats!=null">
+					and floats = #{floats}
+				</if>
+	       
+				<if test="length!=null">
+					and length = #{length}
+				</if>
+	       
+				<if test="width!=null">
+					and width = #{width}
+				</if>
+	       
+				<if test="high!=null">
+					and high = #{high}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetName!=null and consigneeTargetName!=''">
+					and consignee_target_name = #{consigneeTargetName}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetMobilePhone!=null and consigneeTargetMobilePhone!=''">
+					and consignee_target_mobile_phone = #{consigneeTargetMobilePhone}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetTelephone!=null and consigneeTargetTelephone!=''">
+					and consignee_target_telephone = #{consigneeTargetTelephone}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetCountry!=null and consigneeTargetCountry!=''">
+					and consignee_target_country = #{consigneeTargetCountry}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetProvince!=null and consigneeTargetProvince!=''">
+					and consignee_target_province = #{consigneeTargetProvince}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetCity!=null and consigneeTargetCity!=''">
+					and consignee_target_city = #{consigneeTargetCity}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetDistrict!=null and consigneeTargetDistrict!=''">
+					and consignee_target_district = #{consigneeTargetDistrict}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetVillagesTowns!=null and consigneeTargetVillagesTowns!=''">
+					and consignee_target_villages_towns = #{consigneeTargetVillagesTowns}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetAddress!=null and consigneeTargetAddress!=''">
+					and consignee_target_address = #{consigneeTargetAddress}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetEmail!=null and consigneeTargetEmail!=''">
+					and consignee_target_email = #{consigneeTargetEmail}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetZip!=null and consigneeTargetZip!=''">
+					and consignee_target_zip = #{consigneeTargetZip}
+				</if>
+	       
+				<if test="type!=null">
+					and type = #{type}
+				</if>
+	       
+	       
+		       <if test="orderSource!=null and orderSource!=''">
+					and order_source = #{orderSource}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql> 
+	 
+    <select id="findByodoAndWaybillCode" resultType="long">
+		select count(*) from t_wh_outbound_delivery_confirm  
+		where waybill_code =#{waybillCode}	 and odo_id=#{odoId}
+    </select>
+	
+</mapper>
