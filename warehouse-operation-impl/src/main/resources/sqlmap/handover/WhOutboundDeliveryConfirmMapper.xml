@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.WhOutboundDeliveryConfirmDao">
+	<resultMap id="WhOutboundDeliveryConfirmResult" type="com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm">
+	</resultMap>
+	<resultMap id="WhOutboundDeliveryConfirmPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="WhOutboundDeliveryConfirmResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whOutboundDeliveryConfirmColumns">
+	    <![CDATA[
+	        	id as id,
+	        	odo_id as odoId,
+	        	odo_code as odoCode,
+	        	ext_code as extCode,
+	        	ec_order_code as ecOrderCode,
+	        	ext_trans_order_id as extTransOrderId,
+	        	transport_code as transportCode,
+	        	waybill_code as waybillCode,
+	        	child_waybill_codes as childWaybillCodes,
+	        	transport_service_type as transportServiceType,
+	        	time_effect_type as timeEffectType,
+	        	trans_big_word as transBigWord,
+	        	tms_code as tmsCode,
+	        	logistics_code as logisticsCode,
+	        	package_center_code as packageCenterCode,
+	        	package_center_name as packageCenterName,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	customer_code as customerCode,
+	        	customer_name as customerName,
+	        	store_code as storeCode,
+	        	store_name as storeName,
+	        	status as status,
+	        	ou_id as ouId,
+	        	ou_code as ouCode,
+	        	weight as weight,
+	        	floats as floats,
+	        	length as length,
+	        	width as width,
+	        	high as high,
+	        	consignee_target_name as consigneeTargetName,
+	        	consignee_target_mobile_phone as consigneeTargetMobilePhone,
+	        	consignee_target_telephone as consigneeTargetTelephone,
+	        	consignee_target_country as consigneeTargetCountry,
+	        	consignee_target_province as consigneeTargetProvince,
+	        	consignee_target_city as consigneeTargetCity,
+	        	consignee_target_district as consigneeTargetDistrict,
+	        	consignee_target_villages_towns as consigneeTargetVillagesTowns,
+	        	consignee_target_address as consigneeTargetAddress,
+	        	consignee_target_email as consigneeTargetEmail,
+	        	consignee_target_zip as consigneeTargetZip,
+	        	type as type,
+	        	order_source as orderSource,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
+	    ]]>
+	</sql>
+	<sql id="whOutboundDeliveryConfirmConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_delivery_confirm (
+		       	    id,
+		        	odo_id ,
+		        	odo_code ,
+		        	ext_code ,
+		        	ec_order_code ,
+		        	ext_trans_order_id ,
+		        	transport_code ,
+		        	waybill_code ,
+		        	child_waybill_codes ,
+		        	transport_service_type ,
+		        	time_effect_type ,
+		        	trans_big_word ,
+		        	tms_code ,
+		        	logistics_code ,
+		        	package_center_code ,
+		        	package_center_name ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	customer_code ,
+		        	customer_name ,
+		        	store_code ,
+		        	store_name ,
+		        	status ,
+		        	ou_id ,
+		        	ou_code ,
+		        	weight ,
+		        	floats ,
+		        	length ,
+		        	width ,
+		        	high ,
+		        	consignee_target_name ,
+		        	consignee_target_mobile_phone ,
+		        	consignee_target_telephone ,
+		        	consignee_target_country ,
+		        	consignee_target_province ,
+		        	consignee_target_city ,
+		        	consignee_target_district ,
+		        	consignee_target_villages_towns ,
+		        	consignee_target_address ,
+		        	consignee_target_email ,
+		        	consignee_target_zip ,
+		        	type ,
+		        	order_source ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{extTransOrderId,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{childWaybillCodes,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportServiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{timeEffectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{weight,javaType=Long,jdbcType=DECIMAL} ,
+		        	#{floats,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        	#{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        	#{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        	#{consigneeTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{type,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{orderSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_delivery_confirm SET
+		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ec_order_code = #{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_trans_order_id = #{extTransOrderId,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        child_waybill_codes = #{childWaybillCodes,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_service_type = #{transportServiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        time_effect_type = #{timeEffectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        trans_big_word = #{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tms_code = #{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        logistics_code = #{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_code = #{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_code = #{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        weight = #{weight,javaType=Long,jdbcType=DECIMAL} ,
+		        floats = #{floats,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        consignee_target_name = #{consigneeTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_mobile_phone = #{consigneeTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_telephone = #{consigneeTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_country = #{consigneeTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_province = #{consigneeTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_city = #{consigneeTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_district = #{consigneeTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_villages_towns = #{consigneeTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_address = #{consigneeTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_email = #{consigneeTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_zip = #{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        type = #{type,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        order_source = #{orderSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE t_wh_outbound_delivery_confirm SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="whOutboundDeliveryConfirmConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_outbound_delivery_confirm where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_outbound_delivery_confirm 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from t_wh_outbound_delivery_confirm <include refid="whOutboundDeliveryConfirmConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhOutboundDeliveryConfirmResult" flushCache="false">
+			select <include refid="whOutboundDeliveryConfirmColumns" />
+		    <![CDATA[
+			    from t_wh_outbound_delivery_confirm 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhOutboundDeliveryConfirmResult" flushCache="false">
+			select <include refid="whOutboundDeliveryConfirmColumns" />
+			    from t_wh_outbound_delivery_confirm 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whOutboundDeliveryConfirmDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+	       
+		       <if test="odoCode!=null and odoCode!=''">
+					and odo_code = #{odoCode}
+				</if>
+	       
+	       
+		       <if test="extCode!=null and extCode!=''">
+					and ext_code = #{extCode}
+				</if>
+	       
+	       
+		       <if test="ecOrderCode!=null and ecOrderCode!=''">
+					and ec_order_code = #{ecOrderCode}
+				</if>
+	       
+	       
+		       <if test="extTransOrderId!=null and extTransOrderId!=''">
+					and ext_trans_order_id = #{extTransOrderId}
+				</if>
+	       
+	       
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
+				</if>
+	       
+	       
+		       <if test="waybillCode!=null and waybillCode!=''">
+					and waybill_code = #{waybillCode}
+				</if>
+	       
+	       
+		       <if test="childWaybillCodes!=null and childWaybillCodes!=''">
+					and child_waybill_codes = #{childWaybillCodes}
+				</if>
+	       
+	       
+		       <if test="transportServiceType!=null and transportServiceType!=''">
+					and transport_service_type = #{transportServiceType}
+				</if>
+	       
+	       
+		       <if test="timeEffectType!=null and timeEffectType!=''">
+					and time_effect_type = #{timeEffectType}
+				</if>
+	       
+	       
+		       <if test="transBigWord!=null and transBigWord!=''">
+					and trans_big_word = #{transBigWord}
+				</if>
+	       
+	       
+		       <if test="tmsCode!=null and tmsCode!=''">
+					and tms_code = #{tmsCode}
+				</if>
+	       
+	       
+		       <if test="logisticsCode!=null and logisticsCode!=''">
+					and logistics_code = #{logisticsCode}
+				</if>
+	       
+	       
+		       <if test="packageCenterCode!=null and packageCenterCode!=''">
+					and package_center_code = #{packageCenterCode}
+				</if>
+	       
+	       
+		       <if test="packageCenterName!=null and packageCenterName!=''">
+					and package_center_name = #{packageCenterName}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+	       
+		       <if test="customerCode!=null and customerCode!=''">
+					and customer_code = #{customerCode}
+				</if>
+	       
+	       
+		       <if test="customerName!=null and customerName!=''">
+					and customer_name = #{customerName}
+				</if>
+	       
+	       
+		       <if test="storeCode!=null and storeCode!=''">
+					and store_code = #{storeCode}
+				</if>
+	       
+	       
+		       <if test="storeName!=null and storeName!=''">
+					and store_name = #{storeName}
+				</if>
+	       
+				<if test="status!=null">
+					and status = #{status}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+	       
+		       <if test="ouCode!=null and ouCode!=''">
+					and ou_code = #{ouCode}
+				</if>
+	       
+				<if test="weight!=null">
+					and weight = #{weight}
+				</if>
+	       
+				<if test="floats!=null">
+					and floats = #{floats}
+				</if>
+	       
+				<if test="length!=null">
+					and length = #{length}
+				</if>
+	       
+				<if test="width!=null">
+					and width = #{width}
+				</if>
+	       
+				<if test="high!=null">
+					and high = #{high}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetName!=null and consigneeTargetName!=''">
+					and consignee_target_name = #{consigneeTargetName}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetMobilePhone!=null and consigneeTargetMobilePhone!=''">
+					and consignee_target_mobile_phone = #{consigneeTargetMobilePhone}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetTelephone!=null and consigneeTargetTelephone!=''">
+					and consignee_target_telephone = #{consigneeTargetTelephone}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetCountry!=null and consigneeTargetCountry!=''">
+					and consignee_target_country = #{consigneeTargetCountry}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetProvince!=null and consigneeTargetProvince!=''">
+					and consignee_target_province = #{consigneeTargetProvince}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetCity!=null and consigneeTargetCity!=''">
+					and consignee_target_city = #{consigneeTargetCity}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetDistrict!=null and consigneeTargetDistrict!=''">
+					and consignee_target_district = #{consigneeTargetDistrict}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetVillagesTowns!=null and consigneeTargetVillagesTowns!=''">
+					and consignee_target_villages_towns = #{consigneeTargetVillagesTowns}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetAddress!=null and consigneeTargetAddress!=''">
+					and consignee_target_address = #{consigneeTargetAddress}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetEmail!=null and consigneeTargetEmail!=''">
+					and consignee_target_email = #{consigneeTargetEmail}
+				</if>
+	       
+	       
+		       <if test="consigneeTargetZip!=null and consigneeTargetZip!=''">
+					and consignee_target_zip = #{consigneeTargetZip}
+				</if>
+	       
+				<if test="type!=null">
+					and type = #{type}
+				</if>
+	       
+	       
+		       <if test="orderSource!=null and orderSource!=''">
+					and order_source = #{orderSource}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_outbound_delivery_confirm 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_outbound_delivery_confirm 
+		<include refid="whOutboundDeliveryConfirmDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_outbound_delivery_confirm 
+		<include refid="whOutboundDeliveryConfirmDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhOutboundDeliveryConfirmResult">
+    	select <include refid="whOutboundDeliveryConfirmColumns" />
+	    from t_wh_outbound_delivery_confirm 
+		<include refid="whOutboundDeliveryConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhOutboundDeliveryConfirmResult">
+    	select <include refid="whOutboundDeliveryConfirmColumns" />
+	    from t_wh_outbound_delivery_confirm 
+		<include refid="whOutboundDeliveryConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhOutboundDeliveryConfirmResult">
+    	select <include refid="whOutboundDeliveryConfirmColumns" />
+	    from t_wh_outbound_delivery_confirm 
+		<include refid="whOutboundDeliveryConfirmDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="WhOutboundDeliveryConfirmResult">
+		select <include refid="whOutboundDeliveryConfirmColumns" />
+	    from t_wh_outbound_delivery_confirm  
+		<include refid="whOutboundDeliveryConfirmConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from t_wh_outbound_delivery_confirm  
+		<include refid="whOutboundDeliveryConfirmConditionWhereExt"/>
+    </select>
+
+	
+</mapper>

@@ -192,7 +192,7 @@
 
 
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundConsumableManager" ref="whOutboundConsumableManager" />
-
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.handover.WhOutboundDeliveryConfirmManager" ref="whOutboundDeliveryConfirmManager" />
 	<!-- 物流服务 -->
 	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="transServiceManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.manager.TransServiceManager" />
 	<dubbo:reference url="${dubbo.local.server.logisitics}"  check="false" id="maTransportAccountManager" cluster="failfast" interface="com.baozun.scm.primservice.logistics.wms4.manager.MaTransportAccountManager" />
