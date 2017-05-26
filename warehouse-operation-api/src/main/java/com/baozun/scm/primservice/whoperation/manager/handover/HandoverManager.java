@@ -49,7 +49,7 @@ public interface HandoverManager extends BaseManager {
      */
     List<Long> handover(List<HandoverCollection> hcList, Long ouId, Long userId);
 
-    void print(List<HandoverCollection> hcList);
+    public String findOuCodeByOuId(Long ouId);
 
     /**
      * 查看是否都交接完成
