@@ -6732,7 +6732,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
         whSkuInventoryDao.saveOrUpdateByVersion(inv);
         insertGlobalLog(GLOBAL_LOG_UPDATE, inv, ouId, userId, null, null);
-        insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.PICKING);
+        insertSkuInventoryLog(inv.getId(), inv.getOnHandQty() - oldQty, oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.PICKING);
         return inv.getId();
     }
     
