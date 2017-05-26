@@ -2725,7 +2725,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       public CheckScanResultCommand palletPickingCacheAndCheck(Long locationId, Set<Long> insideContainerIds, Long outerContainerId, Long insideContainerId,Long operationId){
           
           CheckScanResultCommand cssrCmd = new CheckScanResultCommand();
-          LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + locationId.toString());
+          LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString()+locationId.toString());
           ArrayDeque<Long> cacheInsideContainerIds = new ArrayDeque<Long>();
           if (null != cacheContainerCmd) {
               if(null == cacheContainerCmd.getTipOuterInsideContainerIds() ||  cacheContainerCmd.getTipOuterInsideContainerIds().size() == 0){
