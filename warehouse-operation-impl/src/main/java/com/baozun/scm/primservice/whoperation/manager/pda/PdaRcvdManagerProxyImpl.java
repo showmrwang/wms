@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnType;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.GeneralRcvdManager;
@@ -125,6 +126,9 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         WhAsn cacheAsn = this.asnManager.findWhAsnByIdToShard(occupationId, ouId);
         if (null == cacheAsn) {
             throw new BusinessException(ErrorCodes.ASN_NULL);
+        }
+        if (PoAsnType.POTYPE_2 == cacheAsn.getStatus()) {
+            throw new BusinessException(ErrorCodes.PDARECEIVING_RETURNS_NO_ERROR);
         }
         if (PoAsnStatus.ASN_CANCELED == cacheAsn.getStatus()) {// ASN单状态校验：只校验了是未取消的数据
             throw new BusinessException(ErrorCodes.ASN_NULL);
