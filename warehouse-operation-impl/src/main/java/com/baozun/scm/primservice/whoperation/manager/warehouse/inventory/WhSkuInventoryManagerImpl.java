@@ -6716,9 +6716,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
     
     private Long pickingContainerUpdateLocInventory(WhSkuInventoryCommand skuInvCmd,Double qty,Boolean isTabbInvTotal,Long ouId,Long userId){
-        
         WhSkuInventory inv = new WhSkuInventory();
         BeanUtils.copyProperties(skuInvCmd, inv);
+        inv.setOnHandQty(qty);
         Double oldQty = 0.0;
         if (true == isTabbInvTotal) { // 在库存日志是否记录交易前后库存总数 0：否 1：是
             try {
