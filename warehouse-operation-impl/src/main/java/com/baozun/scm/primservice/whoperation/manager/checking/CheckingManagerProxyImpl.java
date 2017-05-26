@@ -51,7 +51,10 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.odo.WhOdoDeliveryInfoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportServiceManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
@@ -69,6 +72,9 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
@@ -127,6 +133,12 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     private ContainerManager containerManager;
     @Autowired
     private WarehouseManager warehouseManager;
+    @Autowired
+    private OdoTransportServiceManager odoTransportServiceManager;
+    @Autowired
+    private WhOdoDeliveryInfoManager whOdoDeliveryInfoManager;
+    @Autowired
+    private OdoTransportMgmtManager odoTransportMgmtManager;
 
 
     /** =============================================================== */
@@ -381,6 +393,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             }
         }
 
+        //更新出库单交接运单信息
+        WhOdodeliveryInfo ododeliveryInfo = this.updateOdoDeliveryInfo(checkedBox.getWaybillCode(), whOutboundbox.getOutboundboxCode(), whOdo.getId(), userId, ouId);
+
 
 
         WhCheckingResultCommand whCheckingResultCommand = new WhCheckingResultCommand();
@@ -417,9 +432,40 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whCheckingResultCommand.setWhOdo(whOdo);
         // 更新SN/残次信息
         whCheckingResultCommand.setCheckedSnInvList(checkedSnInvList);
+        //出库单交接面单信息
+        whCheckingResultCommand.setWhOdodeliveryInfo(ododeliveryInfo);
 
         // 保存复核数据
         checkingManager.finishedChecking(whCheckingResultCommand, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
+    }
+
+    private WhOdodeliveryInfo updateOdoDeliveryInfo(String waybillCode, String outboundBoxCode, Long odoId, Long userId, Long ouId) {
+        WhOdodeliveryInfo ododeliveryInfo;WhOdoTransportService whOdoTransportService = odoTransportServiceManager.findByOdoId(odoId, ouId);
+        if(null == whOdoTransportService || !whOdoTransportService.getIsTspSuccess() || !whOdoTransportService.getIsVasSuccess() || !whOdoTransportService.getIsWaybillCodeSuccess()) {
+            throw new BusinessException(ErrorCodes.CHECKING_ODO_TRANSPORT_SERVICE_ERROR);
+        }else {
+            if (whOdoTransportService.getIsOl()) {
+                //电子面单
+                ododeliveryInfo = whOdoDeliveryInfoManager.findUseableWaybillInfoByOdoId(odoId, ouId);
+                if(null == ododeliveryInfo){
+                    throw new BusinessException(ErrorCodes.CHECKING_ODO_TRANSPORT_SERVICE_ERROR);
+                }
+                ododeliveryInfo.setOutboundboxCode(outboundBoxCode);
+                ododeliveryInfo.setModifiedId(userId);
+            }else {
+                //纸质面单
+                WhOdoTransportMgmt whOdoTransportMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId);
+                ododeliveryInfo = new WhOdodeliveryInfo();
+                ododeliveryInfo.setOutboundboxCode(outboundBoxCode);
+                ododeliveryInfo.setTransportCode(whOdoTransportMgmt.getTransportServiceProvider());
+                ododeliveryInfo.setWaybillCode(waybillCode);
+                ododeliveryInfo.setCreateId(userId);
+                ododeliveryInfo.setCreateTime(new Date());
+                ododeliveryInfo.setModifiedId(userId);
+                ododeliveryInfo.setLastModifyTime(new Date());
+            }
+        }
+        return ododeliveryInfo;
     }
 
     /**
@@ -564,10 +610,17 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         if (isBoxCheckingFinished) {
             boolean isOdoCheckingFinished = this.checkOdoCheckingFinished(checkingId, whOdo.getId(), ouId, logId);
             if (isOdoCheckingFinished) {
-                whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
+                if(OdoStatus.CHECKING.equals(whOdo.getOdoStatus())){
+                    whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
+                }
+                whOdo.setLagOdoStatus(OdoStatus.CHECKING_FINISH);
                 whOdo.setModifiedId(userId);
             } else {
-                whOdo = null;
+                if(OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())){
+                    whOdo.setOdoStatus(OdoStatus.CHECKING);
+                }
+                whOdo.setLagOdoStatus(OdoStatus.CHECKING);
+                whOdo.setModifiedId(userId);
             }
         } else {
             whOdo = null;

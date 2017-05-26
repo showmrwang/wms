@@ -127,7 +127,38 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        	and ou_id = #{ouid}
        	and outboundbox_code is null
     </select>
-    
+
+    <select id="findListByOdoId" resultMap="OdoDeliveryInfoResultExt">
+        select
+            <include refid="odoDeliveryInfoColumnsExt"/>
+        from
+            t_wh_odo_delivery_info
+        where
+            odo_id = #{odoId}
+            and ou_id = #{ouId}
+    </select>
+
+    <select id="findUseableWaybillInfoByOdoId"  resultMap="OdoDeliveryInfoResultExt">
+        select
+            <include refid="odoDeliveryInfoColumnsExt"/>
+        from
+            t_wh_odo_delivery_info
+        where
+            odo_id = #{odoId}
+            and ou_id = #{ouId}
+            and outboundbox_code is null
+    </select>
+
+    <select id="checkUniqueWaybillCode" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            t_wh_odo_delivery_info
+        where
+            ou_id = #{ouId}
+            and waybill_code = #{waybillCode}
+    </select>
+
     <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo">
 	    <![CDATA[
 	        UPDATE t_wh_odo_delivery_info SET

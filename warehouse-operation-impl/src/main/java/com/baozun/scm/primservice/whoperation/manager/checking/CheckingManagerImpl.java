@@ -44,6 +44,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
@@ -64,6 +65,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionOutBou
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
@@ -122,6 +124,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     private WhFunctionOutBoundManager whFunctionOutBoundManager;
     @Autowired
     private WhPrintInfoDao whPrintInfoDao;
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
 
 
     @Override
@@ -594,6 +598,9 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         Container container = checkingResultCommand.getContainer();
         //待释放的播种墙
         WhOutboundFacility seedingFacility = checkingResultCommand.getSeedingFacility();
+        //出库单交接运单信息
+        WhOdodeliveryInfo ododeliveryInfo = checkingResultCommand.getWhOdodeliveryInfo();
+
 
         // 更新复核头状态
         this.updateCheckingInfoToDB(orgCheckingCommand);
@@ -643,6 +650,15 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 throw new BusinessException(ErrorCodes.CHECKING_RELEASE_SEEDING_FACILITY_ERROR);
             }
         }
+
+        //更新出库单交接运单信息
+        ododeliveryInfo.setOutboundboxId(whOutboundbox.getId());
+        if (null == ododeliveryInfo.getId()) {
+            whOdoDeliveryInfoDao.insert(ododeliveryInfo);
+        }else {
+            whOdoDeliveryInfoDao.saveOrUpdateByVersion(ododeliveryInfo);
+        }
+
         printDefect(checkingResultCommand);
     }
 

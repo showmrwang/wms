@@ -61,4 +61,35 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
      * @return
      */
     List<WhOdodeliveryInfo> getWhOdodeliveryInfoByOdoId(@Param("odoId") Long odoId, @Param("ouid") Long ouid);
+
+
+
+    /**
+     * 查询出库单下所有的交接信息
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    public List<WhOdodeliveryInfo> findListByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+
+    /**
+     * 查询出库单下可用的运单
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    public WhOdodeliveryInfo findUseableWaybillInfoByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    /**
+     * 运单号是否已被使用
+     *
+     * @param waybillCode
+     * @param ouId
+     * @return
+     */
+    public int checkUniqueWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
+
 }
