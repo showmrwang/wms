@@ -1025,7 +1025,9 @@ public class ErrorCodes {
     /** 容器库存不存在 */
     public static final int CONTAINER_INVENTORY_NO_EXIST = 70064;
     /** 引入的新容器不能上架 */
-    public static final int NEW_TURNOVERBOX_NO_LOC = 700065;
+    public static final int NEW_TURNOVERBOX_NO_LOC = 70065;
+    /**当前出库箱复合数量不正确*/
+    public static final int CHECKING_NUM_IS_EEROR = 70065;
 
     // 70001-80000 tangming
 
