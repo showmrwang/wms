@@ -2268,7 +2268,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (oLCmd.getCompleteQty().doubleValue() == oLCmd.getQty().doubleValue()) {
                     continue;
                 }
-                if (pickingWay == Constants.PICKING_WAY_ONE  || pickingWay == Constants. PICKING_WAY_TWO ) {// 出库箱流程
+                if (pickingWay == Constants.PICKING_WAY_THREE && (pickingWay == Constants.PICKING_WAY_ONE  || pickingWay == Constants. PICKING_WAY_TWO )) {// 出库箱流程
                     if(!latticeNo.equals(oLCmd.getUseContainerLatticeNo())){
                         continue;
                     }
