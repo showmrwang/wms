@@ -36,6 +36,10 @@ public class SimpleWeightCalculator {
     private Double weight = 0.0;
     private Double currentStuffWeight = 0.0;
     private Double rawWeight;
+    // 已放入重量
+    private Double usedWeight;
+    // 已放入原始重量
+    private Double rawUsedWeight;
     private String _uom;
     private String uom;
     private static final String sysUom = SYS_UOM;
@@ -79,14 +83,20 @@ public class SimpleWeightCalculator {
 
     public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate) {
         preInit(uomConversionRate, defaultUom);
-        setInit(true);
         init(_weight, _uom);
+        setInit(true);
     }
 
     public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate, String defaultUom) {
         preInit(uomConversionRate, defaultUom);
-        setInit(true);
         init(_weight, _uom);
+        setInit(true);
+    }
+    
+    public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate, Double usedWeight) {
+        preInit(uomConversionRate, defaultUom);
+        init(_weight, _uom, usedWeight);
+        setInit(true);
     }
 
     public Double getTotalWeight() {
@@ -181,6 +191,14 @@ public class SimpleWeightCalculator {
         set_weight(rw);
         setAvailability(1.0);
         setAvailableWeight(get_weight() * getAvailability());
+    }
+    
+    private void init(Double _weight, String _uom, Double usedWeight) {
+        init(_weight, _uom);
+        if (null == usedWeight) usedWeight = 0.0;
+        setUsedWeight(usedWeight);
+        setRawUsedWeight(usedWeight);
+        setAvailableWeight((get_weight() * getAvailability()) - usedWeight);
     }
 
     public void initStuffWeight(Double weight, String uom) {
@@ -309,6 +327,22 @@ public class SimpleWeightCalculator {
 
     public void setRawWeight(Double rawWeight) {
         this.rawWeight = rawWeight;
+    }
+
+    public Double getUsedWeight() {
+        return usedWeight;
+    }
+
+    public void setUsedWeight(Double usedWeight) {
+        this.usedWeight = usedWeight;
+    }
+
+    public Double getRawUsedWeight() {
+        return rawUsedWeight;
+    }
+
+    public void setRawUsedWeight(Double rawUsedWeight) {
+        this.rawUsedWeight = rawUsedWeight;
     }
 
     public String get_uom() {
