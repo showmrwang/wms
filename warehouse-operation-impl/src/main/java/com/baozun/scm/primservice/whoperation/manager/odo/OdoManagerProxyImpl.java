@@ -1041,32 +1041,64 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
      * 出库单：整单取消/行取消 接口
      */
     @Override
-    public void cancel(WhOdo odo, Long ouId, Boolean isOdoCancel, List<WhOdoLine> lineList, Long userId, String logId) {
-        // @mender yimin.lu 2017/4/10 屏蔽部分取消接口
-        if (!isOdoCancel) {
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
-        // @mender yimin.lu 2017/5/5 当出库单大于某个状态时候，不允许取消
-        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
-        if (StringUtils.hasText(wh.getOdoNotCancelNode())) {
-            Long odoStatus = Constants.DEFAULT_LONG;
-            Long cancelNode = Constants.DEFAULT_LONG;
-            try {
-                odoStatus = Long.parseLong(odo.getOdoStatus());
-                cancelNode = Long.parseLong(wh.getOdoNotCancelNode());
-            } catch (Exception ex) {
-                throw new BusinessException(ErrorCodes.WAREHOUSE_CANCEL_NODE_ERROR);
+    public ResponseMsg cancel(WhOdo odo, Long ouId, Boolean isOdoCancel, List<WhOdoLine> lineList, Long userId, String logId) {
+        try{
+            // 创建中的出库单删除操作
+            if (OdoStatus.CREATING.equals(odo.getOdoStatus())) {
+                try {
+                    this.deleteOdoLine(lineList);
+                } catch (Exception ex) {
+                    throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                }
+            } else {
+                // @mender yimin.lu 2017/4/10 屏蔽部分取消接口
+                if (!isOdoCancel) {
+                    throw new BusinessException(ErrorCodes.ODO_CANCEL_NO_SUPPORT_LINE_ERROR);
+                }
+                // @mender yimin.lu 2017/5/5 当出库单大于某个状态时候，不允许取消
+                Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+                if (StringUtils.hasText(wh.getOdoNotCancelNode())) {
+                    Long odoStatus = Constants.DEFAULT_LONG;
+                    Long cancelNode = Constants.DEFAULT_LONG;
+                    try {
+                        odoStatus = Long.parseLong(odo.getOdoStatus());
+                        cancelNode = Long.parseLong(wh.getOdoNotCancelNode());
+                    } catch (Exception ex) {
+                        throw new BusinessException(ErrorCodes.WAREHOUSE_CANCEL_NODE_ERROR);
+                    }
+                    if (odoStatus >= cancelNode) {
+                        throw new BusinessException(ErrorCodes.ODO_CANCEL_ERROR);
+                    }
+                }
+                if (isOdoCancel) {
+                    this.cancelOdo(odo, ouId, logId);
+                } else {
+                    this.cancelLines(odo, lineList, ouId, userId, logId);
+                }
             }
-            if (odoStatus >= cancelNode) {
-                throw new BusinessException(ErrorCodes.ODO_CANCEL_ERROR);
-            }
-        }
-        if (isOdoCancel) {
-            this.cancelOdo(odo, ouId, logId);
-        } else {
-            this.cancelLines(odo, lineList, ouId, userId, logId);
+            ResponseMsg msg = new ResponseMsg();
+            msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+            msg.setMsg("SUCCESS");
+            return msg;
+        } catch (BusinessException ex) {
+            log.error("", ex);
+            ResponseMsg msg = new ResponseMsg();
+            msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            msg.setMsg(ex.getErrorCode() + "");
+            return msg;
+        } catch (Exception e) {
+            log.error("", e);
+            ResponseMsg msg = new ResponseMsg();
+            msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            msg.setMsg(ErrorCodes.SYSTEM_ERROR + "");
+            return msg;
         }
     }
+
+    private void deleteOdoLine(List<WhOdoLine> lineList) {
+        this.odoLineManager.deleteLines(lineList);
+    }
+
 
     private void cancelOdo(WhOdo odo, Long ouId, String logId) {
         this.odoManager.cancelOdo(odo, ouId, logId);
@@ -1078,7 +1110,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception e) {
-            log.error(e + "");
+            log.error("", e);
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
     }
