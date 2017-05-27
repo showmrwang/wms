@@ -33,10 +33,17 @@ public class WhOdoDeliveryInfoManagerImpl extends BaseManagerImpl implements WhO
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOdodeliveryInfo saveOrUpdate(WhOdodeliveryInfo whOdodeliveryInfo) {
-        int cnt = whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
-        if (0 < cnt) {
-            // throw new BusinessException("更新运单表失败");
-            return null;
+        if (null == whOdodeliveryInfo.getId()) {
+            Long insertCnt = whOdoDeliveryInfoDao.insert(whOdodeliveryInfo);
+            if (0 > insertCnt) {
+                return null;
+            }
+        } else {
+            int cnt = whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
+            if (0 > cnt) {
+                // throw new BusinessException("更新运单表失败");
+                return null;
+            }
         }
         return whOdodeliveryInfo;
     }
@@ -46,5 +53,37 @@ public class WhOdoDeliveryInfoManagerImpl extends BaseManagerImpl implements WhO
     public List<WhOdodeliveryInfo> findByParams(WhOdodeliveryInfo whOdodeliveryInfo) {
         List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findListByParam(whOdodeliveryInfo);
         return list;
+    }
+
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdodeliveryInfo> findListByOdoId(Long odoId, Long ouId) {
+        List<WhOdodeliveryInfo> ododeliveryInfoList = whOdoDeliveryInfoDao.findListByOdoId(odoId, ouId);
+        return ododeliveryInfoList;
+    }
+
+    /**
+     * 查询出库单下可用的运单
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    public WhOdodeliveryInfo findUseableWaybillInfoByOdoId(Long odoId, Long ouId){
+        return whOdoDeliveryInfoDao.findUseableWaybillInfoByOdoId(odoId, ouId);
+    }
+
+    /**
+     * 运单号是否已被使用
+     *
+     * @param waybillCode
+     * @param ouId
+     * @return
+     */
+    public Boolean checkUniqueWaybillCode(String waybillCode, Long ouId){
+        int count = whOdoDeliveryInfoDao.checkUniqueWaybillCode(waybillCode, ouId);
+
+        return count == 0;
     }
 }

@@ -29,4 +29,32 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
      */
     List<WhOdodeliveryInfo> findByParams(WhOdodeliveryInfo whOdodeliveryInfo);
 
+
+    /**
+     * 查询出库单下所有的交接信息
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    public List<WhOdodeliveryInfo> findListByOdoId(Long odoId, Long ouId);
+
+    /**
+     * 查询出库单下可用的运单
+     *
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    public WhOdodeliveryInfo findUseableWaybillInfoByOdoId(Long odoId, Long ouId);
+
+    /**
+     * 运单号是否已被使用
+     *
+     * @param waybillCode
+     * @param ouId
+     * @return
+     */
+    public Boolean checkUniqueWaybillCode(String waybillCode, Long ouId);
+
 }

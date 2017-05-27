@@ -23,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
@@ -71,6 +72,8 @@ public class WhCheckingResultCommand extends BaseModel {
     Container container;
     /** 待释放播种墙 */
     WhOutboundFacility seedingFacility;
+    /** 出库单交接运单信息 */
+    WhOdodeliveryInfo whOdodeliveryInfo;
     /** 更新已复核的SN/残次信息 */
     List<WhSkuInventorySnCommand> checkedSnInvList;
 
@@ -190,6 +193,14 @@ public class WhCheckingResultCommand extends BaseModel {
 
     public void setSeedingFacility(WhOutboundFacility seedingFacility) {
         this.seedingFacility = seedingFacility;
+    }
+
+    public WhOdodeliveryInfo getWhOdodeliveryInfo() {
+        return whOdodeliveryInfo;
+    }
+
+    public void setWhOdodeliveryInfo(WhOdodeliveryInfo whOdodeliveryInfo) {
+        this.whOdodeliveryInfo = whOdodeliveryInfo;
     }
 
     public List<WhSkuInventorySnCommand> getCheckedSnInvList() {
