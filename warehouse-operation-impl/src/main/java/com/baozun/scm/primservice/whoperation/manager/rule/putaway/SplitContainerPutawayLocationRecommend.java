@@ -464,9 +464,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setSn(null);
                                         list.add(lrrc);
                                     } else {
-                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM, rlVolume, rlWeight);
+                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume);
+                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight);
+                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
                                         if (null != lrrc) {
                                             statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                             rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -601,9 +601,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setSn(null);
                                         list.add(lrrc);
                                     } else {
-                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM, rlVolume + livwVolume, rlWeight + livwWeight);
+                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume + livwVolume);
+                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight + livwWeight);
+                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
                                         if (null != lrrc) {
                                             statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                             rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -681,9 +681,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setSn(null);
                                         list.add(lrrc);
                                     } else {
-                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM, rlVolume + livwVolume, rlWeight + livwWeight);
+                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume + livwVolume);
+                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight + livwWeight);
+                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
                                         if (null != lrrc) {
                                             statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                             rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -814,9 +814,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         lrrc.setSn(null);
                                         list.add(lrrc);
                                     } else {
-                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM, rlVolume + livwVolume, rlWeight + livwWeight);
+                                        calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume + livwVolume);
+                                        weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight + livwWeight);
+                                        lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
                                         if (null != lrrc) {
                                             statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                             rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -1163,9 +1163,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
                                         } else {
-                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM, rlVolume, rlWeight);
+                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume);
+                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight);
+                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                             if (null != lrrc) {
                                                 statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                                 rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -1307,9 +1307,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
                                         } else {
-                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM, rlVolume + livwVolume, rlWeight + livwWeight);
+                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume + livwVolume);
+                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight + livwWeight);
+                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                             if (null != lrrc) {
                                                 statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                                 rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -1387,9 +1387,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
                                         } else {
-                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM, rlVolume + livwVolume, rlWeight + livwWeight);
+                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume + livwVolume);
+                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight + livwWeight);
+                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                             if (null != lrrc) {
                                                 statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                                 rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -1520,9 +1520,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             lrrc.setSn(sn);
                                             list.add(lrrc);
                                         } else {
-                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
-                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate);
-                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM, rlVolume + livwVolume, rlWeight + livwWeight);
+                                            calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate, rlVolume + livwVolume);
+                                            weightCal = new SimpleWeightCalculator(locWeight, SimpleWeightCalculator.SYS_UOM, weightUomConversionRate, rlWeight + livwWeight);
+                                            lrrc = accumulateRecommandLocation(calc, weightCal, skuId, length, width, height, weight, onHandQty, SimpleCubeCalculator.SYS_UOM);
                                             if (null != lrrc) {
                                                 statisticRecommandLocation(rlMaps, skuId, skuAttrId, lrrc.getQty(), lrrc.getVolumes(), lrrc.getWeights(), locId);
                                                 rsMaps.put(skuAttrId, rlQty + lrrc.getQty());
@@ -1677,8 +1677,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
         return rlCmd;
     }
     
-    private LocationRecommendResultCommand accumulateRecommandLocation(SimpleCubeCalculator volumeCal, SimpleWeightCalculator weightCal, Long skuId, Double length, Double width, Double height, Double weight, Double qty, String uom, Double rlVolumes,
-            Double rlWeights) {
+    private LocationRecommendResultCommand accumulateRecommandLocation(SimpleCubeCalculator volumeCal, SimpleWeightCalculator weightCal, Long skuId, Double length, Double width, Double height, Double weight, Double qty, String uom) {
         LocationRecommendResultCommand lrrCmd = null;
         Double cVolume = 0.0;
         Double cWeight = 0.0;
@@ -1687,18 +1686,16 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
             return null;
         }
         for (int i = 1; i <= total; i++) {
-            volumeCal.accumulationStuffVolume(length, width, height, uom);
-            cVolume = volumeCal.getStuffVolume();
-            volumeCal.addStuffVolume(rlVolumes);
-            weightCal.accumulationStuffWeight(weight);
-            cWeight = weightCal.getStuffWeight();
-            weightCal.addStuffWeight(rlWeights);
+            cVolume = volumeCal.accumulationStuffVolume(length, width, height, uom);
+            // volumeCal.addStuffVolume(rlVolumes);
+            cWeight = weightCal.accumulationStuffWeight(weight, uom);
+            // weightCal.addStuffWeight(rlWeights);
             boolean cubageAvailable = volumeCal.calculateAvailable();
             boolean weightAvailable = weightCal.calculateAvailable();
             if (cubageAvailable & weightAvailable) {
                 lrrCmd = new LocationRecommendResultCommand();
-                volumeCal.subtractStuffVolume(rlVolumes);
-                weightCal.subtractStuffWeight(rlWeights);
+                // volumeCal.subtractStuffVolume(rlVolumes);
+                // weightCal.subtractStuffWeight(rlWeights);
                 lrrCmd.setSkuId(skuId);
                 lrrCmd.setQty(new Double(i));
                 lrrCmd.setVolumes(cVolume);

@@ -456,6 +456,10 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 //纸质面单
                 WhOdoTransportMgmt whOdoTransportMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId);
                 ododeliveryInfo = new WhOdodeliveryInfo();
+                ododeliveryInfo.setOdoId(odoId);
+                ododeliveryInfo.setOuId(ouId);
+                ododeliveryInfo.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
+                ododeliveryInfo.setStatus(BaseModel.LIFECYCLE_NORMAL);
                 ododeliveryInfo.setOutboundboxCode(outboundBoxCode);
                 ododeliveryInfo.setTransportCode(whOdoTransportMgmt.getTransportServiceProvider());
                 ododeliveryInfo.setWaybillCode(waybillCode);
@@ -623,7 +627,11 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 whOdo.setModifiedId(userId);
             }
         } else {
-            whOdo = null;
+            if(OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())){
+                whOdo.setOdoStatus(OdoStatus.CHECKING);
+            }
+            whOdo.setLagOdoStatus(OdoStatus.CHECKING);
+            whOdo.setModifiedId(userId);
         }
         return whOdo;
     }

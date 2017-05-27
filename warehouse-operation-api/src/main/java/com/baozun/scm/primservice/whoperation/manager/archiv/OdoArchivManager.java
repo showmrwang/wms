@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
-import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 
 public interface OdoArchivManager extends BaseManager {
 
@@ -43,5 +42,13 @@ public interface OdoArchivManager extends BaseManager {
 	 * @version 2017年3月30日
 	 */
 	List<WhOdoArchivLineIndex> findWhOdoLineArchivByOdoCode(String odoCode, Long ouId, String sysDate, String ecOrderCode, String dataSource);
+
+
+    /**
+     * 退货数据反馈
+     * 
+     * @param sqlList
+     */
+    void executeReturns(List<String> sqlList);
 	
 }

@@ -20,16 +20,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 
 public interface WhOdoArchivLineIndexDao extends BaseDao<WhOdoArchivLineIndex, Long>{
 
@@ -42,5 +42,9 @@ public interface WhOdoArchivLineIndexDao extends BaseDao<WhOdoArchivLineIndex, L
 	List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexByEcOrderCodeAndSource(@Param("ecOrderCode") String ecOrderCode, @Param("wmsSource") String wmsSource, @Param("num") String num);
 
     List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexByEcOrderCodeAndSkuIdList(@Param("ecOrderCode") String ecOrderCode, @Param("skuIdList") Set<Long> skuIdList, @Param("num") String num);
+
+    WhOdoArchivLineIndex findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    int execute(@Param("tableName") String sql, @Param("id") Long id, @Param("qty") Double qty);
 	
 }

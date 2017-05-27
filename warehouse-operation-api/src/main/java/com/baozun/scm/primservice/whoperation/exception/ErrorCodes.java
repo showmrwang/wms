@@ -461,8 +461,11 @@ public class ErrorCodes {
     public static final int UUID_GENERATE_ERROR = 11096;
     /** 收货反馈数据失败 */
     public static final int FEEDBACK_RCVD_ERROR = 11097;
+
     /** 消费者退换入请走操作台：退换货入流程 */
     public static final int PDARECEIVING_RETURNS_NO_ERROR = 11098;
+    /** 关联原始单据反馈数据失败 */
+    public static final int FEEDBACK_ORIGINAL_ERROR = 11099;
     // 10001-20000 luyimin
 
 

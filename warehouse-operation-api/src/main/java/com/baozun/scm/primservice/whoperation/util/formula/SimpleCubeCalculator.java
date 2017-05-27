@@ -86,6 +86,10 @@ public class SimpleCubeCalculator {
     private Double currentStuffVolume = 0.0;
     // 填充立方体原始单位体积
     private Double rawVolume;
+    // 已放入体积
+    private Double usedVolume;
+    // 已放入原始体积
+    private Double rawUsedVolume;
     // 容器体积可用率
     private Double availability = 0.8;
     // 容器可用体积
@@ -131,10 +135,16 @@ public class SimpleCubeCalculator {
         init(_x, _y, _z, _uom, availability);
         setInit(true);
     }
-
+    
     public SimpleCubeCalculator(Double _x, Double _y, Double _z, String _uom, Double availability, Map<String, Double> uomConversionRate, String defaultUom) {
         preInit(uomConversionRate, defaultUom);
         init(_x, _y, _z, _uom, availability);
+        setInit(true);
+    }
+    
+    public SimpleCubeCalculator(Double _x, Double _y, Double _z, String _uom, Double availability, Map<String, Double> uomConversionRate, Double usedVolume) {
+        preInit(uomConversionRate, defaultUom);
+        init(_x, _y, _z, _uom, availability, usedVolume);
         setInit(true);
     }
 
@@ -255,7 +265,7 @@ public class SimpleCubeCalculator {
         addStuffVolume(cubage);
         return getStuffVolume();
     }
-
+    
     /**
      * 计算可用体积
      *
@@ -424,6 +434,14 @@ public class SimpleCubeCalculator {
         set_volume(volumeFormula(rx, ry, rz));
         setAvailability(availability);
         setAvailableVolume(get_Volume() * getAvailability());
+    }
+    
+    private void init(Double _x, Double _y, Double _z, String _uom, Double availability, Double usedVolume) {
+        init(_x, _y, _z, _uom, availability);
+        if (null == usedVolume) usedVolume = 0.0;
+        setRawUsedVolume(usedVolume);
+        setUsedVolume(usedVolume);
+        setAvailableVolume((get_Volume() * getAvailability()) - getUsedVolume());
     }
 
     private void isLengthSupport(Double len) {
@@ -878,6 +896,22 @@ public class SimpleCubeCalculator {
 
     public void setRawVolume(Double rawVolume) {
         this.rawVolume = rawVolume;
+    }
+
+    public Double getUsedVolume() {
+        return usedVolume;
+    }
+
+    public void setUsedVolume(Double usedVolume) {
+        this.usedVolume = usedVolume;
+    }
+
+    public Double getRawUsedVolume() {
+        return rawUsedVolume;
+    }
+
+    public void setRawUsedVolume(Double rawUsedVolume) {
+        this.rawUsedVolume = rawUsedVolume;
     }
 
     public Double getAvailability() {
