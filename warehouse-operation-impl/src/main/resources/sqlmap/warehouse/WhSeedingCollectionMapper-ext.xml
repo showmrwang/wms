@@ -382,6 +382,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where
             seedingCollection.facility_id = #{facilityId}
             and seedingCollection.ou_id = #{ouId}
+            and outboundFacility.facility_code is not null
             and container.code = #{turnoverBoxCode}
     </select>
 
