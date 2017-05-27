@@ -184,6 +184,53 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanLocation is end");
         return command;
     }
+    
+    /**
+     * 扫描库位--整托整箱
+     * 
+     * @author qiming.liu
+     * @param ReplenishmentPutawayCommand
+     * @return
+     */
+    @Override
+    public ReplenishmentPutawayCommand putawayWholeCaseScanLocation(ReplenishmentPutawayCommand command) {
+        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is start");
+        Long operationId = command.getOperationId();
+        Long ouId = command.getOuId();
+        Long locationId = command.getLocationId();                            
+        OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
+        if(null == opExecLineCmd){
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        Map<Long, Set<Long>> locToInsideContainerIds = opExecLineCmd.getInsideContainerIds();
+        Set<Long> insideContainerIds = locToInsideContainerIds.get(locationId);
+        if(null == insideContainerIds || insideContainerIds.size() == 0){
+            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        // 缓存库位
+        this.cacheLocation(operationId, locationId);
+        // 缓存货箱      
+        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipContainer(insideContainerIds, operationId, locationId);
+        // 提示托盘         
+        if(null != opExecLineCmd.getPallets() && opExecLineCmd.getPallets().size() != 0){
+            Set<Long> pallets = opExecLineCmd.getPallets();
+            Long palletId = null;
+            for(Long pallet : pallets){
+                palletId =  pallet;
+                break;
+            }
+            String palletCode = this.judeContainer(palletId, ouId);   
+            command.setTipPalletCode(palletCode);
+            command.setIsNeedScanPallet(true);
+        }
+        // 提示货箱        
+        Long containerId = sRCmd.getContainerId();
+        String containerCode = this.judeContainer(containerId, ouId);
+        command.setTipContainerCode(containerCode);
+        command.setIsNeedScanContainer(true);
+        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is end");
+        return command;
+    }
 
     
     private void cacheLocation(Long operationId,Long locationId){
@@ -1133,10 +1180,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Map<String, Map<Long, Map<String, Long>>> skuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();
         // 周转箱每个唯一sku对应的所有sn及残次条码
         Map<String, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
-        // 目标库位对应的所有外部容器（整托整箱）
-        Map<Long, Set<Long>> outerContainerIds = new HashMap<Long, Set<Long>>();
-        // 外部容器对应所有内部容器（整托整箱）
-        Map<Long, Set<Long>> outerToInside = new HashMap<Long, Set<Long>>();
+        // 目标库位对应的所有内部容器（整托整箱）
+        Map<Long, Set<Long>> insideContainerIds = new HashMap<Long, Set<Long>>();
         // 内部容器对应所有sku（整托整箱）
         Map<String, Set<Long>> insideSkuIds = new HashMap<String, Set<Long>>();
         // 内部容器每个sku总件数（整托整箱）
@@ -1257,24 +1302,20 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 }
             }else{
                 // 所有托盘
-                pallets.add(operationExecLine.getUseOuterContainerId());
-                // 所有货箱
-                containers.add(operationExecLine.getUseContainerId());
-                // 目标库位对应的所有外部容器（整托整箱）
-                if(null != outerContainerIds.get(operationExecLine.getToLocationId())){
-                    outerContainerIds.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseOuterContainerId());
-                }else{
-                    Set<Long> useOuterContainerIdSet = new HashSet<Long>();
-                    useOuterContainerIdSet.add(operationExecLine.getUseOuterContainerId());
-                    outerContainerIds.put(operationExecLine.getToLocationId(), useOuterContainerIdSet);
+                if(null != operationExecLine.getUseOuterContainerId()){
+                    pallets.add(operationExecLine.getUseOuterContainerId());    
                 }
-                // 外部容器对应所有内部容器（整托整箱）
-                if(null != outerToInside.get(operationExecLine.getUseOuterContainerId())){
-                    outerToInside.get(operationExecLine.getUseOuterContainerId()).add(operationExecLine.getUseContainerId());
+                // 所有货箱
+                if(null != operationExecLine.getUseContainerId()){
+                    containers.add(operationExecLine.getUseContainerId());    
+                }
+                // 目标库位对应的所有外部容器（整托整箱）
+                if(null != insideContainerIds.get(operationExecLine.getToLocationId())){
+                    insideContainerIds.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseContainerId());
                 }else{
                     Set<Long> useContainerIdSet = new HashSet<Long>();
                     useContainerIdSet.add(operationExecLine.getUseContainerId());
-                    outerToInside.put(operationExecLine.getUseOuterContainerId(), useContainerIdSet);
+                    insideContainerIds.put(operationExecLine.getToLocationId(), useContainerIdSet);
                 }
                 String toLocationAndUseContainer = operationExecLine.getToLocationId().toString() + operationExecLine.getUseContainerId().toString();
                 // 内部容器对应所有sku（整托整箱）
@@ -1387,9 +1428,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         // 周转箱每个唯一sku对应的所有sn及残次条码
         statisticsCommand.setSkuAttrIdsSnDefect(skuAttrIdsSnDefect);
         // 目标库位对应的所有外部容器（整托整箱）
-        statisticsCommand.setOuterContainerIds(outerContainerIds);
-        // 外部容器对应所有内部容器（整托整箱）
-        statisticsCommand.setOuterToInside(outerToInside);
+        statisticsCommand.setInsideContainerIds(insideContainerIds);
         // 内部容器对应所有sku（整托整箱）
         statisticsCommand.setInsideSkuIds(insideSkuIds);
         // 内部容器每个sku总件数（整托整箱）
@@ -1552,8 +1591,10 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
          OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
          if(null != opExecLineCmd){
              Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
+             Map<String, Set<Long>> insIdeSkuIds = opExecLineCmd.getInsideSkuIds();
              List<Long> locationIds = opExecLineCmd.getLocationIds();
              Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
+             Map<Long, Set<Long>> locInsideContainerIds = opExecLineCmd.getInsideContainerIds();
              for(Long locationId:locationIds){
                  Set<Long> turnoverBoxIds = locTurnoverBoxIds.get(locationId);
                  if(null != turnoverBoxIds){
@@ -1567,6 +1608,21 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                          }
                          cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnoverBoxId.toString());
                      }
+                 }
+                 if(null != locInsideContainerIds){
+                     Set<Long> insideContainerIds = locInsideContainerIds.get(locationId);
+                     if(null != insideContainerIds){
+                         for(Long insideContainerId:insideContainerIds){
+                             String key = locationId.toString()+insideContainerId;
+                             Set<Long> skuIds = insIdeSkuIds.get(key);
+                             for(Long skuId:skuIds){
+                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ insideContainerId.toString() + skuId.toString());
+                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ insideContainerId.toString() + skuId.toString());
+                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ insideContainerId.toString() + skuId.toString());
+                             }
+                             cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+insideContainerId.toString());
+                         }
+                     }    
                  }
              }
              cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());

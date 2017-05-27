@@ -181,7 +181,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        logistics_code = #{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        package_center_code = #{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        ext_id = #{extId,javaType=java.lang.String,jdbcType=VARCHAR}  
+		        ext_id = #{extId,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}

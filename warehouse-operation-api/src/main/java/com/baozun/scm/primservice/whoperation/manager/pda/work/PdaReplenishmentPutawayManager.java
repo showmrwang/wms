@@ -26,6 +26,13 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
     public ReplenishmentPutawayCommand putawayScanLocation(ReplenishmentPutawayCommand command);
     
     /***
+     * 扫描库位--整托整箱
+     * @param command
+     * @return
+     */
+    public ReplenishmentPutawayCommand putawayWholeCaseScanLocation(ReplenishmentPutawayCommand command);
+    
+    /***
      * 扫描周转箱
      * @param command
      * @return
