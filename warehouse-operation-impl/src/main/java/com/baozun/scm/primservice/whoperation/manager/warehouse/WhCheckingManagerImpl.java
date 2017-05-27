@@ -1081,33 +1081,39 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
         whOdoDao.saveOrUpdateByVersion(whOdo);
         insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
-        // 修改小车
-        ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-        if (null == outerCmd) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            // 修改小车
+            ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
+            if (null == outerCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            Container c = new Container();
+            BeanUtils.copyProperties(outerCmd, c);
+            c.setStatus(Constants.LIFECYCLE_START);
+            c.setLifecycle(Constants.LIFECYCLE_START);
+            containerDao.saveOrUpdateByVersion(c);
         }
-        Container c = new Container();
-        BeanUtils.copyProperties(outerCmd, c);
-        c.setStatus(Constants.LIFECYCLE_START);
-        c.setLifecycle(Constants.LIFECYCLE_START);
-        containerDao.saveOrUpdateByVersion(c);
-        // 周转箱状态
-        ContainerCommand turnCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
-        if (null == turnCmd) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        if(!StringUtils.isEmpty(turnoverBoxCode)){
+         // 周转箱状态
+            ContainerCommand turnCmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+            if (null == turnCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            Container turn = new Container();
+            BeanUtils.copyProperties(turnCmd, turn);
+            turn.setStatus(Constants.LIFECYCLE_START);
+            turn.setLifecycle(Constants.LIFECYCLE_START);
+            containerDao.saveOrUpdateByVersion(turn);
         }
-        Container turn = new Container();
-        BeanUtils.copyProperties(turnCmd, turn);
-        turn.setStatus(Constants.LIFECYCLE_START);
-        turn.setLifecycle(Constants.LIFECYCLE_START);
-        containerDao.saveOrUpdateByVersion(turn);
-        // 修改播种墙状态
-        WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-        if (null == facility) {
-            throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+        if(!StringUtils.isEmpty(seedingWallCode)){
+            // 修改播种墙状态
+            WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+            if (null == facility) {
+                throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+            }
+            facility.setStatus("1");
+            whOutboundFacilityDao.saveOrUpdateByVersion(facility);
         }
-        facility.setStatus("1");
-        whOutboundFacilityDao.saveOrUpdateByVersion(facility);
     }
 
     @Override

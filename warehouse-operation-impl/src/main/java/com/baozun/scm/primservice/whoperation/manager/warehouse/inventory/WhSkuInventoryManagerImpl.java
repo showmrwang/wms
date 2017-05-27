@@ -7071,14 +7071,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (scanSkuQty.doubleValue() > onHandQty.doubleValue()) {
                             sum += onHandQty;
                             if (sum.doubleValue() > scanSkuQty.doubleValue()) {
-                                Double qty = sum - scanSkuQty;
-                                Double tempQty = scanSkuQty - onHandQty;
+                                Double tempQty = scanSkuQty - (sum-onHandQty);
                                 // 添加容器库存
                                 Set<Long> temp =
                                         this.pickingAddInventory(occupationLineId, occupationCode, snDefectList, pickingWay, skuInvCmd, isTabbInvTotal, tempQty, ouId, userId, isShortPicking, outBoundBox, containerId, useContainerLatticeNo, turnoverBoxId);
                                 invSkuIds.addAll(temp);
                                 // 添加库位库存
-                                this.addLocInventory(skuInvCmd, qty, isTabbInvTotal, ouId, userId);
+                                this.addLocInventory(skuInvCmd,onHandQty-tempQty, isTabbInvTotal, ouId, userId);
                                 // 删除容器库存
                                 this.pickingDeleInventory(whSkuCmd, isTabbInvTotal, ouId, onHandQty, userId);
                                 isEnd = true;
@@ -9799,11 +9798,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             for(WhSkuInventoryCommand skuInvCmd:invList) {
                 String skuInvAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
                 if(skuAttrIds.equals(skuInvAttrIds)) {  //是同一条记录
-                    String uuid = null;
+                    String uuid = skuInvCmd.getUuid();
                     WhSkuInventory skuInv = new WhSkuInventory();
                     BeanUtils.copyProperties(skuInvCmd, skuInv);
                     if(scanSkuQty.doubleValue() > skuInvCmd.getOnHandQty().doubleValue()){
-                        uuid = skuInvCmd.getUuid();
                         skuInvQty += skuInvCmd.getOnHandQty();
                         if(scanSkuQty.doubleValue() > skuInvQty.doubleValue()) {
                             Double oldQty = 0.0;
@@ -9824,8 +9822,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             Double qty  = scanSkuQty -(skuInvQty-skuInv.getOnHandQty());
                             skuInv.setOnHandQty(skuInv.getOnHandQty()-qty);
                             try {
-                                uuid = SkuInventoryUuid.invUuid(skuInv);
-                                skuInv.setUuid(uuid);// UUID
+                                String uuid1 = SkuInventoryUuid.invUuid(skuInv);
+                                skuInv.setUuid(uuid1);// UUID
                             } catch (Exception e) {
                                 log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
                                 throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
@@ -9848,7 +9846,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             break;
                         } 
                         if(scanSkuQty.doubleValue() == skuInvQty.doubleValue()){
-                            uuid = skuInvCmd.getUuid();
                             Double oldQty = 0.0;
                             if (true == isTabbInvTotal) {
                                 try {
@@ -9887,8 +9884,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         Double qty1 = skuInvCmd.getOnHandQty() - scanSkuQty;
                         skuInv.setOnHandQty(qty1);
                         try {
-                            uuid = SkuInventoryUuid.invUuid(skuInv);
-                            skuInv.setUuid(uuid);// UUID
+                            String uuid1 = SkuInventoryUuid.invUuid(skuInv);
+                            skuInv.setUuid(uuid1);// UUID
                         } catch (Exception e) {
                             log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
                             throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
