@@ -182,7 +182,43 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	t_wh_odo_archiv_line_index_${num}
         where 
         	ec_order_code = #{ecOrderCode}
-			and data_source = #{wmsSource}
+        	<if test="wmsSource != null and wmsSource != ''">
+				and data_source = #{wmsSource}
+        	</if>
 	</select>
 	
+	<select id="findWhOdoArchivLineIndexByEcOrderCodeAndSkuIdList" resultMap="WhOdoArchivLineIndexResultExt">
+		select
+			id as id,
+			ec_order_code as ecOrderCode,
+			data_source as dataSource,
+        	sku_id as skuId,
+        	store_id as storeId,
+        	returned_purchase_qty as returnedPurchaseQty,
+        	mfg_date as mfgDate,
+        	exp_date as expDate,
+        	batch_number as batchNumber,
+        	country_of_origin as countryOfOrigin,
+        	inv_status as invStatus,
+        	inv_type as invType,
+        	inv_attr1 as invAttr1,
+        	inv_attr2 as invAttr2,
+        	inv_attr3 as invAttr3,
+        	inv_attr4 as invAttr4,
+        	inv_attr5 as invAttr5,
+        	color as color,
+        	style as style,
+        	size as size,
+        	sn as sn,
+        	uuid as uuid
+        from
+        	t_wh_odo_archiv_line_index_${num}
+        where 
+        	ec_order_code = #{ecOrderCode}
+        	and returned_purchase_qty > 0
+        	and sku_id in 
+        	<foreach collection="skuIdList" item="skuId" open="(" separator="," close=")">
+				#{skuId}
+			</foreach>
+	</select>
 </mapper>

@@ -310,4 +310,17 @@ public class WhOdoArchivIndexManagerImpl extends BaseManagerImpl implements WhOd
         }
         return indexList;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_COLLECTSOURCE)
+    public List<WhOdoArchivLineIndex> findReturnSkuLine(String ecOrderCode, Set<Long> skuIdList, Long ouId) {
+        String num = HashUtil.serialNumberByHashCode(ecOrderCode);
+        List<WhOdoArchivLineIndex> indexList = whOdoArchivLineIndexDao.findWhOdoArchivLineIndexByEcOrderCodeAndSkuIdList(ecOrderCode, skuIdList, num);
+        for (WhOdoArchivLineIndex line : indexList) {
+            line.setCollectOdoArchivLineId(line.getId());
+            line.setCollectTableName("t_wh_odo_archiv_line_index_" + num);
+            line.setOuId(ouId);
+        }
+        return indexList;
+    }
 }

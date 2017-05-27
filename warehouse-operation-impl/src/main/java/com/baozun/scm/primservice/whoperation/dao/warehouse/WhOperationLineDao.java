@@ -96,5 +96,14 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
     
     public void deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
     
+    /**
+     * 当前货格对应的数据全部拣货完成
+     * @param ouId
+     * @param lattice
+     * @param operationId
+     * @return
+     */
+    public int findOperationLineByLattice(@Param("ouId") Long ouId,@Param("lattice") Integer lattice,@Param("operationId") Long operationId);
+    
 	
 }

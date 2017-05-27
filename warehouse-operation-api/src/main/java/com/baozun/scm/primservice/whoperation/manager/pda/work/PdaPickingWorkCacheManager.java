@@ -131,7 +131,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
        * @param skuCmd
        * @return
        */
-      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Map<String, Set<Integer>>  skuAttrIdsLattice,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,Map<Long, Set<Long>> locSkuIds, Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrIds,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> icSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,
+      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Integer latticeNo,Map<String, Set<Integer>>  skuAttrIdsLattice,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,Map<Long, Set<Long>> locSkuIds, Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrIds,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> icSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,
                                                                          Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
     
       public CheckScanResultCommand palletPickingCacheAndCheck(Long locationId, Set<Long> insideContainerIds, Long outerContainerId, Long insideContainerId,Long operationId);
@@ -216,4 +216,9 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       * @param ouId
       */
      public void replenishmentCancelPattern(Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
+     
+     public  Integer tipLatticeNo(Long skuId,String skuAttrId,Long insideContainerId,Long operationId,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer latticeNo,Long ouId);
+     
+     
+     public  Integer tipLatticeNoLoc(Long locationId,Long skuId,Long operationId,String skuAttrId,Map<String, Set<Integer>>  skuAttrIdsLattice,Integer latticeNo,Long ouId);
 }

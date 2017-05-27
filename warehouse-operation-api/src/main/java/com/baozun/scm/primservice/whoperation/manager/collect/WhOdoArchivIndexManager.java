@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.collect;
 
 import java.util.List;
+import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -81,4 +82,11 @@ public interface WhOdoArchivIndexManager extends BaseManager {
      * @version 2017年5月26日
      */
     List<WhOdoArchivLineIndex> findWhOdoArchivIndexLineByWms3(String ecOrderCode, WhOdoArchivIndex odoArchivIndex, String wms3, Long ouId);
+    
+    /**
+     * 查找退货的sku数据
+     * @author kai.zhu
+     * @version 2017年5月27日
+     */
+    List<WhOdoArchivLineIndex> findReturnSkuLine(String ecOrderCode, Set<Long> skuIdList, Long ouId);
 }
