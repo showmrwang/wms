@@ -1406,26 +1406,38 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
     private ResponseMsg createOdoArchivLineIndex(WhPo whPo, WhPoTransportMgmt whPoTm, List<WhPoLine> whPoLines, String ecOrderCode, String dataSource, Long ouId, ResponseMsg msg) {
         // 查询归档(collect)数据表中的数据
-        List<WhOdoArchivIndex> odoArchivIndexList = whOdoArchivIndexManager.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, dataSource, null, ouId);
+        List<WhOdoArchivIndex> odoArchivIndexList = whOdoArchivIndexManager.findWhOdoArchivIndexByEcOrderCode(ecOrderCode, null, null, ouId);
         if (null == odoArchivIndexList || odoArchivIndexList.isEmpty()) {
             msg.setMsg("odoCollectEmpty,ecOrderCode:{" + ecOrderCode + "}");
             msg.setResponseStatus(0);
             return msg;
         }
-        List<WhOdoArchivLineIndex> whOdoArchivLineIndexList = new ArrayList<WhOdoArchivLineIndex>();
+        // 要退换货的skuId
+        Set<Long> skuIdList = new HashSet<Long>();
+        for (WhPoLine poLine : whPoLines) {
+            skuIdList.add(poLine.getSkuId());
+        }
+        List<WhOdoArchivLineIndex> whOdoArchivLineIndexList = null;
         for (WhOdoArchivIndex odoArchivIndex : odoArchivIndexList) {
             if (Constants.WMS3.equals(odoArchivIndex.getDataSource())) {
-                whOdoArchivLineIndexList.addAll(whOdoArchivIndexManager.findWhOdoArchivIndexLineByWms3(ecOrderCode, odoArchivIndex, Constants.WMS3, ouId));
+                // wms3迁移数据直接查找LineIndex记录
+                break;
             } else if (null != odoArchivIndex.getIsReturnedPurchase() && !odoArchivIndex.getIsReturnedPurchase()) {
                 // 退货入标记为0时,同步出库单明细到collect
                 String odoCode = odoArchivIndex.getWmsOdoCode();
                 String sysDate = odoArchivIndex.getSysDate();
                 // 查找
-                List<WhOdoArchivLineIndex> lineIndexList = odoArchivManager.findWhOdoLineArchivByOdoCode(odoCode, ouId, sysDate, ecOrderCode, dataSource);
+                List<WhOdoArchivLineIndex> lineIndexList = odoArchivManager.findWhOdoLineArchivByOdoCode(odoCode, ouId, sysDate, ecOrderCode, odoArchivIndex.getDataSource());
                 // 保存
                 lineIndexList = whOdoArchivIndexManager.saveWhOdoLineArchivListIntoCollect(odoArchivIndex, lineIndexList);
-                whOdoArchivLineIndexList.addAll(lineIndexList);
             }
+        }
+        // 查询collect库中订单下的这些商品明细
+        whOdoArchivLineIndexList = whOdoArchivIndexManager.findReturnSkuLine(ecOrderCode, skuIdList, ouId);
+        if (null == whOdoArchivLineIndexList || whOdoArchivLineIndexList.isEmpty()) {
+            msg.setMsg("not have sku to return,ecOrderCode:" + ecOrderCode);
+            msg.setResponseStatus(0);
+            return msg;
         }
         // 创建Po的逻辑
         this.createPoDefault(whPo, whPoTm, whPoLines, whOdoArchivLineIndexList, ouId);
