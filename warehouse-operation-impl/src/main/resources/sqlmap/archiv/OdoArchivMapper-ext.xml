@@ -912,7 +912,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	tms_code ,
 		        	logistics_code ,
 		        	package_center_code ,
-		        	package_center_name 
+		        	package_center_name ,
+		        	is_ol
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -934,7 +935,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{isOl,javaType=java.lang.Boolean,jdbcType=BIT} 
 		        )
 		    ]]>
 		</insert>

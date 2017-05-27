@@ -2715,6 +2715,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 delivery.setTransportServiceType(transMgmt.getCourierServiceType());
                 delivery.setOuId(ouId);
                 delivery.setOdoId(odoId);
+                delivery.setIsOl(Boolean.FALSE);
                 return delivery;
             }
             // 电子面单,获取运单号
@@ -2739,6 +2740,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 delivery.setLogisticsCode(res.getLogisticsCode()); // 物流公司编码,用于发货回传
                 delivery.setPackageCenterCode(res.getPackageCenterCode()); // 集包地编码
                 delivery.setPackageCenterName(res.getPackageCenterName()); // 集包地名称
+                delivery.setIsOl(Boolean.TRUE);
                 odoTransportMgmtManager.insertDeliveryInfoExt(delivery);
                 return delivery;
             } else {
