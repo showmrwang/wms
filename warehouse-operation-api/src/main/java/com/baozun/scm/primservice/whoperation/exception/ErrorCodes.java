@@ -910,6 +910,8 @@ public class ErrorCodes {
     public static final int CHECKING_ODO_TRANSPORT_SERVICE_ERROR = 60349;
     /** 运单号已被使用 */
     public static final int CHECKING_WAYBILL_CODE_UNUSEABLE_ERROR = 60350;
+    /** 该电脑未绑定复核台 */
+    public static final int CHECKING_COMPUTER_BIND_ERROR = 60351;
 
 
 
