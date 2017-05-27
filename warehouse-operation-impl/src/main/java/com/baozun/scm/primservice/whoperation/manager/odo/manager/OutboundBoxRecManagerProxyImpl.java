@@ -1129,7 +1129,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 获取可用容器，设置包裹的outContainerId
                         Container trolleyContainer = null;
                         if(null !=  availableTrolley){
-                            trolleyContainer = this.getUseAbleContainer(availableTrolley, ouId);
+                            trolleyContainer = this.getUseAbleContainer(availableTrolley, ouId, logId);
                         }
                         if (null == availableTrolley || null == trolleyContainer) {
                             // 没有可用小车，保存数据
@@ -1287,7 +1287,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             // 小车是否可用
                             boolean isTrolleyAvailable = this.packingIntoTrolley(trolley, odoCommand, odoBoxList, ouId, logId);
                             // 创建新容器
-                            Container trolleyContainer = this.getUseAbleContainer(trolley, ouId);
+                            Container trolleyContainer = this.getUseAbleContainer(trolley, ouId, logId);
                             if (!isTrolleyAvailable || null == trolleyContainer) {
                                 // 小车不可用或者小车已分配完
                                 continue;
@@ -1416,7 +1416,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     boolean isAllocateBoxSuccess = true;
                     for (Container2ndCategoryCommand container2ndCategory : packingTurnoverBoxList) {
                         // 创建周转箱
-                        Container turnoverBox = this.getUseAbleContainer(container2ndCategory, ouId);
+                        Container turnoverBox = this.getUseAbleContainer(container2ndCategory, ouId, logId);
                         if(null == turnoverBox){
                             isAllocateBoxSuccess = false;
                             break;
@@ -1885,7 +1885,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                     for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                         // 创建周转箱
-                        Container turnoverBox = this.getUseAbleContainer(container, ouId);
+                        Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
                         if(null == turnoverBox){
                             throw new BusinessException("没有可用周转箱");
                         }
@@ -2010,7 +2010,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId);
+                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
                             if(null == turnoverBox){
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -2183,7 +2183,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId);
+                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
                             if(null == turnoverBox){
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -2342,7 +2342,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId);
+                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
                             if(null == turnoverBox){
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -2526,7 +2526,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId);
+                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
                             if(null == turnoverBox){
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -3436,7 +3436,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param ouId 仓库组织ID
      * @return 新建的容器对象
      */
-    private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId) {
+    private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId, String logId) {
         if(null == availableContainer){
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -3452,7 +3452,11 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             useAbleContainer = containerList.get(0);
             useAbleContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
-            outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
+            int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
+            if(1 != updateCount){
+                log.error("outboundBoxRecManagerProxyImpl getUseAbleContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
         }
 
         return useAbleContainer;
