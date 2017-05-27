@@ -1686,7 +1686,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
         if (0 == total) {
             return null;
         }
-        for (int i = 0; i <= total; i++) {
+        for (int i = 1; i <= total; i++) {
             volumeCal.accumulationStuffVolume(length, width, height, uom);
             cVolume = volumeCal.getStuffVolume();
             volumeCal.addStuffVolume(rlVolumes);

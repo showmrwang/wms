@@ -1556,23 +1556,23 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
              Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
              for(Long locationId:locationIds){
                  Set<Long> turnoverBoxIds = locTurnoverBoxIds.get(locationId);
-                 for(Long turnoverBoxId:turnoverBoxIds){
-                     String key = locationId.toString()+turnoverBoxId;
-                     Set<Long> skuIds = locSkuIds.get(key);
-                     for(Long skuId:skuIds){
-                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
-                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
-                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                 if(null != turnoverBoxIds){
+                     for(Long turnoverBoxId:turnoverBoxIds){
+                         String key = locationId.toString()+turnoverBoxId;
+                         Set<Long> skuIds = locSkuIds.get(key);
+                         for(Long skuId:skuIds){
+                             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+                         }
+                         cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnoverBoxId.toString());
                      }
-                     cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnoverBoxId.toString());
                  }
              }
              cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());
              cacheManager.remove(CacheConstants.OPERATIONEXEC_STATISTICS+operationId.toString());
          }
-        
      }
-     
      
      /**
       * 判断是否是单库位

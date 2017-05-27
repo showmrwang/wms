@@ -11,4 +11,9 @@ public interface WhOutboundDeliveryConfirmManager extends BaseManager {
 
     void saveOrUpdate(WhOutboundDeliveryConfirm whOutboundDeliveryConfirm);
 
+    List<WhOutboundDeliveryConfirm> selectNewOutboundDeliveryConfirm();
+
+    void OutboundDeliveryConfirm(WhOutboundDeliveryConfirm whOutboundDeliveryConfirm);
+
+
 }
