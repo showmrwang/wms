@@ -6,7 +6,7 @@ public class WavePhase implements Serializable {
 
     private static final long serialVersionUID = -1200827494569415671L;
 
-    /** 波次阶段*/
+    /** 波次阶段 */
     public static final String WEAK_ALLOCATED = "WEAK_ALLOCATED"; // 软分配
     public static final String MERGE_ODO = "MERGE_ODO"; // 合并出库单
     public static final String ALLOCATED = "ALLOCATED"; // 硬分配
@@ -15,8 +15,9 @@ public class WavePhase implements Serializable {
     public static final String CREATE_OUTBOUND_CARTON = "CREATE_OUTBOUND_CARTON"; // 创建出库箱/容器
     public static final String CREATE_TASK = "CREATE_TASK"; // 创建任务
     public static final String GET_LOGISTICS_INFO = "GET_LOGISTICS_INFO"; // 获取物流信息(增值服务,物流商推荐,运单号)
+    public static final String GET_OUTBOUNDDELIVERYCONFIRM_INFO = "GET_OUTBOUNDDELIVERYCONFIRM_INFO"; // 订单反馈
     public static final String CREATE_WORK = "CREATE_WORK"; // 创建工作
-    
+
     public static final int WEAK_ALLOCATED_NUM = 10; // 软分配
     public static final int MERGE_ODO_NUM = 20; // 合并出库单
     public static final int ALLOCATED_NUM = 30; // 硬分配
