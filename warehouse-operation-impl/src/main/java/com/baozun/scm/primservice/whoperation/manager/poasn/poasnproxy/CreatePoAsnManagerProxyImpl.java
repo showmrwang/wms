@@ -50,6 +50,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager;
 import com.baozun.scm.primservice.whoperation.manager.bi.OutPutStreamToServersManager;
 import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
+import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivLineIndexManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.GeneralRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
@@ -145,6 +146,10 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private OutPutStreamToServersManager outPutStreamToServersManager;
     @Autowired
     private SysDictionaryManager sysDictionaryManager;
+    @Autowired
+    private WhOdoArchivIndexManager whOdoArchivIndexManager;
+    @Autowired
+    private WhOdoArchivLineIndexManager whOdoArchivLineIndexManager;
 
     /**
      * 验证po单数据是否完整
@@ -1361,8 +1366,6 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
     }
     
-    @Autowired
-    private WhOdoArchivIndexManager whOdoArchivIndexManager;
     
     /**
      * 创建上位系统传入的Po
@@ -1691,6 +1694,46 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             msg.setMsg(ex.getErrorCode() + "");
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
             return msg;
+        }
+        // 关联原单数据
+        if(isReturns!=null&&isReturns){
+            Store s = this.storeManager.findStoreById(asn.getStoreId());
+            if (s.getIsReturnedPurchaseOriginalInvAttr() != null && s.getIsReturnedPurchaseOriginalInvAttr()) {
+                try {
+                    Map<Long, Double> archivMap = new HashMap<Long, Double>();
+                    for (RcvdCacheCommand cacheInv : commandList) {
+                        Long archivLineId = cacheInv.getArchivlineId();
+                        if (archivMap.containsKey(archivLineId)) {
+                            archivMap.put(archivLineId, archivMap.get(archivLineId) + cacheInv.getSkuBatchCount());
+                        } else {
+                            archivMap.put(archivLineId, (double) cacheInv.getSkuBatchCount());
+                        }
+
+                    }
+                    Iterator<Entry<Long, Double>> archivLineIt = archivMap.entrySet().iterator();
+                    List<WhOdoArchivLineIndex> list = new ArrayList<WhOdoArchivLineIndex>();
+                    while (archivLineIt.hasNext()) {
+                        Entry<Long, Double> entry = archivLineIt.next();
+                        Long archivLineId = entry.getKey();
+                        Double count = entry.getValue();
+
+
+                        WhOdoArchivLineIndex archivLine = this.whOdoArchivLineIndexManager.findByIdToShard(archivLineId, ouId);
+                        if (archivLine == null) {
+                            throw new BusinessException(ErrorCodes.FEEDBACK_ORIGINAL_ERROR);
+                        }
+                        archivLine.setReturnedPurchaseQty(count);
+
+                        list.add(archivLine);
+                    }
+                    this.whOdoArchivLineIndexManager.executeReturns(list);
+                } catch (Exception ex) {
+                    ResponseMsg msg = new ResponseMsg();
+                    msg.setMsg(ErrorCodes.FEEDBACK_RCVD_ERROR + "");
+                    msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+                    return msg;
+                }
+            }
         }
         // 反馈数据
         try {

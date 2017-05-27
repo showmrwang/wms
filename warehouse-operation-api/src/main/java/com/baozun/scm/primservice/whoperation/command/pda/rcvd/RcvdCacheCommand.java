@@ -68,7 +68,16 @@ public class RcvdCacheCommand implements Serializable{
 
     /** 运单号 */
     private String expressNum;
+    /** 匹配明细行ID关联原单Id */
+    private Long archivlineId;
 
+    public Long getArchivlineId() {
+        return archivlineId;
+    }
+
+    public void setArchivlineId(Long archivlineId) {
+        this.archivlineId = archivlineId;
+    }
 
     public String getExpressNum() {
         return expressNum;

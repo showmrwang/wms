@@ -221,4 +221,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				#{skuId}
 			</foreach>
 	</select>
+	
+	 <select id="findByIdExt"  resultMap="WhOdoArchivLineIndexResult" flushCache="false">
+			select <include refid="whOdoArchivLineIndexColumns" />
+		    <![CDATA[
+			    from t_wh_odo_archiv_line_index 
+		        where 
+		        id = #{id} and ou_id=#{ouId}
+		    ]]>
+		</select>	
+		
+		<update id="execute">
+	    <![CDATA[
+	       update ${tableName} set  returned_purchase_qty= (returned_purchase_qty-${qty}) where id=${id}
+	    ]]>
+		</update>
 </mapper>
