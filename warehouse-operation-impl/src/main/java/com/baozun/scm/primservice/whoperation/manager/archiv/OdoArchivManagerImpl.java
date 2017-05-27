@@ -480,4 +480,11 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
         }
         return indexList;
     }
+
+
+    @Override
+    public void executeReturns(List<String> sqlList) {
+        // TODO Auto-generated method stub
+
+    }
 }
