@@ -2957,8 +2957,20 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         if (null != infoList && !infoList.isEmpty()) {
             info = infoList.get(0);
             info.setOutboundboxCode(outboundboxCode);
-            info.setOutboundboxId(consumableSkuId);
+            // info.setOutboundboxId(consumableSkuId);
             info = this.whOdoDeliveryInfoManager.saveOrUpdate(info);
+        } else {
+            WhOdodeliveryInfo whOdodeliveryInfo = new WhOdodeliveryInfo();
+            whOdodeliveryInfo.setOdoId(odoId);
+            whOdodeliveryInfo.setTransportCode("SF");
+            whOdodeliveryInfo.setWaybillCode(waybillCode);
+            whOdodeliveryInfo.setOutboundboxCode(outboundboxCode);
+            whOdodeliveryInfo.setStatus(1);
+            whOdodeliveryInfo.setOuId(ouId);
+            whOdodeliveryInfo.setLifecycle(1);
+            whOdodeliveryInfo.setCreateTime(new Date());
+            whOdodeliveryInfo.setLastModifyTime(new Date());
+            this.whOdoDeliveryInfoManager.saveOrUpdate(whOdodeliveryInfo);
         }
         return info;
     }
