@@ -129,10 +129,8 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         Map<String, Map<Long, Map<String, Long>>> skuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();
         // 周转箱每个唯一sku对应的所有sn及残次条码
         Map<String, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
-        // 目标库位对应的所有外部容器（整托整箱）
-        Map<Long, Set<Long>> outerContainerIds = new HashMap<Long, Set<Long>>();
-        // 外部容器对应所有内部容器（整托整箱）
-        Map<Long, Set<Long>> outerToInside = new HashMap<Long, Set<Long>>();
+        // 目标库位对应的所有内部容器（整托整箱）
+        Map<Long, Set<Long>> insideContainerIds = new HashMap<Long, Set<Long>>();
         // 内部容器对应所有sku（整托整箱）
         Map<String, Set<Long>> insideSkuIds = new HashMap<String, Set<Long>>();
         // 内部容器每个sku总件数（整托整箱）
@@ -254,21 +252,13 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
                 if(null != operationExecLine.getUseContainerId()){
                     containers.add(operationExecLine.getUseContainerId()); 
                 }
-                // 目标库位对应的所有外部容器（整托整箱）
-                if(null != outerContainerIds.get(operationExecLine.getToLocationId())){
-                    outerContainerIds.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseOuterContainerId());
-                }else{
-                    Set<Long> useOuterContainerIdSet = new HashSet<Long>();
-                    useOuterContainerIdSet.add(operationExecLine.getUseOuterContainerId());
-                    outerContainerIds.put(operationExecLine.getToLocationId(), useOuterContainerIdSet);
-                }
-                // 外部容器对应所有内部容器（整托整箱）
-                if(null != outerToInside.get(operationExecLine.getUseOuterContainerId())){
-                    outerToInside.get(operationExecLine.getUseOuterContainerId()).add(operationExecLine.getUseContainerId());
+                // 目标库位对应的所有内部容器（整托整箱）
+                if(null != insideContainerIds.get(operationExecLine.getToLocationId())){
+                    insideContainerIds.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseContainerId());
                 }else{
                     Set<Long> useContainerIdSet = new HashSet<Long>();
                     useContainerIdSet.add(operationExecLine.getUseContainerId());
-                    outerToInside.put(operationExecLine.getUseOuterContainerId(), useContainerIdSet);
+                    insideContainerIds.put(operationExecLine.getToLocationId(), useContainerIdSet);
                 }
                 String toLocationAndUseContainer = operationExecLine.getToLocationId().toString() + "-" + operationExecLine.getUseOuterContainerId() + "-" + operationExecLine.getUseContainerId();
                 // 内部容器对应所有sku（整托整箱）
@@ -380,10 +370,8 @@ public class PdaInWarehouseMovePutawayManagerImpl extends BaseManagerImpl implem
         statisticsCommand.setSkuAttrIds(skuAttrIds);
         // 周转箱每个唯一sku对应的所有sn及残次条码
         statisticsCommand.setSkuAttrIdsSnDefect(skuAttrIdsSnDefect);
-        // 目标库位对应的所有外部容器（整托整箱）
-        statisticsCommand.setOuterContainerIds(outerContainerIds);
-        // 外部容器对应所有内部容器（整托整箱）
-        statisticsCommand.setOuterToInside(outerToInside);
+        // 目标库位对应的所有内部容器（整托整箱）
+        statisticsCommand.setInsideContainerIds(insideContainerIds);
         // 内部容器对应所有sku（整托整箱）
         statisticsCommand.setInsideSkuIds(insideSkuIds);
         // 内部容器每个sku总件数（整托整箱）

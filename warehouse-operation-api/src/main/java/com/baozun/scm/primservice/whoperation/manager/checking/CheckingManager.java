@@ -43,7 +43,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printSinglePlane(String outBoundBoxCode,String waybillCode, Long userId, Long ouId);
+    void printSinglePlane(String outBoundBoxCode,String waybillCode, Long userId, Long ouId,Long odoId);
 
     /**
      * 打印箱标签
@@ -51,7 +51,7 @@ public interface CheckingManager extends BaseManager {
      * @param userId 用户Id
      * @param ouId 仓库Id
      */
-    void printBoxLabel(String outBoundBoxCode, Long userId, Long ouId);
+    void printBoxLabel(String outBoundBoxCode, Long userId, Long ouId,Long odoId);
 
     /**
      * 打印发票（复核）
@@ -77,14 +77,7 @@ public interface CheckingManager extends BaseManager {
      */
     WhOutboundFacilityCommand findOutboundFacilityById(Long id, Long ouId);
 
-    /**
-     * 根据绑定的MAC地址查询复核台
-     *
-     * @param macAddr
-     * @param ouId
-     * @return
-     */
-    WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String ipAddr, String macAddr, Long ouId);
+
 
 
     List<WhCheckingCommand> findCheckingBySourceCode(String checkingSourceCode, Long ouId);

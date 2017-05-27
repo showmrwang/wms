@@ -1289,11 +1289,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         }
                         if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId);
+                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId,checkingLineList.get(0).getOdoId());
                         }
                         if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                             // 箱标签
-                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId,checkingLineList.get(0).getOdoId());
                         }
                     } catch (Exception e) {
                         log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -1315,11 +1315,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             }
                             if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId);
+                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId,checkingLineList.get(0).getOdoId());
                             }
                             if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                                 // 箱标签
-                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
+                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId,checkingLineList.get(0).getOdoId());
                             }
                         } catch (Exception e) {
                             log.error("WhCheckingManagerImpl printDefect is execption" + e);

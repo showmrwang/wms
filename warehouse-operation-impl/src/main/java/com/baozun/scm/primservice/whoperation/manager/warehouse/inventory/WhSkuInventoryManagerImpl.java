@@ -9716,6 +9716,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (null == skuInvCmdList || skuInvCmdList.size() == 0) {
             throw new BusinessException(ErrorCodes.ALLOCATE_INVENTORY_NO_EXIST); // 分配库存不存在
         }
+        List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.findWhSkuInventoryCommandByReplish(ouId,  locationId, outerContainerId, insideContainerId);
+        if (null == invList || invList.size() == 0) {
+            throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO); // 分配库存不存在
+        }
         Double sum = 0.0;
         Boolean isPickingEnd = false;
         for(WhSkuInventoryAllocatedCommand allocateCmd:skuInvCmdList){
@@ -9793,7 +9797,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
         if(!isShortPicking) {
             //修改拣货的库位库存
-            List<WhSkuInventoryCommand>  invList = whSkuInventoryDao.findWhSkuInventoryCommandByReplish(ouId,  locationId, outerContainerId, insideContainerId);
             Double skuInvQty = 0.0;
             for(WhSkuInventoryCommand skuInvCmd:invList) {
                 String skuInvAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);

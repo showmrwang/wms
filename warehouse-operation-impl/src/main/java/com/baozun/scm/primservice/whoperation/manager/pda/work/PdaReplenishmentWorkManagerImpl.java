@@ -89,9 +89,9 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         // 捡货方式           
         if(whOperationCommand.getIsWholeCase() == false){
             psRCmd.setReplenishWay(Constants.REPLENISH_WAY_ONE);
-        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getPallets().size() > 0){
+        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getContainers().size() > 0){
             psRCmd.setReplenishWay(Constants.REPLENISH_WAY_TWO);
-        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 0 && statisticsCommand.getPallets().size() > 0){
+        }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 0 && statisticsCommand.getContainers().size() > 0){
             psRCmd.setReplenishWay(Constants.REPLENISH_WAY_THREE);
         }
         // 库存占用模型

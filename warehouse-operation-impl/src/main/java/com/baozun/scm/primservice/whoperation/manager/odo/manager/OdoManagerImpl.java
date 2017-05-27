@@ -686,7 +686,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     line.setOdoLineStatus(OdoStatus.ODOLINE_CANCEL);
                     int updateLineCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
                     if (updateLineCount <= 0) {
-                        throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 }
             }
@@ -694,7 +694,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             odo.setOdoStatus(OdoStatus.CANCEL);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
-                throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
         } catch (BusinessException e) {
             throw e;

@@ -255,4 +255,12 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         }
         return lineList;
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void deleteLines(List<WhOdoLine> lineList) {
+        for (WhOdoLine line : lineList) {
+            this.whOdoLineDao.deleteByIdOuId(line.getId(), line.getOuId());
+        }
+    }
 }

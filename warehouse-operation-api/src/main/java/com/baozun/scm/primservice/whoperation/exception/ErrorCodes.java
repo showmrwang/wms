@@ -466,6 +466,8 @@ public class ErrorCodes {
     public static final int PDARECEIVING_RETURNS_NO_ERROR = 11098;
     /** 关联原始单据反馈数据失败 */
     public static final int FEEDBACK_ORIGINAL_ERROR = 11099;
+    /** 系统不允许部分行取消 */
+    public static final int ODO_CANCEL_NO_SUPPORT_LINE_ERROR = 11100;
     // 10001-20000 luyimin
 
 
@@ -910,6 +912,8 @@ public class ErrorCodes {
     public static final int CHECKING_ODO_TRANSPORT_SERVICE_ERROR = 60349;
     /** 运单号已被使用 */
     public static final int CHECKING_WAYBILL_CODE_UNUSEABLE_ERROR = 60350;
+    /** 该电脑未绑定复核台 */
+    public static final int CHECKING_COMPUTER_BIND_ERROR = 60351;
 
 
 

@@ -191,7 +191,7 @@ public interface OdoManagerProxy extends BaseManager {
      * @param userId
      * @param logId
      */
-    public void cancel(WhOdo odo, Long ouId, Boolean isOdoCancel, List<WhOdoLine> lineList, Long userId, String logId);
+    public ResponseMsg cancel(WhOdo odo, Long ouId, Boolean isOdoCancel, List<WhOdoLine> lineList, Long userId, String logId);
 
     /**
      * 查询创建波次分组出库单

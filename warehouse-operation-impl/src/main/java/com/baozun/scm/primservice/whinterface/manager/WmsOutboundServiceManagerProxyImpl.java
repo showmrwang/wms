@@ -18,6 +18,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
+import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -111,7 +112,10 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
             }
             WhOdo odo = odoList.get(0);
             if (wmsOutBoundCancel.getIsOdoCancel().booleanValue()) {
-                this.odoManagerProxy.cancel(odo, ouId, true, null, null, null);
+                ResponseMsg msg = this.odoManagerProxy.cancel(odo, ouId, true, null, null, null);
+                if (ResponseMsg.STATUS_SUCCESS != msg.getResponseStatus()) {
+                    return new WmsResponse(0, msg.getMsg(), "CANCEL ERROR");
+                }
             } else {
                 List<WhOdoLine> lineList = null;
                 try {
@@ -119,9 +123,8 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
                 } catch (Exception ex) {
                     return new WmsResponse(0, WmsErrorCode.SEARCH_ERROR, "SEARCH_ERROR");
                 }
-                try {
-                    this.odoManagerProxy.cancel(odo, ouId, false, lineList, null, null);
-                } catch (Exception ex) {
+                ResponseMsg msg = this.odoManagerProxy.cancel(odo, ouId, true, null, null, null);
+                if (ResponseMsg.STATUS_SUCCESS != msg.getResponseStatus()) {
                     return new WmsResponse(0, WmsErrorCode.UPDATE_DATA_ERROR, "CANCEL ERROR");
                 }
             }
