@@ -251,11 +251,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                     try {
                         if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId);
+                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId,null);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                             // 箱标签
-                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId,null);
                         }
                     } catch (Exception e) {
                         log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -269,11 +269,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                         try {
                             if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId);
+                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId,null);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                                 // 箱标签
-                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId);
+                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId,null);
                             }
                         } catch (Exception e) {
                             log.error("WhCheckingManagerImpl printDefect is execption" + e);

@@ -153,12 +153,13 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     @Override
-    public void printSinglePlane(String outBoundBoxCode,String waybillCode, Long userId, Long ouId) {
+    public void printSinglePlane(String outBoundBoxCode,String waybillCode, Long userId, Long ouId,Long odoId) {
         // 打印面单
         try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
             printDataCommand.setCode(waybillCode);
             printDataCommand.setOutBoundBoxCode(outBoundBoxCode);
+            printDataCommand.setOdoId(odoId);
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,11 +167,12 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     @Override
-    public void printBoxLabel(String outBoundBoxCode, Long userId, Long ouId) {
+    public void printBoxLabel(String outBoundBoxCode, Long userId, Long ouId,Long odoId) {
         // 打印箱标签
         try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
             printDataCommand.setCode(outBoundBoxCode);
+            printDataCommand.setOdoId(odoId);
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -806,11 +808,11 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                     }
                     if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                         // 面单
-                        this.printSinglePlane(null, null, whCheckingResultCommand.getUserId(), ouId);
+                        this.printSinglePlane(null, null, whCheckingResultCommand.getUserId(), ouId,null);
                     }
                     if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                         // 箱标签
-                        this.printBoxLabel(null, whCheckingResultCommand.getUserId(), ouId);
+                        this.printBoxLabel(null, whCheckingResultCommand.getUserId(), ouId,null);
                     }
                 } catch (Exception e) {
                     log.error(e + "");
