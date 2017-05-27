@@ -44,10 +44,8 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     private Map<String, Map<Long, Map<String, Long>>> skuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();
     /** 周转箱每个唯一sku对应的所有sn及残次条码 */
     private Map<String, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
-    /** 目标库位对应的所有外部容器（整托整箱） */
-    private Map<Long, Set<Long>> outerContainerIds = new HashMap<Long, Set<Long>>();
-    /** 外部容器对应所有内部容器（整托整箱） */
-    private Map<Long, Set<Long>> outerToInside = new HashMap<Long, Set<Long>>();
+    /** 目标库位对应的所有内部容器（整托整箱） */
+    private Map<Long, Set<Long>> insideContainerIds = new HashMap<Long, Set<Long>>();
     /** 内部容器对应所有sku（整托整箱）*/
     private Map<String, Set<Long>> insideSkuIds = new HashMap<String, Set<Long>>();
     /** 内部容器每个sku总件数（整托整箱） */
@@ -113,17 +111,11 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     public void setSkuAttrIdsSnDefect(Map<String, Map<String, Set<String>>> skuAttrIdsSnDefect) {
         this.skuAttrIdsSnDefect = skuAttrIdsSnDefect;
     }
-    public Map<Long, Set<Long>> getOuterContainerIds() {
-        return outerContainerIds;
+    public Map<Long, Set<Long>> getInsideContainerIds() {
+        return insideContainerIds;
     }
-    public void setOuterContainerIds(Map<Long, Set<Long>> outerContainerIds) {
-        this.outerContainerIds = outerContainerIds;
-    }
-    public Map<Long, Set<Long>> getOuterToInside() {
-        return outerToInside;
-    }
-    public void setOuterToInside(Map<Long, Set<Long>> outerToInside) {
-        this.outerToInside = outerToInside;
+    public void setInsideContainerIds(Map<Long, Set<Long>> insideContainerIds) {
+        this.insideContainerIds = insideContainerIds;
     }
     public Map<String, Set<Long>> getInsideSkuIds() {
         return insideSkuIds;

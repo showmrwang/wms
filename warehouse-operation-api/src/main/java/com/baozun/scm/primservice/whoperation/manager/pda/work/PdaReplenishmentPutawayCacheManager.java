@@ -27,6 +27,14 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      */
     public ReplenishmentScanResultComamnd tipTurnoverBox(Set<Long> turnoverBoxIds,Long operationId,Long locationId);
     
+    /***
+     * 缓存货箱
+     * @param turnoverBoxIds
+     * @param operationId
+     * @return
+     */
+    public ReplenishmentScanResultComamnd tipContainer(Set<Long> outerContainerIds,Long operationId,Long locationId);
+    
     /****
      * 清楚补货上架缓存
      * @param operationId
