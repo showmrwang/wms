@@ -512,4 +512,13 @@
         and checking_id = #{checkingId}
     </select>
 
+    <select id="countCheckingLine" resultType="Integer">
+      select
+        	sum(qty-checking_qty)
+      from
+        t_wh_checking_line 
+      where
+        ou_id = #{ouId}
+        and checking_id = #{checkingId}
+    </select>
 </mapper>
