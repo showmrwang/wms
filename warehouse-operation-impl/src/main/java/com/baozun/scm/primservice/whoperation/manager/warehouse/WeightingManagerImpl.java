@@ -159,6 +159,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
         WhOdodeliveryInfo whOdodeliveryInfo = new WhOdodeliveryInfo();
         whOdodeliveryInfo.setOutboundboxCode(outboundBoxCode);
+        whOdodeliveryInfo.setOuId(ouId);
         List<WhOdodeliveryInfo> whOdodeliveryInfoList = whOdoDeliveryInfoDao.findListByParam(whOdodeliveryInfo);
         whOdodeliveryInfo = whOdodeliveryInfoList.get(0);
 
