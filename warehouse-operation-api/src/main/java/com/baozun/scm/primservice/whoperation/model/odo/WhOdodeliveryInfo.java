@@ -52,8 +52,6 @@ public class WhOdodeliveryInfo extends BaseModel {
     private String packageCenterName;
     /** 集包地名称 */
     private String extId;
-    /** 是否电子面单 */
-    private Boolean isOl;
 
     /** 当前月份 用于归档 */
     private String sysDate;
@@ -232,14 +230,6 @@ public class WhOdodeliveryInfo extends BaseModel {
 
     public void setExtId(String extId) {
         this.extId = extId;
-    }
-
-    public Boolean getIsOl() {
-        return isOl;
-    }
-
-    public void setIsOl(Boolean isOl) {
-        this.isOl = isOl;
     }
 
 }

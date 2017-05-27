@@ -32,8 +32,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	logistics_code as logisticsCode,
 	        	package_center_code as packageCenterCode,
 	        	package_center_name as packageCenterName,
-	        	ext_id as extId,
-	        	is_ol as isOl
+	        	ext_id as extId
 	    ]]>
 	</sql>
 	
@@ -182,8 +181,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        logistics_code = #{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        package_center_code = #{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        ext_id = #{extId,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        is_ol = #{isOl,javaType=java.lang.Boolean,jdbcType=BIT} 
+		        ext_id = #{extId,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
