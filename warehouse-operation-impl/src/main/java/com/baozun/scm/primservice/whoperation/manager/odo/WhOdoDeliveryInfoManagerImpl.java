@@ -33,10 +33,17 @@ public class WhOdoDeliveryInfoManagerImpl extends BaseManagerImpl implements WhO
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOdodeliveryInfo saveOrUpdate(WhOdodeliveryInfo whOdodeliveryInfo) {
-        int cnt = whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
-        if (0 < cnt) {
-            // throw new BusinessException("更新运单表失败");
-            return null;
+        if (null == whOdodeliveryInfo.getId()) {
+            Long insertCnt = whOdoDeliveryInfoDao.insert(whOdodeliveryInfo);
+            if (0 > insertCnt) {
+                return null;
+            }
+        } else {
+            int cnt = whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
+            if (0 > cnt) {
+                // throw new BusinessException("更新运单表失败");
+                return null;
+            }
         }
         return whOdodeliveryInfo;
     }

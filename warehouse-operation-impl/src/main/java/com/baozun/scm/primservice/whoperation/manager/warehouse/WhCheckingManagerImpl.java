@@ -805,7 +805,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         String outboundbox = cmd.getOutboundBoxCode();
         Long outboundboxId = cmd.getOutboundboxId();
         // 更新复合明细表
-        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId, outboundboxId, outboundbox, userId,cmd.getCheckingPattern());
+        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId, outboundboxId, outboundbox, userId, cmd.getCheckingPattern());
         cmd.setOuId(ouId);
         // 生成出库箱库存(sn有问题)
         whSkuInventoryManager.addOutBoundInventory(cmd, isTabbInvTotal, userId);
@@ -816,12 +816,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId);
         // 算包裹计重????
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox);
-        this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId,outboundboxId);
+        this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId, outboundboxId);
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if (result) {
             // 更新出库单状态
             this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode());
-        }else{
+        } else {
             WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
             // 修改出库单状态为复核完成状态。
             whOdo.setOdoStatus(OdoStatus.CHECKING);
@@ -839,16 +839,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         return null;
     }
 
-    private void odoDeliveryInfoUpdate(String waybillCode, String outboundbox, Long odoId, Long ouId,Long outboundboxId) {
+    private void odoDeliveryInfoUpdate(String waybillCode, String outboundbox, Long odoId, Long ouId, Long outboundboxId) {
         List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.getWhOdodeliveryInfoByOdoId(odoId, ouId);
-        if(null == list || list.size() == 0){
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        if (null == list || list.size() == 0) {
+            // throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        WhOdodeliveryInfo whOdodeliveryInfo = list.get(0);
-        whOdodeliveryInfo.setWaybillCode(waybillCode);
-        whOdodeliveryInfo.setOutboundboxCode(outboundbox);
-        whOdodeliveryInfo.setOutboundboxId(outboundboxId);
-        whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
+        // WhOdodeliveryInfo whOdodeliveryInfo = list.get(0);
+        // whOdodeliveryInfo.setWaybillCode(waybillCode);
+        // whOdodeliveryInfo.setOutboundboxCode(outboundbox);
+        // whOdodeliveryInfo.setOutboundboxId(outboundboxId);
+        // whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
     }
 
 
@@ -857,7 +857,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合更新复合表
      * @param checkingLineList
      */
-    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId,String checkingPattern) {
+    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId, String checkingPattern) {
         Long checkingId = null;
         for (WhCheckingLineCommand lineCmd : checkingLineList) {
             checkingId = lineCmd.getCheckingId(); // 复合头id
@@ -868,12 +868,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern)){
+        if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
                 Long id = cmd.getId(); // 复合明细id
                 Long checkingQty = cmd.getCheckingQty(); // 复合明细数量
                 WhCheckingLineCommand lineCmd = whCheckingLineDao.findCheckingLineById(id, ouId);
-                if(lineCmd.getQty() > cmd.getCheckingQty()){
+                if (lineCmd.getQty() > cmd.getCheckingQty()) {
                     WhCheckingLine line = new WhCheckingLine();
                     BeanUtils.copyProperties(lineCmd, line);
                     line.setId(null);
@@ -886,26 +886,27 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     line.setLastModifyTime(new Date());
                     whCheckingLineDao.insert(line);
                     insertGlobalLog(GLOBAL_LOG_INSERT, line, ouId, userId, null, null);
-                    //插入出库箱没有用记录
+                    // 插入出库箱没有用记录
                     WhCheckingLine insertLine = new WhCheckingLine();
                     BeanUtils.copyProperties(lineCmd, insertLine);
-                    insertLine.setCheckingQty(lineCmd.getQty()-checkingQty);
+                    insertLine.setQty(lineCmd.getQty() - checkingQty);
+                    // insertLine.setCheckingQty(0L);
                     insertLine.setOutboundboxId(null);
                     insertLine.setOutboundboxCode(null);
                     whCheckingLineDao.saveOrUpdateByVersion(insertLine);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
-                    
+
                     WhChecking checking = new WhChecking();
                     BeanUtils.copyProperties(checkingCmd, checking);
                     checking.setStatus(CheckingStatus.PART_FINISH);
                     whCheckingDao.saveOrUpdate(checking);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
                 }
-                if(lineCmd.getQty() < cmd.getCheckingQty()){
+                if (lineCmd.getQty() < cmd.getCheckingQty()) {
                     throw new BusinessException(ErrorCodes.CHECKING_NUM_IS_EEROR);
                 }
-                if(lineCmd.getQty() == cmd.getCheckingQty()){
-                    
+                if (lineCmd.getQty() == cmd.getCheckingQty()) {
+
                     WhCheckingLine line = new WhCheckingLine();
                     BeanUtils.copyProperties(lineCmd, line);
                     line.setCheckingQty(checkingQty);
@@ -913,7 +914,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     line.setOutboundboxCode(outboundbox);
                     whCheckingLineDao.saveOrUpdateByVersion(line);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
-                    
+
                     WhChecking checking = new WhChecking();
                     BeanUtils.copyProperties(checkingCmd, checking);
                     checking.setStatus(CheckingStatus.FINISH);
@@ -921,8 +922,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
                 }
             }
-            
-        }else{
+
+        } else {
             for (WhCheckingLineCommand cmd : checkingLineList) {
                 Long id = cmd.getId(); // 复合明细id
                 Long checkingQty = cmd.getCheckingQty(); // 复合明细数量
@@ -1051,7 +1052,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
             WhOdoPackageInfo whOdoPackageInfo = new WhOdoPackageInfo();
             whOdoPackageInfo.setOdoId(odoId);
-            whOdoPackageInfo.setOutboundboxId(outboundboxId);
+            // whOdoPackageInfo.setOutboundboxId(outboundboxId);
             whOdoPackageInfo.setOutboundboxCode(outboundboxCode);
             whOdoPackageInfo.setStatus(Constants.LIFECYCLE_START);
             whOdoPackageInfo.setFloats(whFunctionOutBound.getWeightFloatPercentage());

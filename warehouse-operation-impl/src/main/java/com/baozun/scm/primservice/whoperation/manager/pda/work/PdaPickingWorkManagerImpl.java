@@ -3242,9 +3242,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             WhOperationExecLine whOperationExecLine = new WhOperationExecLine();
             // 复制数据
             BeanUtils.copyProperties(operationLineCommand, whOperationExecLine);
-            if(null != command.getPickingWay()){
-                whOperationExecLine.setCompleteQty(0.0);    
-            }
+            whOperationExecLine.setCompleteQty(0.0);    
             whOperationExecLine.setIsUseNew(false);
             whOperationExecLine.setId(null);
             whOperationExecLine.setUseContainerId(operationLineCommand.getFromInsideContainerId());

@@ -254,11 +254,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             whOutboundboxDao.saveOrUpdate(outboundbox);
             // 6出库单下所有对应的出库箱是否都已经交接 如果都交接了 更新订单状态 订单明细状态
             Long odoId = outboundbox.getOdoId();
-            int a = whOutboundboxDao.findunhandoverBoxByOdoId(odoId, ouId);
             WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
-            if (0 == a) {
-
-
+            if (odo.getLagOdoStatus() == OdoStatus.FINISH) {
                 odo.setOdoStatus(OdoStatus.FINISH);
                 odo.setLagOdoStatus(OdoStatus.FINISH);
                 int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
