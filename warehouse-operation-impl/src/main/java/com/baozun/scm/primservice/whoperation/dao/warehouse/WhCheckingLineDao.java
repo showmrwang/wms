@@ -77,6 +77,14 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
     
     public WhCheckingLineCommand  judeIsLastBox(@Param("ouId")Long ouId,@Param("odoId") Long odoId);
     
+    /**
+     * 
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    public Integer countCheckingLine(@Param("checkingId") Long checkingId,@Param("ouId") Long ouId);
+    
     
 
 }

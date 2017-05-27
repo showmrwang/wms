@@ -32,7 +32,6 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
-import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -1559,11 +1558,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 BeanUtils.copyProperties(inv, line);
                 line.setCheckingCollectionId(whCheckingCollection.getId());
                 line.setSeedingQty(0L);
-                if (null != line.getOdoId()) {
-                    WhOdo odo = whOdoDao.findById(line.getOdoId());
-                    odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
-                    whOdoDao.saveOrUpdateByVersion(odo);
-                }
                 this.whCheckingCollectionLineDao.insert(line);
             }
         }

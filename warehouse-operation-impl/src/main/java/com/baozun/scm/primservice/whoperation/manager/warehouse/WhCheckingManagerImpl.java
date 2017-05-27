@@ -869,6 +869,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
+        //查询当前复合头对应的要复合的数量,复合明细中出库箱悟为空
         if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
                 Long id = cmd.getId(); // 复合明细id
@@ -896,12 +897,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     insertLine.setOutboundboxCode(null);
                     whCheckingLineDao.saveOrUpdateByVersion(insertLine);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
-
-                    WhChecking checking = new WhChecking();
-                    BeanUtils.copyProperties(checkingCmd, checking);
-                    checking.setStatus(CheckingStatus.PART_FINISH);
-                    whCheckingDao.saveOrUpdate(checking);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
                 }
                 if (lineCmd.getQty() < cmd.getCheckingQty()) {
                     throw new BusinessException(ErrorCodes.CHECKING_NUM_IS_EEROR);
@@ -915,15 +910,22 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     line.setOutboundboxCode(outboundbox);
                     whCheckingLineDao.saveOrUpdateByVersion(line);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
-
-                    WhChecking checking = new WhChecking();
-                    BeanUtils.copyProperties(checkingCmd, checking);
-                    checking.setStatus(CheckingStatus.FINISH);
-                    whCheckingDao.saveOrUpdate(checking);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
+                  
                 }
+                WhChecking checking = new WhChecking();
+                BeanUtils.copyProperties(checkingCmd, checking);
+                checking.setStatus(CheckingStatus.PART_FINISH);
+                whCheckingDao.saveOrUpdate(checking);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
             }
-
+            Integer count = whCheckingLineDao.countCheckingLine(checkingId, ouId);
+            if(count == 0){
+              WhChecking checking = new WhChecking();
+              BeanUtils.copyProperties(checkingCmd, checking);
+              checking.setStatus(CheckingStatus.FINISH);
+              whCheckingDao.saveOrUpdate(checking);
+              insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
+            }
         } else {
             for (WhCheckingLineCommand cmd : checkingLineList) {
                 Long id = cmd.getId(); // 复合明细id

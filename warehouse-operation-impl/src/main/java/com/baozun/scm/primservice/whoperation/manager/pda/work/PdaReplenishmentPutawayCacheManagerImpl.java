@@ -116,8 +116,56 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         return command;
     }
     
-    
-    
+    /**
+     * 扫描货箱--整箱
+     * 
+     * @author qiming.liu
+     * @param ReplenishmentPutawayCommand
+     * @return
+     */
+    @Override
+    public ReplenishmentScanResultComamnd tipContainer(Set<Long> insideContainerIds, Long operationId, Long locationId) {
+        log.info("PdaReplenishmentPutawayCacheManagerImpl tipContainer is start");
+        ReplenishmentScanResultComamnd command = new ReplenishmentScanResultComamnd();
+        Long insideContainerId = null;
+        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+        if(null == replenishment) {
+            for(Long id : insideContainerIds) {
+                insideContainerId = id;
+                break;
+            }
+        }else{
+            for(Long id : insideContainerIds) {
+                Map<Long,ArrayDeque<Long>> tipContainerIdsMap = replenishment.getTipContainerIds();
+                if(null == tipContainerIdsMap) {
+                    insideContainerId = id;
+                     break;
+                }else{
+                    ArrayDeque<Long> tipContainerIds = tipContainerIdsMap.get(locationId);
+                    if(null == tipContainerIds || tipContainerIds.isEmpty()) {
+                        insideContainerId = id;
+                      break;
+                  }else{
+                      if(tipContainerIds.contains(id)){
+                          continue;
+                      }else{
+                          insideContainerId = id;
+                          break;
+                      }
+                  }
+                   
+                }
+            }
+        }
+        if(null != insideContainerId){
+            command.setContainerId(insideContainerId);
+            command.setIsNeedScanContainer(true);
+        }else{
+            command.setIsNeedScanContainer(false);
+        }
+        log.info("PdaReplenishmentPutawayCacheManagerImpl tipContainer is end");
+        return command;
+    }
 
     /***
      * 清楚补货上架缓存

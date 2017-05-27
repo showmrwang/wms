@@ -33,13 +33,22 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     private Long locationId;
     /***/
     private String tipTurnoverBoxCode;
+    
+    private String tipPalletCode;
+    private String tipContainerCode;
 
     private String turnoverBoxCode;
+    private String palletCode;
+    private String containerCode;
 
     /**是否需要扫描库位*/
     private Boolean isNeedScanLocation = false;
     /**是否需要扫描周转箱*/
     private Boolean isNeedScanTurnoverBox = false;
+    /**是否需要扫描周转箱*/
+    private Boolean isNeedScanPallet = false;
+    /**是否需要扫描周转箱*/
+    private Boolean isNeedScanContainer = false;
     /**是否扫描结束*/
     private Boolean isScanFinsh = false;
     /**是否整托盘整箱补货*/
@@ -676,6 +685,54 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
 
     public void setInWarehouseMoveWay(Integer inWarehouseMoveWay) {
         this.inWarehouseMoveWay = inWarehouseMoveWay;
+    }
+
+    public String getTipPalletCode() {
+        return tipPalletCode;
+    }
+
+    public void setTipPalletCode(String tipPalletCode) {
+        this.tipPalletCode = tipPalletCode;
+    }
+
+    public String getTipContainerCode() {
+        return tipContainerCode;
+    }
+
+    public void setTipContainerCode(String tipContainerCode) {
+        this.tipContainerCode = tipContainerCode;
+    }
+
+    public Boolean getIsNeedScanPallet() {
+        return isNeedScanPallet;
+    }
+
+    public void setIsNeedScanPallet(Boolean isNeedScanPallet) {
+        this.isNeedScanPallet = isNeedScanPallet;
+    }
+
+    public Boolean getIsNeedScanContainer() {
+        return isNeedScanContainer;
+    }
+
+    public void setIsNeedScanContainer(Boolean isNeedScanContainer) {
+        this.isNeedScanContainer = isNeedScanContainer;
+    }
+
+    public String getPalletCode() {
+        return palletCode;
+    }
+
+    public void setPalletCode(String palletCode) {
+        this.palletCode = palletCode;
+    }
+
+    public String getContainerCode() {
+        return containerCode;
+    }
+
+    public void setContainerCode(String containerCode) {
+        this.containerCode = containerCode;
     }
 
 }

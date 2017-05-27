@@ -137,7 +137,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	logistics_code ,
 		        	package_center_code ,
 		        	package_center_name ,
-		        	ext_id
+		        	ext_id 
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,

@@ -407,18 +407,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         return facilityCommand;
     }
 
-    /**
-     * 根据绑定的MAC地址查询复核台
-     *
-     * @param macAddr
-     * @param ouId
-     * @return
-     */
-    @Override
-    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhOutboundFacilityCommand findOutboundFacilityByMacAddr(String ipAddr, String macAddr, Long ouId) {
-        return whOutboundFacilityDao.findOutboundFacilityByMacAddr(ipAddr, macAddr, ouId);
-    }
+
 
     /**
      * 复核 占用耗材库存

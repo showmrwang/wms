@@ -140,7 +140,7 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                     cubeCal.accumulationStuffVolume(icLength, icWidth, icHeight);
                     weightCal.accumulationStuffWeight(icWeight);
                 } else {
-                    if (null != skuId && !skuIds.contains(skuId)) {
+                    if (null != skuId) {
                         // 既无外部容器也无内部容器
                         WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                         if (null == skuCmd) {
