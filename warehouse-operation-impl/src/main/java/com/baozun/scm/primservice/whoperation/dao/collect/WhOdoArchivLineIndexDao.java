@@ -18,6 +18,7 @@ package com.baozun.scm.primservice.whoperation.dao.collect;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -39,5 +40,7 @@ public interface WhOdoArchivLineIndexDao extends BaseDao<WhOdoArchivLineIndex, L
 	int saveOrUpdate(WhOdoArchivLineIndex o);
 	
 	List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexByEcOrderCodeAndSource(@Param("ecOrderCode") String ecOrderCode, @Param("wmsSource") String wmsSource, @Param("num") String num);
+
+    List<WhOdoArchivLineIndex> findWhOdoArchivLineIndexByEcOrderCodeAndSkuIdList(@Param("ecOrderCode") String ecOrderCode, @Param("skuIdList") Set<Long> skuIdList, @Param("num") String num);
 	
 }
