@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
@@ -52,7 +51,6 @@ import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
-import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
@@ -101,7 +99,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
-import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
@@ -839,40 +836,46 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhOutboundboxCommand outboundboxCmd = this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId);
         // 算包裹计重????
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox);
-        this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId, outboundboxId);
-        //扣减耗材库存
-        List<WhSkuInventory> skuInvList = whSkuInventoryDao.findbyOccupationCode(outboundbox, ouId);
-        if(null == skuInvList || skuInvList.size() > 1){
-            throw new BusinessException(ErrorCodes.SUPPLIES__IS_EEROR);
-        }
-        for(WhSkuInventory skuInv:skuInvList){
-            Double oldQty = 0.0;
-            if (true == isTabbInvTotal) {
-                try {
-                    oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
-                } catch (Exception e) {
-                    log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-                }
-            } else {
-                oldQty = 0.0;
-            }
-            this.insertSkuInventoryLog(skuInv.getId(), -skuInv.getOnHandQty(), oldQty, true, ouId, userId, InvTransactionType.CHECK);
-            whSkuInventoryDao.deleteWhSkuInventoryById(skuInv.getId(), ouId);
-            insertGlobalLog(GLOBAL_LOG_DELETE, skuInv, ouId, userId, null, null);
-            // 出库单信息
-            WhOdo whOdo = odoManagerProxy.findOdOById(odoId, ouId);
-            // 复核台信息
-            WhOutboundFacilityCommand facilityCommand = checkingManager.findOutboundFacilityById(facilityId, ouId);
-            WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
-            if (null == checkingCmd) {
-                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-            }
-            //记录耗材信息
-            WhOutboundConsumable consumable = this.createOutboundConsumable(facilityCommand, outboundbox, checkingCmd, outboundboxCmd, whOdo, userId, ouId, logId);
-            whOutboundConsumableDao.insert(consumable);
-            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
-        }
+        // this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId,
+        // outboundboxId);
+        // 扣减耗材库存
+        // List<WhSkuInventory> skuInvList = whSkuInventoryDao.findbyOccupationCode(outboundbox,
+        // ouId);
+        // if (null == skuInvList || skuInvList.size() > 1) {
+        // throw new BusinessException(ErrorCodes.SUPPLIES__IS_EEROR);
+        // }
+        // for (WhSkuInventory skuInv : skuInvList) {
+        // Double oldQty = 0.0;
+        // if (true == isTabbInvTotal) {
+        // try {
+        // oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
+        // } catch (Exception e) {
+        // log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+        // throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+        // }
+        // } else {
+        // oldQty = 0.0;
+        // }
+        // this.insertSkuInventoryLog(skuInv.getId(), -skuInv.getOnHandQty(), oldQty, true, ouId,
+        // userId, InvTransactionType.CHECK);
+        // whSkuInventoryDao.deleteWhSkuInventoryById(skuInv.getId(), ouId);
+        // insertGlobalLog(GLOBAL_LOG_DELETE, skuInv, ouId, userId, null, null);
+        // // 出库单信息
+        // WhOdo whOdo = odoManagerProxy.findOdOById(odoId, ouId);
+        // // 复核台信息
+        // WhOutboundFacilityCommand facilityCommand =
+        // checkingManager.findOutboundFacilityById(facilityId, ouId);
+        // WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId,
+        // ouId);
+        // if (null == checkingCmd) {
+        // throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        // }
+        // // 记录耗材信息
+        // WhOutboundConsumable consumable = this.createOutboundConsumable(facilityCommand,
+        // outboundbox, checkingCmd, outboundboxCmd, whOdo, userId, ouId, logId);
+        // whOutboundConsumableDao.insert(consumable);
+        // insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
+        // }
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if (result) {
             // 更新出库单状态
@@ -894,7 +897,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // }
         return null;
     }
-    
+
     private WhOutboundConsumable createOutboundConsumable(WhOutboundFacilityCommand facilityCommand, String outboundBoxCode, WhCheckingCommand orgChecking, WhOutboundboxCommand checkedBox, WhOdo whOdo, Long userId, Long ouId, String logId) {
 
         WhOutboundConsumable whOutboundConsumable = new WhOutboundConsumable();
@@ -955,13 +958,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private void odoDeliveryInfoUpdate(String waybillCode, String outboundbox, Long odoId, Long ouId, Long outboundboxId) {
         List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.getWhOdodeliveryInfoByOdoId(odoId, ouId);
         if (null == list || list.size() == 0) {
-             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-         WhOdodeliveryInfo whOdodeliveryInfo = list.get(0);
-         whOdodeliveryInfo.setWaybillCode(waybillCode);
-         whOdodeliveryInfo.setOutboundboxCode(outboundbox);
-         whOdodeliveryInfo.setOutboundboxId(outboundboxId);
-         whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
+        WhOdodeliveryInfo whOdodeliveryInfo = list.get(0);
+        whOdodeliveryInfo.setWaybillCode(waybillCode);
+        whOdodeliveryInfo.setOutboundboxCode(outboundbox);
+        whOdodeliveryInfo.setOutboundboxId(outboundboxId);
+        whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
     }
 
 
@@ -981,7 +984,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
-        //查询当前复合头对应的要复合的数量,复合明细中出库箱悟为空
+        // 查询当前复合头对应的要复合的数量,复合明细中出库箱悟为空
         if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
                 Long id = cmd.getId(); // 复合明细id
@@ -1022,7 +1025,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     line.setOutboundboxCode(outboundbox);
                     whCheckingLineDao.saveOrUpdateByVersion(line);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
-                  
+
                 }
                 WhChecking checking = new WhChecking();
                 BeanUtils.copyProperties(checkingCmd, checking);
@@ -1031,12 +1034,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
             }
             Integer count = whCheckingLineDao.countCheckingLine(checkingId, ouId);
-            if(count == 0){
-              WhChecking checking = new WhChecking();
-              BeanUtils.copyProperties(checkingCmd, checking);
-              checking.setStatus(CheckingStatus.FINISH);
-              whCheckingDao.saveOrUpdate(checking);
-              insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
+            if (count == 0) {
+                WhChecking checking = new WhChecking();
+                BeanUtils.copyProperties(checkingCmd, checking);
+                checking.setStatus(CheckingStatus.FINISH);
+                whCheckingDao.saveOrUpdate(checking);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
             }
         } else {
             for (WhCheckingLineCommand cmd : checkingLineList) {
@@ -1104,6 +1107,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOutboundbox.setOutboundboxId(outboundboxId);
             whOutboundboxDao.insert(whOutboundbox);
             insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
+            outboundboxCmd = new WhOutboundboxCommand();
             BeanUtils.copyProperties(whOutboundbox, outboundboxCmd);
             // 生成出库想明细信息
             List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
@@ -1140,7 +1144,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 insertGlobalLog(GLOBAL_LOG_INSERT, outboundboxLine, ouId, userId, null, null);
             }
         }
-        
+
         return outboundboxCmd;
     }
 
