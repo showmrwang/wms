@@ -901,31 +901,12 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideContainerId.toString() + skuId.toString());
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
-//                                      Long insideSkuQty = insideContainerSkuIdsQty.get(skuId);  //当前货箱的sku总数
                                       Map<String, Long> skuAttrQty = skuAttrIdsQty.get(skuId);
                                       Long insideSkuQty = skuAttrQty.get(skuAttrId);
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内同一种唯一sku 没有拣完，还要捡到别的货格中
-//                                          Integer lattice = this.tipLatticeNo(skuId, skuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
-                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }//二期
                                               Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
@@ -953,32 +934,14 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                           //先删除缓存计数
                                           cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideContainerId.toString() + skuId.toString());
-//                                          Integer lattice = this.tipLatticeNo(skuId, tipSkuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice,latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                       }
-//                                      if(isSnLine) {//有sn/残次信息
-                                          //有sn的
-//                                          Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                          Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-//                                          ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                          for(String sn:snDefect) {
-//                                                  String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-//                                                  if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                      cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                      cssrCmd.setIsNeedScanSku(true);
-//                                                  }
-//                                          }二期
-                                          Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
-                                          if(result) {
-                                              cssrCmd.setIsNeedScanSkuSn(true);
-                                          }
-                                          cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-                                          cssrCmd.setIsNeedScanSku(true);
-//                                      }else{
-//                                        cssrCmd.setIsNeedScanSku(true);
-//                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                      }
+                                      Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
+                                      if(result) {
+                                          cssrCmd.setIsNeedScanSkuSn(true);
+                                      }
+                                      cssrCmd.setTipSkuAttrId(tipSkuAttrId);
+                                      cssrCmd.setIsNeedScanSku(true);
                                   }else{
                                       ArrayDeque<Long> cacheSkuIds = tipScanSkuCmd.getScanSkuIds();
                                       if (null == cacheSkuIds || cacheSkuIds.isEmpty()) {
@@ -1031,8 +994,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                                    cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                                                    cssrCmd.setIsHaveInsideContainer(false);  //没有货箱
                                                                    if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
-//                                                                       Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty, latticeNo,ouId);
-//                                                                       cssrCmd.setLatticeNo(lattice);
                                                                        cssrCmd.setIsTipNewLattice(true);
                                                                    }
                                                                    cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
@@ -1101,35 +1062,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                           if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                               //先删除缓存计数
                                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideContainerId.toString() + skuId.toString());
-//                                              Integer lattice = this.tipLatticeNo(skuId, tipSkuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                              cssrCmd.setLatticeNo(lattice);
                                               cssrCmd.setIsTipNewLattice(true);
                                           }
-//                                          if(isSnLine) {//有sn/残次信息
-                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              } 
-                                              Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
-                                              if(result) {
-                                                  cssrCmd.setIsNeedScanSkuSn(true);
-                                              }
-                                              cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                          }else{
-//                                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                          }
+                                          Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
+                                          if(result) {
+                                              cssrCmd.setIsNeedScanSkuSn(true);
+                                          }
+                                          cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                       }
                                   }
                                   break;
@@ -1186,31 +1125,12 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideContainerId.toString() + skuId.toString());
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
-//                                      Long insideSkuQty = insideContainerSkuIdsQty.get(skuId);
                                       Map<String, Long> skuAttrQty = skuAttrIdsQty.get(skuId);
                                       Long insideSkuQty = skuAttrQty.get(skuAttrId);
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内统一种唯一sku 没有拣完，还要捡到别的货格中
-//                                          Integer lattice = this.tipLatticeNo(skuId, skuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
-                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }
                                               Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
@@ -1241,8 +1161,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                           //先删除缓存计数
                                           cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideContainerId.toString() + skuId.toString());
-//                                          Integer lattice = this.tipLatticeNo(skuId, tipSkuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                       }
 //                                      if(isSnLine) {//有sn/残次信息
@@ -1632,27 +1550,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       Map<String, Long> skuAttrQty = skuAttrIdsQty.get(skuId);
                                       Long insideSkuQty = skuAttrQty.get(skuAttrId);
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内统一种唯一sku 没有拣完，还要捡到别的货格中
-//                                        Integer lattice =  this.tipLatticeNo(skuId, skuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                        cssrCmd.setLatticeNo(lattice);
-                                        cssrCmd.setIsTipNewLattice(true);
+                                          cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
-//                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }
                                               Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, insideContainerId, skuAttrId, operationWay);
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
@@ -1661,6 +1561,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                           }else{
                                             cssrCmd.setTipSkuAttrId(skuAttrId);
                                           }
+                                          cssrCmd.setIsNeedScanSku(true);
                                           return cssrCmd;
                                       }
                                    }
@@ -1681,29 +1582,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       cssrCmd.setIsNeedScanSku(true);
                                       if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                             cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideContainerId.toString() + skuId.toString());
-//                                            Integer lattice =  this.tipLatticeNo(skuId, tipSkuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                            cssrCmd.setLatticeNo(lattice);
                                             cssrCmd.setIsTipNewLattice(true);
                                       }
-//                                      if(isSnLine) {//有sn/残次信息
-                                          //有sn的
-//                                          Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                          Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-//                                          ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                          for(String sn:snDefect) {
-//                                                  String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-//                                                  if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                      cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                  }
-//                                          }
-                                          Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, insideContainerId, tipSkuAttrId, operationWay);
-                                          if(result) {
-                                              cssrCmd.setIsNeedScanSkuSn(true);
-                                          }
-                                          cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                      }else{
-//                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                      }
+                                      Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, insideContainerId, tipSkuAttrId, operationWay);
+                                      if(result) {
+                                          cssrCmd.setIsNeedScanSkuSn(true);
+                                      }
+                                      cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                   }else{
                                       ArrayDeque<Long> cacheSkuIds = tipScanSkuCmd.getScanSkuIds();
                                       if (null == cacheSkuIds || cacheSkuIds.isEmpty()) {
@@ -1879,50 +1764,12 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideContainerId.toString() + skuId.toString());
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
-//                                      Long insideSkuQty = insideContainerSkuIdsQty.get(skuId);
                                       Map<String, Long> skuAttrQty = skuAttrIdsQty.get(skuId);
                                       Long insideSkuQty = skuAttrQty.get(skuAttrId);
                                       if(insideSkuQty.longValue() > valueLattice) { //当前货箱内统一种唯一sku 没有拣完，还要捡到别的货格中
-//                                          ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
-//                                          if(null == latticeList){
-//                                              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                          }
-//                                          //如果有sn残次信息,去掉sn/残次信息
-//                                          Integer lattice = null;
-//                                          Set<Integer> latticeNos = insideSkuAttrIdsLattice.get(skuAttrId);
-//                                          Iterator<Integer> it = latticeNos.iterator();
-//                                          while (it.hasNext()){
-//                                              lattice = it.next();
-//                                              if(latticeList.contains(lattice)) {
-//                                                  continue;
-//                                              }else{
-//                                                  break;
-//                                              }
-//                                          }
-//                                          //缓存货格号
-//                                          latticeList.addFirst(lattice);
-//                                          cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
-//                                          Integer lattice =  this.tipLatticeNo(skuId, skuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
-                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }
                                               Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, insideContainerId, skuAttrId, operationWay);
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
@@ -1952,30 +1799,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       cssrCmd.setIsNeedScanSku(true);
                                       if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                           cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString()+insideContainerId.toString() + skuId.toString());
-                                          //先判断同一个货箱要拣货的数量是否放在多个货格内
-//                                            Integer lattice =  this.tipLatticeNo(skuId, tipSkuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                            cssrCmd.setLatticeNo(lattice);
                                             cssrCmd.setIsTipNewLattice(true);
                                       }
-//                                      if(isSnLine) {//有sn/残次信息
-                                          //有sn的
-//                                          Map<String, Set<String>> skuAttrIdSnDefect = insideSkuAttrIdsSnDefect.get(insideContainerId);
-//                                          Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-//                                          ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                          for(String sn:snDefect) {
-//                                                  String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-//                                                  if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                      cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                  }
-//                                          }
-                                          Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, insideContainerId, tipSkuAttrId, operationWay);
-                                          if(result) {
-                                              cssrCmd.setIsNeedScanSkuSn(true);
-                                          }
-                                          cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                      }else{
-//                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                      }
+                                      Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, insideContainerId, tipSkuAttrId, operationWay);
+                                      if(result) {
+                                          cssrCmd.setIsNeedScanSkuSn(true);
+                                      }
+                                      cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                   }else{
                                       ArrayDeque<Long> cacheSkuIds = new ArrayDeque<Long>();
                                       cacheSkuIds.addFirst(skuId);
@@ -1995,8 +1825,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                                           cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                                                           cssrCmd.setIsHaveInsideContainer(false);
                                                           if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
-//                                                              Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrId, skuAttrIdsLattice, locSkuQty,latticeNo,ouId);
-//                                                              cssrCmd.setLatticeNo(lattice);
                                                               cssrCmd.setIsTipNewLattice(true);
                                                           }
                                                           cssrCmd.setIsNeedScanSkuSn(cmd.getIsNeedScanSkuSn());
@@ -2057,11 +1885,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                               }
                                           }
                                           cssrCmd.setIsNeedScanSku(true);
-//                                          cssrCmd.setTipSkuAttrId( tipSkuAttrId);
                                           if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                               //先判断同一个货箱要拣货的数量是否放在多个货格内
-//                                                Integer lattice =  this.tipLatticeNo(skuId, tipSkuAttrId, insideContainerId, operationId, insideSkuAttrIdsLattice, latticeNo,ouId);
-//                                                cssrCmd.setLatticeNo(lattice);
                                                 cssrCmd.setIsTipNewLattice(true);
                                           }
 //                                          if(isSnLine) {//有sn/残次信息
@@ -2272,32 +2097,12 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       //先删除缓存计数
                                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ locationId.toString() + skuId.toString());
                                       //先判断同一个货箱要拣货的数量是否放在多个货格内
-//                                      Long lskuQty = locSkuQty.get(skuId);
                                       Map<String, Long> skuAttrQty = skuAttrIdsQty.get(sId);
                                       Long lskuQty = skuAttrQty.get(skuAttrId);
                                       if(lskuQty.longValue() > valueLattice) { //当前库位上同一种唯一sku 没有拣完，还要捡到别的货格中
-//                                          Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, skuAttrId, skuAttrIdsLattice, locSkuQty, latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
-//                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = skuAttrIdsSnDefect.get(locationId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                          break;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }
                                               Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, skuAttrId, operationWay);
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
@@ -2311,7 +2116,6 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       }
                                    }
                                   //先判断同一种sku是否有不同唯一sku属性
-//                                  ArrayDeque<String> scanSkuAttrIds = tipScanSkuCmd.getScanSkuAttrIds();  //唯一sku/sn及残次信息
                                   ArrayDeque<String> scanSkuAttrIdsNoSn = tipScanSkuCmd.getScanSkuAttrIdsNoSn();
                                   Map<String, Long> skuAttrIdQty =  skuAttrIdsQty.get(skuId);  //唯一sku对应的sku数量
                                   Set<String> skuAttrIds = skuAttrIdQty.keySet();
@@ -2417,36 +2221,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                           cssrCmd.setIsNeedScanSku(true);
                                           if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ locationId.toString() + skuId.toString());
-//                                              Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrIdNoSn, skuAttrIdsLattice, locSkuQty, latticeNo,ouId);
-//                                              cssrCmd.setLatticeNo(lattice);
                                               cssrCmd.setIsTipNewLattice(true);
                                           }
-//                                          if(isSnLine) {//有sn/残次信息
-                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = skuAttrIdsSnDefect.get(locationId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                          break;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }
-                                              Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, tipSkuAttrIdNoSn, operationWay);
-                                              if(result) {
-                                                  cssrCmd.setIsNeedScanSkuSn(true);
-                                              }
-                                              cssrCmd.setTipSkuAttrId(tipSkuAttrIdNoSn);
-//                                          }else{
-//                                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                          }
+                                          Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, tipSkuAttrIdNoSn, operationWay);
+                                          if(result) {
+                                              cssrCmd.setIsNeedScanSkuSn(true);
+                                          }
+                                          cssrCmd.setTipSkuAttrId(tipSkuAttrIdNoSn);
                                       }
                                   }
                                   break;
@@ -2506,28 +2287,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       Map<String, Long> skuAttrQty = skuAttrIdsQty.get(sId);
                                       Long lskuQty = skuAttrQty.get(skuAttrId);
                                       if(lskuQty.longValue() > valueLattice) { //当前库位上同一种唯一sku 没有拣完，还要捡到别的货格中
-//                                          Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, skuAttrId, skuAttrIdsLattice, locSkuQty, latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                           //判断当前sku是否是sn商品
                                           if(isSnLine) {//有sn/残次信息
-                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = skuAttrIdsSnDefect.get(locationId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(skuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                          break;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }
                                               Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, skuAttrId, operationWay);
                                               if(result) {
                                                   cssrCmd.setIsNeedScanSkuSn(true);
@@ -2565,29 +2327,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                       cssrCmd.setIsNeedScanSku(true);
                                       if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                           cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+locationId.toString() + skuId.toString());
-//                                          Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrIdNoSn, skuAttrIdsLattice, locSkuQty, latticeNo,ouId);
-//                                          cssrCmd.setLatticeNo(lattice);
                                           cssrCmd.setIsTipNewLattice(true);
                                       }
-//                                      if(isSnLine) {//有sn/残次信息
-                                          //有sn的
-//                                          Map<String, Set<String>> skuAttrIdSnDefect = skuAttrIdsSnDefect.get(locationId);
-//                                          Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-//                                          ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                          for(String sn:snDefect) {
-//                                                  String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-//                                                  if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                      cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                  }
-//                                          }
-                                          Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, tipSkuAttrIdNoSn, operationWay);
-                                          if(result) {
-                                              cssrCmd.setIsNeedScanSkuSn(true);
-                                          }
-                                          cssrCmd.setTipSkuAttrId(tipSkuAttrIdNoSn);
-//                                      }else{
-//                                        cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                      }
+                                      Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, tipSkuAttrIdNoSn, operationWay);
+                                      if(result) {
+                                          cssrCmd.setIsNeedScanSkuSn(true);
+                                      }
+                                      cssrCmd.setTipSkuAttrId(tipSkuAttrIdNoSn);
                                   }else{ //同一个库位上不同种类的sku
                                       if (isCacheAllExists(skuIds, cacheSkuIds)) {
                                           if (isCacheAllExists2(locationIds, cacheLocaitionIds)) {  //返回true ,两者相同
@@ -2638,36 +2384,13 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                           cssrCmd.setIsNeedScanSku(true);
                                           if(Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)){
                                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE+operationId.toString()+ locationId.toString() + skuId.toString());
-//                                              Integer lattice = this.tipLatticeNoLoc(locationId, skuId, operationId, tipSkuAttrIdNoSn, skuAttrIdsLattice, locSkuQty, latticeNo,ouId);
-//                                              cssrCmd.setLatticeNo(lattice);
                                               cssrCmd.setIsTipNewLattice(true);
                                           }
-//                                          if(isSnLine) {//有sn/残次信息
-                                              //有sn的
-//                                              Map<String, Set<String>> skuAttrIdSnDefect = skuAttrIdsSnDefect.get(locationId);
-//                                              Set<String> snDefect = skuAttrIdSnDefect.get(tipSkuAttrId);  //获取sn/残次信息
-//                                              ArrayDeque<String> skuAttrIdsSn = tipScanSkuCmd.getScanSkuAttrIds();
-//                                              Boolean result = false;
-//                                              for(String sn:snDefect) {
-//                                                      String skuAttrIdSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,sn);
-//                                                      if(!skuAttrIdsSn.contains(skuAttrIdSn)){
-//                                                          cssrCmd.setTipSkuAttrId(skuAttrIdSn);
-//                                                          result = true;
-//                                                          break;
-//                                                      }
-//                                              }
-//                                              if(!result) {
-//                                                  log.error("tip container is not in cache server error, logId is[{}]", logId);
-//                                                  throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//                                              }
-                                              Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, tipSkuAttrIdNoSn, operationWay);
-                                              if(result) {
-                                                  cssrCmd.setIsNeedScanSkuSn(true);
-                                              }
-                                              cssrCmd.setTipSkuAttrId(tipSkuAttrIdNoSn);
-//                                          }else{
-//                                            cssrCmd.setTipSkuAttrId(tipSkuAttrId);
-//                                          }
+                                          Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId,null, null, tipSkuAttrIdNoSn, operationWay);
+                                          if(result) {
+                                              cssrCmd.setIsNeedScanSkuSn(true);
+                                          }
+                                          cssrCmd.setTipSkuAttrId(tipSkuAttrIdNoSn);
                                       }
                                   }
                                   break;
