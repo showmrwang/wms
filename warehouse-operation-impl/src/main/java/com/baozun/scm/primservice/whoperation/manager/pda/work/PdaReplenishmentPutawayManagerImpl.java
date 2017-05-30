@@ -825,8 +825,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             command.setIsNeedScanSku(true);
             command.setSkuId(skuId);
             this.tipSkuDetailAspect(command, skuAttrIds, skuAttrIdsQty1, logId);
-            //删除缓存的sn
-            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
         }else if(csrCmd.getIsNeedTipInsideContainer()){
             List<String> list = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+turnoverBoxId.toString()+skuId.toString());
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
@@ -1525,6 +1523,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             }
         }else if(CancelPattern.PICKING_SCAN_SKU_DETAIL == cancelPattern){
             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locationId.toString()+ turnoverBoxId.toString() + tipSkuId.toString());
+        }else if(CancelPattern.PICKING_SCAN_SKU_SCANCEL == cancelPattern){
+            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ turnoverBoxId.toString() + tipSkuId.toString());
         }
     }
     

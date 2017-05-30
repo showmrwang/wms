@@ -299,7 +299,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             Container c = new Container();
             BeanUtils.copyProperties(cmd, c);
             c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-            c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            c.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
             containerDao.saveOrUpdateByVersion(c);
         }
     }
