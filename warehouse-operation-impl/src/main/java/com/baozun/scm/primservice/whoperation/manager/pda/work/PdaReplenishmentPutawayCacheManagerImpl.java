@@ -172,13 +172,18 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
      * @param operationId
      */
     @Override
-     public void pdaReplenishPutwayRemoveAllCache(Long operationId,Long turnoverBoxId,Long locationId,Boolean isPutaway){
+     public void pdaReplenishPutwayRemoveAllCache(Long operationId,Long turnoverBoxId,Long locationId,Boolean isPutaway,Integer replenishWay){
          log.info("PdaPickingWorkCacheManagerImpl addPickingOperationExecLine is start");
          OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
          if(null == opExecLineCmd){
              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
          }
-         Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
+         Map<String, Set<Long>> locSkuIds = new HashMap<String, Set<Long>>();
+         if(null != replenishWay && (2 == replenishWay || 3 == replenishWay)){
+             locSkuIds = opExecLineCmd.getInsideSkuIds();
+         }else{
+             locSkuIds = opExecLineCmd.getSkuIds();
+         }
          String key = locationId.toString()+turnoverBoxId;
          Set<Long> skuIds = locSkuIds.get(key);
          for(Long skuId:skuIds){
