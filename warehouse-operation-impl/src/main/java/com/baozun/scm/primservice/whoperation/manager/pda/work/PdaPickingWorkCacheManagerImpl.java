@@ -2943,6 +2943,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString()+insideId.toString()+skuId.toString());
                                   cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + operationId.toString()+insideId.toString() + skuId.toString());
                                   cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN + operationId.toString()+insideId.toString() + skuId.toString());
+                                  cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO +operationId.toString()+ insideId.toString() + tipSkuId.toString());
                               }
                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE +operationId.toString()+ insideId.toString());
                           }
@@ -2955,6 +2956,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString()+locId.toString()+skuId.toString());
                               cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + operationId.toString()+locId.toString() + skuId.toString());
                               cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_SN +operationId.toString()+ locId.toString() + skuId.toString());
+                              cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_LATTICE_NO +operationId.toString()+ locId.toString() + tipSkuId.toString());
                           }
                       }
                       cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString()+locId.toString());
