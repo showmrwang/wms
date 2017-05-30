@@ -290,6 +290,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Long ouId = command.getOuId();
         Long locationId = command.getLocationId();
         String turnoverBoxCode = command.getTurnoverBoxCode();
+        if(null != command.getReplenishWay() && (2 == command.getReplenishWay() || 3 == command.getReplenishWay())){
+            turnoverBoxCode = command.getContainerCode();  
+        }else{
+            turnoverBoxCode = command.getTurnoverBoxCode();    
+        }
         String newTurnoverBoxCode = command.getNewTurnoverBoxCode();
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
@@ -300,7 +305,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         List<Long> locationIds = opExecLineCmd.getLocationIds();
-        Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
+        Map<Long, Set<Long>> mapTurnoverBoxIds = new HashMap<Long, Set<Long>>();
+        if(null != command.getReplenishWay() && (2 == command.getReplenishWay() || 3 == command.getReplenishWay())){
+            mapTurnoverBoxIds = opExecLineCmd.getInsideContainerIds();
+        }else{
+            mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds(); 
+        }
         Set<Long> turnoverBoxIds = mapTurnoverBoxIds.get(locationId);
         Long turnoverBoxId = cmd.getId();
         Boolean result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId);
@@ -1635,7 +1645,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
       * @param operationId
       * @return
       */
-     public Boolean judgeIsOnlyLocation(Long operationId,Long locationId,String turnoverBoxCode,Long ouId){
+     public Boolean judgeIsOnlyLocation(Long operationId, Long locationId, String turnoverBoxCode, Long ouId, Integer replenishWay){
          Boolean result = false;// 默认单库位
          ContainerCommand ic = containerDao.getContainerByCode(turnoverBoxCode, ouId);
          if (null == ic) {
@@ -1649,7 +1659,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
          }
          List<Long> locationIds = opExecLineCmd.getLocationIds();
-         Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
+         Map<Long, Set<Long>> mapTurnoverBoxIds = new HashMap<Long, Set<Long>>();
+         if(null != replenishWay && (2 == replenishWay || 3 == replenishWay)){
+             mapTurnoverBoxIds = opExecLineCmd.getInsideContainerIds(); 
+         }else{
+             mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();     
+         }
          result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId);
          return result;
      }
