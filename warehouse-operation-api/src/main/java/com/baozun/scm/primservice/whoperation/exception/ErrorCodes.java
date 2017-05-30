@@ -1039,6 +1039,8 @@ public class ErrorCodes {
     public static final int NEW_TURNOVERBOX_NO_LOC = 70065;
     /**当前出库箱复合数量不正确*/
     public static final int CHECKING_NUM_IS_EEROR = 70065;
+    /**占用耗材不正确*/
+    public static final int SUPPLIES__IS_EEROR = 70066;
 
     // 70001-80000 tangming
 
