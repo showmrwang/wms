@@ -119,7 +119,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param isTabbInvTotal
      * @return
      */
-    public PickingScanResultCommand palletPickingOperationExecLine(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
+    public PickingScanResultCommand palletPickingOperationExecLine(PickingScanResultCommand command, Boolean isTabbInvTotal);
     
     /**
      * 整箱拣货模式生成作业执行明细
@@ -130,7 +130,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param isTabbInvTotal
      * @return
      */
-    public PickingScanResultCommand containerPickingOperationExecLine(PickingScanResultCommand  command,WhSkuCommand skuCmd,Boolean isTabbInvTotal);
+    public PickingScanResultCommand containerPickingOperationExecLine(PickingScanResultCommand command, Boolean isTabbInvTotal);
     
     /***
      * 拣货取消流程
