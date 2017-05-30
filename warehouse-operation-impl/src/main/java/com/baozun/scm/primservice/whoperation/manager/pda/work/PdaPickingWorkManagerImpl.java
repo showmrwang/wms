@@ -1128,14 +1128,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         return command;
     }
 
-    private void cacheLatticeNo(Long operationId, Integer lattice) {
-        ArrayDeque<Integer> latticeList = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
-        if (null == latticeList) {
-            latticeList = new ArrayDeque<Integer>();
-        }
-        latticeList.addFirst(lattice);
-        cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(), latticeList, CacheConstants.CACHE_ONE_DAY);
-    }
+//    private void cacheLatticeNo(Long operationId, Integer lattice) {
+//        ArrayDeque<Integer> latticeList = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+//        if (null == latticeList) {
+//            latticeList = new ArrayDeque<Integer>();
+//        }
+//        latticeList.addFirst(lattice);
+//        cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(), latticeList, CacheConstants.CACHE_ONE_DAY);
+//    }
 
     /***
      * 判断货箱内库存属性是否唯一
