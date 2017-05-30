@@ -46,6 +46,8 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
     /** sn列表*/
     private List<Long> sn;
+    
+    private Long facilityId;
 
 
     public Integer getContainerLatticeNo() {
@@ -184,6 +186,14 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     public void setWaybillCode(String waybillCode) {
         this.waybillCode = waybillCode;
+    }
+
+    public Long getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(Long facilityId) {
+        this.facilityId = facilityId;
     }
 
 }
