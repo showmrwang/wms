@@ -73,6 +73,12 @@ public interface HandoverManager extends BaseManager {
     void packageWeightCalculationByOdo(WhOutboundbox whOutboundbox, Long ouId, Long userId);
 
     /**
+     * 是否电子面单
+     * 
+     */
+    Boolean isOl(Long id, Long ouId);
+
+    /**
      * 打印销售清单
      * 
      * @param userId 用户Id

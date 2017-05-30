@@ -34,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportServiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
@@ -53,6 +54,7 @@ import com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryC
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
@@ -100,6 +102,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private OutBoundBoxTypeDao outBoundBoxTypeDao;
     @Autowired
     private OrderConfirmContentManager orderConfirmContentManager;
+    @Autowired
+    private WhOdoTransportServiceDao whOdoTransportServiceDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -256,8 +260,13 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             Long odoId = outboundbox.getOdoId();
             WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
             if (odo.getLagOdoStatus().equals(OdoStatus.CHECKING_FINISH)) {
-                odo.setOdoStatus(OdoStatus.FINISH);
-                odo.setLagOdoStatus(OdoStatus.FINISH);
+                int findunhandoverBoxByOdoId = whOutboundboxDao.findunhandoverBoxByOdoId(odoId, ouId);
+                if (0 == findunhandoverBoxByOdoId) {
+                    odo.setOdoStatus(OdoStatus.FINISH);
+                    odo.setLagOdoStatus(OdoStatus.FINISH);
+                } else {
+                    odo.setOdoStatus(OdoStatus.PARTLY_FINISH);
+                }
                 int odoUpdate = whOdoDao.saveOrUpdateByVersion(odo);
                 if (0 == odoUpdate) {
                     // 出库单状态更新失败
@@ -449,5 +458,26 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             whOdoPackageInfo.setOuId(ouId);
             whOdoPackageInfoDao.insert(whOdoPackageInfo);
         }
+    }
+
+    /**
+     * 是否电子面单
+     * 
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Boolean isOl(Long odoId, Long ouId) {
+        WhOdoTransportService whOdoTransportService = new WhOdoTransportService();
+        whOdoTransportService.setOdoId(odoId);
+        whOdoTransportService.setOuId(ouId);
+        List<WhOdoTransportService> findListByParam = whOdoTransportServiceDao.findListByParam(whOdoTransportService);
+        if (findListByParam.size() < 1 || null == findListByParam) {
+            log.error("handover error whhandovermanager.whOdoTransportServiceDao  , findListByParam is null");
+            throw new BusinessException(ErrorCodes.CHECKING_ODO_TRANSPORT_SERVICE_ERROR);
+        }
+        Boolean isOl = findListByParam.get(0).getIsOl();
+        return isOl;
+
+
     }
 }
