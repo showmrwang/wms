@@ -244,7 +244,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
      * @param ouId
      * @param logId
      */
-    public void finishedCheckingByContainer(WhFunctionOutBound function, Long outboundFacilityId, WhCheckingCommand checkingCommand, String checkingSourceCode, String checkingType, Boolean isWeighting, Long userId, Long ouId, String logId) {
+    public void finishedCheckingByContainer(WhFunctionOutBound function, Long outboundFacilityId, WhCheckingCommand checkingCommand, String checkingSourceCode, String checkingType, Boolean isStoreWeighting, Long userId, Long ouId, String logId) {
         // 复核台信息
         WhOutboundFacilityCommand facilityCommand = checkingManager.findOutboundFacilityById(outboundFacilityId, ouId);
         // 仓库配置信息
@@ -326,7 +326,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         }
 
         // 创建出库箱信息
-        WhOutboundbox whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBox.getOutboundboxCode(), orgCheckingLineList.get(0).getOdoId(), isWeighting, userId, ouId, logId);
+        WhOutboundbox whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBox.getOutboundboxCode(), orgCheckingLineList.get(0).getOdoId(), isStoreWeighting, userId, ouId, logId);
 
         // 装箱包裹计重信息
         WhOdoPackageInfoCommand odoPackageInfo = this.createOdoPackageInfo(function, whOutboundbox, packageCalcWeight, orgCheckingLineList.get(0).getOdoId(), userId, ouId);
@@ -367,6 +367,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     // 按箱复核类型 小车
                     boolean isTrolleyCheckingFinished = this.checkTrolleyCheckingFinished(orgChecking.getId(), checkingSourceCode, ouId, logId);
                     if (isTrolleyCheckingFinished) {
+                        //TODO 校验小车库存是否已经删除完成
                         // 释放小车
                         trolleyContainer = releaseTrolleyContainer(orgChecking, userId, ouId);
                     }
@@ -376,6 +377,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     // 按箱复核类型 播种墙
                     boolean isFacilityCheckingFinished = this.checkFacilityCheckingFinished(orgChecking.getId(), checkingSourceCode, ouId, logId);
                     if (isFacilityCheckingFinished) {
+                        //TODO 校验播种墙库存是否已经删除完成
                         // 释放播种墙
                         seedingFacility = this.releaseSeedingFacility(orgChecking, userId, ouId);
                     }
@@ -393,7 +395,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             }
         }
 
-        //更新出库单交接运单信息
+        // 更新出库单交接运单信息
         WhOdodeliveryInfo ododeliveryInfo = this.updateOdoDeliveryInfo(checkedBox.getWaybillCode(), whOutboundbox.getOutboundboxCode(), whOdo.getId(), userId, ouId);
 
 
@@ -432,7 +434,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whCheckingResultCommand.setWhOdo(whOdo);
         // 更新SN/残次信息
         whCheckingResultCommand.setCheckedSnInvList(checkedSnInvList);
-        //出库单交接面单信息
+        // 出库单交接面单信息
         whCheckingResultCommand.setWhOdodeliveryInfo(ododeliveryInfo);
 
         // 保存复核数据
@@ -440,20 +442,21 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     }
 
     private WhOdodeliveryInfo updateOdoDeliveryInfo(String waybillCode, String outboundBoxCode, Long odoId, Long userId, Long ouId) {
-        WhOdodeliveryInfo ododeliveryInfo;WhOdoTransportService whOdoTransportService = odoTransportServiceManager.findByOdoId(odoId, ouId);
-        if(null == whOdoTransportService || !whOdoTransportService.getIsTspSuccess() || !whOdoTransportService.getIsVasSuccess() || !whOdoTransportService.getIsWaybillCodeSuccess()) {
+        WhOdodeliveryInfo ododeliveryInfo;
+        WhOdoTransportService whOdoTransportService = odoTransportServiceManager.findByOdoId(odoId, ouId);
+        if (null == whOdoTransportService || !whOdoTransportService.getIsTspSuccess() || !whOdoTransportService.getIsVasSuccess() || !whOdoTransportService.getIsWaybillCodeSuccess()) {
             throw new BusinessException(ErrorCodes.CHECKING_ODO_TRANSPORT_SERVICE_ERROR);
-        }else {
+        } else {
             if (whOdoTransportService.getIsOl()) {
-                //电子面单
+                // 电子面单
                 ododeliveryInfo = whOdoDeliveryInfoManager.findUseableWaybillInfoByOdoId(odoId, ouId);
-                if(null == ododeliveryInfo){
+                if (null == ododeliveryInfo) {
                     throw new BusinessException(ErrorCodes.CHECKING_ODO_TRANSPORT_SERVICE_ERROR);
                 }
                 ododeliveryInfo.setOutboundboxCode(outboundBoxCode);
                 ododeliveryInfo.setModifiedId(userId);
-            }else {
-                //纸质面单
+            } else {
+                // 纸质面单
                 WhOdoTransportMgmt whOdoTransportMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(odoId, ouId);
                 ododeliveryInfo = new WhOdodeliveryInfo();
                 ododeliveryInfo.setOdoId(odoId);
@@ -614,20 +617,20 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         if (isBoxCheckingFinished) {
             boolean isOdoCheckingFinished = this.checkOdoCheckingFinished(checkingId, whOdo.getId(), ouId, logId);
             if (isOdoCheckingFinished) {
-                if(OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.CHECKING.equals(whOdo.getOdoStatus())){
+                if (OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.CHECKING.equals(whOdo.getOdoStatus())) {
                     whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
                 }
                 whOdo.setLagOdoStatus(OdoStatus.CHECKING_FINISH);
                 whOdo.setModifiedId(userId);
             } else {
-                if(OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())){
+                if (OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())) {
                     whOdo.setOdoStatus(OdoStatus.CHECKING);
                 }
                 whOdo.setLagOdoStatus(OdoStatus.CHECKING);
                 whOdo.setModifiedId(userId);
             }
         } else {
-            if(OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())){
+            if (OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())) {
                 whOdo.setOdoStatus(OdoStatus.CHECKING);
             }
             whOdo.setLagOdoStatus(OdoStatus.CHECKING);
@@ -719,6 +722,13 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         SkuRedisCommand skuRedis = skuRedisManager.findSkuMasterBySkuId(consumableSkuId, ouId, logId);
         Sku sku = skuRedis.getSku();
 
+        WhOdoTransportMgmt whOdoTransportMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(whOdo.getId(), ouId);
+        String waybillCode = checkedBox.getWaybillCode();
+        if(null == waybillCode){
+            WhOdodeliveryInfo ododeliveryInfo = whOdoDeliveryInfoManager.findUseableWaybillInfoByOdoId(whOdo.getId(), ouId);
+            waybillCode = ododeliveryInfo.getWaybillCode();
+        }
+
         whOutboundConsumable.setBatch(orgChecking.getBatch());
         whOutboundConsumable.setWaveCode(orgChecking.getWaveCode());
         whOutboundConsumable.setCustomerCode(orgChecking.getCustomerCode());
@@ -727,9 +737,8 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundConsumable.setStoreName(orgChecking.getStoreName());
         whOutboundConsumable.setOdoId(whOdo.getId());
         whOutboundConsumable.setOdoCode(whOdo.getOdoCode());
-        // TODO 不知道设置
-        whOutboundConsumable.setTransportCode("");
-        whOutboundConsumable.setWaybillCode("");
+        whOutboundConsumable.setTransportCode(whOdoTransportMgmt.getTransportServiceProvider());
+        whOutboundConsumable.setWaybillCode(waybillCode);
         whOutboundConsumable.setFacilityId(facilityCommand.getId());
         whOutboundConsumable.setFacilityCode(facilityCommand.getFacilityCode());
         whOutboundConsumable.setLocationId(locationSkuVolume.getLocationId());
@@ -843,7 +852,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return orgCheckingLineList;
     }
 
-    private WhOutboundbox createWhOutboundbox(WhCheckingCommand whChecking, String outboundBoxCode, Long odoId, Boolean isWeighting, Long userId, Long ouId, String logId) {
+    private WhOutboundbox createWhOutboundbox(WhCheckingCommand whChecking, String outboundBoxCode, Long odoId, Boolean isStoreWeighting, Long userId, Long ouId, String logId) {
         WhOutboundbox whOutboundbox = new WhOutboundbox();
         whOutboundbox.setBatch(whChecking.getBatch());
         whOutboundbox.setWaveCode(whChecking.getWaveCode());
@@ -858,7 +867,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundbox.setPickingMode(whChecking.getPickingMode());
         whOutboundbox.setCheckingMode(whChecking.getCheckingMode());
 
-        if (isWeighting) {
+        if (isStoreWeighting) {
             whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
         } else {
             whOutboundbox.setStatus(OutboundboxStatus.WEIGHING);
