@@ -121,7 +121,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             command = whCheckingDao.findByWaybillCode(command.getWaybillCode(), command.getOuId());
         } else {
             // 通过出库箱号查找带称重信息
-            command = whCheckingDao.findByOutboundBoxCode(command.getOutboundBoxCode(), command.getOuId());
+            // command = whCheckingDao.findByOutboundBoxCode(command.getOutboundBoxCode(),
+            // command.getOuId());
+            String outboundBoxCode = command.getOutboundBoxCode();
+            command = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
+            command.setOutboundBoxCode(outboundBoxCode);
         }
         return command;
     }
