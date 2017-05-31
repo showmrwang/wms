@@ -74,6 +74,10 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
         Map<String, Double> weihgtUomConversionRate = uomMap.get(WhUomType.WEIGHT_UOM);
         // 1.获取该库位上的所有库存
         List<WhSkuInventoryCommand> locInvs = whSkuInventoryDao.findWhSkuInventoryByLocIdAndOuId(ouId, locationId);
+        List<WhSkuInventoryCommand> tobefilledInvs = whSkuInventoryDao.findWhSkuInventoryByTobefilledLocIdAndOuId(ouId, locationId);
+        if (null != tobefilledInvs && tobefilledInvs.size() > 0) {
+            locInvs.addAll(tobefilledInvs);
+        }
         // 2.分析库存并计算体积重量
         SimpleCubeCalculator cubeCal = new SimpleCubeCalculator(lenUomConversionRate);
         SimpleWeightCalculator weightCal = new SimpleWeightCalculator(weihgtUomConversionRate);

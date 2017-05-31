@@ -525,6 +525,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventoryCommand> findWhSkuInventoryByLocIdAndOuId(@Param("ouid") Long ouid, @Param("locid") Long locid);
+    
+    /**
+     * 根据库位查找所有待移入库存
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param locid
+     * @return
+     */
+    List<WhSkuInventoryCommand> findWhSkuInventoryByTobefilledLocIdAndOuId(@Param("ouid") Long ouid, @Param("locid") Long locid);
 
     /**
      * 根据外部容器号查询所有内部容器信息
