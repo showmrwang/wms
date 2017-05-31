@@ -831,11 +831,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Long outboundboxId = cmd.getOutboundboxId();
         Long facilityId = cmd.getFacilityId();
         Long locationId = cmd.getLocationId();
-        Location location = locationDao.findByIdExt(locationId, ouId);
-        if(null == location){
-            throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
-        }
-        String locationCode = location.getCode();
         // 更新复合明细表
         Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId, outboundboxId, outboundbox, userId, cmd.getCheckingPattern());
         cmd.setOuId(ouId);
@@ -869,18 +864,25 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             this.insertSkuInventoryLog(skuInv.getId(), -skuInv.getOnHandQty(), oldQty, true, ouId, userId, InvTransactionType.CHECK);
             whSkuInventoryDao.deleteWhSkuInventoryById(skuInv.getId(), ouId);
             insertGlobalLog(GLOBAL_LOG_DELETE, skuInv, ouId, userId, null, null);
-            // 出库单信息
-            WhOdo whOdo = odoManagerProxy.findOdOById(odoId, ouId);
-            // 复核台信息
-            WhOutboundFacilityCommand facilityCommand = checkingManager.findOutboundFacilityById(facilityId, ouId);
-            WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
-            if (null == checkingCmd) {
-                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            if(null != outboundboxId){
+                // 出库单信息
+                WhOdo whOdo = odoManagerProxy.findOdOById(odoId, ouId);
+                // 复核台信息
+                WhOutboundFacilityCommand facilityCommand = checkingManager.findOutboundFacilityById(facilityId, ouId);
+                WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
+                if (null == checkingCmd) {
+                    throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                }
+                Location location = locationDao.findByIdExt(locationId, ouId);
+                if(null == location){
+                    throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
+                }
+                String locationCode = location.getCode();
+                //记录耗材信息
+                WhOutboundConsumable consumable = this.createOutboundConsumable(facilityCommand, outboundbox, checkingCmd, locationCode,outboundboxId, whOdo, userId, ouId, logId);
+                whOutboundConsumableDao.insert(consumable);
+                insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
             }
-            //记录耗材信息
-            WhOutboundConsumable consumable = this.createOutboundConsumable(facilityCommand, outboundbox, checkingCmd, locationCode,outboundboxId, whOdo, userId, ouId, logId);
-            whOutboundConsumableDao.insert(consumable);
-            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
         }
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
         if (result) {
