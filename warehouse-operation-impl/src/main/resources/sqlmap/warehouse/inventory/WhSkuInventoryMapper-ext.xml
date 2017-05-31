@@ -2198,10 +2198,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        inv.inv_attr4 as invAttr4,
 			        inv.inv_attr5 as invAttr5,
 			        inv.uuid as uuid,
-			        inv.is_locked as isLocked,
 			        inv.ou_id as ouId,
 			        inv.occupation_code_source as occupationCodeSource,
-			        inv.inbound_time as inboundTime,
 	               	inv.last_modify_time as lastModifyTime
 		    <![CDATA[
 			    from t_wh_sku_inventory_tobefilled inv
