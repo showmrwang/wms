@@ -3928,4 +3928,30 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
 
     }
 
+    @Override
+    public PickingScanResultCommand toWholeCase(PickingScanResultCommand command, Boolean isTabbInvTotal, String operationWay) {
+        PickingScanResultCommand resultCmd = new PickingScanResultCommand();
+        if(null != command.getIsScanInsideContainer()){
+            if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
+                resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
+            }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){
+                resultCmd = this.containerPickingOperationExecLine(command, isTabbInvTotal);    
+            } else{
+                // 提示内部容器
+                resultCmd = this.tipInsideContainer(command);    
+            }
+        }
+        if(null != command.getIsScanSku()){
+            if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
+                resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
+            }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){
+                resultCmd = this.containerPickingOperationExecLine(command, isTabbInvTotal);    
+            } else{
+                // 提示SKU
+                resultCmd = this.tipSku(command,Constants.REPLENISHMENT_PICKING_INVENTORY);    
+            }
+        }
+        return resultCmd;
+    }
+
 }

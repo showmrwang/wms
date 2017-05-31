@@ -352,4 +352,6 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     List<Long> getCancelOdoIdListByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 
+    long countOdoIndexIsNull(@Param("waveCode") String waveCode, @Param("ouId") Long ouId);
+
 }

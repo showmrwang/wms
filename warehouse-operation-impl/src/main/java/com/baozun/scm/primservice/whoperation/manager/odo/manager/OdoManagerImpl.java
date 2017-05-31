@@ -1620,4 +1620,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {
         return this.whOdoDao.findPrintOdoIdList(waveCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public long countOdoIndexIsNull(String waveCode, Long ouId) {
+        return this.whOdoDao.countOdoIndexIsNull(waveCode, ouId);
+    }
 }
