@@ -134,8 +134,8 @@ public final class SkuCategoryProvider {
 
     public static String getSkuAttrIdByWhWorkLineCommand(WhWorkLineCommand whWorkLineCmd) {
         String ret = "";
-         Long skuId = whWorkLineCmd.getSkuId();
-//        String skuCode = whWorkLineCmd.getSkuCode();
+        Long skuId = whWorkLineCmd.getSkuId();
+        // String skuCode = whWorkLineCmd.getSkuCode();
         String invType = (StringUtils.isEmpty(whWorkLineCmd.getInvType()) ? PH : whWorkLineCmd.getInvType());
         String invStatus = (StringUtils.isEmpty(whWorkLineCmd.getInvStatus()) ? PH : whWorkLineCmd.getInvStatus() + "");
         String batchNumber = (StringUtils.isEmpty(whWorkLineCmd.getBatchNumber()) ? PH : whWorkLineCmd.getBatchNumber());
@@ -197,7 +197,7 @@ public final class SkuCategoryProvider {
     public static String getSkuAttrIdByCheck(WhCheckingLineCommand whCheckingLineCommand) {
         String ret = "";
         // Long skuId = whCheckingLineCommand.getSkuId();
-        String skuCode = whCheckingLineCommand.getSkuCode();
+        String skuCode = whCheckingLineCommand.getSkuBarCode();
         String invType = (StringUtils.isEmpty(whCheckingLineCommand.getInvTypeStr()) ? PH : whCheckingLineCommand.getInvTypeStr());
         String invStatus = (StringUtils.isEmpty(whCheckingLineCommand.getInvStatusStr()) ? PH : whCheckingLineCommand.getInvStatusStr() + "");
         String batchNumber = (StringUtils.isEmpty(whCheckingLineCommand.getBatchNumber()) ? PH : whCheckingLineCommand.getBatchNumber());

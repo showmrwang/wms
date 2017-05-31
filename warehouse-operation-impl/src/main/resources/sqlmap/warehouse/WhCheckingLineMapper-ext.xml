@@ -336,7 +336,8 @@
                 line.create_time as createTime,
                 line.modified_id as modifiedId,
                 status.name as invStatusStr,
-                odo.odo_code as odoCode
+                odo.odo_code as odoCode,
+                sku.bar_code as skuBarCode
         ]]>
     </sql>
     
@@ -345,6 +346,7 @@
         <include refid="whCheckingLineCommandColumnsExt"/>
         from t_wh_checking_line line left join t_wh_inventory_status status on line.inv_status = status.id
         left join t_wh_odo odo on line.odo_id = odo.id
+        left join t_wh_sku sku on line.sku_code = sku.code
         <include refid="whCheckingLineCommandDynamicWhereExt"/>
 
     </select>
