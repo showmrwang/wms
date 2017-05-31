@@ -2722,6 +2722,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (!flag) {
                 return null;
             }
+        } else {
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 2, null, null, ouId);
         }
         // 获取运单号
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
@@ -2771,6 +2773,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 delivery.setLogisticsCode(res.getLogisticsCode()); // 物流公司编码,用于发货回传
                 delivery.setPackageCenterCode(res.getPackageCenterCode()); // 集包地编码
                 delivery.setPackageCenterName(res.getPackageCenterName()); // 集包地名称
+                if (!StringUtils.isEmpty(res.getTransAccount())) {
+                    transMgmt.setTransAccount(res.getTransAccount());   // 账号
+                    odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
+                }
                 odoTransportMgmtManager.insertDeliveryInfoExt(delivery);
                 return delivery;
             } else {

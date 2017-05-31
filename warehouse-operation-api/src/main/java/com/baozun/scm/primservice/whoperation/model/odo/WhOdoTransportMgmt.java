@@ -57,6 +57,8 @@ public class WhOdoTransportMgmt extends BaseModel {
     private Double codAmt;
     /** 保价金额 */
     private Double insuranceCoverage;
+    /** 获取运单号账号 */
+    private String transAccount;
 
     /** 当前月份 用于归档 */
     private String sysDate;
@@ -187,6 +189,14 @@ public class WhOdoTransportMgmt extends BaseModel {
 
     public void setTimeEffectType(String timeEffectType) {
         this.timeEffectType = timeEffectType;
+    }
+
+    public String getTransAccount() {
+        return transAccount;
+    }
+
+    public void setTransAccount(String transAccount) {
+        this.transAccount = transAccount;
     }
 
 }
