@@ -31,6 +31,13 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     /** 所有货箱 */
     private Set<Long> containers= new HashSet<Long>();
     
+    /** 目标库位对应的所有外部容器 */
+    private Map<Long, Set<Long>> palleToLocation = new HashMap<Long, Set<Long>>();
+    /** 外部容器对应所有内部容器 */
+    private Map<Long, Set<Long>> palleToContainer = new HashMap<Long, Set<Long>>();
+    /** 目标库位对应的所有内部容器（无外部容器） */
+    private Map<Long, Set<Long>> containerToLocation = new HashMap<Long, Set<Long>>();
+    
     // 库位商品统计信息 
     /** 所有目标库位 */
     private List<Long> locationIds = new ArrayList<Long>();
@@ -140,6 +147,24 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     }
     public void setInsideSkuAttrIdsSnDefect(Map<String, Map<String, Set<String>>> insideSkuAttrIdsSnDefect) {
         this.insideSkuAttrIdsSnDefect = insideSkuAttrIdsSnDefect;
+    }
+    public Map<Long, Set<Long>> getPalleToLocation() {
+        return palleToLocation;
+    }
+    public void setPalleToLocation(Map<Long, Set<Long>> palleToLocation) {
+        this.palleToLocation = palleToLocation;
+    }
+    public Map<Long, Set<Long>> getPalleToContainer() {
+        return palleToContainer;
+    }
+    public void setPalleToContainer(Map<Long, Set<Long>> palleToContainer) {
+        this.palleToContainer = palleToContainer;
+    }
+    public Map<Long, Set<Long>> getContainerToLocation() {
+        return containerToLocation;
+    }
+    public void setContainerToLocation(Map<Long, Set<Long>> containerToLocation) {
+        this.containerToLocation = containerToLocation;
     }
     
 }

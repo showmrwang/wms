@@ -151,7 +151,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<Long> handover(List<HandoverCollection> hcList, Long ouId, Long userId) {
+    public List<Long> handover(List<HandoverCollection> hcList, Long ouId, Long userId, String ouCode) {
         if (log.isInfoEnabled()) {
             log.info("HandoverManagerImpl.handover start, logId is:[{}]", logId);
         }
@@ -339,7 +339,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 whOutboundDeliveryConfirm.setExtCode(odo.getExtCode());
                 whOutboundDeliveryConfirm.setOdoCode(odo.getOdoCode());
                 whOutboundDeliveryConfirm.setOuId(ouId);
-                // whOutboundDeliveryConfirm.setOuCode(this.findOuCodeByOuId(ouId));
+                whOutboundDeliveryConfirm.setOuCode(ouCode);
                 whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.NEW);
                 whOutboundDeliveryConfirm.setCustomerCode(outboundbox.getCustomerCode());
                 whOutboundDeliveryConfirm.setCustomerName(outboundbox.getCustomerName());
@@ -372,6 +372,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 whOutboundDeliveryConfirm.setWaybillCode(whOdodeliveryInfo.getWaybillCode());
                 whOutboundDeliveryConfirm.setChildWaybillCodes(whOdodeliveryInfo.getWaybillCode());
                 whOutboundDeliveryConfirm.setType(1);
+                whOutboundDeliveryConfirm.setOrderSource("TM");
 
                 Long findByodoAndWaybillCode = whOutboundDeliveryConfirmDao.findByodoAndWaybillCode(whOdodeliveryInfo.getWaybillCode(), odoId);
                 if (findByodoAndWaybillCode == 0 || null == findByodoAndWaybillCode) {

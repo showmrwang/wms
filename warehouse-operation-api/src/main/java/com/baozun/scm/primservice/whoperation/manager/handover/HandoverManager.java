@@ -46,8 +46,9 @@ public interface HandoverManager extends BaseManager {
      * @param hcList 该库位下的所有出库箱信息
      * @param ouId
      * @param userId
+     * @param ouCode
      */
-    List<Long> handover(List<HandoverCollection> hcList, Long ouId, Long userId);
+    List<Long> handover(List<HandoverCollection> hcList, Long ouId, Long userId, String ouCode);
 
     public String findOuCodeByOuId(Long ouId);
 
