@@ -103,7 +103,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	<update id="updateByVersion" parameterType="com.baozun.wms4.model.auth.WhPrintInfo">
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo">
 		    <![CDATA[
 		        UPDATE t_wh_print_info SET
 			        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
