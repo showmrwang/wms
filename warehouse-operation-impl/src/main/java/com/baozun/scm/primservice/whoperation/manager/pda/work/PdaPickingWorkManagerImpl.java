@@ -3460,20 +3460,48 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         operationCmd.setIsPickingFinish(true);
         operationCmd.setModifiedId(command.getUserId());
         whOperationManager.saveOrUpdate(operationCmd);
-        //修改容器状态        
-        Container container = new Container();
-        ContainerCommand containerCmd = containerDao.getContainerByCode(command.getTipInsideContainerCode(), command.getOuId());
-        if (null == containerCmd) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-        }
-        BeanUtils.copyProperties(containerCmd, container);
-        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-        if(null != command.getPickingWay()){
-            container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING_END);    
+        //修改容器状态
+        if(null != command.getTipOuterContainerCode()){
+            ContainerCommand outerContainer = containerDao.getContainerByCode(command.getTipOuterContainerCode(), command.getOuId());
+            if (null == outerContainer) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + command.getOperationId().toString());
+            Map<Long, Set<Long>> outerToInside = new HashMap<Long, Set<Long>>();
+            outerToInside = operatorLine.getOuterToInside();  
+            Set<Long> insideContainers = new HashSet<Long>();
+            insideContainers = outerToInside.get(outerContainer.getId());
+            for(Long insideContainerId : insideContainers){
+                Container container = new Container();
+                ContainerCommand containerCmd = containerDao.findContainerCommandByIdExt(insideContainerId, command.getOuId());
+                if (null == containerCmd) {
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
+                BeanUtils.copyProperties(containerCmd, container);
+                container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                if(null != command.getPickingWay()){
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING_END);    
+                }else{
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY); 
+                }
+                containerDao.saveOrUpdateByVersion(container);
+                
+            }
         }else{
-            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY); 
+            Container container = new Container();
+            ContainerCommand containerCmd = containerDao.getContainerByCode(command.getTipInsideContainerCode(), command.getOuId());
+            if (null == containerCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            BeanUtils.copyProperties(containerCmd, container);
+            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            if(null != command.getPickingWay()){
+                container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING_END);    
+            }else{
+                container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY); 
+            }
+            containerDao.saveOrUpdateByVersion(container);
         }
-        containerDao.saveOrUpdateByVersion(container);
         if (null != command.getPickingWay()) {
             // 更新工作及作业状态
             pdaPickingWorkCacheManager.pdaPickingUpdateStatus(command.getOperationId(), command.getWorkBarCode(), command.getOuId(), command.getUserId());
