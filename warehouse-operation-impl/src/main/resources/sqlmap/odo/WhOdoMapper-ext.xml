@@ -3467,4 +3467,15 @@
 			and (odo.odo_status = '88')
 			and odo.ou_id = #{ouId}
 	</select>
+	
+	<select id="countOdoIndexIsNull" resultType="long">
+		select
+			count(1)
+		from
+			t_wh_odo o
+		where
+			o.wave_code = #{waveCode}
+			and o.odo_index is null
+			and o.ou_id = #{ouId}
+	</select>
 </mapper>
