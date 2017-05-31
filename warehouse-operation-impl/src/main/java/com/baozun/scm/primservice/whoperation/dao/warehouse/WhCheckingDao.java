@@ -205,4 +205,12 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      */
     List<WhChecking> findListByParamWithNoFinish(WhChecking ch);
 
+    /**
+     * [业务方法] 通过出库箱查找信息
+     * @param outboundBoxCode
+     * @param ouId
+     * @return
+     */
+    WeightingCommand findByOutboundBoxCodeForChecking(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
+
 }

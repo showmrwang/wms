@@ -1175,5 +1175,29 @@
         from t_wh_checking
         <include refid="whCheckingDynamicWhereWithNoFinish"/>
     </select>
+    
+    <select id="findByOutboundBoxCodeForChecking" resultMap="WeightingCommand" flushCache="false">
+		SELECT
+			consumable.store_name AS storeName,
+			consumable.customer_name AS customerName,
+			consumable.sku_barcode AS skuCode,
+			consumable.waybill_code AS waybillCode,
+			consumable.transport_code AS transportCode,
+			consumable.batch AS batch,
+			consumable.wave_code AS waveCode,
+			consumable.odo_code AS odoCode,
+			consumable.outboundbox_code AS outboundboxCode,
+			consumable.odo_id as odoId,
+			info.calc_weight AS calcWeighting,
+			info.floats AS floats
+		FROM
+			t_wh_outbound_consumable consumable
+		LEFT JOIN t_wh_odo_package_info info ON consumable.outboundbox_code = info.outboundbox_code
+		WHERE
+			consumable.outboundbox_code = #{outboundBoxCode}
+		AND consumable.ou_id = #{ouId}
+		LIMIT 1
+    </select>
+    
 
 </mapper>
