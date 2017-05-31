@@ -732,7 +732,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * @param skuCmd(扫描的sku)
        * @return
        */
-      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Integer latticeNo,Map<String, Set<Integer>>  skuAttrIdsLattice,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,
+      public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Integer latticeNo,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,
                                                                          Map<Long, Set<Long>> locSkuIds,Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrId,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> iSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operationId,Map<Long, Set<Long>> insideContainerSkuIds,
                                                                          Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd){
           log.info("PdaPickingWorkCacheManagerImpl pdaPickingyCacheSkuAndCheckContainer is start");
@@ -2477,59 +2477,77 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
           return cssrCmd;
       }
       
-      public  Integer tipLatticeNo(Long skuId,String skuAttrId,Long insideContainerId,Long operationId,Map<String, Set<Integer>>  insideSkuAttrIdsLattice,Integer latticeNo,Long ouId){
+      public  Integer tipLatticeNo(String skuAttrId,Long insideContainerId,Long operationId,Long ouId){
           //先判断同一个货箱要拣货的数量是否放在多个货格内
             Integer lattice = null;  //提示下一个货格号
-            ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
-            if(null == latticeList){
-                latticeList = new ArrayDeque<Integer>();
-            }
-            int count = whOperationLineDao.findOperationLineByLattice(ouId, latticeNo, operationId);
-            if(count == 0){  //当前货格没有没拣的sku可以缓存
-                //缓存当前的货格号
-                latticeList.addFirst(latticeNo);
-                cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
-            }
-            //如果有sn残次信息,去掉sn/残次信息
-            Set<Integer> latticeNos = insideSkuAttrIdsLattice.get(skuAttrId);
-            Iterator<Integer> it = latticeNos.iterator();
-            while (it.hasNext()){
-                lattice = it.next();
-                if(latticeList.contains(lattice) || latticeNo.equals(lattice)) {
-                    continue;
-                }else{
-                    break;
-                }
-            }
+//            ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+//            if(null == latticeList){
+//                latticeList = new ArrayDeque<Integer>();
+//            }
+//            int count = whOperationLineDao.findOperationLineByLattice(ouId, latticeNo, operationId);
+//            if(count == 0){  //当前货格没有没拣的sku可以缓存
+//                //缓存当前的货格号
+//                latticeList.addFirst(latticeNo);
+//                cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+//            }
+//            //如果有sn残次信息,去掉sn/残次信息
+//            Set<Integer> latticeNos = insideSkuAttrIdsLattice.get(skuAttrId);
+//            Iterator<Integer> it = latticeNos.iterator();
+//            while (it.hasNext()){
+//                lattice = it.next();
+//                if(latticeList.contains(lattice) || latticeNo.equals(lattice)) {
+//                    continue;
+//                }else{
+//                    break;
+//                }
+//            }
+          
+          //版本2.0
+          List<WhOperationLineCommand>  operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
+          for(WhOperationLineCommand lineCmd:operationLineList){
+              String lineSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationLine(lineCmd);
+              if(insideContainerId.equals(lineCmd.getFromInsideContainerId()) && skuAttrId.equals(lineSkuAttrIds) && lineCmd.getQty().longValue() != lineCmd.getCompleteQty().longValue()){  //同一个货箱中，相同的库存属性,且改行没有拣货完毕的
+                   lattice = lineCmd.getUseContainerLatticeNo();
+                   break;
+              }
+          }
           return lattice;
       }
       
       
-      public  Integer tipLatticeNoLoc(Long locationId,Long skuId,Long operationId,String skuAttrId,Map<String, Set<Integer>>  skuAttrIdsLattice,Integer latticeNo,Long ouId){
+      public  Integer tipLatticeNoLoc(Long locationId,Long operationId,String skuAttrId,Long ouId){
              Integer lattice = null;
-              ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
-              if(null == latticeList){
-                  latticeList = new ArrayDeque<Integer>();
-              }
-              //缓存之前判断还有没有别的sku对应此货格
-              int count = whOperationLineDao.findOperationLineByLattice(ouId, latticeNo, operationId);
-              if(count == 0){  //当前货格没有没拣的sku可以缓存
-                  //缓存当前的货格号
-                  //缓存货格号
-                  latticeList.addFirst(latticeNo);
-                  cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
-              }
-              //如果有sn残次信息,去掉sn/残次信息
-              Set<Integer> latticeNos = skuAttrIdsLattice.get(skuAttrId);
-              Iterator<Integer> it = latticeNos.iterator();
-              while (it.hasNext()){
-                  lattice = it.next();
-                  if(latticeList.contains(lattice)) {
-                      continue;
-                  }else{
+//              ArrayDeque<Integer> latticeList  = cacheManager.getObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString());
+//              if(null == latticeList){
+//                  latticeList = new ArrayDeque<Integer>();
+//              }
+//              //缓存之前判断还有没有别的sku对应此货格
+//              int count = whOperationLineDao.findOperationLineByLattice(ouId, latticeNo, operationId);
+//              if(count == 0){  //当前货格没有没拣的sku可以缓存
+//                  //缓存当前的货格号
+//                  //缓存货格号
+//                  latticeList.addFirst(latticeNo);
+//                  cacheManager.setObject(CacheConstants.CACHE_LATTICE_NO + operationId.toString(),latticeList, CacheConstants.CACHE_ONE_DAY);
+//              }
+//              //如果有sn残次信息,去掉sn/残次信息
+//              Set<Integer> latticeNos = skuAttrIdsLattice.get(skuAttrId);
+//              Iterator<Integer> it = latticeNos.iterator();
+//              while (it.hasNext()){
+//                  lattice = it.next();
+//                  if(latticeList.contains(lattice) || latticeNo.equals(lattice)) {
+//                      continue;
+//                  }else{
+//                      break;
+//                  }
+//              }
+             List<WhOperationLineCommand>  operationLineList = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
+             for(WhOperationLineCommand lineCmd:operationLineList){
+                 String lineSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationLine(lineCmd);
+                 if(locationId.equals(lineCmd.getFromLocationId()) && skuAttrId.equals(lineSkuAttrIds) && lineCmd.getQty().longValue() != lineCmd.getCompleteQty().longValue()){  //同一个货箱中，相同的库存属性,且改行没有拣货完毕的
+                      lattice = lineCmd.getUseContainerLatticeNo();
                       break;
-                  }
-              }
+                 }
+             }
           return lattice;
       }
       /***

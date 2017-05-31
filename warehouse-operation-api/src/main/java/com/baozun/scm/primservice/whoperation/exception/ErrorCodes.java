@@ -1041,6 +1041,8 @@ public class ErrorCodes {
     public static final int CHECKING_NUM_IS_EEROR = 70065;
     /**占用耗材不正确*/
     public static final int SUPPLIES__IS_EEROR = 70066;
+    /**服务器繁忙,请重新拣货*/
+    public static final int PICKING__NO_END = 70067;
 
     // 70001-80000 tangming
 

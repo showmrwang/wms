@@ -1465,7 +1465,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
 //        //清除所有缓存
 //        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
 //    }
-    
     /**
      * 获取补货功能参数
      * @param ouId
@@ -1479,7 +1478,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }
         return replenish;
     }
-    
     /***
      * 补货上架取消
      * @param operationId
