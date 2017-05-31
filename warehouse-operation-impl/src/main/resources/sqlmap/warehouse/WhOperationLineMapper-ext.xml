@@ -391,7 +391,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <select id="findOperationLineByLattice" resultType="Integer">
 		select count(*) from t_wh_operation_line line 
 			where line.ou_id=#{ouId}
-			and line.use_container_lattice_no=#{lattice} 
 			and line.operation_id=#{operationId}
 			and line.qty != line.complete_qty
 	</select>

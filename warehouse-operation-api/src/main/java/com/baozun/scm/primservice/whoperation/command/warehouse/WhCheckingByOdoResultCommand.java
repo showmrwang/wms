@@ -45,7 +45,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     /**复合明细集合*/
     private List<WhCheckingLineCommand> checkingLineList = new ArrayList<WhCheckingLineCommand>();
     /** sn列表*/
-    private List<Long> sn;
+    private List<String> sn;
 
     private Long facilityId;
     /** 库位id*/
@@ -174,14 +174,6 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.userId = userId;
     }
 
-    public List<Long> getSn() {
-        return sn;
-    }
-
-    public void setSn(List<Long> sn) {
-        this.sn = sn;
-    }
-
     public String getWaybillCode() {
         return waybillCode;
     }
@@ -198,6 +190,15 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.facilityId = facilityId;
     }
 
+    public List<String> getSn() {
+        return sn;
+    }
+
+    public void setSn(List<String> sn) {
+        this.sn = sn;
+    }
+
+    
     public Long getLocationId() {
         return locationId;
     }
