@@ -12,6 +12,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<sql id="whPrintInfoColumnsExt">
 	    <![CDATA[
 	        	id as id,
+	        	odo_id as odoId,
+	        	odo_code as odoCode,
+	        	waybill_code as waybillCode,
 	        	facility_id as facilityId,
 	        	container_id as containerId,
 	        	container_code as containerCode,
@@ -24,7 +27,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	outboundbox_id as outboundboxId,
 	        	outboundbox_code as outboundboxCode,
 	        	print_type as printType,
-	        	print_count as printCount
+	        	print_count as printCount,
+	        	create_id as createId,
+	        	create_time as createTime,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId
 	    ]]>
 	</sql>
 	
@@ -95,6 +102,35 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 		</where>
 	</sql>
+	
+	<update id="updateByVersion" parameterType="com.baozun.wms4.model.auth.WhPrintInfo">
+		    <![CDATA[
+		        UPDATE t_wh_print_info SET
+			        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        print_type = #{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        print_count = #{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+		</update>
 	
 	<select id="findByOutboundboxCodeAndPrintType" resultMap="WhPrintInfoResultExt">
     	select 

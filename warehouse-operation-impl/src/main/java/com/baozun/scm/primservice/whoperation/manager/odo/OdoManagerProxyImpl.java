@@ -2909,8 +2909,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
 
     @Override
-    public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {
-        return this.odoManager.findPrintOdoIdList(waveCode, ouId);
+    public List<Long> findPrintOdoIdList(Long waveId, Long ouId) {
+        WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
+        if (wave == null) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        String waveCode = wave.getCode();
+        // 检验odoIndex是否都有值
+        long num = odoManager.countOdoIndexIsNull(waveCode, ouId);
+        if (num > 0) {
+            // 有null值,重新排序
+            this.updateOdoIndexByWaveId(waveId, ouId);
+        }
+        return odoManager.findPrintOdoIdList(wave.getCode(), ouId);
     }
 
 
@@ -2957,7 +2968,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (flag) {
                 odoManager.updateOdoIndexByBatchExt(batchPrintConditionMap, ouId);
             } else {
-                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+                throw new BusinessException(ErrorCodes.WAVE_ODOINDEX_SORT_ERROR);
             }
         }
     }

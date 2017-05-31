@@ -1075,6 +1075,8 @@ public class ErrorCodes {
     public static final int COLLECTION_RECOMMEND_PATH_ERROR = 80014;
     /** 波次[{}]中出库单集合含有不同的发票信息 */
     public static final int WAVE_ODOLIST_INVOICE_DIFFERENCE = 80011;
+    /** 出库单排序失败,请检查波次主档销售清单排序设置或打印条件销售清单排序 */
+    public static final int WAVE_ODOINDEX_SORT_ERROR = 80015;
     // 80001-90000 zhukai
 
     // 100001-110000 liuqiming
