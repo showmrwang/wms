@@ -197,7 +197,7 @@ public final class SkuCategoryProvider {
     public static String getSkuAttrIdByCheck(WhCheckingLineCommand whCheckingLineCommand) {
         String ret = "";
         // Long skuId = whCheckingLineCommand.getSkuId();
-        String skuCode = whCheckingLineCommand.getSkuBarCode();
+        String skuCode = whCheckingLineCommand.getSkuCode();
         String invType = (StringUtils.isEmpty(whCheckingLineCommand.getInvTypeStr()) ? PH : whCheckingLineCommand.getInvTypeStr());
         String invStatus = (StringUtils.isEmpty(whCheckingLineCommand.getInvStatusStr()) ? PH : whCheckingLineCommand.getInvStatusStr() + "");
         String batchNumber = (StringUtils.isEmpty(whCheckingLineCommand.getBatchNumber()) ? PH : whCheckingLineCommand.getBatchNumber());

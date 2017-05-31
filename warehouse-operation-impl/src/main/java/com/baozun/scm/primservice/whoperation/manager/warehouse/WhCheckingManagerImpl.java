@@ -319,6 +319,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null != whCheckingLineList && !whCheckingLineList.isEmpty()) {
             whCheckingLineList = setDicLabel(whCheckingLineList);
             for (WhCheckingLineCommand command : whCheckingLineList) {
+                command.setSkuCode(command.getSkuBarCode());
                 String skuAttr = SkuCategoryProvider.getSkuAttrIdByCheck(command);
                 String[] skuAttrArray = skuAttr.split(DV);
                 String attrIndex = "";
