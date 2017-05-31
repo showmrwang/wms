@@ -172,8 +172,9 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             Long actualWeight = command.getActualWeight();
             Long calcWeight = packageInfo.getCalcWeight();
             Integer floats = packageInfo.getFloats();
-            Long difference = Math.abs(actualWeight - calcWeight) / calcWeight * 100;
-            if (difference > floats) {
+            Double difference = (double) Math.abs(actualWeight - calcWeight);
+            Double calcDifference = (double) (calcWeight * floats / 100);
+            if (difference > calcDifference) {
                 throw new BusinessException("excceed");
             }
         }
