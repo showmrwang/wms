@@ -668,6 +668,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 if (null == checkedSnInv) {
                     throw new BusinessException(ErrorCodes.CHECKING_CHECKING_SN_ERROR);
                 }
+                checkedSnInv.setOldUuid(checkedSnInv.getUuid());
                 // 更新SN/残次信息的uuid
                 checkedSnInv.setUuid(odoSkuInv.getUuid());
                 // 记录需要更新uuid的SN/残次信息
