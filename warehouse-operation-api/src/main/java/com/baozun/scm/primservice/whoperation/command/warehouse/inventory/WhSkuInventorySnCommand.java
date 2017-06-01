@@ -101,6 +101,9 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     
     private Long occupationLineId;
 
+    //更新前的uuid
+    private String oldUuid;
+
     public Long getId() {
         return id;
     }
@@ -364,7 +367,12 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     public void setOccupationLineId(Long occupationLineId) {
         this.occupationLineId = occupationLineId;
     }
-	
-	
-	
+
+    public String getOldUuid() {
+        return oldUuid;
+    }
+
+    public void setOldUuid(String oldUuid) {
+        this.oldUuid = oldUuid;
+    }
 }
