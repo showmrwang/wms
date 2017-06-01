@@ -116,18 +116,22 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
     }
 
     private WeightingCommand findInputResponse(WeightingCommand command) {
+        WeightingCommand weightingCommand = new WeightingCommand();
         if (StringUtils.hasLength(command.getWaybillCode())) {
             // 通过运单号查找待称重信息
-            command = whCheckingDao.findByWaybillCode(command.getWaybillCode(), command.getOuId());
+            weightingCommand = whCheckingDao.findByWaybillCode(command.getWaybillCode(), command.getOuId());
         } else {
             // 通过出库箱号查找带称重信息
             // command = whCheckingDao.findByOutboundBoxCode(command.getOutboundBoxCode(),
             // command.getOuId());
             String outboundBoxCode = command.getOutboundBoxCode();
-            command = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
-            command.setOutboundBoxCode(outboundBoxCode);
+            weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
+            if (null == weightingCommand) {
+                weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking1(outboundBoxCode, command.getOuId());
+            }
+            weightingCommand.setOutboundBoxCode(outboundBoxCode);
         }
-        return command;
+        return weightingCommand;
     }
 
     private Integer checkOutboundBoxStatus(String outboundBoxCode, String waybillCode, Long ouId) {
@@ -292,9 +296,13 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WeightingCommand inputResponseForChecking(WeightingCommand command) {
+        WeightingCommand weightingCommand = new WeightingCommand();
         String outboundBoxCode = command.getOutboundBoxCode();
-        command = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
-        command.setOutboundBoxCode(outboundBoxCode);
-        return command;
+        weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
+        if (null == weightingCommand) {
+            weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
+        }
+        weightingCommand.setOutboundBoxCode(outboundBoxCode);
+        return weightingCommand;
     }
 }
