@@ -8211,7 +8211,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param workCode
      * @param turnoverBoxId
      */
-    public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long turnoverBoxId) {
+    public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long palletId, Long turnoverBoxId) {
         List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
         if (null == invTobefilledList || 0 == invTobefilledList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
@@ -8236,7 +8236,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
                 List<WhSkuInventoryCommand> invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(ouId, turnoverBoxId, invCmd.getUuid());
                 for (WhSkuInventoryCommand skuInvCmd : invList) {
-                    this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal);
+                    this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, palletId, isTabbInvTotal);
                     String uuid1 = skuInvCmd.getUuid();
                     Double oldQty1 = 0.0;
                     if (true == isTabbInvTotal) {
@@ -8299,7 +8299,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
     }
     
-    private void replenishmentAddInventory(WhSkuInventoryCommand skuInvCmd,WhSkuInventoryCommand invCmd,Long ouId,Long userId,Long locationId,Boolean isTV,Boolean isBM,Boolean isVM,Long turnoverBoxId,Boolean isTabbInvTotal){
+    private void replenishmentAddInventory(WhSkuInventoryCommand skuInvCmd,WhSkuInventoryCommand invCmd,Long ouId,Long userId,Long locationId,Boolean isTV,Boolean isBM,Boolean isVM,Long turnoverBoxId,Long palletId,Boolean isTabbInvTotal){
         List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
         String uuid = "";
         if (null == snList || 0 == snList.size()) {
@@ -8312,6 +8312,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
             } else {
+                inv.setOuterContainerId(palletId);
                 inv.setInsideContainerId(turnoverBoxId); // 当前周转箱
             }
             if (false == isBM) {
@@ -8357,6 +8358,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
             } else {
+                inv.setOuterContainerId(palletId);
                 inv.setInsideContainerId(turnoverBoxId); // 当前周转箱
             }
             if (false == isBM) {
