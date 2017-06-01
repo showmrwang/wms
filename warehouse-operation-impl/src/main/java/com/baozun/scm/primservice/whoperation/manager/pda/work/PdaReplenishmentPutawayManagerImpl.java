@@ -289,9 +289,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Long userId = command.getUserId();
         Long ouId = command.getOuId();
         Long locationId = command.getLocationId();
-        String turnoverBoxCode = command.getTurnoverBoxCode();
+        String turnoverBoxCode = null;
+        String palletCode = null;
         if(null != command.getReplenishWay() && (2 == command.getReplenishWay() || 3 == command.getReplenishWay())){
-            turnoverBoxCode = command.getContainerCode();  
+            turnoverBoxCode = command.getContainerCode(); 
+            palletCode = command.getPalletCode();
         }else{
             turnoverBoxCode = command.getTurnoverBoxCode();    
         }
@@ -299,6 +301,10 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+        }
+        ContainerCommand palletCommand = containerDao.getContainerByCode(palletCode, ouId);
+        if(null == palletCommand) {
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         ContainerCommand cmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
         if(null == cmd) {
@@ -312,6 +318,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds(); 
         }
         Set<Long> turnoverBoxIds = mapTurnoverBoxIds.get(locationId);
+        Long palletId = palletCommand.getId();
         Long turnoverBoxId = cmd.getId();
         Boolean result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId);
         if(!result) {//result 为true时，是多库位,为false时是单库位
@@ -324,14 +331,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 command.setTipTurnoverBoxCode(containerCode);
                 command.setIsNeedScanTurnoverBox(true);
                 //当前周转箱上架
-                whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
+                whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, palletId, turnoverBoxId);
                 //修改作业执行明细的执行量
                 this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId,locationId);
                 //判断当前库位是否有拣货工作
                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId);
             }else{//继续扫描下一个库位
                  command.setIsScanFinsh(true);
-                 whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId);
+                 whSkuInventoryManager.replenishmentContianerPutaway(locationId, operationId, ouId, isTabbInvTotal, userId, workCode, palletId, turnoverBoxId);
                  //修改作业执行明细的执行量
                  this.updateOperationExecLine(turnoverBoxId, operationId, ouId, userId,locationId);
                  //更新工作及作业状态

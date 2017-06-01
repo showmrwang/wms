@@ -440,11 +440,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
                 String locationCode = lrrCmd.getLocationCode();
                 Set<Long> rLocs = invRecommendLocId.get(lrrCmd.getSkuAttrId());
-                if(null != rLocs){
-                    rLocs.add(locationId);
-                }else{
-                    rLocs = new HashSet<Long>();
-                    rLocs.add(locationId);
+                if (null != rLocs) {
+                    if (!StringUtils.isEmpty(locationCode)) {
+                        rLocs.add(locationId);
+                    }
+                } else {
+                    if (!StringUtils.isEmpty(locationCode)) {
+                        rLocs = new HashSet<Long>();
+                        rLocs.add(locationId);
+                    }
                 }
                 invRecommendLocId.put(lrrCmd.getSkuAttrId(), rLocs);
                 Set<String> rLocCodes = invRecommendLocCode.get(lrrCmd.getSkuAttrId());
@@ -475,7 +479,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (null != allSkuAttrIdsQty) {
                             qty = allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                         }
-
+                        if(0 == qty.compareTo(new Long(0))){
+                            continue;
+                        }
                         inv.setQty(new Double(qty));// 待移入
                         inv.setLocationId(recommendLocId);
                         try {
@@ -527,6 +533,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (null != allSkuAttrIds && 0 < allSkuAttrIds.size()) {
                             // 插入待移入库位库存
                             int qty = allSkuAttrIds.size();
+                            if(0 == qty){
+                                continue;
+                            }
                             WhSkuInventoryTobefilled inv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, inv);
                             inv.setId(null);
@@ -8211,7 +8220,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param workCode
      * @param turnoverBoxId
      */
-    public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long turnoverBoxId) {
+    public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long palletId, Long turnoverBoxId) {
         List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
         if (null == invTobefilledList || 0 == invTobefilledList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
@@ -8236,7 +8245,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
                 List<WhSkuInventoryCommand> invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(ouId, turnoverBoxId, invCmd.getUuid());
                 for (WhSkuInventoryCommand skuInvCmd : invList) {
-                    this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal);
+                    this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, palletId, isTabbInvTotal);
                     String uuid1 = skuInvCmd.getUuid();
                     Double oldQty1 = 0.0;
                     if (true == isTabbInvTotal) {
@@ -8299,7 +8308,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
     }
     
-    private void replenishmentAddInventory(WhSkuInventoryCommand skuInvCmd,WhSkuInventoryCommand invCmd,Long ouId,Long userId,Long locationId,Boolean isTV,Boolean isBM,Boolean isVM,Long turnoverBoxId,Boolean isTabbInvTotal){
+    private void replenishmentAddInventory(WhSkuInventoryCommand skuInvCmd,WhSkuInventoryCommand invCmd,Long ouId,Long userId,Long locationId,Boolean isTV,Boolean isBM,Boolean isVM,Long turnoverBoxId,Long palletId,Boolean isTabbInvTotal){
         List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
         String uuid = "";
         if (null == snList || 0 == snList.size()) {
@@ -8312,6 +8321,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
             } else {
+                inv.setOuterContainerId(palletId);
                 inv.setInsideContainerId(turnoverBoxId); // 当前周转箱
             }
             if (false == isBM) {
@@ -8357,6 +8367,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
             } else {
+                inv.setOuterContainerId(palletId);
                 inv.setInsideContainerId(turnoverBoxId); // 当前周转箱
             }
             if (false == isBM) {
