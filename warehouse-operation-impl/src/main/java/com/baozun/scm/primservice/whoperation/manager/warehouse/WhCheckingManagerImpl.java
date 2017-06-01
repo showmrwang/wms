@@ -1415,7 +1415,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
                             idsList.add(checkingLineList.get(0).getOdoId());
                             // 销售清单
-                            // checkingManager.printSalesList(idsList, userId, ouId);
+                             checkingManager.printSalesList(idsList, userId, ouId);
                         }
                         if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                             // 面单
