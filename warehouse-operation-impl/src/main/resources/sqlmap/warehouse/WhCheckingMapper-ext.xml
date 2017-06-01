@@ -1221,7 +1221,7 @@
 		LEFT JOIN t_wh_outbound_consumable consumable ON consumable.outboundbox_code = info.outboundbox_code
 		WHERE
 			info.outboundbox_code = #{outboundBoxCode}
-			AND info.ou_id = #{ouId};
+			AND info.ou_id = #{ouId}
 		LIMIT 1
     </select>
     
