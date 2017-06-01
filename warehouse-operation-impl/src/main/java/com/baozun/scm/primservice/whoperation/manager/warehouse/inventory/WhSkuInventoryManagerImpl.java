@@ -5458,6 +5458,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void releaseInventoryByOccupyCode(String occupyCode, Long ouId) {
         whSkuInventoryDao.releaseInventoryOccupyCode(occupyCode, ouId);
     }
