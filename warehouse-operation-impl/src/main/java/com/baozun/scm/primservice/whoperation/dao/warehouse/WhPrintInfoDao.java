@@ -38,10 +38,10 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhPrintInfo o);
-    
+
     @CommonQuery
     int saveOrUpdateByVersion(WhPrintInfo o);
-    
+
     /**
      * 打印信息表
      * 
@@ -56,6 +56,6 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
      * 
      * @param outboundboxCode
      */
-    WhPrintInfo findFromcheckingCollectionByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode);
+    List<WhPrintInfo> findFromcheckingCollectionByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
 }

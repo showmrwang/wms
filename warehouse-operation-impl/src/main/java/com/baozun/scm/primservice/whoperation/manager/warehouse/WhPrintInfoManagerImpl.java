@@ -55,8 +55,8 @@ public class WhPrintInfoManagerImpl extends BaseManagerImpl implements WhPrintIn
     }
 
     @Override
-    public WhPrintInfo findFromcheckingCollectionByOutboundboxCode(String outboundboxCode) {
-        return whPrintInfoDao.findFromcheckingCollectionByOutboundboxCode(outboundboxCode);
+    public List<WhPrintInfo> findFromcheckingCollectionByOutboundboxCode(String outboundboxCode, Long ouId) {
+        return whPrintInfoDao.findFromcheckingCollectionByOutboundboxCode(outboundboxCode, ouId);
     }
 
 }

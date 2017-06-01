@@ -79,6 +79,8 @@ public interface HandoverManager extends BaseManager {
      */
     Boolean isOl(Long id, Long ouId);
 
+    String findStoreCodeByStoreId(Long storeId);
+
     /**
      * 打印销售清单
      * 

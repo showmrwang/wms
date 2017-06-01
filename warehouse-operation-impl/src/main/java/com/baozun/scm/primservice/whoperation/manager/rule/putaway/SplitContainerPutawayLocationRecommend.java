@@ -722,6 +722,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     List<Long> invSkus = whSkuLocationDao.findOtherSkuInInvLocation(ouId, locId, skuId);
                                     List<Long> tobefilledSkus = whSkuLocationDao.findOtherSkuInTobefilledLocation(ouId, locId, skuId);
                                     List<Long> allSkus = new ArrayList<Long>();
+                                    allSkus.add(skuId);
                                     if(null != invSkus && invSkus.size() > 0){
                                         allSkus.addAll(invSkus);
                                     }
@@ -749,6 +750,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     List<WhSkuInventoryCommand> invSkuAttr = whSkuLocationDao.findOtherSkuAttrInInvLocation(ouId, locId, skuId, sql.toString());
                                     List<WhSkuInventoryCommand> tobefilledInvSkuAttr = whSkuLocationDao.findOtherSkuAttrInTobefilledLocation(ouId, locId, skuId, sql.toString());
                                     List<WhSkuInventoryCommand> allInvSkuAttr = new ArrayList<WhSkuInventoryCommand>();
+                                    allInvSkuAttr.add(invCmd);
                                     if(null != invSkuAttr && invSkuAttr.size() > 0){
                                         allInvSkuAttr.addAll(invSkuAttr); 
                                     }
@@ -763,7 +765,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         }
                                     }
                                     locSkuAttrCategory = invAttrCountAspect(allInvSkuAttr, skuAttrIds);
-                                    if (mixStackingNumber < (locSkuCategory + skuCategory) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory)) {
+                                    if (mixStackingNumber < (locSkuCategory) || maxChaosSku < (locSkuAttrCategory)) {
                                         // 此混放库位超过最大sku混放数或sku属性混放数
                                         continue;
                                     }
@@ -1428,6 +1430,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         List<Long> invSkus = whSkuLocationDao.findOtherSkuInInvLocation(ouId, locId, skuId);
                                         List<Long> tobefilledSkus = whSkuLocationDao.findOtherSkuInTobefilledLocation(ouId, locId, skuId);
                                         List<Long> allSkus = new ArrayList<Long>();
+                                        allSkus.add(skuId);
                                         if(null != invSkus && invSkus.size() > 0){
                                             allSkus.addAll(invSkus);
                                         }
@@ -1455,6 +1458,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         List<WhSkuInventoryCommand> invSkuAttr = whSkuLocationDao.findOtherSkuAttrInInvLocation(ouId, locId, skuId, sql.toString());
                                         List<WhSkuInventoryCommand> tobefilledInvSkuAttr = whSkuLocationDao.findOtherSkuAttrInTobefilledLocation(ouId, locId, skuId, sql.toString());
                                         List<WhSkuInventoryCommand> allInvSkuAttr = new ArrayList<WhSkuInventoryCommand>();
+                                        allInvSkuAttr.add(invCmd);
                                         if(null != invSkuAttr && invSkuAttr.size() > 0){
                                             allInvSkuAttr.addAll(invSkuAttr); 
                                         }
@@ -1469,7 +1473,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                             }
                                         }
                                         locSkuAttrCategory = invAttrCountAspect(allInvSkuAttr, skuAttrIds);
-                                        if (mixStackingNumber < (locSkuCategory + 1) || maxChaosSku < (locSkuAttrCategory + 1)) {
+                                        if (mixStackingNumber < (locSkuCategory) || maxChaosSku < (locSkuAttrCategory)) {
                                             // 此混放库位超过最大sku混放数或sku属性混放数
                                             continue;
                                         }

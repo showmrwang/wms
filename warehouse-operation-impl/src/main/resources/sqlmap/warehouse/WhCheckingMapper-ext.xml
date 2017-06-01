@@ -1204,6 +1204,7 @@
 			info.outboundbox_code AS outboundboxCode,
 			pack.calc_weight AS calcWeighting,
 			pack.floats AS floats,
+			odo.id as odoId,
 			odo.odo_code AS odoCode,
 			box.wave_code AS waveCode,
 			box.batch AS batch,
