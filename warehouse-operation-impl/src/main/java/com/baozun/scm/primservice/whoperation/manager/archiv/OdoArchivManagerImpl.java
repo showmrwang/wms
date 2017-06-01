@@ -390,6 +390,7 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     public int deleteOdo(Long odoid, Long ouid) {
         int count = 0;
         try {
+            odoArchivDao.deleteWhOdoTransportService(odoid, ouid);
             odoArchivDao.deleteWhOdoOutBoundBox(odoid, ouid);
             int odoVas = odoArchivDao.deleteOdoVas(odoid, ouid);
             count += odoVas;
