@@ -223,7 +223,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}
-			        and last_modify_time	<=  #{lastModifyTime}    
+			        and last_modify_time <= #{lastModifyTime}    
 		    ]]>
 		</update>
 		
