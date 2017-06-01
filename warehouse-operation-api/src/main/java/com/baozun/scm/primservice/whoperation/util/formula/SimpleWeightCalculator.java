@@ -92,7 +92,7 @@ public class SimpleWeightCalculator {
         init(_weight, _uom);
         setInit(true);
     }
-    
+
     public SimpleWeightCalculator(Double _weight, String _uom, Map<String, Double> uomConversionRate, Double usedWeight) {
         preInit(uomConversionRate, defaultUom);
         init(_weight, _uom, usedWeight);
@@ -115,7 +115,7 @@ public class SimpleWeightCalculator {
         setWeight(weight);
         return weight;
     }
-    
+
     public Double subtractStuffWeight(Double w) {
         Double weight = getStuffWeight();
         weight -= w;
@@ -192,7 +192,7 @@ public class SimpleWeightCalculator {
         setAvailability(1.0);
         setAvailableWeight(get_weight() * getAvailability());
     }
-    
+
     private void init(Double _weight, String _uom, Double usedWeight) {
         init(_weight, _uom);
         if (null == usedWeight) usedWeight = 0.0;
@@ -211,7 +211,7 @@ public class SimpleWeightCalculator {
         setWeight(rw);
         setInitStuffWeight(true);
     }
-    
+
     public void initStuffWeight(Double weight, Double qty, String uom) {
         setRawWeight(weight);
         setUom(uom);
@@ -312,7 +312,7 @@ public class SimpleWeightCalculator {
     public void setWeight(Double weight) {
         this.weight = weight;
     }
-    
+
     public Double getCurrentStuffWeight() {
         return currentStuffWeight;
     }
