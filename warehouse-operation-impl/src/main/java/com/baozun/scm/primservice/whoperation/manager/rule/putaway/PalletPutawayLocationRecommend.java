@@ -581,7 +581,7 @@ public class PalletPutawayLocationRecommend extends BasePutawayLocationRecommend
                             allInvSkuAttr.addAll(tobefilledInvSkuAttr); 
                         }
                         locSkuAttrCategory = invAttrCountAspect(allInvSkuAttr);
-                        if (mixStackingNumber < (locSkuCategory + skuCategory) || maxChaosSku < (locSkuAttrCategory + skuAttrCategory)) {
+                        if (mixStackingNumber < (locSkuCategory) || maxChaosSku < (locSkuAttrCategory)) {
                             // 此混放库位超过最大sku混放数或sku属性混放数
                             continue;
                         }
