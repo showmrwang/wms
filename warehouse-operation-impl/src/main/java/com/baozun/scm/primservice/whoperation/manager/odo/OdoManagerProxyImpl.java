@@ -574,6 +574,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (StringUtils.isEmpty(odo.getDataSource())) {
                 odo.setDataSource(Constants.WMS);
             }
+            if (null == transportMgmt.getIsCod()) {
+                transportMgmt.setIsCod(false);
+            }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
@@ -2378,6 +2381,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             if (null == odo.getIsLocked()) {
                 odo.setIsLocked(false);
+            }
+            if (null == transportMgmt.getIsCod()) {
+                transportMgmt.setIsCod(false);
             }
             odo.setCreatedId(userId);
             odo.setCreateTime(new Date());
