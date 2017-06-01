@@ -13,6 +13,13 @@ public interface WeightingManager extends BaseManager {
     WeightingCommand inputResponse(WeightingCommand command);
 
     /**
+     * [业务方法] 根据输入返回页面显示
+     * @param command
+     * @return
+     */
+    WeightingCommand inputResponseForChecking(WeightingCommand command);
+
+    /**
      * [业务方法] 校验输入是否正确
      * @param command
      * @return

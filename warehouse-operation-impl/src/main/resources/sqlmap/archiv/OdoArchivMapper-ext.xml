@@ -495,7 +495,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     is_cod,
                     cod_amt,
                     ou_id ,
-		        	insurance_coverage 
+		        	insurance_coverage ,
+		        	trans_account
                 ) VALUES (
                 	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -512,7 +513,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
                     #{codAmt,javaType=Double,jdbcType=DECIMAL} ,
                     #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{insuranceCoverage,javaType=java.lang.Double,jdbcType=DECIMAL} 
+		        	#{insuranceCoverage,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        	#{transAccount,javaType=java.lang.String,jdbcType=VARCHAR} 
                 )
             ]]>
     </insert>

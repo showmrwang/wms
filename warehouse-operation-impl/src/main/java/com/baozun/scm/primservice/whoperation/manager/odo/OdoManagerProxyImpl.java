@@ -216,7 +216,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            msg.setMsg(e.getErrorCode() + "");
+            msg.setMsg((e.getErrorCode() != 0) ? (e.getErrorCode() + "") : e.getMessage());
             return msg;
         } catch (Exception ex) {
             log.error("" + ex);
@@ -572,7 +572,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 odo.setLagOdoStatus(OdoStatus.NEW);
             }
             if (StringUtils.isEmpty(odo.getDataSource())) {
-                odo.setDataSource(Constants.WMS4);
+                odo.setDataSource(Constants.WMS);
+            }
+            if (null == transportMgmt.getIsCod()) {
+                transportMgmt.setIsCod(false);
             }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
@@ -2379,6 +2382,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (null == odo.getIsLocked()) {
                 odo.setIsLocked(false);
             }
+            if (null == transportMgmt.getIsCod()) {
+                transportMgmt.setIsCod(false);
+            }
             odo.setCreatedId(userId);
             odo.setCreateTime(new Date());
             odo.setModifiedId(userId);
@@ -2722,6 +2728,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (!flag) {
                 return null;
             }
+        } else {
+            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 2, null, null, ouId);
         }
         // 获取运单号
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
@@ -2771,6 +2779,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 delivery.setLogisticsCode(res.getLogisticsCode()); // 物流公司编码,用于发货回传
                 delivery.setPackageCenterCode(res.getPackageCenterCode()); // 集包地编码
                 delivery.setPackageCenterName(res.getPackageCenterName()); // 集包地名称
+                if (!StringUtils.isEmpty(res.getTransAccount())) {
+                    transMgmt.setTransAccount(res.getTransAccount());   // 账号
+                    odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
+                }
                 odoTransportMgmtManager.insertDeliveryInfoExt(delivery);
                 return delivery;
             } else {
@@ -2903,8 +2915,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
 
     @Override
-    public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {
-        return this.odoManager.findPrintOdoIdList(waveCode, ouId);
+    public List<Long> findPrintOdoIdList(Long waveId, Long ouId) {
+        WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
+        if (wave == null) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        String waveCode = wave.getCode();
+        // 检验odoIndex是否都有值
+        long num = odoManager.countOdoIndexIsNull(waveCode, ouId);
+        if (num > 0) {
+            // 有null值,重新排序
+            this.updateOdoIndexByWaveId(waveId, ouId);
+        }
+        return odoManager.findPrintOdoIdList(wave.getCode(), ouId);
     }
 
 
@@ -2951,7 +2974,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (flag) {
                 odoManager.updateOdoIndexByBatchExt(batchPrintConditionMap, ouId);
             } else {
-                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+                throw new BusinessException(ErrorCodes.WAVE_ODOINDEX_SORT_ERROR);
             }
         }
     }

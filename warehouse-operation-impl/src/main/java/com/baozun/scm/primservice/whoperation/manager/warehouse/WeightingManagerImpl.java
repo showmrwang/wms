@@ -121,7 +121,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             command = whCheckingDao.findByWaybillCode(command.getWaybillCode(), command.getOuId());
         } else {
             // 通过出库箱号查找带称重信息
-            command = whCheckingDao.findByOutboundBoxCode(command.getOutboundBoxCode(), command.getOuId());
+            // command = whCheckingDao.findByOutboundBoxCode(command.getOutboundBoxCode(),
+            // command.getOuId());
+            String outboundBoxCode = command.getOutboundBoxCode();
+            command = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
+            command.setOutboundBoxCode(outboundBoxCode);
         }
         return command;
     }
@@ -168,8 +172,9 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             Long actualWeight = command.getActualWeight();
             Long calcWeight = packageInfo.getCalcWeight();
             Integer floats = packageInfo.getFloats();
-            Long difference = Math.abs(actualWeight - calcWeight) / calcWeight * 100;
-            if (difference > floats) {
+            Double difference = (double) Math.abs(actualWeight - calcWeight);
+            Double calcDifference = (double) (calcWeight * floats / 100);
+            if (difference > calcDifference) {
                 throw new BusinessException("excceed");
             }
         }
@@ -251,11 +256,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                     try {
                         if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId,null);
+                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, null);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                             // 箱标签
-                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId,null);
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, null);
                         }
                     } catch (Exception e) {
                         log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -269,11 +274,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                         try {
                             if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId,null);
+                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, null);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                                 // 箱标签
-                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId,null);
+                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, null);
                             }
                         } catch (Exception e) {
                             log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -282,5 +287,14 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                 }
             }
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WeightingCommand inputResponseForChecking(WeightingCommand command) {
+        String outboundBoxCode = command.getOutboundBoxCode();
+        command = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
+        command.setOutboundBoxCode(outboundBoxCode);
+        return command;
     }
 }

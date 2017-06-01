@@ -360,7 +360,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
             // @mender yimin.lu 2017/5/26 数据来源不能为空
             if (StringUtils.isEmpty(odo.getDataSource())) {
-                odo.setDataSource(Constants.WMS4);
+                odo.setDataSource(Constants.WMS);
             }
             this.whOdoDao.insert(odo);
             odoId = odo.getId();
@@ -548,6 +548,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         boolean isHazardous = odo.getIncludeHazardousCargo();
         boolean isFragile = odo.getIncludeFragileCargo();
         Set<Long> skuIdSet = new HashSet<Long>();
+        // #TODO 是否合并逻辑
         boolean isAllowMerge = false;
         if (odo.getIsLocked() == null || odo.getIsLocked() == false) {
             isAllowMerge = true;
@@ -1619,5 +1620,11 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {
         return this.whOdoDao.findPrintOdoIdList(waveCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public long countOdoIndexIsNull(String waveCode, Long ouId) {
+        return this.whOdoDao.countOdoIndexIsNull(waveCode, ouId);
     }
 }

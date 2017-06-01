@@ -378,4 +378,12 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     public WarehouseCommand findWarehouseCommandById(Long ouId) {
         return warehouseDao.findWarehouseCommandById(ouId);
     }
+
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public String findOuCodeByOuId(Long ouId) {
+        return warehouseDao.findById(ouId).getCode();
+    }
+
 }

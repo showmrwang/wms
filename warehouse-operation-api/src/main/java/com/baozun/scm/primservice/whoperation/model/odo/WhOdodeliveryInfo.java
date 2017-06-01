@@ -50,7 +50,7 @@ public class WhOdodeliveryInfo extends BaseModel {
     private String packageCenterCode;
     /** 集包地名称 */
     private String packageCenterName;
-    /** 集包地名称 */
+    /** 物流平台单号 */
     private String extId;
 
     /** 当前月份 用于归档 */

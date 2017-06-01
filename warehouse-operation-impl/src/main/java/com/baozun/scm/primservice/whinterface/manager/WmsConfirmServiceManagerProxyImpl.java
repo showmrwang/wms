@@ -246,7 +246,6 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             for (WhOutboundLineConfirm line : whOutboundLineConfirms) {
                 WmsOutBoundLineConfirm wmsOutboundLineConfirm = new WmsOutBoundLineConfirm();
                 BeanUtils.copyProperties(line, wmsOutboundLineConfirm);
-                lineConfirms.add(wmsOutboundLineConfirm);
                 List<WmsOutBoundSnLineConfirm> snLineConfirms = new ArrayList<WmsOutBoundSnLineConfirm>();
                 // 出库单明细SN/残次信息
                 List<WhOutboundSnLineConfirm> snLine = line.getSnLineConfirms();

@@ -26,7 +26,8 @@
                 is_cod as isCod,
                 cod_amt as codAmt,
                 insurance_coverage as insuranceCoverage,
-                ou_id as ouId
+                ou_id as ouId,
+                trans_account as transAccount
         ]]>
     </sql>
 
@@ -127,7 +128,8 @@
 		        actual_deliver_goods_time = #{actualDeliverGoodsTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        is_cod = #{isCod,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        cod_amt = #{codAmt,javaType=java.lang.Double,jdbcType=DECIMAL} ,
-		        insurance_coverage = #{insuranceCoverage,javaType=java.lang.Double,jdbcType=DECIMAL} 
+		        insurance_coverage = #{insuranceCoverage,javaType=java.lang.Double,jdbcType=DECIMAL} ,
+		        trans_account = #{transAccount,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}

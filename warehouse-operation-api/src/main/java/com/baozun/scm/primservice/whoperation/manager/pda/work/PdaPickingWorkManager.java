@@ -57,21 +57,21 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param command
      * @return
      */
-    public PickingScanResultCommand pdaPickingScanContainer(PickingScanResultCommand  command);
+    public PickingScanResultCommand pdaPickingScanContainer(PickingScanResultCommand command);
     
     /***提示外部容器(托盘)
      * @author tangming
      * @param command
      * @return
      */
-    public PickingScanResultCommand tipOuterContainer(PickingScanResultCommand  command);
+    public PickingScanResultCommand tipOuterContainer(PickingScanResultCommand command);
     
     /****
      * @author tangming
      * @param command
      * @return
      */
-    public PickingScanResultCommand  tipInsideContainer(PickingScanResultCommand  command);
+    public PickingScanResultCommand  tipInsideContainer(PickingScanResultCommand command);
     
     /***
      * pda拣货:推荐容器提示sku
@@ -205,5 +205,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public Boolean isContainerScanSn(String insideContainerCode,Long skuId,Long ouId,Long locationId,Double scanSkuQty,Boolean isContinueScanSn,Long operationId);
+    
+    public PickingScanResultCommand toWholeCase(PickingScanResultCommand command, Boolean isTabbInvTotal, String operationWay);
     
 }

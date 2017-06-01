@@ -349,4 +349,6 @@ public interface OdoManager extends BaseManager {
      */
     List<Long> findPrintOdoIdList(String waveCode, Long ouId);
 
+    long countOdoIndexIsNull(String waveCode, Long ouId);
+
 }

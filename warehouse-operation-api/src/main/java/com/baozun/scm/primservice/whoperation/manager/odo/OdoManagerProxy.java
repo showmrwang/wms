@@ -429,7 +429,7 @@ public interface OdoManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    List<Long> findPrintOdoIdList(String code, Long ouId);
+    List<Long> findPrintOdoIdList(Long id, Long ouId);
 
     WhWave findWaveByIdOuId(Long waveId, Long ouId);
 

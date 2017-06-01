@@ -1178,6 +1178,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Set<Long> containers = new HashSet<Long>();
         // 所有目标库位
         Set<Long> locationIds = new HashSet<Long>();
+        // 目标库位对应的所有外部容器 
+        Map<Long, Set<Long>> palleToLocation = new HashMap<Long, Set<Long>>();
+        // 外部容器对应所有内部容器
+        Map<Long, Set<Long>> palleToContainer = new HashMap<Long, Set<Long>>();
+        // 目标库位对应的所有内部容器（无外部容器）
+        Map<Long, Set<Long>> containerToLocation = new HashMap<Long, Set<Long>>();
         // 目标库位对应的所有周转箱        
         Map<Long, Set<Long>> turnoverBoxIds = new HashMap<Long, Set<Long>>();
         // 周转箱对应的所有sku 
@@ -1216,6 +1222,34 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), operationExecLine.getUuid());
             //获取库位ID 
             locationIds.add(operationExecLine.getToLocationId());
+            if(null != operationExecLine.getUseOuterContainerId()){
+                // 目标库位对应的所有外部容器
+                if(null != palleToLocation.get(operationExecLine.getToLocationId())){
+                    palleToLocation.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseOuterContainerId());
+                }else{
+                    Set<Long> useOuterContainerIdSet = new HashSet<Long>();
+                    useOuterContainerIdSet.add(operationExecLine.getUseOuterContainerId());
+                    palleToLocation.put(operationExecLine.getToLocationId(), useOuterContainerIdSet);
+                }
+                // 外部容器对应所有内部容器
+                if(null != palleToContainer.get(operationExecLine.getUseOuterContainerId())){
+                    palleToContainer.get(operationExecLine.getUseOuterContainerId()).add(operationExecLine.getUseContainerId());
+                }else{
+                    Set<Long> useContainerIdSet = new HashSet<Long>();
+                    useContainerIdSet.add(operationExecLine.getUseContainerId());
+                    palleToContainer.put(operationExecLine.getUseOuterContainerId(), useContainerIdSet);
+                }    
+            }else{
+                // 目标库位对应的所有内部容器（无外部容器）
+                if(null != containerToLocation.get(operationExecLine.getToLocationId())){
+                    containerToLocation.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseContainerId());
+                }else{
+                    Set<Long> useContainerIdSet = new HashSet<Long>();
+                    useContainerIdSet.add(operationExecLine.getUseContainerId());
+                    containerToLocation.put(operationExecLine.getToLocationId(), useContainerIdSet);
+                }
+            }
+            
             if(whOperationCommand.getIsWholeCase() == false){
                 // 获取目标库位对应的所有周转箱
                 if(null != turnoverBoxIds.get(operationExecLine.getToLocationId())){
@@ -1425,6 +1459,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         sortLocationIds = locationManager.sortByIds(locationIds, whOperationCommand.getOuId());
         // 所有目标库位
         statisticsCommand.setLocationIds(sortLocationIds);
+        // 目标库位对应的所有外部容器 
+        statisticsCommand.setPalleToLocation(palleToLocation);
+        // 外部容器对应所有内部容器
+        statisticsCommand.setPalleToContainer(palleToContainer);
+        // 目标库位对应的所有内部容器（无外部容器）
+        statisticsCommand.setContainerToLocation(containerToLocation);
         // 目标库位对应的所有周转箱
         statisticsCommand.setTurnoverBoxIds(turnoverBoxIds);
         // 周转箱对应的所有sku
@@ -1465,7 +1505,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
 //        //清除所有缓存
 //        pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId);
 //    }
-    
     /**
      * 获取补货功能参数
      * @param ouId
@@ -1479,7 +1518,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }
         return replenish;
     }
-    
     /***
      * 补货上架取消
      * @param operationId
