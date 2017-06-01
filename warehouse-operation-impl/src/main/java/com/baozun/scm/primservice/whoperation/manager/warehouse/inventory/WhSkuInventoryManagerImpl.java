@@ -5451,6 +5451,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void releaseInventoryByOdoId(Long odoId, Long ouId) {
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         String occupyCode = odo.getOdoCode();
