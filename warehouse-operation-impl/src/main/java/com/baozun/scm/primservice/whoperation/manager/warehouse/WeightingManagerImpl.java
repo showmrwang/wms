@@ -189,9 +189,6 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         if (0 > cnt) {
             throw new BusinessException("save fail");
         }
-        // 4.打印单据
-        // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);
-        this.print2(outbound.getWeighingPrint(), whOdodeliveryInfo.getWaybillCode(), outboundBoxCode, packageInfo.getId(), userId, ouId);
         // 5.更新出库单状态
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         WhOdoLine line = new WhOdoLine();
@@ -214,6 +211,13 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         BeanUtils.copyProperties(whOutboundboxCommand, whOutboundbox);
         whOutboundbox.setStatus("9");
         whOutboundboxDao.update(whOutboundbox);
+        // 4.打印单据
+        // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);
+        try {
+            this.print2(outbound.getWeighingPrint(), whOdodeliveryInfo.getWaybillCode(), outboundBoxCode, packageInfo.getId(), odoId, userId, ouId);
+        } catch (Exception e) {
+            log.error("打印失败");
+        }
     }
 
     /**
@@ -243,7 +247,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
      * @param weightingPrint
      * @param packageInfoId
      */
-    private void print2(String weightingPrint, String waybillCode, String outboundBoxCode, Long packageInfoId, Long userId, Long ouId) {
+    private void print2(String weightingPrint, String waybillCode, String outboundBoxCode, Long packageInfoId, Long odoId, Long userId, Long ouId) {
         if (!StringUtils.isEmpty(weightingPrint)) {
             String[] weightingPrintArray = weightingPrint.split(",");
             for (int i = 0; i < weightingPrintArray.length; i++) {
@@ -260,11 +264,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                     try {
                         if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                             // 面单
-                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, null);
+                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, odoId);
                         }
                         if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                             // 箱标签
-                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, null);
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, odoId);
                         }
                     } catch (Exception e) {
                         log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -278,11 +282,11 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                         try {
                             if (CheckingPrint.SINGLE_PLANE.equals(weightingPrintArray[i])) {
                                 // 面单
-                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, null);
+                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, odoId);
                             }
                             if (CheckingPrint.BOX_LABEL.equals(weightingPrintArray[i])) {
                                 // 箱标签
-                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, null);
+                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, odoId);
                             }
                         } catch (Exception e) {
                             log.error("WhCheckingManagerImpl printDefect is execption" + e);
@@ -300,7 +304,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         String outboundBoxCode = command.getOutboundBoxCode();
         weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
         if (null == weightingCommand) {
-            weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
+            weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking1(outboundBoxCode, command.getOuId());
         }
         weightingCommand.setOutboundBoxCode(outboundBoxCode);
         return weightingCommand;
