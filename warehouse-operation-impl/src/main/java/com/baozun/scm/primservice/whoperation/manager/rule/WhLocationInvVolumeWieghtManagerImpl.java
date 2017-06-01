@@ -158,21 +158,18 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                             log.error("sys guide putaway sku length、width、height is null error, skuId is:[{}], logId is:[{}]", skuId, logId);
                             throw new BusinessException(ErrorCodes.SKU_LENGTH_WIDTH_HIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
                         }
-                        Double onHandQty = invCmd.getOnHandQty();
-                        Double freezeQty = invCmd.getFrozenQty();
-                        Double toBeFillQty = invCmd.getToBeFilledQty();
+                        Double onHandQty = (null == invCmd.getOnHandQty() ? 0.0 : invCmd.getOnHandQty());
+                        Double freezeQty = (null == invCmd.getFrozenQty() ? 0.0 : invCmd.getFrozenQty());
+                        Double toBeFillQty = (null == invCmd.getToBeFilledQty() ? 0.0 : invCmd.getToBeFilledQty());
                         Double sVolume = cubeCal.calculateStuffVolume(skuLength, skuWidth, skuHeight);
-                        if(null == toBeFillQty) {
-                            toBeFillQty = 0.0;
-                        }
                         cubeCal.addStuffVolume(sVolume * (onHandQty + freezeQty + toBeFillQty));
                     }
                 }
             }
             // 计算库位上所有商品的重量
-            Double onHandQty = invCmd.getOnHandQty();
-            Double freezeQty = invCmd.getFrozenQty();
-            Double toBeFillQty = invCmd.getToBeFilledQty();
+            Double onHandQty = (null == invCmd.getOnHandQty() ? 0.0 : invCmd.getOnHandQty());
+            Double freezeQty = (null == invCmd.getFrozenQty() ? 0.0 : invCmd.getFrozenQty());
+            Double toBeFillQty = (null == invCmd.getToBeFilledQty() ? 0.0 : invCmd.getToBeFilledQty());
             WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
             if (null == skuCmd) {
                 log.error("sys guide putaway sku is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
@@ -184,9 +181,6 @@ public class WhLocationInvVolumeWieghtManagerImpl extends BaseManagerImpl implem
                 throw new BusinessException(ErrorCodes.SKU_WEIGHT_IS_NULL_ERROR, new Object[] {skuCmd.getBarCode()});
             }
             Double sWeight = weightCal.calculateStuffWeight(skuWeight);
-            if(null == toBeFillQty) {
-                toBeFillQty = 0.0;
-            }
             weightCal.addStuffWeight(sWeight * (onHandQty + freezeQty + toBeFillQty));
             outerContainerIds.add(outerContainerId);
             insideContainerIds.add(insideContainerId);

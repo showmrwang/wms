@@ -327,15 +327,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
     <select id="getTotalQtyByReplenishmentCode" resultType="Double">
 		select
-			sum(qty)
+			sum(line.qty)
 		from
-			t_wh_work_line 
+			t_wh_work_line line,
+			t_wh_work work
 		<where>
+			work.id = line.work_id
+			<if test="workCategory!=null and workCategory!=''">
+				and work.work_category = #{workCategory} 
+			</if>
 			<if test="replenishmentCode!=null and replenishmentCode!=''">
-				and replenishment_code = #{replenishmentCode} 
+				and line.replenishment_code = #{replenishmentCode} 
 			</if>
 			<if test="ouId!=null and ouId!=''">
-				and ou_id = #{ouId} 
+				and line.ou_id = #{ouId} 
 			</if>
 		</where>
 	</select>

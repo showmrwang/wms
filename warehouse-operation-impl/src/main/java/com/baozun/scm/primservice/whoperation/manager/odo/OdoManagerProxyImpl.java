@@ -216,7 +216,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            msg.setMsg(e.getErrorCode() + "");
+            msg.setMsg((e.getErrorCode() != 0) ? (e.getErrorCode() + "") : e.getMessage());
             return msg;
         } catch (Exception ex) {
             log.error("" + ex);
@@ -521,59 +521,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         Long odoId = null;
         try {
             // 默认属性
-            if (odo.getCurrentQty() == null) {
-                odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (odo.getActualQty() == null) {
-                odo.setActualQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (odo.getCancelQty() == null) {
-                odo.setCancelQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (null == odo.getIsWholeOrderOutbound()) {
-                odo.setIsWholeOrderOutbound(true);
-            }
-            if (null == odo.getPriorityLevel()) {
-                odo.setPriorityLevel(Constants.ODO_DEFAULT_PRIORITYLEVLE);
-            }
-            if (null == odo.getIncludeFragileCargo()) {
-                odo.setIncludeFragileCargo(false);
-            }
-            if (null == odo.getIncludeHazardousCargo()) {
-                odo.setIncludeHazardousCargo(false);
-            }
-            if (null == odo.getIsLocked()) {
-                odo.setIsLocked(false);
-            }
-            odo.setCreatedId(userId);
-            odo.setCreateTime(new Date());
-            odo.setModifiedId(userId);
-            odo.setLastModifyTime(new Date());
-            if (null == odo.getOrderTime()) {
-                odo.setOrderTime(new Date());
-            }
-            if (null == odo.getQty()) {
-                odo.setQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (null == odo.getSkuNumberOfPackages()) {
-                odo.setSkuNumberOfPackages(Constants.DEFAULT_INTEGER);
-            }
-            if (null == odo.getAmt()) {
-                odo.setAmt(Constants.DEFAULT_DOUBLE);
-            }
-            if (null == odo.getIsAllowMerge()) {
-                odo.setIsAllowMerge(true);
-            }
-            if (StringUtils.isEmpty(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.NEW);
-            }
-            // @mender yimin.lu 2017/4/11 领先、滞后出库单状态
-            if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
-                odo.setLagOdoStatus(OdoStatus.NEW);
-            }
-            if (StringUtils.isEmpty(odo.getDataSource())) {
-                odo.setDataSource(Constants.WMS4);
-            }
+            this.packageOdoDefault(odo, transportMgmt, userId);
+
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);
@@ -618,6 +567,73 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
         return odoId;
     }
+
+    private void packageOdoDefault(OdoCommand odo, OdoTransportMgmtCommand transportMgmt, Long userId) {
+        if (odo.getCurrentQty() == null) {
+            odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
+        }
+        if (odo.getActualQty() == null) {
+            odo.setActualQty(Constants.DEFAULT_DOUBLE);
+        }
+        if (odo.getCancelQty() == null) {
+            odo.setCancelQty(Constants.DEFAULT_DOUBLE);
+        }
+        if (null == odo.getIsWholeOrderOutbound()) {
+            odo.setIsWholeOrderOutbound(true);
+        }
+        if (null == odo.getPriorityLevel()) {
+            odo.setPriorityLevel(Constants.ODO_DEFAULT_PRIORITYLEVLE);
+        }
+        if (null == odo.getIncludeFragileCargo()) {
+            odo.setIncludeFragileCargo(false);
+        }
+        if (null == odo.getIncludeHazardousCargo()) {
+            odo.setIncludeHazardousCargo(false);
+        }
+        if (null == odo.getIsLocked()) {
+            odo.setIsLocked(false);
+        }
+        odo.setCreatedId(userId);
+        odo.setCreateTime(new Date());
+        odo.setModifiedId(userId);
+        odo.setLastModifyTime(new Date());
+        if (null == odo.getOrderTime()) {
+            odo.setOrderTime(new Date());
+        }
+        if (null == odo.getQty()) {
+            odo.setQty(Constants.DEFAULT_DOUBLE);
+        }
+        if (null == odo.getSkuNumberOfPackages()) {
+            odo.setSkuNumberOfPackages(Constants.DEFAULT_INTEGER);
+        }
+        if (null == odo.getAmt()) {
+            odo.setAmt(Constants.DEFAULT_DOUBLE);
+        }
+        if (null == odo.getIsAllowMerge()) {
+            odo.setIsAllowMerge(true);
+        }
+        if (StringUtils.isEmpty(odo.getOdoStatus())) {
+            odo.setOdoStatus(OdoStatus.NEW);
+        }
+        // @mender yimin.lu 2017/4/11 领先、滞后出库单状态
+        if (StringUtils.isEmpty(odo.getLagOdoStatus())) {
+            odo.setLagOdoStatus(OdoStatus.NEW);
+        }
+        if (StringUtils.isEmpty(odo.getDataSource())) {
+            odo.setDataSource(Constants.WMS);
+        }
+        if (null == transportMgmt.getIsCod()) {
+            transportMgmt.setIsCod(false);
+        }
+        if (null == odo.getIsWholeOrderOutbound()) {
+            odo.setIsWholeOrderOutbound(true);
+        }
+        if (null == odo.getCrossDockingSymbol()) {
+            odo.setCrossDockingSymbol(Constants.ODO_CROSS_DOCKING_SYSMBOL_2);
+        }
+
+    }
+
 
     private WhOdoTransportMgmt copyTransportMgmtProperties(OdoTransportMgmtCommand transportMgmtCommand) throws ParseException {
         try {
@@ -691,6 +707,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             line.setLinePrice(lineCommand.getLinePrice());
             line.setLineAmt(lineCommand.getLineAmt());
 
+
             // 默认值设置
             line.setCurrentQty(Constants.DEFAULT_DOUBLE);
             line.setActualQty(Constants.DEFAULT_DOUBLE);
@@ -710,6 +727,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         line.setMixingAttr(lineCommand.getMixingAttr());
         line.setInvStatus(lineCommand.getInvStatus());
         line.setInvType(lineCommand.getInvType());
+        // @mender yimin.lu 2017/6/1 是否复核与是否整行出库 默认为是
+        if (null == line.getFullLineOutbound()) {
+            line.setFullLineOutbound(true);
+        }
+        if (null == line.getIsCheck()) {
+            line.setIsCheck(true);
+        }
         if (StringUtils.hasText(lineCommand.getMfgDateStr())) {
 
             try {
@@ -2355,52 +2379,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             OdoTransportMgmtCommand transportMgmt = group.getTransPortMgmt();
             List<OdoLineCommand> odoLineList = group.getOdoLineList();
             // 默认属性
-            if (odo.getCurrentQty() == null) {
-                odo.setCurrentQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (odo.getActualQty() == null) {
-                odo.setActualQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (odo.getCancelQty() == null) {
-                odo.setCancelQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (null == odo.getIsWholeOrderOutbound()) {
-                odo.setIsWholeOrderOutbound(true);
-            }
-            if (null == odo.getPriorityLevel()) {
-                odo.setPriorityLevel(Constants.ODO_DEFAULT_PRIORITYLEVLE);
-            }
-            if (null == odo.getIncludeFragileCargo()) {
-                odo.setIncludeFragileCargo(false);
-            }
-            if (null == odo.getIncludeHazardousCargo()) {
-                odo.setIncludeHazardousCargo(false);
-            }
-            if (null == odo.getIsLocked()) {
-                odo.setIsLocked(false);
-            }
-            odo.setCreatedId(userId);
-            odo.setCreateTime(new Date());
-            odo.setModifiedId(userId);
-            odo.setLastModifyTime(new Date());
-            if (null == odo.getOrderTime()) {
-                odo.setOrderTime(new Date());
-            }
-            if (null == odo.getQty()) {
-                odo.setQty(Constants.DEFAULT_DOUBLE);
-            }
-            if (null == odo.getSkuNumberOfPackages()) {
-                odo.setSkuNumberOfPackages(Constants.DEFAULT_INTEGER);
-            }
-            if (null == odo.getAmt()) {
-                odo.setAmt(Constants.DEFAULT_DOUBLE);
-            }
-            if (null == odo.getIsAllowMerge()) {
-                odo.setIsAllowMerge(true);
-            }
-            if (StringUtils.isEmpty(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.NEW);
-            }
+            this.packageOdoDefault(odo, transportMgmt, userId);
             odo.setOuId(ouId);
             // 设置单号和外部对接编码
             String odoCode = codeManager.generateCode(Constants.WMS, Constants.WHODO_MODEL_URL, Constants.WMS_ODO_INNER, "ODO", null);

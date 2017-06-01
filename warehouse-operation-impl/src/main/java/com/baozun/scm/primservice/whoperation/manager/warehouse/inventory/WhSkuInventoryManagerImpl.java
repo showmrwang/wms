@@ -802,7 +802,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // 删除待移入库存
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
 
                 } else {
@@ -845,7 +845,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                      */
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
@@ -1028,7 +1028,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // 删除待移入库存
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                 } else {
                     /*
@@ -1072,7 +1072,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                      */
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
@@ -2199,7 +2199,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // 删除待移入库存
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     // 扣减容器库存（分配容器库存）
                     WhSkuInventory invC = new WhSkuInventory();
@@ -2352,7 +2352,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // insertSkuInventorySnLog(inv.getUuid(), ouId);
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
@@ -2660,7 +2660,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // 删除待移入库存
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     // 扣减容器库存（分配容器库存）
                     WhSkuInventory invC = new WhSkuInventory();
@@ -2818,7 +2818,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // insertSkuInventorySnLog(inv.getUuid(), ouId);
                     WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                     BeanUtils.copyProperties(invCmd, cInv);
-                    whSkuInventoryTobefilledDao.delete(cInv.getId());
+                    whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                     insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
@@ -3175,7 +3175,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (tobefilledQty.equals(0.0)) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invCmd, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     } else {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -3341,7 +3341,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (tobefilledQty.equals(0.0)) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invCmd, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     } else {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -3683,7 +3683,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (tobefilledQty.equals(0.0)) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                         } else {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -3853,7 +3853,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (tobefilledQty.equals(0.0)) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                         } else {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -4035,7 +4035,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         // 删除待移入库存
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invCmd, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     } else {
                         /*
@@ -4080,7 +4080,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                          */
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invCmd, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                         for (WhSkuInventorySnCommand cSnCmd : snList) {
                             WhSkuInventorySn sn = new WhSkuInventorySn();
@@ -5451,6 +5451,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void releaseInventoryByOdoId(Long odoId, Long ouId) {
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         String occupyCode = odo.getOdoCode();
@@ -5458,6 +5459,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void releaseInventoryByOccupyCode(String occupyCode, Long ouId) {
         whSkuInventoryDao.releaseInventoryOccupyCode(occupyCode, ouId);
     }
@@ -7593,7 +7595,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (locSkuQty.equals(0.0)) {// 删除
                             WhSkuInventoryTobefilled invTobefilled = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, invTobefilled);
-                            whSkuInventoryTobefilledDao.delete(invTobefilled.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invTobefilled, ouId, userId, null, null);
                         } else { // 修改
                             WhSkuInventoryTobefilled invTobefilled = new WhSkuInventoryTobefilled();
@@ -7655,7 +7657,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (locSkuQty.equals(0.0)) {// 删除
                             WhSkuInventoryTobefilled invTobefilled = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, invTobefilled);
-                            whSkuInventoryTobefilledDao.delete(invTobefilled.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(invTobefilled.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invTobefilled, ouId, userId, null, null);
                         } else { // 修改
                             WhSkuInventoryTobefilled invTobefilled = new WhSkuInventoryTobefilled();
@@ -8001,7 +8003,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (tobefilledQty.equals(0.0)) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invCmd, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     } else {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -8102,7 +8104,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (tobefilledQty.equals(0.0)) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invCmd, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                     } else {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -8260,14 +8262,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (tobefilledQty.doubleValue() < 0) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invTobefilled, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             continue;
                         }
                         if (tobefilledQty.doubleValue() == 0) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invTobefilled, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             continue;
                         }
@@ -8512,14 +8514,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (tobefilledQty.doubleValue() < 0) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invTobefilled, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             continue;
                         }
                         if (tobefilledQty.doubleValue() == 0) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invTobefilled, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             continue;
                         }
@@ -8616,14 +8618,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (tobefilledQty.doubleValue() < 0) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invTobefilled, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             continue;
                         }
                         if (tobefilledQty.doubleValue() == 0) {
                             WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invTobefilled, cInv);
-                            whSkuInventoryTobefilledDao.delete(cInv.getId());
+                            whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             continue;
                         }
@@ -8955,14 +8957,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (tobefilledQty.doubleValue() < 0) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                         continue;
                     }
                     if (tobefilledQty.doubleValue() == 0) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                         continue;
                     }
@@ -9058,14 +9060,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (tobefilledQty.doubleValue() < 0) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                         continue;
                     }
                     if (tobefilledQty.doubleValue() == 0) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.delete(cInv.getId());
+                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(),ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                         continue;
                     }

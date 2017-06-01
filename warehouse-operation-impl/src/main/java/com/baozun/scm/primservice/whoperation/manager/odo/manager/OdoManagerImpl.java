@@ -360,7 +360,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
             // @mender yimin.lu 2017/5/26 数据来源不能为空
             if (StringUtils.isEmpty(odo.getDataSource())) {
-                odo.setDataSource(Constants.WMS4);
+                odo.setDataSource(Constants.WMS);
             }
             this.whOdoDao.insert(odo);
             odoId = odo.getId();
@@ -386,6 +386,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     odoLine.setPlanQty(odoLine.getQty());
                     if (null == odoLine.getLineAmt()) {
                         odoLine.setLineAmt(odoLine.getLinePrice() * odoLine.getQty());
+                    }
+                    if (null == odoLine.getIsCheck()) {
+
+                        odoLine.setIsCheck(true);
+                    }
+                    if (null == odoLine.getFullLineOutbound()) {
+
+                        odoLine.setFullLineOutbound(true);
                     }
                     odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
                     odoLine.setCurrentQty(lineCommand.getCurrentQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCurrentQty());
@@ -548,6 +556,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         boolean isHazardous = odo.getIncludeHazardousCargo();
         boolean isFragile = odo.getIncludeFragileCargo();
         Set<Long> skuIdSet = new HashSet<Long>();
+        // #TODO 是否合并逻辑
         boolean isAllowMerge = false;
         if (odo.getIsLocked() == null || odo.getIsLocked() == false) {
             isAllowMerge = true;
