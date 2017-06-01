@@ -24,7 +24,6 @@ import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnLineCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
-import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -564,8 +563,8 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             if (asn.getIsIqc() != null) {
                 whAsn.setIsIqc(asn.getIsIqc());
             }
-            asn.setUrgentStatus(whAsn.getUrgentStatus());
-            asn.setOverChageRate(whAsn.getOverChageRate());
+            whAsn.setUrgentStatus(asn.getUrgentStatus());
+            whAsn.setOverChageRate(asn.getOverChageRate());
             whAsnDao.insert(whAsn);
             // 插入日志
             this.insertGlobalLog(GLOBAL_LOG_INSERT, whAsn, ouId, userId, null, null);
@@ -640,7 +639,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
-            log.error("" + ex);
+            log.error("", ex);
             throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
         }
     }

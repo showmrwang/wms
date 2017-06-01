@@ -752,6 +752,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
         // 查询功能是否配置复核打印单据配置
         WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundManager.findByFunctionIdExt(whCheckingResultCommand.getFunctionId(), ouId);
         String checkingPrint = whFunctionOutBound.getCheckingPrint();
+        String outboundBoxCode = whCheckingResultCommand.getWhOutboundbox().getOutboundboxCode();
         if (null != checkingPrint && !"".equals(checkingPrint)) {
             String[] checkingPrintArray = checkingPrint.split(",");
             for (int i = 0; i < checkingPrintArray.length; i++) {
@@ -792,16 +793,17 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                         this.printPackingList(idsList, whCheckingResultCommand.getUserId(), ouId);
                     }
                     if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                        idsList.add(whCheckingResultCommand.getWhOdo().getId());
                         // 销售清单
                         this.printSalesList(idsList, whCheckingResultCommand.getUserId(), ouId);
                     }
                     if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                         // 面单
-                        this.printSinglePlane(null, null, whCheckingResultCommand.getUserId(), ouId,null);
+                        this.printSinglePlane(outboundBoxCode, whCheckingResultCommand.getWhOdodeliveryInfo().getWaybillCode(), whCheckingResultCommand.getUserId(), ouId, whCheckingResultCommand.getWhOdo().getId());
                     }
                     if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                         // 箱标签
-                        this.printBoxLabel(null, whCheckingResultCommand.getUserId(), ouId,null);
+                        this.printBoxLabel(outboundBoxCode, whCheckingResultCommand.getUserId(), ouId, whCheckingResultCommand.getWhOdo().getId());
                     }
                 } catch (Exception e) {
                     log.error(e + "");

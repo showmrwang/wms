@@ -2835,6 +2835,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     }
                     trans.setTransVasList(transVasList);
                 }
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 1, null, null, ouId);
                 return true;
             } else {
                 // 失败,记录ErrorMessage
