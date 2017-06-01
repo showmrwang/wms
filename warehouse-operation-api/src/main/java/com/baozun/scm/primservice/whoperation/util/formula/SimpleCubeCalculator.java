@@ -392,7 +392,7 @@ public class SimpleCubeCalculator {
         actualUom = actualUom.trim();
         isUomSupport(actualUom);
         Double conversionRate = uomConversion.get(actualUom);
-        ret = (ret * (conversionRate * sysUomValue) / defaultUomValue);
+        ret = (ret * defaultUomValue / (conversionRate * sysUomValue));
         return ret;
     }
 
