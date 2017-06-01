@@ -143,25 +143,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	   		and ou_id = #{ouId}
     </select>
     
-	<select id="findFromcheckingCollectionByOutboundboxCode" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo">
-    SELECT 
-			checkingCollection.facility_id as facilityId ,
-			checkingCollection.container_id as containerId,
-			container.code as containerCode,
-			checkingCollection.batch as batch,
-			checkingCollection.wave_code as waveCode,
-			checkingCollection.ou_id as ouId,
-			checkingCollection.outer_container_id as outerContainerId,
-			container2.code as outerContainerCode,
-			checkingCollection.container_lattice_no as containerLatticeNo,
-			checkingCollection.outboundbox_id as outboundboxId,
-			checkingCollection.outboundbox_code as outboundboxCode
-	from 
-		 t_wh_checking_collection as checkingCollection
-		 left join t_wh_container as container on container.id = checkingCollection.container_id
-		 left join t_wh_container as container2 on container.id = checkingCollection.outer_container_id
-	where 
-		checkingCollection.outboundbox_code =#{outboundboxCode}
+	<select id="findFromcheckingCollectionByOutboundboxCode" resultMap="WhPrintInfoResultExt">
+  select 
+    		<include refid="whPrintInfoColumnsExt" />
+	   	from  
+	   		t_wh_print_info 
+	   	where
+			outboundbox_code = #{outboundboxCode}
+			and ou_id = #{ouId}
     </select>
     
     
