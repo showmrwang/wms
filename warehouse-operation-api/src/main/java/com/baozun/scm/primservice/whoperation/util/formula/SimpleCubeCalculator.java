@@ -87,9 +87,9 @@ public class SimpleCubeCalculator {
     // 填充立方体原始单位体积
     private Double rawVolume;
     // 已放入体积
-    private Double usedVolume;
+    private Double usedVolume = 0.0;
     // 已放入原始体积
-    private Double rawUsedVolume;
+    private Double rawUsedVolume = 0.0;
     // 容器体积可用率
     private Double availability = 0.8;
     // 容器可用体积
@@ -611,7 +611,7 @@ public class SimpleCubeCalculator {
         if (coords_z.equals(coords)) {
             Double rx = get_x();
             Double ry = get_y();
-            set_remainZ(calculateRemainZ(calculateRemainCubage(get_Volume(), getStuffVolume()), rx, ry));
+            set_remainZ(calculateRemainZ(calculateRemainCubage(get_Volume(), getStuffVolume() + getUsedVolume()), rx, ry));
             Double rz = get_remainZ();
             Double ax = getX();
             Double ay = getY();
@@ -620,7 +620,7 @@ public class SimpleCubeCalculator {
         } else if (coords_y.equals(coords)) {
             Double rx = get_x();
             Double rz = get_z();
-            set_remainY(calculateRemainY(calculateRemainCubage(get_Volume(), getStuffVolume()), rz, rx));
+            set_remainY(calculateRemainY(calculateRemainCubage(get_Volume(), getStuffVolume() + getUsedVolume()), rz, rx));
             Double ry = get_remainY();
             Double ax = getX();
             Double ay = getY();
@@ -629,7 +629,7 @@ public class SimpleCubeCalculator {
         } else if (coords_x.equals(coords)) {
             Double ry = get_y();
             Double rz = get_z();
-            set_remainX(calculateRemainX(calculateRemainCubage(get_Volume(), getStuffVolume()), ry, rz));
+            set_remainX(calculateRemainX(calculateRemainCubage(get_Volume(), getStuffVolume() + getUsedVolume()), ry, rz));
             Double rx = get_remainX();
             Double ax = getX();
             Double ay = getY();

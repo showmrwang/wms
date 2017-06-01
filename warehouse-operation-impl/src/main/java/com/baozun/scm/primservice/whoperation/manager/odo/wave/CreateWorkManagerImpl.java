@@ -246,7 +246,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 判断补货单号对应库存是否都创完工作
             for (String replenishmentCode : replenishmentCodes) {
                 Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
-                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
+                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId(), "REPLENISHMENT");
                 if (null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)) {
                     // 将补货任务行标识为已创建工作
                     ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
@@ -474,7 +474,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 判断补货单号对应库存是否都创完工作
             for (String replenishmentCode : replenishmentCodes) {
                 Double totalQtyAllocated = skuInventoryAllocatedDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
-                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());
+                Double totalQtyWorkLine = workLineDao.getTotalQtyByReplenishmentCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId(), "REPLENISHMENT");
                 if (null != totalQtyAllocated && null != totalQtyWorkLine && totalQtyAllocated.equals(totalQtyWorkLine)) {
                     // 将补货任务行标识为已创建工作
                     ReplenishmentTask replenishmentTask = replenishmentTaskDao.findReplenishmentTaskByCode(replenishmentCode, replenishmentRuleCommand.getTaskOuId());

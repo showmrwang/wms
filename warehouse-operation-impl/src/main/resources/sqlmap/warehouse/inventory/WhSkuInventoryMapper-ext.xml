@@ -2185,7 +2185,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        inv.customer_id as customerId,
 			        inv.store_id as storeId,
 			        inv.occupation_code as occupationCode,
-			        inv.qty as onHandQty,
+			        inv.qty as toBeFilledQty,
 			        inv.inv_status as invStatus,
 			        inv.inv_type as invType,
 			        inv.batch_number as batchNumber,

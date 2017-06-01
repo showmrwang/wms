@@ -44,6 +44,8 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
@@ -208,8 +210,9 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setCheckingId(checking.getId());
                             line.setCheckingQty(0L);
                             line.setCountryOfOrigin(inv.getCountryOfOrigin());
-                            line.setCustomerCode("");
-                            line.setCustomerName("");
+                            Customer customer = this.getCustomerByRedis(inv.getCustomerId());
+                            line.setCustomerCode(customer.getCustomerCode());
+                            line.setCustomerName(customer.getCustomerName());
                             line.setExpDate(inv.getExpDate());
                             line.setInvAttr1(inv.getInvAttr1());
                             line.setInvAttr2(inv.getInvAttr2());
@@ -246,8 +249,9 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setSkuCode(sku.getCode());
                             line.setSkuExtCode(sku.getExtCode());
                             line.setSkuName(sku.getName());
-                            line.setStoreCode("");
-                            line.setStoreName("");
+                            Store store = this.getStoreByRedis(inv.getStoreId());
+                            line.setStoreCode(store.getStoreCode());
+                            line.setStoreName(store.getStoreName());
                             line.setUuid(inv.getUuid());
                             line.setCreateId(userId);
                             line.setCreateTime(new Date());
@@ -286,7 +290,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
      * @author lichuan
      * @param facilityId
      * @param batchNo
-     * @param facilitySeedingSkuInventoryList
+     * @param seedingLineList
      * @param userId
      * @param ouId
      * @param logId
@@ -426,8 +430,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setCheckingId(checking.getId());
                             line.setCheckingQty(0L);
                             line.setCountryOfOrigin(inv.getCountryOfOrigin());
-                            line.setCustomerCode("");
-                            line.setCustomerName("");
+
+                            Customer customer = this.getCustomerByRedis(inv.getCustomerId());
+                            line.setCustomerCode(customer.getCustomerCode());
+                            line.setCustomerName(customer.getCustomerName());
                             line.setExpDate(inv.getExpDate());
                             line.setInvAttr1(inv.getInvAttr1());
                             line.setInvAttr2(inv.getInvAttr2());
@@ -460,8 +466,9 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                             line.setSkuCode(sku.getCode());
                             line.setSkuExtCode(sku.getExtCode());
                             line.setSkuName(sku.getName());
-                            line.setStoreCode("");
-                            line.setStoreName("");
+                            Store store = this.getStoreByRedis(inv.getStoreId());
+                            line.setStoreCode(store.getStoreCode());
+                            line.setStoreName(store.getStoreName());
                             line.setUuid(inv.getUuid());
                             line.setCreateId(userId);
                             line.setCreateTime(new Date());
