@@ -149,6 +149,8 @@ public class ScanResultCommand extends BaseCommand {
     private String locationCode;
     /** 已扫描数量 */
     private Long scanSkuQty;
+    /** 提示SKU ID */
+    private Long skuId;
     
     
     private Boolean isNeedScanNewLocation = false;   //拆箱扫描商品重量达到库位承重的时候,跳转
@@ -667,8 +669,16 @@ public class ScanResultCommand extends BaseCommand {
     public void setScanSkuQty(Long scanSkuQty) {
         this.scanSkuQty = scanSkuQty;
     }
-    
 
+	public Long getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(Long skuId) {
+		this.skuId = skuId;
+	}
+    
+    
     
     
     

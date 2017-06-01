@@ -1165,6 +1165,10 @@ public class ErrorCodes {
     public static final int OUT_BOUND_BOX_NOT_MOVE_CONDITION = 120002;
     /** 目标出库箱出库单号与原始出库箱/货格出库单不一致 */
     public static final int OUT_BOUND_BOX_ODO_CODE_NOT_MATCH = 120003;
+    /** 容器号[{0}]未找到库存信息 */
+    public static final int CONTAINER_NOT_FOUND_INV_ERROR = 120004;
+    /** 容器号[{0}]未找到库存信息 */
+    public static final int CONTAINER_INVENTORY_STATISTIC_ERROR = 120005;
     // 120000-130000 zhaozili
 
     /** 文件不存在 */
