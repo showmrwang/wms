@@ -2,21 +2,16 @@ package com.baozun.scm.primservice.whoperation.manager.checking;
 
 
 import java.util.List;
-import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingResultCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface CheckingManager extends BaseManager {
@@ -61,13 +56,6 @@ public interface CheckingManager extends BaseManager {
      */
     void printInvoiceReview(List<Long> facilityIdsList, Long userId, Long ouId);
 
-    /**
-     * 生成出库箱库存
-     * 
-     * @param userId 用户Id
-     * @param ouId 仓库Id
-     */
-    String createOutboundboxInventory(WhCheckingCommand checkingCommand, List<WhSkuInventory> whSkuInventoryLst);
 
     /**
      * 根据id查询播种墙
