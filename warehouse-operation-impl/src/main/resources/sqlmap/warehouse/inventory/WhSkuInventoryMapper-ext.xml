@@ -5303,7 +5303,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
           from t_wh_sku_inventory inv
           where inv.ou_id=#{ouId}
                 and inv.uuid=#{uuid}
-                inv.inside_container_id = #{turnoverBoxId}
+                and inv.inside_container_id = #{turnoverBoxId}
     </select>
     
      <select id="countWhSkuInventoryCommandByInsideContainerId" resultType="Integer">
