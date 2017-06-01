@@ -760,7 +760,6 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 WhCheckingCommand whCheckingCommand = whCheckingResultCommand.getOrgCheckingCommand();
                 List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
-                    idsList.add(whCheckingCommand.getId());
                     WhPrintInfo whPrintInfo = new WhPrintInfo();
                     whPrintInfo.setFacilityId(whCheckingCommand.getFacilityId());
                     if(null != whCheckingCommand.getContainerId()){
