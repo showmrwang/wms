@@ -37,9 +37,9 @@ public class SimpleWeightCalculator {
     private Double currentStuffWeight = 0.0;
     private Double rawWeight;
     // 已放入重量
-    private Double usedWeight;
+    private Double usedWeight = 0.0;
     // 已放入原始重量
-    private Double rawUsedWeight;
+    private Double rawUsedWeight = 0.0;
     private String _uom;
     private String uom;
     private static final String sysUom = SYS_UOM;

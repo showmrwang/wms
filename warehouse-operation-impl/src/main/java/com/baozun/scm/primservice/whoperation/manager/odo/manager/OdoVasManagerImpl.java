@@ -80,7 +80,6 @@ public class OdoVasManagerImpl extends BaseManagerImpl implements OdoVasManager 
                 }
             }
         }
-        odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 1, null, null, ouId);
     }
 
 }
