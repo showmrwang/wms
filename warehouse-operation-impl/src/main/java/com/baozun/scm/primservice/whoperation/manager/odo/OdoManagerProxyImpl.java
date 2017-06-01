@@ -216,7 +216,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
         } catch (BusinessException e) {
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
-            msg.setMsg(e.getErrorCode() + "");
+            msg.setMsg((e.getErrorCode() != 0) ? (e.getErrorCode() + "") : e.getMessage());
             return msg;
         } catch (Exception ex) {
             log.error("" + ex);
@@ -572,7 +572,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 odo.setLagOdoStatus(OdoStatus.NEW);
             }
             if (StringUtils.isEmpty(odo.getDataSource())) {
-                odo.setDataSource(Constants.WMS4);
+                odo.setDataSource(Constants.WMS);
             }
             odo.setOuId(ouId);
             // 设置单号和外部对接编码

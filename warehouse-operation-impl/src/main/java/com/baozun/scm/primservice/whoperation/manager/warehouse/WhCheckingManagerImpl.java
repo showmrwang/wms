@@ -87,6 +87,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
@@ -269,29 +270,26 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Long ouId = checking.getOuId();
         // List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findByOdoIdWithoutOutboundbox(odoId,
         // ouId);
-        checking.setWaybillType("1"); // 1为纸质面单
-        // WhOdoTransportService odoTransportService =
-        // whOdoTransportServiceDao.findByOdoIdAndOuId(odoId, ouId);
-        // if (null != odoTransportService && odoTransportService.getIsVasSuccess() &&
-        // odoTransportService.getIsTspSuccess() && odoTransportService.getIsWaybillCodeSuccess()) {
-        // if (odoTransportService.getIsOl()) {
-        // checking.setWaybillType("2"); // 2为电子面单
-        // } else {
         // checking.setWaybillType("1"); // 1为纸质面单
-        // }
-        // } else {
-        // WhOdodeliveryInfo info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, "gianni_test",
-        // ouId);
-        // if (null != info) {
-        // if (null != info.getWaybillCode()) {
-        // checking.setWaybillType("2");
-        // } else {
-        // checking.setWaybillType("1");
-        // }
-        // } else {
-        // throw new BusinessException("获取运单号失败");
-        // }
-        // }
+        WhOdoTransportService odoTransportService = whOdoTransportServiceDao.findByOdoIdAndOuId(odoId, ouId);
+        if (null != odoTransportService && odoTransportService.getIsVasSuccess() && odoTransportService.getIsTspSuccess() && odoTransportService.getIsWaybillCodeSuccess()) {
+            if (odoTransportService.getIsOl()) {
+                checking.setWaybillType("2"); // 2为电子面单
+            } else {
+                checking.setWaybillType("1"); // 1为纸质面单
+            }
+        } else {
+            WhOdodeliveryInfo info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, "gianni_test", ouId);
+            if (null != info) {
+                if (null != info.getWaybillCode()) {
+                    checking.setWaybillType("2");
+                } else {
+                    checking.setWaybillType("1");
+                }
+            } else {
+                throw new BusinessException("获取运单号失败");
+            }
+        }
         return checking;
     }
 
