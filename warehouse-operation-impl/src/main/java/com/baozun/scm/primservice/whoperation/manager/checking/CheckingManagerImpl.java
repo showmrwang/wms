@@ -642,9 +642,11 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
             if (isTabbInvTotal) {
                 originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(odoOrgSkuInv.getUuid(), odoOrgSkuInv.getOuId());
             }
+
+            WhSkuInventory orgSkuInv = whSkuInventoryDao.findWhSkuInventoryById(odoOrgSkuInv.getId(), ouId);
             if (0 == odoOrgSkuInv.getOnHandQty()) {
 
-                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), -odoOrgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), -orgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
 
                 int deleteCount = whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), odoOrgSkuInv.getOuId());
                 if (0 == deleteCount) {
@@ -660,7 +662,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 this.insertGlobalLog(GLOBAL_LOG_UPDATE, odoOrgSkuInv, ouId, userId, null, null);
 
                 // 从仓库判断是否需要记录库存数量变化
-                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), -odoOrgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), odoOrgSkuInv.getOnHandQty() - orgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
 
             }
         }
@@ -735,23 +737,23 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
                     WhPrintInfo whPrintInfo = new WhPrintInfo();
                     whPrintInfo.setFacilityId(whCheckingCommand.getFacilityId());
-                    if(null != whCheckingCommand.getContainerId()){
+                    if (null != whCheckingCommand.getContainerId()) {
                         whPrintInfo.setContainerId(whCheckingCommand.getContainerId());
                         Container container = containerDao.findByIdExt(whCheckingCommand.getContainerId(), whCheckingCommand.getOuId());
-                        whPrintInfo.setContainerCode(container.getCode());    
+                        whPrintInfo.setContainerCode(container.getCode());
                     }
                     whPrintInfo.setBatch(whCheckingCommand.getBatch());
                     whPrintInfo.setWaveCode(whCheckingCommand.getWaveCode());
                     whPrintInfo.setOuId(whCheckingCommand.getOuId());
-                    if(null != whCheckingCommand.getOuterContainerId()){
+                    if (null != whCheckingCommand.getOuterContainerId()) {
                         whPrintInfo.setOuterContainerId(whCheckingCommand.getOuterContainerId());
                         Container outerContainer = containerDao.findByIdExt(whCheckingCommand.getOuterContainerId(), whCheckingCommand.getOuId());
-                        whPrintInfo.setOuterContainerCode(outerContainer.getCode());    
+                        whPrintInfo.setOuterContainerCode(outerContainer.getCode());
                     }
                     whPrintInfo.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
                     WhOutboundbox whOutboundbox = whCheckingResultCommand.getWhOutboundbox();
-                    if(null == whOutboundbox){
-                        throw new BusinessException(ErrorCodes.PARAMS_ERROR);    
+                    if (null == whOutboundbox) {
+                        throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                     }
                     whPrintInfo.setOutboundboxId(whOutboundbox.getOutboundboxId());
                     whPrintInfo.setOutboundboxCode(whOutboundbox.getOutboundboxCode());
