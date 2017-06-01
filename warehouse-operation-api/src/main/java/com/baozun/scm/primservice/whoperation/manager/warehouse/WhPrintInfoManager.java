@@ -28,6 +28,6 @@ public interface WhPrintInfoManager extends BaseManager {
      * 
      * @param outboundboxCode
      */
-    WhPrintInfo findFromcheckingCollectionByOutboundboxCode(String outboundboxCode);
+    List<WhPrintInfo> findFromcheckingCollectionByOutboundboxCode(String outboundboxCode, Long ouId);
 
 }

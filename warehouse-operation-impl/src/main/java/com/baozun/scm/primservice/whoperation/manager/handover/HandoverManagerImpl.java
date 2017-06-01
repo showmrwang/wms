@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportServiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
@@ -104,6 +105,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private OrderConfirmContentManager orderConfirmContentManager;
     @Autowired
     private WhOdoTransportServiceDao whOdoTransportServiceDao;
+    @Autowired
+    private StoreDao storeDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -480,5 +483,11 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         return isOl;
 
 
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public String findStoreCodeByStoreId(Long storeId) {
+        return storeDao.findById(storeId).getStoreCode();
     }
 }
