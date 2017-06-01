@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- *
+ * 
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- *
+ * 
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- *
+ * 
  */
 package com.baozun.scm.primservice.whoperation.manager.warehouse.outbound;
 
@@ -35,6 +35,8 @@ import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.DistributionMode;
 import com.baozun.scm.primservice.whoperation.constant.PickingMode;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionDao;
@@ -54,7 +56,7 @@ import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 
 /**
  * @author lichuan
- *
+ * 
  */
 @Service("checkingModeCalcManager")
 @Transactional
@@ -73,6 +75,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
     private WhOdoDao whOdoDao;
     @Autowired
     private WhSeedingCollectionDao whSeedingCollectionDao;
+    @Autowired
+    private StoreDao storeDao;
+    @Autowired
+    private CustomerDao customerDao;
 
     /**
      * 复核台集货完成生产待复核数据
@@ -159,6 +165,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
         if (null != operationExecLineGroup && !operationExecLineGroup.isEmpty()) {
             // 每组数据分别生成待复核数据
             for (WhOperationExecLineCommand groupLine : operationExecLineGroup) {
+                Long odoId = groupLine.getOdoId();
+                WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
+                Store store2 = storeDao.findById(whOdo.getStoreId());
+                Customer customer2 = customerDao.findById(whOdo.getCustomerId());
                 Long outerContainerId = groupLine.getUseOuterContainerId();
                 Integer containerLatticeNo = groupLine.getUseContainerLatticeNo();
                 Long insideContainerId = groupLine.getUseContainerId();
@@ -178,8 +188,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setCheckingMode(checkingMode);
                     checking.setContainerId(insideContainerId);
                     checking.setContainerLatticeNo(containerLatticeNo);
-                    checking.setCustomerCode("");
-                    checking.setCustomerName("");
+                    if (null != customer2) {
+                        checking.setCustomerCode(customer2.getCustomerCode());
+                        checking.setCustomerName(customer2.getCustomerName());
+                    }
                     checking.setDistributionMode(distributionMode);
                     checking.setFacilityId(null);
                     checking.setOuId(ouId);
@@ -190,8 +202,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setProductCode("");
                     checking.setProductName("");
                     checking.setStatus(CheckingStatus.NEW);
-                    checking.setStoreCode("");
-                    checking.setStoreName("");
+                    if (null != store2) {
+                        checking.setStoreCode(store2.getStoreCode());
+                        checking.setStoreName(store2.getStoreName());
+                    }
                     checking.setTimeEffectCode("");
                     checking.setTimeEffectName("");
                     checking.setTransportCode("");
@@ -380,6 +394,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
         if (null != seedingSkuInventoryListGroup && !seedingSkuInventoryListGroup.isEmpty()) {
             // 每组数据分别生成待复核数据
             for (WhSeedingCollectionLineCommand groupLine : seedingSkuInventoryListGroup) {
+                Long odoId = groupLine.getOdoId();
+                WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
+                Store store2 = storeDao.findById(whOdo.getStoreId());
+                Customer customer2 = customerDao.findById(whOdo.getCustomerId());
                 String facilityCode = groupLine.getFacilityCode();
                 Integer latticeNo = groupLine.getLatticeNo();
                 String outboundBoxCode = groupLine.getOutboundBoxCode();
@@ -398,8 +416,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setCheckingMode(checkingMode);
                     checking.setContainerId(null);
                     checking.setContainerLatticeNo(latticeNo);
-                    checking.setCustomerCode("");
-                    checking.setCustomerName("");
+                    if (null != customer2) {
+                        checking.setCustomerCode(customer2.getCustomerCode());
+                        checking.setCustomerName(customer2.getCustomerName());
+                    }
                     checking.setDistributionMode(distributionMode);
                     checking.setFacilityId(facilityId);
                     checking.setOuId(ouId);
@@ -410,8 +430,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                     checking.setProductCode("");
                     checking.setProductName("");
                     checking.setStatus(CheckingStatus.NEW);
-                    checking.setStoreCode("");
-                    checking.setStoreName("");
+                    if (null != store2) {
+                        checking.setStoreCode(store2.getStoreCode());
+                        checking.setStoreName(store2.getStoreName());
+                    }
                     checking.setTimeEffectCode("");
                     checking.setTimeEffectName("");
                     checking.setTransportCode("");

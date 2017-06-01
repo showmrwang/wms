@@ -426,8 +426,6 @@ public class ErrorCodes {
     public static final int UPDATE_FAILURE = 11079;
     /** ASN没有此商品信息 **/
     public static final int RCVD_ASN_NO_SKU_ERROR = 11080;
-    /** 出库单外部单号已存在 **/
-    public static final int ODO_EXTCODE_ISEXIST = 11081;
     /** 此状态下出库单不允许编辑 */
     public static final int ODO_EDIT_ERROR = 11082;
     /** PO单所包含的子Po状态不全为【关闭】，PO单不允许审核成功 */
@@ -468,6 +466,10 @@ public class ErrorCodes {
     public static final int FEEDBACK_ORIGINAL_ERROR = 11099;
     /** 系统不允许部分行取消 */
     public static final int ODO_CANCEL_NO_SUPPORT_LINE_ERROR = 11100;
+    /** 出库单外部单号已存在 **/
+    public static final int ODO_EXTCODE_ISEXIST = 11101;
+    /** PO单正在被他人操作 **/
+    public static final int ASN_CREATE_SYNC_ERROR = 11104;
     // 10001-20000 luyimin
 
 
