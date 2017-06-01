@@ -551,6 +551,7 @@ public class PalletPutawayLocationRecommend extends BasePutawayLocationRecommend
                         List<Long> invSkus = whSkuLocationDao.findOtherSkuInInvLocation(ouId, locId, skuId);
                         List<Long> tobefilledSkus = whSkuLocationDao.findOtherSkuInTobefilledLocation(ouId, locId, skuId);
                         List<Long> allSkus = new ArrayList<Long>();
+                        allSkus.add(skuId);
                         if(null != invSkus && invSkus.size() > 0){
                             allSkus.addAll(invSkus);
                         }
@@ -572,6 +573,7 @@ public class PalletPutawayLocationRecommend extends BasePutawayLocationRecommend
                         List<WhSkuInventoryCommand> invSkuAttr = whSkuLocationDao.findOtherSkuAttrInInvLocation(ouId, locId, skuId, sql.toString());
                         List<WhSkuInventoryCommand> tobefilledInvSkuAttr = whSkuLocationDao.findOtherSkuAttrInTobefilledLocation(ouId, locId, skuId, sql.toString());
                         List<WhSkuInventoryCommand> allInvSkuAttr = new ArrayList<WhSkuInventoryCommand>();
+                        allInvSkuAttr.add(invCmd);
                         if(null != invSkuAttr && invSkuAttr.size() > 0){
                             allInvSkuAttr.addAll(invSkuAttr); 
                         }
