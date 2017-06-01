@@ -698,28 +698,35 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         List<WhChecking> whCheckingList = whCheckingDao.findListByParamWithNoFinish(checking);
         if (null != whCheckingList && !whCheckingList.isEmpty()) {
             checking = whCheckingList.get(0);
-            if (CheckingStatus.FINISH == checking.getStatus()) {
-                // 找到的复核行状态为10,提示已复核完成
-                whCheckingCommand.setTip(Constants.TIP_FINISH);
-                // TODO
-                command.setCheckingCommand(whCheckingCommand);
-                return true;
-            } else {
-                if (Constants.PICKING_MODE_BATCH_GROUP.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checking.getPickingMode())) {
-                    // TODO 查找对应的主副品或者套装或者秒杀
-
-                }
-                // 可以执行复核操作
-                whCheckingCommand.setId(checking.getId());
-                // List<WhCheckingLineCommand> whCheckingLineList =
-                // findWhCheckingLineByChecking(whCheckingCommand);
-                // command.setCheckingLineCommandList(whCheckingLineList);
+            if (null != checking.getContainerLatticeNo()) {
+                // 货格
                 whCheckingCommand.setBatch(input);
-                whCheckingCommand.setTip(Constants.TIP_SUCCESS);
-                command.setCheckingCommand(whCheckingCommand);
-                command = findWhCheckingLineByChecking(command);
+                whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
                 return true;
+            } else if (null != checking.getOutboundboxCode()) {
+                // 出库箱
+                int size = whCheckingList.size();
+                if (1 == size) {
+                    // 只有一个出库箱
+                    whCheckingCommand.setTip(Constants.TIP_BATCH_UNIQUE_OUTBOUND_BOX);
+                    whCheckingCommand.setOutboundboxCode(checking.getOutboundboxCode());
+                    whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
+                } else {
+                    // 多个出库箱
+                    whCheckingCommand.setTip(Constants.TIP_BATCH_MULTIPLE_OUTBOUND_BOX);
+                    whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
+                }
             }
+            if (Constants.PICKING_MODE_BATCH_GROUP.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checking.getPickingMode())) {
+                // TODO 查找对应的主副品或者套装或者秒杀
+
+            }
+            // 可以执行复核操作
+            // List<WhCheckingLineCommand> whCheckingLineList =
+            // findWhCheckingLineByChecking(whCheckingCommand);
+            // command.setCheckingLineCommandList(whCheckingLineList);
+            whCheckingCommand.setBatch(input);
+            return true;
         }
         return false;
     }
@@ -736,17 +743,43 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhOdo odo = whOdoDao.findOdoByCodeAndOuId(input, ouId);
         if (null != odo) {
             Long odoId = odo.getId();
-            WhDistributionPatternRule distributionPatternRule = whDistributionPatternRuleDao.findByOdoIdAndOuId(odoId, ouId);
-            if (null != distributionPatternRule && (Constants.PICKING_MODE_PICKING.equals(distributionPatternRule.getPickingMode()) || Constants.PICKING_MODE_SEED.equals(distributionPatternRule.getPickingMode()))) {
-                whCheckingCommand.setOdoId(odoId);
+            WhChecking checking = new WhChecking();
+            // checkingLine.setOdoId(odoId);
+            // checkingLine.setOuId(ouId);
+            List<WhChecking> whCheckingList = whCheckingLineDao.findListByParamWithNoFinish(odoId, ouId);
+            if (null != whCheckingList && !whCheckingList.isEmpty()) {
+                checking = whCheckingList.get(0);
+                if (null != checking.getContainerLatticeNo()) {
+                    // 货格
+                    whCheckingCommand.setBatch(input);
+                    whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
+                    return true;
+                } else if (null != checking.getOutboundboxCode()) {
+                    // 出库箱
+                    int size = whCheckingList.size();
+                    if (1 == size) {
+                        // 只有一个出库箱
+                        whCheckingCommand.setTip(Constants.TIP_BATCH_UNIQUE_OUTBOUND_BOX);
+                        whCheckingCommand.setOutboundboxCode(checking.getOutboundboxCode());
+                        whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
+                    } else {
+                        // 多个出库箱
+                        whCheckingCommand.setTip(Constants.TIP_BATCH_MULTIPLE_OUTBOUND_BOX);
+                        whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
+                    }
+                }
+                if (Constants.PICKING_MODE_BATCH_GROUP.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checking.getPickingMode())) {
+                    // TODO 查找对应的主副品或者套装或者秒杀
+
+                }
+                // 可以执行复核操作
                 // List<WhCheckingLineCommand> whCheckingLineList =
                 // findWhCheckingLineByChecking(whCheckingCommand);
                 // command.setCheckingLineCommandList(whCheckingLineList);
-                whCheckingCommand.setTip(Constants.TIP_SUCCESS);
-                command.setCheckingCommand(whCheckingCommand);
-                command = findWhCheckingLineByChecking(command);
+                whCheckingCommand.setBatch(input);
                 return true;
             }
+            return false;
         }
         return false;
     }
@@ -1415,7 +1448,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
                             idsList.add(checkingLineList.get(0).getOdoId());
                             // 销售清单
-                             checkingManager.printSalesList(idsList, userId, ouId);
+                            checkingManager.printSalesList(idsList, userId, ouId);
                         }
                         if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                             // 面单

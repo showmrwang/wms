@@ -798,10 +798,17 @@ public final class Constants {
     public static final String TIP_SUCCESS = "SUCCESS";
     /** 按单复核:提示扫描出库箱或货格号 */
     public static final String TIP_OUTBOUND_BOX_OR_NO = "OUTBOUND_BOX_OR_NO";
+    /** 按单复核:提示扫描小车或播种墙 */
+    public static final String TIP_CONTAINER_OR_FACILITY = "CONTAINER_OR_FACILITY";
     /** 按单复核:提示已经完成复核 */
     public static final String TIP_FINISH = "FINISH";
     /** 按单复核:提示扫描批次号 */
     public static final String TIP_BATCH = "BATCH";
+    /** 按单复核:提示扫描批次号 */
+    public static final String TIP_BATCH_UNIQUE_OUTBOUND_BOX = "BATCH_UNIQUE_OUTBOUND_BOX";
+
+    public static final String TIP_BATCH_MULTIPLE_OUTBOUND_BOX = "BATCH_MULTIPLE_OUTBOUND_BOX";
+
 
     /** 按单复核方式:小车出库箱流程 */
     public static final int CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX = 1;
@@ -869,7 +876,7 @@ public final class Constants {
     public static final String WEEK_DAY_SUNDAY = "Sunday";
 
 
-    public static final Double PICKING_NUM = 1.0;  //拣货数量
+    public static final Double PICKING_NUM = 1.0; // 拣货数量
 
     // ------------------导入配置--------------------------------
     public static final String IMPORT_BIPO_EXCEL_CONFIG_ID = "biPo";// 入库单导入
@@ -941,12 +948,12 @@ public final class Constants {
     public static final String CHECK = "handover";
     public static final String CHECK_BY_CONTAINER = "CHECK_BY_CONTAINER";
     public static final String CHECK_BY_ODO = "CHECK_BY_ODO";
-    
+
     /** 电子面单 */
     public static final String WAYBILL_TYPE_ELECTRONIC = "waybill_electronic";
     /** 纸质面单 */
     public static final String WAYBILL_TYPE_PAPER = "waybill_paper";
     /** 保价 */
     public static final String EXPRESS_VAS_INSURED = "INSURED";
-    
+
 }
