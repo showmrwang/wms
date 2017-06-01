@@ -329,7 +329,13 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             if(PoAsnStatus.PO_CANCELED==whpo.getStatus()||PoAsnStatus.PO_CLOSE==whpo.getStatus()){
                 throw new BusinessException(ErrorCodes.PO_CREATEASN_STATUS_ERROR);
             }
-            this.deleteTempAsnAndLine(poId, ouId, null);
+            try {
+
+                this.deleteTempAsnAndLine(poId, ouId, null);
+            } catch (Exception ex) {
+                log.error("", ex);
+                throw new BusinessException(ErrorCodes.ASN_CREATE_SYNC_ERROR);
+            }
 
             // 验证数据完整性
             // checkAsnParameter(asn);
