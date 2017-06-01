@@ -440,11 +440,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
                 String locationCode = lrrCmd.getLocationCode();
                 Set<Long> rLocs = invRecommendLocId.get(lrrCmd.getSkuAttrId());
-                if(null != rLocs){
-                    rLocs.add(locationId);
-                }else{
-                    rLocs = new HashSet<Long>();
-                    rLocs.add(locationId);
+                if (null != rLocs) {
+                    if (!StringUtils.isEmpty(locationCode)) {
+                        rLocs.add(locationId);
+                    }
+                } else {
+                    if (!StringUtils.isEmpty(locationCode)) {
+                        rLocs = new HashSet<Long>();
+                        rLocs.add(locationId);
+                    }
                 }
                 invRecommendLocId.put(lrrCmd.getSkuAttrId(), rLocs);
                 Set<String> rLocCodes = invRecommendLocCode.get(lrrCmd.getSkuAttrId());
@@ -475,7 +479,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (null != allSkuAttrIdsQty) {
                             qty = allSkuAttrIdsQty.get(SkuCategoryProvider.getSkuAttrIdByInv(invCmd));
                         }
-
+                        if(0 == qty.compareTo(new Long(0))){
+                            continue;
+                        }
                         inv.setQty(new Double(qty));// 待移入
                         inv.setLocationId(recommendLocId);
                         try {
@@ -527,6 +533,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         if (null != allSkuAttrIds && 0 < allSkuAttrIds.size()) {
                             // 插入待移入库位库存
                             int qty = allSkuAttrIds.size();
+                            if(0 == qty){
+                                continue;
+                            }
                             WhSkuInventoryTobefilled inv = new WhSkuInventoryTobefilled();
                             BeanUtils.copyProperties(invCmd, inv);
                             inv.setId(null);

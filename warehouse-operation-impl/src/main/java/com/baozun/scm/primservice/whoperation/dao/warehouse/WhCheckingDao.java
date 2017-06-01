@@ -213,4 +213,6 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      */
     WeightingCommand findByOutboundBoxCodeForChecking(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 
+    WeightingCommand findByOutboundBoxCodeForChecking1(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
+
 }

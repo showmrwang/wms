@@ -387,6 +387,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     if (null == odoLine.getLineAmt()) {
                         odoLine.setLineAmt(odoLine.getLinePrice() * odoLine.getQty());
                     }
+                    if (null == odoLine.getIsCheck()) {
+
+                        odoLine.setIsCheck(true);
+                    }
+                    if (null == odoLine.getFullLineOutbound()) {
+
+                        odoLine.setFullLineOutbound(true);
+                    }
                     odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
                     odoLine.setCurrentQty(lineCommand.getCurrentQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCurrentQty());
                     odoLine.setActualQty(lineCommand.getActualQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getActualQty());
@@ -497,7 +505,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             // @mender yimin.lu 配货模式计算
             // 汇总信息
             if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
-                this.getSummaryByOdolineList(odo);
+                this.getSummaryByOdolineList(odo, trans);
                 // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
                 if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
                     // 设置计数器编码
@@ -539,7 +547,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         return odoId;
     }
 
-    private void getSummaryByOdolineList(WhOdo odo) {
+    private void getSummaryByOdolineList(WhOdo odo, WhOdoTransportMgmt trans) {
         List<WhOdoLine> lineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), odo.getOuId());
         // 出库单统计数目
         double qty = Constants.DEFAULT_DOUBLE;
@@ -548,10 +556,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         boolean isHazardous = odo.getIncludeHazardousCargo();
         boolean isFragile = odo.getIncludeFragileCargo();
         Set<Long> skuIdSet = new HashSet<Long>();
-        // #TODO 是否合并逻辑
-        boolean isAllowMerge = false;
-        if (odo.getIsLocked() == null || odo.getIsLocked() == false) {
-            isAllowMerge = true;
+        // # 是否合并逻辑:锁定的出库单不允许合并，COD,保价已经增值服务的出库单不允许合并 @mender yimin.lu 2017/6/1
+        boolean isAllowMerge = true;
+        if ((odo.getIsLocked() != null && odo.getIsLocked()) || (trans.getIsCod() != null && trans.getIsCod()) || (trans.getInsuranceCoverage() != null && trans.getInsuranceCoverage() < 0d)) {
+            isAllowMerge = false;
         } else {
             List<WhOdoVasCommand> ouVasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), null, odo.getOuId());
             if (ouVasList != null && ouVasList.size() > 0) {
@@ -566,13 +574,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 skuIdSet.add(line.getSkuId());
                 amt += line.getLineAmt();
                 qty += line.getQty();
-
-                if (isAllowMerge) {
-                    List<WhOdoVasCommand> ouVasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), line.getId(), odo.getOuId());
-                    if (ouVasList != null && ouVasList.size() > 0) {
-                        isAllowMerge = false;
-                    }
-                }
+                // @mender yimin.lu 不需要查询明细的增值服务 2017/6/1
             }
 
         }

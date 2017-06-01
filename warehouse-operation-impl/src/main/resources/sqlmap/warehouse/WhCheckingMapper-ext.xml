@@ -1198,6 +1198,32 @@
 		AND consumable.ou_id = #{ouId}
 		LIMIT 1
     </select>
+
+    <select id="findByOutboundBoxCodeForChecking1" resultMap="WeightingCommand" flushCache="false">
+		SELECT
+			info.outboundbox_code AS outboundboxCode,
+			pack.calc_weight AS calcWeighting,
+			pack.floats AS floats,
+			odo.odo_code AS odoCode,
+			box.wave_code AS waveCode,
+			box.batch AS batch,
+			info.transport_code AS transportCode,
+			info.waybill_code AS waybillCode,
+			consumable.sku_barcode AS skuCode,
+			box.customer_name AS customerName,
+			box.store_name AS storeName
+		FROM
+			t_wh_odo_delivery_info info
+		LEFT JOIN t_wh_outboundbox box ON info.outboundbox_code = box.outboundbox_code
+		AND info.odo_id = box.odo_id
+		LEFT JOIN t_wh_odo odo ON info.odo_id = odo.id
+		LEFT JOIN t_wh_odo_package_info pack ON pack.odo_id = info.odo_id
+		LEFT JOIN t_wh_outbound_consumable consumable ON consumable.outboundbox_code = info.outboundbox_code
+		WHERE
+			info.outboundbox_code = #{outboundBoxCode}
+			AND info.ou_id = #{ouId};
+		LIMIT 1
+    </select>
     
 
 </mapper>
