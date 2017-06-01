@@ -3343,6 +3343,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
                         newSkuInventory.setOccupationCode(whOdo.getOdoCode());
                     }
+                    newSkuInventory.setOccupationLineId(operationLineCommand.getOdoLineId());
                     newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
                     // 内部对接码
                     try {
@@ -3404,6 +3405,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             newSkuInventory.setOccupationCode(whOdo.getOdoCode());
                         }
                     }
+                    newSkuInventory.setOccupationLineId(operationLineCommand.getOdoLineId());
                     // 内部对接码
                     try {
                         newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
