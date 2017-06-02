@@ -45,9 +45,9 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     private Boolean isNeedScanLocation = false;
     /**是否需要扫描周转箱*/
     private Boolean isNeedScanTurnoverBox = false;
-    /**是否需要扫描周转箱*/
+    /**是否需要扫描托盘*/
     private Boolean isNeedScanPallet = false;
-    /**是否需要扫描周转箱*/
+    /**是否需要扫描胡货箱*/
     private Boolean isNeedScanContainer = false;
     /**是否扫描结束*/
     private Boolean isScanFinsh = false;
@@ -126,7 +126,7 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     
     private String tipOuterContainerCode;
     
-    
+    private String outerContainerCode;
     private String tipInsideContainerCode;
     
     
@@ -733,6 +733,14 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
 
     public void setContainerCode(String containerCode) {
         this.containerCode = containerCode;
+    }
+
+    public String getOuterContainerCode() {
+        return outerContainerCode;
+    }
+
+    public void setOuterContainerCode(String outerContainerCode) {
+        this.outerContainerCode = outerContainerCode;
     }
 
 }

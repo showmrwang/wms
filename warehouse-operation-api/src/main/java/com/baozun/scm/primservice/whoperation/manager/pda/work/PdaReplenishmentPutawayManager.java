@@ -123,5 +123,15 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
       */
      public void updateTurnoverBox(String turnoverBoxCode,Long ouId);
      
+     /**
+      * 提示内部容器
+      * @param outerContainerCode
+      * @param ouId
+      * @param operationId
+      * @param locationId
+      * @return
+      */
+     public ReplenishmentPutawayCommand scanOuterContainer(ReplenishmentPutawayCommand command,Long ouId,Long userId,Boolean isTabbInvTotal);
+     
      
 }

@@ -965,8 +965,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 			ou_id = #{ouId}
 			and operation_id = #{operationId}
-			and use_container_id = #{useContainerId}
 			and to_location_id=#{locationId}
+			<if test="useContainerId!=null and useContainerId!=''">
+				  and use_container_id = #{useContainerId}
+	        </if>
+	        <if test="useOuterContainerId!=null and useOuterContainerId!=''">
+				  and use_outer_container_id = #{useOuterContainerId}
+	        </if>
 			and qty != complete_qty
 	</select>
 </mapper>

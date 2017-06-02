@@ -8220,12 +8220,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param workCode
      * @param turnoverBoxId
      */
-    public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long palletId, Long turnoverBoxId) {
+    public void replenishmentContianerPutaway(Long outerContainerId,Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId,  Long turnoverBoxId) {
         List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
         if (null == invTobefilledList || 0 == invTobefilledList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
         }
-        List<WhSkuInventoryCommand> invSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByReplenishment(ouId, turnoverBoxId);// 获取容器库存/关联sn的记录
+        List<WhSkuInventoryCommand> invSnList = null;
+        if(null == outerContainerId){//整箱
+            invSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByReplenishment(null,ouId, turnoverBoxId);// 获取容器库存/关联sn的记录
+        }else{//整托
+            invSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByReplenishment(outerContainerId,ouId, null);// 获取容器库存/关联sn的记录
+        }
         if (null == invSnList || 0 == invSnList.size()) {
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
         }
@@ -8243,9 +8248,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         // 2.执行上架(一入一出)
         for (WhSkuInventoryCommand invCmd : invSnList) {
                 String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
-                List<WhSkuInventoryCommand> invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(ouId, turnoverBoxId, invCmd.getUuid());
+                List<WhSkuInventoryCommand> invList = null;
+                if(null == outerContainerId){//整箱
+                    invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(null,ouId, turnoverBoxId, invCmd.getUuid());
+                }else{//整托
+                    invList =  whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(outerContainerId,ouId, null, invCmd.getUuid());
+                }
                 for (WhSkuInventoryCommand skuInvCmd : invList) {
-                    this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, palletId, isTabbInvTotal);
+                    this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, outerContainerId, isTabbInvTotal);
                     String uuid1 = skuInvCmd.getUuid();
                     Double oldQty1 = 0.0;
                     if (true == isTabbInvTotal) {
@@ -8304,6 +8314,20 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
                 containerDao.saveOrUpdateByVersion(container);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+            }
+            if (null != outerContainerId) { // 修改托盘
+                //判断是否该托盘是否还有货箱没有上架
+                int count = whSkuInventoryDao.findAllInventoryCountsByOuterContainerId(ouId, outerContainerId);
+                if(count == 0 ){
+                    Container container = containerDao.findByIdExt(outerContainerId, ouId);
+                    if (null == container) {
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS);
+                    }
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
             }
         }
     }
@@ -8677,7 +8701,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param workCode
      */
     public void replenishmentSplitContainerPutaway(List<String> cacehSnList, Double skuScanQty, String skuAttrId, Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long turnoverBoxId, Long newTurnoverBoxId) {
-        List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(locationId,operationId, ouId, turnoverBoxId);
+        List<WhOperationExecLine>  execLineList = whOperationExecLineDao.findOperationExecLineByUseContainerId(null,locationId,operationId, ouId, turnoverBoxId);
         if(null == execLineList){
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST, new Object[] {});
         }
