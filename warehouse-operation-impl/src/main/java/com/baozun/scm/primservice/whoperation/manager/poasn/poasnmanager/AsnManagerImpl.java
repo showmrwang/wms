@@ -629,12 +629,13 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                 }
             }
             // 最后修改ASN的计划数量
-            whAsn.setQtyPlanned(qty);
-            int result = whAsnDao.saveOrUpdateByVersion(whAsn);
+            WhAsn updateAsn = this.whAsnDao.findWhAsnById(whAsn.getId(), ouId);
+            updateAsn.setQtyPlanned(qty);
+            int result = whAsnDao.saveOrUpdateByVersion(updateAsn);
             if (result <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            this.insertGlobalLog(GLOBAL_LOG_UPDATE, whAsn, ouId, userId, null, null);
+            this.insertGlobalLog(GLOBAL_LOG_UPDATE, updateAsn, ouId, userId, null, null);
             return whAsn.getId();
         } catch (BusinessException e) {
             throw e;
