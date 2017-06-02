@@ -846,9 +846,9 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     
     
-    public List<WhSkuInventoryCommand> getWhSkuInventorySnCommandByReplenishment(@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId);
+    public List<WhSkuInventoryCommand> getWhSkuInventorySnCommandByReplenishment(@Param("outerContainerId") Long outerContainerId,@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId);
     
-    public List<WhSkuInventoryCommand> getWhSkuInventoryCommandByReplenishment(@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId,@Param("uuid") String uuid);
+    public List<WhSkuInventoryCommand> getWhSkuInventoryCommandByReplenishment(@Param("outerContainerId") Long outerContainerId,@Param("ouId") Long ouId, @Param("turnoverBoxId") Long turnoverBoxId,@Param("uuid") String uuid);
     
     public List<WhSkuInventoryCommand> getWhSkuInventoryCommandByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
     /**
@@ -872,7 +872,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     public List<WhSkuInventoryCommand> checkReplenishmentInventory(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
 
 
-    public List<WhSkuInventoryCommand> findReplenishmentBylocationId(@Param("turnoverBoxId") Long turnoverBoxId, @Param("ouId") Long ouId, @Param("locationId") Long locationId);
+    public List<WhSkuInventoryCommand> findReplenishmentBylocationId(@Param("outerContainerId") Long outerContainerId,@Param("turnoverBoxId") Long turnoverBoxId, @Param("ouId") Long ouId, @Param("locationId") Long locationId);
 
     List<WhSeedingCollectionLine> findSeedingDataByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 
@@ -1177,4 +1177,14 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
         @Param("insideContainerId") Long insideContainerId);
     
     public List<WhSkuInventoryCommand> findWhSkuInventoryContainerPicking( @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("uuid") String uuid);
+    
+    
+    /**
+     * 根据外部容器获取数量
+     * 
+     * @param ouid
+     * @param insideContainerid
+     * @return
+     */
+    int findAllInventoryCountsByOuterContainerId(@Param("ouId") Long ouid, @Param("outerContainerId") Long outerContainerId);
 }

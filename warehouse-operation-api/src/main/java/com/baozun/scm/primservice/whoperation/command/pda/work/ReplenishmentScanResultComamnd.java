@@ -21,9 +21,9 @@ public class ReplenishmentScanResultComamnd extends BaseCommand {
     private Boolean isNeedScanLocation;
     /**是否需要扫描周转箱*/
     private Boolean isNeedScanTurnoverBox;
-    /**是否需要扫描周转箱*/
+    /**是否需要扫托盘*/
     private Boolean isNeedScanPallet;
-    /**是否需要扫描周转箱*/
+    /**是否需要扫货箱*/
     private Boolean isNeedScanContainer;
 
     public Long getLocationId() {

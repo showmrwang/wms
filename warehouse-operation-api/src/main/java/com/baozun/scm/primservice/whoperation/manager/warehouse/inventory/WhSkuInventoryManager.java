@@ -411,9 +411,9 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param isTabbInvTotal
      * @param userId
      * @param workCode
-     * @param turnoverBoxId
+     * @param turnoverBoxId(周转箱id或者货箱id)
      */
-    public void replenishmentContianerPutaway(Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, String workCode, Long palletId,Long turnoverBoxId);
+    public void replenishmentContianerPutaway(Long outerContainerId,Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, Long turnoverBoxId);
 
     void emptyouterContainerIdAndSeedingWallCode(String outboundboxCode, Long ouId);
 

@@ -2042,6 +2042,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		inv.ou_id = #{ouId}
 		and inv.inside_container_id = #{insideContainerId}
 	</select>
+	<select id="findAllInventoryCountsByOuterContainerId"  resultType="Integer">
+		select count(1)
+		from
+		t_wh_sku_inventory as inv
+		where
+		inv.ou_id = #{ouId}
+		and inv.outer_container_id = #{outerContainerId}
+	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId1" resultType="Integer">
 		select count(1) from t_wh_sku_inventory inv,t_wh_asn asn where inv.occupation_code is not null and inv.outer_container_id is not null
@@ -3905,7 +3913,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		t_wh_sku_inventory
 		where	    ou_id = #{ouId}
 	            and location_id = #{locationId}
-	            and inside_container_id =#{turnoverBoxId}
+	            <if test="outerContainerId!=null and outerContainerId!=''">
+				          	 and outer_container_id = #{outerContainerId}
+	            </if>
+	            <if test="turnoverBoxId!=null and turnoverBoxId!=''">
+					         and inside_container_id=#{turnoverBoxId}
+	           </if>
 	</select>
 	
 	<select id="findSeedingDataByContainerId" resultMap="WhSeedingCollectionLineResult">
@@ -5290,20 +5303,35 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						t_wh_sku_inventory inv
 					WHERE
 						inv.ou_id = #{ouId}
-					AND inv.inside_container_id = #{turnoverBoxId}
+						<if test="turnoverBoxId != null and turnoverBoxId!=''">
+						     and inv.inside_container_id = #{turnoverBoxId}
+						</if>
+						<if test="outerContainerId != null and outerContainerId!=''">
+						     and inv.outer_container_id = #{outerContainerId}
+						</if>
 					GROUP BY inv.uuid
 			) inventory 
 			LEFT JOIN t_wh_sku_inventory_sn sn ON inventory.invUuid = sn.uuid
 			WHERE
 				inventory.invOuId = #{ouId}
-			AND inventory.insideContainerId = #{turnoverBoxId}
+			  <if test="turnoverBoxId != null and turnoverBoxId!=''">
+				 and inventory.insideContainerId = #{turnoverBoxId}
+			  </if>
+			  <if test="outerContainerId != null and outerContainerId!=''">
+			     and inventory.outerContainerId = #{outerContainerId}
+			  </if>
     </select>
     <select id="getWhSkuInventoryCommandByReplenishment" resultMap="WhSkuInventoryCommandResultExt">
           select <include refid="whSkuInventoryColumnsInvExt" />
           from t_wh_sku_inventory inv
           where inv.ou_id=#{ouId}
                 and inv.uuid=#{uuid}
-                and inv.inside_container_id = #{turnoverBoxId}
+                <if test="turnoverBoxId != null and turnoverBoxId!=''">
+						 and inv.inside_container_id = #{turnoverBoxId}
+				</if>
+				<if test="outerContainerId != null and outerContainerId!=''">
+						and inv.outer_container_id = #{outerContainerId}
+				</if>
     </select>
     
      <select id="countWhSkuInventoryCommandByInsideContainerId" resultType="Integer">
