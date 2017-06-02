@@ -1782,6 +1782,12 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                      }
                  }else{
                      command.setIsScanFinsh(true);
+                     //更新工作及作业状态
+                     this.updateStatus(operationId, workCode, ouId, userId);
+                    //修改作业执行明细的执行量
+                     this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  //需要改
+                     //判断当前库位是否有拣货工作
+                     this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId); //需要改
                  }
                  whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
              }
