@@ -36,12 +36,12 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     /** 外部容器对应所有内部容器(周转箱) */
     private Map<Long, Set<Long>> palleToContainer = new HashMap<Long, Set<Long>>();
     /** 目标库位对应的所有内部容器（无外部容器） */ 
-    private Map<Long, Set<Long>> containerToLocation = new HashMap<Long, Set<Long>>();  //删掉
+    private Map<Long, Set<Long>> containerToLocation = new HashMap<Long, Set<Long>>();  
     
     // 库位商品统计信息 
     /** 所有目标库位 */
     private List<Long> locationIds = new ArrayList<Long>();
-    /** 目标库位对应的所有周转箱 */
+    /** 目标库位对应的所有周转箱(没有外部容器的) */
     private Map<Long, Set<Long>> turnoverBoxIds = new HashMap<Long, Set<Long>>();
     /** 周转箱对应的所有sku */
     private Map<String, Set<Long>> skuIds = new HashMap<String, Set<Long>>();
@@ -55,13 +55,13 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     /** 目标库位对应的所有内部容器（整托整箱） */
     private Map<Long, Set<Long>> insideContainerIds = new HashMap<Long, Set<Long>>();//删掉
     /** 内部容器对应所有sku（整托整箱）*/
-    private Map<String, Set<Long>> insideSkuIds = new HashMap<String, Set<Long>>();
+    private Map<String, Set<Long>> insideSkuIds = new HashMap<String, Set<Long>>();//删掉
     /** 内部容器每个sku总件数（整托整箱） */
-    private Map<String, Map<Long, Long>> insideSkuQty = new HashMap<String, Map<Long, Long>>();
+    private Map<String, Map<Long, Long>> insideSkuQty = new HashMap<String, Map<Long, Long>>();//删掉
     /** 内部容器每个sku对应的唯一sku及件数（整托整箱） */
-    private Map<String, Map<Long, Map<String, Long>>> insideSkuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();
+    private Map<String, Map<Long, Map<String, Long>>> insideSkuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();//删掉
     /** 内部容器每个唯一sku对应的所有sn及残次条码 */
-    private Map<String, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
+    private Map<String, Map<String, Set<String>>> insideSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();//删掉
     
     //columns END
     

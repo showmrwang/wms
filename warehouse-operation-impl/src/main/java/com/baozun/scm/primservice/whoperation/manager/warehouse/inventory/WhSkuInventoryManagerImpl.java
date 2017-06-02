@@ -10462,6 +10462,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             this.addOutBoundBoxInventory(cacehSnList,invCmd, invSnCmd,Double.valueOf(checkingLine.getQty()), outboundboxCode, isTabbInvTotal, ouId, userId);
                             //删除容器库存
                             this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
+                            break;
                         }
                         
                         if(invCmd.getOnHandQty().doubleValue()  > Double.valueOf(checkingLine.getQty()).doubleValue() ){
@@ -10470,6 +10471,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             this.addOutBoundBoxInventory(cacehSnList,invCmd, invSnCmd,Double.valueOf(checkingLine.getQty()), outboundboxCode, isTabbInvTotal, ouId, userId);
                             //修改容器库存
                             this.updateContainerInventory(qty, invCmd, ouId, userId, isTabbInvTotal, oldQty);
+                            break;
                             
                         }
                        
@@ -10479,17 +10481,20 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 this.addOutBoundBoxInventory(cacehSnList,invCmd, invSnCmd,invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
                                 //删除容器库存
                                 this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
+                                continue;
                             }
                             if(sum.doubleValue() < Double.valueOf(checkingLine.getQty()).doubleValue()){
                                 this.addOutBoundBoxInventory(cacehSnList,invCmd, invSnCmd,invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
                                 //删除容器库存
                                 this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
+                                continue;
                             }
                             if(sum.doubleValue() > Double.valueOf(checkingLine.getQty()).doubleValue()){
                                 Double qty = Double.valueOf(checkingLine.getQty()) -(sum-invCmd.getOnHandQty());  //要生成出库箱库存的sku数量
                                 this.addOutBoundBoxInventory(cacehSnList,invCmd, invSnCmd, qty, outboundboxCode, isTabbInvTotal, ouId, userId);
                                 //修改容器库存
                                 this.updateContainerInventory(invCmd.getOnHandQty()-qty, invCmd, ouId, userId, isTabbInvTotal, qty);
+                                break;
                             }
                         }
                     }
