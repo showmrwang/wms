@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -53,12 +54,14 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.rule.WhLocationInvVolumeWieghtManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
@@ -73,7 +76,7 @@ import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("createInWarehouseMoveWorkManager")
 @Transactional
-public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMoveWorkManager {
+public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implements CreateInWarehouseMoveWorkManager {
 
     public static final Logger log = LoggerFactory.getLogger(CreateInWarehouseMoveWorkManagerImpl.class);
     
@@ -125,6 +128,8 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
     private WhSkuDao whSkuDao;
     @Autowired
     private WhSkuInventorySnDao whSkuInventorySnDao;
+    @Autowired
+    private WarehouseManager warehouseManager;
     
     /**
      * 库存分配（生成分配库存与待移入库存）
@@ -928,6 +933,10 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Boolean executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey) {
         try {
+            Warehouse warehouse = warehouseManager.findWarehouseById(ouId);
+            if (null == warehouse) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
             List<WhSkuInventorySn> skuInventorySnLst = new ArrayList<WhSkuInventorySn>();
             skuInventorySnLst = this.getSnStatistics(snKey);
             // 获取工作头信息        
@@ -963,15 +972,19 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
                     if(null == whSkuInventory.getOccupationCode() && 0 != allocatedQty.compareTo(0.00)){
                         if(allocatedQty < whSkuInventory.getOnHandQty()){
                             whSkuInventory.setOnHandQty(whSkuInventory.getOnHandQty() - allocatedQty); 
-                            skuInventoryDao.update(whSkuInventory);
+                            skuInventoryDao.saveOrUpdateByVersion(whSkuInventory);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
+                            insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), whSkuInventory.getOnHandQty() + allocatedQty, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                             break;
                         }else{
                             allocatedQty = allocatedQty - whSkuInventory.getOnHandQty();
-                            skuInventoryDao.delete(whSkuInventory.getId());
+                            skuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
+                            insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
+                            insertSkuInventoryLog(whSkuInventory.getId(), 0.00, whSkuInventory.getOnHandQty(), warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                         }
                     }
                 }
-                skuInventoryAllocatedDao.delete(skuInventoryAllocatedLst.get(0).getId());
+                skuInventoryAllocatedDao.deleteExt(skuInventoryAllocatedLst.get(0).getId(), skuInventoryAllocatedLst.get(0).getOuId());
                 //根据invMoveCode获取待移入库存 
                 WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
                 skuInventoryTobefilled.setOccupationCode(operationLineCommand.getInvMoveCode());
@@ -985,6 +998,9 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
                 whSkuInventory.setOnHandQty(skuInventoryTobefilledLst.get(0).getQty());
                 whSkuInventory.setFrozenQty(0.00);
                 skuInventoryDao.insert(whSkuInventory);
+                insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
+                insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), 0.00, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
+                
                 int snCount = 0;
                 for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
                     for( WhSkuInventorySn whSkuInventorySn : skuInventorySnLst){
@@ -994,7 +1010,9 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
                             WhSkuInventorySn skuInventorySn = new WhSkuInventorySn();
                             BeanUtils.copyProperties(whSkuInventorySnCommand, skuInventorySn);
                             skuInventorySn.setUuid(whSkuInventory.getUuid());
-                            whSkuInventorySnDao.update(skuInventorySn);
+                            whSkuInventorySnDao.saveOrUpdateByVersion(skuInventorySn);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventorySn, ouId, userId, null, null);
+                            insertSkuInventorySnLog(whSkuInventorySn.getId(), ouId); // 记录sn日志
                         }
                     }
                 }
@@ -1003,19 +1021,19 @@ public class CreateInWarehouseMoveWorkManagerImpl implements CreateInWarehouseMo
                 if (0 != retval) {
                     throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
                 }
-                skuInventoryTobefilledDao.delete(skuInventoryTobefilledLst.get(0).getId());
+                skuInventoryTobefilledDao.deleteByExt(skuInventoryTobefilledLst.get(0).getId(), skuInventoryTobefilledLst.get(0).getOuId());
             }
             // 更新工作表
             WhWork whWork = new WhWork();
             BeanUtils.copyProperties(whWorkCommand, whWork);
             whWork.setStatus(10);
             whWork.setIsLocked(false);
-            workDao.update(whWork);
+            workDao.saveOrUpdateByVersion(whWork);
             // 更新作业表
             WhOperation whOperation = new WhOperation();
             BeanUtils.copyProperties(whOperationCommand, whOperation);
             whOperation.setStatus(10);
-            operationDao.update(whOperation);
+            operationDao.saveOrUpdateByVersion(whOperation);
             // 更新缓存信息            
             this.snStatisticsRedis(skuInventorySnLst, snKey);
         } catch (Exception e) {
