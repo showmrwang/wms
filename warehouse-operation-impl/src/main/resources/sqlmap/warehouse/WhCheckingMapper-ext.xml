@@ -1225,6 +1225,51 @@
 			AND info.ou_id = #{ouId}
 		LIMIT 1
     </select>
-    
+
+    <select id="findBatchBoxCntByParam" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			count(1)
+		FROM
+			t_wh_checking checking
+		WHERE
+			checking.batch = #{batch}
+			AND checking.ou_id = #{ouId}
+			group by checking.outboundboxCode
+    </select>
+
+    <select id="findBatchBoxCntCheckByParam" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			count(1)
+		FROM
+			t_wh_checking checking
+		WHERE
+			checking.batch = #{batch}
+			AND checking.ou_id = #{ouId}
+			and checking.status != 10
+			group by checking.outboundboxCode
+    </select>
+
+    <select id="findBatchOdoCntByParam" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			count(1)
+		FROM
+			t_wh_checking checking left join t_wh_checking_line line on checking.id = line.checking_id
+		WHERE
+			checking.batch = #{batch}
+			AND checking.ou_id = #{ouId}
+			group by line.odo_id
+    </select>
+
+    <select id="findBatchOdoCntCheckByParam" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			count(1)
+		FROM
+			t_wh_checking checking left join t_wh_checking_line line on checking.id = line.checking_id
+		WHERE
+			checking.batch = #{batch}
+			AND checking.ou_id = #{ouId}
+			and checking.status != 10
+			group by line.odo_id
+    </select>
 
 </mapper>

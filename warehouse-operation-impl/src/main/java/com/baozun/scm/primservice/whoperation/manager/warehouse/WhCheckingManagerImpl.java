@@ -1208,7 +1208,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
         if (null != odoPackageInfo) {
-            odoPackageInfo.setCalcWeight(sum.longValue());
+            odoPackageInfo.setCalcWeight(sum);
             whOdoPackageInfoDao.saveOrUpdateByVersion(odoPackageInfo);
             insertGlobalLog(GLOBAL_LOG_UPDATE, odoPackageInfo, ouId, userId, null, null);
         } else {
@@ -1224,7 +1224,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOdoPackageInfo.setCreateTime(new Date());
             whOdoPackageInfo.setLastModifyTime(new Date());
             whOdoPackageInfo.setModifiedId(userId);
-            whOdoPackageInfo.setCalcWeight(sum.longValue());
+            whOdoPackageInfo.setCalcWeight(sum);
             whOdoPackageInfo.setOuId(ouId);
             whOdoPackageInfoDao.insert(whOdoPackageInfo);
             insertGlobalLog(GLOBAL_LOG_INSERT, whOdoPackageInfo, ouId, userId, null, null);
@@ -1337,6 +1337,19 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             checkingDisplayCommand.setOdoCode(odoCode);
             checkingDisplayCommand.setExtCode(odo.getExtCode());
         }
+        if (null != whCheckingCommand.getOutboundboxCode()) {
+            Long batchBoxCnt = whCheckingDao.findBatchBoxCntByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+            checkingDisplayCommand.setOutboundboxCount(batchBoxCnt);
+            Long batchBoxCntCheck = whCheckingDao.findBatchBoxCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+            checkingDisplayCommand.setToBeCheckedOutboundboxCount(batchBoxCntCheck);
+        } else {
+            checkingDisplayCommand.setOutboundboxCount(0L);
+            checkingDisplayCommand.setToBeCheckedOutboundboxCount(0L);
+        }
+        Long batchOdoCnt = whCheckingDao.findBatchOdoCntByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+        checkingDisplayCommand.setOdoCount(batchOdoCnt);
+        Long batchOdoCntCheck = whCheckingDao.findBatchOdoCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+        checkingDisplayCommand.setToBeCheckedOdoCount(batchOdoCntCheck);
         checkingDisplayCommand.setWaveCode(whCheckingCommand.getWaveCode());
         checkingDisplayCommand.setTransportName(whCheckingCommand.getTransportName());
         checkingDisplayCommand.setProductName(whCheckingCommand.getProductName());

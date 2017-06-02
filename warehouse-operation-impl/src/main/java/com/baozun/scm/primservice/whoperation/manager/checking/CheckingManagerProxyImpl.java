@@ -367,7 +367,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     // 按箱复核类型 小车
                     boolean isTrolleyCheckingFinished = this.checkTrolleyCheckingFinished(orgChecking.getId(), checkingSourceCode, ouId, logId);
                     if (isTrolleyCheckingFinished) {
-                        //TODO 校验小车库存是否已经删除完成
+                        // TODO 校验小车库存是否已经删除完成
                         // 释放小车
                         trolleyContainer = releaseTrolleyContainer(orgChecking, userId, ouId);
                     }
@@ -377,7 +377,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                     // 按箱复核类型 播种墙
                     boolean isFacilityCheckingFinished = this.checkFacilityCheckingFinished(orgChecking.getId(), checkingSourceCode, ouId, logId);
                     if (isFacilityCheckingFinished) {
-                        //TODO 校验播种墙库存是否已经删除完成
+                        // TODO 校验播种墙库存是否已经删除完成
                         // 释放播种墙
                         seedingFacility = this.releaseSeedingFacility(orgChecking, userId, ouId);
                     }
@@ -725,7 +725,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
         WhOdoTransportMgmt whOdoTransportMgmt = odoTransportMgmtManager.findTransportMgmtByOdoIdOuId(whOdo.getId(), ouId);
         String waybillCode = checkedBox.getWaybillCode();
-        if(null == waybillCode){
+        if (null == waybillCode) {
             WhOdodeliveryInfo ododeliveryInfo = whOdoDeliveryInfoManager.findUseableWaybillInfoByOdoId(whOdo.getId(), ouId);
             waybillCode = ododeliveryInfo.getWaybillCode();
         }
@@ -793,7 +793,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOdoPackageInfoCommand.setOutboundboxId(outboundbox.getId());
         whOdoPackageInfoCommand.setOutboundboxCode(outboundbox.getOutboundboxCode());
         whOdoPackageInfoCommand.setStatus(1);
-        whOdoPackageInfoCommand.setCalcWeight(packageCalcWeight.longValue());
+        whOdoPackageInfoCommand.setCalcWeight(packageCalcWeight.doubleValue());
         whOdoPackageInfoCommand.setFloats(function.getWeightFloatPercentage());
         whOdoPackageInfoCommand.setActualWeight(null);
         whOdoPackageInfoCommand.setLifecycle(BaseModel.LIFECYCLE_NORMAL);

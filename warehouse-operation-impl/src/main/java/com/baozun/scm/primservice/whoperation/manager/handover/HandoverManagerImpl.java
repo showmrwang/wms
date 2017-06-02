@@ -174,9 +174,9 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         Integer totalBox = handoverCollectionDao.findCountByHandoverStationIdAndStatus(hcList.get(0).getHandoverStationId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
         handover.setTotalBox(totalBox);
         // 计重
-        Long totalCalcWeight = 0L;
+        Double totalCalcWeight = 0.0;
         // 称重
-        Long totalActualWeight = 0L;
+        Double totalActualWeight = 0.0;
         for (HandoverCollection handoverCollection : hcList) {
             WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(handoverCollection.getOutboundboxCode(), ouId);
             if (null != whOdoPackageInfo) {
@@ -442,7 +442,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         }
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(whOutboundbox.getOutboundboxCode(), ouId);
         if (null != odoPackageInfo) {
-            odoPackageInfo.setCalcWeight(sum.longValue());
+            odoPackageInfo.setCalcWeight(sum);
             whOdoPackageInfoDao.saveOrUpdateByVersion(odoPackageInfo);
         } else {
             // WhFunctionOutBound whFunctionOutBound =
@@ -458,7 +458,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             whOdoPackageInfo.setCreateTime(new Date());
             whOdoPackageInfo.setLastModifyTime(new Date());
             whOdoPackageInfo.setModifiedId(userId);
-            whOdoPackageInfo.setCalcWeight(sum.longValue());
+            whOdoPackageInfo.setCalcWeight(sum);
             whOdoPackageInfo.setOuId(ouId);
             whOdoPackageInfoDao.insert(whOdoPackageInfo);
         }

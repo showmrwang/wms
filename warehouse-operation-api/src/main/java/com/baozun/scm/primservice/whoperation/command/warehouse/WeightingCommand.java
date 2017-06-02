@@ -16,7 +16,7 @@ public class WeightingCommand extends BaseCommand {
     private Long ouId;
 
     /** 称重*/
-    private Long actualWeight;
+    private Double actualWeight;
 
     // ====================================页面缓存====================================
 
@@ -33,7 +33,7 @@ public class WeightingCommand extends BaseCommand {
     private String outboundBoxCode;
 
     /** 计重*/
-    private Long calcWeighting;
+    private Double calcWeighting;
 
     /** 浮动百分比*/
     private Long difference;
@@ -61,9 +61,9 @@ public class WeightingCommand extends BaseCommand {
 
     /** 店铺名称*/
     private String storeName;
-    
+
     private Boolean isSuccess;
-    
+
 
     public Long getFuncId() {
         return funcId;
@@ -81,11 +81,11 @@ public class WeightingCommand extends BaseCommand {
         this.ouId = ouId;
     }
 
-    public Long getActualWeight() {
+    public Double getActualWeight() {
         return actualWeight;
     }
 
-    public void setActualWeight(Long actualWeight) {
+    public void setActualWeight(Double actualWeight) {
         this.actualWeight = actualWeight;
     }
 
@@ -121,11 +121,11 @@ public class WeightingCommand extends BaseCommand {
         this.outboundBoxCode = outboundBoxCode;
     }
 
-    public Long getCalcWeighting() {
+    public Double getCalcWeighting() {
         return calcWeighting;
     }
 
-    public void setCalcWeighting(Long calcWeighting) {
+    public void setCalcWeighting(Double calcWeighting) {
         this.calcWeighting = calcWeighting;
     }
 
@@ -209,6 +209,6 @@ public class WeightingCommand extends BaseCommand {
         this.isSuccess = isSuccess;
     }
 
-    
-    
+
+
 }

@@ -37,9 +37,9 @@ public class Handover extends BaseModel {
     /** 运输服务商名称 */
     private String transportName;
     /** 总计重 */
-    private Long totalCalcWeight;
+    private Double totalCalcWeight;
     /** 总称重 */
-    private Long totalActualWeight;
+    private Double totalActualWeight;
     /** 对应组织ID */
     private Long ouId;
     /** 创建人ID */
@@ -113,19 +113,19 @@ public class Handover extends BaseModel {
         this.transportName = transportName;
     }
 
-    public Long getTotalCalcWeight() {
+    public Double getTotalCalcWeight() {
         return totalCalcWeight;
     }
 
-    public void setTotalCalcWeight(Long totalCalcWeight) {
+    public void setTotalCalcWeight(Double totalCalcWeight) {
         this.totalCalcWeight = totalCalcWeight;
     }
 
-    public Long getTotalActualWeight() {
+    public Double getTotalActualWeight() {
         return totalActualWeight;
     }
 
-    public void setTotalActualWeight(Long totalActualWeight) {
+    public void setTotalActualWeight(Double totalActualWeight) {
         this.totalActualWeight = totalActualWeight;
     }
 

@@ -61,7 +61,7 @@ public class WhOutboundDeliveryConfirm extends BaseModel {
     /** 仓库CODE */
     private String ouCode;
     /** 重量，单位千克 */
-    private Long weight;
+    private Double weight;
     /** 浮动百分比 */
     private Integer floats;
     /** 长度，单位厘米 */
@@ -298,11 +298,11 @@ public class WhOutboundDeliveryConfirm extends BaseModel {
         this.ouCode = ouCode;
     }
 
-    public Long getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Long weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 

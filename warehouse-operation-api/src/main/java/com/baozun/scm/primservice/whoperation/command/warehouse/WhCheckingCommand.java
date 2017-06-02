@@ -148,7 +148,15 @@ public class WhCheckingCommand extends BaseCommand {
     private Long checkingFacilityId;
 
     /** 复核的出库箱 */
-    WhOutboundboxCommand outboundbox;
+    private WhOutboundboxCommand outboundbox;
+    /** 小批次下总箱数*/
+    private Long batchBoxCnt;
+    /** 待复核总箱数*/
+    private Long batchBoxCntCheck;
+    /** 小批次下总单数*/
+    private Long batchOdoCnt;
+    /** 待复核总单数*/
+    private Long batchOdoCntCheck;
 
     public Long getId() {
         return id;
@@ -621,6 +629,38 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setWaybillType(String waybillType) {
         this.waybillType = waybillType;
+    }
+
+    public Long getBatchBoxCnt() {
+        return batchBoxCnt;
+    }
+
+    public void setBatchBoxCnt(Long batchBoxCnt) {
+        this.batchBoxCnt = batchBoxCnt;
+    }
+
+    public Long getBatchBoxCntCheck() {
+        return batchBoxCntCheck;
+    }
+
+    public void setBatchBoxCntCheck(Long batchBoxCntCheck) {
+        this.batchBoxCntCheck = batchBoxCntCheck;
+    }
+
+    public Long getBatchOdoCnt() {
+        return batchOdoCnt;
+    }
+
+    public void setBatchOdoCnt(Long batchOdoCnt) {
+        this.batchOdoCnt = batchOdoCnt;
+    }
+
+    public Long getBatchOdoCntCheck() {
+        return batchOdoCntCheck;
+    }
+
+    public void setBatchOdoCntCheck(Long batchOdoCntCheck) {
+        this.batchOdoCntCheck = batchOdoCntCheck;
     }
 
 }

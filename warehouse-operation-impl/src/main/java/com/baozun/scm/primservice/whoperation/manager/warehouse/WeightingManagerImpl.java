@@ -17,14 +17,17 @@ import org.springframework.util.StringUtils;
 import com.baozun.scm.baseservice.print.command.PrintDataCommand;
 import com.baozun.scm.baseservice.print.constant.Constants;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
+import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhFunctionOutBoundDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
@@ -33,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.checking.CheckingManager;
+import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
@@ -75,6 +79,9 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
     @Autowired
     private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
+
+    @Autowired
+    private UomDao uomDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -173,8 +180,20 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
         // 2.判断称重集中是否满足浮动百分比
         if (outbound.getIsValidateWeight()) {
-            Long actualWeight = command.getActualWeight();
-            Long calcWeight = packageInfo.getCalcWeight();
+            List<UomCommand> weightUomCmds;
+            weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+            Double uomRate = 0.0;
+            for (UomCommand lenUom : weightUomCmds) {
+                String uomCode = "";
+                if (null != lenUom) {
+                    uomCode = lenUom.getUomCode();
+                    if ("kg".equalsIgnoreCase(uomCode)) uomRate = lenUom.getConversionRate();
+                    break;
+                }
+            }
+
+            Double actualWeight = command.getActualWeight() * uomRate;
+            Double calcWeight = packageInfo.getCalcWeight();
             Integer floats = packageInfo.getFloats();
             Double difference = (double) Math.abs(actualWeight - calcWeight);
             Double calcDifference = (double) (calcWeight * floats / 100);
