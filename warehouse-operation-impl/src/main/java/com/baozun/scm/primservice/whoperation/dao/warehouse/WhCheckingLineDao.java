@@ -28,6 +28,7 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 
 public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
@@ -73,18 +74,20 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
      * @return
      */
     List<WhCheckingLineCommand> findListByParamExt(WhCheckingLine o);
-    
-    
-    public WhCheckingLineCommand  judeIsLastBox(@Param("ouId")Long ouId,@Param("odoId") Long odoId);
-    
+
+
+    public WhCheckingLineCommand judeIsLastBox(@Param("ouId") Long ouId, @Param("odoId") Long odoId);
+
     /**
      * 
      * @param checkingId
      * @param ouId
      * @return
      */
-    public Integer countCheckingLine(@Param("checkingId") Long checkingId,@Param("ouId") Long ouId);
-    
-    
+    public Integer countCheckingLine(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
+
+    public List<WhChecking> findListByParamWithNoFinish(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+
 
 }

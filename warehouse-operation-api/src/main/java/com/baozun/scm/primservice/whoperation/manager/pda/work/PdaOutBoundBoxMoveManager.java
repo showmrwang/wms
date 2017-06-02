@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutboundboxMove;
@@ -20,7 +21,7 @@ public interface PdaOutBoundBoxMoveManager extends BaseManager{
      * @param userId
      * @return
      */
-    public ScanResultCommand scanContainer(String containerCode,WhFunctionOutboundboxMove boxMoveFunc, Long ouId,String logId,Long userId);
+    public ScanResultCommand scanContainer(String containerCode, Integer movePattern, Long ouId,String logId,Long userId);
     /**
      * 扫描目标容器
      * @param containerCode
@@ -30,7 +31,22 @@ public interface PdaOutBoundBoxMoveManager extends BaseManager{
      * @param userId
      * @return
      */
-    public ScanResultCommand scanTargetContainer(String containerCode,WhFunctionOutboundboxMove boxMoveFunc,Long ouId,String logId,Long userId,String targetBoxCode,Warehouse warehouse);
+    public ScanResultCommand scanTargetContainer(String containerCode,Long ouId,String logId,Long userId,String targetBoxCode,Warehouse warehouse);
+    
+    /**
+     * 出库箱拆分:扫描sku商品
+     * @param isScanSkuSn
+     * @param insideContainerCode
+     * @param skuCmd
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @param warehouse
+     * @return
+     */
+      public ScanResultCommand boxMoveScanSku(Boolean isScanSkuSn,String insideContainerCode,WhSkuCommand skuCmd, 
+    		   Long funcId, Long ouId, Long userId, String logId,Warehouse warehouse,Integer scanPattern);
     
 //    /***
 //     * 整托上架使用推荐库位上架
