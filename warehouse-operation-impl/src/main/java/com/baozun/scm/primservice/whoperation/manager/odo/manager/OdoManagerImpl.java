@@ -1478,6 +1478,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setExpressType(transMgmt.getCourierServiceType());
         mailNoContent.setTotalActual(new BigDecimal(odo.getAmt().doubleValue()));
         mailNoContent.setTimeType(transMgmt.getTimeEffectType());
+        mailNoContent.setSfWhCode("BZ021NOTCOD");
         mailNoContent.setQuantity(1);   // 获取面单数量1
         mailNoContent.setType(1);   // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
