@@ -149,7 +149,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         String outerContainerCode = pdaManMadePutawayCommand.getOuterContainerCode();
         // 验证容器号为空
         if (StringUtil.isEmpty(pdaManMadePutawayCommand.getContainerCode())) {
-            log.error("pdaScanContainer pdaInboundSortationCommand.getContainerCode() is null logid: " + logId);
+            log.error("pdaScanContainer pdaInboundSortationCommand.getContainerCode() is null logid is [{}]: " + logId);
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         ContainerCommand container = containerDao.getContainerByCode(pdaManMadePutawayCommand.getContainerCode(), ouId);
@@ -501,12 +501,12 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         }
         // 验证库位是否存在
         if (null == location) {
-            log.error("pdaScanLocation location is null logid: " + pdaManMadePutawayCommand.getLogId());
+            log.error("pdaScanLocation location is null logid: ",logId);
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
         }
         // 验证库位状态是否可用:lifecycle
         if (location.getLifecycle() != 1) {
-            log.error("pdaScanLocation lifecycle is error logid: " + pdaManMadePutawayCommand.getLogId());
+            log.error("pdaScanLocation lifecycle is error logid: ",logId);
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_LIFECYCLE_ERROR);
         }
         pdaManMadePutawayCommand.setLocationId(location.getId());
@@ -1217,7 +1217,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         ContainerCommand insideContainer = containerDao.getContainerByCode(insideContainerCode, ouId); // 内部容器
         if (null == insideContainer) {
             // 容器信息不存在
-            log.error("pdaScanContainer container is null logid: " + pdaManMadePutawayCommand.getLogId());
+            log.error("pdaScanContainer container is null logid: ",logId);
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         // 验证容器Lifecycle是否有效

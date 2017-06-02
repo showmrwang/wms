@@ -566,7 +566,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         // TODO Auto-generated method stub
         log.info("PdaSysSuggestPutwayManagerImpl scanContainerBypallet is start"); 
         if (log.isInfoEnabled()) {
-            log.info("PdaSysSuggestPutwayManagerImpl scanContainerBypallet param , ouId is:[{}],  containerCmd is:[{}]", ouId,  containerCmd);
+            log.info("PdaSysSuggestPutwayManagerImpl scanContainerBypallet param , ouId is:[{}],  containerCmd is:[{}],logId", ouId,  containerCmd,logId);
         }
         ScanResultCommand srCmd = new ScanResultCommand();  //扫描返回结果
         srCmd.setPutawayPatternType(WhPutawayPatternType.SYS_SUGGEST_PUTAWAY);
@@ -641,7 +641,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
     private List<WhSkuInventoryCommand>  palletPutwayCacheInventory(ContainerCommand containerCmd,Long ouId,String logId) {
         log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory is start"); 
         if (log.isInfoEnabled()) {
-            log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory param  containerCmd is:[{}]",  containerCmd);
+            log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory param  containerCmd is:[{}],logId is:[{}]",  containerCmd,logId);
         }
         Long containerId = containerCmd.getId();
         // 2.判断是否已经缓存所有库存信息
@@ -668,7 +668,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
     private List<WhSkuInventoryCommand>  containerPutwayCacheInventory(ContainerCommand containerCmd,Long ouId,String logId) {
         log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory is start"); 
         if (log.isInfoEnabled()) {
-            log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory param  containerCmd is:[{}]",  containerCmd);
+            log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory param  containerCmd is:[{}],log is:[{}]",  containerCmd,logId);
         }
         Long containerId = containerCmd.getId();
         // 2.判断是否已经缓存所有库存信息
@@ -692,7 +692,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
     private List<WhSkuInventoryCommand>  splitPutwayCacheInventory(ContainerCommand containerCmd,Long ouId,String logId) {
         log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory is start"); 
         if (log.isInfoEnabled()) {
-            log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory param  containerCmd is:[{}]",  containerCmd);
+            log.info("PdaSysSuggestPutwayManagerImpl cacheContainerInventory param  containerCmd is:[{}],logId is:[{}]",  containerCmd,logId);
         }
         Long containerId = containerCmd.getId();
         // 2.判断是否已经缓存所有库存信息
@@ -3827,17 +3827,20 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
 //        List<WhSkuInventoryCommand> whskuList =  this.palletPutwayCacheInventory(cmd,ouId,logId);
         boolean hasMulitSku = this.isNoContainerMultiSku(whskuList);
         if (!hasMulitSku) {
+            log.error("pdaSysSuggestPutwayManagerImpl pdaLocationNotMix, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_NOT_MULTISKU);
         }
         List<WhSkuInventoryCommand> LocationSkuList = whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, locationId);
         // 判断托盘/货箱是否存在相同sku，不同库存属性的商品
         boolean diffAttibutes = this.isNoSkuDiffAtt(whskuList);
         if (!diffAttibutes) {
+            log.error("pdaSysSuggestPutwayManagerImpl pdaLocationNotMix, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PDA_NOT_ALLOW_DIFFERENT_INVENTORY_ATTRIBUTES);
         }
         // 如果库位已存在库存商品，判断 ：托盘、货箱内的sku商品、库存属性是否和库位上的相同
         boolean IsAttConsistent = this.IsAttConsistent(LocationSkuList, whskuList);
         if (!IsAttConsistent) {
+            log.error("pdaSysSuggestPutwayManagerImpl pdaLocationNotMix, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PDA_CONTAINER_SKUATT_NOTSAME_LOCATION_SKUATT);
         }
         if(putawayPatternDetailType != WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY){
@@ -4028,6 +4031,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         // 查询库位最大混放SKU种类数
         Location location = locationDao.findByIdExt(locationId, ouId);
         if (null == location) {
+            log.error("pdaSysSuggestPutwayManagerImpl pdaLocationIsMix, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_NULL);
         }
         Integer mixStackingNumber = location.getMixStackingNumber(); // 库位上最大混放种类数
@@ -4049,10 +4053,12 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Integer skuMixStacking =  skuIds.size();
         // 判断库位已有sku种类数+容器内SKU种类数是否<=最大混放SKU种类数 *
         if (mixStackingNumber < skuMixStacking) {
+            log.error("pdaSysSuggestPutwayManagerImpl pdaLocationIsMix, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_VARIETY_OVER_MAX);
         }
         // 验证库位最大混放sku属性数,判断库位已有SKU属性数+容器内SKU属性数是否<=最大混放SKU属性数*
         if (maxChaosSku < skuAttrDiff) {
+            log.error("pdaSysSuggestPutwayManagerImpl pdaLocationIsMix, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_ATT_OVER_MAX);
         }
         if(putawayPatternDetailType != WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY){
