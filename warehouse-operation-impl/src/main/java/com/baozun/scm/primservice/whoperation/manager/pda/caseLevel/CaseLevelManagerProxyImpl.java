@@ -56,6 +56,7 @@ import com.baozun.scm.primservice.whoperation.manager.pda.CheckInManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.CaseLevelRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
+import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnproxy.SelectPoAsnManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -114,6 +115,9 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
 
     @Autowired
     private CheckInManagerProxy checkInManagerProxy;
+
+    @Autowired
+    private PoManager poManager;
 
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final DateFormat dateFormatUn = new SimpleDateFormat("MM/dd/yyyy");
@@ -1232,6 +1236,7 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
      * @param logId
      */
     public void caseLevelReceivingCompleted(WhFunctionRcvd whFunctionRcvd, WhCartonCommand whCartonCommand, List<WhCartonCommand> rcvdCartonList, Long userId, Long ouId, String logId) {
+
         if (null == rcvdCartonList || rcvdCartonList.isEmpty()) {
             throw new BusinessException(ErrorCodes.CASELEVEL_RCVD_DATA_NULL_ERROR, new Object[] {whCartonCommand.getContainerCode()});
         }
@@ -1352,6 +1357,25 @@ public class CaseLevelManagerProxyImpl extends BaseManagerImpl implements CaseLe
         }
         // 清除该货箱前次收货数据
         cacheManager.remonKeys(CacheKeyConstant.WMS_CACHE_CL_LAST_RECD_QTY_PREFIX + userId + "-" + whCartonCommand.getAsnId() + "-" + whCartonCommand.getContainerId() + "-*");
+
+        /*
+        //TODO PO关闭反馈
+        // 反馈数据
+        try {
+            WhPo shardPo = this.poManager.findWhPoByIdToShard(toUpdateWhPoList.get(0).getId(), ouId);
+            // 自动关单逻辑：仓库下PO单关闭要同步到集团下
+            // 同步接口调整
+            if (PoAsnStatus.PO_CLOSE == shardPo.getStatus()) {
+                this.poManager.snycPoToInfo("CLOSE", shardPo, false, toUpdatePoLineList);
+            } else if (PoAsnStatus.PO_RCVD == shardPo.getStatus()) {
+                this.poManager.snycPoToInfo("RCVD", shardPo, false, toUpdatePoLineList);
+            } else if (PoAsnStatus.PO_RCVD_FINISH == shardPo.getStatus()) {
+                this.poManager.snycPoToInfo("RCVD_FINISH", shardPo, false, toUpdatePoLineList);
+            }
+        } catch (Exception ex) {
+            log.error("CaseLevelManagerProxyImpl caseLevelReceivingCompleted feedBack rcvd error, ex is:[{}], logId is:[{}]", ex, logId);
+        }
+        */
 
         boolean isAsnRcvdFinished = caseLevelRcvdManager.checkIsAsnRcvdFinished(whCartonCommand.getAsnId(), ouId, logId);
         if (isAsnRcvdFinished) {
