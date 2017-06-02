@@ -1227,6 +1227,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             String onlySku = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(operationExecLine);
             //根据库存UUID查找对应SN/残次信息
             List<WhSkuInventorySnCommand> skuInventorySnCommands = whSkuInventorySnDao.findWhSkuInventoryByUuid(whOperationCommand.getOuId(), operationExecLine.getUuid());
+            // 所有托盘
+            if(null != operationExecLine.getUseOuterContainerId()){
+                pallets.add(operationExecLine.getUseOuterContainerId());    
+            }
+            // 所有货箱
+            if(null != operationExecLine.getUseContainerId()){
+                containers.add(operationExecLine.getUseContainerId());    
+            }
             //获取库位ID 
             locationIds.add(operationExecLine.getToLocationId());
             if(null != operationExecLine.getUseOuterContainerId()){
@@ -1350,14 +1358,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     skuAttrIdsSnDefect.put(toLocationAndUseContainer, onlySkuAndSn);
                 }
 //            }else{
-//                // 所有托盘
-//                if(null != operationExecLine.getUseOuterContainerId()){
-//                    pallets.add(operationExecLine.getUseOuterContainerId());    
-//                }
-//                // 所有货箱
-//                if(null != operationExecLine.getUseContainerId()){
-//                    containers.add(operationExecLine.getUseContainerId());    
-//                }
+//                
 //                // 目标库位对应的所有外部容器（整托整箱）
 //                if(null != insideContainerIds.get(operationExecLine.getToLocationId())){
 //                    insideContainerIds.get(operationExecLine.getToLocationId()).add(operationExecLine.getUseContainerId());
