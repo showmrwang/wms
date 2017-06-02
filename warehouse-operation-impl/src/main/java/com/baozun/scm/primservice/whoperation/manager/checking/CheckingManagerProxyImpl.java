@@ -439,6 +439,13 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
 
         // 保存复核数据
         checkingManager.finishedChecking(whCheckingResultCommand, warehouseMgmt.getIsTabbInvTotal(), userId, ouId, logId);
+        try{
+            // 保存打印信息
+            checkingManager.printDefect(whCheckingResultCommand); 
+        } catch (Exception e) {
+            log.error(e + "");
+            throw new BusinessException(ErrorCodes.PRINT_ERROR);
+        }
     }
 
     private WhOdodeliveryInfo updateOdoDeliveryInfo(String waybillCode, String outboundBoxCode, Long odoId, Long userId, Long ouId) {

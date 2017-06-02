@@ -1110,6 +1110,8 @@ public class ErrorCodes {
     public static final int IN_WAREHOUSE_MOVE_ISSTATIC_ERROR = 100011;
     /** 创建库内移动工作失败 */
     public static final int CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR = 1000012;
+    /** 创建库内移动工作失败 */
+    public static final int PRINT_ERROR = 1000013;
     // 100001-110000 liuqiming
     // 110000-120000 xuhui
     /** 交货交接规则为空 */

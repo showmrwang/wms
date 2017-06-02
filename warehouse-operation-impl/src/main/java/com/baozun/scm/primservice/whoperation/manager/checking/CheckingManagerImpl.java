@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.print.command.PrintDataCommand;
@@ -543,9 +544,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
 
         // 更新出库单交接运单信息
         this.saveOrUpdateOdoDeliveryInfo(whOutboundbox, ododeliveryInfo, userId, ouId);
-
-        // 保存打印信息
-        this.printDefect(checkingResultCommand);
+        
     }
 
     private void saveOrUpdateOdoDeliveryInfo(WhOutboundbox whOutboundbox, WhOdodeliveryInfo ododeliveryInfo, Long userId, Long ouId) {
@@ -722,6 +721,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
      * @param whCheckingResultCommand
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void printDefect(WhCheckingResultCommand whCheckingResultCommand) {
         Long ouId = whCheckingResultCommand.getOuId();
         // 查询功能是否配置复核打印单据配置
