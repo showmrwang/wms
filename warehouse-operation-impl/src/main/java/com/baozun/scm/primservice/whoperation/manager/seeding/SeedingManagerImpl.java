@@ -377,7 +377,6 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     private void saveWhSkuInventoryToDB(List<WhSkuInventory> toSaveSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
         // 创建 库存信息 WhSkuInventory
         for (WhSkuInventory whSkuInventory : toSaveSkuInventoryList) {
-            WhSkuInventory orgSkuInv = whSkuInventoryDao.findWhSkuInventoryById(whSkuInventory.getId(), ouId);
 
             Double originOnHandQty = 0.0;
             if (isTabbInvTotal) {
@@ -387,7 +386,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
             whSkuInventoryDao.insert(whSkuInventory);
             log.warn("SeedingManagerImpl.saveWhSkuInventoryToDB save whSkuInventory to share DB, whSkuInventory is:[{}], logId is:[{}]", whSkuInventory, logId);
             this.insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, ouId, userId, null, null);
-            this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty() - orgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
+            this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
         }
 
     }
