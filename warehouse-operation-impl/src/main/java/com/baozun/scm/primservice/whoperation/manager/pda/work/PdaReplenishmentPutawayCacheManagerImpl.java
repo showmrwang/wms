@@ -145,7 +145,7 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
                         tipOuterContainerId = outerContainerId;
                         break;
                       }else{
-                        if(palletIds.contains(tipOuterContainerId)){
+                        if(palletIds.contains(outerContainerId)){
                             continue;
                         }else{
                             tipOuterContainerId = outerContainerId;

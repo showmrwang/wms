@@ -1558,10 +1558,10 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
          OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
          if(null != opExecLineCmd){
              Map<String, Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
-             Map<String, Set<Long>> insIdeSkuIds = opExecLineCmd.getInsideSkuIds();
+//             Map<String, Set<Long>> insIdeSkuIds = opExecLineCmd.getInsideSkuIds();
              List<Long> locationIds = opExecLineCmd.getLocationIds();
              Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
-             Map<Long, Set<Long>> locInsideContainerIds = opExecLineCmd.getInsideContainerIds();
+//             Map<Long, Set<Long>> locInsideContainerIds = opExecLineCmd.getInsideContainerIds();
              for(Long locationId:locationIds){
                  Set<Long> turnoverBoxIds = locTurnoverBoxIds.get(locationId);
                  if(null != turnoverBoxIds){
@@ -1576,21 +1576,21 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                          cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnoverBoxId.toString());
                      }
                  }
-                 if(null != locInsideContainerIds){
-                     Set<Long> insideContainerIds = locInsideContainerIds.get(locationId);
-                     if(null != insideContainerIds){
-                         for(Long insideContainerId:insideContainerIds){
-                             String key = locationId.toString()+insideContainerId;
-                             Set<Long> skuIds = insIdeSkuIds.get(key);
-                             for(Long skuId:skuIds){
-                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ insideContainerId.toString() + skuId.toString());
-                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ insideContainerId.toString() + skuId.toString());
-                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ insideContainerId.toString() + skuId.toString());
-                             }
-                             cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+insideContainerId.toString());
-                         }
-                     }    
-                 }
+//                 if(null != locInsideContainerIds){
+//                     Set<Long> insideContainerIds = locInsideContainerIds.get(locationId);
+//                     if(null != insideContainerIds){
+//                         for(Long insideContainerId:insideContainerIds){
+//                             String key = locationId.toString()+insideContainerId;
+//                             Set<Long> skuIds = insIdeSkuIds.get(key);
+//                             for(Long skuId:skuIds){
+//                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ insideContainerId.toString() + skuId.toString());
+//                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ insideContainerId.toString() + skuId.toString());
+//                                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN +locationId.toString()+ insideContainerId.toString() + skuId.toString());
+//                             }
+//                             cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+insideContainerId.toString());
+//                         }
+//                     }    
+//                 }
              }
              cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());
              cacheManager.remove(CacheConstants.OPERATIONEXEC_STATISTICS+operationId.toString());
@@ -1755,36 +1755,43 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                  String tipOuterContainerCode = this.judeContainer(tipOuterContainerId, ouId);
                  command.setTipOuterContainerCode(tipOuterContainerCode);
                  command.setIsNeedScanPallet(true);
+                 whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
                  //修改作业执行明细的执行量
                  this.updateOperationExecLine(tipOuterContainerId,null, operationId, ouId, userId,locationId);  //需要改
-                 //更新工作及作业状态
-                 this.updateStatus(operationId, workCode, ouId, userId);
                  //判断当前库位是否有拣货工作
                  this.judeLocationIsPicking(null, locationId, ouId, userId,tipOuterContainerId); //需要改
              }else{
                  Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
                  //提示货箱/周转箱
                  Set<Long> turnoverBoxIds = locToTurnoverBoxIds.get(locationId);
-                 if(null == turnoverBoxIds || turnoverBoxIds.size() == 0){
-                     throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+                 if(null != turnoverBoxIds && turnoverBoxIds.size() != 0){
+                     ReplenishmentScanResultComamnd  turnoverSRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId,locationId);
+                     if(turnoverSRCmd.getIsNeedScanTurnoverBox()) {  //当前库位对应的周转箱扫描完毕
+                         Long tipTurnoverBoxId = turnoverSRCmd.getTurnoverBoxId();
+                         String containerCode = this.judeContainer(tipTurnoverBoxId, ouId);
+                         command.setTipTurnoverBoxCode(containerCode);
+                         command.setIsNeedScanTurnoverBox(true);
+                     }else{//单目标库位补货上架完成
+                          command.setIsScanFinsh(true);
+                          //更新工作及作业状态
+                          this.updateStatus(operationId, workCode, ouId, userId);
+                         //修改作业执行明细的执行量
+                          this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  //需要改
+                          //判断当前库位是否有拣货工作
+                          this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId); //需要改
+                     }
+                 }else{
+                     command.setIsScanFinsh(true);
+                     //更新工作及作业状态
+                     this.updateStatus(operationId, workCode, ouId, userId);
+                    //修改作业执行明细的执行量
+                     this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  //需要改
+                     //判断当前库位是否有拣货工作
+                     this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId); //需要改
                  }
-                 ReplenishmentScanResultComamnd  turnoverSRCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(turnoverBoxIds, operationId,locationId);
-                 if(turnoverSRCmd.getIsNeedScanTurnoverBox()) {  //当前库位对应的周转箱扫描完毕
-                     Long tipTurnoverBoxId = turnoverSRCmd.getTurnoverBoxId();
-                     String containerCode = this.judeContainer(tipTurnoverBoxId, ouId);
-                     command.setTipTurnoverBoxCode(containerCode);
-                     command.setIsNeedScanTurnoverBox(true);
-                 }else{//单目标库位补货上架完成
-                      command.setIsScanFinsh(true);
-                      //更新工作及作业状态
-                      this.updateStatus(operationId, workCode, ouId, userId);
-                     //修改作业执行明细的执行量
-                      this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  //需要改
-                      //判断当前库位是否有拣货工作
-                      this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId); //需要改
-                 }
+                 whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
              }
-             whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
+           
          }
          return command;
      }
