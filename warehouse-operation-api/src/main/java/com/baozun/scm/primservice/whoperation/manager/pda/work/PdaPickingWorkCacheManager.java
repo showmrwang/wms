@@ -217,8 +217,11 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       */
      public void replenishmentCancelPattern(Long outerContainerId,Long insideContainerId, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
      
-     public  Integer tipLatticeNo(String skuAttrId,Long insideContainerId,Long operationId,Long ouId);
+     public Integer tipLatticeNo(String skuAttrId,Long insideContainerId,Long operationId,Long ouId);
      
      
-     public  Integer tipLatticeNoLoc(Long locationId,Long operationId,String skuAttrId,Long ouId);
+     public Integer tipLatticeNoLoc(Long locationId,Long operationId,String skuAttrId,Long ouId);
+     
+     public void cacheOuterContainerCode(Long locationId, Long outerId, Long operationId);
+     public void cacheInsideContainerCode(Long locationId, Long insideId, Long outerContainerId,Long operationId);
 }

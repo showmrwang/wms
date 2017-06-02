@@ -2553,7 +2553,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
       /***
        * 缓存托盘
        */
-      private void cacheOuterContainerCode(Long locationId, Long outerId,Long operationId) {
+      @Override
+      public void cacheOuterContainerCode(Long locationId, Long outerId,Long operationId) {
           LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION +operationId.toString()+ locationId.toString());
           if (null == tipLocationCmd) {
               tipLocationCmd = new LocationTipCacheCommand();
@@ -2595,7 +2596,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
        * @param locationId
        * @param insideId
        */
-      private void cacheInsideContainerCode(Long locationId, Long insideId, Long outerContainerId,Long operationId) {
+      @Override
+      public void cacheInsideContainerCode(Long locationId, Long insideId, Long outerContainerId,Long operationId) {
           LocationTipCacheCommand tipLocationCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION +operationId.toString()+ locationId.toString());
           if (null != outerContainerId) { // 内部容器存在托盘
               if (null == tipLocationCmd) {

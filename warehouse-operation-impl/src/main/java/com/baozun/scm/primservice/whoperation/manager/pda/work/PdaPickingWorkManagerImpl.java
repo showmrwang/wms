@@ -3248,8 +3248,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     log.info("collection run end time:" + endTime);
                     log.info("collection run  time:" + (endTime - startTime));
                     command.setPickingMode(pickingMode);
-                    // 清除缓存
-                    pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
+                    if(2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()){
+                        // 清除缓存
+                        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());    
+                    }
                     // 更改出库单状态
                     List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
                     for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
@@ -3277,7 +3279,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         }
                     }
                 }
-              //修改容器状态        
+                //修改容器状态 
                 Container container = new Container();
                 ContainerCommand containerCmd = containerDao.getContainerByCode(command.getTipOuterContainerCode(), command.getOuId());
                 if (null == containerCmd) {
@@ -3310,6 +3312,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 根据作业id获取作业明细信息
         List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
         for (WhOperationLineCommand operationLineCommand : operationLineList) {
+            // 缓存数据            
+            pdaPickingWorkCacheManager.cacheOuterContainerCode(command.getLocationId(), operationLineCommand.getFromOuterContainerId(), command.getOperationId());
+            pdaPickingWorkCacheManager.cacheInsideContainerCode(command.getLocationId(), operationLineCommand.getFromOuterContainerId(), operationLineCommand.getFromInsideContainerId(), command.getOperationId());
             operationLineCommand.setCompleteQty(operationLineCommand.getQty());
             whOperationLineManager.saveOrUpdate(operationLineCommand);
             // 生成作业作业明细
@@ -3551,8 +3556,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 log.info("collection run end time:" + endTime);
                 log.info("collection run  time:" + (endTime - startTime));
                 command.setPickingMode(pickingMode);
-                // 清除缓存
-                pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
+                if(2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()){
+                    // 清除缓存
+                    pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());    
+                }
                 // 更改出库单状态
                 List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
                 for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
@@ -3933,7 +3940,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @Override
     public PickingScanResultCommand toWholeCase(PickingScanResultCommand command, Boolean isTabbInvTotal, String operationWay) {
         PickingScanResultCommand resultCmd = new PickingScanResultCommand();
-        if(null != command.getIsScanInsideContainer()){
+        if(false != command.getIsScanInsideContainer()){
             if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
                 resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
             }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){
@@ -3943,7 +3950,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 resultCmd = this.tipInsideContainer(command);    
             }
         }
-        if(null != command.getIsScanSku()){
+        if(false != command.getIsScanSku()){
             if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
                 resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
             }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){
