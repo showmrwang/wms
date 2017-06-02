@@ -615,119 +615,73 @@
 		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
 
 		SELECT
-		odo.id as id,
-		odo.odo_code as odoCode,
-		odo.ext_code as extCode,
-		odo.priority_level as priorityLevel,
-		odo.is_whole_order_outbound as isWholeOrderOutbound,
-		
-		odo.cross_docking_symbol as crossDockingSysmbol,
-
-		odo.ec_order_code as ecOrderCode,
-		odo.customer_id as customerId,
-		odo.store_id AS storeId,
-		DATE_FORMAT(odo.order_time,'%Y-%m-%d') as
-		orderTime,
-		odo.sku_number_of_packages AS skuNumberOfPackages,
-		odo.amt as amt,
-		transmgmt.transport_service_provider as transportServiceProvider,
-		transmgmt.transport_service_provider as transportServiceProviderName,
-		transmgmt.mode_of_transport as modeOfTransport,
-
-		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
-		odo.order_type as orderType,
-		odo.odo_type as odoType,
-
-		odo.distribute_mode as distributeMode,
-
-		odo.odo_status as odoStatus,
-
-		
-		transmgmt.outbound_target_type as
-		outboundTargetType,
-
-		transmgmt.outbound_target as outboundTarget,
-		address.distribution_target_name as distributionTargetName,
-		address.distribution_target_mobile_phone as
-		distributionTargetMobilePhone,
-		address.distribution_target_telephone as
-		distributionTargetTelephone,
-		address.distribution_target_country as
-		distributionTargetCountry,
-		address.distribution_target_province as
-		distributionTargetProvince,
-		address.distribution_target_city as
-		distributionTargetCity,
-		address.distribution_target_district as
-		distributionTargetDistrict,
-		address.distribution_target_villages_towns
-		as
-		distributionTargetVillagesTowns,
-		address.distribution_target_address
-		as distributionTargetAddress,
-		address.distribution_target_email as
-		distributionTargetEmail,
-		address.distribution_target_zip as
-		distributionTargetZip,
-		address.consignee_target_name as
-		consigneeTargetName,
-		address.consignee_target_mobile_phone as
-		consigneeTargetMobilePhone,
-		address.consignee_target_telephone as
-		consigneeTargetTelephone,
-		address.consignee_target_country as
-		consigneeTargetCountry,
-		address.consignee_target_province as
-		consigneeTargetProvince,
-		address.consignee_target_city as
-		consigneeTargetCity,
-		address.consignee_target_district as
-		consigneeTargetDistrict,
-		address.consignee_target_villages_towns as
-		consigneeTargetVillagesTowns,
-		address.consignee_target_address as
-		consigneeTargetAddress,
-		address.consignee_target_email as
-		consigneeTargetEmail,
-		address.consignee_target_zip as
-		consigneeTargetZip,
-		transmgmt.deliver_goods_time_mode as
-		deliverGoodsTimeMode,
-
-		DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d') as
-		deliverGoodsTime,
-		DATE_FORMAT(transmgmt.plan_deliver_goods_time,'%Y-%m-%d') as
-		planDeliverGoodsTime,
-		DATE_FORMAT(transmgmt.actual_deliver_goods_time,'%Y-%m-%d') as
-		actualDeliverGoodsTime,
-		odo.include_fragile_cargo as
-		includeFragileCargo,
-
-		odo.include_hazardous_cargo as
-		includeHazardousCargo,
-
-		odo.outbound_carton_type as outboundCartonType,
-		boxType.name as outboundCartonTypeName,
-		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
-		odo.created_id
-		as createId,
-		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
-		odo.modified_id as modifiedId,
-		odo.is_locked as isLocked,
-		odo.is_assign_success as isAssignSuccess,
-		odo.original_odo_code as originalOdoCode,
-		odo.assign_fail_reason as assignFailReason
-		from t_wh_odo odo
-		left join t_wh_odo_address
-		address on
-		address.odo_id=odo.id
-		left join t_wh_odo_transport_mgmt
-		transmgmt on
-		transmgmt.odo_id=odo.id
-		
-		left join
-		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type 
+			odo.id as id,
+			odo.odo_code as odoCode,
+			odo.ext_code as extCode,
+			odo.priority_level as priorityLevel,
+			odo.is_whole_order_outbound as isWholeOrderOutbound,
+			odo.cross_docking_symbol as crossDockingSysmbol,
+			odo.ec_order_code as ecOrderCode,
+			odo.customer_id as customerId,
+			odo.store_id AS storeId,
+			DATE_FORMAT(odo.order_time, '%Y-%m-%d') as orderTime,
+			odo.sku_number_of_packages AS skuNumberOfPackages,
+			odo.amt as amt,
+			transmgmt.transport_service_provider as transportServiceProvider,
+			transmgmt.transport_service_provider as transportServiceProviderName,
+			transmgmt.mode_of_transport as modeOfTransport,
+			odo.epistatic_systems_order_type as epistaticSystemsOrderType,
+			odo.order_type as orderType,
+			odo.odo_type as odoType,
+			odo.distribute_mode as distributeMode,
+			odo.odo_status as odoStatus,
+			transmgmt.outbound_target_type as outboundTargetType,
+			transmgmt.outbound_target as outboundTarget,
+			address.distribution_target_name as distributionTargetName,
+			address.distribution_target_mobile_phone as distributionTargetMobilePhone,
+			address.distribution_target_telephone as distributionTargetTelephone,
+			address.distribution_target_country as distributionTargetCountry,
+			address.distribution_target_province as distributionTargetProvince,
+			address.distribution_target_city as distributionTargetCity,
+			address.distribution_target_district as distributionTargetDistrict,
+			address.distribution_target_villages_towns as distributionTargetVillagesTowns,
+			address.distribution_target_address as distributionTargetAddress,
+			address.distribution_target_email as distributionTargetEmail,
+			address.distribution_target_zip as distributionTargetZip,
+			address.consignee_target_name as consigneeTargetName,
+			address.consignee_target_mobile_phone as consigneeTargetMobilePhone,
+			address.consignee_target_telephone as consigneeTargetTelephone,
+			address.consignee_target_country as consigneeTargetCountry,
+			address.consignee_target_province as consigneeTargetProvince,
+			address.consignee_target_city as consigneeTargetCity,
+			address.consignee_target_district as consigneeTargetDistrict,
+			address.consignee_target_villages_towns as consigneeTargetVillagesTowns,
+			address.consignee_target_address as consigneeTargetAddress,
+			address.consignee_target_email as consigneeTargetEmail,
+			address.consignee_target_zip as consigneeTargetZip,
+			transmgmt.deliver_goods_time_mode as deliverGoodsTimeMode,
+			DATE_FORMAT(transmgmt.deliver_goods_time, '%Y-%m-%d') as deliverGoodsTime,
+			DATE_FORMAT(transmgmt.plan_deliver_goods_time, '%Y-%m-%d') as planDeliverGoodsTime,
+			DATE_FORMAT(transmgmt.actual_deliver_goods_time, '%Y-%m-%d') as actualDeliverGoodsTime,
+			odo.include_fragile_cargo as includeFragileCargo,
+			odo.include_hazardous_cargo as includeHazardousCargo,
+			odo.outbound_carton_type as outboundCartonType,
+			boxType. name as outboundCartonTypeName,
+			DATE_FORMAT(odo.create_time, '%Y-%m-%d') as createTime,
+			odo.created_id as createId,
+			DATE_FORMAT(odo.last_modify_time, '%Y-%m-%d') as lastModifyTime,
+			odo.modified_id as modifiedId,
+			odo.is_locked as isLocked,
+			odo.is_assign_success as isAssignSuccess,
+			odo.original_odo_code as originalOdoCode,
+			odo.assign_fail_reason as assignFailReason,
+			if((s.is_vas_success = 0 or s.is_tsp_success = 0 or s.is_waybill_code_success = 0), 0, 1) as logisticsFlag
+		from
+			t_wh_odo odo
+			left join t_wh_odo_address address on address.odo_id = odo.id
+			left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id = odo.id
+			left join t_wh_outboundbox_type boxType on boxType.id = odo.outbound_carton_type
+			left join t_wh_odo_transport_service s on s.odo_id = odo.id
 		
 		<include refid="whOdoDynamicWherePageExt" />
 	</select>

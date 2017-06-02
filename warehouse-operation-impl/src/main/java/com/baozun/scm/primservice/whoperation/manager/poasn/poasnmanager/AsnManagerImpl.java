@@ -565,6 +565,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             }
             whAsn.setUrgentStatus(asn.getUrgentStatus());
             whAsn.setOverChageRate(asn.getOverChageRate());
+            log.info("CreateAsnBatch insert whAsn!");
             whAsnDao.insert(whAsn);
             // 插入日志
             this.insertGlobalLog(GLOBAL_LOG_INSERT, whAsn, ouId, userId, null, null);
@@ -574,6 +575,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                 whpo.setModifiedId(userId);
                 int result = whPoDao.saveOrUpdateByVersion(whpo);
                 if (result <= 0) {
+                    log.info("CreateAsnBatch update whpo by version error!");
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
                 this.insertGlobalLog(GLOBAL_LOG_UPDATE, whpo, ouId, userId, null, null);
@@ -602,6 +604,7 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                         al.setCreateTime(new Date());
                         al.setModifiedId(userId);
                         al.setLastModifyTime(new Date());
+                        log.info("CreateAsnBatch insert asn line!");
                         whAsnLineDao.insert(al);
                         // 插入日志
                         this.insertGlobalLog(GLOBAL_LOG_INSERT, al, ouId, userId, whAsn.getAsnCode(), null);
@@ -614,11 +617,13 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                         }
                         int result = whPoLineDao.saveOrUpdateByVersion(pl);
                         if (result <= 0) {
+                            log.info("CreateAsnBatch update whpo line by version error!");
                             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                         }
                         this.insertGlobalLog(GLOBAL_LOG_UPDATE, pl, ouId, userId, whpo.getPoCode(), null);
                         // 生成箱信息
                         if (StringUtils.hasText(pl.getCartonNo())) {
+                            log.info("CreateAsnBatch create container info!");
                             if (null == c2c && null == containerMap) {
                                 c2c = container2ndCategoryDao.findByCodeAndOuId(Constants.CONTAINER_TYPE_2ND_BOX, ouId);
                                 containerMap = new HashMap<String, Long>();
@@ -629,12 +634,14 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
                 }
             }
             // 最后修改ASN的计划数量
-            whAsn.setQtyPlanned(qty);
-            int result = whAsnDao.saveOrUpdateByVersion(whAsn);
+            WhAsn updateAsn = this.whAsnDao.findWhAsnById(whAsn.getId(), ouId);
+            updateAsn.setQtyPlanned(qty);
+            int result = whAsnDao.saveOrUpdateByVersion(updateAsn);
             if (result <= 0) {
+                log.info("CreateAsnBatch update whasn by version error!");
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
-            this.insertGlobalLog(GLOBAL_LOG_UPDATE, whAsn, ouId, userId, null, null);
+            this.insertGlobalLog(GLOBAL_LOG_UPDATE, updateAsn, ouId, userId, null, null);
             return whAsn.getId();
         } catch (BusinessException e) {
             throw e;

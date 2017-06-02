@@ -26,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
@@ -450,5 +451,7 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     WhWork findWorkById(Long workId, Long ouId);
+
+    WhOdoTransportService findTransportServiceByOdoIdAndOuId(Long odoId, Long ouId);
 
 }
