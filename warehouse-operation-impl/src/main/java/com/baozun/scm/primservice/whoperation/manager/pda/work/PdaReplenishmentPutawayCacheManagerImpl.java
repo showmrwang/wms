@@ -94,7 +94,7 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
                     if(null == tipTurnoverBoxIds || tipTurnoverBoxIds.isEmpty()) {
                       turnoverBoxId = id;
                       break;
-                  }else{
+                    }else{
                       if(tipTurnoverBoxIds.contains(id)){
                           continue;
                       }else{
@@ -114,6 +114,54 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         }
         log.info("PdaReplenishmentPutawayCacheManagerImpl tipTurnoverBox is end");
         return command;
+    }
+    
+    /***
+     * 提示托盘
+     * @param outerContainerIds
+     * @param operationId
+     * @param locationId
+     * @return
+     */
+    public ReplenishmentScanResultComamnd tipOutContainer(Set<Long> outerContainerIds,Long operationId,Long locationId){
+        ReplenishmentScanResultComamnd command = new ReplenishmentScanResultComamnd();
+        Long tipOuterContainerId = null;
+        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+        if(null == replenishment){
+            replenishment = new ReplenishmentPutawayCacheCommand();
+            for(Long outerContaierId:outerContainerIds){
+                tipOuterContainerId = outerContaierId;
+                break;
+            }
+        }else{
+            for(Long outerContainerId:outerContainerIds){
+                Map<Long,ArrayDeque<Long>>  palletIdsMap = replenishment.getTipPalletIds();
+                if(null == palletIdsMap || palletIdsMap.size() == 0){
+                    tipOuterContainerId = outerContainerId;
+                    break;
+                }else{
+                    ArrayDeque<Long> palletIds = palletIdsMap.get(locationId);
+                    if(null == palletIds || palletIds.isEmpty()) {
+                        tipOuterContainerId = outerContainerId;
+                        break;
+                      }else{
+                        if(palletIds.contains(tipOuterContainerId)){
+                            continue;
+                        }else{
+                            tipOuterContainerId = outerContainerId;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if(null != tipOuterContainerId){
+            command.setPalletId(tipOuterContainerId);
+            command.setIsNeedScanPallet(true);
+        }else{
+            command.setIsNeedScanPallet(false);
+        }
+       return command;
     }
     
     /**
@@ -250,6 +298,47 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
             }
     }
     
+    
+    /**
+     * 补货缓存托盘
+     * @param operationId
+     * @param outerContainerId
+     * @param locationId
+     * @param ouId
+     * @param isOnlyLocation
+     */
+    public void pdaReplenishPutwayCacheOuterContainer(Long operationId,Long outerContainerId,Long locationId,Long ouId,Boolean isOnlyLocation){
+        ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
+        if(null == replenishment){
+             replenishment = new ReplenishmentPutawayCacheCommand();
+             Map<Long,ArrayDeque<Long>> tipPalletIds = new HashMap<Long,ArrayDeque<Long>>();
+             ArrayDeque<Long> outContainerIds = new ArrayDeque<Long>();
+             outContainerIds.addFirst(outerContainerId);
+             tipPalletIds.put(locationId, outContainerIds);
+             replenishment.setTipPalletIds(tipPalletIds);
+        }else{
+            Map<Long,ArrayDeque<Long>> tipPalletIds = replenishment.getTipPalletIds();
+            if(null == tipPalletIds || tipPalletIds.size() == 0){
+                ArrayDeque<Long> outContainerIds = new ArrayDeque<Long>();
+                outContainerIds.addFirst(outerContainerId);
+                tipPalletIds.put(locationId, outContainerIds);
+                replenishment.setTipPalletIds(tipPalletIds);
+            }else{
+                ArrayDeque<Long> outContainerIds = tipPalletIds.get(locationId);
+                if(null == outContainerIds || outContainerIds.size() == 0){
+                    outContainerIds = new ArrayDeque<Long>();
+                    outContainerIds.addFirst(outerContainerId);
+                    tipPalletIds.put(locationId, outContainerIds);
+                    replenishment.setTipPalletIds(tipPalletIds);
+                }else{
+                    outContainerIds.addFirst(outerContainerId);
+                    tipPalletIds.put(locationId, outContainerIds);
+                    replenishment.setTipPalletIds(tipPalletIds); 
+                }
+            }
+        }
+        cacheManager.setObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString(), replenishment, CacheConstants.CACHE_ONE_DAY);
+    }
     /***
      * 提示sku
      * @param skuIds

@@ -1,6 +1,5 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +34,16 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      */
     public ReplenishmentScanResultComamnd tipContainer(Set<Long> outerContainerIds,Long operationId,Long locationId);
     
+    
+    /***
+     * 提示托盘
+     * @param outerContainerIds
+     * @param operationId
+     * @param locationId
+     * @return
+     */
+    public ReplenishmentScanResultComamnd tipOutContainer(Set<Long> outerContainerIds,Long operationId,Long locationId);
+    
     /****
      * 清楚补货上架缓存
      * @param operationId
@@ -48,6 +57,16 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      * @param locationId
      */
     public void pdaReplenishPutwayCacheTurnoverBox(Long operationId,Long turnoverBoxId,Long locationId,Long ouId,Boolean isOnlyLocation);
+    
+    /**
+     * 补货缓存托盘
+     * @param operationId
+     * @param outerContainerId
+     * @param locationId
+     * @param ouId
+     * @param isOnlyLocation
+     */
+    public void pdaReplenishPutwayCacheOuterContainer(Long operationId,Long outerContainerId,Long locationId,Long ouId,Boolean isOnlyLocation);
     
     /***
      * 提示sku

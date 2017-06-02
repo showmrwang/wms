@@ -88,6 +88,8 @@ public class OdoResultCommand extends BaseCommand {
     private String assignFailReason;
     /** 原始出库单号 */
     private String originalOdoCode;
+    /** 物流服务调用标志 0:失败 */
+    private Integer logisticsFlag;
 
     public String getQty() {
         return qty;
@@ -719,6 +721,14 @@ public class OdoResultCommand extends BaseCommand {
 
     public void setOriginalOdoCode(String originalOdoCode) {
         this.originalOdoCode = originalOdoCode;
+    }
+
+    public Integer getLogisticsFlag() {
+        return logisticsFlag;
+    }
+
+    public void setLogisticsFlag(Integer logisticsFlag) {
+        this.logisticsFlag = logisticsFlag;
     }
 
 }

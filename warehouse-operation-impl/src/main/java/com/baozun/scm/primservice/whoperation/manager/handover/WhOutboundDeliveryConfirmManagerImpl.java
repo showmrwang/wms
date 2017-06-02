@@ -9,6 +9,7 @@ import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,13 +64,13 @@ public class WhOutboundDeliveryConfirmManagerImpl extends BaseManagerImpl implem
     public void OutboundDeliveryConfirm(WhOutboundDeliveryConfirm whOutboundDeliveryConfirm) {
         try {
             OrderConfirmContent paramOrderConfirmContent = new OrderConfirmContent();
-            paramOrderConfirmContent.setOrdercode(whOutboundDeliveryConfirm.getOdoId() + "");
+            paramOrderConfirmContent.setOrdercode(whOutboundDeliveryConfirm.getOdoCode());
             paramOrderConfirmContent.setTradeid(whOutboundDeliveryConfirm.getEcOrderCode());
             paramOrderConfirmContent.setOrdersource(whOutboundDeliveryConfirm.getOrderSource());
             paramOrderConfirmContent.setExttransorderid(whOutboundDeliveryConfirm.getExtTransOrderId());
             paramOrderConfirmContent.setWhcode(whOutboundDeliveryConfirm.getOuCode());
             paramOrderConfirmContent.setOwnercode(whOutboundDeliveryConfirm.getStoreCode());
-            paramOrderConfirmContent.setLpcode(whOutboundDeliveryConfirm.getLogisticsCode());
+            paramOrderConfirmContent.setLpcode(StringUtils.upperCase(whOutboundDeliveryConfirm.getLogisticsCode()));
             paramOrderConfirmContent.setTrackingno(whOutboundDeliveryConfirm.getWaybillCode());
             // paramOrderConfirmContent.setChildtracknolis();
 

@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.OutInvBoxTypeCom
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -261,16 +262,28 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal,
             Long userId, Long ouId, String logId) {
         for (WhSkuInventory odoOrgSkuInv : odoOrgSkuInvList) {
+            Double originOnHandQty = 0.0;
+            if (isTabbInvTotal) {
+                originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(odoOrgSkuInv.getUuid(), odoOrgSkuInv.getOuId());
+            }
+            WhSkuInventory orgSkuInv = whSkuInventoryDao.findWhSkuInventoryById(odoOrgSkuInv.getId(), ouId);
+
             if (0 == odoOrgSkuInv.getOnHandQty()) {
-                whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), ouId);
-            } else {
-                whSkuInventoryDao.saveOrUpdateByVersion(odoOrgSkuInv);
-                Double originOnHandQty = 0.0;
-                if (isTabbInvTotal) {
-                    originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(odoOrgSkuInv.getUuid(), odoOrgSkuInv.getOuId());
+                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), -orgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
+
+                int deleteCount = whSkuInventoryDao.deleteWhSkuInventoryById(odoOrgSkuInv.getId(), ouId);
+                if (0 == deleteCount) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(GLOBAL_LOG_DELETE, odoOrgSkuInv, ouId, userId, null, null);
+            } else {
+                int updateCount = whSkuInventoryDao.saveOrUpdateByVersion(odoOrgSkuInv);
+                if (1 != updateCount) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                this.insertGlobalLog(GLOBAL_LOG_UPDATE, odoOrgSkuInv, ouId, userId, null, null);
                 // 从仓库判断是否需要记录库存数量变化
-                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), odoOrgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
+                this.insertSkuInventoryLog(odoOrgSkuInv.getId(), odoOrgSkuInv.getOnHandQty() - orgSkuInv.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
 
             }
         }
@@ -284,7 +297,24 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList, WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId,
             Long ouId, String logId) {
-        whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
+        List<WhSkuInventoryCommand> skuInventoryList = whSkuInventoryDao.findListByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
+        for (WhSkuInventoryCommand skuInventoryCommand : skuInventoryList) {
+            WhSkuInventory whSkuInventory = new WhSkuInventory();
+            BeanUtils.copyProperties(skuInventoryCommand, whSkuInventory);
+
+            Double originOnHandQty = 0.0;
+            if (isTabbInvTotal) {
+                originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(whSkuInventory.getUuid(), whSkuInventory.getOuId());
+            }
+            this.insertSkuInventoryLog(whSkuInventory.getId(), -whSkuInventory.getOnHandQty(), originOnHandQty, isTabbInvTotal, ouId, userId, InvTransactionType.SEEDING);
+
+            int deleteCount = whSkuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
+            if (0 == deleteCount) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            this.insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, ouId, userId, null, null);
+        }
+        // whSkuInventoryDao.deleteByOccupationCode(seedingWallLattice.getOdoCode(), ouId);
         this.saveWhSkuInventoryToDB(odoSeedingSkuInventoryList, isTabbInvTotal, userId, ouId, logId);
         // 生成复核数据并重计算复核模式
         checkingModeCalcManager.generateCheckingDataBySeeding(facilityId, batchNo, odoSeedingLineList, userId, ouId, logId);
@@ -347,6 +377,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     private void saveWhSkuInventoryToDB(List<WhSkuInventory> toSaveSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId) {
         // 创建 库存信息 WhSkuInventory
         for (WhSkuInventory whSkuInventory : toSaveSkuInventoryList) {
+
             Double originOnHandQty = 0.0;
             if (isTabbInvTotal) {
                 originOnHandQty = whSkuInventoryLogDao.sumSkuInvOnHandQty(whSkuInventory.getUuid(), whSkuInventory.getOuId());

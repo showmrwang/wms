@@ -3003,4 +3003,14 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
         return info;
     }
+
+
+    @Override
+    public WhOdoTransportService findTransportServiceByOdoIdAndOuId(Long odoId, Long ouId) {
+        WhOdoTransportService service = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
+        if (null == service) {
+            throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+        }
+        return service;
+    }
 }
