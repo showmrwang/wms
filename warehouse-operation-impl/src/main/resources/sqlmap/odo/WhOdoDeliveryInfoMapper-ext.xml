@@ -203,8 +203,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         select <include refid="odoDeliveryInfoColumnsExt"/>
         from t_wh_odo_delivery_info
        	where 
-       	odo_id = #{id} 
+       	odo_id = #{odoId} 
        	and outboundbox_code  = #{outboundBoxCode}
-       	and ou_id = #{ouid}
+       	and ou_id = #{ouId}
        	</select>
 </mapper>
