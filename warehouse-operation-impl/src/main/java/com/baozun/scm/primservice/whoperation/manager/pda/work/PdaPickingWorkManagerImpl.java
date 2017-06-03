@@ -3356,20 +3356,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
                         throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                     }
-                    Double oldQty = 0.0;
-                    if (true == isTabbInvTotal) { // 在库存日志是否记录交易前后库存总数 0：否 1：是
-                        try {
-                            oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(newSkuInventory.getUuid(), newSkuInventory.getOuId());
-                        } catch (Exception e) {
-                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-                        }
-                    } else {
-                        oldQty = 0.0;
-                    }
                     whSkuInventoryDao.insert(newSkuInventory);
                     insertGlobalLog(GLOBAL_LOG_INSERT, newSkuInventory, command.getOuId(), command.getUserId(), null, null);
-                    insertSkuInventoryLog(newSkuInventory.getId(), newSkuInventory.getOnHandQty(), oldQty, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
+                    insertSkuInventoryLog(newSkuInventory.getId(), newSkuInventory.getOnHandQty(), 0.00, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
                     List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
                     whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
                     double count = 0;
@@ -3417,20 +3406,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
                         throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                     }
-                    Double oldQty = 0.0;
-                    if (true == isTabbInvTotal) { // 在库存日志是否记录交易前后库存总数 0：否 1：是
-                        try {
-                            oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(newSkuInventory.getUuid(), newSkuInventory.getOuId());
-                        } catch (Exception e) {
-                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-                        }
-                    } else {
-                        oldQty = 0.0;
-                    }
                     whSkuInventoryDao.insert(newSkuInventory);
                     insertGlobalLog(GLOBAL_LOG_INSERT, newSkuInventory, command.getOuId(), command.getUserId(), null, null);
-                    insertSkuInventoryLog(newSkuInventory.getId(), newSkuInventory.getOnHandQty(), oldQty, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
+                    insertSkuInventoryLog(newSkuInventory.getId(), newSkuInventory.getOnHandQty(), 0.00, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
                     List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
                     whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(oldSkuInventory.getOuId(), oldSkuInventory.getUuid());
                     double count = 0;
