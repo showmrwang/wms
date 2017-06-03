@@ -198,4 +198,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        	and outboundbox_code is null
        	and outboundbox_id is null
     </select>
+    
+    <select id="findByOdoIdWitOutboundbox" resultType="com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo">
+        select <include refid="odoDeliveryInfoColumnsExt"/>
+        from t_wh_odo_delivery_info
+       	where 
+       	odo_id = #{odoId} 
+       	and outboundbox_code  = #{outboundBoxCode}
+       	and ou_id = #{ouId}
+       	</select>
 </mapper>

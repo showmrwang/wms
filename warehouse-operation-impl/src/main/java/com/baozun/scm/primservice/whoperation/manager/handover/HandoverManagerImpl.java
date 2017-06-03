@@ -230,6 +230,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             if (null == skuInventoryList || skuInventoryList.size() == 0) {
                 // 库存为空
                 log.error("handover error skuInventoryList  , skuInventoryList is:[{}]", skuInventoryList);
+                handoverCollectionDao.deleteByOuId(handoverCollection.getId(), ouId);
                 throw new BusinessException(ErrorCodes.SKUINVENTORY_IS_NULL);
             }
             for (WhSkuInventory whSkuInventory : skuInventoryList) {

@@ -227,5 +227,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						GROUP BY customer_code,customer_name,store_name,store_code,transport_name,transport_code
 				) as a
     </select>
-	
+		
+	   <delete id="deleteByOuId" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_handover_collection where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	    </delete> 
 </mapper>

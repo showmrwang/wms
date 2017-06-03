@@ -108,4 +108,6 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
      * @return
      */
     Integer isTheSameCodeAndName(@Param("handoverStationId") Long handoverStationId, @Param("ouId") Long ouId);
+
+    int deleteByOuId(@Param("id") Long id, @Param("ouId") Long ouId);
 }
