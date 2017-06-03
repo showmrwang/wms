@@ -1470,19 +1470,42 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             List<Long> locationIds = opExecLineCmd.getLocationIds();
             Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
             Map<String, Set<Long>> turnoverBoxSkuIds = opExecLineCmd.getSkuIds();
+            Set<Long> pallets = opExecLineCmd.getPallets();
+            Map<Long, Set<Long>> palleToContainer = opExecLineCmd.getPalleToContainer();
             for(Long locId:locationIds){
                 Set<Long> turnoverBoxIds = locTurnoverBoxIds.get(locId);
-                for(Long turnId:turnoverBoxIds){
-                    String key = locationId.toString()+turnId;
-                    Set<Long> skuIds = turnoverBoxSkuIds.get(key);
-                    if(null != skuIds && skuIds.size() != 0){
-                        for(Long skuId:skuIds){
-                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locId.toString()+ turnId.toString() + skuId.toString());
-                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locId.toString()+ turnId.toString() + skuId.toString());
-                            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locId.toString()+ turnId.toString() + skuId.toString());
+                if(null != turnoverBoxIds && turnoverBoxIds.size() != 0){
+                    for(Long turnId:turnoverBoxIds){
+                        String key = locationId.toString()+turnId;
+                        Set<Long> skuIds = turnoverBoxSkuIds.get(key);
+                        if(null != skuIds && skuIds.size() != 0){
+                            for(Long skuId:skuIds){
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locId.toString()+ turnId.toString() + skuId.toString());
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locId.toString()+ turnId.toString() + skuId.toString());
+                                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locId.toString()+ turnId.toString() + skuId.toString());
+                            }
+                        }
+                        cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locId.toString()+turnId.toString());
+                    }
+                }
+                //整托
+                if(null != pallets && pallets.size() != 0) {
+                    for(Long palletId:pallets){
+                        Set<Long> insideContainerIds = palleToContainer.get(palletId);
+                        for(Long insideContainerId:insideContainerIds){
+                            String key = locationId.toString()+insideContainerId;
+                            Set<Long> skuIds = turnoverBoxSkuIds.get(key);
+                            if(null != skuIds && skuIds.size() != 0){
+                                for(Long skuId:skuIds){
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locId.toString()+ insideContainerId.toString() + skuId.toString());
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + locId.toString()+ insideContainerId.toString() + skuId.toString());
+                                    cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + locId.toString()+ insideContainerId.toString() + skuId.toString());
+                                }
+                            }
+                            cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locId.toString()+insideContainerId.toString());
                         }
                     }
-                    cacheManager.remove(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locId.toString()+turnId.toString());
+                    cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+ operationId.toString());
                 }
             }
             cacheManager.remove(CacheConstants.CACHE_PUTAWAY_LOCATION+operationId.toString());

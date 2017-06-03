@@ -55,7 +55,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 提示内部容器号 */
     private String tipInsideContainerCode;
     /** 是否提示内部容器 */
-    private Boolean isTipinsideCotnainer;
+    private Boolean isTipinsideCotnainer = false;
     /** 托盘 */
     private String outerContainerCode;
     /** 内部容器号 */
