@@ -993,7 +993,7 @@
             t_wh_checking AS checking
         WHERE
             checking.ou_id = #{ouId}
-            and checking.outboundboxCode = #{outboundBoxCode}
+            and checking.outboundbox_code = #{outboundBoxCode}
     </select>
 
     <select id="findCheckingByTurnoverBox"  resultMap="WhCheckingCommand">
@@ -1235,7 +1235,7 @@
 		WHERE
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
-			group by checking.outboundboxCode
+			group by checking.outboundbox_code
     </select>
 
     <select id="findBatchBoxCntCheckByParam" resultType="java.lang.Long" flushCache="false">
@@ -1247,7 +1247,7 @@
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
 			and checking.status != 10
-			group by checking.outboundboxCode
+			group by checking.outboundbox_code
     </select>
 
     <select id="findBatchOdoCntByParam" resultType="java.lang.Long" flushCache="false">
