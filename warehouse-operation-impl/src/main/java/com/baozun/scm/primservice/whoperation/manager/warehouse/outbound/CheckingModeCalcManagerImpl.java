@@ -217,6 +217,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setTransportCode(whOdodeliveryInfo.getTransportCode());
                         checking.setTransportName(whOdodeliveryInfo.getTransportCode());
                     }
+                    checking.setTimeEffectCode("");
+                    checking.setTimeEffectName("");
+                    checking.setTransportName("");
+                    checking.setTransportCode("");
                     checking.setWaveCode(waveCode);
                     checking.setCreateId(userId);
                     checking.setCreateTime(new Date());
@@ -448,6 +452,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setTransportCode(whOdodeliveryInfo.getTransportCode());
                         checking.setTransportName(whOdodeliveryInfo.getTransportCode());
                     }
+                    checking.setTimeEffectCode("");
+                    checking.setTimeEffectName("");
+                    checking.setTransportName("");
+                    checking.setTransportCode("");
                     checking.setWaveCode(waveCode);
                     checking.setCreateId(userId);
                     checking.setCreateTime(new Date());
