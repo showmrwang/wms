@@ -50,11 +50,13 @@ public class WhPrintInfoManagerImpl extends BaseManagerImpl implements WhPrintIn
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveOrUpdate(WhPrintInfo whPrintInfo) {
         whPrintInfoDao.insert(whPrintInfo);
     }
 
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhPrintInfo> findFromcheckingCollectionByOutboundboxCode(String outboundboxCode, Long ouId) {
         return whPrintInfoDao.findFromcheckingCollectionByOutboundboxCode(outboundboxCode, ouId);
     }
