@@ -3309,7 +3309,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @Override
     public PickingScanResultCommand containerPickingOperationExecLine(PickingScanResultCommand command, Boolean isTabbInvTotal) {
         ContainerCommand conCmd = new ContainerCommand();
-        if(!command.getTipOuterContainerCode().isEmpty()){
+        if(!StringUtils.isEmpty(command.getTipOuterContainerCode())){
             conCmd = containerDao.getContainerByCode(command.getTipOuterContainerCode(), command.getOuId());    
         }else{
             conCmd = containerDao.getContainerByCode(command.getTipInsideContainerCode(), command.getOuId());    
@@ -3320,7 +3320,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         // 根据作业id获取作业明细信息
         List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
         for (WhOperationLineCommand operationLineCommand : operationLineList) {
-            if((!command.getTipOuterContainerCode().isEmpty() && conCmd.getId().longValue() == operationLineCommand.getFromOuterContainerId().longValue()) || (command.getTipOuterContainerCode().isEmpty() && conCmd.getId().longValue() == operationLineCommand.getFromInsideContainerId().longValue())){
+            if((!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == operationLineCommand.getFromOuterContainerId().longValue()) || (!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == operationLineCommand.getFromInsideContainerId().longValue())){
                 // 缓存数据 
                 if(null != operationLineCommand.getFromOuterContainerId()){
                     pdaPickingWorkCacheManager.cacheOuterContainerCode(command.getLocationId(), operationLineCommand.getFromOuterContainerId(), command.getOperationId());    
@@ -3370,6 +3370,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             log.error(getLogMsg("whSkuInventoryAllocated uuid error, logId is:[{}]", new Object[] {logId}), e);
                             throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                         }
+                        newSkuInventory.setLastModifyTime(new Date()); 
                         whSkuInventoryDao.insert(newSkuInventory);
                         insertGlobalLog(GLOBAL_LOG_INSERT, newSkuInventory, command.getOuId(), command.getUserId(), null, null);
                         insertSkuInventoryLog(newSkuInventory.getId(), newSkuInventory.getOnHandQty(), 0.00, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
@@ -3469,14 +3470,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 }
             }
         }
-        if( null == command.getTempReplenishWay() || 2 != command.getTempReplenishWay() || 3 != command.getTempReplenishWay()){
+        if( null == command.getTempReplenishWay() || (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay())){
             WhOperationCommand operationCmd = whOperationManager.findOperationById(command.getOperationId(), command.getOuId());
             operationCmd.setIsPickingFinish(true);
             operationCmd.setModifiedId(command.getUserId());
             whOperationManager.saveOrUpdate(operationCmd);    
         }
         //修改容器状态
-        if(!command.getTipOuterContainerCode().isEmpty()){
+        if(!StringUtils.isEmpty(command.getTipOuterContainerCode())){
             ContainerCommand outerContainer = containerDao.getContainerByCode(command.getTipOuterContainerCode(), command.getOuId());
             if (null == outerContainer) {
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
@@ -3934,7 +3935,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @Override
     public PickingScanResultCommand toWholeCase(PickingScanResultCommand command, Boolean isTabbInvTotal, String operationWay) {
         PickingScanResultCommand resultCmd = new PickingScanResultCommand();
-        if(!command.getTipOuterContainerCode().isEmpty()){
+        if(!StringUtils.isEmpty(command.getTipOuterContainerCode())){
             if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
                 resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
             }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){
@@ -3944,7 +3945,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 resultCmd = this.tipInsideContainer(command);
             }
         }
-        if(!command.getTipInsideContainerCode().isEmpty()){
+        if(!StringUtils.isEmpty(command.getTipInsideContainerCode())){
             if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
                 resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
             }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){

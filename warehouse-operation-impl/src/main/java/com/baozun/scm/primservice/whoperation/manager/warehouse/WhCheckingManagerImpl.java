@@ -1388,8 +1388,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Long userId = cmd.getUserId();
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         String outboundBoxCode = cmd.getOutboundBoxCode();
+        Long outboundboxId = cmd.getOutboundboxId();
         String waybillCode = cmd.getWaybillCode();
         Long checkingId = checkingLineList.get(0).getCheckingId();
+        Long odoId = checkingLineList.get(0).getOdoId();
         // 更新复合头状态
         WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
         if (null == checkingCmd) {
@@ -1448,10 +1450,14 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     whPrintInfo.setBatch(checkingLineList.get(0).getBatchNumber());
                     whPrintInfo.setWaveCode(checkingCmd.getWaveCode());
                     whPrintInfo.setOuId(ouId);
-                    whPrintInfo.setOutboundboxId(checkingCmd.getOutboundboxId());
-                    whPrintInfo.setOutboundboxCode(checkingCmd.getOutboundboxCode());
+                    whPrintInfo.setOutboundboxId(outboundboxId);
+                    whPrintInfo.setOutboundboxCode(outboundBoxCode);
                     whPrintInfo.setPrintType(checkingPrintArray[i]);
                     whPrintInfo.setPrintCount(1);// 打印次数
+                    whPrintInfo.setLastModifyTime(new Date());
+                    whPrintInfo.setCreateTime(new Date());
+                    whPrintInfo.setCreateId(userId);
+                    whPrintInfo.setOdoId(odoId);
                     whPrintInfoDao.insert(whPrintInfo);
                     try {
                         if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
