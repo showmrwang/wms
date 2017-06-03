@@ -2049,6 +2049,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 		inv.ou_id = #{ouId}
 		and inv.outer_container_id = #{outerContainerId}
+		and inv.location_id is null
 	</select>
 	
 	 <select id="findRcvdInventoryCountsByInsideContainerId1" resultType="Integer">

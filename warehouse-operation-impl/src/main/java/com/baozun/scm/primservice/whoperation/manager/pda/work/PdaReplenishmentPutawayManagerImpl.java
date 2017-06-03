@@ -1774,13 +1774,13 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
          }
          List<Long> locationIds = opExecLineCmd.getLocationIds();
          Map<Long, Set<Long>> palleToLocation = opExecLineCmd.getPalleToLocation();
+         Map<Long, Set<Long>> palleToContainer = opExecLineCmd.getPalleToContainer();  //当前托盘对应所有的货箱
+         Set<Long> containerIds =  palleToContainer.get(outerContainerId);
          Boolean result = this.judgeIsManayLoc(locationIds, palleToLocation, outerContainerId, locationId, operationId);
          if(result){ //托盘对应多个库位
              //对应多个库位提示
              Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
-             Map<Long, Set<Long>> palleToContainer = opExecLineCmd.getPalleToContainer();  //当前托盘对应所有的货箱
              Set<Long> insideContainerIds = locTurnoverBoxIds .get(locationId);  //当前库位上对应的所有货箱
-             Set<Long> containerIds =  palleToContainer.get(outerContainerId);
              Long insideContainerId = this.getInsideContainerId(insideContainerIds, containerIds);   //提示货箱id
              Container insideCmd = containerDao.findByIdExt(insideContainerId, ouId);
              if(null == insideCmd) {
@@ -1800,6 +1800,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                  command.setTipOuterContainerCode(tipOuterContainerCode);
                  command.setIsNeedScanPallet(true);
                  whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
+                 //整托上架更新内部容器状态
+                 this.updateInsideContainerStatus(containerIds, ouId, userId);
                  //修改作业执行明细的执行量
                  this.updateOperationExecLine(tipOuterContainerId,null, operationId, ouId, userId,locationId);  //需要改
                  //判断当前库位是否有拣货工作
@@ -1816,13 +1818,17 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                          command.setTipTurnoverBoxCode(containerCode);
                          command.setIsNeedScanTurnoverBox(true);
                          whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
-                       //修改作业执行明细的执行量
+                         //整托上架更新内部容器状态
+                         this.updateInsideContainerStatus(containerIds, ouId, userId);
+                         //修改作业执行明细的执行量
                          this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  
                          //判断当前库位是否有拣货工作
                          this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId);
                      }else{//单目标库位补货上架完成
                           command.setIsScanFinsh(true);
                           whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
+                          //整托上架更新内部容器状态
+                          this.updateInsideContainerStatus(containerIds, ouId, userId);
                          //修改作业执行明细的执行量
                           this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  
                           //判断当前库位是否有拣货工作
@@ -1833,6 +1839,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                  }else{
                      command.setIsScanFinsh(true);
                      whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
+                     //整托上架更新内部容器状态
+                     this.updateInsideContainerStatus(containerIds, ouId, userId);
                     //修改作业执行明细的执行量
                      this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);
                      //判断当前库位是否有拣货工作
@@ -1846,6 +1854,19 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
          return command;
      }
      
+     
+     private void updateInsideContainerStatus(Set<Long> insideContainerIds,Long ouId,Long userId){
+         for(Long insideContainerId:insideContainerIds){
+             Container container = containerDao.findByIdExt(insideContainerId, ouId);
+             if (null == container) {
+                 throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS);
+             }
+             container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+             container.setStatus(ContainerStatus.CONTAINER_STATUS_SHEVLED);
+             containerDao.saveOrUpdateByVersion(container);
+             insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+         }
+     }
      
      private Long getInsideContainerId(Set<Long> insideContainerIds,Set<Long> containerIds){
          Long insideContainerId = null;
