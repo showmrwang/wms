@@ -9,7 +9,6 @@ import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +69,7 @@ public class WhOutboundDeliveryConfirmManagerImpl extends BaseManagerImpl implem
             paramOrderConfirmContent.setExttransorderid(whOutboundDeliveryConfirm.getExtTransOrderId());
             paramOrderConfirmContent.setWhcode(whOutboundDeliveryConfirm.getOuCode());
             paramOrderConfirmContent.setOwnercode(whOutboundDeliveryConfirm.getStoreCode());
-            paramOrderConfirmContent.setLpcode(StringUtils.upperCase(whOutboundDeliveryConfirm.getLogisticsCode()));
+            paramOrderConfirmContent.setLpcode(whOutboundDeliveryConfirm.getLogisticsCode().toUpperCase());
             paramOrderConfirmContent.setTrackingno(whOutboundDeliveryConfirm.getWaybillCode());
             // paramOrderConfirmContent.setChildtracknolis();
 
