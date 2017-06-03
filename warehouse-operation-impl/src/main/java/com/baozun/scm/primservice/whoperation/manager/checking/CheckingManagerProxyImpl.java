@@ -444,7 +444,6 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
             checkingManager.printDefect(whCheckingResultCommand); 
         } catch (Exception e) {
             log.error(e + "");
-            throw new BusinessException(ErrorCodes.PRINT_ERROR);
         }
     }
 
