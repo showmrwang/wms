@@ -1783,6 +1783,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             WhOperationLineCommand.setOdoId(whWorkLineCommand.getOdoId());
             // 出库单明细ID
             WhOperationLineCommand.setOdoLineId(whWorkLineCommand.getOdoLineId());
+            // 补货单据号
+            WhOperationLineCommand.setReplenishmentCode(whWorkLineCommand.getReplenishmentCode());
             // 创建时间
             WhOperationLineCommand.setCreateTime(new Date());
             // 最后操作时间

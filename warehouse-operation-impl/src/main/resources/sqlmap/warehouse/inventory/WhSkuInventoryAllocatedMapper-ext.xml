@@ -431,8 +431,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and replenishTask.replenishment_code = invAllocated.replenishment_code 
 				and replenishTask.replenishment_code = invTobefilled.replenishment_code 
 				and invAllocated.sku_id = invTobefilled.sku_id 
-				and invAllocated.occupation_code = invTobefilled.occupation_code 
-				and invAllocated.occupation_line_id = invTobefilled.occupation_line_id 
+				and (invAllocated.occupation_code = invTobefilled.occupation_code or (invAllocated.occupation_code is null and invTobefilled.occupation_code is null)) 
+				and (invAllocated.occupation_line_id = invTobefilled.occupation_line_id or (invAllocated.occupation_line_id is null and invTobefilled.occupation_line_id is null))
 				and invAllocated.replenishment_rule_id = replenishRule.id
 				and invAllocated.inv_status = invTobefilled.inv_status
 				and (invAllocated.inv_type = invTobefilled.inv_type or (invAllocated.inv_type is null and invTobefilled.inv_type is null))
