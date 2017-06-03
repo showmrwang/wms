@@ -50,8 +50,8 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
      * @return
      */
     List<WhOdodeliveryInfo> findByOdoIdWithoutOutboundbox(@Param("id") Long id, @Param("ouid") Long ouid);
-    
-    
+
+
 
     /**
      * 通过出库单ID且出库单号为空的数据
@@ -66,7 +66,7 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
 
     /**
      * 查询出库单下所有的交接信息
-     *
+     * 
      * @param odoId
      * @param ouId
      * @return
@@ -76,7 +76,7 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
 
     /**
      * 查询出库单下可用的运单
-     *
+     * 
      * @param odoId
      * @param ouId
      * @return
@@ -85,11 +85,21 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
 
     /**
      * 运单号是否已被使用
-     *
+     * 
      * @param waybillCode
      * @param ouId
      * @return
      */
     public int checkUniqueWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
+
+    /**
+     * 通过出库单ID、出库箱号查询运单
+     * 
+     * @param id
+     * @param outboundBoxCode
+     * @param ouid
+     * @return
+     */
+    WhOdodeliveryInfo findByOdoIdWitOutboundbox(@Param("odoId") Long odoId, @Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 
 }

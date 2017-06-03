@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.DistributionMode;
 import com.baozun.scm.primservice.whoperation.constant.PickingMode;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.CustomerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
@@ -45,6 +46,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -79,6 +81,8 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
     private StoreDao storeDao;
     @Autowired
     private CustomerDao customerDao;
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
 
     /**
      * 复核台集货完成生产待复核数据
@@ -206,10 +210,13 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setStoreCode(store2.getStoreCode());
                         checking.setStoreName(store2.getStoreName());
                     }
-                    checking.setTimeEffectCode("");
-                    checking.setTimeEffectName("");
-                    checking.setTransportCode("");
-                    checking.setTransportName("");
+                    WhOdodeliveryInfo whOdodeliveryInfo = whOdoDeliveryInfoDao.findByOdoIdWitOutboundbox(odoId, outboundBoxCode, ouId);
+                    if (null != whOdodeliveryInfo) {
+                        checking.setTimeEffectCode(whOdodeliveryInfo.getTimeEffectType());
+                        checking.setTimeEffectName(whOdodeliveryInfo.getTimeEffectType());
+                        checking.setTransportCode(whOdodeliveryInfo.getTransportCode());
+                        checking.setTransportName(whOdodeliveryInfo.getTransportCode());
+                    }
                     checking.setWaveCode(waveCode);
                     checking.setCreateId(userId);
                     checking.setCreateTime(new Date());
@@ -434,10 +441,13 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setStoreCode(store2.getStoreCode());
                         checking.setStoreName(store2.getStoreName());
                     }
-                    checking.setTimeEffectCode("");
-                    checking.setTimeEffectName("");
-                    checking.setTransportCode("");
-                    checking.setTransportName("");
+                    WhOdodeliveryInfo whOdodeliveryInfo = whOdoDeliveryInfoDao.findByOdoIdWitOutboundbox(odoId, outboundBoxCode, ouId);
+                    if (null != whOdodeliveryInfo) {
+                        checking.setTimeEffectCode(whOdodeliveryInfo.getTimeEffectType());
+                        checking.setTimeEffectName(whOdodeliveryInfo.getTimeEffectType());
+                        checking.setTransportCode(whOdodeliveryInfo.getTransportCode());
+                        checking.setTransportName(whOdodeliveryInfo.getTransportCode());
+                    }
                     checking.setWaveCode(waveCode);
                     checking.setCreateId(userId);
                     checking.setCreateTime(new Date());
