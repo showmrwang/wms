@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.logistics.manager.OrderConfirmContentManager;
+import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
+import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -107,6 +109,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private WhOdoTransportServiceDao whOdoTransportServiceDao;
     @Autowired
     private StoreDao storeDao;
+    @Autowired
+    private MaTransportManager maTransportManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -202,8 +206,6 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             handover.setCustomerName(outboundbox.getCustomerName());
             handover.setStoreCode(outboundbox.getStoreCode());
             handover.setStoreName(outboundbox.getStoreName());
-            handover.setTransportCode(outboundbox.getTransportCode());
-            handover.setTransportName(outboundbox.getTransportName());
 
         }
         WhOutboundbox whOutboundboxByCode = new WhOutboundbox();
@@ -214,7 +216,12 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         WhOdodeliveryInfo whOdodeliveryInfo1 = whOdoDeliveryInfoDao.findByOdoIdWitOutboundbox(whOutboundboxByCode1.getOdoId(), hcList.get(0).getOutboundboxCode(), ouId);
         if (null != whOdodeliveryInfo1) {
             handover.setTransportCode(whOdodeliveryInfo1.getTransportCode());
-            handover.setTransportName(whOdodeliveryInfo1.getTransportCode());
+            MaTransport search = new MaTransport();
+            search.setCode(whOdodeliveryInfo1.getTransportCode());
+            List<MaTransport> list = maTransportManager.findMaTransport(search);
+            if (null != list) {
+                handover.setTransportName(list.get(0).getName());
+            }
         }
         Handover handover2 = handoverDao.findByBatch(handoverCollectionrecord.getHandoverBatch());
         if (null != handover2) {
