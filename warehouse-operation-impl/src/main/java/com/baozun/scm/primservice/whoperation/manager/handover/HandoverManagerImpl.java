@@ -206,8 +206,16 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             handover.setTransportName(outboundbox.getTransportName());
 
         }
-
-
+        WhOutboundbox whOutboundboxByCode = new WhOutboundbox();
+        whOutboundboxByCode.setOutboundboxCode(hcList.get(0).getOutboundboxCode());
+        whOutboundboxByCode.setOuId(ouId);
+        List<WhOutboundbox> whOutboundboxByCodeList = whOutboundboxDao.findListByParam(whOutboundboxByCode);
+        WhOutboundbox whOutboundboxByCode1 = whOutboundboxByCodeList.get(0);
+        WhOdodeliveryInfo whOdodeliveryInfo1 = whOdoDeliveryInfoDao.findByOdoIdWitOutboundbox(whOutboundboxByCode1.getOdoId(), hcList.get(0).getOutboundboxCode(), ouId);
+        if (null != whOdodeliveryInfo1) {
+            handover.setTransportCode(whOdodeliveryInfo1.getTransportCode());
+            handover.setTransportName(whOdodeliveryInfo1.getTransportCode());
+        }
         Handover handover2 = handoverDao.findByBatch(handoverCollectionrecord.getHandoverBatch());
         if (null != handover2) {
             // 已有该交接头信息
