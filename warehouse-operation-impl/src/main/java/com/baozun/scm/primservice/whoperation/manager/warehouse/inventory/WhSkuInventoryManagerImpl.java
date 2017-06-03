@@ -8345,8 +8345,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
             } else {
-                inv.setOuterContainerId(palletId);
-                inv.setInsideContainerId(turnoverBoxId); // 当前周转箱
+                if(null == palletId){
+                    inv.setInsideContainerId(turnoverBoxId); // 当前周转箱/货箱
+                }
             }
             if (false == isBM) {
                 inv.setBatchNumber(null);
@@ -8391,8 +8392,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setOuterContainerId(null);
                 inv.setInsideContainerId(null);
             } else {
-                inv.setOuterContainerId(palletId);
-                inv.setInsideContainerId(turnoverBoxId); // 当前周转箱
+                if(null == palletId){
+                    inv.setInsideContainerId(turnoverBoxId); // 当前周转箱/货箱
+                }
             }
             if (false == isBM) {
                 inv.setBatchNumber(null);
