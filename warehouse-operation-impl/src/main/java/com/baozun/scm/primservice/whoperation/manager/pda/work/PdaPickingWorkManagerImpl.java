@@ -3465,7 +3465,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 }
             }
         }
-        if( 2 == command.getTempReplenishWay() || 3 == command.getTempReplenishWay()){
+        if( 2 != command.getTempReplenishWay() || 3 != command.getTempReplenishWay()){
             WhOperationCommand operationCmd = whOperationManager.findOperationById(command.getOperationId(), command.getOuId());
             operationCmd.setIsPickingFinish(true);
             operationCmd.setModifiedId(command.getUserId());
