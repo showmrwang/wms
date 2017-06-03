@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -3940,17 +3939,17 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     @Override
     public PickingScanResultCommand toWholeCase(PickingScanResultCommand command, Boolean isTabbInvTotal, String operationWay) {
         PickingScanResultCommand resultCmd = new PickingScanResultCommand();
-        if(false != command.getIsScanInsideContainer()){
+        if(null != command.getTipOuterContainerCode()){
             if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
                 resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
             }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){
                 resultCmd = this.containerPickingOperationExecLine(command, isTabbInvTotal);    
             } else{
                 // 提示内部容器
-                resultCmd = this.tipInsideContainer(command);    
+                resultCmd = this.tipInsideContainer(command);
             }
         }
-        if(false != command.getIsScanSku()){
+        if(null == command.getTipInsideContainerCode()){
             if(2 == command.getTempReplenishWay() && 5 != command.getPalletPickingMode()){
                 resultCmd = this.palletPickingOperationExecLine(command, isTabbInvTotal);    
             }else if(3 == command.getTempReplenishWay() && 5 != command.getContainerPickingMode()){
