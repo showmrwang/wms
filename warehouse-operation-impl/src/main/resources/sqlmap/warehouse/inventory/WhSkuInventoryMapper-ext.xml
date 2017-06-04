@@ -4866,6 +4866,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				inv.ou_id = #{ouId}
 				and inv.occupation_line_id = #{odoLineId}
 				and inv.uuid = #{uuid}
+				and odo.id = #{odoId}
 				<if test="containerId!=null and containerId!=''">
 					 and inv.outer_container_id = #{containerId}
 				</if>
@@ -5784,4 +5785,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					 and inv.uuid = #{uuid}
 				   </if>
     </select>
+    
+    
+      
+    <select id="countWhSkuInventoryCommandByOdo" resultMap="WhSkuInventoryCommandSnResultExt">
+	    select
+	          count(*)
+		      from 
+					t_wh_sku_inventory inv
+					left join t_wh_odo odo on inv.occupation_code = odo.odo_code
+			  where
+				inv.ou_id = #{ouId}
+				and odo.id = #{odoId}
+				and inv.location_id is null
+				<if test="outerContainerId!=null and outerContainerId!=''">
+					 and inv.outer_container_id = #{outerContainerId}
+				</if>
+				<if test="insideContainerId!=null and insideContainerId!=''">
+					 and inv.inside_container_id =#{insideContainerId}
+				</if>
+				<if test="seedingWallCode!=null and seedingWallCode!=''">
+					 and inv.seeding_wall_code =#{seedingWallCode}
+				</if>
+	</select>
 </mapper>

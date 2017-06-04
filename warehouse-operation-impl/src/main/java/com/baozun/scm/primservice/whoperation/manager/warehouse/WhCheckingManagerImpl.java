@@ -1251,11 +1251,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             if (null == outerCmd) {
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
-            Container c = new Container();
-            BeanUtils.copyProperties(outerCmd, c);
-            c.setStatus(Constants.LIFECYCLE_START);
-            c.setLifecycle(Constants.LIFECYCLE_START);
-            containerDao.saveOrUpdateByVersion(c);
+            Long outerContainerId = outerCmd.getId();
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId, outerContainerId, null, null);
+            if(count == 0){
+                Container c = new Container();
+                BeanUtils.copyProperties(outerCmd, c);
+                c.setStatus(Constants.LIFECYCLE_START);
+                c.setLifecycle(Constants.LIFECYCLE_START);
+                containerDao.saveOrUpdateByVersion(c);
+                insertGlobalLog(GLOBAL_LOG_INSERT, c, ouId, userId, null, null);
+            }
         }
         if (!StringUtils.isEmpty(turnoverBoxCode)) {
             // 周转箱状态
@@ -1263,20 +1268,27 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             if (null == turnCmd) {
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
-            Container turn = new Container();
-            BeanUtils.copyProperties(turnCmd, turn);
-            turn.setStatus(Constants.LIFECYCLE_START);
-            turn.setLifecycle(Constants.LIFECYCLE_START);
-            containerDao.saveOrUpdateByVersion(turn);
+            Long insideContainerId = turnCmd.getId();
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId,null, insideContainerId, null);
+            if(count == 0){
+                Container turn = new Container();
+                BeanUtils.copyProperties(turnCmd, turn);
+                turn.setStatus(Constants.LIFECYCLE_START);
+                turn.setLifecycle(Constants.LIFECYCLE_START);
+                containerDao.saveOrUpdateByVersion(turn);
+            }
         }
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
-            WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-            if (null == facility) {
-                throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId,null, null, seedingWallCode);
+            if(count == 0){
+                WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+                if (null == facility) {
+                    throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+                }
+                facility.setStatus("1");
+                whOutboundFacilityDao.saveOrUpdateByVersion(facility);
             }
-            facility.setStatus("1");
-            whOutboundFacilityDao.saveOrUpdateByVersion(facility);
         }
     }
 

@@ -1187,4 +1187,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     int findAllInventoryCountsByOuterContainerId(@Param("ouId") Long ouid, @Param("outerContainerId") Long outerContainerId);
+    
+    /***
+     * 查询容器库存(按单复合)
+     * 
+     * @param ouId
+     * @param operationId
+     * @return
+     */
+   public int countWhSkuInventoryCommandByOdo(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId, @Param("seedingWallCode") String seedingWallCode);
 }
