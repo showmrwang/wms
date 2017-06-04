@@ -1020,7 +1020,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         // 查询当前复合头对应的要复合的数量,复合明细中出库箱悟为空
-        if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern)) {
+        if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern) || Constants.WAY_5.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
                 Long id = cmd.getId(); // 复合明细id
                 Long checkingQty = cmd.getCheckingQty(); // 复合明细数量
