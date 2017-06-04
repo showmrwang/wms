@@ -1393,6 +1393,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      */
     @Override
     public Boolean printDefect(WhCheckingByOdoResultCommand cmd) {
+        log.info("whcheckingManagerImpl printDefect is start");
         Boolean isSuccess = true;
         String checkingPattern = cmd.getCheckingPattern(); // 按单复合模式
         Long ouId = cmd.getOuId();
@@ -1421,6 +1422,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 List<Long> idsList = new ArrayList<Long>();
                 List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(outboundBoxCode, checkingPrintArray[i], ouId);
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
+                    log.info("whprintInfo insert is start");
                     WhPrintInfo whPrintInfo = new WhPrintInfo();
                     // 小车加出库箱
                     if (Constants.WAY_1.equals(checkingPattern)) {
@@ -1493,11 +1495,18 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         log.error("WhCheckingManagerImpl printDefect is execption" + e);
                     }
                 } else {
+                    log.info("whprintInfo update is start");
                     Integer printCount = whPrintInfoLst.get(0).getPrintCount();
                     if (printCount < 1) {
                         WhPrintInfo printfo = whPrintInfoLst.get(0);
                         printfo.setPrintCount(1);
-                        whPrintInfoDao.saveOrUpdate(printfo);
+                        printfo.setModifiedId(userId);
+                        printfo.setOutboundboxId(outboundboxId);
+                        printfo.setOutboundboxCode(outboundBoxCode);
+                        printfo.setOdoId(odoId);
+                        printfo.setBatch(checkingLineList.get(0).getBatchNumber());
+                        printfo.setWaveCode(checkingCmd.getWaveCode());
+                        whPrintInfoDao.saveOrUpdateByVersion(printfo);
                         try {
                             if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
                                 // 装箱清单
@@ -1522,6 +1531,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 }
             }
         }
+        log.info("whcheckingManagerImpl printDefect is end");
         return isSuccess;
     }
 }
