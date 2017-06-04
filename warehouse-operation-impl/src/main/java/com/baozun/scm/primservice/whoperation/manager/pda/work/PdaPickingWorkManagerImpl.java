@@ -1768,6 +1768,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     } else {
                         lattice = pdaPickingWorkCacheManager.tipLatticeNoLoc(locationId,  operationId, skuAttrIdNoSn, ouId);
                     }
+                }else{
+                     lattice = latticeNo;
                 }
                 String key = lattice.toString() + locationId;
                 if (cSRCmd.getIsHaveInsideContainer()) {

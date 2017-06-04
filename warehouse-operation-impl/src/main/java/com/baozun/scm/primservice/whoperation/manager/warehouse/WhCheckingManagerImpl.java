@@ -1065,7 +1065,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 WhChecking checking = new WhChecking();
                 BeanUtils.copyProperties(checkingCmd, checking);
                 checking.setStatus(CheckingStatus.PART_FINISH);
-                whCheckingDao.saveOrUpdate(checking);
+                whCheckingDao.saveOrUpdateByVersion(checking);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
             }
             Integer count = whCheckingLineDao.countCheckingLine(checkingId, ouId);
@@ -1073,7 +1073,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 WhChecking checking = new WhChecking();
                 BeanUtils.copyProperties(checkingCmd, checking);
                 checking.setStatus(CheckingStatus.FINISH);
-                whCheckingDao.saveOrUpdate(checking);
+                whCheckingDao.saveOrUpdateByVersion(checking);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
             }
         } else {
@@ -1092,7 +1092,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             WhChecking checking = new WhChecking();
             BeanUtils.copyProperties(checkingCmd, checking);
             checking.setStatus(CheckingStatus.FINISH);
-            whCheckingDao.saveOrUpdate(checking);
+            whCheckingDao.saveOrUpdateByVersion(checking);
             insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
         }
         return checkingId;
