@@ -1229,48 +1229,54 @@
 
     <select id="findBatchBoxCntByParam" resultType="java.lang.Long" flushCache="false">
 		SELECT
-			count(1)
+			count(distinct checking.outboundbox_code)
 		FROM
 			t_wh_checking checking
 		WHERE
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
-			group by checking.outboundbox_code
     </select>
 
     <select id="findBatchBoxCntCheckByParam" resultType="java.lang.Long" flushCache="false">
 		SELECT
-			count(1)
+			count(distinct checking.outboundbox_code)
 		FROM
 			t_wh_checking checking
 		WHERE
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
 			and checking.status != 10
-			group by checking.outboundbox_code
     </select>
 
     <select id="findBatchOdoCntByParam" resultType="java.lang.Long" flushCache="false">
 		SELECT
-			count(1)
+			count(distinct line.odo_id)
 		FROM
 			t_wh_checking checking left join t_wh_checking_line line on checking.id = line.checking_id
 		WHERE
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
-			group by line.odo_id
     </select>
 
     <select id="findBatchOdoCntCheckByParam" resultType="java.lang.Long" flushCache="false">
 		SELECT
-			count(1)
+			count(distinct line.odo_id)
 		FROM
 			t_wh_checking checking left join t_wh_checking_line line on checking.id = line.checking_id
 		WHERE
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
 			and checking.status != 10
-			group by line.odo_id
+    </select>
+    
+    <select id="findBatchSkuCntByParam" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			sum(line.qty)
+		FROM
+			t_wh_checking checking left join t_wh_checking_line line on checking.id = line.checking_id
+		WHERE
+			checking.batch = #{batch}
+			AND checking.ou_id = #{ouId}
     </select>
 
 </mapper>
