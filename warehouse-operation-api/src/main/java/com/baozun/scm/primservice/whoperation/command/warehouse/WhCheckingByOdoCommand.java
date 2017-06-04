@@ -26,6 +26,8 @@ public class WhCheckingByOdoCommand extends BaseCommand {
     private List<WhSkuInventorySn> snList;
     /** 出库功能配置*/
     private WhFunctionOutBound whFunctonOutBound;
+    /** 页面提示信息*/
+    private String message;
 
 
     public WhCheckingCommand getCheckingCommand() {
@@ -74,6 +76,14 @@ public class WhCheckingByOdoCommand extends BaseCommand {
 
     public void setSnList(List<WhSkuInventorySn> snList) {
         this.snList = snList;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }

@@ -206,7 +206,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingCommand whCheckingCommand = command.getCheckingCommand();
         String input = whCheckingCommand.getInput();
         if (!StringUtils.hasLength(input)) {
-            throw new BusinessException("输入为空");
+            command.setMessage("请输入一个编码开始复核");
         }
         Boolean bingo = false;
         // 判断:播种墙
@@ -299,7 +299,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         List<WhSkuInventorySn> snList = new ArrayList<WhSkuInventorySn>();
         if (null == checking.getId() && null == checking.getOdoId()) {
             // 如果复核id或者出库单id为空,则不应该继续查找复核明细
-            throw new BusinessException("不能查找复核明细");
+            // throw new BusinessException("不能查找复核明细");
+            whCheckingByOdoCommand.setMessage("不能查找复核明细");
         }
         if (null != checking.getId()) {
             // 有复核id
@@ -353,7 +354,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
         whCheckingByOdoCommand.setSnList(snList);
         checking.setOdoId(whCheckingLineList.get(0).getOdoId());
-        checking = findWaybillInfo(checking);
+        try {
+            checking = findWaybillInfo(checking);
+        } catch (Exception e) {
+            whCheckingByOdoCommand.setMessage("获取运单号失败");
+        }
         whCheckingByOdoCommand.setCheckingCommand(checking);
         return whCheckingByOdoCommand;
     }
@@ -1253,7 +1258,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             }
             Long outerContainerId = outerCmd.getId();
             int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId, outerContainerId, null, null);
-            if(count == 0){
+            if (count == 0) {
                 Container c = new Container();
                 BeanUtils.copyProperties(outerCmd, c);
                 c.setStatus(Constants.LIFECYCLE_START);
@@ -1269,8 +1274,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             Long insideContainerId = turnCmd.getId();
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId,null, insideContainerId, null);
-            if(count == 0){
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId, null, insideContainerId, null);
+            if (count == 0) {
                 Container turn = new Container();
                 BeanUtils.copyProperties(turnCmd, turn);
                 turn.setStatus(Constants.LIFECYCLE_START);
@@ -1280,8 +1285,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId,null, null, seedingWallCode);
-            if(count == 0){
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId, null, null, seedingWallCode);
+            if (count == 0) {
                 WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
                 if (null == facility) {
                     throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
@@ -1362,6 +1367,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         checkingDisplayCommand.setOdoCount(batchOdoCnt);
         Long batchOdoCntCheck = whCheckingDao.findBatchOdoCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
         checkingDisplayCommand.setToBeCheckedOdoCount(batchOdoCntCheck);
+        Long skuCnt = whCheckingDao.findBatchSkuCntByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+        checkingDisplayCommand.setSkuCnt(skuCnt);
         checkingDisplayCommand.setWaveCode(whCheckingCommand.getWaveCode());
         checkingDisplayCommand.setTransportName(whCheckingCommand.getTransportName());
         checkingDisplayCommand.setProductName(whCheckingCommand.getProductName());

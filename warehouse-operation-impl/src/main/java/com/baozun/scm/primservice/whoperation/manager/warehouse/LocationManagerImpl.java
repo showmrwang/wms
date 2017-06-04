@@ -186,7 +186,6 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
             Long a = 1L;
             if (null != locationIds && locationIds.size() > 0) {
                 for (Long locationId : locationIds) {
-
                     LocationSkuVolume locationSkuVolume = getLocationSkuVolumeByLocationIdAndOuid(ouId, locationId);
                     list.add(locationSkuVolume);
                     locationSkuVolume.setId(a);
@@ -207,7 +206,8 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
      * @return
      */
     private LocationSkuVolume getLocationSkuVolumeByLocationIdAndOuid(Long ouId, Long locationId) {
-        LocationSkuVolume locationSkuVolume = locationSkuVolumeDao.findListBylocationId(locationId, ouId);
+        List<LocationSkuVolume> locationSkuVolumeList = locationSkuVolumeDao.findListBylocationId(locationId, ouId);
+        LocationSkuVolume locationSkuVolume = locationSkuVolumeList.get(0);
         Long OnHandQty = whSkuInventoryDao.findOnHandQtyByLocationId(locationId, ouId);
         if (null == OnHandQty) {
             locationSkuVolume.setOnHandQty(0L);

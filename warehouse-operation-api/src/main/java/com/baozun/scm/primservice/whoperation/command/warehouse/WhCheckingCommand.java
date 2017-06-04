@@ -124,6 +124,8 @@ public class WhCheckingCommand extends BaseCommand {
     // private String waybillCode;
     /** 面单类型*/
     private String waybillType;
+    /** 待扫描商品总件数*/
+    private Long skuCnt;
 
 
 
@@ -661,6 +663,14 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setBatchOdoCntCheck(Long batchOdoCntCheck) {
         this.batchOdoCntCheck = batchOdoCntCheck;
+    }
+
+    public Long getSkuCnt() {
+        return skuCnt;
+    }
+
+    public void setSkuCnt(Long skuCnt) {
+        this.skuCnt = skuCnt;
     }
 
 }

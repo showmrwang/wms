@@ -45,6 +45,8 @@ public class CheckingDisplayCommand extends BaseCommand {
     private String skuCode;
     /** 主品名称 */
     private String skuName;
+    /** 待扫描商品总件数*/
+    private Long skuCnt;
 
     /** 客户(已有) */
     /** 店铺(已有) */
@@ -174,6 +176,14 @@ public class CheckingDisplayCommand extends BaseCommand {
 
     public void setSkuName(String skuName) {
         this.skuName = skuName;
+    }
+
+    public Long getSkuCnt() {
+        return skuCnt;
+    }
+
+    public void setSkuCnt(Long skuCnt) {
+        this.skuCnt = skuCnt;
     }
 
 }
