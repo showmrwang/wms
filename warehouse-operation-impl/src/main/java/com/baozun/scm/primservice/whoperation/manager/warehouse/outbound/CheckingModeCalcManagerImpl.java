@@ -210,6 +210,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setStoreCode(store2.getStoreCode());
                         checking.setStoreName(store2.getStoreName());
                     }
+                    checking.setTimeEffectCode("");
+                    checking.setTimeEffectName("");
+                    checking.setTransportName("");
+                    checking.setTransportCode("");
                     WhOdodeliveryInfo whOdodeliveryInfo = whOdoDeliveryInfoDao.findByOdoIdWitOutboundbox(odoId, outboundBoxCode, ouId);
                     if (null != whOdodeliveryInfo) {
                         checking.setTimeEffectCode(whOdodeliveryInfo.getTimeEffectType());
@@ -217,10 +221,6 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setTransportCode(whOdodeliveryInfo.getTransportCode());
                         checking.setTransportName(whOdodeliveryInfo.getTransportCode());
                     }
-                    checking.setTimeEffectCode("");
-                    checking.setTimeEffectName("");
-                    checking.setTransportName("");
-                    checking.setTransportCode("");
                     checking.setWaveCode(waveCode);
                     checking.setCreateId(userId);
                     checking.setCreateTime(new Date());
@@ -445,6 +445,10 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setStoreCode(store2.getStoreCode());
                         checking.setStoreName(store2.getStoreName());
                     }
+                    checking.setTimeEffectCode("");
+                    checking.setTimeEffectName("");
+                    checking.setTransportName("");
+                    checking.setTransportCode("");
                     WhOdodeliveryInfo whOdodeliveryInfo = whOdoDeliveryInfoDao.findByOdoIdWitOutboundbox(odoId, outboundBoxCode, ouId);
                     if (null != whOdodeliveryInfo) {
                         checking.setTimeEffectCode(whOdodeliveryInfo.getTimeEffectType());
@@ -452,10 +456,6 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
                         checking.setTransportCode(whOdodeliveryInfo.getTransportCode());
                         checking.setTransportName(whOdodeliveryInfo.getTransportCode());
                     }
-                    checking.setTimeEffectCode("");
-                    checking.setTimeEffectName("");
-                    checking.setTransportName("");
-                    checking.setTransportCode("");
                     checking.setWaveCode(waveCode);
                     checking.setCreateId(userId);
                     checking.setCreateTime(new Date());
