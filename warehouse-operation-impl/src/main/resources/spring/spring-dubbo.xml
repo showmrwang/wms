@@ -87,6 +87,7 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhFacilityGroupSkuVolumeManager" ref="whFacilityGroupSkuVolumeManager" />
 	<!-- 创捡货工作 -->
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager" ref="whWorkManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WorkManagerProxy" ref="workManagerProxy" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager" ref="whWorkLineManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager" ref="whOperationManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager" ref="whOperationLineManager" />

@@ -32,6 +32,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 
@@ -418,4 +419,8 @@ public interface WhSkuInventoryManager extends BaseManager {
     void emptyouterContainerIdAndSeedingWallCode(String outboundboxCode, Long ouId);
 
     void batchInsert(Map<String, WhSkuInventory> uuidInvMap, Map<String, List<WhSkuInventorySn>> uuidSnMap, Warehouse wh, Long userId);
+
+    void executeReplenishmentWork(String replenishmentCode, WhWorkLine line, Long ouId, Long userId);
+
+    void executePickingWork(WhWorkLine line, Long ouId, Long userId);
 }

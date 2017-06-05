@@ -208,4 +208,15 @@ public interface PdaPickingWorkManager extends BaseManager {
     
     public PickingScanResultCommand toWholeCase(PickingScanResultCommand command, Boolean isTabbInvTotal, String operationWay);
     
+    public String insertIntoCollection(PickingScanResultCommand command, Long ouId, Long userId);
+
+    /**
+     * 
+     * @param pickingMode
+     * @param operationId
+     * @param ouId
+     * @param userId
+     */
+    void changeOdoStatus(String pickingMode, Long operationId, Long ouId, Long userId);
+
 }

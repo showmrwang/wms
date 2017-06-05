@@ -127,7 +127,7 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         if (null == cacheAsn) {
             throw new BusinessException(ErrorCodes.ASN_NULL);
         }
-        if (PoAsnType.POTYPE_2 == cacheAsn.getStatus()) {
+        if (PoAsnType.POTYPE_2 == cacheAsn.getAsnType()) {
             throw new BusinessException(ErrorCodes.PDARECEIVING_RETURNS_NO_ERROR);
         }
         if (PoAsnStatus.ASN_CANCELED == cacheAsn.getStatus()) {// ASN单状态校验：只校验了是未取消的数据

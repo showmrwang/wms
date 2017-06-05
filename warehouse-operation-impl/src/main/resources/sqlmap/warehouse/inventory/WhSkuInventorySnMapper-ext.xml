@@ -168,6 +168,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				uuid = #{uuid}
 				and ou_id = #{ouid} 
     </select>
+    <select id="findUseableInvSnByUuid" resultMap="WhSkuInventorySnResultExt">
+    	select <include refid="whSkuInventorySnColumnsExt" />
+				from 
+				t_wh_sku_inventory_sn
+				where 
+				uuid = #{uuid}
+				and ou_id = #{ouid} 
+				and (occupation_code is null or occupation_code ='')
+				and (occupation_line_id is null or occupation_line_id ='')
+				and status='1'
+    </select>
     
     <select id="findWhSkuInventoryByUuidLeftJoinForeignKey" resultMap="WhSkuInventorySnCommandResultExt">
 	    	select 
