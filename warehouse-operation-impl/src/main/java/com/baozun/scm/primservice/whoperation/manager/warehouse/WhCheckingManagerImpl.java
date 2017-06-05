@@ -1036,7 +1036,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 Long id = cmd.getId(); // 复合明细id
                 Long checkingQty = cmd.getCheckingQty(); // 复合明细数量
                 WhCheckingLineCommand lineCmd = whCheckingLineDao.findCheckingLineById(id, ouId);
-                if (lineCmd.getQty() > cmd.getCheckingQty()) {
+                if (lineCmd.getQty().longValue() > cmd.getCheckingQty().longValue()) {
                     WhCheckingLine line = new WhCheckingLine();
                     BeanUtils.copyProperties(lineCmd, line);
                     line.setId(null);
@@ -1059,10 +1059,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     whCheckingLineDao.saveOrUpdateByVersion(insertLine);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
                 }
-                if (lineCmd.getQty() < cmd.getCheckingQty()) {
+                if (lineCmd.getQty().longValue() < cmd.getCheckingQty().longValue()) {
                     throw new BusinessException(ErrorCodes.CHECKING_NUM_IS_EEROR);
                 }
-                if (lineCmd.getQty() == cmd.getCheckingQty()) {
+                if (lineCmd.getQty().longValue() == cmd.getCheckingQty().longValue()) {
 
                     WhCheckingLine line = new WhCheckingLine();
                     BeanUtils.copyProperties(lineCmd, line);
@@ -1079,8 +1079,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 whCheckingDao.saveOrUpdateByVersion(checking);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
             }
-            Integer count = whCheckingLineDao.countCheckingLine(checkingId, ouId);
-            if (count == 0) {
+            Double count = whCheckingLineDao.countCheckingLine(checkingId, ouId);
+            if (count.doubleValue() == 0.0) {
                 WhChecking checking = new WhChecking();
                 BeanUtils.copyProperties(checkingCmd, checking);
                 checking.setStatus(CheckingStatus.FINISH);

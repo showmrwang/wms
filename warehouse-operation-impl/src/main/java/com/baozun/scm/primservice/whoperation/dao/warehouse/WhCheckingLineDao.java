@@ -84,7 +84,7 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
      * @param ouId
      * @return
      */
-    public Integer countCheckingLine(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
+    public Double countCheckingLine(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
 
     public List<WhChecking> findListByParamWithNoFinish(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
