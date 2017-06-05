@@ -4182,6 +4182,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     		and on_hand_qty > 0.0 
 			and IFNULL(is_locked, 0) != 1
     </select>
+    <select id="findUseableInventoryByUuid" resultMap="WhSkuInventoryResultExt">
+    	select 
+    		<include refid="whSkuInventoryColumnsExt"/>
+    	from 
+    		t_wh_sku_inventory
+    	where 
+    		uuid = #{uuid}
+    		and ou_id = #{ouId}
+    		and occupation_code is null
+    		and location_id is not null 
+    		and on_hand_qty > 0.0 
+			and IFNULL(is_locked, 0) != 1
+    </select>
     
     <select id="findUseableInventoryByInsideContainerId" resultMap="WhSkuInventoryCommandResultExt">
 		select 

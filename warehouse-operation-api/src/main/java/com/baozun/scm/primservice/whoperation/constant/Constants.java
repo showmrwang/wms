@@ -959,4 +959,21 @@ public final class Constants {
     /**获取运单号失败*/
     public static final String FIND_WAYBILL_CODE_ERROR="waybillCode_is_error";
 
+    // 签入签出
+    public static final Integer ASSIGN_IN = 1;
+    public static final Integer ASSIGN_OUT = 2;
+    public static final Integer CANCEL_ASSIGN_OUT = 3;
+
+    // 工作类别
+    public static final String WORKCATEGORY_RCVD = "RCVD";
+    public static final String WORKCATEGORY_PUTAWAY = "PUTAWAY";
+    public static final String WORKCATEGORY_PICKING = "PICKING";
+    public static final String WORKCATEGORY_REPLENISHMENT = "REPLENISHMENT";
+    public static final String WORKCATEGORY_STOCK_COUNT = "STOCK_COUNT";
+    public static final String WORKCATEGORY_IN_WAREHOUSE_MOVE = "IN_WAREHOUSE_MOVE";
+    public static final String WORKCATEGORY_IN_WAREHOUSE_PROCESS = "IN_WAREHOUSE_PROCESS";
+
+    /** 签出 */
+    public static final String WORK_ASSIGN_OUT_BATCH = "WORK_ASSIGN_OUT_BATCH";
+
 }

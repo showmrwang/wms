@@ -2186,7 +2186,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param command
      * @param ouId
      */
-    private String insertIntoCollection(PickingScanResultCommand command, Long ouId, Long userId) {
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public String insertIntoCollection(PickingScanResultCommand command, Long ouId, Long userId) {
         WhWorkCommand work = workManager.findWorkByWorkCode(command.getWorkBarCode(), ouId);
         if (null == work) {
             throw new BusinessException("no work found");
@@ -3966,6 +3968,37 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
         }
         return resultCmd;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void changeOdoStatus(String pickingMode, Long operationId, Long ouId, Long userId) {
+        List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
+        for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
+            List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOdoId(), null, false, whOperationLineCommand.getOuId());
+            List<WhOperationCommand> operationCommandByOdo = whOperationDao.findOperationCommandByOdo(whOperationLineCommand.getOdoId(), null, 10, whOperationLineCommand.getOuId());
+            List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), false, whOperationLineCommand.getOuId());
+            List<WhOperationCommand> operationCommandByOdoLine = whOperationDao.findOperationCommandByOdo(null, whOperationLineCommand.getOdoLineId(), 10, whOperationLineCommand.getOuId());
+            if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
+                // 根据出库单code获取出库单信息
+                WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
+                if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
+                    odo.setOdoStatus(OdoStatus.PICKING_FINISH);
+                    odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
+                } else {
+                    odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
+                    odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                }
+                odoDao.update(odo);
+            }
+            if (0 == odoOutBoundBoxByOdoLine.size() && 0 == operationCommandByOdoLine.size()) {
+                // 根据出库单code获取出库单信息
+                WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
+                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
+                whOdoLineDao.update(whOdoLine);
+            }
+        }
+
     }
 
 }

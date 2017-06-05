@@ -104,6 +104,8 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @return
      */
     public int findOperationLineByLattice(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
+
+    List<WhOperationLine> findByOperationId(@Param("operationId") Long operationId, @Param("ouId") Long ouId);
     
 	
 }

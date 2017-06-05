@@ -404,7 +404,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
     </select>
     
-<select id="findWorkLineByWorkIdOuId" resultMap="WhWorkLineCommandResultExt">
+<select id="findWorkLineByWorkIdOuId" resultMap="WhWorkLineResultExt">
     	select 
     		<include refid="whWorkLineColumns" />
 	    from 

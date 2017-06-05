@@ -507,6 +507,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     List<WhSkuInventory> findInventorysByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 
     /**
+     * 根据uuid查询所有可用库存记录行
+     * 
+     * @author lichuan
+     * @param ouid
+     * @param uuid
+     * @return
+     */
+    List<WhSkuInventory> findUseableInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
+
+    /**
      * 根据uuid查询所有已分配的外部容器库存
      * 
      * @author lichuan

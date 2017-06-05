@@ -105,6 +105,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
@@ -10762,6 +10763,192 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
 
 
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void executeReplenishmentWork(String replenishmentCode, WhWorkLine line, Long ouId, Long userId) {
+        // 开启新的事务查询仓库
+        Warehouse wh = this.warehouseManager.findWarehouseByIdExt(ouId);
+        // 已分配库存扣减
+        WhSkuInventoryAllocated skuInventoryAllocated = new WhSkuInventoryAllocated();
+        skuInventoryAllocated.setReplenishmentCode(replenishmentCode);
+        skuInventoryAllocated.setOccupationLineId(line.getOdoLineId());
+        skuInventoryAllocated.setOuId(ouId);
+        List<WhSkuInventoryAllocated> skuInventoryAllocatedList = this.whSkuInventoryAllocatedDao.findskuInventoryAllocateds(skuInventoryAllocated);
+        Map<String, List<WhSkuInventorySn>> uuidMap = new HashMap<String, List<WhSkuInventorySn>>();
+        if (skuInventoryAllocatedList != null && skuInventoryAllocatedList.size() > 0) {
+            for (WhSkuInventoryAllocated allocated : skuInventoryAllocatedList) {
+                String key = SkuCategoryProvider.getSkuAttrIdByInv(allocated);
+                Double allocatedQty = allocated.getQty();
+                List<WhSkuInventory> skuInventoryList = this.whSkuInventoryDao.findUseableInventoryByUuid(ouId, allocated.getUuid());
+                if (skuInventoryList == null || skuInventoryList.size() == 0) {
+                    log.error("executeReplenishmentWork allocate  find no skuInv ,error");
+                    throw new BusinessException(ErrorCodes.ALLOCATEDQTY_SHORT_ERROR);
+                }
+                for (WhSkuInventory inv : skuInventoryList) {
+
+                    Double onHandQty = inv.getOnHandQty();
+                    if (inv.getOnHandQty() > allocatedQty) {
+                        inv.setOnHandQty(onHandQty - allocatedQty);
+                        int updateCount = this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
+                        if (updateCount <= 0) {
+                            log.error("executeReplenishmentWork update skuInv error");
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                        this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.REPLENISHMENT);
+                        allocatedQty = 0d;
+                        break;
+                    } else {
+                        this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
+                        this.insertSkuInventoryLog(inv.getId(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.REPLENISHMENT);
+                        allocatedQty -= inv.getOnHandQty();
+                    }
+
+                }
+                if (allocatedQty > 0) {
+                    log.error("executeReplenishmentWork allocate  short of skuInv ,error");
+                    throw new BusinessException(ErrorCodes.ALLOCATEDQTY_SHORT_ERROR);
+                }
+                List<WhSkuInventorySn> invSnList = this.whSkuInventorySnDao.findUseableInvSnByUuid(ouId, allocated.getUuid());
+                if (invSnList != null && invSnList.size() > 0) {// 序列号商品更新
+                    for (int i = 0; i < allocated.getQty(); i++) {
+                        if (uuidMap.containsKey(key)) {
+                            List<WhSkuInventorySn> snList = uuidMap.get(key);
+                            snList.add(invSnList.get(i));
+                            uuidMap.put(key, snList);
+                        } else {
+                            List<WhSkuInventorySn> snList = new ArrayList<WhSkuInventorySn>();
+                            snList.add(invSnList.get(i));
+                            uuidMap.put(key, snList);
+                        }
+                    }
+                }
+                this.whSkuInventoryAllocatedDao.deleteExt(allocated.getId(), ouId);
+            }
+        }
+        // 待移入库存
+        WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
+        skuInventoryTobefilled.setReplenishmentCode(replenishmentCode);
+        skuInventoryTobefilled.setOccupationLineId(line.getOdoLineId());
+        skuInventoryTobefilled.setOuId(ouId);
+        List<WhSkuInventoryTobefilled> skuInventoryTobefilledList = this.whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(skuInventoryTobefilled);
+        if (skuInventoryTobefilledList == null || skuInventoryTobefilledList.size() > 0) {
+            log.error("executeReplenishmentWork filled with no skuInv ,error");
+            throw new BusinessException(ErrorCodes.TOBEFILLEDQTY_NULL_ERROR);
+        }
+        for (WhSkuInventoryTobefilled tobeFilled : skuInventoryTobefilledList) {
+            String key = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(tobeFilled);
+            WhSkuInventory inv = new WhSkuInventory();
+            Double onHandQty = tobeFilled.getQty();
+            BeanUtils.copyProperties(tobeFilled, inv);
+            inv.setOccupationCode(null);
+            inv.setOnHandQty(tobeFilled.getQty());
+            inv.setFrozenQty(Constants.DEFAULT_DOUBLE);
+            this.whSkuInventoryDao.insert(inv);
+            this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.REPLENISHMENT);
+            if (uuidMap.containsKey(key)) {
+                List<WhSkuInventorySn> snList = uuidMap.get(key);
+                if (onHandQty > snList.size()) {
+                    throw new BusinessException(ErrorCodes.ALLOCATED_SN_QTY_ERROR);
+                }
+
+                List<WhSkuInventorySn> newSnList = new ArrayList<WhSkuInventorySn>();
+                for (int i = 0; i < snList.size(); i++) {
+                    if (onHandQty > 1) {
+                        WhSkuInventorySn sn = snList.get(i);
+                        sn.setUuid(inv.getUuid());
+                        this.whSkuInventorySnDao.update(sn);
+                        onHandQty -= 1;
+                    } else {
+                        newSnList.add(snList.get(i));
+                    }
+
+                }
+                uuidMap.put(key, newSnList);
+            }
+        }
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void executePickingWork(WhWorkLine line, Long ouId, Long userId) {
+        // 开启新的事务查询仓库
+        Warehouse wh = this.warehouseManager.findWarehouseByIdExt(ouId);
+
+        Double qty = line.getQty();
+        String uuid = line.getUuid();
+
+        
+        List<WhSkuInventory> skuInventoryList = this.whSkuInventoryDao.findOdoSkuInvByOdoLineIdUuid(line.getOdoLineId(), ouId, uuid);
+        WhOdo odo = this.whOdoDao.findByIdOuId(line.getOdoId(), ouId);
+        String occupationCode = odo.getOdoCode();
+       
+
+        if (skuInventoryList == null || skuInventoryList.size() == 0) {
+            log.error("executePickingWork allocate  short of skuInv ,error");
+            throw new BusinessException(ErrorCodes.ALLOCATEDQTY_SHORT_ERROR);
+        }
+        String newUuid = null;
+        WhSkuInventory newInv = new WhSkuInventory();
+        for (WhSkuInventory inv : skuInventoryList) {
+            if (StringUtils.isEmpty(newUuid)) {
+                BeanUtils.copyProperties(inv, newInv);
+                newInv.setLocationId(null);
+                newInv.setOutboundboxCode(line.getUseOutboundboxCode());
+                newInv.setOuterContainerId(line.getUseOuterContainerId());
+                newInv.setInsideContainerId(line.getUseContainerId());
+                newInv.setContainerLatticeNo(line.getUseContainerLatticeNo());
+                try {
+                    newUuid = SkuInventoryUuid.invUuid(newInv);
+                } catch (Exception e) {
+                    log.error("executePickingWork generate uuid error");
+                    throw new BusinessException(ErrorCodes.UUID_GENERATE_ERROR);
+                }
+            }
+
+            Double onHandQty = inv.getOnHandQty();
+
+            if (inv.getOnHandQty() > qty) {
+                inv.setOnHandQty(onHandQty - qty);
+                int updateCount = this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
+                if (updateCount <= 0) {
+                    log.error("executePickingWork update skuInv error");
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
+                qty = 0d;
+                break;
+            } else {
+                this.insertSkuInventoryLog(inv.getId(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
+                this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
+                qty -= inv.getOnHandQty();
+            }
+
+
+        }
+
+        if (qty > 0) {
+            log.error("executePickingWork picking  short of skuInv ,error");
+            throw new BusinessException(ErrorCodes.ALLOCATEDQTY_SHORT_ERROR);
+        }
+        newInv.setOnHandQty(line.getQty());
+        newInv.setId(null);
+        this.whSkuInventoryDao.insert(newInv);
+        this.insertSkuInventoryLog(newInv.getId(), newInv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), ouId, userId, InvTransactionType.PICKING);
+
+
+        List<WhSkuInventorySnCommand> invSnList = this.whSkuInventorySnDao.findInvSnByAsnCodeAndUuid(occupationCode, uuid, ouId);
+        if (invSnList != null && invSnList.size() > 0) {// 序列号商品更新
+            for (int i = 0; i < line.getQty(); i++) {
+                WhSkuInventorySn sn = new WhSkuInventorySn();
+                BeanUtils.copyProperties(invSnList.get(i), sn);
+                sn.setUuid(newUuid);
+                this.whSkuInventorySnDao.insert(sn);
+            }
         }
 
     }

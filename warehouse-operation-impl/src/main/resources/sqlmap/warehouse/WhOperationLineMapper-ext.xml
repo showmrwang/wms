@@ -297,6 +297,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</where>
     </select>
+	<select id="findByOperationId" resultMap="WhOperationLineResultExt">
+    	select 
+    		<include refid="whOperationLineColumnsExt" />
+	    from 
+	    	t_wh_operation_line
+		<where> 
+				ou_id = #{ouId}
+				and operation_id = #{operationId}
+		</where>
+    </select>
     
     <select id="findOperationLineByLocationId" resultMap="whOperationLineCommandResultExt">
     	select 

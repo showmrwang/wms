@@ -472,6 +472,20 @@ public class ErrorCodes {
     public static final int ODO_EXTCODE_ISEXIST = 11101;
     /** PO单正在被他人操作 **/
     public static final int ASN_CREATE_SYNC_ERROR = 11104;
+    /** 工作单状态非新建锁定，不允许签出 */
+    public static final int ASSIGN_OUT_CHECK_STATUS_ERROR = 11102;
+    /** 库位容量补货 不允许签出 */
+    public static final int ASSIGN_OUT_REPLENISHMENT_STATUS_ERROR = 11103;
+    /** 签出的出库单才允许取消签出 */
+    public static final int CANCEL_ASSIGNOUT_CAPABLE = 11105;
+    /** 库存数量不足，不可分配 */
+    public static final int ALLOCATEDQTY_SHORT_ERROR = 11106;
+    /** 待移入数量为0 */
+    public static final int TOBEFILLEDQTY_NULL_ERROR = 11107;
+    /** 分配的序列号数量不足 */
+    public static final int ALLOCATED_SN_QTY_ERROR = 11108;
+    /** 补货任务签入异常 */
+    public static final int REPLENISHMENT_ASSIGN_IN_ERROR = 11109;
     // 10001-20000 luyimin
 
 

@@ -25,6 +25,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineComman
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
 /**
@@ -156,6 +157,27 @@ public final class SkuCategoryProvider {
 
 
     public static String getSkuAttrIdByInv(WhSkuInventoryAllocatedCommand invCmd) {
+        String ret = "";
+        Long skuId = invCmd.getSkuId();
+        String invType = (StringUtils.isEmpty(invCmd.getInvType()) ? PH : invCmd.getInvType());
+        String invStatus = (StringUtils.isEmpty(invCmd.getInvStatus()) ? PH : invCmd.getInvStatus() + "");
+        String batchNumber = (StringUtils.isEmpty(invCmd.getBatchNumber()) ? PH : invCmd.getBatchNumber());
+        String countryOfOrigin = (StringUtils.isEmpty(invCmd.getCountryOfOrigin()) ? PH : invCmd.getCountryOfOrigin());
+        String mfgDate = (StringUtils.isEmpty(invCmd.getMfgDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getMfgDate()));
+        String expDate = (StringUtils.isEmpty(invCmd.getExpDate()) ? PH : new SimpleDateFormat("yyyyMMddHHmmss").format(invCmd.getExpDate()));
+        String invAttr1 = (StringUtils.isEmpty(invCmd.getInvAttr1()) ? PH : invCmd.getInvAttr1());
+        String invAttr2 = (StringUtils.isEmpty(invCmd.getInvAttr2()) ? PH : invCmd.getInvAttr2());
+        String invAttr3 = (StringUtils.isEmpty(invCmd.getInvAttr3()) ? PH : invCmd.getInvAttr3());
+        String invAttr4 = (StringUtils.isEmpty(invCmd.getInvAttr4()) ? PH : invCmd.getInvAttr4());
+        String invAttr5 = (StringUtils.isEmpty(invCmd.getInvAttr5()) ? PH : invCmd.getInvAttr5());
+        // ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + mfgDate + DV +
+        // expDate + DV + countryOfOrigin + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV +
+        // invAttr4 + DV + invAttr5;
+        ret = skuId + DV + invType + DV + invStatus + DV + batchNumber + DV + countryOfOrigin + DV + mfgDate + DV + expDate + DV + invAttr1 + DV + invAttr2 + DV + invAttr3 + DV + invAttr4 + DV + invAttr5;
+        return ret;
+    }
+
+    public static String getSkuAttrIdByInv(WhSkuInventoryAllocated invCmd) {
         String ret = "";
         Long skuId = invCmd.getSkuId();
         String invType = (StringUtils.isEmpty(invCmd.getInvType()) ? PH : invCmd.getInvType());
