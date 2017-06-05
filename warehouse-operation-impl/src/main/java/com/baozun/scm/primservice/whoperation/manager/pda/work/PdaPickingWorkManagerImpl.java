@@ -3326,7 +3326,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
         for (WhOperationLineCommand operationLineCommand : operationLineList) {
             if ((!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == operationLineCommand.getFromOuterContainerId().longValue())
-                    || (!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == operationLineCommand.getFromInsideContainerId().longValue())) {
+                    || (!StringUtils.isEmpty(command.getTipInsideContainerCode()) && conCmd.getId().longValue() == operationLineCommand.getFromInsideContainerId().longValue())) {
                 // 缓存数据
                 if (null != operationLineCommand.getFromOuterContainerId()) {
                     pdaPickingWorkCacheManager.cacheOuterContainerCode(command.getLocationId(), operationLineCommand.getFromOuterContainerId(), command.getOperationId());
@@ -3355,7 +3355,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 List<WhSkuInventory> whSkuInventoryLst = this.whSkuInventoryDao.findInventorysByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
                 for (WhSkuInventory oldSkuInventory : whSkuInventoryLst) {
                     if ((!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == oldSkuInventory.getOuterContainerId().longValue())
-                            || (!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == oldSkuInventory.getInsideContainerId().longValue())) {
+                            || (!StringUtils.isEmpty(command.getTipInsideContainerCode()) && conCmd.getId().longValue() == oldSkuInventory.getInsideContainerId().longValue())) {
                         if (oldSkuInventory.getOnHandQty() > onHandQty) {
                             // 生成容器库存
                             WhSkuInventory newSkuInventory = new WhSkuInventory();
@@ -3475,7 +3475,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst = whSkuInventoryAllocatedDao.findSkuInventoryAllocatedByUuid(operationLineCommand.getUuid(), operationLineCommand.getOuId());
                     for (WhSkuInventoryAllocated whSkuInventoryAllocated : whSkuInventoryAllocatedLst) {
                         if ((!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == whSkuInventoryAllocated.getOuterContainerId().longValue())
-                                || (!StringUtils.isEmpty(command.getTipOuterContainerCode()) && conCmd.getId().longValue() == whSkuInventoryAllocated.getInsideContainerId().longValue())) {
+                                || (!StringUtils.isEmpty(command.getTipInsideContainerCode()) && conCmd.getId().longValue() == whSkuInventoryAllocated.getInsideContainerId().longValue())) {
                             whSkuInventoryAllocatedDao.delete(whSkuInventoryAllocated.getId());
                         }
                     }
