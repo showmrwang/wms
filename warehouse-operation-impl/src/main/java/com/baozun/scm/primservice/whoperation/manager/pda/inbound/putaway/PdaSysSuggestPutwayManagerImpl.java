@@ -50,6 +50,7 @@ import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuBarcodeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -78,6 +79,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionPutAwa
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
@@ -88,6 +90,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
+import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
@@ -156,6 +159,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
     private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
     @Autowired
     private InventoryStatisticManager inventoryStatisticManager;
+    @Autowired
+    private SkuBarcodeDao skuBarcodeDao;
     
     
     
@@ -1814,6 +1819,16 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         tipSkuDetailAspect(false,srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
         srCmd.setNeedTipSku(true);
         srCmd.setTipSkuBarcode(skuCmd.getBarCode());   //提示sku
+        List<SkuBarcode> list = skuBarcodeDao.findSkuBarcodeBySkuIdShared(skuId, ouId);
+        String mutilBarcodes = "";
+        if (null != list && list.size() > 0) {
+            for (SkuBarcode bc : list) {
+                if (!StringUtils.isEmpty(bc.getBarCode())) {
+                    mutilBarcodes = ParamsUtil.concatParam(mutilBarcodes, bc.getBarCode());
+                }
+            }
+        }
+        srCmd.setTipSkuMutilBarcode(mutilBarcodes);
         log.info("PdaSysSuggestPutwayManagerImpl splitUserSuggestLocation is end"); 
         return srCmd;
     }
@@ -3696,6 +3711,16 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         sRcmd.setNeedTipSku(true);
         sRcmd.setTipSkuBarcode(skuCmd.getBarCode());   //提示sku
         sRcmd.setTipSkuQty(new Integer(insideContainerSkuQty.get(insideContainerId).toString()));
+        List<SkuBarcode> list = skuBarcodeDao.findSkuBarcodeBySkuIdShared(skuId, ouId);
+        String mutilBarcodes = "";
+        if (null != list && list.size() > 0) {
+            for (SkuBarcode bc : list) {
+                if (!StringUtils.isEmpty(bc.getBarCode())) {
+                    mutilBarcodes = ParamsUtil.concatParam(mutilBarcodes, bc.getBarCode());
+                }
+            }
+        }
+        sRcmd.setTipSkuMutilBarcode(mutilBarcodes);
         //人工分支缓存扫描的库位
         this.cacheManTipLocation(insideContainerId, tipLocationId, logId, insideContainerCode);
         return sRcmd;
