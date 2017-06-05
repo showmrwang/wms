@@ -227,11 +227,11 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
          }
          Map<String, Set<Long>> locSkuIds = new HashMap<String, Set<Long>>();
-         if(null != replenishWay && (2 == replenishWay || 3 == replenishWay)){
-             locSkuIds = opExecLineCmd.getInsideSkuIds();
-         }else{
+//         if(null != replenishWay && (2 == replenishWay || 3 == replenishWay)){
+//             locSkuIds = opExecLineCmd.getInsideSkuIds();
+//         }else{
              locSkuIds = opExecLineCmd.getSkuIds();
-         }
+//         }
          String key = locationId.toString()+turnoverBoxId;
          Set<Long> skuIds = locSkuIds.get(key);
          for(Long skuId:skuIds){
