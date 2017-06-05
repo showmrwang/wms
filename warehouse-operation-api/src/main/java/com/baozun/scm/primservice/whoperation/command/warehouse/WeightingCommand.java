@@ -63,6 +63,8 @@ public class WeightingCommand extends BaseCommand {
     private String storeName;
 
     private Boolean isSuccess;
+    /** 页面输入*/
+    private String input;
 
 
     public Long getFuncId() {
@@ -209,6 +211,11 @@ public class WeightingCommand extends BaseCommand {
         this.isSuccess = isSuccess;
     }
 
+    public String getInput() {
+        return input;
+    }
 
-
+    public void setInput(String input) {
+        this.input = input;
+    }
 }

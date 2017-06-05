@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 public interface WeightingManager extends BaseManager {
@@ -10,7 +11,7 @@ public interface WeightingManager extends BaseManager {
      * @param command
      * @return
      */
-    WeightingCommand inputResponse(WeightingCommand command);
+    WeightingCommand findInfoByInput(WeightingCommand command);
 
     /**
      * [业务方法] 根据输入返回页面显示
@@ -30,7 +31,7 @@ public interface WeightingManager extends BaseManager {
      * [业务方法] 称重
      * @param command
      */
-    void weighting(WeightingCommand command, Long userId);
+    WhCheckingByOdoResultCommand weighting(WeightingCommand command, Long userId);
 
 
 }

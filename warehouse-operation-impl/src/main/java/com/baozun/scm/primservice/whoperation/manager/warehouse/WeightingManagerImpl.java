@@ -19,6 +19,7 @@ import com.baozun.scm.baseservice.print.constant.Constants;
 import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -83,16 +84,23 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
     @Autowired
     private UomDao uomDao;
 
+    @Autowired
+    private WhCheckingManager whCheckingManager;
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WeightingCommand inputResponse(WeightingCommand command) {
+    public WeightingCommand findInfoByInput(WeightingCommand command) {
         // Boolean flag = this.checkParam(command);
         String outboundBoxCode = command.getOutboundBoxCode();
         String waybillCode = command.getWaybillCode();
-        if (true) {
-            command = findInputResponse(command);
-            command.setOutboundBoxCode(outboundBoxCode);
-            command.setWaybillCode(waybillCode);
+        command = findInputResponse(command);
+        if (null != command) {
+            if (!StringUtils.hasLength(command.getOutboundBoxCode())) {
+                command.setOutboundBoxCode(outboundBoxCode);
+            }
+            if (!StringUtils.hasLength(command.getWaybillCode())) {
+                command.setWaybillCode(waybillCode);
+            }
         }
         return command;
     }
@@ -122,23 +130,40 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         return true;
     }
 
+    /**
+     * [业务方法] 判断输入为面单还是出库箱编码
+     * @param command
+     * @return
+     */
     private WeightingCommand findInputResponse(WeightingCommand command) {
         WeightingCommand weightingCommand = new WeightingCommand();
-        if (StringUtils.hasLength(command.getWaybillCode())) {
-            // 通过运单号查找待称重信息
-            weightingCommand = whCheckingDao.findByWaybillCode(command.getWaybillCode(), command.getOuId());
-        } else {
-            // 通过出库箱号查找带称重信息
-            // command = whCheckingDao.findByOutboundBoxCode(command.getOutboundBoxCode(),
-            // command.getOuId());
-            String outboundBoxCode = command.getOutboundBoxCode();
-            weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking(outboundBoxCode, command.getOuId());
-            if (null == weightingCommand) {
-                weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking1(outboundBoxCode, command.getOuId());
+        Long ouId = command.getOuId();
+        String input = command.getInput();
+        if (StringUtils.hasLength(input)) {
+            // 未知输入为面单还是出库箱编码
+            // 先测试面单
+            weightingCommand = whCheckingDao.findByWaybillCode(input, ouId);
+            if (null != weightingCommand) {
+                // 如果找到, 就返回
+                weightingCommand.setWaybillCode(input);
+                return weightingCommand;
+            } else {
+                // 如果找不到信息 则测试出库箱编码
+                weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking1(input, ouId);
+                if (null != weightingCommand) {
+                    weightingCommand.setOutboundBoxCode(input);
+                }
+                return weightingCommand;
             }
-            weightingCommand.setOutboundBoxCode(outboundBoxCode);
+        } else {
+            // 已知是面单还是出库箱编码
+            String outboundBoxCode = command.getOutboundBoxCode();
+            weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking1(outboundBoxCode, ouId);
+            if (null != weightingCommand) {
+                weightingCommand.setOutboundBoxCode(outboundBoxCode);
+            }
+            return weightingCommand;
         }
-        return weightingCommand;
     }
 
     private Integer checkOutboundBoxStatus(String outboundBoxCode, String waybillCode, Long ouId) {
@@ -159,7 +184,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void weighting(WeightingCommand command, Long userId) {
+    public WhCheckingByOdoResultCommand weighting(WeightingCommand command, Long userId) {
         Long funcId = command.getFuncId();
         Long ouId = command.getOuId();
         Long odoId = command.getOdoId();
@@ -176,6 +201,10 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         whOdodeliveryInfo.setOutboundboxCode(outboundBoxCode);
         whOdodeliveryInfo.setOuId(ouId);
         List<WhOdodeliveryInfo> whOdodeliveryInfoList = whOdoDeliveryInfoDao.findListByParam(whOdodeliveryInfo);
+        if (null == whOdodeliveryInfoList || 1 < whOdodeliveryInfoList.size()) {
+            throw new BusinessException("一个出库箱对应多个运单号");
+        }
+
         whOdodeliveryInfo = whOdodeliveryInfoList.get(0);
 
         // 2.判断称重集中是否满足浮动百分比
@@ -208,7 +237,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         if (0 > cnt) {
             throw new BusinessException("save fail");
         }
-        // 5.更新出库单状态
+        // 4.更新出库单状态
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         WhOdoLine line = new WhOdoLine();
         line.setOdoId(odoId);
@@ -224,19 +253,23 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         odo.setOdoStatus(OdoStatus.WEIGHING_FINISH);
         odo.setModifiedId(userId);
         whOdoDao.saveOrUpdateByVersion(odo);
-        // 6.更新出库箱状态
+        // 5.更新出库箱状态
         WhOutboundboxCommand whOutboundboxCommand = whOutboundboxDao.findByOutboundBoxCode(outboundBoxCode, ouId);
         WhOutboundbox whOutboundbox = new WhOutboundbox();
         BeanUtils.copyProperties(whOutboundboxCommand, whOutboundbox);
         whOutboundbox.setStatus("9");
         whOutboundboxDao.update(whOutboundbox);
-        // 4.打印单据
+        // 6.绑定出库箱与面单
+        WhCheckingByOdoResultCommand waybillCommand = new WhCheckingByOdoResultCommand();
+        waybillCommand = whCheckingManager.bindkWaybillCode(funcId, ouId, odoId, outboundBoxCode, null);
+        // 7.打印单据
         // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);
         try {
             this.print2(outbound.getWeighingPrint(), whOdodeliveryInfo.getWaybillCode(), outboundBoxCode, packageInfo.getId(), odoId, userId, ouId);
         } catch (Exception e) {
             log.error("打印失败");
         }
+        return waybillCommand;
     }
 
     /**

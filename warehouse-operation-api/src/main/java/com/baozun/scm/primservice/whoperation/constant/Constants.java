@@ -806,6 +806,8 @@ public final class Constants {
     public static final String TIP_BATCH = "BATCH";
     /** 按单复核:提示扫描批次号 */
     public static final String TIP_BATCH_UNIQUE_OUTBOUND_BOX = "BATCH_UNIQUE_OUTBOUND_BOX";
+    /** 按单复核:普通摘果*/
+    public static final String TIP_GENERAL_CHECKING = "GENERAL_CHECKING";
 
     public static final String TIP_BATCH_MULTIPLE_OUTBOUND_BOX = "BATCH_MULTIPLE_OUTBOUND_BOX";
 
@@ -955,9 +957,9 @@ public final class Constants {
     public static final String WAYBILL_TYPE_PAPER = "waybill_paper";
     /** 保价 */
     public static final String EXPRESS_VAS_INSURED = "INSURED";
-    
+
     /**获取运单号失败*/
-    public static final String FIND_WAYBILL_CODE_ERROR="waybillCode_is_error";
+    public static final String FIND_WAYBILL_CODE_ERROR = "WAYBILL_CODE_IS_ERROR";
 
     // 签入签出
     public static final Integer ASSIGN_IN = 1;
@@ -975,5 +977,9 @@ public final class Constants {
 
     /** 签出 */
     public static final String WORK_ASSIGN_OUT_BATCH = "WORK_ASSIGN_OUT_BATCH";
+    /** 纸质面单*/
+    public static final String PAPER_WAY_BILL = "1";
+    /** 电子面单*/
+    public static final String ELECTRONIC_WAY_BILL = "2";
 
 }

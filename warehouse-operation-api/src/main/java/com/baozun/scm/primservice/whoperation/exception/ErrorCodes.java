@@ -495,6 +495,8 @@ public class ErrorCodes {
     // 20001-30000 shenjian
 
     // 30001-40000 zhanglei
+    /** [称重] 输入的编码未查询到相应的出库信息*/
+    public static final int WEIGHTING_INPUT_NOT_CORRECT = 30101;
     // 30001-40000 zhanglei
 
     // 40001-50000 lichuan
