@@ -515,7 +515,7 @@
         and checking_id = #{checkingId}
     </select>
 
-    <select id="countCheckingLine" resultType="Integer">
+    <select id="countCheckingLine" resultType="java.lang.Double">
       select
         	sum(qty-checking_qty)
       from

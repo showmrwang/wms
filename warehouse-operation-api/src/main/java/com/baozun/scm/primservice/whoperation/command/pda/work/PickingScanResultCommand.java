@@ -199,7 +199,7 @@ public class PickingScanResultCommand extends BaseCommand {
     /** 出库箱/周转箱满箱后是否使用新的容器 */
     private Boolean isUserNewContainer = false;
 
-    private Boolean isNeedScanSku; // 是否扫描sku
+    private Boolean isNeedScanSku = false; // 是否扫描sku
 
     private Boolean isNeedTipLoc;
 

@@ -1063,6 +1063,8 @@ public class ErrorCodes {
     public static final int SUPPLIES__IS_EEROR = 70066;
     /**服务器繁忙,请重新拣货*/
     public static final int PICKING__NO_END = 70067;
+    /**打印失败*/
+    public static final int PRINT_IS_FAIL = 70068;
 
     // 70001-80000 tangming
 
