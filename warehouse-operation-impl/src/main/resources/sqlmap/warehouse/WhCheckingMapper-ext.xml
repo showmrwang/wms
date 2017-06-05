@@ -217,10 +217,30 @@
     
     
      <select id="findByWaybillCode" resultMap="WeightingCommand" flushCache="false">
-        select
-        <include refid="whCheckWeightingExt"/>
-        from t_wh_checking ch left join t_wh_odo_delivery_info info on ch.outboundbox_code = info.outboundbox_code
-		where info.waybill_code = #{waybillCode} and ch.ou_id = #{ouId}
+        SELECT
+			info.outboundbox_code AS outboundboxCode,
+			pack.calc_weight AS calcWeighting,
+			pack.floats AS floats,
+			odo.id AS odoId,
+			odo.odo_code AS odoCode,
+			box.wave_code AS waveCode,
+			box.batch AS batch,
+			info.transport_code AS transportCode,
+			info.waybill_code AS waybillCode,
+			consumable.sku_barcode AS skuCode,
+			box.customer_name AS customerName,
+			box.store_name AS storeName
+		FROM
+			t_wh_odo_delivery_info info
+		LEFT JOIN t_wh_outboundbox box ON info.outboundbox_code = box.outboundbox_code
+		AND info.odo_id = box.odo_id
+		LEFT JOIN t_wh_odo odo ON info.odo_id = odo.id
+		LEFT JOIN t_wh_odo_package_info pack ON pack.odo_id = info.odo_id
+		LEFT JOIN t_wh_outbound_consumable consumable ON consumable.outboundbox_code = info.outboundbox_code
+		WHERE
+			info.waybill_code = #{waybillCode}
+			AND info.ou_id = #{ouId}
+			LIMIT 1
     </select>
 
      <select id="findByOutboundBoxCode" resultMap="WeightingCommand" flushCache="false">

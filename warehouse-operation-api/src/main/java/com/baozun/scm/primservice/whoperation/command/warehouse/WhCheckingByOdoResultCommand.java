@@ -50,12 +50,14 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private Long facilityId;
     /** 库位id*/
     private Long locationId;
-    
+
     private Boolean isScanWaybillCode;
-    
+
     /** 页面提示信息*/
     private String message;
-    
+    /** 面单号类型*/
+    private String waybillType;
+
 
 
     public Integer getContainerLatticeNo() {
@@ -204,7 +206,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.sn = sn;
     }
 
-    
+
     public Long getLocationId() {
         return locationId;
     }
@@ -229,5 +231,12 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.message = message;
     }
 
-    
+    public String getWaybillType() {
+        return waybillType;
+    }
+
+    public void setWaybillType(String waybillType) {
+        this.waybillType = waybillType;
+    }
+
 }

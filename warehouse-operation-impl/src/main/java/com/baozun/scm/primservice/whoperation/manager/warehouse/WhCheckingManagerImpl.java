@@ -186,7 +186,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private WhLocationDao locationDao;
     @Autowired
     private WhOdoDeliveryInfoManager whOdoDeliveryInfoManager;
-    
+
 
     @Override
     public void saveOrUpdate(WhCheckingCommand whCheckingCommand) {
@@ -269,32 +269,28 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param checking
      * @return
      */
-    private WhCheckingCommand findWaybillInfo(WhCheckingCommand checking) {
-        Long odoId = checking.getOdoId();
-        Long ouId = checking.getOuId();
-        // List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findByOdoIdWithoutOutboundbox(odoId,
-        // ouId);
-        // checking.setWaybillType("1"); // 1为纸质面单
+    private String findWaybillInfo(Long odoId, Long ouId) {
+        String waybillType = "";
         WhOdoTransportService odoTransportService = whOdoTransportServiceDao.findByOdoIdAndOuId(odoId, ouId);
         if (null != odoTransportService && odoTransportService.getIsVasSuccess() && odoTransportService.getIsTspSuccess() && odoTransportService.getIsWaybillCodeSuccess()) {
             if (odoTransportService.getIsOl()) {
-                checking.setWaybillType("2"); // 2为电子面单
+                waybillType = Constants.ELECTRONIC_WAY_BILL; // 2为电子面单
             } else {
-                checking.setWaybillType("1"); // 1为纸质面单
+                waybillType = Constants.PAPER_WAY_BILL; // 1为纸质面单
             }
         } else {
             WhOdodeliveryInfo info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, "gianni_test", ouId);
             if (null != info) {
                 if (null != info.getWaybillCode()) {
-                    checking.setWaybillType("2");
+                    waybillType = Constants.ELECTRONIC_WAY_BILL;
                 } else {
-                    checking.setWaybillType("1");
+                    waybillType = Constants.PAPER_WAY_BILL;
                 }
             } else {
                 throw new BusinessException("获取运单号失败");
             }
         }
-        return checking;
+        return waybillType;
     }
 
     private WhCheckingByOdoCommand findWhCheckingLineByChecking(WhCheckingByOdoCommand whCheckingByOdoCommand) {
@@ -358,8 +354,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
         whCheckingByOdoCommand.setSnList(snList);
         checking.setOdoId(whCheckingLineList.get(0).getOdoId());
+        String waybillType = "";
         try {
-            checking = findWaybillInfo(checking);
+            waybillType = findWaybillInfo(checking.getOdoId(), checking.getOuId());
+            checking.setWaybillType(waybillType);
         } catch (Exception e) {
             whCheckingByOdoCommand.setMessage("获取运单号失败");
         }
@@ -735,6 +733,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // findWhCheckingLineByChecking(whCheckingCommand);
             // command.setCheckingLineCommandList(whCheckingLineList);
             whCheckingCommand.setBatch(input);
+            command.setCheckingCommand(whCheckingCommand);
             return true;
         }
         return false;
@@ -777,15 +776,27 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX);
                     }
                 }
-                if (Constants.PICKING_MODE_BATCH_GROUP.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checking.getPickingMode())) {
-                    // TODO 查找对应的主副品或者套装或者秒杀
+                if (null != checking.getContainerId()) {
+                    // 周转箱
+                    if (Constants.PICKING_MODE_BATCH_SINGLE.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_GROUP.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checking.getPickingMode())
+                            || Constants.PICKING_MODE_BATCH_MAIN.equals(checking.getPickingMode())) {
+                        // TODO 查找对应的主副品或者套装或者秒杀
 
+                    } else {
+                        // 普通摘果
+                        whCheckingCommand.setTip(Constants.TIP_GENERAL_CHECKING);
+                        whCheckingCommand.setContainerId(checking.getContainerId());
+                        Container container = containerDao.findByIdExt(checking.getContainerId(), ouId);
+                        whCheckingCommand.setContainerCode(container.getCode());
+                        whCheckingCommand.setPickingMode(checking.getPickingMode());
+                    }
                 }
                 // 可以执行复核操作
                 // List<WhCheckingLineCommand> whCheckingLineList =
                 // findWhCheckingLineByChecking(whCheckingCommand);
                 // command.setCheckingLineCommandList(whCheckingLineList);
-                whCheckingCommand.setBatch(input);
+                whCheckingCommand.setBatch(checking.getBatch());
+                command.setCheckingCommand(whCheckingCommand);
                 return true;
             }
             return false;
@@ -1537,7 +1548,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         }
                     }
                     WhPrintInfo printfo = whPrintInfoLst.get(0);
-                    printfo.setPrintCount(printfo.getPrintCount()+1);
+                    printfo.setPrintCount(printfo.getPrintCount() + 1);
                     printfo.setModifiedId(userId);
                     printfo.setOutboundboxId(outboundboxId);
                     printfo.setOutboundboxCode(outboundBoxCode);
@@ -1551,36 +1562,56 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         log.info("whcheckingManagerImpl printDefect is end");
         return isSuccess;
     }
-    
+
     /***
      * 绑定运单号
      * @param command
      * @return
      */
-    public  WhCheckingByOdoResultCommand bindkWaybillCode(Long functionId,Long ouId,Long odoId,String outboundboxCode,Long consumableSkuId){
+    public WhCheckingByOdoResultCommand bindkWaybillCode(Long functionId, Long ouId, Long odoId, String outboundboxCode, Long consumableSkuId) {
         log.info("whcheckingManagerImpl bindkWaybillCode is start");
-         WhCheckingByOdoResultCommand command = new WhCheckingByOdoResultCommand();
-         WhOdodeliveryInfo info = null;
-         List<WhOdodeliveryInfo> infoList = whOdoDeliveryInfoManager.findByOdoIdWithoutOutboundbox(odoId, ouId);
-         if (null == infoList || infoList.isEmpty()) {
-            info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, logId, ouId);
-         } else {
-            info = infoList.get(0);
-         }
-         if(info == null) {
+        WhCheckingByOdoResultCommand command = new WhCheckingByOdoResultCommand();
+        String waybillType = "";
+        try {
+            waybillType = findWaybillInfo(odoId, ouId);
+        } catch (Exception e) {
             command.setMessage(Constants.FIND_WAYBILL_CODE_ERROR);
-         }
-         info.setOutboundboxCode(outboundboxCode);
-         info.setOutboundboxId(consumableSkuId);
-         this.whOdoDeliveryInfoManager.saveOrUpdate(info);
-         //判断是否扫描运单号
-         WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
-         if(null == whFunctionOutBound){
-             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-         }
-         command.setIsScanWaybillCode(whFunctionOutBound.getIsScanWayBill());
-         command.setWaybillCode(info.getWaybillCode());
-         log.info("whcheckingManagerImpl bindkWaybillCode is end");
+            return command;
+        }
+        if (!StringUtils.hasLength(waybillType)) {
+            command.setMessage(Constants.FIND_WAYBILL_CODE_ERROR);
+            return command;
+        }
+        command.setWaybillType(waybillType);
+        if (Constants.ELECTRONIC_WAY_BILL.equals(waybillType)) {
+            // 电子面单
+            command.setMessage("请输入一个电子面单");
+            WhOdodeliveryInfo info = null;
+            List<WhOdodeliveryInfo> infoList = whOdoDeliveryInfoManager.findByOdoIdWithoutOutboundbox(odoId, ouId);
+            if (null == infoList || infoList.isEmpty()) {
+                info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, logId, ouId);
+            } else {
+                info = infoList.get(0);
+            }
+            if (info == null) {
+                command.setMessage(Constants.FIND_WAYBILL_CODE_ERROR);
+                return command;
+            }
+            info.setOutboundboxCode(outboundboxCode);
+            info.setOutboundboxId(consumableSkuId);
+            this.whOdoDeliveryInfoManager.saveOrUpdate(info);
+            // 判断是否扫描运单号
+            WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
+            if (null == whFunctionOutBound) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            command.setIsScanWaybillCode(whFunctionOutBound.getIsScanWayBill());
+            command.setWaybillCode(info.getWaybillCode());
+            log.info("whcheckingManagerImpl bindkWaybillCode is end");
+        } else {
+            // 纸质面单
+            command.setMessage("请输入一个纸质面单");
+        }
         return command;
     }
 }
