@@ -963,7 +963,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 skuInventoryAllocated.setOccupationCode(operationLineCommand.getInvMoveCode());
                 List<WhSkuInventoryAllocated> skuInventoryAllocatedLst =  skuInventoryAllocatedDao.findskuInventoryAllocateds(skuInventoryAllocated);
                 if(null == skuInventoryAllocatedLst || 0 == skuInventoryAllocatedLst.size()){
-                    
+                    throw new BusinessException(ErrorCodes.ALLOCATED_LIST_IS_NULL);    
                 }
                 Double allocatedQty = skuInventoryAllocatedLst.get(0).getQty();
                 //根据uuid获取库存
@@ -978,23 +978,22 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                             whSkuInventory.setOnHandQty(whSkuInventory.getOnHandQty() - allocatedQty); 
                             skuInventoryDao.saveOrUpdateByVersion(whSkuInventory);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
-                            insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), whSkuInventory.getOnHandQty() + allocatedQty, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                             break;
                         }else{
                             allocatedQty = allocatedQty - whSkuInventory.getOnHandQty();
                             skuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
                             insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
-                            insertSkuInventoryLog(whSkuInventory.getId(), 0.00, whSkuInventory.getOnHandQty(), warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                         }
                     }
                 }
                 skuInventoryAllocatedDao.deleteExt(skuInventoryAllocatedLst.get(0).getId(), skuInventoryAllocatedLst.get(0).getOuId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, skuInventoryAllocatedLst.get(0), skuInventoryAllocatedLst.get(0).getOuId(), userId, null, null);
                 //根据invMoveCode获取待移入库存 
                 WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
                 skuInventoryTobefilled.setOccupationCode(operationLineCommand.getInvMoveCode());
                 List<WhSkuInventoryTobefilled> skuInventoryTobefilledLst  = skuInventoryTobefilledDao.findskuInventoryTobefilleds(skuInventoryTobefilled);
                 if(null == skuInventoryTobefilledLst || 0 == skuInventoryTobefilledLst.size()){
-                    
+                    throw new BusinessException(ErrorCodes.TOBEFILLED_INVENTORY_NO_EXIST);    
                 }
                 WhSkuInventory whSkuInventory = new WhSkuInventory();
                 BeanUtils.copyProperties(skuInventoryTobefilledLst.get(0), whSkuInventory);
@@ -1003,27 +1002,29 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 whSkuInventory.setFrozenQty(0.00);
                 skuInventoryDao.insert(whSkuInventory);
                 insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
-                insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), 0.00, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
-                
-                int snCount = 0;
-                for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
-                    for( WhSkuInventorySn whSkuInventorySn : skuInventorySnLst){
-                        if(((null == whSkuInventorySn.getSn() && null == whSkuInventorySnCommand.getSn()) || whSkuInventorySn.getSn().equals(whSkuInventorySnCommand.getSn())) && ((null == whSkuInventorySn.getDefectWareBarcode() && null == whSkuInventorySnCommand.getDefectWareBarcode()) || whSkuInventorySn.getDefectWareBarcode().equals(whSkuInventorySnCommand.getDefectWareBarcode()))){
-                            whSkuInventorySn.setStatus(1);
-                            snCount = snCount + 1;
-                            WhSkuInventorySn skuInventorySn = new WhSkuInventorySn();
-                            BeanUtils.copyProperties(whSkuInventorySnCommand, skuInventorySn);
-                            skuInventorySn.setUuid(whSkuInventory.getUuid());
-                            whSkuInventorySnDao.saveOrUpdateByVersion(skuInventorySn);
-                            insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventorySn, ouId, userId, null, null);
-                            insertSkuInventorySnLog(whSkuInventorySn.getId(), ouId); // 记录sn日志
+                if(null != whSkuInventorySnCommandLst && 0 < whSkuInventorySnCommandLst.size()){
+                    Integer  snCount = 0;
+                    for(WhSkuInventorySnCommand whSkuInventorySnCommand : whSkuInventorySnCommandLst){
+                        if(null != skuInventorySnLst && 0 < skuInventorySnLst.size()){
+                            for( WhSkuInventorySn whSkuInventorySn : skuInventorySnLst){
+                                if(((null == whSkuInventorySn.getSn() && null == whSkuInventorySnCommand.getSn()) || whSkuInventorySn.getSn().equals(whSkuInventorySnCommand.getSn())) && ((null == whSkuInventorySn.getDefectWareBarcode() && null == whSkuInventorySnCommand.getDefectWareBarcode()) || whSkuInventorySn.getDefectWareBarcode().equals(whSkuInventorySnCommand.getDefectWareBarcode()))){
+                                    whSkuInventorySn.setStatus(1);
+                                    snCount = snCount + 1;
+                                    WhSkuInventorySn skuInventorySn = new WhSkuInventorySn();
+                                    BeanUtils.copyProperties(whSkuInventorySnCommand, skuInventorySn);
+                                    skuInventorySn.setUuid(whSkuInventory.getUuid());
+                                    whSkuInventorySnDao.saveOrUpdateByVersion(skuInventorySn);
+                                    insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventorySn, ouId, userId, null, null);
+                                }
+                            }    
                         }
                     }
-                }
-                if (snCount != skuInventorySnLst.size()) {
-                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
+                    if (null == skuInventorySnLst || snCount.doubleValue() != skuInventoryAllocatedLst.get(0).getQty()) {
+                        throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
+                    }    
                 }
                 skuInventoryTobefilledDao.deleteByExt(skuInventoryTobefilledLst.get(0).getId(), skuInventoryTobefilledLst.get(0).getOuId());
+                insertGlobalLog(GLOBAL_LOG_DELETE, skuInventoryTobefilledLst.get(0), skuInventoryTobefilledLst.get(0).getOuId(), userId, null, null);
             }
             // 更新工作表
             WhWork whWork = new WhWork();
