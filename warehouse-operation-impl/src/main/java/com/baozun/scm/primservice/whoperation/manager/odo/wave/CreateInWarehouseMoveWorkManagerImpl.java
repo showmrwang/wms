@@ -57,6 +57,7 @@ import com.baozun.scm.primservice.whoperation.manager.rule.WhLocationInvVolumeWi
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Area;
@@ -65,6 +66,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WorkType;
@@ -130,6 +132,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     private WhSkuInventorySnDao whSkuInventorySnDao;
     @Autowired
     private WarehouseManager warehouseManager;
+    @Autowired
+    private WhSkuManager whSkuManager;
     
     /**
      * 库存分配（生成分配库存与待移入库存）
@@ -1016,9 +1020,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                         }
                     }
                 }
-                Double douSn = new Double(snCount);
-                int retval =  douSn.compareTo(skuInventoryTobefilledLst.get(0).getQty());
-                if (0 != retval) {
+                if (snCount != skuInventorySnLst.size()) {
                     throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
                 }
                 skuInventoryTobefilledDao.deleteByExt(skuInventoryTobefilledLst.get(0).getId(), skuInventoryTobefilledLst.get(0).getOuId());
