@@ -708,7 +708,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             Location loc = locationDao.findByIdExt(locId, ouId);
             if (null == loc) {
                 log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
-                throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                throw new BusinessException(ErrorCodes.COMMON_RECOMMAND_LOCATION_IS_NOT_EXISTS);
             }
             srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
             srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
@@ -2512,7 +2512,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
             Location loc = locationDao.findByIdExt(locId, ouId);
             if (null == loc) {
                 log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
-                throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                throw new BusinessException(ErrorCodes.COMMON_RECOMMAND_LOCATION_IS_NOT_EXISTS);
             }
             srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
             srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码
@@ -2991,7 +2991,7 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         Location loc = locationDao.findByIdExt(locId, ouId);
         if (null == loc) {
             log.error("location is null error, locId is:[{}], logId is:[{}]", locId, logId);
-            throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+            throw new BusinessException(ErrorCodes.COMMON_RECOMMAND_LOCATION_IS_NOT_EXISTS);
         }
         srCmd.setTipLocationCode(loc.getCode());// 提示库位编码
         srCmd.setTipLocBarCode(loc.getBarCode());// 库位条码

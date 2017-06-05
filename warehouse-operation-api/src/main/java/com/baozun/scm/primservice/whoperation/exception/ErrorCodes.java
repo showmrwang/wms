@@ -297,6 +297,8 @@ public class ErrorCodes {
     public static final int COMMON_MULTI_BARCODE_QTY_NOT_SUITABLE = 5033;
     /** 库位绑定异常！ */
     public static final int COMMON_LOCATION_BINDING_ERROR = 5034;
+    /** 推荐的库位信息不存在！ */
+    public static final int COMMON_RECOMMAND_LOCATION_IS_NOT_EXISTS = 5035;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
