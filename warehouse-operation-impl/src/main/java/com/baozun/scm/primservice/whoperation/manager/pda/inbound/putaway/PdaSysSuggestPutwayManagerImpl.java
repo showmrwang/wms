@@ -3677,6 +3677,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Map<Long, Set<String>> insideContainerSkuAttrIds = isCmd.getInsideContainerSkuAttrIds();  // /** 内部容器唯一sku种类 */
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(insideContainerId);  //库位属性
         Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(insideContainerId);   //内部容器唯一sku总件数'
+        Map<Long, Long> insideContainerSkuQty = isCmd.getInsideContainerSkuQty();
         isCmd.getInsideContainerSkuAndSkuAttrIds();
         String tipSkuAttrId = "";
 //        if(isRecommendFail==true || isNotUser == true) {  //推荐库位失败,或者不使用推荐库位(isRecommendFail=false，时推荐库位成功，isRecommendFail=true时，推荐库位失败,isNotUser=true，不使用推荐库位，isNotUser=false时，使用推荐库位)
@@ -3694,6 +3695,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         tipSkuDetailAspect(isRecommendFail,sRcmd,tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
         sRcmd.setNeedTipSku(true);
         sRcmd.setTipSkuBarcode(skuCmd.getBarCode());   //提示sku
+        sRcmd.setTipSkuQty(new Integer(insideContainerSkuQty.get(insideContainerId).toString()));
         //人工分支缓存扫描的库位
         this.cacheManTipLocation(insideContainerId, tipLocationId, logId, insideContainerCode);
         return sRcmd;

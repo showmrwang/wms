@@ -1208,11 +1208,11 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             log.error("sys guide pallet putaway container2ndCategory is null error, icId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", icId, insideContainerCate, logId);
                             throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
                         }
-                        if (1 != insideContainer2.getLifecycle()) {
-                            pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
-                            log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", icId, insideContainer2.getId(), logId);
-                            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
-                        }
+//                        if (1 != insideContainer2.getLifecycle()) {
+//                            pdaPutawayCacheManager.sysGuidePutawayRemoveInventory(containerCmd, ouId, logId);
+//                            log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", icId, insideContainer2.getId(), logId);
+//                            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+//                        }
                         Double icLength = insideContainer2.getLength();
                         Double icWidth = insideContainer2.getWidth();
                         Double icHeight = insideContainer2.getHigh();
@@ -1586,10 +1586,10 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                     log.error("container2ndCategory is null error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", containerId, outerContainerCate, logId);
                     throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
                 }
-                if (1 != outerContainer2.getLifecycle()) {
-                    log.error("container2ndCategory lifecycle is not normal error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", containerId, outerContainer2.getId(), logId);
-                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
-                }
+//                if (1 != outerContainer2.getLifecycle()) {
+//                    log.error("container2ndCategory lifecycle is not normal error, cId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", containerId, outerContainer2.getId(), logId);
+//                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+//                }
                 Double ocLength = outerContainer2.getLength();
                 Double ocWidth = outerContainer2.getWidth();
                 Double ocHeight = outerContainer2.getHigh();

@@ -918,6 +918,8 @@ public class ErrorCodes {
     public static final int CHECKING_WAYBILL_CODE_UNUSEABLE_ERROR = 60350;
     /** 该电脑未绑定复核台 */
     public static final int CHECKING_COMPUTER_BIND_ERROR = 60351;
+    /** 出库单状态【{0}】不允许复核 */
+    public static final int CHECKING_STATUS_ERROR = 60352;
 
 
 
