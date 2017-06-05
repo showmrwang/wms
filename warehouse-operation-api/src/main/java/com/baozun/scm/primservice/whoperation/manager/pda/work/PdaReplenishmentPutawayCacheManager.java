@@ -48,7 +48,7 @@ public interface PdaReplenishmentPutawayCacheManager extends BaseManager{
      * 清楚补货上架缓存
      * @param operationId
      */
-    public void pdaReplenishPutwayRemoveAllCache(Long operationId,Long turnoverBoxId,Long locationId,Boolean isPutaway,Integer replenishWay);
+    public void pdaReplenishPutwayRemoveAllCache(Long operationId,Long turnoverBoxId,Long locationId,Boolean isPutaway);
     
 
     /**
