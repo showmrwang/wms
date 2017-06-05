@@ -1299,6 +1299,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
                 }
                 facility.setStatus("1");
+                facility.setBatch(null);
                 whOutboundFacilityDao.saveOrUpdateByVersion(facility);
             }
         }
