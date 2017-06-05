@@ -235,7 +235,7 @@
 		LEFT JOIN t_wh_outboundbox box ON info.outboundbox_code = box.outboundbox_code
 		AND info.odo_id = box.odo_id
 		LEFT JOIN t_wh_odo odo ON info.odo_id = odo.id
-		LEFT JOIN t_wh_odo_package_info pack ON pack.odo_id = info.odo_id
+		LEFT JOIN t_wh_odo_package_info pack ON pack.outboundbox_code = info.outboundbox_code
 		LEFT JOIN t_wh_outbound_consumable consumable ON consumable.outboundbox_code = info.outboundbox_code
 		WHERE
 			info.waybill_code = #{waybillCode}

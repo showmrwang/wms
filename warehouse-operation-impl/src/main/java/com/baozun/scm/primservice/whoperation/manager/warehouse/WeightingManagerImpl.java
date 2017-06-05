@@ -185,6 +185,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhCheckingByOdoResultCommand weighting(WeightingCommand command, Long userId) {
+        WhCheckingByOdoResultCommand waybillCommand = new WhCheckingByOdoResultCommand();
         Long funcId = command.getFuncId();
         Long ouId = command.getOuId();
         Long odoId = command.getOdoId();
@@ -193,20 +194,24 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         // 1.判断是否校验称重和计量
         WhFunctionOutBound outbound = this.whFunctionOutBoundDao.findByFunctionIdExt(funcId, ouId);
         if (null == outbound) {
-            throw new BusinessException("no function");
+            waybillCommand.setMessage("找不到功能配置");
+            return waybillCommand;
         }
         WhOdoPackageInfo packageInfo = whOdoPackageInfoDao.findByOdoIdAndOutboundBoxCode(odoId, outboundBoxCode, ouId);
-
+        if (null == packageInfo) {
+            waybillCommand.setMessage("没有包裹信息");
+            return waybillCommand;
+        }
         WhOdodeliveryInfo whOdodeliveryInfo = new WhOdodeliveryInfo();
         whOdodeliveryInfo.setOutboundboxCode(outboundBoxCode);
         whOdodeliveryInfo.setOuId(ouId);
         List<WhOdodeliveryInfo> whOdodeliveryInfoList = whOdoDeliveryInfoDao.findListByParam(whOdodeliveryInfo);
         if (null == whOdodeliveryInfoList || 1 < whOdodeliveryInfoList.size()) {
-            throw new BusinessException("一个出库箱对应多个运单号");
+            waybillCommand.setMessage("一个出库箱对应多个运单号");
+            return waybillCommand;
+            // throw new BusinessException("一个出库箱对应多个运单号");
         }
-
         whOdodeliveryInfo = whOdodeliveryInfoList.get(0);
-
         // 2.判断称重集中是否满足浮动百分比
         if (outbound.getIsValidateWeight()) {
             List<UomCommand> weightUomCmds;
@@ -227,7 +232,8 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             Double difference = (double) Math.abs(actualWeight - calcWeight);
             Double calcDifference = (double) (calcWeight * floats / 100);
             if (difference > calcDifference) {
-                throw new BusinessException("excceed");
+                waybillCommand.setMessage("实际称重超过允许浮动范围");
+                return waybillCommand;
             }
         }
         // 3.保存包裹实际重量
@@ -260,7 +266,6 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         whOutboundbox.setStatus("9");
         whOutboundboxDao.update(whOutboundbox);
         // 6.绑定出库箱与面单
-        WhCheckingByOdoResultCommand waybillCommand = new WhCheckingByOdoResultCommand();
         waybillCommand = whCheckingManager.bindkWaybillCode(funcId, ouId, odoId, outboundBoxCode, null);
         // 7.打印单据
         // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);

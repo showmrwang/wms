@@ -1585,7 +1585,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         command.setWaybillType(waybillType);
         if (Constants.ELECTRONIC_WAY_BILL.equals(waybillType)) {
             // 电子面单
-            command.setMessage("请输入一个电子面单");
+            // command.setMessage("请输入一个电子面单");
             WhOdodeliveryInfo info = null;
             List<WhOdodeliveryInfo> infoList = whOdoDeliveryInfoManager.findByOdoIdWithoutOutboundbox(odoId, ouId);
             if (null == infoList || infoList.isEmpty()) {
@@ -1610,7 +1610,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             log.info("whcheckingManagerImpl bindkWaybillCode is end");
         } else {
             // 纸质面单
-            command.setMessage("请输入一个纸质面单");
+            // command.setMessage("请输入一个纸质面单");
         }
         return command;
     }
