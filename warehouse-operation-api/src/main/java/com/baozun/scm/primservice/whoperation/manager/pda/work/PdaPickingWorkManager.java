@@ -195,7 +195,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * 进入拣货作业时,如果缓存，存在先清楚
      * @param workId
      */
-    public void removeCache(Long workId,Long ouId);
+    public void removeCache(Long workId,Long ouId,Long operationId);
     
     /**
      * 是否继续扫描sn
