@@ -955,5 +955,8 @@ public final class Constants {
     public static final String WAYBILL_TYPE_PAPER = "waybill_paper";
     /** 保价 */
     public static final String EXPRESS_VAS_INSURED = "INSURED";
+    
+    /**获取运单号失败*/
+    public static final String FIND_WAYBILL_CODE_ERROR="waybillCode_is_error";
 
 }

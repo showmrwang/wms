@@ -65,4 +65,13 @@ public interface WhCheckingManager extends BaseManager {
     
     
     public Boolean printDefect(WhCheckingByOdoResultCommand cmd);
+    
+    
+    /***
+     * 绑定运单号
+     * @param command
+     * @return
+     */
+    public  WhCheckingByOdoResultCommand bindkWaybillCode(Long funcationId,Long ouId,Long odoId,String outboundboxCode,Long consumableSkuId);
+    
 }

@@ -28,6 +28,9 @@ public class WhCheckingByOdoCommand extends BaseCommand {
     private WhFunctionOutBound whFunctonOutBound;
     /** 页面提示信息*/
     private String message;
+    
+    
+    
 
 
     public WhCheckingCommand getCheckingCommand() {

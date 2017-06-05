@@ -81,6 +81,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.checking.CheckingManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.odo.WhOdoDeliveryInfoManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
@@ -183,6 +184,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private SkuRedisManager skuRedisManager;
     @Autowired
     private WhLocationDao locationDao;
+    @Autowired
+    private WhOdoDeliveryInfoManager whOdoDeliveryInfoManager;
+    
 
     @Override
     public void saveOrUpdate(WhCheckingCommand whCheckingCommand) {
@@ -863,6 +867,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param checkingLineList
      */
     public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
+        log.info("whcheckingManagerImpl checkingByOdo is start");
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         String outboundbox = cmd.getOutboundBoxCode();
         Long outboundboxId = cmd.getOutboundboxId();
@@ -941,6 +946,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // } else {
         // return null;
         // }
+        log.info("whcheckingManagerImpl checkingByOdo is end");
         return null;
     }
 
@@ -1504,17 +1510,17 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     }
                 } else {
                     log.info("whprintInfo update is start");
+                    WhPrintInfo printfo = whPrintInfoLst.get(0);
+                    printfo.setPrintCount(1);
+                    printfo.setModifiedId(userId);
+                    printfo.setOutboundboxId(outboundboxId);
+                    printfo.setOutboundboxCode(outboundBoxCode);
+                    printfo.setOdoId(odoId);
+                    printfo.setBatch(checkingLineList.get(0).getBatchNumber());
+                    printfo.setWaveCode(checkingCmd.getWaveCode());
+                    whPrintInfoDao.saveOrUpdateByVersion(printfo);
                     Integer printCount = whPrintInfoLst.get(0).getPrintCount();
-                    if (printCount < 1) {
-                        WhPrintInfo printfo = whPrintInfoLst.get(0);
-                        printfo.setPrintCount(1);
-                        printfo.setModifiedId(userId);
-                        printfo.setOutboundboxId(outboundboxId);
-                        printfo.setOutboundboxCode(outboundBoxCode);
-                        printfo.setOdoId(odoId);
-                        printfo.setBatch(checkingLineList.get(0).getBatchNumber());
-                        printfo.setWaveCode(checkingCmd.getWaveCode());
-                        whPrintInfoDao.saveOrUpdateByVersion(printfo);
+                    if (printCount == 0) {
                         try {
                             if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
                                 // 装箱清单
@@ -1541,5 +1547,37 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         log.info("whcheckingManagerImpl printDefect is end");
         return isSuccess;
+    }
+    
+    /***
+     * 绑定运单号
+     * @param command
+     * @return
+     */
+    public  WhCheckingByOdoResultCommand bindkWaybillCode(Long functionId,Long ouId,Long odoId,String outboundboxCode,Long consumableSkuId){
+        log.info("whcheckingManagerImpl bindkWaybillCode is start");
+        WhCheckingByOdoResultCommand command = new WhCheckingByOdoResultCommand();
+        WhOdodeliveryInfo info = null;
+        List<WhOdodeliveryInfo> infoList = whOdoDeliveryInfoManager.findByOdoIdWithoutOutboundbox(odoId, ouId);
+        if (null == infoList || infoList.isEmpty()) {
+            info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, logId, ouId);
+        } else {
+            info = infoList.get(0);
+        }
+        if(info == null) {
+            command.setMessage(Constants.FIND_WAYBILL_CODE_ERROR);
+        }
+         info.setOutboundboxCode(outboundboxCode);
+         info.setOutboundboxId(consumableSkuId);
+         this.whOdoDeliveryInfoManager.saveOrUpdate(info);
+         //判断是否扫描运单号
+         WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
+         if(null == whFunctionOutBound){
+             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+         }
+         command.setIsScanWaybillCode(whFunctionOutBound.getIsScanWayBill());
+         command.setWaybillCode(info.getWaybillCode());
+         log.info("whcheckingManagerImpl bindkWaybillCode is end");
+        return command;
     }
 }

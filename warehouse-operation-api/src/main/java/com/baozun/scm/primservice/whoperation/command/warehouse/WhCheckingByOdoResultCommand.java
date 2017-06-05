@@ -50,6 +50,12 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
     private Long facilityId;
     /** 库位id*/
     private Long locationId;
+    
+    private Boolean isScanWaybillCode;
+    
+    /** 页面提示信息*/
+    private String message;
+    
 
 
     public Integer getContainerLatticeNo() {
@@ -207,4 +213,21 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.locationId = locationId;
     }
 
+    public Boolean getIsScanWaybillCode() {
+        return isScanWaybillCode;
+    }
+
+    public void setIsScanWaybillCode(Boolean isScanWaybillCode) {
+        this.isScanWaybillCode = isScanWaybillCode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    
 }
