@@ -64,6 +64,7 @@ import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuBarcodeDao;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerAssistDao;
@@ -91,6 +92,7 @@ import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
@@ -100,6 +102,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPutAway;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleCubeCalculator;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
@@ -159,6 +162,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
     private SkuRedisManager skuRedisManager;
     @Autowired
     InventoryStatisticManager inventoryStatisticManager;
+    @Autowired
+    private SkuBarcodeDao skuBarcodeDao;
 
 
     /**
@@ -3384,6 +3389,16 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
         srCmd.setNeedTipSku(true);
         srCmd.setTipSkuBarcode(sku.getBarCode());
+        List<SkuBarcode> list = skuBarcodeDao.findSkuBarcodeBySkuIdShared(skuId, ouId);
+        String mutilBarcodes = "";
+        if (null != list && list.size() > 0) {
+            for (SkuBarcode bc : list) {
+                if (!StringUtils.isEmpty(bc.getBarCode())) {
+                    mutilBarcodes = ParamsUtil.concatParam(mutilBarcodes, bc.getBarCode());
+                }
+            }
+        }
+        srCmd.setTipSkuMutilBarcode(mutilBarcodes);
         return srCmd;
     }
 
@@ -4397,6 +4412,16 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //            }
             tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
             srCmd.setTipSkuBarcode(tipSku.getBarCode());
+            List<SkuBarcode> list = skuBarcodeDao.findSkuBarcodeBySkuIdShared(skuId, ouId);
+            String mutilBarcodes = "";
+            if (null != list && list.size() > 0) {
+                for (SkuBarcode bc : list) {
+                    if (!StringUtils.isEmpty(bc.getBarCode())) {
+                        mutilBarcodes = ParamsUtil.concatParam(mutilBarcodes, bc.getBarCode());
+                    }
+                }
+            }
+            srCmd.setTipSkuMutilBarcode(mutilBarcodes);
             if (false == cssrCmd.isTipSameSkuAttrId()) {
                 pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(icCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
             }
@@ -4425,6 +4450,16 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
 //            }
             tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
             srCmd.setTipSkuBarcode(tipSku.getBarCode());
+            List<SkuBarcode> list = skuBarcodeDao.findSkuBarcodeBySkuIdShared(skuId, ouId);
+            String mutilBarcodes = "";
+            if (null != list && list.size() > 0) {
+                for (SkuBarcode bc : list) {
+                    if (!StringUtils.isEmpty(bc.getBarCode())) {
+                        mutilBarcodes = ParamsUtil.concatParam(mutilBarcodes, bc.getBarCode());
+                    }
+                }
+            }
+            srCmd.setTipSkuMutilBarcode(mutilBarcodes);
             if (false == cssrCmd.isTipSameSkuAttrId()) {
                 pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(icCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
             }
@@ -5977,6 +6012,16 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
                 Sku tipSku = cacheSku.getSku();
                 tipSkuDetailAspect(srCmd, tipSkuAttrId, locSkuAttrIds, skuAttrIdsQty, logId);
                 srCmd.setTipSkuBarcode(tipSku.getBarCode());
+                List<SkuBarcode> list = skuBarcodeDao.findSkuBarcodeBySkuIdShared(skuId, ouId);
+                String mutilBarcodes = "";
+                if (null != list && list.size() > 0) {
+                    for (SkuBarcode bc : list) {
+                        if (!StringUtils.isEmpty(bc.getBarCode())) {
+                            mutilBarcodes = ParamsUtil.concatParam(mutilBarcodes, bc.getBarCode());
+                        }
+                    }
+                }
+                srCmd.setTipSkuMutilBarcode(mutilBarcodes);
                 pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipSku(insideContainerCmd, loc.getId(), locSkuAttrIds, tipSkuAttrId, logId);
             }
         } else {

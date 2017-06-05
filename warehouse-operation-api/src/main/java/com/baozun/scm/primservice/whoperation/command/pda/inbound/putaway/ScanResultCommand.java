@@ -58,6 +58,8 @@ public class ScanResultCommand extends BaseCommand {
     private boolean isNeedTipSku;
     /** 提示商品条码 */
     private String tipSkuBarcode;
+    /** 提示商品多条码 */
+    private String tipSkuMutilBarcode;
     /** 是否直接核扫商品 */
     private boolean isNeedScanSku;
     /** 扫描sku模式1：数量扫描2：逐件扫描 */
@@ -292,6 +294,14 @@ public class ScanResultCommand extends BaseCommand {
 
     public void setTipSkuBarcode(String tipSkuBarcode) {
         this.tipSkuBarcode = tipSkuBarcode;
+    }
+    
+    public String getTipSkuMutilBarcode() {
+        return tipSkuMutilBarcode;
+    }
+
+    public void setTipSkuMutilBarcode(String tipSkuMutilBarcode) {
+        this.tipSkuMutilBarcode = tipSkuMutilBarcode;
     }
 
     public boolean isNeedScanSku() {
