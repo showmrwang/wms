@@ -349,7 +349,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
             handoverCollection.setModifiedId(userId);
             handoverCollection.setHandoverStationId(handoverStationId);
             handoverCollection.setHandoverStatus(HandoverCollectionStatus.TO_HANDOVER);// 交接状态
-            handoverCollectionDao.saveOrUpdate(handoverCollection);
+            handoverCollectionDao.saveOrUpdateByVersion(handoverCollection);
         }
         // 计算交接工位上限
         Integer upperCapacity = handoverStation.getUpperCapacity();

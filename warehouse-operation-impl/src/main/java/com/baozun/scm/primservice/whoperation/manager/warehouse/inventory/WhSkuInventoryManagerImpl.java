@@ -1335,7 +1335,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -cInvCmd.getAllocatedQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             if (0 == totalQty.compareTo(outboundQty)) {
                                 break;
@@ -1358,7 +1358,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -actualOutboundQty, oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -1471,7 +1471,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -cInvCmd.getAllocatedQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             List<WhSkuInventorySnCommand> cSnList = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, cInvCmd.getUuid());
                             Double count = 0.0;
@@ -1511,7 +1511,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -actualOutboundQty, oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -1782,7 +1782,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -cInvCmd.getAllocatedQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             if (0 == totalQty.compareTo(outboundQty)) {
                                 break;
@@ -1805,7 +1805,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -actualOutboundQty, oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -1925,7 +1925,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -cInvCmd.getAllocatedQty(), oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             List<WhSkuInventorySnCommand> cSnList = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, cInvCmd.getUuid());
                             Double count = 0.0;
@@ -1965,7 +1965,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cInvCmd.getId(), -actualOutboundQty, oldSkuInvOnHandQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory cInv = new WhSkuInventory();
                             BeanUtils.copyProperties(cInvCmd, cInv);
-                            whSkuInventoryDao.delete(cInv.getId());
+                            whSkuInventoryDao.deleteByIdExt(cInv.getId(), ouId);
                             // 记录操作日志
                             insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
                             // 剩余已分配容器库存插入新的库存份
@@ -2248,7 +2248,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory invDelete = new WhSkuInventory();
                             BeanUtils.copyProperties(cCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
+                            whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                         } else {
                             dQty = invCmd.getToBeFilledQty();
@@ -2407,7 +2407,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory invDelete = new WhSkuInventory();
                             BeanUtils.copyProperties(cCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
+                            whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                             List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                             if (null != snCList && snCList.size() > 0) {
@@ -2721,7 +2721,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory invDelete = new WhSkuInventory();
                             BeanUtils.copyProperties(cCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
+                            whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                         } else {
                             dQty = invCmd.getToBeFilledQty();
@@ -2885,7 +2885,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory invDelete = new WhSkuInventory();
                             BeanUtils.copyProperties(cCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
+                            whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                             List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                             if (null != snCList && snCList.size() > 0) {
@@ -3235,7 +3235,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory invDelete = new WhSkuInventory();
                             BeanUtils.copyProperties(cCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
+                            whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                         } else {
                             dQty = scanQty;
@@ -3414,7 +3414,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                             WhSkuInventory invDelete = new WhSkuInventory();
                             BeanUtils.copyProperties(cCmd, invDelete);
-                            whSkuInventoryDao.delete(invDelete.getId());
+                            whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                             List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                             if (null != snCList && snCList.size() > 0) {
@@ -3751,7 +3751,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                                 WhSkuInventory invDelete = new WhSkuInventory();
                                 BeanUtils.copyProperties(cCmd, invDelete);
-                                whSkuInventoryDao.delete(invDelete.getId());
+                                whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                                 insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                             } else {
                                 dQty = invCmd.getToBeFilledQty();
@@ -3926,7 +3926,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 insertSkuInventoryLog(cCmd.getId(), -cQty, oldQtyC, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                                 WhSkuInventory invDelete = new WhSkuInventory();
                                 BeanUtils.copyProperties(cCmd, invDelete);
-                                whSkuInventoryDao.delete(invDelete.getId());
+                                whSkuInventoryDao.deleteByIdExt(invDelete.getId(), ouId);
                                 insertGlobalLog(GLOBAL_LOG_DELETE, invDelete, ouId, userId, null, null);
                                 List<WhSkuInventorySnCommand> snCList = cCmd.getWhSkuInventorySnCommandList();
                                 if (null != snCList && snCList.size() > 0) {
@@ -9962,24 +9962,48 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
             }
 
-            // 修改容器状态
-            if (null != insideContainerId) {
-                int count1 = whSkuInventoryDao.countWhSkuInventoryCommandByInsideContainerId(ouId, locationId, insideContainerId);
-                if (count1 == 0) {
-                    Container container = containerDao.findByIdExt(insideContainerId, ouId);
-                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                    container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                    containerDao.saveOrUpdateByVersion(container);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+            if(2 == pickingWay || 3 == pickingWay){
+                // 修改容器状态
+                if (null != insideContainerId) {
+                    int count1 = whSkuInventoryDao.countWhSkuInventoryCommandByInsideContainerId(ouId, locationId, insideContainerId);
+                    if (count1 == 0) {
+                        Container container = containerDao.findByIdExt(insideContainerId, ouId);
+                        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                        container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                        containerDao.saveOrUpdateByVersion(container);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                    }
+                    if (null != outerContainerId) {
+                        int count2 = whSkuInventoryDao.countWhSkuInventoryCommandByOuterContainerId(ouId, locationId, outerContainerId);
+                        if (count2 == 0) {
+                            Container container = containerDao.findByIdExt(outerContainerId, ouId);
+                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        }
+                    }
                 }
-                if (null != outerContainerId) {
-                    int count2 = whSkuInventoryDao.countWhSkuInventoryCommandByOuterContainerId(ouId, locationId, outerContainerId);
-                    if (count2 == 0) {
-                        Container container = containerDao.findByIdExt(outerContainerId, ouId);
+            }else{
+                // 修改容器状态
+                if (null != insideContainerId) {
+                    int count1 = whSkuInventoryDao.countWhSkuInventoryCommandByInsideContainerId(ouId, locationId, insideContainerId);
+                    if (count1 == 0) {
+                        Container container = containerDao.findByIdExt(insideContainerId, ouId);
                         container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
                         container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
                         containerDao.saveOrUpdateByVersion(container);
                         insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                    }
+                    if (null != outerContainerId) {
+                        int count2 = whSkuInventoryDao.countWhSkuInventoryCommandByOuterContainerId(ouId, locationId, outerContainerId);
+                        if (count2 == 0) {
+                            Container container = containerDao.findByIdExt(outerContainerId, ouId);
+                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        }
                     }
                 }
             }

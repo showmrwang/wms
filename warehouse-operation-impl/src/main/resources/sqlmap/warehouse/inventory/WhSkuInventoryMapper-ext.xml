@@ -1836,6 +1836,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ou_id = #{ouId}
 	    ]]>
 	</update>
+	
+	 <delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_sku_inventory where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	  </delete> 
 		
 		<delete id="deleteWhSkuInventoryById" >
 	        delete from t_wh_sku_inventory where
