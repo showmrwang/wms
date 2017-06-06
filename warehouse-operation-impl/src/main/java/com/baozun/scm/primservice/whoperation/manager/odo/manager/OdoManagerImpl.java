@@ -504,22 +504,23 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
             // @mender yimin.lu 配货模式计算
             // 汇总信息
-            if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
-                this.getSummaryByOdolineList(odo, trans);
+            WhOdo updateOdo = this.whOdoDao.findByIdOuId(odoId, ouId);
+            if (OdoStatus.NEW.equals(updateOdo.getOdoStatus())) {
+                this.getSummaryByOdolineList(updateOdo, trans);
                 // 如果单据为新建状态，则设置技术器编码，并放入到配货模式池中
-                if (OdoStatus.NEW.equals(odo.getOdoStatus())) {
+                if (OdoStatus.NEW.equals(updateOdo.getOdoStatus())) {
                     // 设置计数器编码
-                    String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, odo.getSkuNumberOfPackages(), odo.getQty(), skuIdSet);
-                    odo.setCounterCode(counterCode);
+                    String counterCode = this.distributionModeArithmeticManagerProxy.getCounterCodeForOdo(ouId, updateOdo.getSkuNumberOfPackages(), updateOdo.getQty(), skuIdSet);
+                    updateOdo.setCounterCode(counterCode);
                 }
-                int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+                int updateCount = this.whOdoDao.saveOrUpdateByVersion(updateOdo);
                 if (updateCount <= 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
                 // 加入仓库配货模式
                 try {
 
-                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(odo.getCounterCode(), odo.getId());
+                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(updateOdo.getCounterCode(), updateOdo.getId());
                 } catch (BusinessException ex) {
                     log.error("", ex);
                 } catch (Exception exp) {
@@ -531,7 +532,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             // 生成反馈信息 @mender yimin.lu 2017/4/24
             //@mender yimin.lu 捕获异常封装
             try{
-                this.whOutboundConfirmManager.saveWhOutboundConfirm(odo);
+                this.whOutboundConfirmManager.saveWhOutboundConfirm(updateOdo);
             }catch(BusinessException ex){
                 log.error("",ex);
                 throw ex;
