@@ -2984,32 +2984,35 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
           }
           //如果是多次扫sn，则跳过
           if(!(null != isScanSkuSn && isScanSkuSn == true)) {
-              if(isRecommendFail) { //推荐库位失败的情况,绑定库位
-                  //缓存容器库存
-                  whSkuInventoryManager.manMadeBinding(outerContainerId, insideContainerId, warehouse, locationId, putawayPatternDetailType, ouId, userId, insideContainerCode, skuCmd.getScanSkuQty());
-              }else{
-                  //手动绑定库位
-                  List<WhSkuInventoryTobefilled> listTobeFilled = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilled(outerContainerId, insideContainerId, ouId);
-                  for(WhSkuInventoryTobefilled skuInvTobeFilled :listTobeFilled) {
-                      skuInvTobeFilled.setLocationId(locationId);  //中心设置库位
-                      //先删除待入库数据，在添加
-                      Long tobeFilledId = skuInvTobeFilled.getId();
-                      whSkuInventoryTobefilledDao.deleteByExt(tobeFilledId, ouId);
-                      //重新插入
-                      skuInvTobeFilled.setId(null);  //id置空
-                      skuInvTobeFilled.setLastModifyTime(new Date());
-                      whSkuInventoryTobefilledDao.insert(skuInvTobeFilled);
+                  if(isRecommendFail || isNotUser) { //推荐库位失败的情况,绑定库位
+                      if(isNotUser && isRecommendFail == false){//推荐成功，不使用推荐库位
+                          //手动绑定库位
+                          List<WhSkuInventoryTobefilled> listTobeFilled = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilled(outerContainerId, insideContainerId, ouId);
+                          for(WhSkuInventoryTobefilled skuInvTobeFilled :listTobeFilled) {
+                              skuInvTobeFilled.setLocationId(locationId);  //中心设置库位
+                              //先删除待入库数据，在添加
+                              Long tobeFilledId = skuInvTobeFilled.getId();
+                              whSkuInventoryTobefilledDao.deleteByExt(tobeFilledId, ouId);
+                              //重新插入
+                              skuInvTobeFilled.setId(null);  //id置空
+                              skuInvTobeFilled.setLastModifyTime(new Date());
+                              whSkuInventoryTobefilledDao.insert(skuInvTobeFilled);
+                          }
+                      }else{
+                         //缓存容器库存
+                          whSkuInventoryManager.manMadeBinding(outerContainerId, insideContainerId, warehouse, locationId, putawayPatternDetailType, ouId, userId, insideContainerCode, skuCmd.getScanSkuQty());
+                      }
+                   // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
+                      Boolean result = this.IsLocationBearWeight(insideContainerId, locationSkuList, whskuList,putawayPatternDetailType,locationId, ouId);
+                      if(result) {//超重时,更换库位
+                          srCmd = this.reminderLocation(isCmd, srCmd, ouId);
+                          srCmd.setIsNeedScanNewLocation(true);
+                          return srCmd;
+                      }else{
+                          srCmd.setIsNeedScanNewLocation(false);
+                      }
                   }
-              }
-              // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
-              Boolean result = this.IsLocationBearWeight(insideContainerId, locationSkuList, whskuList,putawayPatternDetailType,locationId, ouId);
-              if(result) {//超重时,更换库位
-                  srCmd = this.reminderLocation(isCmd, srCmd, ouId);
-                  srCmd.setIsNeedScanNewLocation(true);
-                  return srCmd;
-              }else{
-                  srCmd.setIsNeedScanNewLocation(false);
-              }
+                  
           }
           CheckScanSkuResultCommand cssrCmd =  pdaPutawayCacheManager.sysSuggestSplitContainerPutawayTipSkuOrContainer(lskuAttrIdsQty,locationIds,tipLocationId,isCancel,isRecommendFail,locSkuAttrIds,scanPattern,ocCmd, icCmd, insideContainerIds, insideContainerSkuAttrIdsQty, insideContainerSkuAttrIdsSnDefect, insideContainerSkuAttrIds, skuCmd, logId);
           if (cssrCmd.isNeedTipSkuSn()) {
