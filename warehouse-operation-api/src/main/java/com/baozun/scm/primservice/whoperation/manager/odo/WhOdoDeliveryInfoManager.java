@@ -9,6 +9,7 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
 
     /**
      * [业务方法] 通过出库单号查找没有绑定出库箱的运单信息
+     * 
      * @param odoId
      * @param ouId
      * @return
@@ -17,6 +18,7 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
 
     /**
      * [通用方法] 更新运单表
+     * 
      * @param whOdodeliveryInfo
      * @return
      */
@@ -24,6 +26,7 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
 
     /**
      * [通用方法] 查找运单表
+     * 
      * @param whOdodeliveryInfo
      * @return
      */
@@ -32,7 +35,7 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
 
     /**
      * 查询出库单下所有的交接信息
-     *
+     * 
      * @param odoId
      * @param ouId
      * @return
@@ -41,7 +44,7 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
 
     /**
      * 查询出库单下可用的运单
-     *
+     * 
      * @param odoId
      * @param ouId
      * @return
@@ -50,11 +53,13 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
 
     /**
      * 运单号是否已被使用
-     *
+     * 
      * @param waybillCode
      * @param ouId
      * @return
      */
     public Boolean checkUniqueWaybillCode(String waybillCode, Long ouId);
+
+    WhOdodeliveryInfo findByWaybillCode(String outboundboxCode, Long ouId);
 
 }

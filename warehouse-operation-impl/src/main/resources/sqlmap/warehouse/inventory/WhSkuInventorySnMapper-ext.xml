@@ -111,7 +111,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         ]]>
     </update>
 
-
+	 <delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_sku_inventory_sn where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	 </delete>
 	
 	<select id="findListCountByQueryMapExt" resultType="long">
         select count(*) 

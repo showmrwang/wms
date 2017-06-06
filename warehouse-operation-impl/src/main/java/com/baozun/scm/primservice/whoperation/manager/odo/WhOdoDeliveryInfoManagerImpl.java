@@ -65,25 +65,46 @@ public class WhOdoDeliveryInfoManagerImpl extends BaseManagerImpl implements WhO
 
     /**
      * 查询出库单下可用的运单
-     *
+     * 
      * @param odoId
      * @param ouId
      * @return
      */
-    public WhOdodeliveryInfo findUseableWaybillInfoByOdoId(Long odoId, Long ouId){
+    public WhOdodeliveryInfo findUseableWaybillInfoByOdoId(Long odoId, Long ouId) {
         return whOdoDeliveryInfoDao.findUseableWaybillInfoByOdoId(odoId, ouId);
     }
 
     /**
      * 运单号是否已被使用
-     *
+     * 
      * @param waybillCode
      * @param ouId
      * @return
      */
-    public Boolean checkUniqueWaybillCode(String waybillCode, Long ouId){
+    public Boolean checkUniqueWaybillCode(String waybillCode, Long ouId) {
         int count = whOdoDeliveryInfoDao.checkUniqueWaybillCode(waybillCode, ouId);
 
         return count == 0;
+    }
+
+    /**
+     * 根据运单号查询运单信息
+     * 
+     * @param waybillCode
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhOdodeliveryInfo findByWaybillCode(String outboundboxCode, Long ouId) {
+        WhOdodeliveryInfo whOdodeliveryInfo = new WhOdodeliveryInfo();
+        whOdodeliveryInfo.setWaybillCode(outboundboxCode);
+        whOdodeliveryInfo.setOuId(ouId);
+        List<WhOdodeliveryInfo> list = whOdoDeliveryInfoDao.findListByParam(whOdodeliveryInfo);
+        if (null != list && list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
     }
 }

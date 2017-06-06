@@ -1059,13 +1059,13 @@ public class ErrorCodes {
     public static final int CONTAINER_INVENTORY_NO_EXIST = 70064;
     /** 引入的新容器不能上架 */
     public static final int NEW_TURNOVERBOX_NO_LOC = 70065;
-    /**当前出库箱复合数量不正确*/
+    /** 当前出库箱复合数量不正确 */
     public static final int CHECKING_NUM_IS_EEROR = 70065;
-    /**占用耗材不正确*/
+    /** 占用耗材不正确 */
     public static final int SUPPLIES__IS_EEROR = 70066;
-    /**服务器繁忙,请重新拣货*/
+    /** 服务器繁忙,请重新拣货 */
     public static final int PICKING__NO_END = 70067;
-    /**打印失败*/
+    /** 打印失败 */
     public static final int PRINT_IS_FAIL = 70068;
 
     // 70001-80000 tangming
@@ -1182,6 +1182,8 @@ public class ErrorCodes {
     public static final int NO_ODO_DELIVERY_INFO = 110022;
     /** 该出库箱未绑定运单号或物流商编码 */
     public static final int NO_WAYBILL_CODE_OR_TRANSPORT_CODE = 110023;
+    /** 该面单未绑定出库箱 */
+    public static final int WAYBILL_CODE_NO_OUTBOUNDBOX_CODE = 110024;
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;

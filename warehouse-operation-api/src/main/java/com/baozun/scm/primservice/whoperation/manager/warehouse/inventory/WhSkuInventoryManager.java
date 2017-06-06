@@ -303,7 +303,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param turnoverBoxId
      */
     public void replenishmentContainerInventory(List<WhOperationExecLine> execLineList, Boolean isShortPicking, List<String> snDefectList, String skuAttrIds, Long lcoationId, Long operationId, Long ouId, Long outerContainerId, Long insideContainerId,
-            Long turnoverBoxId, Boolean isTabbInvTotal, Long userId, String workCode, Double scanSkuQty);
+            Long turnoverBoxId, Boolean isTabbInvTotal, Long userId, String workCode, Double scanSkuQty, Integer pickingWay);
 
     /***
      * 库内移动中的拣货由库位库存生成容器库存

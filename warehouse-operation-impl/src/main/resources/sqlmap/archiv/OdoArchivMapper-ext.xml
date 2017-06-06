@@ -54,10 +54,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	data_source,
 		        	ext_odo_type,
 		        	is_freight_invoice_sunder,
-		        	head_start_odo_status,
+		        	odo_status,
 		        	lag_odo_status,
 		        	is_permit_outbound,
-		        	odo_index
+		        	odo_index,
+		        	archiv_time
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -102,7 +103,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{odoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT},
-		        	#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR}
+		        	#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	now()
                 )
             ]]>
     </insert>
