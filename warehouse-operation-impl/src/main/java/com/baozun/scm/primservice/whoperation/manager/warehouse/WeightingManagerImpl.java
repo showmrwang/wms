@@ -266,7 +266,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         whOutboundbox.setStatus("9");
         whOutboundboxDao.update(whOutboundbox);
         // 6.绑定出库箱与面单
-        waybillCommand = whCheckingManager.bindkWaybillCode(funcId, ouId, odoId, outboundBoxCode, null);
+        waybillCommand = whCheckingManager.bindkWaybillCode(funcId, ouId, odoId, outboundBoxCode, null, true);
         // 7.打印单据
         // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);
         try {

@@ -62,16 +62,16 @@ public interface WhCheckingManager extends BaseManager {
      * @return
      */
     public WhCheckingByOdoCommand findCheckingInfo(WhCheckingByOdoCommand whCheckingByOdoCommand);
-    
-    
+
+
     public Boolean printDefect(WhCheckingByOdoResultCommand cmd);
-    
-    
+
+
     /***
      * 绑定运单号
      * @param command
      * @return
      */
-    public  WhCheckingByOdoResultCommand bindkWaybillCode(Long funcationId,Long ouId,Long odoId,String outboundboxCode,Long consumableSkuId);
-    
+    public WhCheckingByOdoResultCommand bindkWaybillCode(Long funcationId, Long ouId, Long odoId, String outboundboxCode, Long consumableSkuId, Boolean binding);
+
 }

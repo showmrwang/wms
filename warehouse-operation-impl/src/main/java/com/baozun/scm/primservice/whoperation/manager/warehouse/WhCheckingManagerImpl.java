@@ -1036,11 +1036,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             checkingId = lineCmd.getCheckingId(); // 复合头id
             break;
         }
-        // 更新复合头状态
-        WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
-        if (null == checkingCmd) {
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
         // 查询当前复合头对应的要复合的数量,复合明细中出库箱悟为空
         if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern) || Constants.WAY_5.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
@@ -1084,17 +1079,23 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
 
                 }
-                WhChecking checking = new WhChecking();
-                BeanUtils.copyProperties(checkingCmd, checking);
-                checking.setStatus(CheckingStatus.PART_FINISH);
-                whCheckingDao.saveOrUpdateByVersion(checking);
-                insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
+            }
+            // 更新复合头状态
+            WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
+            if (null == checkingCmd) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
             Double count = whCheckingLineDao.countCheckingLine(checkingId, ouId);
             if (count.doubleValue() == 0.0) {
                 WhChecking checking = new WhChecking();
                 BeanUtils.copyProperties(checkingCmd, checking);
                 checking.setStatus(CheckingStatus.FINISH);
+                whCheckingDao.saveOrUpdateByVersion(checking);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
+            } else {
+                WhChecking checking = new WhChecking();
+                BeanUtils.copyProperties(checkingCmd, checking);
+                checking.setStatus(CheckingStatus.PART_FINISH);
                 whCheckingDao.saveOrUpdateByVersion(checking);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
             }
@@ -1110,6 +1111,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 line.setOutboundboxCode(outboundbox);
                 whCheckingLineDao.saveOrUpdateByVersion(line);
                 insertGlobalLog(GLOBAL_LOG_UPDATE, line, ouId, userId, null, null);
+            }
+            // 更新复合头状态
+            WhCheckingCommand checkingCmd = whCheckingDao.findWhCheckingCommandByIdExt(checkingId, ouId);
+            if (null == checkingCmd) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
             WhChecking checking = new WhChecking();
             BeanUtils.copyProperties(checkingCmd, checking);
@@ -1520,6 +1526,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     whPrintInfo.setCreateTime(new Date());
                     whPrintInfo.setCreateId(userId);
                     whPrintInfo.setOdoId(odoId);
+                    whPrintInfo.setWaybillCode(waybillCode);
                     whPrintInfoDao.insert(whPrintInfo);
                 } else {
                     log.info("whprintInfo update is start");
@@ -1546,16 +1553,17 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                             log.error("WhCheckingManagerImpl printDefect is execption" + e);
                             throw new BusinessException(ErrorCodes.PRINT_IS_FAIL);
                         }
+                        WhPrintInfo printfo = whPrintInfoLst.get(0);
+                        printfo.setPrintCount(printfo.getPrintCount() + 1);
+                        printfo.setModifiedId(userId);
+                        printfo.setOutboundboxId(outboundboxId);
+                        printfo.setOutboundboxCode(outboundBoxCode);
+                        printfo.setOdoId(odoId);
+                        printfo.setBatch(checkingLineList.get(0).getBatchNumber());
+                        printfo.setWaveCode(checkingCmd.getWaveCode());
+                        printfo.setWaybillCode(waybillCode);
+                        whPrintInfoDao.saveOrUpdateByVersion(printfo);
                     }
-                    WhPrintInfo printfo = whPrintInfoLst.get(0);
-                    printfo.setPrintCount(printfo.getPrintCount() + 1);
-                    printfo.setModifiedId(userId);
-                    printfo.setOutboundboxId(outboundboxId);
-                    printfo.setOutboundboxCode(outboundBoxCode);
-                    printfo.setOdoId(odoId);
-                    printfo.setBatch(checkingLineList.get(0).getBatchNumber());
-                    printfo.setWaveCode(checkingCmd.getWaveCode());
-                    whPrintInfoDao.saveOrUpdateByVersion(printfo);
                 }
             }
         }
@@ -1568,7 +1576,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param command
      * @return
      */
-    public WhCheckingByOdoResultCommand bindkWaybillCode(Long functionId, Long ouId, Long odoId, String outboundboxCode, Long consumableSkuId) {
+    public WhCheckingByOdoResultCommand bindkWaybillCode(Long functionId, Long ouId, Long odoId, String outboundboxCode, Long consumableSkuId, Boolean binding) {
         log.info("whcheckingManagerImpl bindkWaybillCode is start");
         WhCheckingByOdoResultCommand command = new WhCheckingByOdoResultCommand();
         String waybillType = "";
@@ -1587,7 +1595,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 电子面单
             // command.setMessage("请输入一个电子面单");
             WhOdodeliveryInfo info = null;
-            List<WhOdodeliveryInfo> infoList = whOdoDeliveryInfoManager.findByOdoIdWithoutOutboundbox(odoId, ouId);
+            List<WhOdodeliveryInfo> infoList = new ArrayList<WhOdodeliveryInfo>();
+            if (binding) {
+                WhOdodeliveryInfo whOdodeliveryInfo = new WhOdodeliveryInfo();
+                whOdodeliveryInfo.setOdoId(odoId);
+                whOdodeliveryInfo.setOuId(ouId);
+                whOdodeliveryInfo.setOutboundboxCode(outboundboxCode);
+                infoList = whOdoDeliveryInfoManager.findByParams(whOdodeliveryInfo);
+            } else {
+                infoList = whOdoDeliveryInfoManager.findByOdoIdWithoutOutboundbox(odoId, ouId);
+            }
             if (null == infoList || infoList.isEmpty()) {
                 info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, logId, ouId);
             } else {
@@ -1598,7 +1615,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 return command;
             }
             info.setOutboundboxCode(outboundboxCode);
-            info.setOutboundboxId(consumableSkuId);
+            if (null != consumableSkuId) {
+                info.setOutboundboxId(consumableSkuId);
+            }
             this.whOdoDeliveryInfoManager.saveOrUpdate(info);
             // 判断是否扫描运单号
             WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
