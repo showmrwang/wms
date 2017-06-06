@@ -1075,57 +1075,53 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         } else {
             skuIds = insideSkuIds.get(insideContainerId);
         }
-        if(null != skuIds && skuIds.size() != 0){
-            CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipSku(outerContainerId, operationWay, skuIds, operationId, locationId, ouId, insideContainerId, skuAttrIdsSnDefect, insideSkuAttrIdsSnDefect);
-            if (cSRCmd.getIsNeedScanSku()) { // 此货箱的sku，还没有扫描完毕
-                String skuAttrId = cSRCmd.getTipSkuAttrId(); // 提示唯一的sku
-                Long skuId = SkuCategoryProvider.getSkuId(skuAttrId);
-                Map<String, Long> skuAttrIdsQty = null;
-                if (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO) {
-                    // Map<String, Set<Integer>> skuAttrIdsLattice = null;
-                    Integer lattice = null;
-                    // 如果有sn残次信息,去掉sn/残次信息
-                    String skuAttrIdNoSn = SkuCategoryProvider.getSkuAttrId(skuAttrId);
-                    if (null != insideContainerId) {// 有货箱
-                    // skuAttrIdsLattice = insideSkuAttrIdsContainerLattice.get(insideContainerId);
-                        lattice = pdaPickingWorkCacheManager.tipLatticeNo(skuAttrIdNoSn, insideContainerId, operationId, ouId);
-                    } else {// 没有货箱
-                    // skuAttrIdsLattice = skuAttrIdsContainerLattice.get(locationId);
-                        lattice = pdaPickingWorkCacheManager.tipLatticeNoLoc(locationId, operationId, skuAttrIdNoSn, ouId);
-                    }
-                    // Set<Integer> latticeNos = skuAttrIdsLattice.get(skuAttrIdNoSn);
-                    // Iterator<Integer> it = latticeNos.iterator();
-                    // while (it.hasNext()) {
-                    // lattice = it.next();
-                    // break;
-                    // }
-                    // 获得当前货格对应的数量
-                    String key = lattice.toString() + locationId;
-                    if (null != insideContainerId) {// 有货箱
-                        Map<Long, Map<String, Long>> insideSkuAttrIdsQty = latticeInsideSkuAttrIdsQty.get(key);
-                        skuAttrIdsQty = insideSkuAttrIdsQty.get(insideContainerId);
-                    } else {
-                        skuAttrIdsQty = latticeSkuAttrIdsQty.get(key);
-                    }
-                    // 缓存货格号
-                    // this.cacheLatticeNo(operationId, lattice);
-                    command.setUseContainerLatticeNo(lattice);
+        CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipSku(outerContainerId, operationWay, skuIds, operationId, locationId, ouId, insideContainerId, skuAttrIdsSnDefect, insideSkuAttrIdsSnDefect);
+        if (cSRCmd.getIsNeedScanSku()) { // 此货箱的sku，还没有扫描完毕
+            String skuAttrId = cSRCmd.getTipSkuAttrId(); // 提示唯一的sku
+            Long skuId = SkuCategoryProvider.getSkuId(skuAttrId);
+            Map<String, Long> skuAttrIdsQty = null;
+            if (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO) {
+                // Map<String, Set<Integer>> skuAttrIdsLattice = null;
+                Integer lattice = null;
+                // 如果有sn残次信息,去掉sn/残次信息
+                String skuAttrIdNoSn = SkuCategoryProvider.getSkuAttrId(skuAttrId);
+                if (null != insideContainerId) {// 有货箱
+                // skuAttrIdsLattice = insideSkuAttrIdsContainerLattice.get(insideContainerId);
+                    lattice = pdaPickingWorkCacheManager.tipLatticeNo(skuAttrIdNoSn, insideContainerId, operationId, ouId);
+                } else {// 没有货箱
+                // skuAttrIdsLattice = skuAttrIdsContainerLattice.get(locationId);
+                    lattice = pdaPickingWorkCacheManager.tipLatticeNoLoc(locationId, operationId, skuAttrIdNoSn, ouId);
+                }
+                // Set<Integer> latticeNos = skuAttrIdsLattice.get(skuAttrIdNoSn);
+                // Iterator<Integer> it = latticeNos.iterator();
+                // while (it.hasNext()) {
+                // lattice = it.next();
+                // break;
+                // }
+                // 获得当前货格对应的数量
+                String key = lattice.toString() + locationId;
+                if (null != insideContainerId) {// 有货箱
+                    Map<Long, Map<String, Long>> insideSkuAttrIdsQty = latticeInsideSkuAttrIdsQty.get(key);
+                    skuAttrIdsQty = insideSkuAttrIdsQty.get(insideContainerId);
                 } else {
-                    skuAttrIdsQty = skuIdSkuAttrIdsQty.get(skuId);
+                    skuAttrIdsQty = latticeSkuAttrIdsQty.get(key);
                 }
-                WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-                if (null == skuCmd) {
-                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
-                }
-                command.setTipSkuBarCode(skuCmd.getBarCode()); // 提示sku
-                command.setIsNeedTipSku(true);
-                command.setSkuId(skuId);
-                this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
-                command.setIsNeedScanSkuSn(cSRCmd.getIsNeedScanSkuSn());
+                // 缓存货格号
+                // this.cacheLatticeNo(operationId, lattice);
+                command.setUseContainerLatticeNo(lattice);
             } else {
-                command.setIsNeedTipSku(false);
+                skuAttrIdsQty = skuIdSkuAttrIdsQty.get(skuId);
             }
-        }else{
+            WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+            if (null == skuCmd) {
+                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+            }
+            command.setTipSkuBarCode(skuCmd.getBarCode()); // 提示sku
+            command.setIsNeedTipSku(true);
+            command.setSkuId(skuId);
+            this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
+            command.setIsNeedScanSkuSn(cSRCmd.getIsNeedScanSkuSn());
+        } else {
             command.setIsNeedTipSku(false);
         }
         log.info("PdaPickingWorkManagerImpl tipSku is end");
@@ -2259,7 +2255,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             list = this.containerSaveExecLine(operationId, insideContainerId, ouId, operLineList, userId, locationId);
         } else {
             list =
-                    this.splitContainerSaveExecLine(latticeNo, isShortPickingEnd, scanPattern, pickingWay, skuAttrId, locationId, isShortPicking, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId, operationId,
+                    this.splitContainerSaveExecLine(operationWay,latticeNo, isShortPickingEnd, scanPattern, pickingWay, skuAttrId, locationId, isShortPicking, userId, outBoundBoxId, outBoundBoxCode, turnoverBoxId, outerContainerId, insideContainerId, operationId,
                             ouId, qty, operLineList);
         }
         List<WhOperationExecLine> execlineList = whOperationExecLineDao.checkOperationExecLine(ouId, operationId);
@@ -2302,7 +2298,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     }
 
 
-    private List<WhOperationExecLine> splitContainerSaveExecLine(Integer latticeNo, Boolean isShortPickingEnd, Integer scanPattern, Integer pickingWay, String skuAttrId, Long locationId, Boolean isShortPicking, Long userId, Long outBoundBoxId,
+    private List<WhOperationExecLine> splitContainerSaveExecLine(String operationWay,Integer latticeNo, Boolean isShortPickingEnd, Integer scanPattern, Integer pickingWay, String skuAttrId, Long locationId, Boolean isShortPicking, Long userId, Long outBoundBoxId,
             String outBoundBoxCode, Long turnoverBoxId, Long outerContainerId, Long insideContainerId, Long operationId, Long ouId, Double qty, List<WhOperationLineCommand> operLineList) {
         List<WhOperationExecLine> list = new ArrayList<WhOperationExecLine>();
         String ioIds = (outerContainerId == null ? "┊" : outerContainerId + "┊") + (insideContainerId == null ? "︴" : insideContainerId + "︴");
@@ -2313,7 +2309,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if (oLCmd.getCompleteQty().doubleValue() == oLCmd.getQty().doubleValue()) {
                 continue;
             }
-            if (pickingWay == Constants.PICKING_WAY_THREE && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)) {// 出库箱流程
+            if (Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)) {// 出库箱流程
                 if (!latticeNo.equals(oLCmd.getUseContainerLatticeNo())) {
                     continue;
                 }
