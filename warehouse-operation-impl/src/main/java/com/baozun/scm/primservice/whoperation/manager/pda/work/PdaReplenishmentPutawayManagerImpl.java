@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -198,52 +199,52 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         return command;
     }
     
-    /**
-     * 扫描库位--整托整箱
-     * 
-     * @author qiming.liu
-     * @param ReplenishmentPutawayCommand
-     * @return
-     */
-    @Override
-    public ReplenishmentPutawayCommand putawayWholeCaseScanLocation(ReplenishmentPutawayCommand command) {
-        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is start");
-        Long operationId = command.getOperationId();
-        Long ouId = command.getOuId();
-        Long locationId = command.getLocationId();                            
-        OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
-        if(null == opExecLineCmd){
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-        }
-        Map<Long, Set<Long>> locToInsideContainerIds = opExecLineCmd.getInsideContainerIds();
-        Set<Long> insideContainerIds = locToInsideContainerIds.get(locationId);
-        if(null == insideContainerIds || insideContainerIds.size() == 0){
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-        }
-        // 缓存库位
-        this.cacheLocation(operationId, locationId);
-        // 缓存货箱      
-        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipContainer(insideContainerIds, operationId, locationId);
-        // 提示托盘         
-        if(null != opExecLineCmd.getPallets() && opExecLineCmd.getPallets().size() != 0){
-            Set<Long> pallets = opExecLineCmd.getPallets();
-            Long palletId = null;
-            for(Long pallet : pallets){
-                palletId =  pallet;
-                break;
-            }
-            String palletCode = this.judeContainer(palletId, ouId);   
-            command.setTipPalletCode(palletCode);
-            command.setIsNeedScanPallet(true);
-        }
-        // 提示货箱        
-        Long containerId = sRCmd.getContainerId();
-        String containerCode = this.judeContainer(containerId, ouId);
-        command.setTipContainerCode(containerCode);
-        command.setIsNeedScanContainer(true);
-        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is end");
-        return command;
-    }
+//    /**
+//     * 扫描库位--整托整箱
+//     * 
+//     * @author qiming.liu
+//     * @param ReplenishmentPutawayCommand
+//     * @return
+//     */
+//    @Override
+//    public ReplenishmentPutawayCommand putawayWholeCaseScanLocation(ReplenishmentPutawayCommand command) {
+//        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is start");
+//        Long operationId = command.getOperationId();
+//        Long ouId = command.getOuId();
+//        Long locationId = command.getLocationId();                            
+//        OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
+//        if(null == opExecLineCmd){
+//            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//        }
+//        Map<Long, Set<Long>> locToInsideContainerIds = opExecLineCmd.getInsideContainerIds();
+//        Set<Long> insideContainerIds = locToInsideContainerIds.get(locationId);
+//        if(null == insideContainerIds || insideContainerIds.size() == 0){
+//            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+//        }
+//        // 缓存库位
+//        this.cacheLocation(operationId, locationId);
+//        // 缓存货箱      
+//        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipContainer(insideContainerIds, operationId, locationId);
+//        // 提示托盘         
+//        if(null != opExecLineCmd.getPallets() && opExecLineCmd.getPallets().size() != 0){
+//            Set<Long> pallets = opExecLineCmd.getPallets();
+//            Long palletId = null;
+//            for(Long pallet : pallets){
+//                palletId =  pallet;
+//                break;
+//            }
+//            String palletCode = this.judeContainer(palletId, ouId);   
+//            command.setTipPalletCode(palletCode);
+//            command.setIsNeedScanPallet(true);
+//        }
+//        // 提示货箱        
+//        Long containerId = sRCmd.getContainerId();
+//        String containerCode = this.judeContainer(containerId, ouId);
+//        command.setTipContainerCode(containerCode);
+//        command.setIsNeedScanContainer(true);
+//        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is end");
+//        return command;
+//    }
 
     
     private void cacheLocation(Long operationId,Long locationId){
@@ -361,7 +362,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 //修改作业执行明细的执行量
                 this.updateOperationExecLine(null,turnoverBoxId, operationId, ouId, userId,locationId);
                 //判断当前库位是否有拣货工作
-                this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId,null);
+                this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId,null,operationId);
             }else{//继续扫描下一个库位
                  command.setIsScanFinsh(true);
                  whSkuInventoryManager.replenishmentContianerPutaway(null,locationId, operationId, ouId, isTabbInvTotal, userId,  turnoverBoxId);
@@ -370,7 +371,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                  //更新工作及作业状态
                  this.updateStatus(operationId, workCode, ouId, userId);
                  //判断当前库位是否有拣货工作
-                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId,null);
+                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId,null,operationId);
                  //清除所有缓存
                  pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId,locationId,true);
                  if(null != outerContainerId){
@@ -904,7 +905,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 insideContainerId = turnoverBoxId;
             }
             //判断当前库位是否有拣货工作
-            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId,null);
+            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId,null,operationId);
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId, locationId,false);
         }else if(csrCmd.getIsPutaway()){
             command.setIsScanFinsh(true);
@@ -918,7 +919,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 insideContainerId = turnoverBoxId;
             }
            //判断当前库位是否有拣货工作
-            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId,null);
+            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId,null,operationId);
              //清除所有缓存
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId, turnoverBoxId, locationId,true);
         }
@@ -1000,13 +1001,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         
     }
     
-    private void judeLocationIsPicking(Long turnoverBoxId,Long locationId,Long ouId,Long userId,Long outerContainerId){
-            //判断目标库位上是否有拣货工作
+    private void judeLocationIsPicking(Long turnoverBoxId,Long locationId,Long ouId,Long userId,Long outerContainerId,Long operationId){
+             List<WhOperationLine> operationLine = whOperationLineDao.findByOperationId(operationId, ouId);
+             String replenishmentCode = operationLine.get(0).getReplenishmentCode();
             //更新到工作明细
             List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findReplenishmentBylocationId(outerContainerId,turnoverBoxId,ouId, locationId);
             if(null != skuInvList && skuInvList.size() != 0) {
                 for(WhSkuInventoryCommand invCmd:skuInvList) {
-                    List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId);
+                    List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId,replenishmentCode);
                     if(null != workLineList && workLineList.size() != 0) {
                         Long insideId = invCmd.getInsideContainerId();
                         Long outerId = invCmd.getOuterContainerId();
@@ -1020,26 +1022,25 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                       if(lineQty.doubleValue() > onHandQty.doubleValue()) {
                                           WhWorkLine workLine = new WhWorkLine();
                                           BeanUtils.copyProperties(workLineCmd, workLine);
+                                          workLine.setQty(onHandQty);
+                                          workLine.setId(null);
+                                          workLine.setCreateTime(new Date());
+                                          workLine.setLastModifyTime(new Date());
+                                          String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                          workLine.setLineCode(workLineCode);
                                           workLine.setFromInsideContainerId(insideId);
-                                              workLine.setQty(onHandQty);
-                                              workLine.setId(null);
-                                              workLine.setCreateTime(new Date());
-                                              workLine.setLastModifyTime(new Date());
-                                              String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
-                                              workLine.setLineCode(workLineCode);
-                                              workLine.setFromInsideContainerId(insideId);
-                                              workLine.setFromOuterContainerId(outerId);
-                                              whWorkLineDao.insert(workLine);
-                                              insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
-                                              //修改原来的记录
-                                              WhWorkLine workLine1 = new WhWorkLine();
-                                              BeanUtils.copyProperties(workLineCmd, workLine1);
-                                              workLine1.setFromInsideContainerId(null);
-                                              workLine.setFromOuterContainerId(null);
-                                              workLine1.setQty(lineQty-onHandQty);
-                                              whWorkLineDao.saveOrUpdateByVersion(workLine1);
-                                              insertGlobalLog(GLOBAL_LOG_UPDATE,workLine1, ouId, userId, null, null);
-                                              break;
+                                          workLine.setFromOuterContainerId(outerId);
+                                          whWorkLineDao.insert(workLine);
+                                          insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
+                                          //修改原来的记录
+                                          WhWorkLine workLine1 = new WhWorkLine();
+                                          BeanUtils.copyProperties(workLineCmd, workLine1);
+                                          workLine1.setFromInsideContainerId(null);
+                                          workLine.setFromOuterContainerId(null);
+                                          workLine1.setQty(lineQty-onHandQty);
+                                          whWorkLineDao.saveOrUpdateByVersion(workLine1);
+                                          insertGlobalLog(GLOBAL_LOG_UPDATE,workLine1, ouId, userId, null, null);
+                                          break;
                                        }
                                        if(lineQty.doubleValue() == onHandQty.doubleValue()){
                                               WhWorkLine workLine = new WhWorkLine();
@@ -1106,7 +1107,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(outerContainerId,turnoverBoxId,ouId, locationId);
         if(null != skuInvCmdList && skuInvCmdList.size() != 0) {
             for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
-                List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId);
+                List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId,replenishmentCode);
                 if(null != operLineCmdList && operLineCmdList.size() != 0) {
                     Double sum = 0.0;
                     for(WhOperationLineCommand operLineCmd:operLineCmdList){
@@ -1805,7 +1806,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                  //修改作业执行明细的执行量
                  this.updateOperationExecLine(tipOuterContainerId,null, operationId, ouId, userId,locationId);  //需要改
                  //判断当前库位是否有拣货工作
-                 this.judeLocationIsPicking(null, locationId, ouId, userId,tipOuterContainerId); //需要改
+                 this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId,operationId); //需要改
              }else{
                  Map<Long, Set<Long>> locToTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
                  //提示货箱/周转箱
@@ -1823,7 +1824,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                          //修改作业执行明细的执行量
                          this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  
                          //判断当前库位是否有拣货工作
-                         this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId);
+                         this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId,operationId);
                      }else{//单目标库位补货上架完成
                           command.setIsScanFinsh(true);
                           whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
@@ -1832,7 +1833,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                          //修改作业执行明细的执行量
                           this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);  
                           //判断当前库位是否有拣货工作
-                          this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId);
+                          this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId,operationId);
                           //更新工作及作业状态
                           this.updateStatus(operationId, workCode, ouId, userId);
                           pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,null,locationId,true);
@@ -1845,7 +1846,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     //修改作业执行明细的执行量
                      this.updateOperationExecLine(outerContainerId,null, operationId, ouId, userId,locationId);
                      //判断当前库位是否有拣货工作
-                     this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId);
+                     this.judeLocationIsPicking(null, locationId, ouId, userId,outerContainerId,operationId);
                      //更新工作及作业状态
                      this.updateStatus(operationId, workCode, ouId, userId);
                      pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,null,locationId,true);
