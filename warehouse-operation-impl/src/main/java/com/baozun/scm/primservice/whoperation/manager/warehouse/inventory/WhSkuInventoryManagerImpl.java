@@ -9962,24 +9962,48 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
             }
 
-            // 修改容器状态
-            if (null != insideContainerId) {
-                int count1 = whSkuInventoryDao.countWhSkuInventoryCommandByInsideContainerId(ouId, locationId, insideContainerId);
-                if (count1 == 0) {
-                    Container container = containerDao.findByIdExt(insideContainerId, ouId);
-                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                    container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                    containerDao.saveOrUpdateByVersion(container);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+            if(2 == pickingWay || 3 == pickingWay){
+                // 修改容器状态
+                if (null != insideContainerId) {
+                    int count1 = whSkuInventoryDao.countWhSkuInventoryCommandByInsideContainerId(ouId, locationId, insideContainerId);
+                    if (count1 == 0) {
+                        Container container = containerDao.findByIdExt(insideContainerId, ouId);
+                        container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                        container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                        containerDao.saveOrUpdateByVersion(container);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                    }
+                    if (null != outerContainerId) {
+                        int count2 = whSkuInventoryDao.countWhSkuInventoryCommandByOuterContainerId(ouId, locationId, outerContainerId);
+                        if (count2 == 0) {
+                            Container container = containerDao.findByIdExt(outerContainerId, ouId);
+                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        }
+                    }
                 }
-                if (null != outerContainerId) {
-                    int count2 = whSkuInventoryDao.countWhSkuInventoryCommandByOuterContainerId(ouId, locationId, outerContainerId);
-                    if (count2 == 0) {
-                        Container container = containerDao.findByIdExt(outerContainerId, ouId);
+            }else{
+                // 修改容器状态
+                if (null != insideContainerId) {
+                    int count1 = whSkuInventoryDao.countWhSkuInventoryCommandByInsideContainerId(ouId, locationId, insideContainerId);
+                    if (count1 == 0) {
+                        Container container = containerDao.findByIdExt(insideContainerId, ouId);
                         container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
                         container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
                         containerDao.saveOrUpdateByVersion(container);
                         insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                    }
+                    if (null != outerContainerId) {
+                        int count2 = whSkuInventoryDao.countWhSkuInventoryCommandByOuterContainerId(ouId, locationId, outerContainerId);
+                        if (count2 == 0) {
+                            Container container = containerDao.findByIdExt(outerContainerId, ouId);
+                            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                            containerDao.saveOrUpdateByVersion(container);
+                            insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                        }
                     }
                 }
             }
