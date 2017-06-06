@@ -557,6 +557,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if (null == recommendLocIds) {
                                     continue;
                                 }
+                                Set<String> currentSkuAttrIds = allLocSkuAttrIds.get(locId);
+                                boolean isRecommand = false;
+                                for (String cSkuAttrId : currentSkuAttrIds) {
+                                    if (cSkuAttrId.equals(SkuCategoryProvider.concatSkuAttrId(skuAttrId, snCmd.getSn(), snCmd.getDefectWareBarcode()))) {
+                                        isRecommand = true;
+                                        break;
+                                    }
+                                }
+                                if (false == isRecommand) {
+                                    continue;
+                                }
                                 WhSkuInventorySn sn = new WhSkuInventorySn();
                                 BeanUtils.copyProperties(snCmd, sn);
                                 sn.setId(null);
