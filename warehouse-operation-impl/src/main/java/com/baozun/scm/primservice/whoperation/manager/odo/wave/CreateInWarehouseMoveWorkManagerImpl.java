@@ -158,7 +158,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 isSuccess = true;
             }    
         } catch (Exception e) {
-            log.error("CreateInWarehouseMoveWorkManagerImpl createAndExecuteInWarehouseMoveWork error" + e);
+            log.error("CreateInWarehouseMoveWorkManagerImpl createAndExecuteInWarehouseMoveWork error" + e.getMessage());
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return isSuccess;
@@ -1040,7 +1040,8 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             // 更新缓存信息            
             this.snStatisticsRedis(skuInventorySnLst, snKey);
         } catch (Exception e) {
-            log.error("CreateInWarehouseMoveWorkManagerImpl executeInWarehouseMoveWork error" + e);
+            e.printStackTrace();
+            log.error("CreateInWarehouseMoveWorkManagerImpl executeInWarehouseMoveWork error" + e.getMessage());
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return true;

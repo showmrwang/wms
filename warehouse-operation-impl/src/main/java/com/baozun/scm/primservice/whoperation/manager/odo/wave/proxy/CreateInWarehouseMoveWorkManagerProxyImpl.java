@@ -86,7 +86,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             try {
                 isSuccess = createInWarehouseMoveWorkManager.createAndExecuteInWarehouseMoveWork(inWarehouseMoveWorkCommand, skuInventoryCommandLst, isExecute, ouId, userId, snKey);  
             } catch (Exception e) {
-                log.error("CreateInWarehouseMoveWorkManagerProxyImpl createAndExecuteInWarehouseMoveWork error" + e);
+                log.error("CreateInWarehouseMoveWorkManagerProxyImpl createAndExecuteInWarehouseMoveWork error" + e.getMessage());
                 isSuccess = false;
             }
         }
