@@ -52,6 +52,8 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhSkuInventorySn o);
+    
+    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * 根据库存UUID查找对应SN/残次信息

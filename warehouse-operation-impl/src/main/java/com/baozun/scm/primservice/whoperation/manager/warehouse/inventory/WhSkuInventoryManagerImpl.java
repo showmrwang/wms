@@ -582,7 +582,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                              * cSnCmd.getSn(), cSnCmd.getDefectWareBarcode())); if (null ==
                              * recommendLocId) { continue; } WhSkuInventorySn sn = new
                              * WhSkuInventorySn(); BeanUtils.copyProperties(cSnCmd, sn);
-                             * whSkuInventorySnDao.delete(sn.getId());
+                             * whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                              * insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null); }
                              */
                         }
@@ -704,7 +704,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                      * (WhSkuInventorySnCommand cSnCmd : snList) { //
                      * insertSkuInventorySnLog(cSnCmd.getUuid(), ouId); WhSkuInventorySn sn = new
                      * WhSkuInventorySn(); BeanUtils.copyProperties(cSnCmd, sn);
-                     * whSkuInventorySnDao.delete(sn.getId()); insertGlobalLog(GLOBAL_LOG_DELETE,
+                     * whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId); insertGlobalLog(GLOBAL_LOG_DELETE,
                      * sn, ouId, userId, null, null); }
                      */
                 }
@@ -861,7 +861,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
                         BeanUtils.copyProperties(cSnCmd, sn);
-                        whSkuInventorySnDao.delete(sn.getId());
+                        whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                     }
                 }
@@ -1088,7 +1088,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
                         BeanUtils.copyProperties(cSnCmd, sn);
-                        whSkuInventorySnDao.delete(sn.getId());
+                        whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                     }
                 }
@@ -1481,7 +1481,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     // insertSkuInventorySnLog(cSnCmd.getUuid(), ouId);
                                     WhSkuInventorySn sn = new WhSkuInventorySn();
                                     BeanUtils.copyProperties(cSnCmd, sn);
-                                    whSkuInventorySnDao.delete(sn.getId());
+                                    whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                     if (0 == count.compareTo(qty)) {
                                         break;
@@ -1530,7 +1530,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     // insertSkuInventorySnLog(cSnCmd.getUuid(), ouId);
                                     WhSkuInventorySn sn = new WhSkuInventorySn();
                                     BeanUtils.copyProperties(cSnCmd, sn);
-                                    whSkuInventorySnDao.delete(sn.getId());
+                                    whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                     if (0 == count.compareTo(qty)) {
                                         break;
@@ -1935,7 +1935,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     // insertSkuInventorySnLog(cSnCmd.getUuid(), ouId);
                                     WhSkuInventorySn sn = new WhSkuInventorySn();
                                     BeanUtils.copyProperties(cSnCmd, sn);
-                                    whSkuInventorySnDao.delete(sn.getId());
+                                    whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                     if (0 == count.compareTo(qty)) {
                                         break;
@@ -1984,7 +1984,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     // insertSkuInventorySnLog(cSnCmd.getUuid(), ouId);
                                     WhSkuInventorySn sn = new WhSkuInventorySn();
                                     BeanUtils.copyProperties(cSnCmd, sn);
-                                    whSkuInventorySnDao.delete(sn.getId());
+                                    whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                     if (0 == count.compareTo(qty)) {
                                         break;
@@ -2368,7 +2368,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
                         BeanUtils.copyProperties(cSnCmd, sn);
-                        whSkuInventorySnDao.delete(sn.getId());
+                        whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                     }
                     // 扣减容器库存（分配容器库存）
@@ -2418,7 +2418,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
-                                            whSkuInventorySnDao.delete(sn.getId());
+                                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                             break;
                                         }
@@ -2454,7 +2454,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
-                                            whSkuInventorySnDao.delete(sn.getId());
+                                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                             break;
                                         }
@@ -2834,7 +2834,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     for (WhSkuInventorySnCommand cSnCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
                         BeanUtils.copyProperties(cSnCmd, sn);
-                        whSkuInventorySnDao.delete(sn.getId());
+                        whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                     }
                     // 扣减容器库存（分配容器库存）
@@ -2896,7 +2896,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
-                                            whSkuInventorySnDao.delete(sn.getId());
+                                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                             break;
                                         }
@@ -2932,7 +2932,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         if (sLine.equals(snLine)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
-                                            whSkuInventorySnDao.delete(sn.getId());
+                                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                             break;
                                         }
@@ -3369,7 +3369,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             if (currentSnDefect.equals(snDefect)) {
                                 WhSkuInventorySn sn = new WhSkuInventorySn();
                                 BeanUtils.copyProperties(cSnCmd, sn);
-                                whSkuInventorySnDao.delete(sn.getId());
+                                whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                 insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                 cCount++;
                             }
@@ -3426,7 +3426,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         if (sLine.equals(snDefect)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
-                                            whSkuInventorySnDao.delete(sn.getId());
+                                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                             dCount++;
                                         }
@@ -3466,7 +3466,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                         if (sLine.equals(snDefect)) {
                                             WhSkuInventorySn sn = new WhSkuInventorySn();
                                             BeanUtils.copyProperties(sCmd, sn);
-                                            whSkuInventorySnDao.delete(sn.getId());
+                                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                             dCount++;
                                         }
@@ -3881,7 +3881,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 if (currentSnDefect.equals(snDefect)) {
                                     WhSkuInventorySn sn = new WhSkuInventorySn();
                                     BeanUtils.copyProperties(cSnCmd, sn);
-                                    whSkuInventorySnDao.delete(sn.getId());
+                                    whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                     insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                     cCount++;
                                 }
@@ -3938,7 +3938,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                             if (sLine.equals(snDefect)) {
                                                 WhSkuInventorySn sn = new WhSkuInventorySn();
                                                 BeanUtils.copyProperties(sCmd, sn);
-                                                whSkuInventorySnDao.delete(sn.getId());
+                                                whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                                 insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                                 dCount++;
                                             }
@@ -3978,7 +3978,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                             if (sLine.equals(snDefect)) {
                                                 WhSkuInventorySn sn = new WhSkuInventorySn();
                                                 BeanUtils.copyProperties(sCmd, sn);
-                                                whSkuInventorySnDao.delete(sn.getId());
+                                                whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                                                 insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                                                 dCount++;
                                             }
@@ -4096,7 +4096,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         for (WhSkuInventorySnCommand cSnCmd : snList) {
                             WhSkuInventorySn sn = new WhSkuInventorySn();
                             BeanUtils.copyProperties(cSnCmd, sn);
-                            whSkuInventorySnDao.delete(sn.getId());
+                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                         }
                     }
@@ -7713,7 +7713,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         // for (WhSkuInventorySnCommand cSnCmd : snList) {
                         // WhSkuInventorySn sn = new WhSkuInventorySn();
                         // BeanUtils.copyProperties(cSnCmd, sn);
-                        // whSkuInventorySnDao.delete(sn.getId());
+                        // whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                         // insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                         // }
                     }
@@ -7882,7 +7882,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             // insertSkuInventorySnLog(cSnCmd.getUuid(), ouId);
                             WhSkuInventorySn sn = new WhSkuInventorySn();
                             BeanUtils.copyProperties(cSnCmd, sn);
-                            whSkuInventorySnDao.delete(sn.getId());
+                            whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                             insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                         }
                     }
@@ -8105,7 +8105,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // for (WhSkuInventorySnCommand cSnCmd : snList) {
                     // WhSkuInventorySn sn = new WhSkuInventorySn();
                     // BeanUtils.copyProperties(cSnCmd, sn);
-                    // whSkuInventorySnDao.delete(sn.getId());
+                    // whSkuInventorySnDao.deleteByIdExt(sn.getId(), ouId);
                     // insertGlobalLog(GLOBAL_LOG_DELETE, sn, ouId, userId, null, null);
                     // if(skuScanQty.equals(num)) {
                     // break;
