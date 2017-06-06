@@ -235,4 +235,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ou_id = #{ouId}
 	    ]]>
 	    </delete> 
+	    
+	    
+	    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection">
+	    <![CDATA[
+	        UPDATE t_wh_handover_collection SET
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        handover_station_id = #{handoverStationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        HANDOVER_STATION_TYPE = #{handoverStationType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        handover_batch = #{handoverBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        handover_status = #{handoverStatus,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        group_condition = #{groupCondition,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+		</update>
 </mapper>

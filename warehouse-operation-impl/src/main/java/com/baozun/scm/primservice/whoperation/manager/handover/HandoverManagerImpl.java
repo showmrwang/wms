@@ -148,7 +148,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void saveOrUpdateHandoverCollection(HandoverCollection hc) {
-        handoverCollectionDao.saveOrUpdate(hc);
+        handoverCollectionDao.saveOrUpdateByVersion(hc);
     }
 
     /**
@@ -271,7 +271,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             handoverLineDao.insert(handoverLine);
             // 4更新集货交接状态为已完成
             handoverCollection.setHandoverStatus(HandoverCollectionStatus.FINISH);
-            handoverCollectionDao.saveOrUpdate(handoverCollection);
+            handoverCollectionDao.saveOrUpdateByVersion(handoverCollection);
             // 5出库箱状态改为已交接
             outboundbox.setStatus(OutboundboxStatus.FINISH);
             whOutboundboxDao.saveOrUpdate(outboundbox);
