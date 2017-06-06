@@ -1747,7 +1747,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                     insideContainerId, operationId, ouId, skuCmd.getScanSkuQty(), latticeNo);
                     // 已分配的库位库存转变为容器库存
                     whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
-                            skuCmd.getScanSkuQty());
+                            skuCmd.getScanSkuQty(), pickingWay);
                 }
             }
             if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
@@ -1834,7 +1834,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                     insideContainerId, operationId, ouId, skuCmd.getScanSkuQty(), latticeNo);
                     // 已分配的库位库存转变为容器库存
                     whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
-                            skuCmd.getScanSkuQty());
+                            skuCmd.getScanSkuQty(), pickingWay);
                 }
             }
             if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
@@ -1875,7 +1875,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                 insideContainerId, operationId, ouId, skuCmd.getScanSkuQty(), latticeNo);
                 // 已分配的库位库存转变为容器库存
                 whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
-                        skuCmd.getScanSkuQty());
+                        skuCmd.getScanSkuQty(), pickingWay);
             }
             if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细
@@ -1909,7 +1909,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                 insideContainerId, operationId, ouId, skuCmd.getScanSkuQty(), latticeNo);
                 // 已分配的库位库存转变为容器库存
                 whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
-                        skuCmd.getScanSkuQty());
+                        skuCmd.getScanSkuQty(), pickingWay);
             }
             if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) { // 库内移动中的拣货(库位库存变成容器库存)
                 // 添加作业执行明细
@@ -2022,7 +2022,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                 insideContainerId, operationId, ouId, skuCmd.getScanSkuQty(), latticeNo);
                 // 已分配的库位库存转变为容器库存
                 whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
-                        skuCmd.getScanSkuQty());
+                        skuCmd.getScanSkuQty(), pickingWay);
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
                 // 清除缓存

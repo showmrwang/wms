@@ -9753,7 +9753,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param turnoverBoxId
      */
     public void replenishmentContainerInventory(List<WhOperationExecLine> execLineList, Boolean isShortPicking, List<String> snDefectList, String skuAttrIds, Long locationId, Long operationId, Long ouId, Long outerContainerId, Long insideContainerId,
-            Long turnoverBoxId, Boolean isTabbInvTotal, Long userId, String workCode, Double scanSkuQty) {
+            Long turnoverBoxId, Boolean isTabbInvTotal, Long userId, String workCode, Double scanSkuQty, Integer pickingWay) {
         List<WhOperationExecLine> operationExecLineList = whOperationExecLineDao.getOperationExecLine(operationId, ouId, outerContainerId, insideContainerId);
         if (null == operationExecLineList || operationExecLineList.size() == 0) {
             throw new BusinessException(ErrorCodes.OPERATION_EXEC_LINE_NO_EXIST);
@@ -9797,14 +9797,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (!isShortPicking) {// 非短拣
                         if (scanSkuQty.doubleValue() == allocateCmd.getQty().doubleValue()) {
                             // 添加容器库存
-                            this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, scanSkuQty, allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList, operationExecLineList);
+                            this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, scanSkuQty, allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList, operationExecLineList, outerContainerId, insideContainerId, pickingWay);
                             // 删除已分配库存
                             this.repplenishDeleLoc(scanSkuQty, ouId, userId, allocateCmd);
                             isPickingEnd = true;
                         }
                         if (scanSkuQty.doubleValue() < allocateCmd.getQty().doubleValue()) {
                             // 添加容器库存
-                            this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, scanSkuQty, allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList, operationExecLineList);
+                            this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, scanSkuQty, allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList, operationExecLineList, outerContainerId, insideContainerId, pickingWay);
                             // 删除已分配库存
                             this.repplenishDeleLoc(scanSkuQty, ouId, userId, allocateCmd);
                             isPickingEnd = true;
@@ -9814,7 +9814,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             if (scanSkuQty.doubleValue() == sum.doubleValue()) {
                                 // 添加容器库存
                                 this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, allocateCmd.getQty(), allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList,
-                                        operationExecLineList);
+                                        operationExecLineList, outerContainerId, insideContainerId, pickingWay);
                                 // 删除已分配库存
                                 this.repplenishDeleLoc(allocateCmd.getQty(), ouId, userId, allocateCmd);
                                 isPickingEnd = true;
@@ -9822,7 +9822,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             if (scanSkuQty.doubleValue() < sum.doubleValue()) {
                                 Double qty = scanSkuQty - (sum - allocateCmd.getQty());
                                 // 添加容器库存
-                                this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, qty, allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList, operationExecLineList);
+                                this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, qty, allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList, operationExecLineList, outerContainerId, insideContainerId, pickingWay);
                                 // 删除已分配库存
                                 this.repplenishDeleLoc(qty, ouId, userId, allocateCmd);
                                 isPickingEnd = true;
@@ -9830,7 +9830,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             if (scanSkuQty.doubleValue() > sum.doubleValue()) {
                                 // 添加容器库存
                                 this.replenishAddContainer(allocateCmd.getOccupationLineId(), allocateCmd.getOccupationCode(), operationExecLineList, allocateCmd.getQty(), allocated, ouId, userId, isTabbInvTotal, turnoverBoxId, snDefectList,
-                                        operationExecLineList);
+                                        operationExecLineList, outerContainerId, insideContainerId, pickingWay);
                                 // 删除已分配库存
                                 this.repplenishDeleLoc(allocateCmd.getQty(), ouId, userId, allocateCmd);
                                 continue;
@@ -10013,7 +10013,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     private void replenishAddContainer(Long occupationLineId, String occupationCode, List<WhOperationExecLine> operationExecLineList, Double qty, WhSkuInventoryAllocatedCommand allocated, Long ouId, Long userId, Boolean isTabbInvTotal,
-            Long turnoverBoxId, List<String> snDefectList, List<WhOperationExecLine> execLineList) {
+            Long turnoverBoxId, List<String> snDefectList, List<WhOperationExecLine> execLineList, Long outerContainerId, Long insideContainerId, Integer pickingWay) {
         List<WhSkuInventorySnCommand> listSn = allocated.getWhSkuInventorySnCommandList();
         if (null != listSn && listSn.size() != 0) { // 有sn/残次信息
             // 插入容器库存
@@ -10021,8 +10021,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory skuInv = new WhSkuInventory();
             BeanUtils.copyProperties(allocated, skuInv);
             skuInv.setLocationId(null);
-            skuInv.setOuterContainerId(null);
-            skuInv.setInsideContainerId(turnoverBoxId);
+            if(2 == pickingWay || 3 == pickingWay){
+                skuInv.setOuterContainerId(outerContainerId);
+                skuInv.setInsideContainerId(insideContainerId);    
+            }else{
+                skuInv.setOuterContainerId(null);
+                skuInv.setInsideContainerId(turnoverBoxId);    
+            }
             try {
                 uuid = SkuInventoryUuid.invUuid(skuInv);
                 skuInv.setUuid(uuid);// UUID
@@ -10094,8 +10099,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory skuInv = new WhSkuInventory();
             BeanUtils.copyProperties(allocated, skuInv);
             skuInv.setLocationId(null);
-            skuInv.setOuterContainerId(null);
-            skuInv.setInsideContainerId(turnoverBoxId);
+            if(2 == pickingWay || 3 == pickingWay){
+                skuInv.setOuterContainerId(outerContainerId);
+                skuInv.setInsideContainerId(insideContainerId);    
+            }else{
+                skuInv.setOuterContainerId(null);
+                skuInv.setInsideContainerId(turnoverBoxId);   
+            }
             try {
                 uuid = SkuInventoryUuid.invUuid(skuInv);
                 skuInv.setUuid(uuid);// UUID
