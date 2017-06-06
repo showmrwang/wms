@@ -357,7 +357,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    	left join t_wh_operation  op on op.id=line.operation_id 
 	    where
 		    line.ou_id = #{ouId}
-		    and line.replenishment_code is null
+		    and line.replenishment_code =#{replenishmentCode}
 		    and line.from_inside_container_id is null
 		    and  op.status =1
 		    and op.work_category="PICKING"
