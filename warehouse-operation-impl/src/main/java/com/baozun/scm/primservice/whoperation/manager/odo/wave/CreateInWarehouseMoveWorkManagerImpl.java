@@ -158,7 +158,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 isSuccess = true;
             }    
         } catch (Exception e) {
-            log.error("CreateInWarehouseMoveWorkManagerImpl createAndExecuteInWarehouseMoveWork error" + e);
+            e.printStackTrace();
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return isSuccess;
@@ -270,6 +270,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 whSkuInventoryTobefilledCommand.setUuid(SkuInventoryUuid.invUuid(whSkuInventoryTobefilled));
                 whSkuInventoryTobefilled.setUuid(whSkuInventoryTobefilledCommand.getUuid());
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
             }
             // 插入数据            
@@ -308,7 +309,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             String inWarehouseMoveWorkOperationCode = this.saveInWarehouseMoveOperation(inWarehouseMoveWorkCode, whSkuInventoryAllocatedCommand);
             this.saveInWarehouseMoveWorkOperationLine(inWarehouseMoveWorkCode, inWarehouseMoveWorkOperationCode, whSkuInventoryAllocatedCommand);
         } catch (Exception e) {
-            log.error("", e);
+            e.printStackTrace();
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return inWarehouseMoveWorkCode;    
@@ -1040,7 +1041,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             // 更新缓存信息            
             this.snStatisticsRedis(skuInventorySnLst, snKey);
         } catch (Exception e) {
-            log.error("CreateInWarehouseMoveWorkManagerImpl executeInWarehouseMoveWork error" + e);
+            e.printStackTrace();
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return true;
@@ -1062,7 +1063,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             }
             cacheManager.setObject(CacheConstants.SN_STATISTICS + key, skuInventorySnsLst, CacheConstants.CACHE_ONE_DAY);
         } catch (Exception e) {
-            log.error("CreateInWarehouseMoveWorkManagerImpl snStatisticsRedis error" + e);
+            e.printStackTrace();
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return key;
