@@ -240,6 +240,7 @@
 		WHERE
 			info.waybill_code = #{waybillCode}
 			AND info.ou_id = #{ouId}
+			and box.status in ('1', '8')
 			LIMIT 1
     </select>
 
@@ -1244,6 +1245,7 @@
 			info.outboundbox_code = #{outboundBoxCode}
 			and pack.outboundbox_code = #{outboundBoxCode}
 			AND info.ou_id = #{ouId}
+			and box.status in ('1', '8')
 		LIMIT 1
     </select>
 
