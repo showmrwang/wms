@@ -207,6 +207,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        replenishment_rule_id = #{replenishmentRuleId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 
+		        and ou_id = #{ouId}
 	    ]]>
 		</update>
 		<update id="batchUpdate">
