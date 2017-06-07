@@ -1037,6 +1037,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param checkingLineList
      */
     private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId, String checkingPattern) {
+        if(StringUtils.isEmpty(checkingPattern) || StringUtils.isEmpty(outboundbox)){
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         Long checkingId = null;
         for (WhCheckingLineCommand lineCmd : checkingLineList) {
             checkingId = lineCmd.getCheckingId(); // 复合头id
