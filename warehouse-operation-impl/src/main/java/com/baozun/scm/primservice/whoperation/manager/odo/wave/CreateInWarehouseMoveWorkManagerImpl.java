@@ -967,9 +967,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 }
                 Double allocatedQty = skuInventoryAllocatedLst.get(0).getQty();
                 //根据uuid获取库存
-                WhSkuInventory skuInventory = new WhSkuInventory();
-                skuInventory.setUuid(operationLineCommand.getUuid());
-                List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findWhSkuInventoryByPramas(skuInventory);
+                List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findUseableInventoryByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
                 List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
                 whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
                 log.info("select from db whSkuInventorySn [ouId:{},uuid:{}],read count：{}", operationLineCommand.getOuId(), operationLineCommand.getUuid(), whSkuInventorySnCommandLst == null ? 0 : whSkuInventorySnCommandLst.size());
@@ -981,6 +979,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                             skuInventoryDao.saveOrUpdateByVersion(whSkuInventory);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
                             this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), onHandQty, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
+                            allocatedQty = 0d;
                             break;
                         }else{
                             allocatedQty = allocatedQty - whSkuInventory.getOnHandQty();
@@ -989,6 +988,9 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                             insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
                         }
                     }
+                }
+                if(0 == allocatedQty.compareTo(0.00)){
+                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
                 }
                 skuInventoryAllocatedDao.deleteExt(skuInventoryAllocatedLst.get(0).getId(), skuInventoryAllocatedLst.get(0).getOuId());
                 insertGlobalLog(GLOBAL_LOG_DELETE, skuInventoryAllocatedLst.get(0), skuInventoryAllocatedLst.get(0).getOuId(), userId, null, null);
