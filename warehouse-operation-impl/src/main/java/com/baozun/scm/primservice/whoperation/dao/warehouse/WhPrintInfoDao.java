@@ -58,4 +58,11 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
      */
     List<WhPrintInfo> findFromcheckingCollectionByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法] 查找打印次数
+     * @param whPrintInfo
+     * @return
+     */
+    Long findListCountByParamExt(WhPrintInfo whPrintInfo);
+
 }
