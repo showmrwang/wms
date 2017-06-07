@@ -1291,14 +1291,17 @@
 			and checking.status != 10
     </select>
     
-    <select id="findBatchSkuCntByParam" resultType="java.lang.Long" flushCache="false">
+    <select id="findOdoSkuCntByParam" resultType="java.lang.Long" flushCache="false">
 		SELECT
-			sum(line.qty)
+			sum(line.qty) - sum(line.checking_qty)
 		FROM
-			t_wh_checking checking left join t_wh_checking_line line on checking.id = line.checking_id
+			t_wh_checking checking
+		LEFT JOIN t_wh_checking_line line ON checking.id = line.checking_id
+		LEFT JOIN t_wh_odo odo ON odo.id = line.odo_id
 		WHERE
-			checking.batch = #{batch}
-			AND checking.ou_id = #{ouId}
+			odo.odo_code = #{odoCode}
+		AND checking.ou_id = #{ouId}
+		AND checking.`status` != 10
     </select>
 
 </mapper>

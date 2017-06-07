@@ -49,4 +49,10 @@ public interface WhOutboundDeliveryConfirmDao extends BaseDao<WhOutboundDelivery
 
     Long findByodoAndWaybillCode(@Param("waybillCode") String waybillCode, @Param("odoId") Long odoId);
 
+    @CommonQuery
+    void updateByVersion(WhOutboundDeliveryConfirm whOutboundDeliveryConfirm);
+
+    @CommonQuery
+    void saveOrUpdateByVersion(WhOutboundDeliveryConfirm whOutboundDeliveryConfirm);
+
 }
