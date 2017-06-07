@@ -102,4 +102,12 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
      */
     WhOdodeliveryInfo findByOdoIdWitOutboundbox(@Param("odoId") Long odoId, @Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法] 通过id查找运单信息
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdodeliveryInfo findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
 }
