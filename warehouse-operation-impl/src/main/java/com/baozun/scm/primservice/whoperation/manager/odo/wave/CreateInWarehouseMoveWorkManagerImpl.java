@@ -968,6 +968,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 //根据uuid获取库存
                 WhSkuInventory skuInventory = new WhSkuInventory();
                 skuInventory.setUuid(operationLineCommand.getUuid());
+                skuInventory.setIsLocked(null);
                 List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findWhSkuInventoryByPramas(skuInventory);
                 List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
                 whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
