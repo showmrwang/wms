@@ -983,13 +983,13 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                             break;
                         }else{
                             allocatedQty = allocatedQty - whSkuInventory.getOnHandQty();
-                            skuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
                             this.insertSkuInventoryLog(whSkuInventory.getId(), Constants.DEFAULT_DOUBLE, whSkuInventory.getOnHandQty(), warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
+                            skuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
                             insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
                         }
                     }
                 }
-                if(0 == allocatedQty.compareTo(0.00)){
+                if (allocatedQty > 0) {
                     throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
                 }
                 skuInventoryAllocatedDao.deleteExt(skuInventoryAllocatedLst.get(0).getId(), skuInventoryAllocatedLst.get(0).getOuId());
