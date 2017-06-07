@@ -781,7 +781,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     if (Constants.PICKING_MODE_BATCH_SINGLE.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_GROUP.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checking.getPickingMode())
                             || Constants.PICKING_MODE_BATCH_MAIN.equals(checking.getPickingMode())) {
                         // TODO 查找对应的主副品或者套装或者秒杀
-
+                        // whCheckingCommand.setTip(Constants.TIP_GENERAL_CHECKING);
+                        whCheckingCommand.setContainerId(checking.getContainerId());
+                        Container container = containerDao.findByIdExt(checking.getContainerId(), ouId);
+                        whCheckingCommand.setContainerCode(container.getCode());
+                        whCheckingCommand.setPickingMode(checking.getPickingMode());
+                        whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
                     } else {
                         // 普通摘果
                         whCheckingCommand.setTip(Constants.TIP_GENERAL_CHECKING);
@@ -789,6 +794,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         Container container = containerDao.findByIdExt(checking.getContainerId(), ouId);
                         whCheckingCommand.setContainerCode(container.getCode());
                         whCheckingCommand.setPickingMode(checking.getPickingMode());
+                        whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
                     }
                 }
                 // 可以执行复核操作
