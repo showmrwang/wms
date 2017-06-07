@@ -223,5 +223,5 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
 
     Long findBatchOdoCntCheckByParam(@Param("batch") String batch, @Param("ouId") Long ouId);
 
-    Long findBatchSkuCntByParam(@Param("batch") String batch, @Param("ouId") Long ouId);
+    Long findOdoSkuCntByParam(@Param("odoCode") String odoCode, @Param("ouId") Long ouId);
 }

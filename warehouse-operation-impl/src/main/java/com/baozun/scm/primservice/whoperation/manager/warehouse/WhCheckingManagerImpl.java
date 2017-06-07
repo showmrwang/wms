@@ -1337,7 +1337,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             Long outerContainerId = outerCmd.getId();
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo( ouId, outerContainerId, null, null);
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, outerContainerId, null, null);
             if (count == 0) {
                 Container c = new Container();
                 BeanUtils.copyProperties(outerCmd, c);
@@ -1448,7 +1448,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         checkingDisplayCommand.setOdoCount(batchOdoCnt);
         Long batchOdoCntCheck = whCheckingDao.findBatchOdoCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
         checkingDisplayCommand.setToBeCheckedOdoCount(batchOdoCntCheck);
-        Long skuCnt = whCheckingDao.findBatchSkuCntByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+        Long skuCnt = whCheckingDao.findOdoSkuCntByParam(odoCode, whCheckingCommand.getOuId());
         checkingDisplayCommand.setSkuCnt(skuCnt);
         checkingDisplayCommand.setWaveCode(whCheckingCommand.getWaveCode());
         checkingDisplayCommand.setTransportName(whCheckingCommand.getTransportName());
