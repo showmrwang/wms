@@ -3377,10 +3377,12 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             }
                             if (null != command.getReplenishWay() || null != command.getPickingWay()) {
                                 WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
-                                newSkuInventory.setOccupationCode(whOdo.getOdoCode());
+                                if(null != whOdo){
+                                    newSkuInventory.setOccupationCode(whOdo.getOdoCode());    
+                                }
                             }
                             newSkuInventory.setOccupationLineId(operationLineCommand.getOdoLineId());
-                            newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
+                            newSkuInventory.setOnHandQty(onHandQty);
                             // 内部对接码
                             try {
                                 newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
