@@ -5808,16 +5808,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
     
-      
+
     <select id="countWhSkuInventoryCommandByOdo" resultType="java.lang.Integer">
 	    select
 	          count(*)
 		      from 
 					t_wh_sku_inventory inv
-					left join t_wh_odo odo on inv.occupation_code = odo.odo_code
 			  where
 				inv.ou_id = #{ouId}
-				and odo.id = #{odoId}
 				and inv.location_id is null
 				<if test="outerContainerId!=null and outerContainerId!=''">
 					 and inv.outer_container_id = #{outerContainerId}
