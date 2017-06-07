@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineComman
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreateWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
@@ -59,6 +61,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInven
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryTobefilledDao;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTaskManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
@@ -2205,7 +2208,62 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSkuInventoryAllocatedCommand> getInAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
         // 根据补货工作释放及拆分条件获取所有补货数据
-        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getInAllReplenishmentLst(replenishmentRuleCommand);
+        List<WhSkuInventoryAllocatedCommand> newSiaCommandLst =  new ArrayList<WhSkuInventoryAllocatedCommand>();
+        // List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getInAllReplenishmentLst(replenishmentRuleCommand);
+        List<WhSkuInventoryAllocatedCommand> siaCommandLst = this.skuInventoryAllocatedDao.getReplenishmentLst(replenishmentRuleCommand);
+        List<WhSkuInventoryTobefilledCommand> sitCommandLst = this.skuInventoryTobefilledDao.getReplenishmentLst(replenishmentRuleCommand);
+        for(WhSkuInventoryAllocatedCommand siaCommand : siaCommandLst){
+            String siaOnlySku = SkuCategoryProvider.getSkuAttrIdByInv(siaCommand);
+            String siaReplenishmentCode = (StringUtils.isEmpty(siaCommand.getReplenishmentCode()) ? SkuCategoryProvider.PH : siaCommand.getReplenishmentCode());
+            String siaOccupationCode = (StringUtils.isEmpty(siaCommand.getOccupationCode()) ? SkuCategoryProvider.PH : siaCommand.getOccupationCode());
+            String siaOccupationLineId = (StringUtils.isEmpty(siaCommand.getOccupationLineId().toString()) ? SkuCategoryProvider.PH : siaCommand.getOccupationLineId().toString());
+            siaOnlySku =  siaOnlySku + SkuCategoryProvider.DV + siaReplenishmentCode + SkuCategoryProvider.DV + siaOccupationCode + SkuCategoryProvider.DV + siaOccupationLineId;
+            for(WhSkuInventoryTobefilledCommand sitCommand : sitCommandLst){
+                WhSkuInventoryTobefilled skuTobefilled = new WhSkuInventoryTobefilled ();
+                BeanUtils.copyProperties(sitCommand, skuTobefilled);
+                String sitOnlySku = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(skuTobefilled);
+                String sitReplenishmentCode = (StringUtils.isEmpty(siaCommand.getReplenishmentCode()) ? SkuCategoryProvider.PH : siaCommand.getReplenishmentCode());
+                String sitOccupationCode = (StringUtils.isEmpty(siaCommand.getOccupationCode()) ? SkuCategoryProvider.PH : siaCommand.getOccupationCode());
+                String sitOccupationLineId = (StringUtils.isEmpty(siaCommand.getOccupationLineId().toString()) ? SkuCategoryProvider.PH : siaCommand.getOccupationLineId().toString());
+                sitOnlySku =  sitOnlySku + SkuCategoryProvider.DV + sitReplenishmentCode + SkuCategoryProvider.DV + sitOccupationCode + SkuCategoryProvider.DV + sitOccupationLineId;
+                if(siaOnlySku.equals(sitOnlySku) && siaCommand.getQty().equals(sitCommand.getQty())){
+                    siaCommand.setToLocationId(sitCommand.getLocationId());
+                    siaCommand.setToQty(sitCommand.getQty());
+                    newSiaCommandLst.add(siaCommand); 
+                    sitCommandLst.remove(sitCommand);
+                    break;
+                }
+            }
+        }
+        Map<String, WhSkuInventoryAllocatedCommand> siaCommandMap = new HashMap<String, WhSkuInventoryAllocatedCommand>();
+        for(WhSkuInventoryAllocatedCommand wsiaCommand : newSiaCommandLst){
+            String ret = "";
+            String uuid = wsiaCommand.getUuid();
+            String replenishmentCode = (StringUtils.isEmpty(wsiaCommand.getReplenishmentCode()) ? SkuCategoryProvider.PH : wsiaCommand.getReplenishmentCode());
+            String occupationCode = (StringUtils.isEmpty(wsiaCommand.getOccupationCode()) ? SkuCategoryProvider.PH : wsiaCommand.getOccupationCode());
+            String occupationLineId = (StringUtils.isEmpty(wsiaCommand.getOccupationLineId()) ? SkuCategoryProvider.PH : wsiaCommand.getOccupationLineId() + "");
+            String locationId = (StringUtils.isEmpty(wsiaCommand.getLocationId()) ? SkuCategoryProvider.PH : wsiaCommand.getLocationId() + "");
+            String outerContainerId = (StringUtils.isEmpty(wsiaCommand.getOuterContainerId()) ? SkuCategoryProvider.PH : wsiaCommand.getOuterContainerId() + "");
+            String insideContainerId = (StringUtils.isEmpty(wsiaCommand.getInsideContainerId()) ? SkuCategoryProvider.PH : wsiaCommand.getInsideContainerId() + "");
+            String toLocationId = (StringUtils.isEmpty(wsiaCommand.getToLocationId()) ? SkuCategoryProvider.PH : wsiaCommand.getToLocationId() + "");
+            ret = uuid + SkuCategoryProvider.DV + replenishmentCode + SkuCategoryProvider.DV + occupationCode + SkuCategoryProvider.DV + occupationLineId + SkuCategoryProvider.DV + locationId + SkuCategoryProvider.DV + outerContainerId + SkuCategoryProvider.DV + insideContainerId + SkuCategoryProvider.DV + toLocationId;
+            WhSkuInventoryAllocatedCommand nwsiaCommand = siaCommandMap.get(ret);
+            if(null != nwsiaCommand){
+                BigDecimal nQty = new BigDecimal(Double.toString(nwsiaCommand.getQty()));  
+                BigDecimal nToQty = new BigDecimal(Double.toString(nwsiaCommand.getToQty()));
+                BigDecimal qty = new BigDecimal(Double.toString(nwsiaCommand.getQty()));  
+                BigDecimal toQty = new BigDecimal(Double.toString(nwsiaCommand.getToQty()));
+                nwsiaCommand.setQty(qty.add(nQty).doubleValue());
+                nwsiaCommand.setToQty(toQty.add(nToQty).doubleValue());
+                siaCommandMap.put(ret, nwsiaCommand);
+            }else{
+                siaCommandMap.put(ret, wsiaCommand);   
+            }
+        }
+        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst =  new ArrayList<WhSkuInventoryAllocatedCommand>();
+        for (String key : siaCommandMap.keySet()) {  
+            skuInventoryAllocatedCommandLst.add(siaCommandMap.get(key)); 
+        }
         return skuInventoryAllocatedCommandLst;
     }
 
@@ -2402,7 +2460,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                             // 上限数量
                             Long maxQty = locationQty * upBound / 100;
                             // 在库数量
-                            double invQty = skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId());
+                            double invQty = 0.00;
+                            if(null != skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId())){
+                                invQty = skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId());    
+                            }
                             // 计算可用容量
                             replenishmentQty = (long) Math.floor(maxQty - invQty);
                             skuProductQty = (long) (skuProductQty + whSkuInventoryAllocatedCommand.getQty());

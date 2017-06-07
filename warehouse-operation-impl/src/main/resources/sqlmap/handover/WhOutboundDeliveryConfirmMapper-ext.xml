@@ -296,6 +296,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select <include refid="whOutboundDeliveryConfirmColumnsExt" />
 		 from t_wh_outbound_delivery_confirm  
 		where status='1'
+		and transport_code in('SF','EMS')
     </select>
     
     

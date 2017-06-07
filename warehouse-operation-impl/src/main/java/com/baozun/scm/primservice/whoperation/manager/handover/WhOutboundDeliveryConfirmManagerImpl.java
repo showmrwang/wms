@@ -9,7 +9,6 @@ import java.util.Map;
 
 import lark.common.annotation.MoreDB;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,13 +69,9 @@ public class WhOutboundDeliveryConfirmManagerImpl extends BaseManagerImpl implem
             paramOrderConfirmContent.setExttransorderid(whOutboundDeliveryConfirm.getExtTransOrderId());
             paramOrderConfirmContent.setWhcode(whOutboundDeliveryConfirm.getOuCode());
             paramOrderConfirmContent.setOwnercode(whOutboundDeliveryConfirm.getStoreCode());
-            if (StringUtils.isNotEmpty(whOutboundDeliveryConfirm.getLogisticsCode())) {
-                paramOrderConfirmContent.setLpcode(whOutboundDeliveryConfirm.getLogisticsCode().toUpperCase());
-            }
+            paramOrderConfirmContent.setLpcode(whOutboundDeliveryConfirm.getTransportCode());
             paramOrderConfirmContent.setTrackingno(whOutboundDeliveryConfirm.getWaybillCode());
             // paramOrderConfirmContent.setChildtracknolis();
-
-
             Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
             List<UomCommand> weightUomCmds;
             weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
@@ -125,6 +120,7 @@ public class WhOutboundDeliveryConfirmManagerImpl extends BaseManagerImpl implem
             whOutboundDeliveryConfirmDao.saveOrUpdateByVersion(whOutboundDeliveryConfirm);
         } catch (NumberFormatException e) {
             log.error("whOutboundDeliveryConfirmManager.OutboundDeliveryConfirm error");
+            whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.EXCEPTION);
             whOutboundDeliveryConfirmDao.saveOrUpdateByVersion(whOutboundDeliveryConfirm);
         }
 

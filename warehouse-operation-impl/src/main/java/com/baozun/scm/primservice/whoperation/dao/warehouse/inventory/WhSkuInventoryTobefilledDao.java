@@ -29,6 +29,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
@@ -158,5 +159,13 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @return
      */
     public List<WhSkuInventoryTobefilledCommand> findWhSkuInventoryTobefilledByInvMove(@Param("operationId") Long operationId,@Param("locationId") Long locationId,@Param("ouId") Long ouId);
-    
+   
+    /**
+     * 根据补货工作释放及拆分条件获取所有补货数据
+     *
+     * @author qiming.liu
+     * @param ReplenishmentRuleCommand
+     * @return
+     */
+    List<WhSkuInventoryTobefilledCommand> getReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
 }
