@@ -800,6 +800,8 @@ public final class Constants {
     public static final String TIP_OUTBOUND_BOX_OR_NO = "OUTBOUND_BOX_OR_NO";
     /** 按单复核:提示扫描小车或播种墙 */
     public static final String TIP_CONTAINER_OR_FACILITY = "CONTAINER_OR_FACILITY";
+    /** 按单复核:提示扫描小车或播种墙且只有一个货格 */
+    public static final String TIP_CONTAINER_OR_FACILITY_UNIQUE = "CONTAINER_OR_FACILITY_UNIQUE";
     /** 按单复核:提示已经完成复核 */
     public static final String TIP_FINISH = "FINISH";
     /** 按单复核:提示扫描批次号 */
@@ -960,6 +962,9 @@ public final class Constants {
 
     /**获取运单号失败*/
     public static final String FIND_WAYBILL_CODE_ERROR = "WAYBILL_CODE_IS_ERROR";
+
+    /**一个出库单在多个播种墙货格中*/
+    public static final String ORDER_IN_MULTI_FACILITY = "ORDER_IN_MULTI_FACILITY";
 
     // 签入签出
     public static final Integer ASSIGN_IN = 1;

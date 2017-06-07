@@ -759,9 +759,59 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 checking = whCheckingList.get(0);
                 if (null != checking.getContainerLatticeNo()) {
                     // 货格
-                    whCheckingCommand.setBatch(input);
-                    whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
-                    return true;
+                    // whCheckingCommand.setBatch(input);
+                    // whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
+                    // return true;
+                    int size = whCheckingList.size();
+                    if (1 == size) {
+                        // 只有一个货格
+                        if (null != checking.getFacilityId()) {
+                            // 播种墙+货格
+                            Long facilityId = checking.getFacilityId();
+                            WhOutboundFacility seedingwall = whOutboundFacilityDao.findByIdAndOuId(facilityId, ouId);
+                            whCheckingCommand.setSeedingWallCode(seedingwall.getFacilityCode());
+                            whCheckingCommand.setFacilityId(facilityId);
+                            whCheckingCommand.setContainerLatticeNo(checking.getContainerLatticeNo());
+                            whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO);
+                            whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY_UNIQUE);
+                            whCheckingCommand.setPickingMode(checking.getPickingMode());
+                            whCheckingCommand.setId(checking.getId());
+                        } else {
+                            // 小车+货格
+                            Long outerContainerId = checking.getOuterContainerId();
+                            Container outerContainer = containerDao.findByIdExt(outerContainerId, ouId);
+                            whCheckingCommand.setOuterContainerCode(outerContainer.getCode());
+                            whCheckingCommand.setOuterContainerId(checking.getOuterContainerId());
+                            whCheckingCommand.setContainerLatticeNo(checking.getContainerLatticeNo());
+                            whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO);
+                            whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY_UNIQUE);
+                            whCheckingCommand.setPickingMode(checking.getPickingMode());
+                            whCheckingCommand.setId(checking.getId());
+                        }
+                    } else {
+                        // 多个货格
+                        if (null != checking.getFacilityId()) {
+                            // 播种墙加货格
+                            // Long facilityId = checking.getFacilityId();
+                            // WhOutboundFacility seedingwall =
+                            // whOutboundFacilityDao.findByIdAndOuId(facilityId, ouId);
+                            // whCheckingCommand.setFacilityId(facilityId);
+                            // whCheckingCommand.setSeedingWallCode(seedingwall.getFacilityCode());
+                            // whCheckingCommand.setPickingMode(checking.getPickingMode());
+                            // whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO);
+                            // whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
+                            whCheckingCommand.setTip(Constants.ORDER_IN_MULTI_FACILITY);
+                        } else {
+                            // 小车加货格
+                            Long outerContainerId = checking.getOuterContainerId();
+                            Container outerContainer = containerDao.findByIdExt(outerContainerId, ouId);
+                            whCheckingCommand.setOuterContainerId(outerContainerId);
+                            whCheckingCommand.setOuterContainerCode(outerContainer.getCode());
+                            whCheckingCommand.setPickingMode(checking.getPickingMode());
+                            whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO);
+                            whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
+                        }
+                    }
                 } else if (null != checking.getOutboundboxCode()) {
                     // 出库箱
                     int size = whCheckingList.size();
