@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.baozun.scm.primservice.whoperation.command.warehouse.InWarehouseMoveWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -270,6 +271,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             throw new BusinessException("文件不存在");
         }
         List<WhSkuInventorySn> skuInventorySnsLst = new ArrayList<WhSkuInventorySn>();
+        List<WhSkuInventorySn> nSkuInventorySnsLst = new ArrayList<WhSkuInventorySn>();
         String key = "";
         try {
             // 创建excel上下文实例,它的构成需要配置文件的路径
@@ -277,7 +279,12 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             // Sn和残次条码
             ExcelImportResult result = this.readSkuFromExcel(context, importExcelFile, locale);
             skuInventorySnsLst = result.getListBean();
-            key = createInWarehouseMoveWorkManager.snStatisticsRedis(skuInventorySnsLst, null);
+            for(WhSkuInventorySn WhSkuInventorySn : skuInventorySnsLst){
+                if(!StringUtils.isEmpty(WhSkuInventorySn.getSn()) || !StringUtils.isEmpty(WhSkuInventorySn.getDefectWareBarcode())){
+                    nSkuInventorySnsLst.add(WhSkuInventorySn);  
+                }
+            }
+            key = createInWarehouseMoveWorkManager.snStatisticsRedis(nSkuInventorySnsLst, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
