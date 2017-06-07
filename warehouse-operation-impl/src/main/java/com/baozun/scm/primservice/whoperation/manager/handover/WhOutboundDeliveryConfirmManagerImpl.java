@@ -122,10 +122,10 @@ public class WhOutboundDeliveryConfirmManagerImpl extends BaseManagerImpl implem
             paramOrderConfirmContent.setCaseNumber(whOutboundDeliveryConfirm.getOutboundboxCode());
             orderConfirmContentManager.mialOrderComfirm(paramOrderConfirmContent, Constants.WMS4);
             whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.FINISH);
-            whOutboundDeliveryConfirmDao.saveOrUpdate(whOutboundDeliveryConfirm);
+            whOutboundDeliveryConfirmDao.saveOrUpdateByVersion(whOutboundDeliveryConfirm);
         } catch (NumberFormatException e) {
             log.error("whOutboundDeliveryConfirmManager.OutboundDeliveryConfirm error");
-            whOutboundDeliveryConfirmDao.saveOrUpdate(whOutboundDeliveryConfirm);
+            whOutboundDeliveryConfirmDao.saveOrUpdateByVersion(whOutboundDeliveryConfirm);
         }
 
 

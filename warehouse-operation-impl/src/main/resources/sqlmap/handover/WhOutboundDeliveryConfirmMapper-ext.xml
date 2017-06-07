@@ -297,4 +297,59 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		 from t_wh_outbound_delivery_confirm  
 		where status='1'
     </select>
+    
+    
+    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.handover.WhOutboundDeliveryConfirm">
+	    <![CDATA[
+	        UPDATE t_wh_outbound_delivery_confirm SET
+		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_code = #{extCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ec_order_code = #{ecOrderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ext_trans_order_id = #{extTransOrderId,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_code = #{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        child_waybill_codes = #{childWaybillCodes,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        transport_service_type = #{transportServiceType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        time_effect_type = #{timeEffectType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        trans_big_word = #{transBigWord,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        tms_code = #{tmsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        logistics_code = #{logisticsCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_code = #{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        package_center_name = #{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_code = #{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        customer_name = #{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_code = #{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        store_name = #{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        ou_code = #{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        weight = #{weight,javaType=Double,jdbcType=DECIMAL} ,
+		        floats = #{floats,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        length = #{length,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        width = #{width,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        high = #{high,javaType=java.lang.Double,jdbcType=DOUBLE} ,
+		        consignee_target_name = #{consigneeTargetName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_mobile_phone = #{consigneeTargetMobilePhone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_telephone = #{consigneeTargetTelephone,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_country = #{consigneeTargetCountry,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_province = #{consigneeTargetProvince,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_city = #{consigneeTargetCity,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_district = #{consigneeTargetDistrict,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_villages_towns = #{consigneeTargetVillagesTowns,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_address = #{consigneeTargetAddress,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_email = #{consigneeTargetEmail,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        consignee_target_zip = #{consigneeTargetZip,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        type = #{type,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        order_source = #{orderSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		         and ou_id = #{ouId}
+	    ]]>
+		</update>
 </mapper>
