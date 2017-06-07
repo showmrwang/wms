@@ -52,7 +52,7 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhSkuInventorySn o);
-
+    
     int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
@@ -62,7 +62,7 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @param uuid
      * @return
      */
-    List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(@Param("ouId") Long ouId, @Param("uuid") String uuid);
+    List<WhSkuInventorySnCommand> findWhSkuInventoryByUuid(@Param("ouid") Long ouid, @Param("uuid") String uuid);
 
     /**
      * 根据库存UUID+SYS_UUID修改对应UUID
@@ -96,7 +96,7 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @return
      */
     List<WhSkuInventorySnCommand> findWhSkuInventoryByUuidLeftJoinForeignKey(@Param("ouid") Long ouid, @Param("uuid") String uuid);
-
+    
     /**
      * 查询sn数据
      * @author lichuan
@@ -115,7 +115,7 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @return 返回的String有残次库存的是"invId,invSnId"，没有残次库存的是"invId,null"
      */
     List<String> findInvSnIdStrByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerIdList") List<Long> insideContainerIdList);
-
+    
     /**
      * 
      * @author kai.zhu
@@ -124,8 +124,8 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @param uuid
      * @return
      */
-    List<WhSkuInventorySnCommand> findInvSnByAsnCodeAndUuid(@Param("asnCode") String occupationCode, @Param("uuid") String uuid, @Param("ouId") Long ouId);
-
+	List<WhSkuInventorySnCommand> findInvSnByAsnCodeAndUuid(@Param("asnCode") String occupationCode, @Param("uuid") String uuid, @Param("ouId") Long ouId);
+	
     /**
      * 根据库存UUID查找对应SN/残次信息
      * 
@@ -135,14 +135,14 @@ public interface WhSkuInventorySnDao extends BaseDao<WhSkuInventorySn, Long> {
      * @return
      */
     List<WhSkuInventorySnCommand> findInvSnByOccupationCodeAndUuid(@Param("occupationCode") String occupationCode, @Param("uuid") String uuid, @Param("ouid") Long ouid);
-
-    /**
-     * 查询当前uuid在sn表中的数量
-     * @param uuid
-     * @param ouId
-     * @return
-     */
-    public long findCountSnByuuid(@Param("uuid") String uuid, @Param("ouId") Long ouId);
+	
+	/**
+	 * 查询当前uuid在sn表中的数量
+	 * @param uuid
+	 * @param ouId
+	 * @return
+	 */
+	public long findCountSnByuuid(@Param("uuid") String uuid,@Param("ouId")Long ouId);
 
     public List<WhSkuInventorySnCommand> findCheckingSkuInvSnByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
 
