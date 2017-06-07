@@ -75,6 +75,15 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
      * @return
      */
     List<WhSkuInventoryAllocatedCommand> getOutAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
+    
+    /**
+     * 根据补货工作释放及拆分条件获取所有补货数据
+     *
+     * @author qiming.liu
+     * @param ReplenishmentRuleCommand
+     * @return
+     */
+    List<WhSkuInventoryAllocatedCommand> getReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
 	
 	/**
      * 根据条件查询库存数量

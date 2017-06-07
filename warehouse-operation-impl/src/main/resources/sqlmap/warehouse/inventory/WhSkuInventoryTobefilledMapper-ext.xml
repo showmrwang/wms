@@ -474,4 +474,43 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and operLine.operation_id = #{operationId}
 				and  inv.location_id = #{locationId}
 	</select>
+	
+	<select id="getReplenishmentLst" resultMap="WhSkuInventoryTobefilledCommandResultExt">
+	    SELECT
+			invTobefilled.id AS id,
+			invTobefilled.sku_id AS skuId,
+			invTobefilled.location_id AS locationId,
+			invTobefilled.outer_container_id AS outerContainerId,
+			invTobefilled.inside_container_id AS insideContainerId,
+			invTobefilled.customer_id AS customerId,
+			invTobefilled.store_id AS storeId,
+			invTobefilled.occupation_code AS occupationCode,
+			invTobefilled.occupation_line_id AS occupationLineId,
+			invTobefilled.replenishment_code AS replenishmentCode,
+			invTobefilled.qty AS qty,
+			invTobefilled.inv_status AS invStatus,
+			invTobefilled.inv_type AS invType,
+			invTobefilled.batch_number AS batchNumber,
+			invTobefilled.mfg_date AS mfgDate,
+			invTobefilled.exp_date AS expDate,
+			invTobefilled.country_of_origin AS countryOfOrigin,
+			invTobefilled.inv_attr1 AS invAttr1,
+			invTobefilled.inv_attr2 AS invAttr2,
+			invTobefilled.inv_attr3 AS invAttr3,
+			invTobefilled.inv_attr4 AS invAttr4,
+			invTobefilled.inv_attr5 AS invAttr5,
+			invTobefilled.uuid AS uuid,
+			invTobefilled.ou_id AS ouId,
+			invTobefilled.last_modify_time AS lastModifyTime
+		FROM
+			t_wh_wave wave,
+			t_wh_replenishment_task replenishTask,
+			t_wh_sku_inventory_tobefilled invTobefilled
+		WHERE
+			replenishTask.wave_id = wave.id
+			AND replenishTask.is_create_work != 1
+			AND replenishTask.replenishment_code = invTobefilled.replenishment_code
+			AND wave.id = #{waveId} 
+			AND wave.ou_id = #{taskOuId} 
+	</select>
 </mapper>
