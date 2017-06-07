@@ -884,11 +884,13 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                             if (log.isInfoEnabled()) {
                                 log.info("putawaySCRL invId is:[{}], ruleId is:[{}], recommand type is:[{}], logId is:[{}], calc aLocs end", invRule.getId(), ruleId, locationRecommendRule, logId);
                             }
-                            if (null != lrrc) {
+                            Double rQty = (null == rsMaps.get(skuAttrId) ? 0.0 : rsMaps.get(skuAttrId));
+                            if (null != lrrc && 0 == rQty.compareTo(onHandQty)) {
                                 break;
                             }
                         }
-                        if (null != lrrc) {
+                        Double rQty = (null == rsMaps.get(skuAttrId) ? 0.0 : rsMaps.get(skuAttrId));
+                        if (null != lrrc && 0 == rQty.compareTo(onHandQty)) {
                             break;
                         }
                     }
