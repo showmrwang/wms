@@ -989,9 +989,9 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                         }
                     }
                 }
-                if(0 == allocatedQty.compareTo(0.00)){
-                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
-                }
+//                if(0 == allocatedQty.compareTo(0.00)){
+//                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
+//                }
                 skuInventoryAllocatedDao.deleteExt(skuInventoryAllocatedLst.get(0).getId(), skuInventoryAllocatedLst.get(0).getOuId());
                 insertGlobalLog(GLOBAL_LOG_DELETE, skuInventoryAllocatedLst.get(0), skuInventoryAllocatedLst.get(0).getOuId(), userId, null, null);
                 //根据invMoveCode获取待移入库存 
