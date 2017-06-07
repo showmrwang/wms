@@ -511,7 +511,6 @@ public class SimpleCubeCalculator {
         setY(ry);
         setZ(rz);
         setVolume(volumeFormula(rx, ry, rz) * qty);
-        setCurrentStuffVolume(getVolume());
         setInitStuffCube(true);
     }
 

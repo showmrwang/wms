@@ -440,7 +440,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                     calc.initStuffCube(length, width, height, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
-                                    volumes = calc.getCurrentStuffVolume();
+                                    volumes = calc.getStuffVolume();
                                     calc.addStuffVolume(rlVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
                                     // 计算重量
@@ -575,7 +575,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                     calc.initStuffCube(length, width, height, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
-                                    volumes = calc.getCurrentStuffVolume();
+                                    volumes = calc.getStuffVolume();
                                     calc.addStuffVolume(rlVolume);
                                     calc.addStuffVolume(livwVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
@@ -655,7 +655,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                     calc.initStuffCube(length, width, height, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
-                                    volumes = calc.getCurrentStuffVolume();
+                                    volumes = calc.getStuffVolume();
                                     calc.addStuffVolume(rlVolume);
                                     calc.addStuffVolume(livwVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
@@ -790,7 +790,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                     // 计算体积
                                     SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                     calc.initStuffCube(length, width, height, onHandQty - rlQty, SimpleCubeCalculator.SYS_UOM);
-                                    volumes = calc.getCurrentStuffVolume();
+                                    volumes = calc.getStuffVolume();
                                     calc.addStuffVolume(rlVolume);
                                     calc.addStuffVolume(livwVolume);
                                     boolean cubageAvailable = calc.calculateAvailable();
@@ -1141,7 +1141,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                         calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
-                                        volumes = calc.getCurrentStuffVolume();
+                                        volumes = calc.getStuffVolume();
                                         calc.addStuffVolume(rlVolume);
                                         boolean cubageAvailable = calc.calculateAvailable();
                                         // 计算重量
@@ -1283,7 +1283,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                         calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
-                                        volumes = calc.getCurrentStuffVolume();
+                                        volumes = calc.getStuffVolume();
                                         calc.addStuffVolume(rlVolume);
                                         calc.addStuffVolume(livwVolume);
                                         boolean cubageAvailable = calc.calculateAvailable();
@@ -1363,7 +1363,7 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                                         // 计算体积
                                         SimpleCubeCalculator calc = new SimpleCubeCalculator(locLength, locWidth, locHeight, SimpleCubeCalculator.SYS_UOM, locVolumeRate, lenUomConversionRate);
                                         calc.initStuffCube(length, width, height, onHandQty, SimpleCubeCalculator.SYS_UOM);
-                                        volumes = calc.getCurrentStuffVolume();
+                                        volumes = calc.getStuffVolume();
                                         calc.addStuffVolume(rlVolume);
                                         calc.addStuffVolume(livwVolume);
                                         boolean cubageAvailable = calc.calculateAvailable();
