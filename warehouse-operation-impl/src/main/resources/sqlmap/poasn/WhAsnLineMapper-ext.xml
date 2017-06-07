@@ -625,4 +625,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			al.asn_id = #{asnId}
 			and al.ou_id = #{ouId}
 	 </select>
+	 
+	 <select id="findWhAsnLineByAsnIdPolineIdListAndOuId"  resultMap="WhAsnLineResultExt">
+	 select <include refid="whAsnLineColumnsExt" />
+	 from
+		    t_wh_asn_line
+			where
+			asn_id=#{asnId} and ou_id = #{ouId} 
+			and po_line_id in
+			<foreach collection="poLineIdList" item="poLineId" open="(" separator=","
+				close=")">
+				#{poLineId}
+			</foreach>
+	 </select>
 </mapper>

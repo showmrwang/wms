@@ -486,6 +486,8 @@ public class ErrorCodes {
     public static final int ALLOCATED_SN_QTY_ERROR = 11108;
     /** 补货任务签入异常 */
     public static final int REPLENISHMENT_ASSIGN_IN_ERROR = 11109;
+    /** 取消ASN异常 */
+    public static final int CANCEL_ASN_ERROR = 11110;
     // 10001-20000 luyimin
 
 

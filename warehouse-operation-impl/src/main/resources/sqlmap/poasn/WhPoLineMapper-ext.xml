@@ -659,4 +659,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				#{status}
 			</foreach>
     </select>
+    
+     <select id="findWhPoLineByPoIdOuIdExtLinenum" resultMap="WhPoLineResult">
+    	select <include refid="whPoLineColumns" />
+	    from t_wh_po_line 
+		where po_id=#{poId}
+		and ou_id=#{ouId}
+		and ext_line_num =#{extLinenum}
+    </select>
+    
 </mapper>
+
+

@@ -32,6 +32,8 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
+import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -43,6 +45,8 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inbound.WhInboun
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
@@ -65,6 +69,10 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     private WhPoDao whPoDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
+    @Autowired
+    private WhAsnDao whAsnDao;
+    @Autowired
+    private WhAsnLineDao whAsnLineDao;
     @Autowired
     private GlobalLogManager globalLogManager;
     @Autowired
@@ -291,10 +299,22 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
      * @author yimin.lu
      * @mender yimin.lu 2106/7/27 PO单只允许单条取消
      */
-    @Override
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void cancelPoToInfo(WhPo whPo, Boolean isPoCancel, List<Integer> extlineNumList, Long userId) {
-        cancelPo(whPo, isPoCancel, extlineNumList, userId);
+    private void cancelPoToInfo(WhPo shardPo, Boolean isPoCancel, List<WhPoLine> lineList) {
+        Long ouId = shardPo.getOuId();
+        Long userId = shardPo.getModifiedId();
+        WhPo infoPo = this.whPoDao.findWhPoByCode(shardPo.getPoCode(), ouId);
+        if(isPoCancel){
+            List<WhPoLine> infolineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(infoPo.getId(), ouId, null);
+            for (WhPoLine line : infolineList) {
+                line.setStatus(PoAsnStatus.POLINE_CANCELED);
+                line.setModifiedId(userId);
+                int updateCount = this.whPoLineDao.saveOrUpdateByVersion(line);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
     }
 
     /**
@@ -304,8 +324,126 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void cancelPoToShard(WhPo whPo, Boolean isPoCancel, List<Integer> extlineNumList, Long userId) {
-        cancelPo(whPo, isPoCancel, extlineNumList, userId);
+    public List<WhPoLine> cancelPoToShard(WhPo whPo, Boolean isPoCancel, List<Integer> extlineNumList, Long userId) {
+        Long poId = whPo.getId();
+        Long ouId = whPo.getOuId();
+        if (isPoCancel) {
+            List<WhAsn> asnList = this.whAsnDao.findWhAsnByPoIdOuId(whPo.getId(), ouId);
+            if (asnList != null && asnList.size() > 0) {
+                for (WhAsn asn : asnList) {
+                    if (PoAsnStatus.ASN_NEW != asn.getStatus() || PoAsnStatus.ASN_CANCELED != asn.getStatus()) {
+                        log.error("cancel po error:asn is not allow to cancel");
+                        throw new BusinessException(ErrorCodes.CANCEL_ASN_ERROR);
+                    }
+                    if (PoAsnStatus.ASN_CANCELED == asn.getStatus()) {
+                        continue;
+                    }
+                    List<WhAsnLine> lineList = this.whAsnLineDao.findWhAsnLineByAsnIdOuId(asn.getId(), ouId);
+                    for (WhAsnLine line : lineList) {
+                        line.setModifiedId(userId);
+                        line.setStatus(PoAsnStatus.ASNLINE_CANCELED);
+                        int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(line);
+                        if (updateCount <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                    }
+                    asn.setModifiedId(userId);
+                    asn.setStatus(PoAsnStatus.ASN_CANCELED);
+                    int updateCount = this.whAsnDao.saveOrUpdateByVersion(asn);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+
+                }
+            }
+            List<WhPoLine> poLineList = this.whPoLineDao.findWhPoLineByPoIdOuIdUuid(poId, ouId, null);
+            for (WhPoLine poLine : poLineList) {
+                poLine.setStatus(PoAsnStatus.POLINE_CANCELED);
+                poLine.setModifiedId(userId);
+                int updateCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+            whPo.setModifiedId(userId);
+            whPo.setStatus(PoAsnStatus.PO_CANCELED);
+            int updateCount = this.whPoDao.saveOrUpdateByVersion(whPo);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            return null;
+        } else {// 部分行取消逻辑
+            if (extlineNumList == null || extlineNumList.size() == 0) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            List<WhPoLine> poLineList = new ArrayList<WhPoLine>();
+            for (Integer extlineNum : extlineNumList) {
+
+                WhPoLine poLine = this.whPoLineDao.findWhPoLineByPoIdOuIdExtLinenum(poId, ouId, extlineNum + "");
+                if (poLine != null) {
+                    poLineList.add(poLine);
+                }
+
+            }
+            if (poLineList.size() > 0) {
+                List<Long> poLineIdList = new ArrayList<Long>();
+                for (WhPoLine poLine : poLineList) {
+                    poLineIdList.add(poLine.getId());
+                }
+
+                List<WhAsn> asnList = this.whAsnDao.findWhAsnByPoIdOuId(poId, ouId);
+                if (asnList != null && asnList.size() > 0) {
+                    for (WhAsn asn : asnList) {
+                        if (PoAsnStatus.ASN_NEW != asn.getStatus() || PoAsnStatus.ASN_CANCELED != asn.getStatus()) {
+                            log.error("cancel po error:asn is not allow to cancel");
+                            throw new BusinessException(ErrorCodes.CANCEL_ASN_ERROR);
+                        }
+                        if (PoAsnStatus.ASN_CANCELED == asn.getStatus()) {
+                            continue;
+                        }
+                        List<WhAsnLine> asnlineList = this.whAsnLineDao.findWhAsnLineByAsnIdPolineIdListAndOuId(asn.getId(), poLineIdList, ouId);
+                        if (asnlineList == null || asnlineList.size() == 0) {
+                            continue;
+                        }
+                        Double asnQty = Constants.DEFAULT_DOUBLE;
+                        for (WhAsnLine asnLine : asnlineList) {
+                            asnLine.setModifiedId(userId);
+                            asnLine.setStatus(PoAsnStatus.ASN_CANCELED);
+                            int updateCount = this.whAsnLineDao.saveOrUpdateByVersion(asnLine);
+                            if (updateCount <= 0) {
+                                throw new BusinessException(ErrorCodes.CANCEL_ASN_ERROR);
+                            }
+                            asnQty += asnLine.getQtyPlanned();
+                        }
+                        asn.setModifiedId(userId);
+                        asn.setStatus(PoAsnStatus.ASN_CANCELED);
+                        asn.setQtyPlanned(asn.getQtyPlanned() - asnQty);
+                        int updateCount = this.whAsnDao.saveOrUpdateByVersion(asn);
+                        if (updateCount <= 0) {
+                            throw new BusinessException(ErrorCodes.CANCEL_ASN_ERROR);
+                        }
+                    }
+                }
+                Double poQty = Constants.DEFAULT_DOUBLE;
+                for (WhPoLine poLine : poLineList) {
+                    poLine.setModifiedId(userId);
+                    poLine.setStatus(PoAsnStatus.POLINE_CANCELED);
+                    int updateCount = this.whPoLineDao.saveOrUpdateByVersion(poLine);
+                    if (updateCount <= 0) {
+                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                    }
+                    poQty += poLine.getQtyPlanned();
+                }
+                whPo.setModifiedId(userId);
+                whPo.setQtyPlanned(whPo.getQtyPlanned() - poQty);
+                int updateCount = this.whPoDao.saveOrUpdateByVersion(whPo);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+
+            return poLineList;
+        }
     }
 
     private void cancelPo(WhPo whPo, Boolean isPoCancel, List<Integer> extlineNumList, Long userId) {
@@ -665,6 +803,8 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                 this.snycPoToInfoWhenClosed(shardPo, isPo, lineList);
             } else if (operateType.equals("RCVD_FINISH")) {
                 this.snycPoToInfoWhenRcvdFinished(shardPo, lineList);
+            } else if (operateType.equals("CANCEL")) {
+                this.cancelPoToInfo(shardPo, isPo, lineList);
             }
         } catch (BusinessException e) {
             throw e;
@@ -871,6 +1011,18 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     public void testzk() {
         BiPo bipo = biPoDao.findById(211100153L);
         this.createInBoundConfirmData(bipo);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhPo findWhpoByPoCodeToShard(String poCode, Long ouId) {
+        return this.whPoDao.findWhPoByCode(poCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
+    public WhPo findWhpoByPoCodeToInfo(String poCode, Long ouId) {
+        return this.whPoDao.findWhPoByCode(poCode, ouId);
     }
 
 	
