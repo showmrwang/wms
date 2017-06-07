@@ -1786,6 +1786,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         // 1.提示商品并判断是否需要扫描属性
         Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = isCmd.getInsideContainerSkuAttrIdsQty();   //内部容器唯一sku总件数
+        Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = isCmd.getInsideContainerLocSkuAttrIdsQty();
         Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = isCmd.getInsideContainerLocSkuAttrIds();  //内部容器推荐库位对应唯一sku及残次条码
         Location loc = null;
         if(StringUtils.isEmpty(locationCode) && !StringUtils.isEmpty(locBarCode)) {  //库位号为空,库位条码不为空
@@ -1808,9 +1809,9 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Set<Long> locationIds = isCmd.getLocationIds();
         pdaPutawayCacheManager.sysGuideSplitContainerPutawayTipLocation(insideContainerCmd,locationIds,locationId,logId);
         Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(containerId);  //库位属性
-        Map<String, Long> skuAttrIdsQty = insideContainerSkuAttrIdsQty.get(containerId);   //内部容器唯一sku总件数
         String tipSkuAttrId = this.sysSuggestSplitContainerPutawayTipSku(insideContainerCmd, loc.getId(), locSkuAttrIds, logId);
         Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
+        Map<String, Long> skuAttrIdsQty = insideContainerLocSkuAttrIdsQty.get(containerId).get(locationId);
         WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
         if (null == skuCmd) {
             log.error("sku is not found error, logId is:[{}]", logId);
@@ -4624,6 +4625,8 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             }
         }
         Long locationId = loc.getId();
+        List<String> skuAttrIdsList = new ArrayList<String>();
+//        whSkuInventoryManager.execFinishPutaway(outerCmd, insideCmd, locationCode, skuCmd, skuAttrIdsList, scanQty, warehouse, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
         this.splitContainerPutawayRemoveAllCache(outerCmd, insideCmd, locationId, locationCode, false, null);
     }
 }
