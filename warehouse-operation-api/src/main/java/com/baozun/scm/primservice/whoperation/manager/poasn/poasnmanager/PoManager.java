@@ -110,7 +110,6 @@ public interface PoManager extends BaseManager {
      * @param extlineNumList
      * @param userId
      */
-    void cancelPoToInfo(WhPo updateInfoPo, Boolean isPoCancel, List<Integer> extlineNumList, Long userId);
 
     /**
      * [业务方法]取消SHARD.WHPO
@@ -120,7 +119,7 @@ public interface PoManager extends BaseManager {
      * @param extlineNumList
      * @param userId
      */
-    void cancelPoToShard(WhPo updateShardPo, Boolean isPoCancel, List<Integer> extlineNumList, Long userId);
+    List<WhPoLine> cancelPoToShard(WhPo updateShardPo, Boolean isPoCancel, List<Integer> extlineNumList, Long userId);
 
     /**
      * 逻辑：extCode+storeId+ouId能唯一确定一条PO；
@@ -210,5 +209,9 @@ public interface PoManager extends BaseManager {
     public void closeBiPo(Long bipoId);
 
     void testzk();
+
+    WhPo findWhpoByPoCodeToShard(String poCode, Long ouId);
+
+    WhPo findWhpoByPoCodeToInfo(String poCode, Long ouId);
 
 }

@@ -84,16 +84,21 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             log.error("cancelPo method,the id :{} of poids can not find po!", poId);
             return getResponseMsg("Can not find po!", ResponseMsg.STATUS_ERROR, null);
         }
-        // 组装数据：修改者ID和修改的状态
-        WhPo infoPo = this.poManager.findWhPoByExtCodeStoreIdOuIdToInfo(updatePo.getExtCode(), updatePo.getStoreId(), ouId);
-        if (null == infoPo) {
-            log.error("cancelPo method,the poCode :{}  can not find po in db.info! ", updatePo.getPoCode());
-            return getResponseMsg("Can not find po in info", ResponseMsg.STATUS_ERROR, null);
+        // 状态校验
+        if (PoAsnStatus.PO_CANCELED == updatePo.getStatus()) {
+            log.error("cancelPo method,the id :{} of poids can  find po already cancelled!", poId);
+            return getResponseMsg("po is already cancelled!", ResponseMsg.STATUS_ERROR, null);
+        } else if (PoAsnStatus.PO_NEW == updatePo.getStatus() || PoAsnStatus.PO_CREATE_ASN == updatePo.getStatus()) {
+
+        } else {
+            log.error("cancelPo method,the id :{} of poids can  find po: status error!", poId);
+            return getResponseMsg("po status error!", ResponseMsg.STATUS_ERROR, null);
         }
 
         try {
-            this.poManager.cancelPoToShard(updatePo, isPoCancel, extlineNumList, userId);
-            this.poManager.cancelPoToInfo(infoPo, isPoCancel, extlineNumList, userId);
+            List<WhPoLine> savePoLineList = this.poManager.cancelPoToShard(updatePo, isPoCancel, extlineNumList, userId);
+
+            this.poManager.snycPoToInfo("CANCEL", updatePo, isPoCancel, savePoLineList);
         } catch (BusinessException e) {
             log.error(e + "");
             throw e;
@@ -680,14 +685,36 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
         if (PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
             List<WhPo> whpoList = this.poManager.findWhPoByExtCodeStoreIdToInfo(bipo.getExtCode(), bipo.getStoreId());
             if (whpoList != null) {
+                Boolean isCancel = true;
                 for (WhPo whpo : whpoList) {
-                    if (PoAsnStatus.PO_CANCELED != whpo.getStatus()) {
-                        rm.setMsg("WHPO status error");
-                        rm.setResponseStatus(ResponseMsg.DATA_ERROR);
-                        return rm;
+                    
+                    if (PoAsnStatus.PO_CANCELED != whpo.getStatus() && PoAsnStatus.PO_NEW != whpo.getStatus() && PoAsnStatus.PO_CREATE_ASN != whpo.getStatus()) {
+                        isCancel = false;
+
+                    }
+                    if (!isCancel) {
+                        break;
                     }
                 }
+                if (!isCancel) {
+                    rm.setMsg("BiPo status is error,can not cancel!");
+                    rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+                    return rm;
+                }
+                int success = ResponseMsg.STATUS_SUCCESS;
+                for (WhPo whpo : whpoList) {
+                    if (PoAsnStatus.PO_CANCELED == whpo.getStatus()) {
+
+                    } else if (PoAsnStatus.PO_NEW == whpo.getStatus() || PoAsnStatus.PO_CREATE_ASN == whpo.getStatus()) {
+                        WhPo shardPo = this.poManager.findWhpoByPoCodeToShard(whpo.getPoCode(), whpo.getOuId());
+                        ResponseMsg cancelPoRm = this.cancelPo(shardPo.getId(), shardPo.getOuId(), true, null, userId);
+                        if (ResponseMsg.STATUS_SUCCESS != cancelPoRm.getResponseStatus() && (ResponseMsg.STATUS_SUCCESS == success)) {
+                            success = ResponseMsg.STATUS_ERROR;
+                        }
+                    } 
+                }
             }
+
 
         }
         try {

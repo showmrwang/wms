@@ -245,4 +245,14 @@ public interface WhPoLineDao extends BaseDao<WhPoLine, Long> {
      */
     List<WhPoLine> findPoLineByExtCodeStoreIdOuIdStatus(@Param("extCode") String extCode, @Param("storeId") Long storeId, @Param("ouId") Long ouId, @Param("statusList") List<Integer> statusList);
 
+    /**
+     * [通用方法]查找PO单下外接行号对应的明细行
+     * 
+     * @param poId
+     * @param ouId
+     * @param extlineNumList
+     * @return
+     */
+    WhPoLine findWhPoLineByPoIdOuIdExtLinenum(@Param("poId") Long poId, @Param("ouId") Long ouId, @Param("extLinenum") String extlineNum);
+
 }

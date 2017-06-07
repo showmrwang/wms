@@ -203,4 +203,14 @@ public interface WhAsnLineDao extends BaseDao<WhAsnLine, Long> {
      */
 	List<WhPoLine> findAsnInboundData(@Param("asnId") Long asnId, @Param("ouId") Long ouId);
 
+    /**
+     * PO单行号对应的ASN单明细
+     * 
+     * @param id
+     * @param poLineIdList
+     * @param ouId
+     * @return
+     */
+    List<WhAsnLine> findWhAsnLineByAsnIdPolineIdListAndOuId(@Param("asnId") Long asnId, @Param("poLineIdList") List<Long> poLineIdList, @Param("ouId") Long ouId);
+
 }
