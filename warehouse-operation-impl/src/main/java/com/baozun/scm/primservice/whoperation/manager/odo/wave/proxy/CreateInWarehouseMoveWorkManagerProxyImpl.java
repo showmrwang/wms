@@ -86,7 +86,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
             try {
                 isSuccess = createInWarehouseMoveWorkManager.createAndExecuteInWarehouseMoveWork(inWarehouseMoveWorkCommand, skuInventoryCommandLst, isExecute, ouId, userId, snKey);  
             } catch (Exception e) {
-                log.error("CreateInWarehouseMoveWorkManagerProxyImpl createAndExecuteInWarehouseMoveWork error" + e.getMessage());
+                e.printStackTrace();
                 isSuccess = false;
             }
         }
@@ -243,7 +243,7 @@ public class CreateInWarehouseMoveWorkManagerProxyImpl implements CreateInWareho
                 }
             }
         } catch (Exception e) {
-            log.error(e + "");
+            e.printStackTrace();
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         inWarehouseMoveWorkCommand.setSkuInventoryMap(skuInventoryMap);
