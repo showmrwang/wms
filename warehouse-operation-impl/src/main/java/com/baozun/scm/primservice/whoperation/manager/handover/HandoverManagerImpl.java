@@ -227,7 +227,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         if (null != handover2) {
             // 已有该交接头信息
             log.error("handover error handover already exist, handover2 is:[{}]", handover2);
-            throw new BusinessException(ErrorCodes.HANDOVER_EXISTS);
+            //throw new BusinessException(ErrorCodes.HANDOVER_EXISTS);
         }
         long inserthandover = handoverDao.insert(handover);
         if (0 == inserthandover) {
@@ -245,7 +245,6 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             if (null == skuInventoryList || skuInventoryList.size() == 0) {
                 // 库存为空
                 log.error("handover error skuInventoryList  , skuInventoryList is:[{}]", skuInventoryList);
-                handoverCollectionDao.deleteByOuId(handoverCollection.getId(), ouId);
                 throw new BusinessException(ErrorCodes.SKUINVENTORY_IS_NULL);
             }
             for (WhSkuInventory whSkuInventory : skuInventoryList) {
@@ -403,6 +402,12 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             log.info("HandoverManagerImpl.handover end, logId is:[{}]", logId);
         }
         return handoverIds;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_GLOBALSOURCE)
+    public void deleteByOuId(Long id, Long ouId) {
+        handoverCollectionDao.deleteByOuId(id, ouId);
     }
 
     @Override

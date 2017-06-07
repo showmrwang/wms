@@ -81,6 +81,8 @@ public interface HandoverManager extends BaseManager {
 
     String findStoreCodeByStoreId(Long storeId);
 
+    void deleteByOuId(Long id, Long ouId);
+
     /**
      * 打印销售清单
      * 
