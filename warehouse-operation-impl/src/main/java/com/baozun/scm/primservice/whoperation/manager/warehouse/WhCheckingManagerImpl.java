@@ -1087,7 +1087,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param checkingLineList
      */
     private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId, String checkingPattern) {
-        if(StringUtils.isEmpty(checkingPattern) || StringUtils.isEmpty(outboundbox)){
+        if (StringUtils.isEmpty(checkingPattern) || StringUtils.isEmpty(outboundbox)) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         Long checkingId = null;
@@ -1670,6 +1670,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 info = infoList.get(0);
             }
             if (info == null) {
+                log.info("==================waybill code is null==================");
                 command.setMessage(Constants.FIND_WAYBILL_CODE_ERROR);
                 return command;
             }
@@ -1677,7 +1678,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             if (null != consumableSkuId) {
                 info.setOutboundboxId(consumableSkuId);
             }
+            log.info("===================start whOdoDeliveryInfoManager.saveOrUpdate===================");
             this.whOdoDeliveryInfoManager.saveOrUpdate(info);
+            log.info("===================end whOdoDeliveryInfoManager.saveOrUpdate===================");
             // 判断是否扫描运单号
             WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
             if (null == whFunctionOutBound) {
