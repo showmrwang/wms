@@ -1287,7 +1287,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             Long outerContainerId = outerCmd.getId();
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId, outerContainerId, null, null);
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo( ouId, outerContainerId, null, null);
             if (count == 0) {
                 Container c = new Container();
                 BeanUtils.copyProperties(outerCmd, c);
@@ -1304,7 +1304,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             Long insideContainerId = turnCmd.getId();
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId, null, insideContainerId, null);
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, insideContainerId, null);
             if (count == 0) {
                 Container turn = new Container();
                 BeanUtils.copyProperties(turnCmd, turn);
@@ -1315,7 +1315,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(odoId, ouId, null, null, seedingWallCode);
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
             if (count == 0) {
                 WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
                 if (null == facility) {

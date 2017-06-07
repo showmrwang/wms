@@ -1207,5 +1207,5 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param operationId
      * @return
      */
-   public int countWhSkuInventoryCommandByOdo(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId, @Param("seedingWallCode") String seedingWallCode);
+   public int countWhSkuInventoryCommandByOdo(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId, @Param("seedingWallCode") String seedingWallCode);
 }
