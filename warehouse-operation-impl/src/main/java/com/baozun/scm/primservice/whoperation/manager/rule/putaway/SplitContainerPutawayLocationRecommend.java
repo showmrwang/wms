@@ -127,6 +127,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
      */
     @Override
     public List<LocationRecommendResultCommand> recommendLocation(RuleAfferCommand ruleAffer, RuleExportCommand export, Map<Long, ContainerAssist> caMap, List<WhSkuInventoryCommand> invList, Map<String, Map<String, Double>> uomMap, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("putawaySCRL recommendLocation start, containerCode is:[{}], logId is:[{}]", ruleAffer.getAfferContainerCode(), logId);
+        }
         // 判断该容器是否有符合的上架规则
         List<WhSkuInventoryCommand> invRuleList = export.getShelveSkuInvCommandList();
         if (null == invRuleList || 0 == invRuleList.size()) {
@@ -1623,6 +1626,9 @@ public class SplitContainerPutawayLocationRecommend extends BasePutawayLocationR
                     }
                 }
             }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("putawaySCRL recommendLocation end, containerCode is:[{}], logId is:[{}]", ruleAffer.getAfferContainerCode(), logId);
         }
         return list;
     }
