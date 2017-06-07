@@ -5038,6 +5038,9 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     }
                     insideContainerLocSort.put(insideContainerCmd.getId(), sortLoctionIds);
                     isCmd.setLocationIds(locIds);*/
+                    if (null != locationId) {
+                        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locationId.toString());
+                    }
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString());
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, value.toString());
                 }
