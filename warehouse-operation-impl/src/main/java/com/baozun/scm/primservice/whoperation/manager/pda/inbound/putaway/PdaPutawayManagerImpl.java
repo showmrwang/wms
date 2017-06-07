@@ -6519,6 +6519,8 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         srCmd.setPutaway(true);
         whSkuInventoryManager.execFinishPutaway(ocCmd, icCmd, locationCode, skuCmd, skuAttrIds, scanQty, warehouse, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
         // 清除计数器
+        cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icCmd.getId().toString());
+        cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icCmd.getId().toString() + loc.getId().toString() + saId);
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icCmd.getId().toString() + loc.getId().toString() + saId);
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icCmd.getId().toString() + loc.getId().toString() + saId);
         // 3.清除redis缓存
