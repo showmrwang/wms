@@ -1494,10 +1494,17 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                                 if(null == locSkuAttrIds){
                                     locSkuAttrIds = new HashMap<Long, Set<String>>();
                                     if(null != locationId) {
-                                        locSkuAttrIds.put(locationId, skuAttrIds);
+                                        Set<String> allSkuAttrIds = new HashSet<String>();
+                                        allSkuAttrIds.add(skuAttrId);
+                                        locSkuAttrIds.put(locationId, allSkuAttrIds);
                                     }
                                 }else{
-                                    locSkuAttrIds.put(locationId, skuAttrIds);
+                                    Set<String> allSkuAttrIds = locSkuAttrIds.get(locationId);
+                                    if(null == allSkuAttrIds || allSkuAttrIds.size() == 0){
+                                            allSkuAttrIds = new HashSet<String>();
+                                    }
+                                    allSkuAttrIds.add(skuAttrId);
+                                    locSkuAttrIds.put(locationId, allSkuAttrIds);
                                 }
                                 insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                             }
@@ -1523,10 +1530,19 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(icId);
                             if(null == locSkuAttrIds){
                                    locSkuAttrIds = new HashMap<Long, Set<String>>();
+                                   Set<String> allSkuAttrIds = new HashSet<String>();
+                                   locSkuAttrIds.put(locationId, allSkuAttrIds);
+                            }else{
+                                Set<String> allSkuAttrIds = locSkuAttrIds.get(locationId);
+                                if(null == allSkuAttrIds || allSkuAttrIds.size() == 0){
+                                        allSkuAttrIds = new HashSet<String>();
+                                }
+                                allSkuAttrIds.add(skuAttrId);
+                                locSkuAttrIds.put(locationId, allSkuAttrIds);
                             }
-                            if(null != locationId) {
-                              locSkuAttrIds.put(locationId, skuAttrIds);
-                            }
+//                            if(null != locationId) {
+//                              locSkuAttrIds.put(locationId, skuAttrIds);
+//                            }
                             insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                         }
                         List<Location> sortLocs = new ArrayList<Location>();
