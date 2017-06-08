@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- *
+ * 
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- *
+ * 
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- *
+ * 
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
@@ -79,40 +79,40 @@ public class WhCheckingLineCommand extends BaseCommand {
     private Long odoId;
     /** 出库单明细ID */
     private Long odoLineId;
-    /** 商品属性字符串*/
+    /** 商品属性字符串 */
     private String SkuAttr;
-    /** 商品id*/
+    /** 商品id */
     private Long skuId;
-    /** 播种墙id*/
+    /** 播种墙id */
     private Long facilityId;
-    /** 出库箱code*/
+    /** 出库箱code */
     private String outboundboxCode;
-    /** 播种墙编码*/
+    /** 播种墙编码 */
     private String seedingWallCode;
-    /** 小车编码*/
+    /** 小车编码 */
     private String outerContainerCode;
     // 字典表str
-    /** 库存状态str*/
+    /** 库存状态str */
     private String invStatusStr = new String();
-    /** 库存类型str*/
+    /** 库存类型str */
     private String invTypeStr = new String();
-    /** 库存属性1str*/
+    /** 库存属性1str */
     private String invAttr1Str = new String();
-    /** 库存属性2str*/
+    /** 库存属性2str */
     private String invAttr2Str = new String();
-    /** 库存属性3str*/
+    /** 库存属性3str */
     private String invAttr3Str = new String();
-    /** 库存属性4str*/
+    /** 库存属性4str */
     private String invAttr4Str = new String();
-    /** 库存属性5str*/
+    /** 库存属性5str */
     private String invAttr5Str = new String();
-    /** 生产日期str*/
+    /** 生产日期str */
     private String mfgDateStr = new String();
-    /** 失效日期str*/
+    /** 失效日期str */
     private String expDateStr = new String();
-    /** 周转箱编码*/
+    /** 周转箱编码 */
     private String containerCode;
-    /** 出库单编码*/
+    /** 出库单编码 */
     private String odoCode;
     /** 创建人 */
     private Long createId;
@@ -142,14 +142,23 @@ public class WhCheckingLineCommand extends BaseCommand {
     private String invStatusName;
     /** 库存类型 */
     private String invTypeLabel;
-    /** 耗材id*/
+    /** 耗材id */
     private Long outboundboxId;
     /** 已复核SN/残次信息 */
     private List<Long> snInventoryIdList;
-    /** 是否是sn商品*/
+    /** 是否是sn商品 */
     private Boolean isSn = false;
-    /** 待扫描属性*/
+    /** 待扫描属性 */
     private String attrIndex;
+    private Double odoLineqty;
+
+    public Double getOdoLineqty() {
+        return odoLineqty;
+    }
+
+    public void setOdoLineqty(Double odoLineqty) {
+        this.odoLineqty = odoLineqty;
+    }
 
     public Long getId() {
         return id;

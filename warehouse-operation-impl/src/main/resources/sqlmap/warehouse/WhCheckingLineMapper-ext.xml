@@ -567,4 +567,15 @@
         and checking.status != 10
         group by checking.id
     </select>
+    
+     <select id="findQtyAndOdolineIdByOutboundboxCode" resultMap="WhCheckingLineCommand">
+        select
+        odo_line_id as odoLineId,
+		SUM(checking_qty) as odoLineqty
+        from t_wh_checking_line
+        where outboundbox_code = #{outboundboxCode}
+        and ou_id = #{ouId}
+        group by odo_line_id
+    </select>
+    
 </mapper>

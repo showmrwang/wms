@@ -1,16 +1,16 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
- *
+ * 
  * This software is the confidential and proprietary information of Baozun. You shall not disclose
  * such Confidential Information and shall use it only in accordance with the terms of the license
  * agreement you entered into with Baozun.
- *
+ * 
  * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
  * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
  * DERIVATIVES.
- *
+ * 
  */
 package com.baozun.scm.primservice.whoperation.dao.warehouse;
 
@@ -52,6 +52,7 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     /**
      * 根据复核ID查询复核明细
+     * 
      * @param checkingId
      * @param ouId
      * @return
@@ -60,6 +61,7 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     /**
      * 根据复核ID查询复核明细
+     * 
      * @param checkingId
      * @param ouId
      * @return
@@ -70,6 +72,7 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     /**
      * [业务方法] 通过复核明细对象查找复核明细列表
+     * 
      * @param o
      * @return
      */
@@ -87,6 +90,8 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
     public Double countCheckingLine(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
 
     public List<WhChecking> findListByParamWithNoFinish(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    List<WhCheckingLineCommand> findQtyAndOdolineIdByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
 
 
