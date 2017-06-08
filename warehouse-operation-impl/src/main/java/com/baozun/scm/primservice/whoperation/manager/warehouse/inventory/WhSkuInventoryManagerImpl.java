@@ -8306,7 +8306,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         BeanUtils.copyProperties(invTobefilled, cInv);
                         whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                        continue;
+                        break;
                     }
                     if (tobefilledQty.doubleValue() > 0) {
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
@@ -8314,8 +8314,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         cInv.setQty(tobefilledQty);
                         whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
                         insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
+                        break;
                     }
-                    break;
                 }
             }
         }

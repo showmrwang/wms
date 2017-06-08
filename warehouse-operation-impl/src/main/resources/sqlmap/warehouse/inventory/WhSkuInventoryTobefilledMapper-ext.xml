@@ -388,7 +388,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     
     <select id="findWhSkuInventoryTobefilledByReplenish" resultMap="WhSkuInventoryTobefilledResultExt">
 	    select
-	          inv.id as id,
+	          distinct inv.id as id,
 	          inv.sku_id as skuId,
 	          inv.location_id as locationId,
 	          inv.outer_container_id as outerContainerId,
