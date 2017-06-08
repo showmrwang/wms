@@ -63,5 +63,15 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
     
     
     public void deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+    
+    /**
+     * 获取需要补充的工作明细
+     *
+     * @author qiming.liu
+     * @param toLocationId
+     * @param ouId
+     * @return
+     */
+    List<WhWorkLineCommand> findWorkLineByToLocationId(@Param("toLocationId") Long toLocationId, @Param("ouId") Long ouId);
 	
 }

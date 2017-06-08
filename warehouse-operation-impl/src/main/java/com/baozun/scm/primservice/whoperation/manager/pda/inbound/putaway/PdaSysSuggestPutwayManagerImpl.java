@@ -414,6 +414,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
                         }
                     }
+                    cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE+ icId.toString());
                     cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString());
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, icId.toString());
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, icId.toString());
@@ -435,6 +436,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 }
             }
             cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + containerId.toString());
+            cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE+ containerId.toString());
             cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
             cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
         }
@@ -1174,10 +1176,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         Set<Long> locationIds = isrCmd.getLocationIds(); 
         if (0 < locationIds.size()) {
             srCmd.setRecommendLocation(true);// 已推荐库位
-            if (1 < locationIds.size()) {   //上架已经推荐库位而且绑架多个库位，认定异常
-                log.error("sys guide pallet putaway location is more than one error, logId is:[{}]", logId);
-                throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-            }
             Long locId = null;
             for (Long locationId : locationIds) {
                 if (null == locId) {
@@ -1332,7 +1330,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         /** 内部容器推荐库位对应唯一sku总件数 */
         Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();
         Map<Long, Map<String, Long>> locSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();
-        Map<String, Long> skuAttrIdsQty = new HashMap<String, Long>();
         for (LocationRecommendResultCommand lrrCmd : lrrList) {
             String skuAttrIds = SkuCategoryProvider.getSkuAttrId(lrrCmd.getSkuAttrId());
             Long locationId = lrrCmd.getLocationId();
@@ -1345,8 +1342,17 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                     }
                     allSkuAttrIds.add(lrrCmd.getSkuAttrId());
                     locSkuAttrIds.put(locationId, allSkuAttrIds);
-                    //统计唯一sku,对应的数量
-                    skuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+                } else {
+                    Set<String> allSkuAttrIds = new HashSet<String>();
+                    allSkuAttrIds.add(lrrCmd.getSkuAttrId());
+                    locSkuAttrIds.put(locationId, allSkuAttrIds);
+                }
+                Map<String, Long> skuAttrIdsQty = locSkuAttrIdsQty.get(locationId);
+                if(null == skuAttrIdsQty || skuAttrIdsQty.size() == 0){
+                    skuAttrIdsQty = new HashMap<String,Long>();
+                    skuAttrIdsQty.put(skuAttrIds, lrrCmd.getQty().longValue());
+                    locSkuAttrIdsQty.put(locationId, skuAttrIdsQty);
+                }else{
                     Long qty = skuAttrIdsQty.get(skuAttrIds);
                     if(null != qty){
                         qty += lrrCmd.getQty().longValue();
@@ -1354,14 +1360,9 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                         qty = lrrCmd.getQty().longValue();
                     }
                     skuAttrIdsQty.put(skuAttrIds, qty);
-                } else {
-                    Set<String> allSkuAttrIds = new HashSet<String>();
-                    allSkuAttrIds.add(lrrCmd.getSkuAttrId());
-                    locSkuAttrIds.put(locationId, allSkuAttrIds);
-                    skuAttrIdsQty.put(skuAttrIds, lrrCmd.getQty().longValue());
+                    locSkuAttrIdsQty.put(locationId, skuAttrIdsQty);
                 }
             }
-            locSkuAttrIdsQty.put(locationId, skuAttrIdsQty);
             String locationCode = lrrCmd.getLocationCode();
             invRecommendLocId.put(lrrCmd.getSkuAttrId(), locationId);
             invRecommendLocCode.put(lrrCmd.getSkuAttrId(), locationCode);
@@ -1396,8 +1397,13 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             insideContainerLocSort.put(containerId, sortLocationIds);
         }
         isrCommand.setInsideContainerLocSort(insideContainerLocSort);
-        LocationRecommendResultCommand lrr = lrrList.get(0);
-        Long locationId = lrr.getLocationId();  //推荐库位id
+        Long locationId  = null;
+        for(LocationRecommendResultCommand lrr:lrrList){
+            if(null != lrr.getLocationId()){
+                locationId = lrr.getLocationId();  //推荐库位id
+                break;
+            }
+        }
         Location loc = locationDao.findByIdExt(locationId, ouId);
         if (null == loc) {
             log.error("location is null error, locId is:[{}], logId is:[{}]", locationId, logId);
@@ -3092,6 +3098,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
               }
               srCmd.setTipLocationCode(tipLoc.getCode());
+              srCmd.setTipLocBarCode(tipLoc.getBarCode());
 //              whSkuInventoryManager.execPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
               ScanSkuCacheCommand scanSkuCmd = cacheManager.getObject(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + insideContainerId.toString() + tipLocationId.toString()+sId.toString());
               List<String> scanSkuAttrIds = null;
@@ -3143,6 +3150,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             if(isPutawayEnd == true) {  //人工上架,整箱或整托还没结束
                 cacheManager.remove(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + icId.toString() + locationId.toString()+sId.toString());
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + sId.toString());
+                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + sId.toString());
             }else{
                 if(null != containerCmd) {
                     Long ocId = containerCmd.getId();

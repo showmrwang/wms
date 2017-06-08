@@ -35,8 +35,8 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     private Map<Long, Set<Long>> palleToLocation = new HashMap<Long, Set<Long>>();
     /** 外部容器对应所有内部容器(周转箱) */
     private Map<Long, Set<Long>> palleToContainer = new HashMap<Long, Set<Long>>();
-    /** 目标库位对应的所有内部容器（无外部容器） */ 
-    private Map<Long, Set<Long>> containerToLocation = new HashMap<Long, Set<Long>>();  
+    /** 目标库位对应的内部容器（有外部容器） */ 
+    private Map<Long,Map<Long,Set<Long>>> containerToLocation = new HashMap<Long, Map<Long,Set<Long>>>();  
     
     // 库位商品统计信息 
     /** 所有目标库位 */
@@ -161,11 +161,12 @@ public class OperationExecStatisticsCommand extends BaseCommand{
     public void setPalleToContainer(Map<Long, Set<Long>> palleToContainer) {
         this.palleToContainer = palleToContainer;
     }
-    public Map<Long, Set<Long>> getContainerToLocation() {
+    public Map<Long, Map<Long, Set<Long>>> getContainerToLocation() {
         return containerToLocation;
     }
-    public void setContainerToLocation(Map<Long, Set<Long>> containerToLocation) {
+    public void setContainerToLocation(Map<Long, Map<Long, Set<Long>>> containerToLocation) {
         this.containerToLocation = containerToLocation;
     }
+    
     
 }

@@ -488,6 +488,8 @@ public class ErrorCodes {
     public static final int REPLENISHMENT_ASSIGN_IN_ERROR = 11109;
     /** 取消ASN异常 */
     public static final int CANCEL_ASN_ERROR = 11110;
+    /** 拣货工作和补货工作外，其余工作类型暂时不支持签入签出 */
+    public static final int ASSIGN_IN_OUT_TYPE_ERROR = 11111;
     // 10001-20000 luyimin
 
 
