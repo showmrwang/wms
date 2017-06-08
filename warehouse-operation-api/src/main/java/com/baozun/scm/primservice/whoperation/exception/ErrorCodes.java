@@ -1103,6 +1103,12 @@ public class ErrorCodes {
     public static final int WAVE_ODOLIST_INVOICE_DIFFERENCE = 80011;
     /** 出库单排序失败,请检查波次主档销售清单排序设置或打印条件销售清单排序 */
     public static final int WAVE_ODOINDEX_SORT_ERROR = 80015;
+    /** 出库单不为取消状态,无法操作 */
+    public static final int ODO_NOT_CANCEL_STATUS = 80016;
+    /** 该容器号没有找到库存信息 */
+    public static final int NOT_FIND_SKU_INV_BY_CONTAINERCODE = 80017;
+    /** 数据异常,出库单信息不存在 */
+    public static final int ODO_NOT_FIND = 80018;
     // 80001-90000 zhukai
 
     // 100001-110000 liuqiming

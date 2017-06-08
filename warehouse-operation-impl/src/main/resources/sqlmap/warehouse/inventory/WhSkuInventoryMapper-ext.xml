@@ -5806,8 +5806,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					 and inv.uuid = #{uuid}
 				   </if>
     </select>
-    
-    
 
     <select id="countWhSkuInventoryCommandByOdo" resultType="java.lang.Integer">
 	    select
@@ -5826,5 +5824,63 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				<if test="seedingWallCode!=null and seedingWallCode!=''">
 					 and inv.seeding_wall_code =#{seedingWallCode}
 				</if>
+	</select>
+	
+	<select id="findSkuInventoryByOutSideContainerCode" resultMap="WhSkuInventoryResultExt">
+		select 
+			<include refid="whSkuInventoryColumnsInvExt"/> 
+		from 
+			t_wh_sku_inventory inv,
+			t_wh_container c
+		where 
+			inv.outer_container_id = c.id
+			and inv.on_hand_qty > 0
+			and inv.location_id is null
+			<if test="latticNo != null and latticNo != ''">
+				and inv.container_lattice_no = #{latticNo}
+			</if>
+			and c.`code` = #{containerCode}
+			and inv.ou_id = #{ouId}
+	</select>
+	
+	<select id="findSkuInventoryByInSideContainerCode" resultMap="WhSkuInventoryResultExt">
+		select 
+			<include refid="whSkuInventoryColumnsInvExt"/> 
+		from 
+			t_wh_sku_inventory inv,
+			t_wh_container c
+		where 
+			inv.inside_container_id = c.id
+			and inv.on_hand_qty > 0
+			and inv.location_id is null
+			and c.`code` = #{containerCode}
+			and inv.ou_id = #{ouId}
+	</select>
+	
+	<select id="findSkuInventoryBySeedingWallCode" resultMap="WhSkuInventoryResultExt">
+		select 
+			<include refid="whSkuInventoryColumnsInvExt"/> 
+		from 
+			t_wh_sku_inventory inv
+		where 
+			inv.on_hand_qty > 0
+			and inv.location_id is null
+			<if test="latticNo != null and latticNo != ''">
+				and inv.container_lattice_no = #{latticNo}
+			</if>
+			and inv.seeding_wall_code = #{containerCode}
+			and inv.ou_id = #{ouId}
+	</select>
+	
+	<select id="findSkuInventoryByOutBoundBoxCode" resultMap="WhSkuInventoryResultExt">
+		select 
+			<include refid="whSkuInventoryColumnsInvExt"/> 
+		from 
+			t_wh_sku_inventory inv
+		where 
+			inv.on_hand_qty > 0
+			and inv.location_id is null
+			and inv.outboundbox_code = #{containerCode}
+			and inv.ou_id = #{ouId}
 	</select>
 </mapper>

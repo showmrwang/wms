@@ -1027,6 +1027,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             log.error("container is not exists, logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
         }
+        // 判断是否有播种集货结果
+        WhSeedingCollectionCommand seedingCollection = whSeedingCollectionDao.getSeedingCollectionByContainerCode(containerCode, ouId);
+        if (null == seedingCollection) {
+            throw new BusinessException(ErrorCodes.COLLECTION_NOT_HAVE_CONTAINER_INFO, new Object[] {containerCode});
+        }
         ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId);
         if (null == containerCodeDeque) {
             containerCodeDeque = new ArrayDeque<String>();
@@ -1282,6 +1287,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         skuInventory.setOuId(ouId);
         List<WhSkuInventory> invList = this.whSkuInventoryDao.findListByParam(skuInventory);
         if (null == invList || invList.isEmpty()) {
+            log.error("skuInventory is empty, InsideContainerId:" + recCommand.getContainerId());
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         for (WhSkuInventory inv : invList) {
