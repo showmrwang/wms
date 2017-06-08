@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -180,7 +179,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipOutContainer(pallets, operationId, locationId);
             Long outerContainerId = sRCmd.getPalletId();
             String outerContainerCode = this.judeContainer(outerContainerId, ouId);
-            command.setTipPalletCode(outerContainerCode);
+            command.setTipOuterContainerCode(outerContainerCode);
             command.setIsNeedScanPallet(true);
         }else if(null != locToTurnoverBoxIds && locToTurnoverBoxIds.size() != 0){//周转箱
             Set<Long> turnoverBoxIds = locToTurnoverBoxIds.get(locationId);
@@ -193,58 +192,10 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             command.setTipTurnoverBoxCode(containerCode);
             command.setIsNeedScanTurnoverBox(true);
         }
-        //缓存库位
-        this.cacheLocation(operationId, locationId);
         log.info("PdaReplenishmentPutawayManagerImpl putawayScanLocation is end");
         return command;
     }
     
-//    /**
-//     * 扫描库位--整托整箱
-//     * 
-//     * @author qiming.liu
-//     * @param ReplenishmentPutawayCommand
-//     * @return
-//     */
-//    @Override
-//    public ReplenishmentPutawayCommand putawayWholeCaseScanLocation(ReplenishmentPutawayCommand command) {
-//        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is start");
-//        Long operationId = command.getOperationId();
-//        Long ouId = command.getOuId();
-//        Long locationId = command.getLocationId();                            
-//        OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
-//        if(null == opExecLineCmd){
-//            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//        }
-//        Map<Long, Set<Long>> locToInsideContainerIds = opExecLineCmd.getInsideContainerIds();
-//        Set<Long> insideContainerIds = locToInsideContainerIds.get(locationId);
-//        if(null == insideContainerIds || insideContainerIds.size() == 0){
-//            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
-//        }
-//        // 缓存库位
-//        this.cacheLocation(operationId, locationId);
-//        // 缓存货箱      
-//        ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipContainer(insideContainerIds, operationId, locationId);
-//        // 提示托盘         
-//        if(null != opExecLineCmd.getPallets() && opExecLineCmd.getPallets().size() != 0){
-//            Set<Long> pallets = opExecLineCmd.getPallets();
-//            Long palletId = null;
-//            for(Long pallet : pallets){
-//                palletId =  pallet;
-//                break;
-//            }
-//            String palletCode = this.judeContainer(palletId, ouId);   
-//            command.setTipPalletCode(palletCode);
-//            command.setIsNeedScanPallet(true);
-//        }
-//        // 提示货箱        
-//        Long containerId = sRCmd.getContainerId();
-//        String containerCode = this.judeContainer(containerId, ouId);
-//        command.setTipContainerCode(containerCode);
-//        command.setIsNeedScanContainer(true);
-//        log.info("PdaReplenishmentPutawayManagerImpl putawayWholeCaseScanLocation is end");
-//        return command;
-//    }
 
     
     private void cacheLocation(Long operationId,Long locationId){
@@ -305,12 +256,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Long locationId = command.getLocationId();
         String turnoverBoxCode = command.getTurnoverBoxCode(); ;
         String outerContainerCode = command.getOuterContainerCode();
-//        if(null != command.getReplenishWay() && (2 == command.getReplenishWay() || 3 == command.getReplenishWay())){
-//            turnoverBoxCode = command.getContainerCode(); 
-//            palletCode = command.getPalletCode();
-//        }else{
-//            turnoverBoxCode = command.getTurnoverBoxCode();    
-//        }
         String newTurnoverBoxCode = command.getNewTurnoverBoxCode();
         OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
         if(null == opExecLineCmd){
@@ -330,24 +275,16 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         List<Long> locationIds = opExecLineCmd.getLocationIds();
-        Map<Long, Set<Long>> palleToContainer =  opExecLineCmd.getPalleToContainer();
         Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
+        Map<Long,Map<Long,Set<Long>>> containerToLocation =  opExecLineCmd.getContainerToLocation();
         Set<Long> turnoverBoxIds = null;
         if(null != outerContainerId){
-            turnoverBoxIds = palleToContainer.get(outerContainerId);
+            turnoverBoxIds = containerToLocation.get(locationId).get(outerContainerId);
         }else{
             turnoverBoxIds = mapTurnoverBoxIds.get(locationId);
         }
-//        Set<Long> ContainerIds = palleToContainer.get(palletCommand.getId());
-//        Map<Long, Set<Long>> mapTurnoverBoxIds = new HashMap<Long, Set<Long>>();
-//        if(null != command.getReplenishWay() && (2 == command.getReplenishWay() || 3 == command.getReplenishWay())){
-//            mapTurnoverBoxIds = opExecLineCmd.getInsideContainerIds();
-//        }else{
-//            mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds(); 
-//        }
-//        Set<Long> turnoverBoxIds = mapTurnoverBoxIds.get(locationId);
         Long turnoverBoxId = cmd.getId();
-        Boolean result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId);
+        Boolean result = this.judgeIsManayLoc(containerToLocation,locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId,outerContainerId);
         if(!result) {//result 为true时，是多库位,为false时是单库位
             //缓存上一个周转箱
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId,true);
@@ -363,15 +300,29 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 this.updateOperationExecLine(null,turnoverBoxId, operationId, ouId, userId,locationId);
                 //判断当前库位是否有拣货工作
                 this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId,null,operationId);
-            }else{//继续扫描下一个库位
-                 command.setIsScanFinsh(true);
-                 whSkuInventoryManager.replenishmentContianerPutaway(null,locationId, operationId, ouId, isTabbInvTotal, userId,  turnoverBoxId);
-                 //修改作业执行明细的执行量
+            }else{//判断有没有下一个库位如果有继续扫描下一个库位
+                //修改作业执行明细的执行量
                  this.updateOperationExecLine(null,turnoverBoxId, operationId, ouId, userId,locationId);
-                 //更新工作及作业状态
-                 this.updateStatus(operationId, workCode, ouId, userId);
+                 whSkuInventoryManager.replenishmentContianerPutaway(null,locationId, operationId, ouId, isTabbInvTotal, userId,  turnoverBoxId);
                  //判断当前库位是否有拣货工作
                  this.judeLocationIsPicking(turnoverBoxId, locationId, ouId, userId,null,operationId);
+                 if(locationIds.size() > 1 && null != outerContainerId){
+                     //缓存上一个库位
+                     this.cacheLocation(operationId, locationId);
+                     ReplenishmentScanResultComamnd sCmd = pdaReplenishmentPutawayCacheManager.tipLocation(locationIds, operationId);
+                     if(sCmd.getIsNeedScanLocation()){
+                         Long tipLoctionid = sCmd.getLocationId();
+                         Location loc = whLocationDao.findByIdExt(tipLoctionid, ouId);
+                         command.setTipLocationBarCode(loc.getBarCode());
+                         command.setTipLocationCode(loc.getCode());
+                         command.setIsNeedScanLocation(true);
+                         command.setLocationId(tipLoctionid);
+                         return command;
+                     }
+                 }
+                 command.setIsScanFinsh(true);
+                 //更新工作及作业状态
+                 this.updateStatus(operationId, workCode, ouId, userId);
                  //清除所有缓存
                  pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId,locationId,true);
                  if(null != outerContainerId){
@@ -424,7 +375,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     }
     
     
-    private Boolean judgeIsManayLoc(List<Long> locationIds, Map<Long, Set<Long>> mapContainerIds,Long containerId,Long locationId,Long operationId){
+    private Boolean judgeIsManayLoc(Map<Long,Map<Long,Set<Long>>> containerToLocation,List<Long> locationIds, Map<Long,Set<Long>> mapContainerIds,Long containerId,Long locationId,Long operationId,Long outerContainerId){
         Boolean result = false;//默认单库位
         if(locationIds.size() == 1){
             result = false;  //单库位
@@ -438,11 +389,18 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     }
                 }
                 if(locId.longValue() != locationId.longValue()){
-                    Set<Long> containerIds = mapContainerIds.get(locId);
+                    Set<Long> containerIds = null;
+                    if(null == outerContainerId){  //当前货箱没有外部容器
+                        containerIds = mapContainerIds.get(locId);
+                    }else{//当前货箱有外部容器
+                        Map<Long,Set<Long>> outerInsideIds = containerToLocation.get(locId);
+                        containerIds = outerInsideIds.get(outerContainerId);
+                    }
                     if(containerIds.contains(containerId)){
                         result = true;  //一个周转箱对应多个库位
                         break;
                     }
+                   
                 }
             }
         }
@@ -888,6 +846,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             command.setIsNeedScanTurnoverBox(true);
             command.setTurnoverBoxCode(c.getCode());
         }else if(csrCmd.getIsNeedTipLoc()){
+            //缓存上一个库位
+            this.cacheLocation(operationId, locationId);
             Long tipLoctionid = csrCmd.getTipLocationId();
             Location loc = whLocationDao.findByIdExt(tipLoctionid, ouId);
             command.setTipLocationBarCode(loc.getBarCode());
@@ -1259,6 +1219,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Map<String, Map<Long, Map<String, Long>>> skuAttrIds = new HashMap<String, Map<Long, Map<String, Long>>>();
         // 周转箱每个唯一sku对应的所有sn及残次条码
         Map<String, Map<String, Set<String>>> skuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
+        /** 目标库位对应的内部容器（有外部容器） */ 
+        Map<Long,Map<Long,Set<Long>>> containerToLocation = new HashMap<Long, Map<Long,Set<Long>>>();  
         
         // 根据作业id获取作业信息        
         WhOperationCommand whOperationCommand = whOperationManager.findOperationById(replenishmentPutawayCommand.getOperationId(), replenishmentPutawayCommand.getOuId());
@@ -1301,7 +1263,30 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     Set<Long> useContainerIdSet = new HashSet<Long>();
                     useContainerIdSet.add(operationExecLine.getUseContainerId());
                     palleToContainer.put(operationExecLine.getUseOuterContainerId(), useContainerIdSet);
-                }    
+                } 
+                //目标库位对应的内部容器（有外部容器）
+                Long locationId = operationExecLine.getToLocationId();
+                Map<Long,Set<Long>>  outerInsideContainerIds = containerToLocation.get(locationId);
+                if(null != outerInsideContainerIds && outerInsideContainerIds.size() != 0){
+                      Set<Long> insideContainerIds = outerInsideContainerIds.get(operationExecLine.getUseOuterContainerId());
+                      if(null != insideContainerIds && insideContainerIds.size() != 0){
+                          insideContainerIds.add(operationExecLine.getUseContainerId());
+                          outerInsideContainerIds.put(operationExecLine.getUseOuterContainerId(), insideContainerIds);
+                          containerToLocation.put(locationId, outerInsideContainerIds);
+                      }else{
+                          insideContainerIds = new HashSet<Long>();
+                          insideContainerIds.add(operationExecLine.getUseContainerId());
+                          outerInsideContainerIds.put(operationExecLine.getUseOuterContainerId(), insideContainerIds);
+                          containerToLocation.put(locationId, outerInsideContainerIds);
+                      }
+                }else{
+                    //目标库位对应的内部容器（有外部容器）
+                    outerInsideContainerIds = new HashMap<Long,Set<Long>>();
+                    Set<Long> insideContainerIds = new HashSet<Long>();
+                    insideContainerIds.add(operationExecLine.getUseContainerId());
+                    outerInsideContainerIds.put(operationExecLine.getUseOuterContainerId(), insideContainerIds);
+                    containerToLocation.put(locationId, outerInsideContainerIds);
+                }
             }else{
                 // 获取目标库位对应的所有周转箱（无外部容器）
                 if(null != turnoverBoxIds.get(operationExecLine.getToLocationId())){
@@ -1425,6 +1410,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         statisticsCommand.setSkuAttrIds(skuAttrIds);
         // 周转箱每个唯一sku对应的所有sn及残次条码
         statisticsCommand.setSkuAttrIdsSnDefect(skuAttrIdsSnDefect);
+        statisticsCommand.setContainerToLocation(containerToLocation);
         //缓存统计分析结果        
         pdaPickingWorkCacheManager.operationExecStatisticsRedis(whOperationCommand.getId(), statisticsCommand);
         return statisticsCommand;
@@ -1647,27 +1633,37 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
       * @param operationId
       * @return
       */
-     public Boolean judgeIsOnlyLocation(Long operationId, Long locationId, String turnoverBoxCode, Long ouId, Integer replenishWay){
+     public Boolean judgeIsOnlyLocation(Long operationId, Long locationId, String turnoverBoxCode, Long ouId, String outerContainerCode){
          Boolean result = false;// 默认单库位
-         ContainerCommand ic = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-         if (null == ic) {
-             // 容器信息不存在
-             log.error("pdaScanContainer container is null logid: " + logId);
-             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+         Long turnoverBoxId = null;
+         if(!StringUtils.isEmpty(turnoverBoxCode)){
+             ContainerCommand ic = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+             if (null == ic) {
+                 // 容器信息不存在
+                 log.error("pdaScanContainer container is null logid: " + logId);
+                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+             }
+             turnoverBoxId = ic.getId();
          }
-         Long turnoverBoxId = ic.getId();
+         Long outerContainerId = null;
+         if(!StringUtils.isEmpty(outerContainerCode)){
+             ContainerCommand ic = containerDao.getContainerByCode(outerContainerCode, ouId);
+             if (null == ic) {
+                 // 容器信息不存在
+                 log.error("pdaScanContainer container is null logid: " + logId);
+                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+             }
+             outerContainerId = ic.getId();
+         }
          OperationExecStatisticsCommand opExecLineCmd = cacheManager.getObject(CacheConstants.OPERATIONEXEC_STATISTICS + operationId.toString());
          if(null == opExecLineCmd){
              throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
          }
          List<Long> locationIds = opExecLineCmd.getLocationIds();
-         Map<Long, Set<Long>> mapTurnoverBoxIds = new HashMap<Long, Set<Long>>();
-         if(null != replenishWay && (2 == replenishWay || 3 == replenishWay)){
-             mapTurnoverBoxIds = opExecLineCmd.getInsideContainerIds(); 
-         }else{
-             mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();     
-         }
-         result = this.judgeIsManayLoc(locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId);
+         Map<Long,Map<Long,Set<Long>>> containerToLocation = opExecLineCmd.getContainerToLocation();
+         Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();    
+        
+         result = this.judgeIsManayLoc(containerToLocation,locationIds, mapTurnoverBoxIds, turnoverBoxId, locationId,operationId,outerContainerId);
          return result;
      }
      
@@ -1776,22 +1772,28 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
          List<Long> locationIds = opExecLineCmd.getLocationIds();
          Map<Long, Set<Long>> palleToLocation = opExecLineCmd.getPalleToLocation();
          Map<Long, Set<Long>> palleToContainer = opExecLineCmd.getPalleToContainer();  //当前托盘对应所有的货箱
-         Set<Long> containerIds =  palleToContainer.get(outerContainerId);
-         Boolean result = this.judgeIsManayLoc(locationIds, palleToLocation, outerContainerId, locationId, operationId);
+         Boolean result = this.judgeIsManayLoc(null,locationIds, palleToLocation, outerContainerId, locationId, operationId,null);
          if(result){ //托盘对应多个库位
              //对应多个库位提示
-             Map<Long, Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
-             Set<Long> insideContainerIds = locTurnoverBoxIds .get(locationId);  //当前库位上对应的所有货箱
-             Long insideContainerId = this.getInsideContainerId(insideContainerIds, containerIds);   //提示货箱id
-             Container insideCmd = containerDao.findByIdExt(insideContainerId, ouId);
-             if(null == insideCmd) {
-                     throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+             Map<Long, Map<Long,Set<Long>>> containerToLocation = opExecLineCmd.getContainerToLocation();
+             Map<Long,Set<Long>> outerInsideContainerId = containerToLocation.get(locationId);
+             Set<Long> containerIds = outerInsideContainerId.get(outerContainerId);
+             ReplenishmentScanResultComamnd resCmd = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(containerIds, operationId, locationId);
+             if(resCmd.getIsNeedScanTurnoverBox()) {  //当前库位对应的周转箱扫描完毕
+                 Long insideContainerId = resCmd.getTurnoverBoxId();
+                 Container insideCmd = containerDao.findByIdExt(insideContainerId, ouId);
+                 if(null == insideCmd) {
+                         throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                 }
+                 command.setTipTurnoverBoxCode(insideCmd.getCode());
+                 command.setIsNeedScanTurnoverBox(true);
+             }else{
+                 command.setIsNeedScanTurnoverBox(false);
              }
-             command.setTipTurnoverBoxCode(insideCmd.getCode());
-             command.setIsNeedScanTurnoverBox(true);
              pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheOuterContainer(operationId, outerContainerId, locationId, ouId, true);
          }else{//托盘对应单个库位
              //缓存托盘
+             Set<Long> containerIds =  palleToContainer.get(outerContainerId);
              Set<Long> outerContainerIds = palleToLocation.get(locationId);
              pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheOuterContainer(operationId, outerContainerId, locationId, ouId, true);
              ReplenishmentScanResultComamnd  sRCmd = pdaReplenishmentPutawayCacheManager.tipOutContainer(outerContainerIds, operationId, locationId);
@@ -1871,16 +1873,4 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
          }
      }
      
-     private Long getInsideContainerId(Set<Long> insideContainerIds,Set<Long> containerIds){
-         Long insideContainerId = null;
-         for(Long insideId:insideContainerIds){
-             for(Long containerId:containerIds){
-                 if(insideId.longValue() == containerId.longValue()){
-                     insideContainerId = containerId;
-                     break;
-                 }
-             }
-         }
-         return insideContainerId;
-     }
 }
