@@ -5538,7 +5538,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						                    and inv.occupation_line_id=#{occupationLineId}
 						                    and inv.occupation_code =#{occupationCode}
 						                    and inv.uuid=#{uuid}
-						                    and inv.location_id is null
 										    group by inv.uuid
 					     ) inventory
                       	left join t_wh_sku_inventory_sn sn on inventory.invUuid = sn.uuid
