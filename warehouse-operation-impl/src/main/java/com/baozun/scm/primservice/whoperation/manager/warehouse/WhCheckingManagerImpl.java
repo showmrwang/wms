@@ -104,7 +104,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
@@ -1295,7 +1294,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
 
         }
         // @Gianni 计重包括耗材重量
-        WhSku consumableSku = whSkuManager.getskuById(outboundboxId, ouId);
+        WhSkuCommand consumableSku = whSkuManager.findBySkuIdAndOuId(outboundboxId, ouId);
         if (null != consumableSku) {
             sum += consumableSku.getWeight();
         }
