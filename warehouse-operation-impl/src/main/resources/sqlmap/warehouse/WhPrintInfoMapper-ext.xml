@@ -153,6 +153,112 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and ou_id = #{ouId}
     </select>
     
+    <sql id="whPrintInfoDynamicWhereExt1">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
+				</if>
+	       
+	       
+		       <if test="odoCode!=null and odoCode!=''">
+					and odo_code = #{odoCode}
+				</if>
+	       
+	       
+		       <if test="waybillCode!=null and waybillCode!=''">
+					and waybill_code = #{waybillCode}
+				</if>
+	       
+				<if test="facilityId!=null">
+					and facility_id = #{facilityId}
+				</if>
+	       
+				<if test="containerId!=null">
+					and container_id = #{containerId}
+				</if>
+	       
+	       
+		       <if test="containerCode!=null and containerCode!=''">
+					and container_code = #{containerCode}
+				</if>
+	       
+	       
+		       <if test="batch!=null and batch!=''">
+					and batch = #{batch}
+				</if>
+	       
+	       
+		       <if test="waveCode!=null and waveCode!=''">
+					and wave_code = #{waveCode}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	       
+				<if test="outerContainerId!=null">
+					and outer_container_id = #{outerContainerId}
+				</if>
+	       
+	       
+		       <if test="outerContainerCode!=null and outerContainerCode!=''">
+					and outer_container_code = #{outerContainerCode}
+				</if>
+	       
+				<if test="containerLatticeNo!=null">
+					and container_lattice_no = #{containerLatticeNo}
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+		       <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
+				</if>
+	       
+	       
+		       <if test="printType!=null and printType!=''">
+					and print_type = #{printType}
+				</if>
+	       
+				<if test="printCount!=null">
+					and print_count = #{printCount}
+				</if>
+	       
+				<if test="createId!=null">
+					and create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+    
+    
+    <select id="findListCountByParamExt" resultType="long">
+        select count(*) from t_wh_print_info 
+		<include refid="whPrintInfoDynamicWhereExt1"/>    
+    </select>
+    
+    
+    
     
 	
 </mapper>

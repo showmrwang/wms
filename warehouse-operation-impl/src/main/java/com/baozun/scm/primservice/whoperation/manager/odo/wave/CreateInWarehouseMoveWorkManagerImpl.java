@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -156,7 +157,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 isSuccess = true;
             }    
         } catch (Exception e) {
-            log.error("CreateInWarehouseMoveWorkManagerImpl createAndExecuteInWarehouseMoveWork error" + e);
+            log.error("CreateInWarehouseMoveWorkManagerImpl createAndExecuteInWarehouseMoveWork error", e);
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return isSuccess;
@@ -321,7 +322,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
      */
     private String saveInWarehouseMoveWork(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand, Long ouId, Long userId) {
         //获取工作类型      
-        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("IN_WAREHOUSE_MOVE", skuInventoryAllocatedCommand.getOuId());
+        WorkType workType = this.workTypeDao.findWorkTypeByworkCategory(Constants.WORKCATEGORY_IN_WAREHOUSE_MOVE, skuInventoryAllocatedCommand.getOuId());
         //调编码生成器工作头实体标识        
         String workCode = codeManager.generateCode(Constants.WMS, Constants.WHWORK_MODEL_URL, "", "WORK", null);
         //封装数据        
@@ -935,7 +936,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Boolean executeInWarehouseMoveWork(String inWarehouseMoveWorkCode, Long ouId, Long userId, String snKey) {
         try {
-            Warehouse warehouse = warehouseManager.findWarehouseById(ouId);
+            Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
             if (null == warehouse) {
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
@@ -966,25 +967,30 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 }
                 Double allocatedQty = skuInventoryAllocatedLst.get(0).getQty();
                 //根据uuid获取库存
-                WhSkuInventory skuInventory = new WhSkuInventory();
-                skuInventory.setUuid(operationLineCommand.getUuid());
-                List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findWhSkuInventoryByPramas(skuInventory);
+                List<WhSkuInventory> skuInventoryLst = skuInventoryDao.findUseableInventoryByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
                 List<WhSkuInventorySnCommand> whSkuInventorySnCommandLst = new ArrayList<WhSkuInventorySnCommand>();
                 whSkuInventorySnCommandLst = whSkuInventorySnDao.findWhSkuInventoryByUuid(operationLineCommand.getOuId(), operationLineCommand.getUuid());
                 log.info("select from db whSkuInventorySn [ouId:{},uuid:{}],read count：{}", operationLineCommand.getOuId(), operationLineCommand.getUuid(), whSkuInventorySnCommandLst == null ? 0 : whSkuInventorySnCommandLst.size());
                 for(WhSkuInventory whSkuInventory : skuInventoryLst){
                     if(null == whSkuInventory.getOccupationCode() && 0 != allocatedQty.compareTo(0.00)){
                         if(allocatedQty < whSkuInventory.getOnHandQty()){
+                            Double onHandQty = whSkuInventory.getOnHandQty();
                             whSkuInventory.setOnHandQty(whSkuInventory.getOnHandQty() - allocatedQty); 
                             skuInventoryDao.saveOrUpdateByVersion(whSkuInventory);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
+                            this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), onHandQty, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
+                            allocatedQty = 0d;
                             break;
                         }else{
                             allocatedQty = allocatedQty - whSkuInventory.getOnHandQty();
+                            this.insertSkuInventoryLog(whSkuInventory.getId(), Constants.DEFAULT_DOUBLE, whSkuInventory.getOnHandQty(), warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                             skuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
                             insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
                         }
                     }
+                }
+                if (allocatedQty > 0) {
+                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
                 }
                 skuInventoryAllocatedDao.deleteExt(skuInventoryAllocatedLst.get(0).getId(), skuInventoryAllocatedLst.get(0).getOuId());
                 insertGlobalLog(GLOBAL_LOG_DELETE, skuInventoryAllocatedLst.get(0), skuInventoryAllocatedLst.get(0).getOuId(), userId, null, null);
@@ -1000,7 +1006,9 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 whSkuInventory.setOccupationCode(null);
                 whSkuInventory.setOnHandQty(skuInventoryTobefilledLst.get(0).getQty());
                 whSkuInventory.setFrozenQty(0.00);
+                whSkuInventory.setInboundTime(new Date());
                 skuInventoryDao.insert(whSkuInventory);
+                this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), Constants.DEFAULT_DOUBLE, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                 insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
                 if(null != whSkuInventorySnCommandLst && 0 < whSkuInventorySnCommandLst.size()){
                     Integer  snCount = 0;

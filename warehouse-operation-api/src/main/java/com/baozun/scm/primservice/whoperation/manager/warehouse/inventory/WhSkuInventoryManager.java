@@ -414,7 +414,7 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param workCode
      * @param turnoverBoxId(周转箱id或者货箱id)
      */
-    public void replenishmentContianerPutaway(Long outerContainerId,Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, Long turnoverBoxId);
+    public void replenishmentContianerPutaway(Long outerContainerId, Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, Long turnoverBoxId);
 
     void emptyouterContainerIdAndSeedingWallCode(String outboundboxCode, Long ouId);
 
@@ -423,4 +423,6 @@ public interface WhSkuInventoryManager extends BaseManager {
     void executeReplenishmentWork(String replenishmentCode, WhWorkLine line, Long ouId, Long userId);
 
     void executePickingWork(WhWorkLine line, Long ouId, Long userId);
+
+    List<WhSkuInventory> findSkuInvByoutboundboxCode(String outboundboxCode, Long ouId);
 }

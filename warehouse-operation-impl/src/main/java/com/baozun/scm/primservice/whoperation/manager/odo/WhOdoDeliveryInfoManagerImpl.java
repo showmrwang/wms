@@ -33,13 +33,20 @@ public class WhOdoDeliveryInfoManagerImpl extends BaseManagerImpl implements WhO
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOdodeliveryInfo saveOrUpdate(WhOdodeliveryInfo whOdodeliveryInfo) {
+        log.info("last_modify_time :=============>" + whOdodeliveryInfo.getLastModifyTime());
+        log.info("last_modify_time :=============>" + whOdodeliveryInfo.getId());
+        log.info("last_modify_time :=============>" + whOdodeliveryInfo.getOuId());
         if (null == whOdodeliveryInfo.getId()) {
+            log.info("outboundbox_code :=============>" + whOdodeliveryInfo.getOutboundboxCode());
             Long insertCnt = whOdoDeliveryInfoDao.insert(whOdodeliveryInfo);
+            log.info("insert odo delivery with outboundbox_code :=============>" + insertCnt);
             if (0 > insertCnt) {
                 return null;
             }
         } else {
+            log.info("outboundbox_code :=============>" + whOdodeliveryInfo.getOutboundboxCode());
             int cnt = whOdoDeliveryInfoDao.saveOrUpdateByVersion(whOdodeliveryInfo);
+            log.info("update odo delivery with outboundbox_code :=============>" + cnt);
             if (0 > cnt) {
                 // throw new BusinessException("更新运单表失败");
                 return null;

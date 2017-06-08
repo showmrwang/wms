@@ -5028,8 +5028,8 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                 }
                             }
                         }
-                        tipLocCmd.setTipLocationIds(tipLocIds);
-                        cacheManager.setObject(CacheConstants.SCAN_LOCATION_QUEUE + value.toString(), tipLocCmd, CacheConstants.CACHE_ONE_DAY);
+                        // tipLocCmd.setTipLocationIds(tipLocIds);
+                        // cacheManager.setObject(CacheConstants.SCAN_LOCATION_QUEUE + value.toString(), tipLocCmd, CacheConstants.CACHE_ONE_DAY);
                     }
                     /*InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.toString());
                     if (null == isCmd) {
@@ -5065,6 +5065,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                     if (null != locationId) {
                         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + value.toString() + locationId.toString());
                     }
+                    cacheManager.remonKeys(CacheConstants.SCAN_LOCATION_QUEUE + value.toString());
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideContainerCmd.getId().toString());
                     cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, value.toString());
                 }

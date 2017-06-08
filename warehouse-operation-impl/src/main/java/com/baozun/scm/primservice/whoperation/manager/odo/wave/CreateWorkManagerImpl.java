@@ -2216,7 +2216,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             String siaOnlySku = SkuCategoryProvider.getSkuAttrIdByInv(siaCommand);
             String siaReplenishmentCode = (StringUtils.isEmpty(siaCommand.getReplenishmentCode()) ? SkuCategoryProvider.PH : siaCommand.getReplenishmentCode());
             String siaOccupationCode = (StringUtils.isEmpty(siaCommand.getOccupationCode()) ? SkuCategoryProvider.PH : siaCommand.getOccupationCode());
-            String siaOccupationLineId = (StringUtils.isEmpty(siaCommand.getOccupationLineId().toString()) ? SkuCategoryProvider.PH : siaCommand.getOccupationLineId().toString());
+            String siaOccupationLineId = (StringUtils.isEmpty(siaCommand.getOccupationLineId()) ? SkuCategoryProvider.PH : siaCommand.getOccupationLineId() + "");
             siaOnlySku =  siaOnlySku + SkuCategoryProvider.DV + siaReplenishmentCode + SkuCategoryProvider.DV + siaOccupationCode + SkuCategoryProvider.DV + siaOccupationLineId;
             for(WhSkuInventoryTobefilledCommand sitCommand : sitCommandLst){
                 WhSkuInventoryTobefilled skuTobefilled = new WhSkuInventoryTobefilled ();
@@ -2224,7 +2224,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 String sitOnlySku = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(skuTobefilled);
                 String sitReplenishmentCode = (StringUtils.isEmpty(siaCommand.getReplenishmentCode()) ? SkuCategoryProvider.PH : siaCommand.getReplenishmentCode());
                 String sitOccupationCode = (StringUtils.isEmpty(siaCommand.getOccupationCode()) ? SkuCategoryProvider.PH : siaCommand.getOccupationCode());
-                String sitOccupationLineId = (StringUtils.isEmpty(siaCommand.getOccupationLineId().toString()) ? SkuCategoryProvider.PH : siaCommand.getOccupationLineId().toString());
+                String sitOccupationLineId = (StringUtils.isEmpty(siaCommand.getOccupationLineId()) ? SkuCategoryProvider.PH : siaCommand.getOccupationLineId() + "");
                 sitOnlySku =  sitOnlySku + SkuCategoryProvider.DV + sitReplenishmentCode + SkuCategoryProvider.DV + sitOccupationCode + SkuCategoryProvider.DV + sitOccupationLineId;
                 if(siaOnlySku.equals(sitOnlySku) && siaCommand.getQty().equals(sitCommand.getQty())){
                     siaCommand.setToLocationId(sitCommand.getLocationId());

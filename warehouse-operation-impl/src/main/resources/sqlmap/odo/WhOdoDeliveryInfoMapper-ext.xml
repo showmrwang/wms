@@ -207,4 +207,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        	and outboundbox_code  = #{outboundBoxCode}
        	and ou_id = #{ouId}
        	</select>
+
+    <select id="findByIdExt" resultType="com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo">
+        select <include refid="odoDeliveryInfoColumnsExt"/>
+        from t_wh_odo_delivery_info
+       	where 
+       	id = #{id} 
+       	and ou_id = #{ouId}
+       	</select>
 </mapper>
