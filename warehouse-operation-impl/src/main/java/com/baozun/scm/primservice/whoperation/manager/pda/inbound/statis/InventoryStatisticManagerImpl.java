@@ -1490,9 +1490,14 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                                     }
                                 }
                             }else{
-                                Map<Long, Set<String>> locSkuAttrIds = new HashMap<Long, Set<String>>();
-                                if(null != locationId) {
-                                  locSkuAttrIds.put(locationId, skuAttrIds);
+                                Map<Long, Set<String>> locSkuAttrIds = insideContainerLocSkuAttrIds.get(locationId);
+                                if(null == locSkuAttrIds){
+                                    locSkuAttrIds = new HashMap<Long, Set<String>>();
+                                    if(null != locationId) {
+                                        locSkuAttrIds.put(locationId, skuAttrIds);
+                                    }
+                                }else{
+                                    locSkuAttrIds.put(locationId, skuAttrIds);
                                 }
                                 insideContainerLocSkuAttrIds.put(icId, locSkuAttrIds);
                             }

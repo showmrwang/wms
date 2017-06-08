@@ -4188,16 +4188,28 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                           if (false == isSnLine){ //没有sn/残次
                               tipSkuAttrId = skuAttrId;
                           }else{  //存在sn/残次信息
-                               Set<String> snDefects = skuAttrIdsSnDefect.get(skuAttrIdNoSn);   //获取当前唯一sku所有对应的sn/残次信息
-                           for(String snDe:snDefects) {
-                                 String tipSkuAttrIdSnDefect = SkuCategoryProvider.concatSkuAttrId(skuAttrIdNoSn,snDe);
-                                 if(tipSkuAttrIds.contains(tipSkuAttrIdSnDefect)) {
-                                      continue;
-                                 }else{
-                                      tipSkuAttrId =tipSkuAttrIdSnDefect;
-                                      break;
+                              if(isRecommendFail == false){
+                                  for(String skuAttr:skuAttrIds){
+                                      if(tipSkuAttrIds.contains(skuAttr)) {
+                                            continue;
+                                       }else{
+                                           tipSkuAttrId =skuAttr;
+                                           break;
+                                     }
                                 }
-                                }
+                              }else{
+                                  Set<String> snDefects = skuAttrIdsSnDefect.get(skuAttrIdNoSn);   //获取当前唯一sku所有对应的sn/残次信息
+                                  for(String snDe:snDefects) {
+                                        String tipSkuAttrIdSnDefect = SkuCategoryProvider.concatSkuAttrId(skuAttrIdNoSn,snDe);
+                                        if(tipSkuAttrIds.contains(tipSkuAttrIdSnDefect)) {
+                                             continue;
+                                        }else{
+                                             tipSkuAttrId =tipSkuAttrIdSnDefect;
+                                             break;
+                                       }
+                                   }
+                              }
+                              
                           }
                           cssrCmd.setNeedTipSkuSn(true);
                           cssrCmd.setTipSkuAttrId(tipSkuAttrId);
@@ -4306,7 +4318,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                            Long tipContainerId = null;
                            if (false == isAllContainerCache) {
                                // 提示下一个容器
-                               cssrCmd.setPutaway(true);
+//                               cssrCmd.setPutaway(true);
                                for (Long cId : allContainerIds) {
                                    if (0 == icId.compareTo(cId)) {
                                        continue;
@@ -4441,16 +4453,28 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                             if (false == isSnLine){ //没有sn/残次
                                 tipSkuAttrId = skuAttrId;
                             }else{  //存在sn/残次信息
-                                Set<String> snDefects = skuAttrIdsSnDefect.get(skuAttrIdNoSn);   //获取当前唯一sku所有对应的sn/残次信息
-                                for(String snDe:snDefects) {
-                                    String tipSkuAttrIdSnDefect = SkuCategoryProvider.concatSkuAttrId(skuAttrIdNoSn,snDe);
-                                    if(tipSkuAttrIds.contains(tipSkuAttrIdSnDefect)) {
-                                        continue;
-                                    }else{
-                                        tipSkuAttrId =tipSkuAttrIdSnDefect;
-                                        break;
-                                    }
-                                }
+                                 if(isRecommendFail == false){  //推荐成功且走强制分支
+                                     for(String skuAttr:skuAttrIds){
+                                         if(tipSkuAttrIds.contains(skuAttr)) {
+                                               continue;
+                                          }else{
+                                              tipSkuAttrId =skuAttr;
+                                              break;
+                                        }
+                                      }
+                                 }else{
+                                     Set<String> snDefects = skuAttrIdsSnDefect.get(skuAttrIdNoSn);   //获取当前唯一sku所有对应的sn/残次信息
+                                     for(String snDe:snDefects) {
+                                         String tipSkuAttrIdSnDefect = SkuCategoryProvider.concatSkuAttrId(skuAttrIdNoSn,snDe);
+                                         if(tipSkuAttrIds.contains(tipSkuAttrIdSnDefect)) {
+                                             continue;
+                                         }else{
+                                             tipSkuAttrId =tipSkuAttrIdSnDefect;
+                                             break;
+                                         }
+                                     }
+                                 }
+                               
                             }
                             cssrCmd.setNeedTipSkuSn(true);
                             cssrCmd.setTipSkuAttrId(tipSkuAttrId);
@@ -4529,7 +4553,7 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                                 boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
                                 if (false == isLocAllCache) {
                                     // 提示下一个库位
-                                    cssrCmd.setPutaway(true);// 可上架
+//                                    cssrCmd.setPutaway(true);// 可上架
                                     Long tipLocId = null;
                                     for (Long lId : allLocIds) {
                                         if (0 == tipLocationId.compareTo(lId)) {
