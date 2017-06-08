@@ -263,13 +263,16 @@
 		</where>
 	</select>
 	
-	<select id="findQtyByOdoLineId" resultType="Double">
+	<select id="findQtyByWaveAndOdoLine" resultType="Double">
 		select
 			sum(qty)
 		from
 			t_wh_odo_outboundbox
 		<where>
 			ou_id = #{ouId}
+			<if test="waveId!=null">
+				and wave_id = #{waveId}
+			</if>
 			<if test="odoLineId!=null">
 				and odo_line_id = #{odoLineId}
 			</if>
