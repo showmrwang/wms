@@ -311,7 +311,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                     whSkuInventoryTobefilledList = odoLineIdAndTobefilled.get(whOdoOutBoundBoxCommand.getOdoLineId());
                 }
                 if (null == odoLineIdAndQtyMap.get(whOdoOutBoundBoxCommand.getOdoLineId())) {
-                    odoLineIdAndQty = this.odoOutBoundBoxDao.findQtyByOdoLineId(whOdoOutBoundBoxCommand.getOdoLineId(), whOdoOutBoundBox.getOuId());
+                    odoLineIdAndQty = this.odoOutBoundBoxDao.findQtyByWaveAndOdoLine(whWave.getId(), whOdoOutBoundBoxCommand.getOdoLineId(), whOdoOutBoundBox.getOuId());
                     odoLineIdAndQtyMap.put(whOdoOutBoundBoxCommand.getOdoLineId(), odoLineIdAndQty);
                 } else {
                     odoLineIdAndQty = odoLineIdAndQtyMap.get(whOdoOutBoundBoxCommand.getOdoLineId());

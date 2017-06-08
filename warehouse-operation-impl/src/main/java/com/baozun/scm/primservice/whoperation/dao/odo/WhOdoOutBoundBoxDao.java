@@ -95,7 +95,7 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      * @param ouId
      * @return
      */
-    Double findQtyByOdoLineId(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
+    Double findQtyByWaveAndOdoLine(@Param("waveId") Long waveId, @Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
     /**
      * 获取波次下的小批次

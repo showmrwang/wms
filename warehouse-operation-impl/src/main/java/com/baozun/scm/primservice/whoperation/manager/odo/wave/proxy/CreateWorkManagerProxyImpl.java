@@ -130,6 +130,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 } catch (Exception e) {
                     log.error("CreateWorkManagerProxyImpl createReplenishmentWorkInWave error" + e);
                     isReplenishmentWorkInWave = false;
+                    continue;
                 }
             }
         }
