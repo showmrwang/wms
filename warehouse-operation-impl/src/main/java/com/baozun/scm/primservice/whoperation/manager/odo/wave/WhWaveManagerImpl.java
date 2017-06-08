@@ -791,8 +791,14 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             Set<Long> containerSet = new HashSet<Long>();
             // 删除出库单占用的出库箱
             for (WhOdoOutBoundBox box : boxList) {
-                containerSet.add(box.getContainerId());
-                containerSet.add(box.getOuterContainerId());
+                if (box.getContainerId() != null) {
+
+                    containerSet.add(box.getContainerId());
+                }
+                if (box.getOuterContainerId() != null) {
+
+                    containerSet.add(box.getOuterContainerId());
+                }
                 this.whOdoOutBoundBoxDao.deleteExt(box.getId(), box.getOuId());
             }
             // 回滚容器状态
@@ -1070,7 +1076,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         workSearch.setWorkCategory(Constants.WORK_CATEGORY_PICKING);
         workSearch.setOuId(ouId);
 
-        workSearch.setLifecycle(Constants.LIFECYCLE_START);
+        // workSearch.setLifecycle(Constants.LIFECYCLE_START);
         List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
         if (workList != null && workList.size() > 0) {
             for (WhWork work : workList) {
@@ -1124,7 +1130,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 }
                 WhOperation operation = this.whOperationDao.findOperationByWorkId(work.getId(), ouId);
                 operation.setWaveCode(null);
-                operation.setWaveCode(null);
+                operation.setWaveId(null);
                 operation.setOrderCode(null);
                 int updateOpCount = this.whOperationDao.saveOrUpdateByVersion(operation);
                 if (updateOpCount <= 0) {
