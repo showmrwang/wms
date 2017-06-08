@@ -3,6 +3,7 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,4 +204,22 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
         }
     }
 
+    /**
+     * 拣货后触发补货工作作业明细生成
+     * 
+     * @param locationIds
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    public void createReplenishmentAfterPicking(Set<Long> locationIds, Long ouId, Long userId) {
+        for(Long locationId : locationIds){
+            try {
+                createWorkManager.createReplenishmentAfterPicking(locationId, ouId, userId);
+            } catch (Exception e) {
+                log.error("CreateWorkManagerProxyImpl createReplenishmentAfterPicking error" + e);
+                continue;
+            }
+        }
+    }
 }

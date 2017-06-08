@@ -49,5 +49,13 @@ public interface CreateWorkManager extends BaseManager {
      * @return
      */
     public void createReplenishmentWorkOutWave(List<WhSkuInventoryAllocatedCommand> whSkuInventoryAllocatedCommandLst, ReplenishmentRuleCommand replenishmentRuleCommand, Long userId);
-    
+   
+    /**
+     * 拣货后触发补货工作作业明细生成
+     * @param locationIds
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    public Map<String, List<WhSkuInventoryAllocatedCommand>> createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId);
 }

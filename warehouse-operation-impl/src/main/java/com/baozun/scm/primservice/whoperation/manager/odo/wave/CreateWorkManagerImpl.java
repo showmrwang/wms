@@ -1,7 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -2512,5 +2511,279 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             isAllocatedAndTobefilledQty = false;    
         }
         return isAllocatedAndTobefilledQty;
+    }
+    
+    /**
+     * 拣货后触发补货工作作业明细生成
+     * @param locationIds
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Map<String, List<WhSkuInventoryAllocatedCommand>> createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId) {
+        // 获取库位的未完成工作明细
+        List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByToLocationId(toLocationId, ouId);
+        // 计算目标库位容器
+        List<WhWorkLineCommand> workLineCommandList = calculateLocationByWorkLine(whWorkLineCommandList);
+        if (null != workLineCommandList && 0 < workLineCommandList.size()) {
+            // 基于目标库位容器及工作明细生成作业明细
+            int replenishmentOperationLineCount = this.supplementReplenishmentOperationLine(workLineCommandList);
+            if (replenishmentOperationLineCount != workLineCommandList.size()) {
+                log.error("replenishmentOperationLineCount is error", workLineCommandList.size());
+                throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+            }
+        }
+        return null;
+    }
+    
+    
+    /**
+     *  补充计算库位容量
+     * 
+     * @param replenishmentWorkCode
+     * @param ouId
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhWorkLineCommand> calculateLocationByWorkLine(List<WhWorkLineCommand> whWorkLineCommandList) {
+        String logId = "";
+        Long locationId = whWorkLineCommandList.get(0).getToLocationId();
+        Long ouId = whWorkLineCommandList.get(0).getOuId();
+        LocationCommand location = locationDao.findLocationCommandByParam(locationId, ouId);
+        Long maxVolume = Constants.DEFAULT_LONG;
+        // 上限
+        Integer upBound = location.getUpBound();
+        Integer downBound = location.getDownBound();
+        if (upBound == null || downBound == null) {
+            return null;
+        }
+        // 所有托盘
+        Set<Long> pallets = new HashSet<Long>();
+        // 所有货箱
+        Set<Long> containers = new HashSet<Long>();
+        // 库位上所有sku（sku不在任何容器内）
+        Map<Long, Double> skuIds = new HashMap<Long, Double>();
+        // 库位上所有sku
+        Map<Long, Double> skuIdAndQty = new HashMap<Long, Double>();
+        // sku对应库位容量
+        Map<Long, Long> skuProducts = new HashMap<Long, Long>();
+        // sku对应库位容量
+        Long skuProductQty = Constants.DEFAULT_LONG;
+        // 计算库位可用体积
+        List<WhSkuInventoryCommand> skuInvList = this.whSkuInventoryDao.findWhSkuInvCmdByLocation(ouId, locationId);
+        for (WhSkuInventoryCommand whSkuInventoryCommand : skuInvList) {
+            if (null != whSkuInventoryCommand.getOuterContainerId()) {
+                pallets.add(whSkuInventoryCommand.getOuterContainerId());
+            } else {
+                if (null != whSkuInventoryCommand.getInsideContainerId()) {
+                    containers.add(whSkuInventoryCommand.getInsideContainerId());
+                } else {
+                    if (null != skuIds.get(whSkuInventoryCommand.getSkuId())) {
+                        Double onHandQty = skuIds.get(whSkuInventoryCommand.getSkuId());
+                        BigDecimal oldQty = new BigDecimal(onHandQty.toString());
+                        BigDecimal newQty = new BigDecimal(whSkuInventoryCommand.getOnHandQty().toString());
+                        Double newOnHandQty = oldQty.add(newQty).doubleValue();
+                        skuIds.put(whSkuInventoryCommand.getSkuId(), newOnHandQty);
+                    } else {
+                        skuIds.put(whSkuInventoryCommand.getSkuId(), whSkuInventoryCommand.getOnHandQty());
+                    }
+                }
+            }
+            if (null != skuIdAndQty.get(whSkuInventoryCommand.getSkuId())) {
+                Double onHandQty = skuIdAndQty.get(whSkuInventoryCommand.getSkuId());
+                BigDecimal oldQty = new BigDecimal(onHandQty.toString());
+                BigDecimal newQty = new BigDecimal(whSkuInventoryCommand.getOnHandQty().toString());
+                Double newOnHandQty = oldQty.add(newQty).doubleValue();
+                skuIdAndQty.put(whSkuInventoryCommand.getSkuId(), newOnHandQty);
+            } else {
+                skuIdAndQty.put(whSkuInventoryCommand.getSkuId(), whSkuInventoryCommand.getOnHandQty());
+            }
+        }
+        
+        // 已经被占用的体积       
+        Double occupyVolume = 0.0;
+        // 计算托盘体积
+        for (Long palletId : pallets) {
+            Container container = containerDao.findByIdExt(palletId, ouId);
+            Container2ndCategory container2ndCategory = container2ndCategoryDao.findByIdExt(container.getTwoLevelType(), ouId);
+            occupyVolume = occupyVolume + container2ndCategory.getVolume();
+        }
+        // 计算货箱体积
+        for (Long containerId : containers) {
+            Container container = containerDao.findByIdExt(containerId, ouId);
+            Container2ndCategory container2ndCategory = container2ndCategoryDao.findByIdExt(container.getTwoLevelType(), ouId);
+            occupyVolume = occupyVolume + container2ndCategory.getVolume();
+        }
+        // 计算sku体积
+        for (Long key : skuIds.keySet()) {
+            SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(key, ouId, logId);
+            Sku sku = skuRedis.getSku();
+            occupyVolume = occupyVolume + sku.getVolume() * skuIds.get(key);
+        }
+        maxVolume = (long) (location.getVolume() * upBound / 100);
+        // 剩余体积        
+        Long surplusVolume = (long) (maxVolume - occupyVolume);
+        // 定义返回list            
+        List<WhWorkLineCommand> workLineCommandList = new ArrayList<WhWorkLineCommand>();
+        // 计算补货数量       
+        for (WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList) {
+            // 根据商品id和组织id获取商品所有相关属性
+            SkuRedisCommand skuRedis = this.locationManager.findSkuMasterBySkuId(whWorkLineCommand.getSkuId(), ouId, logId);
+            Sku sku = skuRedis.getSku();
+            // 可以放入sku数量      
+            Long replenishmentQty = (long) Math.floor(surplusVolume / sku.getVolume());
+            // 库位容量流程            
+            if (StringUtils.hasText(location.getSizeType())) {
+                // 仓库商品管理
+                WhSkuWhmgmt skuWhmgmt = skuRedis.getWhSkuWhMgmt();
+                if (skuWhmgmt != null) {
+                    // 货品类型
+                    if (skuWhmgmt.getTypeOfGoods() != null) {
+                        LocationProductVolume locationProductVolume = this.locationManager.getLocationProductVolumeByPcIdAndSize(skuWhmgmt.getTypeOfGoods(), location.getSizeType(), ouId);
+                        if (locationProductVolume != null) {
+                            if(null != skuProducts.get(whWorkLineCommand.getSkuId())){
+                                skuProducts.put(whWorkLineCommand.getSkuId(), locationProductVolume.getVolume());  
+                            }
+                            Long locationQty = Constants.DEFAULT_LONG;
+                            // 库位容量
+                            if(null != skuProducts.get(sku.getId())){
+                                locationQty = locationProductVolume.getVolume() - skuProducts.get(whWorkLineCommand.getSkuId());    
+                            }else{
+                                locationQty = locationProductVolume.getVolume();
+                            }
+                            // 上限数量
+                            Long maxQty = locationQty * upBound / 100;
+                            // 在库数量
+                            double invQty = 0.00;
+                            if(null != skuIdAndQty.get(whWorkLineCommand.getSkuId())){
+                                invQty = skuIdAndQty.get(whWorkLineCommand.getSkuId());    
+                            }
+                            // 计算可用容量
+                            replenishmentQty = (long) Math.floor(maxQty - invQty);
+                            skuProductQty = (long) (skuProductQty + whWorkLineCommand.getQty());
+                            skuProducts.put(whWorkLineCommand.getSkuId(), skuProductQty);
+                        }
+                    }
+                }
+            }
+            if(0 < replenishmentQty){
+                if(whWorkLineCommand.getQty() > replenishmentQty){
+                    continue;
+                }else{
+                    workLineCommandList.add(whWorkLineCommand);
+                    surplusVolume = (long) (surplusVolume - sku.getVolume()*whWorkLineCommand.getQty());
+                }
+            }
+        }
+        return workLineCommandList;
+    }
+    
+    /**
+     * 补充补货作业明细
+     * 
+     * @param replenishmentWorkCode
+     * @param replenishmentOperationCode
+     * @param ouId
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int supplementReplenishmentOperationLine(List<WhWorkLineCommand> workLineCommandList) {
+        int count = 0;
+        for(WhWorkLineCommand whWorkLineCommand : workLineCommandList){
+            // 获取作业头信息
+            WhOperationCommand WhOperationCommand = this.operationDao.findOperationCommandByWorkId(whWorkLineCommand.getWorkId(), whWorkLineCommand.getOuId());
+            // 初始化作业明细 
+            WhOperationLineCommand WhOperationLineCommand = new WhOperationLineCommand();
+            // 作业ID
+            WhOperationLineCommand.setOperationId(WhOperationCommand.getId());
+            // 工作明细ID
+            WhOperationLineCommand.setWorkLineId(whWorkLineCommand.getId());
+            // 仓库组织ID
+            WhOperationLineCommand.setOuId(whWorkLineCommand.getOuId());
+            // 操作开始时间
+            WhOperationLineCommand.setStartTime(whWorkLineCommand.getStartTime());
+            // 操作结束时间
+            WhOperationLineCommand.setFinishTime(whWorkLineCommand.getFinishTime());
+            // 商品ID
+            WhOperationLineCommand.setSkuId(whWorkLineCommand.getSkuId());
+            // 计划量
+            WhOperationLineCommand.setQty(whWorkLineCommand.getQty());
+            // 库存状态
+            WhOperationLineCommand.setInvStatus(whWorkLineCommand.getInvStatus());
+            // 库存类型
+            WhOperationLineCommand.setInvType(whWorkLineCommand.getInvType());
+            // 批次号
+            WhOperationLineCommand.setBatchNumber(whWorkLineCommand.getBatchNumber());
+            // 生产日期
+            WhOperationLineCommand.setMfgDate(whWorkLineCommand.getMfgDate());
+            // 失效日期
+            WhOperationLineCommand.setExpDate(whWorkLineCommand.getExpDate());
+            // 最小失效日期
+            WhOperationLineCommand.setMinExpDate(whWorkLineCommand.getMinExpDate());
+            // 最大失效日期
+            WhOperationLineCommand.setMaxExpDate(whWorkLineCommand.getMaxExpDate());
+            // 原产地
+            WhOperationLineCommand.setCountryOfOrigin(whWorkLineCommand.getCountryOfOrigin());
+            // 库存属性1
+            WhOperationLineCommand.setInvAttr1(whWorkLineCommand.getInvAttr1());
+            // 库存属性2
+            WhOperationLineCommand.setInvAttr2(whWorkLineCommand.getInvAttr2());
+            // 库存属性3
+            WhOperationLineCommand.setInvAttr3(whWorkLineCommand.getInvAttr3());
+            // 库存属性4
+            WhOperationLineCommand.setInvAttr4(whWorkLineCommand.getInvAttr4());
+            // 库存属性5
+            WhOperationLineCommand.setInvAttr5(whWorkLineCommand.getInvAttr5());
+            // 内部对接码
+            WhOperationLineCommand.setUuid(whWorkLineCommand.getUuid());
+            // 原始库位
+            WhOperationLineCommand.setFromLocationId(whWorkLineCommand.getFromLocationId());
+            // 原始库位外部容器
+            WhOperationLineCommand.setFromOuterContainerId(whWorkLineCommand.getFromOuterContainerId());
+            // 原始库位内部容器
+            WhOperationLineCommand.setFromInsideContainerId(whWorkLineCommand.getFromInsideContainerId());
+            // 使用出库箱，耗材ID
+            WhOperationLineCommand.setUseOutboundboxId(whWorkLineCommand.getUseOutboundboxId());
+            // 使用出库箱编码
+            WhOperationLineCommand.setUseOutboundboxCode(whWorkLineCommand.getUseOutboundboxCode());
+            // 使用容器
+            WhOperationLineCommand.setUseContainerId(whWorkLineCommand.getUseContainerId());
+            // 使用外部容器，小车
+            WhOperationLineCommand.setUseOuterContainerId(whWorkLineCommand.getUseOuterContainerId());
+            // 使用货格编码数
+            WhOperationLineCommand.setUseContainerLatticeNo(whWorkLineCommand.getUseContainerLatticeNo());
+            // 目标库位
+            WhOperationLineCommand.setToLocationId(whWorkLineCommand.getToLocationId());
+            // 目标库位外部容器
+            WhOperationLineCommand.setToOuterContainerId(whWorkLineCommand.getToOuterContainerId());
+            // 目标库位内部容器
+            WhOperationLineCommand.setToInsideContainerId(whWorkLineCommand.getToInsideContainerId());
+            // 出库单ID
+            WhOperationLineCommand.setOdoId(whWorkLineCommand.getOdoId());
+            // 出库单明细ID
+            WhOperationLineCommand.setOdoLineId(whWorkLineCommand.getOdoLineId());
+            // 补货单据号
+            WhOperationLineCommand.setReplenishmentCode(whWorkLineCommand.getReplenishmentCode());
+            // 创建时间
+            WhOperationLineCommand.setCreateTime(new Date());
+            // 最后操作时间
+            WhOperationLineCommand.setLastModifyTime(whWorkLineCommand.getLastModifyTime());
+            // 操作人ID
+            WhOperationLineCommand.setOperatorId(whWorkLineCommand.getOperatorId());
+
+            WhOperationLine whOperationLine = new WhOperationLine();
+            // 复制数据
+            BeanUtils.copyProperties(WhOperationLineCommand, whOperationLine);
+            if (null != WhOperationLineCommand.getId()) {
+                operationLineDao.saveOrUpdateByVersion(whOperationLine);
+            } else {
+                operationLineDao.insert(whOperationLine);
+            }
+            count = count + 1;
+            
+        }
+        return count;
     }
 }
