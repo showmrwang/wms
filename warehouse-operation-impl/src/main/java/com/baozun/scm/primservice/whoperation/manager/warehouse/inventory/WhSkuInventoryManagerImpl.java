@@ -10976,7 +10976,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     log.error("executePickingWork generate uuid error");
                     throw new BusinessException(ErrorCodes.UUID_GENERATE_ERROR);
                 }
-                inv.setUuid(newUuid);
+                newInv.setUuid(newUuid);
             } else {
                 BeanUtils.copyProperties(inv, newInv);
                 newInv.setLocationId(null);
@@ -10984,7 +10984,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 newInv.setOuterContainerId(line.getUseOuterContainerId());
                 newInv.setInsideContainerId(line.getUseContainerId());
                 newInv.setContainerLatticeNo(line.getUseContainerLatticeNo());
-                inv.setUuid(newUuid);
+                newInv.setUuid(newUuid);
             }
 
             Double onHandQty = inv.getOnHandQty();
