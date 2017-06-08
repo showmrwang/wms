@@ -10789,7 +10789,14 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void batchInsert(Map<String, WhSkuInventory> uuidInvMap, Map<String, List<WhSkuInventorySn>> uuidSnMap, Warehouse wh, Long userId) {
         Iterator<Entry<String, WhSkuInventory>> it = uuidInvMap.entrySet().iterator();
+        int i = 0;
         while (it.hasNext()) {
+            // 每千行进行提示
+            i++;
+            if (i % 1000 == 0) {
+
+                log.info("skuInventory init ,import rows:{}", i);
+            }
             Entry<String, WhSkuInventory> entry = it.next();
             String uuid = entry.getKey();
             WhSkuInventory inv = entry.getValue();
@@ -10797,6 +10804,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setToBeFilledQty(Constants.DEFAULT_DOUBLE);
             inv.setFrozenQty(Constants.DEFAULT_DOUBLE);
             inv.setIsLocked(false);
+            if (inv.getLastModifyTime() == null) {
+                inv.setLastModifyTime(new Date());
+            }
             if (inv.getInboundTime() == null) {
                 inv.setInboundTime(new Date());
             }
