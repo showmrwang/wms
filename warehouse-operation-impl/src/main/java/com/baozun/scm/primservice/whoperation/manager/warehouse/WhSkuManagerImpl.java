@@ -41,4 +41,10 @@ public class WhSkuManagerImpl extends BaseManagerImpl implements WhSkuManager {
     public WhSku getSkuBySkuCodeOuId(String skuCode, Long ouId) {
         return this.whSkuDao.findSkuBySkuCode(skuCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhSkuCommand findBySkuIdAndOuId(Long skuId, Long ouId) {
+        return this.whSkuDao.findWhSkuByIdExt(skuId, ouId);
+    }
 }

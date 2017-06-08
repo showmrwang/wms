@@ -20,4 +20,13 @@ public interface WhSkuManager extends BaseManager {
 
     WhSku getSkuBySkuCodeOuId(String skuCode, Long ouId);
 
+    /**
+     * [通用方法] 通过skuid和ouid查找
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    WhSkuCommand findBySkuIdAndOuId(Long skuId, Long ouId);
+
+
 }

@@ -1210,4 +1210,28 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     public int countWhSkuInventoryCommandByOdo(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId, @Param("seedingWallCode") String seedingWallCode);
+    
+    /**
+     * 根据外部容器号和货格找出库存
+     * @author kai.zhu
+     */
+    List<WhSkuInventory> findSkuInventoryByOutSideContainerCode(@Param("containerCode") String containerCode, @Param("latticNo") String latticNo, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据内部容器号找出库存
+     * @author kai.zhu
+     */
+    List<WhSkuInventory> findSkuInventoryByInSideContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据播种墙code和货格找出库存
+     * @author kai.zhu
+     */
+    List<WhSkuInventory> findSkuInventoryBySeedingWallCode(@Param("containerCode") String containerCode, @Param("latticNo") String latticNo, @Param("ouId") Long ouId);
+    
+    /**
+     * 根据出库箱code找出库存
+     * @author kai.zhu
+     */
+    List<WhSkuInventory> findSkuInventoryByOutBoundBoxCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 }

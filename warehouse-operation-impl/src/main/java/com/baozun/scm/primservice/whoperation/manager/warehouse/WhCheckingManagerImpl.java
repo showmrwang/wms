@@ -1293,6 +1293,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             sum += actualWeight;
 
         }
+        // @Gianni 计重包括耗材重量
+        WhSkuCommand consumableSku = whSkuManager.findBySkuIdAndOuId(outboundboxId, ouId);
+        if (null != consumableSku) {
+            sum += consumableSku.getWeight();
+        }
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
         if (null != odoPackageInfo) {
             odoPackageInfo.setCalcWeight(sum);

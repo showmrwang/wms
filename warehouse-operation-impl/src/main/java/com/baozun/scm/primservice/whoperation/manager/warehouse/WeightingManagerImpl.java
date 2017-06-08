@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.checking.CheckingManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -95,6 +96,9 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         String waybillCode = command.getWaybillCode();
         WhFunctionOutBound function = whFunctionOutBoundDao.findByFunctionIdExt(command.getFuncId(), command.getOuId());
         command = findInputResponse(command);
+        if (null == command) {
+            throw new BusinessException(ErrorCodes.WEIGHTING_INPUT_NOT_CORRECT);
+        }
         if (function.getIsValidateWeight()) {
             command.setFloats(function.getWeightFloatPercentage());
         }
