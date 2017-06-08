@@ -93,7 +93,28 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         // Boolean flag = this.checkParam(command);
         String outboundBoxCode = command.getOutboundBoxCode();
         String waybillCode = command.getWaybillCode();
+        WhFunctionOutBound function = whFunctionOutBoundDao.findByFunctionIdExt(command.getFuncId(), command.getOuId());
         command = findInputResponse(command);
+        if (function.getIsValidateWeight()) {
+            command.setFloats(function.getWeightFloatPercentage());
+        }
+        Double calcWeight = command.getCalcWeighting();
+        if (null != calcWeight) {
+
+            List<UomCommand> weightUomCmds;
+            weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+            Double uomRate = 0.0;
+            for (UomCommand lenUom : weightUomCmds) {
+                String uomCode = "";
+                if (null != lenUom) {
+                    uomCode = lenUom.getUomCode();
+                    if ("kg".equalsIgnoreCase(uomCode)) uomRate = lenUom.getConversionRate();
+                    break;
+                }
+            }
+            calcWeight = calcWeight / uomRate;
+            command.setCalcWeighting(calcWeight);
+        }
         if (null != command) {
             if (!StringUtils.hasLength(command.getOutboundBoxCode())) {
                 command.setOutboundBoxCode(outboundBoxCode);
@@ -225,11 +246,10 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                     break;
                 }
             }
-
+            Integer floats = outbound.getWeightFloatPercentage();
             Double actualWeight = command.getActualWeight() * uomRate;
             Double calcWeight = packageInfo.getCalcWeight();
-            Integer floats = packageInfo.getFloats();
-            Double difference = (double) Math.abs(actualWeight - calcWeight);
+            Double difference = Math.abs(actualWeight - calcWeight);
             Double calcDifference = (double) (calcWeight * floats / 100);
             if (difference > calcDifference) {
                 waybillCommand.setMessage("实际称重超过允许浮动范围");
@@ -267,6 +287,23 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         whOutboundboxDao.update(whOutboundbox);
         // 6.绑定出库箱与面单
         waybillCommand = whCheckingManager.bindkWaybillCode(funcId, ouId, odoId, outboundBoxCode, null, true);
+        if (waybillCommand.getIsScanWaybillCode()) {
+            // 功能需要扫描运单号, 则判断打印过运单号. 如果打印过运单号, 且是由扫描运单号进入的 则不扫描运单号
+            Boolean enterByWaybill = command.getEnterByWaybill();
+            if (enterByWaybill) {
+                // 由扫描面单进入称重功能
+                String waybillCode = waybillCommand.getWaybillCode();
+                WhPrintInfo whPrintInfo = new WhPrintInfo();
+                whPrintInfo.setWaybillCode(waybillCode);
+                whPrintInfo.setOdoId(odoId);
+                whPrintInfo.setOuId(ouId);
+                Long printCnt = whPrintInfoDao.findListCountByParamExt(whPrintInfo);
+                if (printCnt > 0) {
+                    // 说明已经打印过面单信息 不需要再次打印
+                    waybillCommand.setIsScanWaybillCode(false);
+                }
+            }
+        }
         // 7.打印单据
         // printObjectManagerProxy.printCommonInterface(data, printDocType, userId, ouId);
         try {

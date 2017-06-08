@@ -66,6 +66,8 @@ public class WeightingCommand extends BaseCommand {
     /** 页面输入*/
     private String input;
 
+    private Boolean enterByWaybill;
+
 
     public Long getFuncId() {
         return funcId;
@@ -218,4 +220,13 @@ public class WeightingCommand extends BaseCommand {
     public void setInput(String input) {
         this.input = input;
     }
+
+    public Boolean getEnterByWaybill() {
+        return enterByWaybill;
+    }
+
+    public void setEnterByWaybill(Boolean enterByWaybill) {
+        this.enterByWaybill = enterByWaybill;
+    }
+
 }

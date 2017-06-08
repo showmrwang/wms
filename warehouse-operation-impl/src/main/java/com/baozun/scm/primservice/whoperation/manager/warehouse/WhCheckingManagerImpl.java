@@ -1674,12 +1674,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 command.setMessage(Constants.FIND_WAYBILL_CODE_ERROR);
                 return command;
             }
-            info.setOutboundboxCode(outboundboxCode);
+            WhOdodeliveryInfo deliveryInfo = whOdoDeliveryInfoDao.findByIdExt(info.getId(), ouId);
+            deliveryInfo.setOutboundboxCode(outboundboxCode);
             if (null != consumableSkuId) {
-                info.setOutboundboxId(consumableSkuId);
+                deliveryInfo.setOutboundboxId(consumableSkuId);
             }
             log.info("===================start whOdoDeliveryInfoManager.saveOrUpdate===================");
-            this.whOdoDeliveryInfoManager.saveOrUpdate(info);
+            this.whOdoDeliveryInfoManager.saveOrUpdate(deliveryInfo);
             log.info("===================end whOdoDeliveryInfoManager.saveOrUpdate===================");
             // 判断是否扫描运单号
             WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundDao.findByFunctionIdExt(functionId, ouId);
@@ -1687,7 +1688,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
             command.setIsScanWaybillCode(whFunctionOutBound.getIsScanWayBill());
-            command.setWaybillCode(info.getWaybillCode());
+            command.setWaybillCode(deliveryInfo.getWaybillCode());
             log.info("whcheckingManagerImpl bindkWaybillCode is end");
         } else {
             // 纸质面单
