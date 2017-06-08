@@ -3690,6 +3690,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					where 
 					    inv.ou_id = #{ouId}
 	                    and inv.inside_container_id = #{turnoverBoxId}
+	                    and inv.location_id is null
     </select>
     
 	<select id="getWhSkuInventoryCommandByInsideContainerId" resultMap="WhSkuInventoryCommandSnResultExt">
@@ -5241,7 +5242,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	 <select id="getWhSkuInventorySnCommandByReplenishment" resultMap="WhSkuInventoryCommandSnResultExt">
 			SELECT
-				inventory.invId,
+				distinct inventory.invId,
 				inventory.skuId,
 				inventory.locationId,
 				inventory.outerContainerId,
@@ -5289,7 +5290,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				sn.sys_uuid AS snSysUuid
 			FROM
 				 (SELECT
-						inv.id AS invId,
+						distinct inv.id AS invId,
 						inv.sku_id AS skuId,
 						inv.location_id AS locationId,
 						inv.outer_container_id AS outerContainerId,
@@ -5326,6 +5327,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						t_wh_sku_inventory inv
 					WHERE
 						inv.ou_id = #{ouId}
+						and inv.location_id is null
 						<if test="turnoverBoxId != null and turnoverBoxId!=''">
 						     and inv.inside_container_id = #{turnoverBoxId}
 						</if>
@@ -5337,6 +5339,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			LEFT JOIN t_wh_sku_inventory_sn sn ON inventory.invUuid = sn.uuid
 			WHERE
 				inventory.invOuId = #{ouId}
+				and inventory.locationId is null
 			  <if test="turnoverBoxId != null and turnoverBoxId!=''">
 				 and inventory.insideContainerId = #{turnoverBoxId}
 			  </if>
@@ -5349,6 +5352,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
           from t_wh_sku_inventory inv
           where inv.ou_id=#{ouId}
                 and inv.uuid=#{uuid}
+                and inv.location_id is null
                 <if test="turnoverBoxId != null and turnoverBoxId!=''">
 						 and inv.inside_container_id = #{turnoverBoxId}
 				</if>
@@ -5534,7 +5538,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						                    and inv.occupation_line_id=#{occupationLineId}
 						                    and inv.occupation_code =#{occupationCode}
 						                    and inv.uuid=#{uuid}
-										   group by inv.uuid
+						                    and inv.location_id is null
+										    group by inv.uuid
 					     ) inventory
                       	left join t_wh_sku_inventory_sn sn on inventory.invUuid = sn.uuid
     </select>
