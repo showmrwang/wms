@@ -1006,6 +1006,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 whSkuInventory.setOccupationCode(null);
                 whSkuInventory.setOnHandQty(skuInventoryTobefilledLst.get(0).getQty());
                 whSkuInventory.setFrozenQty(0.00);
+                whSkuInventory.setInboundTime(new Date());
                 skuInventoryDao.insert(whSkuInventory);
                 this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), Constants.DEFAULT_DOUBLE, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                 insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
