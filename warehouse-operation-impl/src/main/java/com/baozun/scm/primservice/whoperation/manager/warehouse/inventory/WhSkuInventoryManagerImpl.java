@@ -8362,6 +8362,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setInsideContainerId(null);
             } else {
                 if (null == palletId) {
+                    inv.setOuterContainerId(null);
                     inv.setInsideContainerId(turnoverBoxId); // 当前周转箱/货箱
                 }
             }
@@ -8409,6 +8410,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setInsideContainerId(null);
             } else {
                 if (null == palletId) {
+                    inv.setOuterContainerId(null);
                     inv.setInsideContainerId(turnoverBoxId); // 当前周转箱/货箱
                 }
             }
