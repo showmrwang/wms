@@ -95,7 +95,7 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
         WhWork work = new WhWork();
         work.setWaveCode(waveCode);
         work.setOuId(ouId);
-        work.setLifecycle(Constants.LIFECYCLE_START);
+        // work.setLifecycle(Constants.LIFECYCLE_START);
         work.setIsLocked(true);
         return this.whWorkDao.findListByParam(work);
     }
@@ -106,7 +106,7 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
         WhWork work = new WhWork();
         work.setWaveCode(waveCode);
         work.setOuId(ouId);
-        work.setLifecycle(Constants.LIFECYCLE_START);
+        // work.setLifecycle(Constants.LIFECYCLE_START);
         work.setIsLocked(false);
         return this.whWorkDao.findListByParam(work);
     }
@@ -117,7 +117,7 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
         WhWork work = new WhWork();
         work.setWaveCode(code);
         work.setOuId(ouId);
-        work.setLifecycle(Constants.LIFECYCLE_START);
+        // work.setLifecycle(Constants.LIFECYCLE_START);
         return this.whWorkDao.findListByParam(work);
     }
 
@@ -128,7 +128,7 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
         work.setWaveCode(code);
         work.setOuId(ouId);
         work.setWorkCategory(workCategory);
-        work.setLifecycle(Constants.LIFECYCLE_START);
+        // work.setLifecycle(Constants.LIFECYCLE_START);
         return this.whWorkDao.findListByParam(work);
     }
 
@@ -198,6 +198,11 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
             }
             if (whWork.getIsAssignOut() != null && whWork.getIsAssignOut()) {
                 throw new BusinessException(ErrorCodes.ASSIGN_OUT_CHECK_STATUS_ERROR, whWork.getCode());
+            }
+            if (Constants.WORKCATEGORY_PICKING.equals(whWork.getWorkCategory()) || Constants.WORK_CATEGORY_REPLENISHMENT.equals(whWork.getWorkCategory())) {
+
+            } else {
+                throw new BusinessException(ErrorCodes.ASSIGN_IN_OUT_TYPE_ERROR);
             }
             workList.add(whWork);
         }
@@ -277,6 +282,8 @@ public class WhWorkManagerImpl extends BaseManagerImpl implements WhWorkManager 
                     this.pdaPickingWorkManager.changeOdoStatus(work.getPickingMode(), operationId, ouId, userId);
 
 
+                } else {
+                    throw new BusinessException(ErrorCodes.ASSIGN_IN_OUT_TYPE_ERROR);
                 }
             }
         }

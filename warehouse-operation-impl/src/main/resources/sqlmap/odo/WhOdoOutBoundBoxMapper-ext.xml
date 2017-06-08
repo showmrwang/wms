@@ -330,4 +330,30 @@
             wave_id = #{waveId}
             and ou_id = #{ouId}
     </select>
+    
+    <select id="findOutboundboxListByWaveIdAndOdoIdAndOdoLineIdAndOuId" resultMap="WhOdoOutBoundBoxResultExt">
+		select
+			 <include refid="whOdoOutBoundBoxColumns"/>
+		from
+			t_wh_odo_outboundbox
+		<where>
+			ou_id = #{ouId}
+			<if test="waveId!=null">
+				and wave_id = #{waveId}
+			</if>
+			<if test="odoLineId!=null">
+				and odo_id = #{odoId}
+			</if>
+			<if test="odoLineId!=null">
+				and odo_line_id = #{odoLineId}
+			</if>
+		</where>
+	</select>
+	
+	 <delete id="deleteExt" parameterType="java.lang.Long">
+        <![CDATA[
+            delete from t_wh_odo_outboundbox where
+                id = #{id} and ou_id=#{ouId}
+        ]]>
+    </delete>
 </mapper>
