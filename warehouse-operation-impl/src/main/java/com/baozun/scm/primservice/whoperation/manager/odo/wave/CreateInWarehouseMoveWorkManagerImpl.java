@@ -983,15 +983,15 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                             break;
                         }else{
                             allocatedQty = allocatedQty - whSkuInventory.getOnHandQty();
-                            skuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
                             this.insertSkuInventoryLog(whSkuInventory.getId(), Constants.DEFAULT_DOUBLE, whSkuInventory.getOnHandQty(), warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
+                            skuInventoryDao.deleteWhSkuInventoryById(whSkuInventory.getId(), whSkuInventory.getOuId());
                             insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);
                         }
                     }
                 }
-//                if(0 == allocatedQty.compareTo(0.00)){
-//                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
-//                }
+                if (allocatedQty > 0) {
+                    throw new BusinessException(ErrorCodes.CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR);
+                }
                 skuInventoryAllocatedDao.deleteExt(skuInventoryAllocatedLst.get(0).getId(), skuInventoryAllocatedLst.get(0).getOuId());
                 insertGlobalLog(GLOBAL_LOG_DELETE, skuInventoryAllocatedLst.get(0), skuInventoryAllocatedLst.get(0).getOuId(), userId, null, null);
                 //根据invMoveCode获取待移入库存 
@@ -1006,6 +1006,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
                 whSkuInventory.setOccupationCode(null);
                 whSkuInventory.setOnHandQty(skuInventoryTobefilledLst.get(0).getQty());
                 whSkuInventory.setFrozenQty(0.00);
+                whSkuInventory.setInboundTime(new Date());
                 skuInventoryDao.insert(whSkuInventory);
                 this.insertSkuInventoryLog(whSkuInventory.getId(), whSkuInventory.getOnHandQty(), Constants.DEFAULT_DOUBLE, warehouse.getIsTabbInvTotal(), whSkuInventory.getOuId(), userId, InvTransactionType.INTRA_WH_MOVE);
                 insertGlobalLog(GLOBAL_LOG_INSERT, whSkuInventory, whSkuInventory.getOuId(), userId, null, null);

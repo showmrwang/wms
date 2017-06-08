@@ -18,6 +18,7 @@ import com.baozun.scm.primservice.logistics.manager.OrderConfirmContentManager;
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
 import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -41,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.StoreDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.UomDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -111,6 +113,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     private StoreDao storeDao;
     @Autowired
     private MaTransportManager maTransportManager;
+    @Autowired
+    private WhCheckingLineDao whCheckingLineDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -227,7 +231,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         if (null != handover2) {
             // 已有该交接头信息
             log.error("handover error handover already exist, handover2 is:[{}]", handover2);
-            //throw new BusinessException(ErrorCodes.HANDOVER_EXISTS);
+            // throw new BusinessException(ErrorCodes.HANDOVER_EXISTS);
         }
         long inserthandover = handoverDao.insert(handover);
         if (0 == inserthandover) {
@@ -274,7 +278,23 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             // 5出库箱状态改为已交接
             outboundbox.setStatus(OutboundboxStatus.FINISH);
             whOutboundboxDao.saveOrUpdate(outboundbox);
-            // 6出库单下所有对应的出库箱是否都已经交接 如果都交接了 更新订单状态 订单明细状态
+            // 6更新odoline出库数量
+            List<WhCheckingLineCommand> WhCheckingLineCommandList = whCheckingLineDao.findQtyAndOdolineIdByOutboundboxCode(outboundboxCode, ouId);
+            if (null != WhCheckingLineCommandList && WhCheckingLineCommandList.size() > 0) {
+                for (WhCheckingLineCommand whCheckingLineCommand : WhCheckingLineCommandList) {
+                    WhOdoLine whOdoLine = whOdoLineDao.findById(whCheckingLineCommand.getOdoLineId());
+                    whOdoLine.setActualQty(whCheckingLineCommand.getOdoLineqty());
+                    whOdoLine.setOdoLineStatus(OdoLineStatus.FINISH);
+                    int odoLineUpdate = whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+                    if (0 == odoLineUpdate) {
+                        // 出库单明细状态更新失败
+                        log.error("handover error whOdoLineDao.saveOrUpdateByVersion  , odoUpdate is:[{}]", odoLineUpdate);
+                        throw new BusinessException(ErrorCodes.ODOLINE_SAVEORUPDATEBYVERSION_ERROR);
+                    }
+                }
+
+            }
+            // 7出库单下所有对应的出库箱是否都已经交接 如果都交接了 更新订单状态 订单明细状态
             Long odoId = outboundbox.getOdoId();
             WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
             if (odo.getLagOdoStatus().equals(OdoStatus.CHECKING_FINISH)) {
@@ -314,16 +334,18 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 }
                 // 调用胡斌方法
                 whOutboundConfirmManager.saveWhOutboundConfirm(odo);
-                List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
-                for (WhOdoLine whOdoLine : whOdoLineList) {
-                    whOdoLine.setOdoLineStatus(OdoLineStatus.PARTLY_FINISH);
-                    int odoLineUpdate = whOdoLineDao.saveOrUpdate(whOdoLine);
-                    if (0 == odoLineUpdate) {
-                        // 出库单明细状态更新失败
-                        log.error("handover error whOdoLineDao.saveOrUpdateByVersion  , odoUpdate is:[{}]", odoLineUpdate);
-                        throw new BusinessException(ErrorCodes.ODOLINE_SAVEORUPDATEBYVERSION_ERROR);
-                    }
-                }
+                // List<WhOdoLine> whOdoLineList = whOdoLineDao.findOdoLineListByOdoIdOuId(odoId,
+                // ouId);
+                // for (WhOdoLine whOdoLine : whOdoLineList) {
+                // whOdoLine.setOdoLineStatus(OdoLineStatus.PARTLY_FINISH);
+                // int odoLineUpdate = whOdoLineDao.saveOrUpdate(whOdoLine);
+                // if (0 == odoLineUpdate) {
+                // // 出库单明细状态更新失败
+                // log.error("handover error whOdoLineDao.saveOrUpdateByVersion  , odoUpdate is:[{}]",
+                // odoLineUpdate);
+                // throw new BusinessException(ErrorCodes.ODOLINE_SAVEORUPDATEBYVERSION_ERROR);
+                // }
+                // }
 
             }
 

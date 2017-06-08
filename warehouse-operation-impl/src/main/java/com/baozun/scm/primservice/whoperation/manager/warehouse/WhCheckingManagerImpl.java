@@ -104,6 +104,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhSku;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
@@ -1292,6 +1293,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             actualWeight = weightCalculator.calculateStuffWeight(whSkuCommand.getWeight()) * whCheckingLineCommand.getCheckingQty();
             sum += actualWeight;
 
+        }
+        // @Gianni 计重包括耗材重量
+        WhSku consumableSku = whSkuManager.getskuById(outboundboxId, ouId);
+        if (null != consumableSku) {
+            sum += consumableSku.getWeight();
         }
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
         if (null != odoPackageInfo) {

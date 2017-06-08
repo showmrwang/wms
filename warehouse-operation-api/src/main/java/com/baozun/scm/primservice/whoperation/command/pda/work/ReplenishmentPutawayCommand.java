@@ -34,12 +34,8 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     /***/
     private String tipTurnoverBoxCode;
     
-    private String tipPalletCode;
-    private String tipContainerCode;
 
     private String turnoverBoxCode;
-    private String palletCode;
-    private String containerCode;
 
     /**是否需要扫描库位*/
     private Boolean isNeedScanLocation = false;
@@ -47,8 +43,6 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     private Boolean isNeedScanTurnoverBox = false;
     /**是否需要扫描托盘*/
     private Boolean isNeedScanPallet = false;
-    /**是否需要扫描胡货箱*/
-    private Boolean isNeedScanContainer = false;
     /**是否扫描结束*/
     private Boolean isScanFinsh = false;
     /**是否整托盘整箱补货*/
@@ -687,20 +681,12 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
         this.inWarehouseMoveWay = inWarehouseMoveWay;
     }
 
-    public String getTipPalletCode() {
-        return tipPalletCode;
+    public String getOuterContainerCode() {
+        return outerContainerCode;
     }
 
-    public void setTipPalletCode(String tipPalletCode) {
-        this.tipPalletCode = tipPalletCode;
-    }
-
-    public String getTipContainerCode() {
-        return tipContainerCode;
-    }
-
-    public void setTipContainerCode(String tipContainerCode) {
-        this.tipContainerCode = tipContainerCode;
+    public void setOuterContainerCode(String outerContainerCode) {
+        this.outerContainerCode = outerContainerCode;
     }
 
     public Boolean getIsNeedScanPallet() {
@@ -710,37 +696,6 @@ public class ReplenishmentPutawayCommand extends BaseCommand {
     public void setIsNeedScanPallet(Boolean isNeedScanPallet) {
         this.isNeedScanPallet = isNeedScanPallet;
     }
-
-    public Boolean getIsNeedScanContainer() {
-        return isNeedScanContainer;
-    }
-
-    public void setIsNeedScanContainer(Boolean isNeedScanContainer) {
-        this.isNeedScanContainer = isNeedScanContainer;
-    }
-
-    public String getPalletCode() {
-        return palletCode;
-    }
-
-    public void setPalletCode(String palletCode) {
-        this.palletCode = palletCode;
-    }
-
-    public String getContainerCode() {
-        return containerCode;
-    }
-
-    public void setContainerCode(String containerCode) {
-        this.containerCode = containerCode;
-    }
-
-    public String getOuterContainerCode() {
-        return outerContainerCode;
-    }
-
-    public void setOuterContainerCode(String outerContainerCode) {
-        this.outerContainerCode = outerContainerCode;
-    }
+    
 
 }

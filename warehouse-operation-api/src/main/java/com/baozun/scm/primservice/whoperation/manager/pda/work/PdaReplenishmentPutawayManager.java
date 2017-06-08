@@ -94,7 +94,7 @@ public interface PdaReplenishmentPutawayManager extends BaseManager {
       * @param operationId
       * @return
       */
-     public Boolean judgeIsOnlyLocation(Long operationId, Long locationId, String turnoverBoxCode, Long ouId, Integer replenishWay);
+     public Boolean judgeIsOnlyLocation(Long operationId, Long locationId, String turnoverBoxCode, Long ouId, String outerContainerCode);
      
      
      public ContainerCommand findContainerCmdByCode(String containerCode,Long ouId);
