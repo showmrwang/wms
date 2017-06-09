@@ -130,7 +130,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         handoverCollection.setHandoverBatch(whOutboundbox.getBatch());
         handoverCollection.setHandoverStationId(HandoverStation.getId());
         handoverCollection.setHandoverStationType(HandoverStation.getType());
-        handoverCollection.setHandoverStatus("5");
+        handoverCollection.setHandoverStatus(HandoverCollectionStatus.TO_HANDOVER);
         handoverCollection.setOuId(HandoverStation.getOuId());
         handoverCollection.setOutboundboxCode(whOutboundbox.getOutboundboxCode());
         handoverCollection.setOutboundboxId(whOutboundbox.getOutboundboxId());
