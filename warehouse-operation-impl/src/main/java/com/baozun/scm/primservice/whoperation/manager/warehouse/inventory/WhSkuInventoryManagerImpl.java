@@ -9835,7 +9835,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             }
                             skuInv.setOuId(ouId);
                             whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-                            invSkuIds.add(skuInv.getId());
                             insertGlobalLog(GLOBAL_LOG_UPDATE, skuInv, ouId, userId, null, null);
                             Double oldQty = 0.0;
                             if (true == isTabbInvTotal) {
@@ -9898,7 +9897,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                         skuInv.setOuId(ouId);
                         whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-                        invSkuIds.add(skuInv.getId());
                         insertGlobalLog(GLOBAL_LOG_UPDATE, skuInv, ouId, userId, null, null);
                         Double oldQty = 0.0;
                         if (true == isTabbInvTotal) {
