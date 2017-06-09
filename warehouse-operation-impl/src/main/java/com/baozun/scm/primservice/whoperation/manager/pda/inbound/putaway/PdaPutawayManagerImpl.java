@@ -6521,8 +6521,11 @@ public class PdaPutawayManagerImpl extends BaseManagerImpl implements PdaPutaway
         // 清除计数器
         cacheManager.remove(CacheConstants.SCAN_LOCATION_QUEUE + icCmd.getId().toString());
         cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icCmd.getId().toString() + loc.getId().toString() + saId);
+        cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + icCmd.getId().toString() +  "*");
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + icCmd.getId().toString() + loc.getId().toString() + saId);
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + icCmd.getId().toString() + loc.getId().toString() + saId);
+        cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + icCmd.getId().toString() + "*");
+        cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + icCmd.getId().toString() + "*");
         // 3.清除redis缓存
         pdaPutawayCacheManager.sysGuideSplitContainerPutawayRemoveAllCache(ocCmd, icCmd, false, false, loc.getId(), logId);
         return srCmd;
