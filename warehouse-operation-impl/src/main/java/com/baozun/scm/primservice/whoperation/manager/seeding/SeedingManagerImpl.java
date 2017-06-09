@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.print.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
@@ -53,6 +54,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CheckingModeCalcManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
@@ -63,6 +65,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("seedingManager")
+@Transactional
 public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManager {
     public static final Logger log = LoggerFactory.getLogger(SeedingManagerImpl.class);
 
@@ -402,7 +405,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public String liberateSeedingWall(String containerCode, Long ouId, Long userId, Long facilityId) throws Exception {
-        log.info("liberateSeedingWall begin!");
+        log.info("SeedingManagerImpl.liberateSeedingWall begin!");
         String msg = "success";
         WhOutboundFacility f = whOutboundFacilityDao.findByIdAndOuId(facilityId, ouId);
         // 验证播种墙是否存在库存
@@ -446,9 +449,24 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
             f.setOperatorId(userId);
             whOutboundFacilityDao.saveOrUpdateByVersion(f);
             insertGlobalLog(GLOBAL_LOG_UPDATE, f, ouId, userId, null, null);
+            // 释放原始周装箱状态
+            for (Long l : iIds) {
+                Container c = containerDao.findByIdExt(l, ouId);
+                c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                c.setOperatorId(userId);
+                containerDao.saveOrUpdateByVersion(c);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
+            }
+            // 占用新周装箱状态
+            Container co = containerDao.findByIdExt(container.getId(), ouId);
+            co.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            co.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING);
+            co.setOperatorId(userId);
+            containerDao.saveOrUpdateByVersion(co);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, co, ouId, userId, null, null);
         }
-        log.info("liberateSeedingWall end!");
+        log.info("SeedingManagerImpl.liberateSeedingWall end!");
         return msg;
     }
-
 }

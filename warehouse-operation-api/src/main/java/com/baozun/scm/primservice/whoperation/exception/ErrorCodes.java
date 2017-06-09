@@ -299,6 +299,8 @@ public class ErrorCodes {
     public static final int COMMON_LOCATION_BINDING_ERROR = 5034;
     /** 推荐的库位信息不存在！ */
     public static final int COMMON_RECOMMAND_LOCATION_IS_NOT_EXISTS = 5035;
+    /** 二级容器状态不可用 */
+    public static final int COMMON_TWO_CONTAINER_LIFECYCLE_IS_NOT_NORMAL = 5036;
     // 5001-10000 common end
 
     // 10001-20000 luyimin
@@ -1113,6 +1115,8 @@ public class ErrorCodes {
     public static final int NOT_FIND_SKU_INV_BY_CONTAINERCODE = 80017;
     /** 数据异常,出库单信息不存在 */
     public static final int ODO_NOT_FIND = 80018;
+    /** 错误,库存中包含多条出库单信息 */
+    public static final int SKU_INV_HAVE_MORE_ODO = 80019;
     // 80001-90000 zhukai
 
     // 100001-110000 liuqiming

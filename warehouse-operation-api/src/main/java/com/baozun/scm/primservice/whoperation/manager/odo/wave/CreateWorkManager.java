@@ -57,5 +57,5 @@ public interface CreateWorkManager extends BaseManager {
      * @param userId
      * @return
      */
-    public Map<String, List<WhSkuInventoryAllocatedCommand>> createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId);
+    public void createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId);
 }

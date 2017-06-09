@@ -350,5 +350,11 @@ public interface OdoManager extends BaseManager {
     List<Long> findPrintOdoIdList(String waveCode, Long ouId);
 
     long countOdoIndexIsNull(String waveCode, Long ouId);
+    
+    /**
+     * 根据odoCode查找出库单
+     * @author kai.zhu
+     */
+    WhOdo findByOdoCodeAndOuId(String odoCode, Long ouId);
 
 }
