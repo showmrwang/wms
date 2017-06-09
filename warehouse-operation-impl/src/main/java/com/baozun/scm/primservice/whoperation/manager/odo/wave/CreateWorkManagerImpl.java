@@ -2542,7 +2542,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Map<String, List<WhSkuInventoryAllocatedCommand>> createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId) {
+    public void createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId) {
         // 获取库位的未完成工作明细
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByToLocationId(toLocationId, ouId);
         // 计算目标库位容器
@@ -2555,7 +2555,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
             }
         }
-        return null;
     }
     
     
@@ -2569,8 +2568,13 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWorkLineCommand> calculateLocationByWorkLine(List<WhWorkLineCommand> whWorkLineCommandList) {
         String logId = "";
-        Long locationId = whWorkLineCommandList.get(0).getToLocationId();
-        Long ouId = whWorkLineCommandList.get(0).getOuId();
+        WhWorkLineCommand workLineCommand = new WhWorkLineCommand();
+        workLineCommand = whWorkLineCommandList.get(0);
+        if (null == workLineCommand || null == workLineCommand.getToLocationId() || null == workLineCommand.getOuId()) {
+            throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+        }
+        Long locationId = workLineCommand.getToLocationId();
+        Long ouId = workLineCommand.getOuId();
         LocationCommand location = locationDao.findLocationCommandByParam(locationId, ouId);
         Long maxVolume = Constants.DEFAULT_LONG;
         // 上限

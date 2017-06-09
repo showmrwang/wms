@@ -65,6 +65,7 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.CreateWorkManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.pda.concentration.PdaConcentrationManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.TipSkuDetailProvider;
@@ -172,6 +173,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private WhSkuInventoryAllocatedDao whSkuInventoryAllocatedDao;
     @Autowired
     private WhSkuInventoryLogManager whSkuInventoryLogManager;
+    @Autowired
+    private CreateWorkManagerProxy createWorkManagerProxy;
 
 
 
@@ -1983,6 +1986,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
 
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
+                this.createReplenishmentAfterPicking(operationId, ouId, userId);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
                 // 更改出库单状态
@@ -3265,6 +3269,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     log.info("collection run  time:" + (endTime - startTime));
                     command.setPickingMode(pickingMode);
                     if (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()) {
+                        this.createReplenishmentAfterPicking(operationId, command.getOuId(), command.getUserId());
                         // 清除缓存
                         pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
                     }
@@ -3579,6 +3584,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 log.info("collection run  time:" + (endTime - startTime));
                 command.setPickingMode(pickingMode);
                 if (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()) {
+                    this.createReplenishmentAfterPicking(command.getOperationId(), command.getOuId(), command.getUserId());
                     // 清除缓存
                     pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
                 }
@@ -4018,5 +4024,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
 
     }
-
+    
+    /**
+     * 拣货后触发补货工作
+     * 
+     */
+    public void createReplenishmentAfterPicking(Long operationId, Long ouId, Long userId) {
+        try {
+            OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId + "");
+            // 补充补货作业明细
+            createWorkManagerProxy.createReplenishmentAfterPicking(operatorLine.getLocationIds(), ouId, userId);
+        } catch (Exception e) {
+            log.error("PdaPickingWorkManagerImpl createReplenishmentAfterPicking error" + e);
+        }
+    }
 }
