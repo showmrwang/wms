@@ -285,10 +285,13 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             Integer lowerCapacity = whLocationSkuVolume.getLowerCapacity();
             Integer upperCapacity = whLocationSkuVolume.getUpperCapacity();
             if (null == skuId) {
-                WhFacilityGroupSkuVolume whFacilityGroupSkuVolume = this.whFacilityGroupSkuVolumeManager.findSkuByCheckLocationSerialNumber(whLocationSkuVolume.getSerialNumber(), ouId);
-                skuId = whFacilityGroupSkuVolume.getSkuId();
-                lowerCapacity = whFacilityGroupSkuVolume.getLowerCapacity();
-                upperCapacity = whFacilityGroupSkuVolume.getUpperCapacity();
+                // 复核台库位上没有绑定商品 需要从复核台组上查找绑定的商品
+                WhFacilityGroupSkuVolume whFacilityGroupSkuVolume = this.whFacilityGroupSkuVolumeManager.findSkuByCheckLocationSerialNumber(whLocationSkuVolume.getId(), whLocationSkuVolume.getSerialNumber(), ouId);
+                if (null != whFacilityGroupSkuVolume) {
+                    skuId = whFacilityGroupSkuVolume.getSkuId();
+                    lowerCapacity = whFacilityGroupSkuVolume.getLowerCapacity();
+                    upperCapacity = whFacilityGroupSkuVolume.getUpperCapacity();
+                }
             }
             if (skuId == null) {
                 return;
@@ -301,37 +304,44 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
     }
 
     private void checkLocationReplenishmentMsg(Warehouse wh, Integer lowerCapacity, Integer upperCapacity, Long locationId, Long skuId) {
-        // 计算是否需要补货
-        Long ouId = wh.getId();
-        String logId = "";
+        try {
+            // 计算是否需要补货
+            Long ouId = wh.getId();
 
-        if (lowerCapacity == null || upperCapacity == null) {
-            return;
-        }
+            if (lowerCapacity == null || upperCapacity == null) {
+                return;
+            }
+            Long invSkuId = whskuInventoryManager.findSkuInInventoryByLocation(locationId, ouId);
+            if (invSkuId != skuId) {
+                log.info("checkLocationReplenishmentMsg: sku not match");
+                return;
+            }
+            // 库位库存量=库位在库库存+库位待移入库存
+            double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
 
-        // 库位库存量=库位在库库存+库位待移入库存
-        double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
+            if (invQty >= lowerCapacity) {
+                return;
+            }
 
-        if (invQty >= lowerCapacity) {
-            return;
-        }
+            Long replenishmentQty = (long) Math.floor(upperCapacity - invQty);
+            ReplenishmentMsg replenishmentMsg = this.replenishmentMsgManager.findMsgbyLocIdAndSkuId(locationId, skuId, ouId);
+            if (replenishmentMsg == null) {
+                replenishmentMsg = new ReplenishmentMsg();
+                replenishmentMsg.setLocationId(locationId);
+                replenishmentMsg.setSkuId(skuId);
+                replenishmentMsg.setUpperLimitQty(replenishmentQty);
+                replenishmentMsg.setOuId(ouId);
+                replenishmentMsg.setCreateTime(new Date());
+                replenishmentMsg.setLastModifyTime(new Date());
+                this.replenishmentMsgManager.insert(replenishmentMsg);
+                return;
+            }
+            if (replenishmentMsg.getUpperLimitQty() == null || replenishmentMsg.getUpperLimitQty().longValue() != replenishmentQty) {
+                replenishmentMsg.setUpperLimitQty(replenishmentQty);
+                this.replenishmentMsgManager.updateByVersion(replenishmentMsg);
+            }
+        } catch (Exception e) {
 
-        Long replenishmentQty = (long) Math.floor(upperCapacity - invQty);
-        ReplenishmentMsg replenishmentMsg = this.replenishmentMsgManager.findMsgbyLocIdAndSkuId(locationId, skuId, ouId);
-        if (replenishmentMsg == null) {
-            replenishmentMsg = new ReplenishmentMsg();
-            replenishmentMsg.setLocationId(locationId);
-            replenishmentMsg.setSkuId(skuId);
-            replenishmentMsg.setUpperLimitQty(replenishmentQty);
-            replenishmentMsg.setOuId(ouId);
-            replenishmentMsg.setCreateTime(new Date());
-            replenishmentMsg.setLastModifyTime(new Date());
-            this.replenishmentMsgManager.insert(replenishmentMsg);
-            return;
-        }
-        if (replenishmentMsg.getUpperLimitQty() == null || replenishmentMsg.getUpperLimitQty().longValue() != replenishmentQty) {
-            replenishmentMsg.setUpperLimitQty(replenishmentQty);
-            this.replenishmentMsgManager.updateByVersion(replenishmentMsg);
         }
     }
 
