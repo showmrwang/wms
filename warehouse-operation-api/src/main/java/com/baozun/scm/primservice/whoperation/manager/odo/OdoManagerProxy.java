@@ -454,4 +454,15 @@ public interface OdoManagerProxy extends BaseManager {
 
     WhOdoTransportService findTransportServiceByOdoIdAndOuId(Long odoId, Long ouId);
 
+    /**
+     * 库内取消出库单
+     * 
+     * @param odo
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @return
+     */
+    ResponseMsg cancelOdoWithWork(WhOdo odo, Long ouId, Long userId, String logId);
+
 }

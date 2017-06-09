@@ -2194,6 +2194,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     try {
                         uuid = SkuInventoryUuid.invUuid(inv);
                         inv.setUuid(uuid);// UUID
@@ -2335,6 +2336,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     try {
                         uuid = SkuInventoryUuid.invUuid(inv);
                         inv.setUuid(uuid);// UUID
@@ -2363,6 +2365,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     for (WhSkuInventorySnCommand snCmd : snList) {
                         WhSkuInventorySn sn = new WhSkuInventorySn();
                         BeanUtils.copyProperties(snCmd, sn);
+                        sn.setOccupationCode(null);
+                        sn.setOccupationLineId(null);
                         sn.setId(null);
                         sn.setUuid(inv.getUuid());
                         whSkuInventorySnDao.insert(sn);
@@ -2649,6 +2653,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     Long icId = invCmd.getInsideContainerId();
                     if (null != icId) {
                         insideContainerIds.add(icId);
@@ -2795,6 +2800,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     Long icId = invCmd.getInsideContainerId();
                     if (null != icId) {
                         insideContainerIds.add(icId);
@@ -2831,6 +2837,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         BeanUtils.copyProperties(snCmd, sn);
                         sn.setId(null);
                         sn.setUuid(inv.getUuid());
+                        sn.setOccupationCode(null);
+                        sn.setOccupationLineId(null);
                         whSkuInventorySnDao.insert(sn);
                         insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
                         // 记录SN日志
@@ -3168,6 +3176,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     try {
                         uuid = SkuInventoryUuid.invUuid(inv);
                         inv.setUuid(uuid);// UUID
@@ -3312,6 +3321,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     try {
                         uuid = SkuInventoryUuid.invUuid(inv);
                         inv.setUuid(uuid);// UUID
@@ -3347,6 +3357,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 BeanUtils.copyProperties(snCmd, sn);
                                 sn.setId(null);
                                 sn.setUuid(inv.getUuid());
+                                sn.setOccupationCode(null);
+                                sn.setOccupationLineId(null);
                                 whSkuInventorySnDao.insert(sn);
                                 insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
                                 // 记录SN日志
@@ -3676,6 +3688,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             inv.setExpDate(null);
                         }
                         inv.setOccupationCode(null);
+                        inv.setOccupationLineId(null);
                         try {
                             uuid = SkuInventoryUuid.invUuid(inv);
                             inv.setUuid(uuid);// UUID
@@ -3824,6 +3837,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             inv.setExpDate(null);
                         }
                         inv.setOccupationCode(null);
+                        inv.setOccupationLineId(null);
                         try {
                             uuid = SkuInventoryUuid.invUuid(inv);
                             inv.setUuid(uuid);// UUID
@@ -3859,6 +3873,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                     BeanUtils.copyProperties(snCmd, sn);
                                     sn.setId(null);
                                     sn.setUuid(inv.getUuid());
+                                    sn.setOccupationCode(null);
+                                    sn.setOccupationLineId(null);
                                     whSkuInventorySnDao.insert(sn);
                                     insertGlobalLog(GLOBAL_LOG_INSERT, sn, ouId, userId, null, null);
                                     // 记录SN日志
@@ -4371,6 +4387,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setExpDate(null);
             }
             inv.setOccupationCode(null);
+            inv.setOccupationLineId(null);
             inv.setLocationId(locationId);
             inv.setInboundTime(new Date());
             inv.setIsLocked(false);
@@ -4436,6 +4453,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setExpDate(null);
             }
             inv.setOccupationCode(null);
+            inv.setOccupationLineId(null);
             try {
                 uuid = SkuInventoryUuid.invUuid(inv);
                 inv.setUuid(uuid);// UUID
@@ -4483,6 +4501,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     for (WhSkuInventorySn sn : skuSnlist) { // 已经扫描过的sn
                         if (sn.getUuid().equals(invCmd.getUuid())) {
                             sn.setUuid(inv.getUuid());
+                            sn.setOccupationCode(null);
+                            sn.setOccupationLineId(null);
                             whSkuInventorySnDao.saveOrUpdate(sn);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
                             insertSkuInventorySnLog(sn.getId(), ouId); // 记录sn日志
@@ -4496,6 +4516,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             WhSkuInventorySn sn = new WhSkuInventorySn();
                             BeanUtils.copyProperties(snCmd, sn);
                             sn.setUuid(inv.getUuid());
+                            sn.setOccupationCode(null);
+                            sn.setOccupationLineId(null);
                             whSkuInventorySnDao.saveOrUpdate(sn);
                             insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
                             insertSkuInventorySnLog(sn.getId(), ouId); // 记录sn日志
@@ -4713,6 +4735,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     inv.setInboundTime(new Date());
                     inv.setIsLocked(false);
                     inv.setLocationId(locationId);
@@ -4764,6 +4787,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         inv.setExpDate(null);
                     }
                     inv.setOccupationCode(null);
+                    inv.setOccupationLineId(null);
                     inv.setInboundTime(new Date());
                     inv.setIsLocked(false);
                     inv.setLocationId(locationId);
@@ -4799,6 +4823,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             WhSkuInventorySn sn = new WhSkuInventorySn();
                             BeanUtils.copyProperties(cSnCmd, sn);
                             sn.setUuid(inv.getUuid());
+                            sn.setOccupationCode(null);
+                            sn.setOccupationLineId(null);
                             whSkuInventorySnDao.saveOrUpdate(sn); // 更新sn
                             insertGlobalLog(GLOBAL_LOG_UPDATE, sn, ouId, userId, null, null);
                         }
@@ -9835,7 +9861,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             }
                             skuInv.setOuId(ouId);
                             whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-                            invSkuIds.add(skuInv.getId());
                             insertGlobalLog(GLOBAL_LOG_UPDATE, skuInv, ouId, userId, null, null);
                             Double oldQty = 0.0;
                             if (true == isTabbInvTotal) {
@@ -9898,7 +9923,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                         skuInv.setOuId(ouId);
                         whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-                        invSkuIds.add(skuInv.getId());
                         insertGlobalLog(GLOBAL_LOG_UPDATE, skuInv, ouId, userId, null, null);
                         Double oldQty = 0.0;
                         if (true == isTabbInvTotal) {

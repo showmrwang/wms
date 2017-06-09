@@ -52,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilityManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
@@ -124,6 +125,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhOperationExecLineDao whOperationExecLineDao;
+
+    @Autowired
+    private WhWorkManager workManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -262,6 +266,24 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         Set<Long> containerIdSet = new HashSet<Long>();
         Set<Long> odoIdSet = new HashSet<Long>();
         List<WhOperationExecLineCommand> execLineCommandList = new ArrayList<WhOperationExecLineCommand>();
+        // TODO 修改是否是最后一个容器
+        if (null != isLastContainer) {
+            command.setIsLastContainer(isLastContainer); // 是否是最后一个容器
+        } else {
+            // TODO 根据批次找到工作是否完成
+            List<WhOperation> operationList = this.whOperationDao.findByBatchAndContainerId(batch, ouId, scanContainerId);
+            if (null == operationList || 1 < operationList.size()) {
+                throw new BusinessException(ErrorCodes.CONCENTRATION_NO_INFO_RETURN);
+            }
+            WhOperation operation = operationList.get(0);
+            if (OperationStatus.FINISH != operation.getStatus()) {
+                // 如果作业状态是未完成 那么是否是最后一个容器为否
+                command.setIsLastContainer(false);
+            } else {
+                command.setIsLastContainer(true);
+            }
+            isLastContainer = command.getIsLastContainer();
+        }
         if (null != workId) {
             execLineCommandList = this.whOperationExecLineDao.findCommandByWorkId(workId, ouId);
         } else {
@@ -275,42 +297,18 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 containerSet.add(execLineCommand.getUseContainerCode());
                 containerIdSet.add(execLineCommand.getUseContainerId());
                 odoIdSet.add(execLineCommand.getOdoId());
-                if (isLastContainer) {
+                if ((null != isLastContainer) && isLastContainer) {
                     // 计算最后一个容器库位
                     command.setLastLocationId(execLineCommand.getFromLocationId()); // 最后一个容器库位
                 }
             }
         }
         List<String> containerList = new ArrayList<String>(containerSet);
-        List<Long> containerIdList = new ArrayList<Long>(containerIdSet);
+        // List<Long> containerIdList = new ArrayList<Long>(containerIdSet);
         List<Long> odoIdList = new ArrayList<Long>(odoIdSet);
         command.setContainerList(containerList); // 容器列表
         command.setOdoIdList(odoIdList); // 出库单列表
         command.setBatch(batch); // 批次号
-        if (null != isLastContainer) {
-            command.setIsLastContainer(isLastContainer); // 是否是最后一个容器
-        } else {
-            // TODO 根据批次找到工作是否完成
-            WhOperation operation = this.whOperationDao.findByBatch(batch, ouId);
-            if (OperationStatus.FINISH != operation.getStatus()) {
-                // 如果作业状态是未完成 那么是否是最后一个容器为否
-                command.setIsLastContainer(false);
-            } else {
-                // 计算出是否是最后一个容器
-                List<Long> noRecContainerList = this.whSeedingCollectionDao.findNoRecByContainerList(containerIdList, ouId);
-                if (null != noRecContainerList && !noRecContainerList.isEmpty()) {
-                    if (noRecContainerList.size() > 1) {
-                        command.setIsLastContainer(false);
-                    } else if (noRecContainerList.get(0).equals(scanContainerId)) {
-                        command.setIsLastContainer(true);
-                    } else {
-                        command.setIsLastContainer(false);
-                    }
-                } else {
-                    command.setIsLastContainer(false);
-                }
-            }
-        }
         return command;
     }
 

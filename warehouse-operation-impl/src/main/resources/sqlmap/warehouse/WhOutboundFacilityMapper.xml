@@ -11,22 +11,23 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whOutboundFacilityColumns">
 	    <![CDATA[
-	        	id as id,
-	        	facility_code as facilityCode,
-	        	facility_name as facilityName,
-	        	facility_type as facilityType,
-	        	outboundbox_type_id as outboundboxTypeId,
-	        	capacity as capacity,
+                id as id,
+                facility_code as facilityCode,
+                facility_name as facilityName,
+                facility_type as facilityType,
+                outboundbox_type_id as outboundboxTypeId,
+                capacity as capacity,
                 facility_lower_limit as facilityLowerLimit,
                 facility_upper_limit as facilityUpperLimit,
-	        	facility_group as facilityGroup,
-	        	check_code as checkCode,
-	        	create_time as createTime,
-	        	last_modify_time as lastModifyTime,
-	        	operator_id as operatorId,
-	        	lifecycle as lifecycle,
-	        	status as status,
-	        	ou_id as ouId
+                facility_group as facilityGroup,
+                check_code as checkCode,
+                create_time as createTime,
+                last_modify_time as lastModifyTime,
+                operator_id as operatorId,
+                lifecycle as lifecycle,
+                status as status,
+                batch as batch,
+                ou_id as ouId
 	    ]]>
 	</sql>
 	

@@ -119,12 +119,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     private WhSkuInventoryDao skuInventoryDao;
 
     @Autowired
-    private WhSkuInventoryTobefilledDao whSkuInventoryTobefilledDao;
-    
-    @Autowired
-    private WhSkuInventoryAllocatedDao whSkuInventoryAllocatedDao;
-
-    @Autowired
     private WhOdoDao odoDao;
 
     @Autowired
@@ -770,13 +764,16 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         }
         // 更新分配库存占用单据号        
         if(null == skuInventoryAllocatedCommand.getOccupationCode() && null == skuInventoryAllocatedCommand.getOccupationLineId()){
-            skuInventoryAllocatedCommand.setOccupationCode(replenishmentWorkCode);
-            skuInventoryAllocatedCommand.setOccupationLineId(whWorkLine.getId());
-            skuInventoryAllocatedCommand.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_WORK);
-            WhSkuInventoryAllocated skuInventoryAllocated = new WhSkuInventoryAllocated();
-            // 复制数据
-            BeanUtils.copyProperties(skuInventoryAllocatedCommand, skuInventoryAllocated);
-            whSkuInventoryAllocatedDao.update(skuInventoryAllocated);
+            Set<Long> ids = new HashSet<Long>();
+            ids = skuInventoryAllocatedCommand.getIds();
+            for(Long id : ids){
+                WhSkuInventoryAllocated whSkuInventoryAllocated = new WhSkuInventoryAllocated();
+                whSkuInventoryAllocated = skuInventoryAllocatedDao.findByIdExt(id, skuInventoryAllocatedCommand.getOuId());
+                whSkuInventoryAllocated.setOccupationCode(replenishmentWorkCode);
+                whSkuInventoryAllocated.setOccupationLineId(whWorkLine.getId());
+                whSkuInventoryAllocated.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_WORK);
+                skuInventoryAllocatedDao.saveOrUpdate(whSkuInventoryAllocated);
+            }
         }
     }
 
@@ -2024,11 +2021,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Map<String, List<WhSkuInventoryAllocatedCommand>> rMap = new HashMap<String, List<WhSkuInventoryAllocatedCommand>>();
         // 根据补货工作释放及拆分条件获取所有补货数据
         List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = new ArrayList<WhSkuInventoryAllocatedCommand>();
-        if (null != replenishmentRuleCommand.getWaveId()) {
-            skuInventoryAllocatedCommandLst = getInAllReplenishmentLst(replenishmentRuleCommand);
-        } else {
-            skuInventoryAllocatedCommandLst = getOutAllReplenishmentLst(replenishmentRuleCommand);
-        }
+        skuInventoryAllocatedCommandLst = getAllReplenishmentLst(replenishmentRuleCommand);
         // 根据补货工作拆分条件统计分析补货数据
         for (WhSkuInventoryAllocatedCommand whSkuInventoryAllocatedCommand : skuInventoryAllocatedCommandLst) {
             // 判断是否整托整箱
@@ -2205,12 +2198,19 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
      * @return
      */
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventoryAllocatedCommand> getInAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
+    public List<WhSkuInventoryAllocatedCommand> getAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
         // 根据补货工作释放及拆分条件获取所有补货数据
         List<WhSkuInventoryAllocatedCommand> newSiaCommandLst =  new ArrayList<WhSkuInventoryAllocatedCommand>();
         // List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getInAllReplenishmentLst(replenishmentRuleCommand);
-        List<WhSkuInventoryAllocatedCommand> siaCommandLst = this.skuInventoryAllocatedDao.getReplenishmentLst(replenishmentRuleCommand);
-        List<WhSkuInventoryTobefilledCommand> sitCommandLst = this.skuInventoryTobefilledDao.getReplenishmentLst(replenishmentRuleCommand);
+        List<WhSkuInventoryAllocatedCommand> siaCommandLst = new ArrayList<WhSkuInventoryAllocatedCommand>();
+        List<WhSkuInventoryTobefilledCommand> sitCommandLst = new ArrayList<WhSkuInventoryTobefilledCommand>();
+        if (null != replenishmentRuleCommand.getWaveId()) {
+            siaCommandLst = this.skuInventoryAllocatedDao.getInReplenishmentLst(replenishmentRuleCommand);
+            sitCommandLst = this.skuInventoryTobefilledDao.getInReplenishmentLst(replenishmentRuleCommand);
+        } else {
+            siaCommandLst = this.skuInventoryAllocatedDao.getOutReplenishmentLst(replenishmentRuleCommand);
+            sitCommandLst = this.skuInventoryTobefilledDao.getOutReplenishmentLst(replenishmentRuleCommand);
+        }
         for(WhSkuInventoryAllocatedCommand siaCommand : siaCommandLst){
             String siaOnlySku = SkuCategoryProvider.getSkuAttrIdByInv(siaCommand);
             String siaReplenishmentCode = (StringUtils.isEmpty(siaCommand.getReplenishmentCode()) ? SkuCategoryProvider.PH : siaCommand.getReplenishmentCode());
@@ -2250,12 +2250,19 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             if(null != nwsiaCommand){
                 BigDecimal nQty = new BigDecimal(Double.toString(nwsiaCommand.getQty()));  
                 BigDecimal nToQty = new BigDecimal(Double.toString(nwsiaCommand.getToQty()));
-                BigDecimal qty = new BigDecimal(Double.toString(nwsiaCommand.getQty()));  
-                BigDecimal toQty = new BigDecimal(Double.toString(nwsiaCommand.getToQty()));
-                nwsiaCommand.setQty(qty.add(nQty).doubleValue());
-                nwsiaCommand.setToQty(toQty.add(nToQty).doubleValue());
+                BigDecimal wQty = new BigDecimal(Double.toString(wsiaCommand.getQty()));  
+                BigDecimal wToQty = new BigDecimal(Double.toString(wsiaCommand.getToQty()));
+                nwsiaCommand.setQty(wQty.add(nQty).doubleValue());
+                nwsiaCommand.setToQty(wToQty.add(nToQty).doubleValue());
+                Set<Long> ids = new HashSet<Long>();
+                ids = nwsiaCommand.getIds();
+                ids.add(wsiaCommand.getId());
+                nwsiaCommand.setIds(ids);
                 siaCommandMap.put(ret, nwsiaCommand);
             }else{
+                Set<Long> ids = new HashSet<Long>();
+                ids.add(wsiaCommand.getId());
+                wsiaCommand.setIds(ids);
                 siaCommandMap.put(ret, wsiaCommand);   
             }
         }
@@ -2263,6 +2270,19 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         for (String key : siaCommandMap.keySet()) {  
             skuInventoryAllocatedCommandLst.add(siaCommandMap.get(key)); 
         }
+        return skuInventoryAllocatedCommandLst;
+    }
+    
+    /**
+     * 根据补货工作释放及拆分条件获取所有补货数据
+     * 
+     * @param WhSkuInventoryAllocatedCommand
+     * @return
+     */
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventoryAllocatedCommand> getInAllReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand) {
+        // 根据补货工作释放及拆分条件获取所有补货数据
+        List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = this.skuInventoryAllocatedDao.getInAllReplenishmentLst(replenishmentRuleCommand);
         return skuInventoryAllocatedCommandLst;
     }
 
@@ -2497,13 +2517,13 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Double tobefilledQty = 0.0;
         WhSkuInventoryAllocated whSkuInventoryAllocated = new WhSkuInventoryAllocated();
         whSkuInventoryAllocated.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-        List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst  = whSkuInventoryAllocatedDao.findskuInventoryAllocateds(whSkuInventoryAllocated);
+        List<WhSkuInventoryAllocated> whSkuInventoryAllocatedLst  = skuInventoryAllocatedDao.findskuInventoryAllocateds(whSkuInventoryAllocated);
         for(WhSkuInventoryAllocated skuInventoryAllocated : whSkuInventoryAllocatedLst){
             allocatedQty = allocatedQty + skuInventoryAllocated.getQty();
         }
         WhSkuInventoryTobefilled whSkuInventoryTobefilled = new WhSkuInventoryTobefilled();
         whSkuInventoryTobefilled.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-        List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledLst =  whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(whSkuInventoryTobefilled);
+        List<WhSkuInventoryTobefilled> whSkuInventoryTobefilledLst = skuInventoryTobefilledDao.findskuInventoryTobefilleds(whSkuInventoryTobefilled);
         for(WhSkuInventoryTobefilled skuInventoryTobefilled : whSkuInventoryTobefilledLst){
             tobefilledQty = tobefilledQty + skuInventoryTobefilled.getQty();    
         }
@@ -2522,7 +2542,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public Map<String, List<WhSkuInventoryAllocatedCommand>> createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId) {
+    public void createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId) {
         // 获取库位的未完成工作明细
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByToLocationId(toLocationId, ouId);
         // 计算目标库位容器
@@ -2535,7 +2555,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
             }
         }
-        return null;
     }
     
     
@@ -2549,8 +2568,13 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWorkLineCommand> calculateLocationByWorkLine(List<WhWorkLineCommand> whWorkLineCommandList) {
         String logId = "";
-        Long locationId = whWorkLineCommandList.get(0).getToLocationId();
-        Long ouId = whWorkLineCommandList.get(0).getOuId();
+        WhWorkLineCommand workLineCommand = new WhWorkLineCommand();
+        workLineCommand = whWorkLineCommandList.get(0);
+        if (null == workLineCommand || null == workLineCommand.getToLocationId() || null == workLineCommand.getOuId()) {
+            throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+        }
+        Long locationId = workLineCommand.getToLocationId();
+        Long ouId = workLineCommand.getOuId();
         LocationCommand location = locationDao.findLocationCommandByParam(locationId, ouId);
         Long maxVolume = Constants.DEFAULT_LONG;
         // 上限

@@ -87,7 +87,7 @@ public interface WhOperationDao extends BaseDao<WhOperation, Long> {
      * @param ouId
      * @return
      */
-    public WhOperation findByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+    public List<WhOperation> findByBatchAndContainerId(@Param("batch") String batch, @Param("ouId") Long ouId, @Param("scanContainerId") Long scanContainerId);
 
     /**
      * 根据作业头Id和ouId,locationId获取作业明细信息

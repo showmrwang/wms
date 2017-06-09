@@ -14,6 +14,7 @@
 
 package com.baozun.scm.primservice.whoperation.manager.seeding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.baseservice.print.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
@@ -33,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollect
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -51,6 +54,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.CheckingModeCalcManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
@@ -58,8 +62,10 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("seedingManager")
+@Transactional
 public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManager {
     public static final Logger log = LoggerFactory.getLogger(SeedingManagerImpl.class);
 
@@ -391,5 +397,76 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     }
 
-
+    /**
+     * 一键释放播种墙
+     * 
+     * @throws Exception
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public String liberateSeedingWall(String containerCode, Long ouId, Long userId, Long facilityId) throws Exception {
+        log.info("SeedingManagerImpl.liberateSeedingWall begin!");
+        String msg = "success";
+        WhOutboundFacility f = whOutboundFacilityDao.findByIdAndOuId(facilityId, ouId);
+        // 验证播种墙是否存在库存
+        List<WhSkuInventory> skuInv = whSkuInventoryDao.findSkuInventoryBySeedingWallCode(f.getFacilityCode(), null, ouId);
+        if (null != skuInv && skuInv.size() > 0) {
+            return "seedingWallInvError";
+        }
+        // 查询对应容器数据
+        ContainerCommand container = containerDao.getContainerByCode(containerCode, ouId);
+        if (null == container) {
+            // 容器信息不存在
+            return "containerNullError";
+        }
+        // 验证容器Lifecycle是否有效
+        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_FORBIDDEN)) {
+            // 容器Lifecycle无效
+            return "containerLifecycleError";
+        }
+        // 如果容器Lifecycle为占用 判断是否状态为可用状态
+        if (!container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+            return "containerStatusError";
+        }
+        // 获取播种墙对应批次周装箱库存
+        List<WhSeedingCollection> w = whSeedingCollectionDao.findWhSeedingCollectionByBatchNo(f.getBatch(), ouId);
+        if (null != w && w.size() > 0) {
+            List<Long> iIds = new ArrayList<Long>();
+            for (WhSeedingCollection whSeedingCollection : w) {
+                iIds.add(whSeedingCollection.getContainerId());
+            }
+            List<WhSkuInventory> invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerIds(ouId, iIds);
+            for (WhSkuInventory whSkuInventory : invList) {
+                // 修改对应库存进入新的周装箱内
+                whSkuInventory.setInsideContainerId(container.getId());
+                String uuid = SkuInventoryUuid.invUuid(whSkuInventory);
+                whSkuInventory.setUuid(uuid);
+                whSkuInventoryDao.saveOrUpdateByVersion(whSkuInventory);
+            }
+            // 释放播种墙
+            f.setBatch(null);
+            f.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
+            f.setOperatorId(userId);
+            whOutboundFacilityDao.saveOrUpdateByVersion(f);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, f, ouId, userId, null, null);
+            // 释放原始周装箱状态
+            for (Long l : iIds) {
+                Container c = containerDao.findByIdExt(l, ouId);
+                c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                c.setOperatorId(userId);
+                containerDao.saveOrUpdateByVersion(c);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
+            }
+            // 占用新周装箱状态
+            Container co = containerDao.findByIdExt(container.getId(), ouId);
+            co.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            co.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING);
+            co.setOperatorId(userId);
+            containerDao.saveOrUpdateByVersion(co);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, co, ouId, userId, null, null);
+        }
+        log.info("SeedingManagerImpl.liberateSeedingWall end!");
+        return msg;
+    }
 }

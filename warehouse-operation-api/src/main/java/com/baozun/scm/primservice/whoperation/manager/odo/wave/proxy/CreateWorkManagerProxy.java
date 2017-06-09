@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
+import java.util.List;
 import java.util.Set;
 
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -36,6 +37,6 @@ public interface CreateWorkManagerProxy extends BaseManager {
      * @param userId
      * @return
      */
-    public void createReplenishmentAfterPicking(Set<Long> locationIds, Long ouId, Long userId);
+    public void createReplenishmentAfterPicking(List<Long> locationIds, Long ouId, Long userId);
     
 }
