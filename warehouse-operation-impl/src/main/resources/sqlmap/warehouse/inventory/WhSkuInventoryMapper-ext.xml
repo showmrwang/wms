@@ -5886,4 +5886,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.outboundbox_code = #{containerCode}
 			and inv.ou_id = #{ouId}
 	</select>
+	
+	<select id="findWhSkuInventoryByInsideContainerIds" resultMap="WhSkuInventoryResultExt">
+		select 
+			<include refid="whSkuInventoryColumnsInvExt"/> 
+		from 
+			t_wh_sku_inventory inv
+		where 
+			inv.ou_id = #{ouId}
+			and inv.inside_container_id in 
+			<foreach item="item" index="index" collection="insideContainerIds" open="(" separator="," close=")">
+	            #{item}
+	        </foreach>
+	</select>
 </mapper>
