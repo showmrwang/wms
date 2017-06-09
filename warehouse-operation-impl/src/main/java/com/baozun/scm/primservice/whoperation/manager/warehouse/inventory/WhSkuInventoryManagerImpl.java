@@ -11015,4 +11015,34 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     public List<WhSkuInventory> findSkuInvByoutboundboxCode(String outboundboxCode, Long ouId) {
         return whSkuInventoryDao.findSkuInvByoutboundboxCode(outboundboxCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventory> findContainerSkuInventory(String containerCode, String latticNo, int target, Long ouId) {
+        List<WhSkuInventory> list = null;
+        if (target == 1) {
+            // 小车货格库存
+            if (StringUtils.isEmpty(latticNo)) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            list = whSkuInventoryDao.findSkuInventoryByOutSideContainerCode(containerCode, latticNo, ouId);
+        } else if (target == 2) {
+            // 周转箱库存
+            list = whSkuInventoryDao.findSkuInventoryByInSideContainerCode(containerCode, ouId);
+        } else if (target == 3) {
+            // 播种墙货格库存
+            if (StringUtils.isEmpty(latticNo)) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            list = whSkuInventoryDao.findSkuInventoryBySeedingWallCode(containerCode, latticNo, ouId);
+        } else if (target == 4) {
+            // 出库箱库存
+            list = whSkuInventoryDao.findSkuInventoryByOutBoundBoxCode(containerCode, ouId);
+        }
+        if (null == list || list.isEmpty()) {
+            log.error("not_find_sku_inv, containerCode:{},latticNo:{},target:{}", containerCode, latticNo, target);
+            throw new BusinessException(ErrorCodes.NOT_FIND_SKU_INV_BY_CONTAINERCODE);
+        }
+        return list;
+    }
 }

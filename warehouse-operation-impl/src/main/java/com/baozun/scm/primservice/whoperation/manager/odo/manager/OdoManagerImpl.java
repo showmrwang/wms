@@ -1631,4 +1631,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     public long countOdoIndexIsNull(String waveCode, Long ouId) {
         return this.whOdoDao.countOdoIndexIsNull(waveCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhOdo findByOdoCodeAndOuId(String odoCode, Long ouId) {
+        return whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
+    }
 }

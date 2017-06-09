@@ -425,4 +425,11 @@ public interface WhSkuInventoryManager extends BaseManager {
     void executePickingWork(WhWorkLine line, Long ouId, Long userId);
 
     List<WhSkuInventory> findSkuInvByoutboundboxCode(String outboundboxCode, Long ouId);
+    
+    /**
+     * 查找容器库存
+     * @author kai.zhu
+     * @version 2017年6月9日
+     */
+    List<WhSkuInventory> findContainerSkuInventory(String containerCode, String latticNo, int target, Long ouId);
 }
