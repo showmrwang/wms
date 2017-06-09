@@ -366,7 +366,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                 // 更新交接批次号
                 for (HandoverCollection hc : hcList) {
                     hc.setHandoverBatch(handoverBatch);
-                    handoverCollectionDao.saveOrUpdate(hc);
+                    handoverCollectionDao.saveOrUpdateByVersion(hc);
                 }
                 // 提示可以执行交接
                 handoverStationCommand.setCode(handoverStation.getCode());
