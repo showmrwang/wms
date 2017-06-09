@@ -303,7 +303,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
     
-     <select id="findByBatchAndContainerId"  resultType="WhOperationResultExt" >
+     <select id="findByBatchAndContainerId"  resultMap="WhOperationResultExt" >
 		select 
 		o.id as id,
         	o.code as code,
