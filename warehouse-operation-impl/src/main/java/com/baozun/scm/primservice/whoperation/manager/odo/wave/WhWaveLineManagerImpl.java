@@ -134,17 +134,11 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason) {
         // 1.修改出库单明细waveCode为空
-        int num = whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
-        if (0 == num) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
+        whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
         // 2.修改出库单waveCode为空
-        num = whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
-        if (0 == num) {
-            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-        }
+        whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
         // 3.从波次明细中剔除出库单
-        num = whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
+        whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
         // 4.提出的出库单加入配货模式
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
