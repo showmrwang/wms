@@ -97,11 +97,13 @@ public interface SeedingManager extends BaseManager {
 
     public int updateSeedingCollectionLineByVersion(WhSeedingCollectionLine seedingCollectionLine);
 
-    public void batchFinishedSeedingWithException(WhOutboundFacilityCommand facilityCommand, List<WhSeedingCollectionCommand> seedingCollectionList, List<WhSeedingCollectionLineCommand> facilitySeedingCollectionLineList,Long logId);
+    public void batchFinishedSeedingWithException(WhOutboundFacilityCommand facilityCommand, List<WhSeedingCollectionCommand> seedingCollectionList, List<WhSeedingCollectionLineCommand> facilitySeedingCollectionLineList, Long logId);
 
-    public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public void finishedSeedingByOutboundBox(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> boxSeedingLineList, List<WhSkuInventory> odoOrgSkuInvList, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal,
+            Long userId, Long ouId, String logId);
 
-    public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList,WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId, Long ouId, String logId);
+    public void finishedSeedingByOdo(Long facilityId, String batchNo, List<WhSeedingCollectionLineCommand> odoSeedingLineList, WhSeedingWallLattice seedingWallLattice, List<WhSkuInventory> odoSeedingSkuInventoryList, Boolean isTabbInvTotal, Long userId,
+            Long ouId, String logId);
 
     public List<WhSkuInventory> findSeedingOdoSkuInvByOdoLineIdUuid(Long odoLineId, Long ouId, String uuid);
 
@@ -110,4 +112,6 @@ public interface SeedingManager extends BaseManager {
     public int updateOutboundFacility(WhOutboundFacilityCommand facilityCommand, String logId);
 
     public Boolean isOutboundBoxAlreadyUsed(String outboundBoxCode, Long ouId, String logId);
+
+    String liberateSeedingWall(String containerCode, Long ouId, Long userId, WhOutboundFacilityCommand WhOutboundFacilityCommand) throws Exception;
 }
