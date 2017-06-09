@@ -113,5 +113,5 @@ public interface SeedingManager extends BaseManager {
 
     public Boolean isOutboundBoxAlreadyUsed(String outboundBoxCode, Long ouId, String logId);
 
-    String liberateSeedingWall(String containerCode, Long ouId, Long userId, WhOutboundFacilityCommand WhOutboundFacilityCommand) throws Exception;
+    String liberateSeedingWall(String containerCode, Long ouId, Long userId, Long facilityId) throws Exception;
 }

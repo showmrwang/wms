@@ -401,11 +401,12 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public String liberateSeedingWall(String containerCode, Long ouId, Long userId, WhOutboundFacilityCommand WhOutboundFacilityCommand) throws Exception {
+    public String liberateSeedingWall(String containerCode, Long ouId, Long userId, Long facilityId) throws Exception {
         log.info("liberateSeedingWall begin!");
         String msg = "success";
+        WhOutboundFacility f = whOutboundFacilityDao.findByIdAndOuId(facilityId, ouId);
         // 验证播种墙是否存在库存
-        List<WhSkuInventory> skuInv = whSkuInventoryDao.findSkuInventoryBySeedingWallCode(WhOutboundFacilityCommand.getFacilityCode(), null, ouId);
+        List<WhSkuInventory> skuInv = whSkuInventoryDao.findSkuInventoryBySeedingWallCode(f.getFacilityCode(), null, ouId);
         if (null != skuInv && skuInv.size() > 0) {
             return "seedingWallInvError";
         }
@@ -425,7 +426,7 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
             return "containerStatusError";
         }
         // 获取播种墙对应批次周装箱库存
-        List<WhSeedingCollection> w = whSeedingCollectionDao.findWhSeedingCollectionByBatchNo(WhOutboundFacilityCommand.getBatch(), ouId);
+        List<WhSeedingCollection> w = whSeedingCollectionDao.findWhSeedingCollectionByBatchNo(f.getBatch(), ouId);
         if (null != w && w.size() > 0) {
             List<Long> iIds = new ArrayList<Long>();
             for (WhSeedingCollection whSeedingCollection : w) {
@@ -440,7 +441,6 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
                 whSkuInventoryDao.saveOrUpdateByVersion(whSkuInventory);
             }
             // 释放播种墙
-            WhOutboundFacility f = whOutboundFacilityDao.findByIdAndOuId(WhOutboundFacilityCommand.getId(), ouId);
             f.setBatch(null);
             f.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
             f.setOperatorId(userId);
