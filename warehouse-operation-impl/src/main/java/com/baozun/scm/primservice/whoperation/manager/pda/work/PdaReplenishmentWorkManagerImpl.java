@@ -65,7 +65,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
     @Autowired
     private WhOperationLineDao whOperationLineDao;
     
-    
+
     /****
      * 确定补货方式和占用模型
      * 
@@ -88,7 +88,17 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         psRCmd.setOperationId(whOperationCommand.getId());
         // 捡货方式           
         if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 1){
-            psRCmd.setReplenishWay(Constants.REPLENISH_WAY_TWO);
+            for(Long pallet : statisticsCommand.getPallets()){
+                int countOut = whSkuInventoryDao.findInventoryCountsByOuterContainerId(ouId, pallet);
+                int countOut1 = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, pallet,psRCmd.getOperationId());
+                if(countOut == countOut1){
+                    psRCmd.setReplenishWay(Constants.REPLENISH_WAY_TWO);
+                    break;    
+                }else{
+                    psRCmd.setReplenishWay(Constants.REPLENISH_WAY_ONE);  
+                    break;   
+                }
+            }
         }else if(whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 0 && statisticsCommand.getContainers().size() == 1){
             psRCmd.setReplenishWay(Constants.REPLENISH_WAY_THREE);
         }else{
