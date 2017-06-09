@@ -58,7 +58,8 @@
 		        is_freight_invoice_sunder as isFreightInvoiceSunder,
 		        lag_odo_status as lagOdoStatus,
 		        is_permit_outbound as isPermitOutBound,
-		        odo_index as odoIndex
+		        odo_index as odoIndex,
+		        is_cancel as isCancel
         ]]>
     </sql>
     <sql id="whOdoConditionWhereExt">
@@ -188,7 +189,8 @@
 		        	is_freight_invoice_sunder,
 		        	lag_odo_status,
 		        	is_permit_outbound,
-		        	odo_index
+		        	odo_index,
+		        	is_cancel
                 ) VALUES (
                    #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -233,7 +235,8 @@
 		        	#{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        	#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT},
-		        	#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR}
+		        	#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{isCancel,javaType=java.lang.Boolean,jdbcType=BIT}
                 )
             ]]>
 
@@ -283,7 +286,8 @@
 		        is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		        lag_odo_status=#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		        is_permit_outbound = #{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT},
-		        odo_index=#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR}
+		        odo_index=#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR},
+		        is_cancel = #{isCancel,javaType=java.lang.Boolean,jdbcType=BIT}
             WHERE 
                 id = #{id} 
                 and ou_id = #{ouId}
@@ -507,6 +511,9 @@
 	       
 		       <if test="extOdoType!=null and extOdoType!=''">
 					and ext_odo_type = #{extOdoType}
+				</if>
+				<if test="isCancel!=null">
+					and is_cancel = #{isCancel}
 				</if>
 		</where>
     </sql>
