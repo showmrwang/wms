@@ -5,6 +5,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityGroupSku
 
 public interface WhFacilityGroupSkuVolumeManager extends BaseManager {
 
-    WhFacilityGroupSkuVolume findSkuByCheckLocationSerialNumber(Integer serialNumber, Long ouId);
+    WhFacilityGroupSkuVolume findSkuByCheckLocationSerialNumber(Long lsvId, Integer serialNumber, Long ouId);
 
 }
