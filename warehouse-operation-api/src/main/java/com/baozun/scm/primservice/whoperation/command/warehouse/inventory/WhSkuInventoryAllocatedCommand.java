@@ -16,7 +16,9 @@
  */
  package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -120,6 +122,8 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
     private java.lang.Long toLocationId;
     /** 目标库位数量 */
     private Double toQty;
+    /** ids */
+    private Set<Long> ids = new HashSet<Long>();
     
     /** 残次库存信息 */
     private List<WhSkuInventorySnCommand> whSkuInventorySnCommandList;
@@ -344,6 +348,14 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
 
     public void setWhSkuInventorySnCommandList(List<WhSkuInventorySnCommand> whSkuInventorySnCommandList) {
         this.whSkuInventorySnCommandList = whSkuInventorySnCommandList;
+    }
+
+    public Set<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(Set<Long> ids) {
+        this.ids = ids;
     }
 
     @Override
