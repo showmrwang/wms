@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityLocationSkuVolumeDao">
+	<resultMap id="WhFacilityLocationSkuVolumeResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityLocationSkuVolume">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFacilityLocationSkuVolumeColumns">
+	    <![CDATA[
+	        	id as id,
+	        	facility_id as facilityId,
+	        	lsv_id as lsvId,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityLocationSkuVolume" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_facility_location_sku_volume (
+		        id,
+		        	facility_id ,
+		        	lsv_id ,
+		        	ou_id 
+		        ) VALUES (
+		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{lsvId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityLocationSkuVolume">
+	    <![CDATA[
+	        UPDATE t_wh_facility_location_sku_volume SET
+		        facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lsv_id = #{lsvId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_facility_location_sku_volume where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from t_wh_facility_location_sku_volume 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="WhFacilityLocationSkuVolumeResult" flushCache="false">
+			select <include refid="whFacilityLocationSkuVolumeColumns" />
+		    <![CDATA[
+			    from t_wh_facility_location_sku_volume 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="WhFacilityLocationSkuVolumeResult" flushCache="false">
+			select <include refid="whFacilityLocationSkuVolumeColumns" />
+			    from t_wh_facility_location_sku_volume 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="whFacilityLocationSkuVolumeDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="facilityId!=null">
+					and facility_id = #{facilityId}
+				</if>
+	       
+				<if test="lsvId!=null">
+					and lsv_id = #{lsvId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from t_wh_facility_location_sku_volume 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from t_wh_facility_location_sku_volume 
+		<include refid="whFacilityLocationSkuVolumeDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from t_wh_facility_location_sku_volume 
+		<include refid="whFacilityLocationSkuVolumeDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="WhFacilityLocationSkuVolumeResult">
+    	select <include refid="whFacilityLocationSkuVolumeColumns" />
+	    from t_wh_facility_location_sku_volume 
+		<include refid="whFacilityLocationSkuVolumeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="WhFacilityLocationSkuVolumeResult">
+    	select <include refid="whFacilityLocationSkuVolumeColumns" />
+	    from t_wh_facility_location_sku_volume 
+		<include refid="whFacilityLocationSkuVolumeDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="WhFacilityLocationSkuVolumeResult">
+    	select <include refid="whFacilityLocationSkuVolumeColumns" />
+	    from t_wh_facility_location_sku_volume 
+		<include refid="whFacilityLocationSkuVolumeDynamicWhere"/>
+		
+    </select>
+
+	
+</mapper>

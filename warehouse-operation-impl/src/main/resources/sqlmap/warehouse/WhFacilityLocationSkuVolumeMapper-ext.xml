@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.warehouse.WhFacilityLocationSkuVolumeDao">
+	<resultMap id="WhFacilityLocationSkuVolumeResultExt" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityLocationSkuVolume">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="whFacilityLocationSkuVolumeColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	facility_id as facilityId,
+	        	lsv_id as lsvId,
+	        	ou_id as ouId
+	    ]]>
+	</sql>
+	
+	<sql id="whFacilityLocationSkuVolumeDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+				<if test="facilityId!=null">
+					and facility_id = #{facilityId}
+				</if>
+	       
+				<if test="lsvId!=null">
+					and lsv_id = #{lsvId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+		</where>
+	</sql>
+	
+	 <delete id="deleteByFacilityId" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_facility_location_sku_volume  where
+		        facility_id= #{facilityId} 
+		        and ou_id = #{ouId}
+	    ]]>
+	</delete>
+	<select id="findByFacilityId" resultMap="WhFacilityLocationSkuVolumeResultExt">
+	    select <include refid="whFacilityLocationSkuVolumeColumnsExt" />
+	    from t_wh_facility_location_sku_volume
+	    where facility_id = #{facilityId} and ou_id=#{ouId}
+	</select>
+	<delete id="deleteExt" parameterType="java.lang.Long">
+	delete from t_wh_facility_location_sku_volume  where
+		        id= #{id} 
+		        and ou_id = #{ouId}
+	</delete>
+	
+			<select id="getLocationCountByfacilityId" resultType="Integer">
+	select count(1) from 
+	t_wh_facility_location_sku_volume 
+	where 
+	facility_id = #{facilityId}
+	</select>
+
+	<select id="findByLsvAndOuId" resultMap="WhFacilityLocationSkuVolumeResultExt">
+		select 
+			id as id,
+        	facility_id as facilityId,
+        	lsv_id as lsvId,
+        	ou_id as ouId
+ 		from 
+			t_wh_facility_location_sku_volume 
+		where 
+			lsv_id = #{lsvId}
+			and ou_id = #{ouId}
+	</select>
+</mapper>
