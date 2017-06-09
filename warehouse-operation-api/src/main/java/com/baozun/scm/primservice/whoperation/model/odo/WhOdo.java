@@ -119,8 +119,17 @@ public class WhOdo extends BaseModel {
     private Date archivTime;
     /** 上位系统单据类型 */
     private String extOdoType;
+    /** 是否取消，用于交接拦截取消的出库单 */
+    private Boolean isCancel;
 
 
+    public Boolean getIsCancel() {
+        return isCancel;
+    }
+
+    public void setIsCancel(Boolean isCancel) {
+        this.isCancel = isCancel;
+    }
 
     public String getLagOdoStatus() {
         return lagOdoStatus;

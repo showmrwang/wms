@@ -3013,4 +3013,28 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         }
         return service;
     }
+
+
+    @Override
+    public ResponseMsg cancelOdoWithWork(WhOdo odo, Long ouId, Long userId, String logId) {
+        try {
+            this.cancelOdo(odo, ouId, logId);
+            ResponseMsg msg = new ResponseMsg();
+            msg.setResponseStatus(ResponseMsg.STATUS_SUCCESS);
+            msg.setMsg("SUCCESS");
+            return msg;
+        } catch (BusinessException ex) {
+            log.error("", ex);
+            ResponseMsg msg = new ResponseMsg();
+            msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            msg.setMsg(ex.getErrorCode() + "");
+            return msg;
+        } catch (Exception e) {
+            log.error("", e);
+            ResponseMsg msg = new ResponseMsg();
+            msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
+            msg.setMsg(ErrorCodes.SYSTEM_ERROR + "");
+            return msg;
+        }
+    }
 }
