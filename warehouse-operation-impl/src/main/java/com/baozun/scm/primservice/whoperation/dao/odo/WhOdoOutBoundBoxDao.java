@@ -129,7 +129,7 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      * @param ouId @required
      * @return
      */
-    List<WhOdoOutBoundBox> findOutboundboxListByWaveIdAndOdoIdAndOdoLineIdAndOuId(@Param("waveId") Long waveId, @Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("waveIdouId") Long ouId);
+    List<WhOdoOutBoundBox> findOutboundboxListByWaveIdAndOdoIdAndOdoLineIdAndOuId(@Param("waveId") Long waveId, @Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
     long deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
 

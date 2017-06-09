@@ -731,7 +731,8 @@
 		        	is_freight_invoice_sunder = #{isFreightInvoiceSunder,javaType=java.lang.Boolean,jdbcType=BIT} ,
 		       		lag_odo_status=#{lagOdoStatus,javaType=java.lang.String,jdbcType=VARCHAR},
 		       		is_permit_outbound = #{isPermitOutBound,javaType=java.lang.Boolean,jdbcType=BIT},
-		       		odo_index=#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR}
+		       		odo_index=#{odoIndex,javaType=java.lang.String,jdbcType=VARCHAR},
+		       		is_cancel = #{isCancel,javaType=java.lang.Boolean,jdbcType=BIT}
            
         ]]>
 		<where>

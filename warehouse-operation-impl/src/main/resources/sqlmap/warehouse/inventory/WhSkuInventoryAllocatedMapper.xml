@@ -39,6 +39,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	uuid as uuid,
 	        	ou_id as ouId,
 	        	last_modify_time as lastModifyTime,
+	        	occupation_code_source as occupationCodeSource,
 	        	replenishment_rule_id as replenishmentRuleId
 	    ]]>
 	</sql>
@@ -204,6 +205,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        replenishment_rule_id = #{replenishmentRuleId,javaType=java.lang.Long,jdbcType=BIGINT} 
 	        WHERE 
 		        id = #{id} 

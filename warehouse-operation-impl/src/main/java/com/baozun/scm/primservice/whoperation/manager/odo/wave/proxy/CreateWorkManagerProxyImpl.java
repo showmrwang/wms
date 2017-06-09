@@ -212,7 +212,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      * @param userId
      * @return
      */
-    public void createReplenishmentAfterPicking(Set<Long> locationIds, Long ouId, Long userId) {
+    public void createReplenishmentAfterPicking(List<Long> locationIds, Long ouId, Long userId) {
         for(Long locationId : locationIds){
             try {
                 createWorkManager.createReplenishmentAfterPicking(locationId, ouId, userId);

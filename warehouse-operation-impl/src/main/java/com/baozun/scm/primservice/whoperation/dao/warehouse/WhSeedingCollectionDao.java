@@ -40,6 +40,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     /**
      * [业务方法] 计算播种墙已由容器数量
+     * 
      * @param seedingwallCode
      * @param batch
      * @param ouId
@@ -48,6 +49,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     /**
      * [通用方法] 通过id和ouId获取集货信息
+     * 
      * @param id
      * @param ouId
      * @return
@@ -56,6 +58,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     /**
      * [通用方法] 保存集货信息表
+     * 
      * @param o
      * @return
      */
@@ -64,6 +67,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     /**
      * [通用方法] 找到当前工作下所有未被推荐的容器
+     * 
      * @param containerIdList
      * @param ouId
      * @return
@@ -74,6 +78,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     /**
      * 通过容器号获取它的集货中状态
+     * 
      * @param containerCode
      * @param ouId
      * @return
@@ -86,7 +91,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     int deleteContainerInSeedingWall(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
 
-	int checkCountInDestination(@Param("batch") String batch, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
+    int checkCountInDestination(@Param("batch") String batch, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
 
     /**
      * 获取播种墙集货信息
@@ -96,9 +101,9 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
      * @return
      */
     public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
-    
-    
-    public List<WhSeedingCollection> findSeedingCollection(@Param("facilityId") Long facilityId, @Param("collectionStatus") List<Integer> collectionStatus,  @Param("ouId") Long ouId);
+
+
+    public List<WhSeedingCollection> findSeedingCollection(@Param("facilityId") Long facilityId, @Param("collectionStatus") List<Integer> collectionStatus, @Param("ouId") Long ouId);
 
     /**
      * 获取播种墙绑定的批次
@@ -111,7 +116,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
     public List<String> getFacilityBindBatch(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 
     public WhSeedingCollection findSeedingCollectionByContainerId(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
-    
+
     public WhSeedingCollectionCommand getSeedingCollectionByTurnoverBox(@Param("facilityId") Long facilityId, @Param("turnoverBoxCode") String turnoverBoxCode, @Param("ouId") Long ouId);
 
     public WhSeedingCollectionCommand getSeedingCollectionById(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
@@ -126,4 +131,15 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
      * @return
      */
     List<WhSeedingWallLattice> getSeedingBatchOdoInfo(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
+
+    /**
+     * 通过小批次号获取对应集货信息
+     * 
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingCollection> findWhSeedingCollectionByBatchNo(@Param("batchNo") String batchNo, @Param("ouid") Long ouid);
+
+
 }

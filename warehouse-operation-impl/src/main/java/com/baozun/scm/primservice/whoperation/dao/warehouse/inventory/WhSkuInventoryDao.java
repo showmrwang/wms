@@ -179,6 +179,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * 根据外部容器查询对应容器库存
+     * 
      * @author lichuan
      * @param ouId
      * @param outerContainerId
@@ -797,6 +798,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     public List<WhSkuInventoryCommand> findWhSkuInventoryByLocationIds(@Param("ouId") Long ouId, @Param("locIdList") List<Long> locIdList);
 
     /**
+     * 根据内部容器Id集合查询库存信息
+     * 
+     * @param ouId
+     * @param locIdList
+     * @return
+     */
+    List<WhSkuInventory> findWhSkuInventoryByInsideContainerIds(@Param("ouId") Long ouId, @Param("insideContainerIds") List<Long> insideContainerIds);
+
+    /**
      * 根据参数查询出库存信息并根据uuid分组--创拣货工作
      * 
      * @author qiming.liu
@@ -835,8 +845,8 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
             @Param("insideContainerId") Long insideContainerId);
 
 
-    public List<WhSkuInventoryCommand> getWhSkuInventoryByOperationId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
-            @Param("insideContainerId") Long insideContainerId);
+    public List<WhSkuInventoryCommand> getWhSkuInventoryByOperationId(@Param("odoId") Long odoId, @Param("occupationLineId") Long occupationLineId, @Param("locationId") Long locationId, @Param("ouId") Long ouId,
+            @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId);
 
 
     public List<WhSkuInventoryCommand> getWhSkuInventoryCmdByOccupationLineId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
@@ -869,6 +879,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * 根据内部容器id查询库存
+     * 
      * @author qiming.liu
      * @return
      */
@@ -1087,6 +1098,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * 查询出库箱信息
+     * 
      * @param outboundbox
      * @param ouId
      * @return
@@ -1095,6 +1107,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * [通用方法] 通过静态库位id查找库存信息
+     * 
      * @return
      */
     WhSkuInventory findSkuInvByLocationId(@Param("locationId") Long locationId);
@@ -1110,6 +1123,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /***
      * 查询当前货箱内sku的数量
+     * 
      * @param ouId
      * @param insideContainerId
      * @return
@@ -1120,6 +1134,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /***
      * 查询当前托盘内sku的数量
+     * 
      * @param ouId
      * @param outerContainerId
      * @return
@@ -1132,6 +1147,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * [通用方法] 通过库位和商品id查找在库库存不为0的库存明细列表
+     * 
      * @param locationId
      * @param skuId
      * @param ouId
@@ -1210,27 +1226,31 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     public int countWhSkuInventoryCommandByOdo(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId, @Param("seedingWallCode") String seedingWallCode);
-    
+
     /**
      * 根据外部容器号和货格找出库存
+     * 
      * @author kai.zhu
      */
     List<WhSkuInventory> findSkuInventoryByOutSideContainerCode(@Param("containerCode") String containerCode, @Param("latticNo") String latticNo, @Param("ouId") Long ouId);
-    
+
     /**
      * 根据内部容器号找出库存
+     * 
      * @author kai.zhu
      */
     List<WhSkuInventory> findSkuInventoryByInSideContainerCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
-    
+
     /**
      * 根据播种墙code和货格找出库存
+     * 
      * @author kai.zhu
      */
     List<WhSkuInventory> findSkuInventoryBySeedingWallCode(@Param("containerCode") String containerCode, @Param("latticNo") String latticNo, @Param("ouId") Long ouId);
-    
+
     /**
      * 根据出库箱code找出库存
+     * 
      * @author kai.zhu
      */
     List<WhSkuInventory> findSkuInventoryByOutBoundBoxCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);

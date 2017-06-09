@@ -696,6 +696,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
 
             odo.setOdoStatus(OdoStatus.CANCEL);
+            odo.setIsCancel(true);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);

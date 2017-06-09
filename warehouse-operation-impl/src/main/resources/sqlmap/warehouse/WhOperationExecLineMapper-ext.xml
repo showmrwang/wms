@@ -687,6 +687,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		opLine.useOuterContainerId,
 		opLine.useContainerId,
 		opLine.useOutboundboxCode,
+		opLine.odoLineId,
 		opLine.skuId,
 		sum(qty) as qty
 		FROM
@@ -696,6 +697,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inventory.outer_container_id as useOuterContainerId,
 			inventory.inside_container_id as useContainerId,
 			inventory.outboundbox_code as useOutboundboxCode,
+			inventory.occupation_line_id as odoLineId,
 			inventory.sku_id as skuId,
 			sum(
 			IFNULL(inventory.on_hand_qty, 0)
@@ -715,6 +717,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inventory.outer_container_id,
 			inventory.inside_container_id,
 			inventory.outboundbox_code,
+			inventory.occupation_line_id,
 			inventory.sku_id
 		) opLine
 		WHERE
@@ -724,6 +727,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		opLine.useOuterContainerId,
 		opLine.useContainerId,
 		opLine.useOutboundboxCode,
+		opLine.odoLineId,
 		opLine.skuId
 		HAVING
 		sum(qty) != 0
@@ -736,6 +740,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		opLine.useOuterContainerId,
 		opLine.useContainerId,
 		opLine.useOutboundboxCode,
+		opLine.odoLineId,
 		opLine.skuId,
 		sum(qty) as qty
 		FROM
@@ -745,6 +750,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			operationExecLine.use_outer_container_id as useOuterContainerId,
 			operationExecLine.use_container_id as useContainerId,
 			operationExecLine.use_outboundbox_code as useOutboundboxCode,
+			operationExecLine.odo_line_id as odoLineId,
 			operationExecLine.sku_id as skuId ,
 			sum(
 			 IFNULL(operationExecLine.qty, 0)
@@ -764,6 +770,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			operationExecLine.use_outer_container_id,
 			operationExecLine.use_container_id,
 			operationExecLine.use_outboundbox_code,
+			operationExecLine.odo_line_id,
 			operationExecLine.sku_id
 			) opLine
 		WHERE
@@ -773,6 +780,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		opLine.useOuterContainerId,
 		opLine.useContainerId,
 		opLine.useOutboundboxCode,
+		opLine.odoLineId,
 		opLine.skuId
 		HAVING
 		sum(qty) != 0

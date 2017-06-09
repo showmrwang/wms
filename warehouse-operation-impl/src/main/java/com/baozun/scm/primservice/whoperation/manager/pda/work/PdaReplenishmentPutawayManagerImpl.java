@@ -989,7 +989,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                           String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
                                           workLine.setLineCode(workLineCode);
                                           workLine.setFromInsideContainerId(insideId);
-                                          workLine.setFromOuterContainerId(outerId);
+                                          if(null == outerContainerId) {
+                                              workLine.setFromOuterContainerId(null);
+                                          }else{
+                                              workLine.setFromOuterContainerId(outerId);
+                                          }
                                           whWorkLineDao.insert(workLine);
                                           insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
                                           //修改原来的记录
@@ -1006,7 +1010,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                               WhWorkLine workLine = new WhWorkLine();
                                               BeanUtils.copyProperties(workLineCmd, workLine);
                                               workLine.setFromInsideContainerId(insideId);
-                                              workLine.setFromOuterContainerId(outerId);
+                                              if(null == outerContainerId) {
+                                                  workLine.setFromOuterContainerId(null);
+                                              }else{
+                                                  workLine.setFromOuterContainerId(outerId);
+                                              }
                                               workLine.setQty(onHandQty);
                                               whWorkLineDao.saveOrUpdateByVersion(workLine);
                                               insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
@@ -1023,7 +1031,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                                  workLine.setCreateTime(new Date());
                                                  workLine.setLastModifyTime(new Date());
                                                  workLine.setFromInsideContainerId(insideId);
-                                                 workLine.setFromOuterContainerId(outerId);
+                                                 if(null == outerContainerId) {
+                                                     workLine.setFromOuterContainerId(null);
+                                                 }else{
+                                                     workLine.setFromOuterContainerId(outerId);
+                                                 }
                                                  String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
                                                  workLine.setLineCode(workLineCode);
                                                  whWorkLineDao.insert(workLine);
@@ -1041,7 +1053,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                                  WhWorkLine workLine = new WhWorkLine();
                                                  BeanUtils.copyProperties(workLineCmd, workLine);
                                                  workLine.setFromInsideContainerId(insideId);
-                                                 workLine.setFromOuterContainerId(outerId);
+                                                 if(null == outerContainerId) {
+                                                     workLine.setFromOuterContainerId(null);
+                                                 }else{
+                                                     workLine.setFromOuterContainerId(outerId);
+                                                 }
                                                  workLine.setQty(lineQty);
                                                  whWorkLineDao.saveOrUpdateByVersion(workLine);
                                                  insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
@@ -1051,7 +1067,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                                  WhWorkLine workLine = new WhWorkLine();
                                                  BeanUtils.copyProperties(workLineCmd, workLine);
                                                  workLine.setFromInsideContainerId(insideId);
-                                                 workLine.setFromOuterContainerId(outerId);
+                                                 if(null == outerContainerId) {
+                                                     workLine.setFromOuterContainerId(null);
+                                                 }else{
+                                                     workLine.setFromOuterContainerId(outerId);
+                                                 }
                                                  workLine.setQty(lineQty);
                                                  whWorkLineDao.saveOrUpdateByVersion(workLine);
                                                  insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
@@ -1083,7 +1103,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                 WhOperationLine opLine = new WhOperationLine();
                                 BeanUtils.copyProperties(operLineCmd, opLine);
                                 opLine.setFromInsideContainerId(insideId);
-                                opLine.setFromOuterContainerId(outerId);
+                                if(null == outerContainerId) {
+                                    opLine.setFromOuterContainerId(null);
+                                }else{
+                                    opLine.setFromOuterContainerId(outerId); 
+                                }
                                 opLine.setQty(onHandQty);
                                 opLine.setId(null);
                                 opLine.setCreateTime(new Date());
@@ -1105,7 +1129,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     WhOperationLine opLine = new WhOperationLine();
                                     BeanUtils.copyProperties(operLineCmd, opLine);
                                     opLine.setFromInsideContainerId(insideId);
-                                    opLine.setFromOuterContainerId(outerId);
+                                    if(null == outerContainerId) {
+                                        opLine.setFromOuterContainerId(null);
+                                    }else{
+                                        opLine.setFromOuterContainerId(outerId); 
+                                    }
                                     opLine.setQty(onHandQty);
                                     whOperationLineDao.saveOrUpdateByVersion(opLine);
                                     insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
@@ -1122,7 +1150,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                         opLine.setCreateTime(new Date());
                                         opLine.setLastModifyTime(new Date());
                                         opLine.setFromInsideContainerId(insideId);
-                                        opLine.setFromOuterContainerId(outerId);
+                                        if(null == outerContainerId) {
+                                            opLine.setFromOuterContainerId(null);
+                                        }else{
+                                            opLine.setFromOuterContainerId(outerId); 
+                                        }
                                         whOperationLineDao.insert(opLine);
                                         insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
                                         //修改原来的作业明细
@@ -1139,7 +1171,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                         WhOperationLine opLine = new WhOperationLine();
                                         BeanUtils.copyProperties(operLineCmd, opLine);
                                         opLine.setFromInsideContainerId(insideId);
-                                        opLine.setFromOuterContainerId(outerId);
+                                        if(null == outerContainerId) {
+                                            opLine.setFromOuterContainerId(null);
+                                        }else{
+                                            opLine.setFromOuterContainerId(outerId); 
+                                        }
                                         opLine.setQty(lineQty);
                                         whOperationLineDao.saveOrUpdateByVersion(opLine);
                                         insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
@@ -1149,7 +1185,11 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                         WhOperationLine opLine = new WhOperationLine();
                                         BeanUtils.copyProperties(operLineCmd, opLine);
                                         opLine.setFromInsideContainerId(insideId);
-                                        opLine.setFromOuterContainerId(outerId);
+                                        if(null == outerContainerId) {
+                                            opLine.setFromOuterContainerId(null);
+                                        }else{
+                                            opLine.setFromOuterContainerId(outerId); 
+                                        }
                                         opLine.setQty(lineQty);
                                         whOperationLineDao.saveOrUpdateByVersion(opLine);
                                         insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
