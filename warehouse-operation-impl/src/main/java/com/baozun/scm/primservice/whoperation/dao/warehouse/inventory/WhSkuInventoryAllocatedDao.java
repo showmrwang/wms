@@ -31,6 +31,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 
@@ -56,6 +57,14 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
     
     List<WhSkuInventoryAllocated> findSkuInventoryAllocatedByUuid(@Param("uuid") String uuid, @Param("ouId") Long ouId);
 
+    /**
+     * 通过id进行查询单个对象
+     * 
+     * @param id
+     * @return
+     */
+    WhSkuInventoryAllocated findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+    
     int deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
 	
 	/**
@@ -83,7 +92,8 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
      * @param ReplenishmentRuleCommand
      * @return
      */
-    List<WhSkuInventoryAllocatedCommand> getReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
+    List<WhSkuInventoryAllocatedCommand> getInReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
+    List<WhSkuInventoryAllocatedCommand> getOutReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
 	
 	/**
      * 根据条件查询库存数量
@@ -136,6 +146,7 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
      * @return
      */
     Double getTotalQtyByReplenishmentCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
+    List<WhSkuInventoryAllocatedCommand> getLstByReplenishmentCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
 
     @CommonQuery
     int saveOrUpdateByVersion(WhSkuInventoryAllocated invAllocated);

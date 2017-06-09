@@ -77,6 +77,8 @@ public class WhSkuInventoryAllocated extends BaseModel {
 	private Long ouId;
 	/** 最后操作时间 */
 	private Date lastModifyTime;
+	/** 占用单据来源 */
+    private String occupationCodeSource;
 	/** 补货阶段使用的规则id */
 	private Long replenishmentRuleId;
 	//columns END
@@ -267,6 +269,14 @@ public class WhSkuInventoryAllocated extends BaseModel {
 	public void setReplenishmentRuleId(Long replenishmentRuleId) {
 		this.replenishmentRuleId = replenishmentRuleId;
 	}
+
+    public String getOccupationCodeSource() {
+        return occupationCodeSource;
+    }
+
+    public void setOccupationCodeSource(String occupationCodeSource) {
+        this.occupationCodeSource = occupationCodeSource;
+    }
 	
 }
 

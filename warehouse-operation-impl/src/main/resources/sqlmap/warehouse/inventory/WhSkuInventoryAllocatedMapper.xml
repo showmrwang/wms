@@ -39,6 +39,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	uuid as uuid,
 	        	ou_id as ouId,
 	        	last_modify_time as lastModifyTime,
+	        	occupation_code_source as occupationCodeSource,
 	        	replenishment_rule_id as replenishmentRuleId
 	    ]]>
 	</sql>

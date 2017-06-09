@@ -167,5 +167,6 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      * @param ReplenishmentRuleCommand
      * @return
      */
-    List<WhSkuInventoryTobefilledCommand> getReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
+    List<WhSkuInventoryTobefilledCommand> getInReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
+    List<WhSkuInventoryTobefilledCommand> getOutReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
 }
