@@ -14,6 +14,7 @@
 
 package com.baozun.scm.primservice.whoperation.manager.seeding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
@@ -33,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollect
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -58,6 +60,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 
 @Service("seedingManager")
 public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManager {
@@ -391,5 +394,61 @@ public class SeedingManagerImpl extends BaseManagerImpl implements SeedingManage
 
     }
 
+    /**
+     * 一键释放播种墙
+     * 
+     * @throws Exception
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public String liberateSeedingWall(String containerCode, Long ouId, Long userId, Long facilityId) throws Exception {
+        log.info("liberateSeedingWall begin!");
+        String msg = "success";
+        WhOutboundFacility f = whOutboundFacilityDao.findByIdAndOuId(facilityId, ouId);
+        // 验证播种墙是否存在库存
+        List<WhSkuInventory> skuInv = whSkuInventoryDao.findSkuInventoryBySeedingWallCode(f.getFacilityCode(), null, ouId);
+        if (null != skuInv && skuInv.size() > 0) {
+            return "seedingWallInvError";
+        }
+        // 查询对应容器数据
+        ContainerCommand container = containerDao.getContainerByCode(containerCode, ouId);
+        if (null == container) {
+            // 容器信息不存在
+            return "containerNullError";
+        }
+        // 验证容器Lifecycle是否有效
+        if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_FORBIDDEN)) {
+            // 容器Lifecycle无效
+            return "containerLifecycleError";
+        }
+        // 如果容器Lifecycle为占用 判断是否状态为可用状态
+        if (!container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+            return "containerStatusError";
+        }
+        // 获取播种墙对应批次周装箱库存
+        List<WhSeedingCollection> w = whSeedingCollectionDao.findWhSeedingCollectionByBatchNo(f.getBatch(), ouId);
+        if (null != w && w.size() > 0) {
+            List<Long> iIds = new ArrayList<Long>();
+            for (WhSeedingCollection whSeedingCollection : w) {
+                iIds.add(whSeedingCollection.getContainerId());
+            }
+            List<WhSkuInventory> invList = whSkuInventoryDao.findWhSkuInventoryByInsideContainerIds(ouId, iIds);
+            for (WhSkuInventory whSkuInventory : invList) {
+                // 修改对应库存进入新的周装箱内
+                whSkuInventory.setInsideContainerId(container.getId());
+                String uuid = SkuInventoryUuid.invUuid(whSkuInventory);
+                whSkuInventory.setUuid(uuid);
+                whSkuInventoryDao.saveOrUpdateByVersion(whSkuInventory);
+            }
+            // 释放播种墙
+            f.setBatch(null);
+            f.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
+            f.setOperatorId(userId);
+            whOutboundFacilityDao.saveOrUpdateByVersion(f);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, f, ouId, userId, null, null);
+        }
+        log.info("liberateSeedingWall end!");
+        return msg;
+    }
 
 }

@@ -501,6 +501,8 @@ public class ErrorCodes {
     // 30001-40000 zhanglei
     /** [称重] 输入的编码未查询到相应的出库信息*/
     public static final int WEIGHTING_INPUT_NOT_CORRECT = 30101;
+    /** [集货] 该出库箱未能找到集货信息*/
+    public static final int CONCENTRATION_NO_INFO_RETURN = 30102;
     // 30001-40000 zhanglei
 
     // 40001-50000 lichuan
