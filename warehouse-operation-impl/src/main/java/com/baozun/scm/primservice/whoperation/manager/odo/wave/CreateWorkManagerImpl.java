@@ -2545,15 +2545,17 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
     public void createReplenishmentAfterPicking(Long toLocationId, Long ouId, Long userId) {
         // 获取库位的未完成工作明细
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByToLocationId(toLocationId, ouId);
-        // 计算目标库位容器
-        List<WhWorkLineCommand> workLineCommandList = calculateLocationByWorkLine(whWorkLineCommandList);
-        if (null != workLineCommandList && 0 < workLineCommandList.size()) {
-            // 基于目标库位容器及工作明细生成作业明细
-            int replenishmentOperationLineCount = this.supplementReplenishmentOperationLine(workLineCommandList);
-            if (replenishmentOperationLineCount != workLineCommandList.size()) {
-                log.error("replenishmentOperationLineCount is error", workLineCommandList.size());
-                throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
-            }
+        if(null != whWorkLineCommandList && 0 < whWorkLineCommandList.size()){
+            // 计算目标库位容器
+            List<WhWorkLineCommand> workLineCommandList = calculateLocationByWorkLine(whWorkLineCommandList);
+            if (null != workLineCommandList && 0 < workLineCommandList.size()) {
+                // 基于目标库位容器及工作明细生成作业明细
+                int replenishmentOperationLineCount = this.supplementReplenishmentOperationLine(workLineCommandList);
+                if (replenishmentOperationLineCount != workLineCommandList.size()) {
+                    log.error("replenishmentOperationLineCount is error", workLineCommandList.size());
+                    throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+                }
+            }    
         }
     }
     

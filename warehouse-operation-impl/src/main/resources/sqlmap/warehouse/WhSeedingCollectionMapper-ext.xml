@@ -474,4 +474,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             batch = #{batchNo}
             and ou_id = #{ouid}
     </select>
+
+    <select id="countOccupationByFacilityCode" resultType="int">
+	    SELECT
+			count(1)
+		FROM
+			t_wh_seeding_collection sc
+		LEFT JOIN t_wh_outbound_facility facility ON sc.facility_id = facility.id
+		WHERE
+			sc.collection_status != 10
+		AND sc.ou_id = #{ouId}
+		AND facility.facility_code = #{seedingWallCode}
+    </select>
 </mapper>
