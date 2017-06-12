@@ -107,5 +107,14 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
 
     List<WhOperationLine> findByOperationId(@Param("operationId") Long operationId, @Param("ouId") Long ouId);
     
+    
+    /**
+     * 判断当前作业要拣货的数量
+     * @param ouId
+     * @param lattice
+     * @param operationId
+     * @return
+     */
+    public int findOperationLineCount(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
 	
 }

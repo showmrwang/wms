@@ -155,7 +155,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhSkuWhmgmtDao whSkuWhmgmtDao;
     @Autowired
     private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
@@ -530,14 +530,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
 
             // 生成反馈信息 @mender yimin.lu 2017/4/24
-            //@mender yimin.lu 捕获异常封装
-            try{
+            // @mender yimin.lu 捕获异常封装
+            try {
                 this.whOutboundConfirmManager.saveWhOutboundConfirm(updateOdo);
-            }catch(BusinessException ex){
-                log.error("",ex);
+            } catch (BusinessException ex) {
+                log.error("", ex);
                 throw ex;
-            }catch(Exception exp){
-                log.error("",exp);
+            } catch (Exception exp) {
+                log.error("", exp);
                 throw new BusinessException(ErrorCodes.ODO_CONFIRM_ERROR);
             }
 
@@ -696,6 +696,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             }
 
             odo.setOdoStatus(OdoStatus.CANCEL);
+            odo.setLagOdoStatus(OdoStatus.CANCEL);
             odo.setIsCancel(true);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
@@ -1005,7 +1006,6 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    
     public WhWaveMaster findWaveMasterByIdouId(Long waveMasterId, Long ouId) {
         return this.whWaveMasterDao.findByIdExt(waveMasterId, ouId);
     }
@@ -1427,7 +1427,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             OutBoundBoxType boxType = outBoundBoxTypeDao.findByIdExt(odo.getOutboundCartonType(), ouId);
             trans.setOutboundCartonType(boxType.getCode());
         }
-        
+
         // 添加商品信息
         List<TransSkuItem> skuItemList = new ArrayList<TransSkuItem>();
         for (WhOdoLine line : odoLineList) {
@@ -1454,7 +1454,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             skuItemList.add(skuItem);
         }
         trans.setTransSkuItem(skuItemList);
-        
+
         // 添加增值服务信息
         if (isInsured) {
             List<TransVasList> transVasList = new ArrayList<TransVasList>();
@@ -1465,7 +1465,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
         return trans;
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public MailnoGetContentCommand getMailNoContent(WhOdo odo, WhOdoAddress address, WhOdoTransportMgmt transMgmt, List<WhOdoLine> odoLineList, boolean isInsured, WarehouseCommand wh) {
@@ -1481,8 +1481,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setTotalActual(new BigDecimal(odo.getAmt().doubleValue()));
         mailNoContent.setTimeType(transMgmt.getTimeEffectType());
         // mailNoContent.setSfWhCode("BZ021NOTCOD"); 目前物流服务项目配置获取
-        mailNoContent.setQuantity(1);   // 获取面单数量1
-        mailNoContent.setType(1);   // 销售单
+        mailNoContent.setQuantity(1); // 获取面单数量1
+        mailNoContent.setType(1); // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
         // 有保价增值服务, 则设置isBj
         if (isInsured) {
@@ -1512,7 +1512,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         send.setMobile(store.getPicContact());
         send.setTelephone(store.getPicMobileTelephone());
         mailNoContent.setSenderTransInfo(send);
-        
+
         // 收件人信息
         MailnoTransInfoCommand receiver = new MailnoTransInfoCommand();
         receiver.setProvince(address.getDistributionTargetProvince());
@@ -1524,7 +1524,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         receiver.setMobile(address.getDistributionTargetMobilePhone());
         receiver.setTelephone(address.getDistributionTargetTelephone());
         mailNoContent.setTransInfo(receiver);
-        
+
         return mailNoContent;
     }
 
@@ -1539,7 +1539,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
         return batchMap;
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findNewOdoIdList(List<Long> odoIdOriginalList, Long ouId) {
@@ -1550,15 +1550,15 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Map<String, List<Long>> getStoreIdMapByOdoIdListGroupByInvoice(List<Long> odoIdList, Long ouId) {
         List<Long> storeIdList = this.whOdoDao.getStoreIdByOdoIdList(odoIdList, ouId);
-        Map<String, List<Long>> invoiceStoreMap=new HashMap<String, List<Long>>();
-        if(storeIdList!=null&&storeIdList.size()>0){
-            Map<Long, Store> storeMap= this.findStoreByRedis(storeIdList);
-            Iterator<Entry<Long,Store>>storeIt=storeMap.entrySet().iterator();
-            while(storeIt.hasNext()){
-                Entry<Long,Store> storeEntry=storeIt.next();
-                Long storeId=storeEntry.getKey();
-                Store store=storeEntry.getValue();
-                
+        Map<String, List<Long>> invoiceStoreMap = new HashMap<String, List<Long>>();
+        if (storeIdList != null && storeIdList.size() > 0) {
+            Map<Long, Store> storeMap = this.findStoreByRedis(storeIdList);
+            Iterator<Entry<Long, Store>> storeIt = storeMap.entrySet().iterator();
+            while (storeIt.hasNext()) {
+                Entry<Long, Store> storeEntry = storeIt.next();
+                Long storeId = storeEntry.getKey();
+                Store store = storeEntry.getValue();
+
                 String key = (StringUtils.isEmpty(store.getMakeOutAnInvoiceCompany()) ? "null" : store.getMakeOutAnInvoiceCompany()) + "$" + (StringUtils.isEmpty(store.getInvoiceExportTemplet()) ? "null" : store.getInvoiceExportTemplet());
                 if (invoiceStoreMap.containsKey(key)) {
                     invoiceStoreMap.get(key).add(storeId);
@@ -1620,7 +1620,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             batchIndex++;
         }
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<Long> findPrintOdoIdList(String waveCode, Long ouId) {

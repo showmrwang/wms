@@ -235,6 +235,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ou_id = #{ouId}
 	    ]]>
 	    </delete> 
+	   <delete id="deleteByOutboundboxCodeAndOuId" >
+	    <![CDATA[
+	        delete from t_wh_handover_collection where
+		        outboundbox_code = #{outboundBoxCode} 
+		        and ou_id = #{ouId}
+	    ]]>
+	    </delete> 
 	    
 	    
 	    <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection">

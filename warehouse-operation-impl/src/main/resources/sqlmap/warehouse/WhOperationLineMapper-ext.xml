@@ -403,4 +403,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and line.operation_id=#{operationId}
 			and line.qty != line.complete_qty
 	</select>
+	
+	 <select id="findOperationLineCount" resultType="java.lang.Integer">
+		select sum(line.qty) from t_wh_operation_line line 
+			where line.ou_id=#{ouId}
+			and line.operation_id=#{operationId}
+	</select>
 </mapper>

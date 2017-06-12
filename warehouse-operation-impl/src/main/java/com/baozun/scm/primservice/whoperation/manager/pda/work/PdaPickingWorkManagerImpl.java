@@ -1986,9 +1986,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
 
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
-                this.createReplenishmentAfterPicking(operationId, ouId, userId);
-                // 清除缓存
-                pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
                 // 更改出库单状态
                 List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
                 for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
@@ -2044,6 +2041,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         log.info("PdaPickingWorkManagerImpl scanSku is end");
         return command;
+    }
+    
+    public void removeCache(Long operationId,Boolean isPicking, Long locationId){
+        // 清除缓存
+        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
     }
 
     /**
@@ -3268,8 +3270,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     log.info("collection run end time:" + endTime);
                     log.info("collection run  time:" + (endTime - startTime));
                     command.setPickingMode(pickingMode);
-                    if (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()) {
-                        this.createReplenishmentAfterPicking(operationId, command.getOuId(), command.getUserId());
+                    if (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay() && null == command.getPickingWay() ) {
                         // 清除缓存
                         pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
                     }
@@ -3583,8 +3584,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 log.info("collection run end time:" + endTime);
                 log.info("collection run  time:" + (endTime - startTime));
                 command.setPickingMode(pickingMode);
-                if (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()) {
-                    this.createReplenishmentAfterPicking(command.getOperationId(), command.getOuId(), command.getUserId());
+                if (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay() && null == command.getPickingWay()) {
                     // 清除缓存
                     pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
                 }
@@ -4029,6 +4029,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * 拣货后触发补货工作
      * 
      */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createReplenishmentAfterPicking(Long operationId, Long ouId, Long userId) {
         try {
             OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId + "");

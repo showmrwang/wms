@@ -425,7 +425,7 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
         //判断当前周转箱是否在缓存中
         ReplenishmentPutawayCacheCommand replenishment = cacheManager.getObject(CacheConstants.CACHE_PUTAWAY_LOCATION + operationId.toString());
         if(null == replenishment){
-            throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
+            replenishment = new ReplenishmentPutawayCacheCommand();
         }
         ArrayDeque<Long> tipLocationIds = replenishment.getTipLocationIds();
         Map<Long,ArrayDeque<Long>> tipMapTurnoverBoxIds = replenishment.getTipTurnoverBoxIds();
@@ -434,6 +434,10 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
             scanTurnoverBoxIds = new ArrayDeque<Long>();
         }
         scanTurnoverBoxIds.addFirst(turnoverBoxId);
+        if(null ==  tipLocationIds ||  tipLocationIds.size() == 0){
+            tipLocationIds = new ArrayDeque<Long>();
+        }
+        tipLocationIds.addFirst(locationId);
         Map<String, Long> skuAttrIdQty = skuAttrIdsQty.get(skuId);
         Long skuQty = skuAttrIdQty.get(skuAttrIdNoSn);
         ReplenishScanTipSkuCacheCommand  scanTipSkuCmd = cacheManager.getObject(CacheConstants.PDA_REPLENISH_PUTAWAY_SCAN_SKU + locationId.toString()+turnoverBoxId.toString());

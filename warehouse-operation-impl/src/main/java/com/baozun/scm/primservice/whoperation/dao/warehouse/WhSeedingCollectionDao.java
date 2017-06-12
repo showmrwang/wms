@@ -141,5 +141,13 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
      */
     List<WhSeedingCollection> findWhSeedingCollectionByBatchNo(@Param("batchNo") String batchNo, @Param("ouid") Long ouid);
 
+    /**
+     * [业务方法] 通过播种墙code查找待播种数量
+     * @param seedingWallCode
+     * @param ouId
+     * @return
+     */
+    int countOccupationByFacilityCode(@Param("seedingWallCode") String seedingWallCode, @Param("ouId") Long ouId);
+
 
 }
