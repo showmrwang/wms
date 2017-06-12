@@ -372,12 +372,9 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     }
 
     /**
-     * 1,新建新合并订单主档
-     * 2,更新原订单状态
-     * 3,新建新合并订单属性表以及配送对象表和运输商管理表
-     * 4,新建新合并订单明细行以及属性对象
-     * 5,更新原订单明细行以及属性
+     * 1,新建新合并订单主档 2,更新原订单状态 3,新建新合并订单属性表以及配送对象表和运输商管理表 4,新建新合并订单明细行以及属性对象 5,更新原订单明细行以及属性
      * 6,插入新建合并订单明细行及属性
+     * 
      * @param odoIdString
      * @param ouId
      * @param userId
@@ -439,6 +436,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 合并订单-待合并的出库单主档id重新排序
+     * 
      * @param odoIds
      * @param newOdoId
      * @return
@@ -454,6 +452,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 创建或更新合并订单主档
+     * 
      * @param odoIdString 合并订单ids
      * @param ouId 组织id
      * @param userId 操作员id
@@ -525,6 +524,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 合并订单-修改合并订单逻辑
+     * 
      * @param whOdo
      * @param userId
      * @return
@@ -536,6 +536,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 合并订单-新建合并订单主档逻辑
+     * 
      * @param odoId
      * @param ouId
      * @param userId
@@ -565,6 +566,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 更新原来订单状态
+     * 
      * @param newWhOdoCode 新建合并订单主档code
      * @param whOdoId 原来订单主档id
      * @param whOdo 原来订单whOdo
@@ -597,10 +599,12 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             case Constants.ODO_CANCEL:
                 // 状态:新建->取消;
                 odo.setOdoStatus(OdoStatus.CANCEL);
+                odo.setLagOdoStatus(OdoStatus.CANCEL);
                 break;
             case Constants.ODO_NEW:
                 // 状态:已合并->新建;
                 odo.setOdoStatus(OdoStatus.NEW);
+                odo.setLagOdoStatus(OdoStatus.NEW);
                 odo.setGroupOdoCode(null);
                 break;
             default:
@@ -616,6 +620,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 新建合并订单配送对象
+     * 
      * @param newOdoId 新建合并订单主档id
      * @param whOdoId 原来订单主档id
      * @param ouId 组织id
@@ -641,6 +646,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 新建合并订单属性
+     * 
      * @param newOdoId 新建合并订单主档id
      * @param whOdoId 原来订单主档id
      * @param ouId 组织id
@@ -666,6 +672,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 新建合并订单运输商管理
+     * 
      * @param newOdoId 新建合并订单主档id
      * @param whOdoId 原来订单主档id
      * @param ouId 组织id
@@ -691,6 +698,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 新建与更新合并订单明细对象
+     * 
      * @param whOdoLineInfoCommandList 新建出库单明细列表
      * @param newOdoId 新建合并订单主档id
      * @param whOdoId 原来订单主档id
@@ -739,6 +747,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 合并订单-创建并更新出库单明细行
+     * 
      * @param newOdoId
      * @param whOdoId
      * @param ouId
@@ -797,6 +806,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 合并订单-更新合并订单明细行
+     * 
      * @param whOdoLine
      * @param newOdoId
      * @param ouId
@@ -825,6 +835,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 合并订单-插入新建出库单明细行
+     * 
      * @param whOdoLineInfoCommandList
      * @param newOdoId
      * @param ouId
@@ -861,6 +872,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 合并订单-插入新建出库单明细行
+     * 
      * @param whOdoLineInfoCommandList
      * @param newOdoId
      * @param ouId
@@ -882,6 +894,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 根据id ouId 获取出库单明细列表
+     * 
      * @param whOdoId 原来订单主档id
      * @param ouId 组织id
      * @return
@@ -900,6 +913,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 根据id ouId 获取出库单明细属性
+     * 
      * @param whOdoLineId 原来订单明细id
      * @param ouId 组织id
      * @return
@@ -914,6 +928,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 新建合并订单明细行
+     * 
      * @param whOdoLine 出库单明细行
      * @param whOdoCode 出库单主档code
      * @param newOdoId 新建合并订单主档id
@@ -941,6 +956,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * 更新合并前订单明细行
+     * 
      * @param whOdoLine 出库单明细行
      * @param userId 操作员id
      * @return
@@ -1012,23 +1028,17 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     // -----------------------------------------波次中合并订单逻辑---------------------------------------
     /**
-     * 波次中合并订单逻辑
-     * 1.合并波次中订单
-     * 2.每个原始出库单取消绑定波次编码
-     * 3.每个原始出库单明细行取消绑定波次编码
-     * 4.波次中剔除已经合并的出库单明细行
-     * 5.新合并的订单绑定到波次
-     * 6.新合并的订单明细行绑定到波次
-     * 7.波次新增波次明细行
+     * 波次中合并订单逻辑 1.合并波次中订单 2.每个原始出库单取消绑定波次编码 3.每个原始出库单明细行取消绑定波次编码 4.波次中剔除已经合并的出库单明细行 5.新合并的订单绑定到波次
+     * 6.新合并的订单明细行绑定到波次 7.波次新增波次明细行
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void waveOdoMerge(WhWave wave, String odoIds, Long ouId, Long userId) {
-        /** 合并波次中订单 start*/
+        /** 合并波次中订单 start */
         WhOdo whOdo = this.generalOdoMerge(odoIds, ouId, userId);
         WhWaveLine line = this.whWaveLineDao.findHighestPriorityByOdoIds(wave.getId(), odoIds, ouId);
-        /** end*/
-        /** 子订单操作 start*/
+        /** end */
+        /** 子订单操作 start */
 
         String originalOdoCode = whOdo.getOriginalOdoCode(); // 子订单
         String[] odoCodeList = originalOdoCode.split(",");
@@ -1041,18 +1051,19 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
             }
             updateWaveLine(wave.getId(), odo.getId(), whOdo.getId(), whOdo.getOdoCode(), ouId, userId, line);
         }
-        /** end*/
-        /** 新订单操作*/
+        /** end */
+        /** 新订单操作 */
         whOdo.setWaveCode(wave.getCode());
         this.whOdoDao.saveOrUpdateByVersion(whOdo);
         bindOdoLine(wave.getId(), wave.getCode(), whOdo.getId(), ouId, userId);
-        /** end*/
+        /** end */
         // 新建的出库单明细 绑定
 
     }
 
     /**
      * [业务方法] 波次中合并订单-解绑原始出库单
+     * 
      * @param odoCode
      * @param ouId
      * @param userId
@@ -1070,6 +1081,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 波次中合并订单-解绑原始出库单明细行
+     * 
      * @param odoId
      * @param ouId
      * @param userId
@@ -1087,6 +1099,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 波次中合并出库单-更新波次明细行
+     * 
      * @param waveId 波次id
      * @param originalOdoId 原出库单id
      * @param odoId 新出库单id
@@ -1114,6 +1127,7 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
 
     /**
      * [业务方法] 波次中合并订单-绑定合并后的订单明细行
+     * 
      * @param waveId
      * @param waveCode
      * @param odoId
@@ -1124,18 +1138,19 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odoId, ouId);
         if (null != odoLineList && !odoLineList.isEmpty()) {
             for (WhOdoLine odoLine : odoLineList) {
-                /**出库单明细行绑定到波次 start*/
+                /** 出库单明细行绑定到波次 start */
                 // if (null != odoLine.getWaveCode()) {
                 odoLine.setWaveCode(waveCode);
                 this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
                 // }
-                /** end*/
+                /** end */
             }
         }
     }
 
     /**
      * [业务方法] 合并出库单-取消合并
+     * 
      * @param odoId
      * @param ouId
      * @param userId
