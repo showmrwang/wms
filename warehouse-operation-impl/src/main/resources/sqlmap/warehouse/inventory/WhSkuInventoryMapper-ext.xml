@@ -1829,7 +1829,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		       		 	 last_modify_time = now() ,	
 	            	     container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 	            	     temporary_location_id = #{temporaryLocationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-	            	     outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR}
+	            	     outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+	            	     seeding_wall_code = #{seedingWallCode,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 		        and last_modify_time	=  #{lastModifyTime}

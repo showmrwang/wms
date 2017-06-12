@@ -64,5 +64,13 @@ public interface ContainerManager extends BaseManager {
      * @return
      */
     int saveOrUpdateByVersion(Container container);
+    
+    /**
+     * 检验容器
+     * @author kai.zhu
+     */
+    ContainerCommand checkContainerStatus(String packingContainer, Integer target, Long ouId);
+
+    ContainerCommand useOutBoundBoxToContainer(String containerCode, Long twoLevelType, Long userId, Long ouId);
 
 }

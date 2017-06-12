@@ -106,6 +106,7 @@
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentWorkManager" ref="pdaReplenishmentWorkManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentWorkEntranceManager" ref="pdaReplenishmentWorkEntranceManager" />
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaReplenishmentPutawayManager" ref="pdaReplenishmentPutawayManager" />
+	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.cancel.PdaCancelOutBoundManager" ref="pdaCancelOutBoundManager" />
 	
 	<!-- 库内移动 -->
 	<dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.CreateInWarehouseMoveWorkManagerProxy" ref="createInWarehouseMoveWorkManagerProxy"/>

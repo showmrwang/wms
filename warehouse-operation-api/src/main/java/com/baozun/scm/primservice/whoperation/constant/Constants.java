@@ -308,6 +308,7 @@ public final class Constants {
     /** 库存 占用单据来源 ASN */
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN = "ASN";
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ODO = "ODO";
+    public static final String SKU_INVENTORY_OCCUPATION_SOURCE_ASN_EXCEPTION = "ASN_EXCEPTION";
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_CHECKING_CONSUMABLE = "CHECKING_CONSUMABLE";
     public static final String SKU_INVENTORY_OCCUPATION_SOURCE_WORK = "WORK";
 
@@ -761,6 +762,7 @@ public final class Constants {
 
     /** 对接系统系数来源 */
     public static final String DATA_SOURCE_WMS = "wms";
+    public static final String DATA_SOURCE_WMS_ERROR = "wms_error";
     public static final String DATA_SOURCE_PAC = "pac";
     public static final String DATA_SOURCE_HUB = "hub";
     public static final String COLLECTION_STATUS_10 = "10";

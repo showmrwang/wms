@@ -52,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
+import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -162,7 +163,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 WhDistributionPatternRule rule = distributionPatternRuleMap.get(odoCommand.getDistributeMode());
                 if (null == rule) {
                     // 踢出波次
-                    whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_DISTRIBUTE_MODE_ERROR, warehouse);
+                    whWaveManager.deleteWaveLinesFromWaveByWavePhase(whWaveCommand.getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_DISTRIBUTE_MODE_ERROR, warehouse, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
                     continue;
                 }
                 if (Constants.PICKING_MODE_PICKING.equals(rule.getPickingMode().toString())) {
@@ -211,7 +212,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             afterRecOdoIdList.removeAll(odoOutboundBoxOdoIdList);
             if(!afterRecOdoIdList.isEmpty()){
                 for(Long odoId : afterRecOdoIdList){
-                    whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_UNKNOWN, warehouse);
+                    whWaveManager.deleteWaveLinesFromWaveByWavePhase(whWaveCommand.getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_UNKNOWN, warehouse, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
                 }
             }
 
@@ -270,7 +271,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             if (null == odoLineIdGroupList || odoLineIdGroupList.isEmpty()) {
                 // 踢出波次
                 Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
-                whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(singlePickOdo.getWhWaveCommand().getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_SPLIT_REQUIRE_ERROR, warehouse);
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(singlePickOdo.getWhWaveCommand().getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_SPLIT_REQUIRE_ERROR, warehouse, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
                 continue;
             }
 
@@ -315,7 +316,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 log.error("packing whole case odoLine error, odoLine qty less than whole case total qty, exception is:[{}], logId is:[{}]", be, logId);
                 // 踢出波次
                 Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
-                whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(singlePickOdo.getWhWaveCommand().getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, warehouse);
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(singlePickOdo.getWhWaveCommand().getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_EXCEPTION, warehouse, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
 
                 continue;
             }
@@ -2881,7 +2882,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 log.error("odoLine occupy skuInventory error, exception is:[{}], logId is:[{}]", be, logId);
                 // 踢出波次
                 Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
-                whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(odoCommand.getWhWaveCommand().getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_OCC_INVENTORY_ERROR, warehouse);
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(odoCommand.getWhWaveCommand().getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_OCC_INVENTORY_ERROR, warehouse, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
                 distributeModeOdoIterator.remove();
                 continue;
             }

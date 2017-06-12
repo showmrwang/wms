@@ -137,4 +137,6 @@ public interface ContainerDao extends BaseDao<Container, Long> {
 
 
     List<ContainerCommand> getContainerByCodeAndType(ContainerCommand commnad);
+
+    int updateContainerStatusByIdAndOuId(@Param("id") Long id, @Param("status") int status, @Param("ouId") Long ouId);
 }
