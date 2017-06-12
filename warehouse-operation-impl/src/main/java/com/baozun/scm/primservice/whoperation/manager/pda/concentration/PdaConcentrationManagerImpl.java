@@ -1344,17 +1344,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (StringUtils.isEmpty(batch)) {
             throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
         }
-        WhFacilityRecPathCommand rec = new WhFacilityRecPathCommand();
+        WhFacilityRecPathCommand rec = null;
         List<WhFacilityRecPathCommand> recList = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
         if (null != recList && !recList.isEmpty()) {
             rec = recList.get(0);
         }
         if (null == rec) {
-            /*
-             * List<Long> odoIdList = whWorkDao.getOdoIdListByBatch(batch, ouId); if (null ==
-             * odoIdList || odoIdList.isEmpty()) { throw new
-             * BusinessException(ErrorCodes.DATA_BIND_EXCEPTION); }
-             */
             Long scanContainerId = containerCmd.getId();
             WorkCollectionCommand workCommand = this.createObject(batch, null, ouId, null, scanContainerId);
             // 推荐播种墙逻辑,并判断是否推荐成功
@@ -1365,6 +1360,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             recFacilityPath.setOdoIdList(workCommand.getOdoIdList());
             recFacilityPath.setLastContainer(workCommand.getIsLastContainer());
             recFacilityPath.setAreaId(workCommand.getLastLocationId());
+            recFacilityPath.setPickingMode(Constants.PICKING_MODE_SEED);
             // 调用播种墙推荐逻辑
             RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
             if (1 == command.getStatus()) {
@@ -1374,6 +1370,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 List<WhFacilityRecPathCommand> recList2 = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
                 if (null != recList2 && !recList2.isEmpty()) {
                     rec = recList2.get(0);
+                } else {
+                    throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
                 }
             } else {
                 throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);

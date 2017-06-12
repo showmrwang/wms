@@ -126,103 +126,95 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
     private OdoOutBoundBoxMapper odoOutBoundBoxMapper;
 
     public void recommendOutboundBox(Long ouId, String logId) {
-
+        log.info("OutboundBoxRecManagerProxyImpl.recommendOutboundBox begin!");
         // 创建出库箱阶段的波次列表
         List<WhWaveCommand> whWaveCommandList = whWaveManager.getWhWaveByPhaseCode(Constants.CREATE_OUTBOUND_CARTON, ouId);
-
         Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
         // 根据波次查询对应的出库单
         for (WhWaveCommand whWaveCommand : whWaveCommandList) {
-            // 根据波次获得出库单ID集合
-            List<Long> whOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
+            try {
+                // 根据波次获得出库单ID集合
+                List<Long> whOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
+                if (whOdoIdList.isEmpty()) {
+                    // 设置波次的波次阶段为下一个阶段
+                    whWaveManager.changeWavePhaseCode(whWaveCommand.getId(), ouId);
+                    continue;
+                }
+                // 波次下出库单列表
+                List<OdoCommand> whOdoCommandList = odoManager.getWhOdoListById(whOdoIdList, ouId);
+                // 配货模式规则, <distributionPatternCode, rule>
+                Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+                // 摘果模式由于要匹配规则，只使用ID即可
+                List<Long> singleOdoPickModeOdoIdList = new ArrayList<>();
+                // 非摘果模式的出库单直接推荐周转箱,按照拣货模式分组<pickingMode, List<OdoCommand>>
+                Map<String, List<OdoCommand>> batchOdoPickModeOdoListMap = new HashMap<>();
+                // 方便根据出库单ID获取出库单<odoId, odoCommand>
+                Map<Long, OdoCommand> odoCommandMap = new HashMap<>();
+                // 将出库单和波次绑定，并且将出库单按照拣货模式分组，分成摘果出库单和非摘果出库单
+                for (OdoCommand odoCommand : whOdoCommandList) {
+                    odoCommand.setWhWaveCommand(whWaveCommand);
+                    odoCommandMap.put(odoCommand.getId(), odoCommand);
+                    WhDistributionPatternRule rule = distributionPatternRuleMap.get(odoCommand.getDistributeMode());
+                    if (null == rule) {
+                        // 踢出波次
+                        whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_DISTRIBUTE_MODE_ERROR, warehouse);
+                        continue;
+                    }
+                    if (Constants.PICKING_MODE_PICKING.equals(rule.getPickingMode().toString())) {
+                        singleOdoPickModeOdoIdList.add(odoCommand.getId());
+                    } else {
+                        List<OdoCommand> batchOdoPickModeOdoList = batchOdoPickModeOdoListMap.get(rule.getPickingMode().toString());
+                        if (null == batchOdoPickModeOdoList) {
+                            batchOdoPickModeOdoList = new ArrayList<>();
+                            batchOdoPickModeOdoListMap.put(rule.getPickingMode().toString(), batchOdoPickModeOdoList);
+                        }
+                        batchOdoPickModeOdoList.add(odoCommand);
+                    }
+                }
+                // 将波次明细绑定到出库单，将所有波次明细按照出库单分组，绑定到出库单
+                List<WhWaveLineCommand> whWaveLineCommandList = whWaveLineManager.findWaveLineCommandListByWaveId(whWaveCommand.getId(), ouId);
+                for (WhWaveLineCommand whWaveLineCommand : whWaveLineCommandList) {
+                    OdoCommand odoCommand = odoCommandMap.get(whWaveLineCommand.getOdoId());
+                    if (null == odoCommand) {
+                        // 波次错误
+                        log.warn("波次明细对应的出库单为空");
+                        continue;
+                    }
+                    // <odoLineId, waveLine>
+                    Map<Long, WhWaveLineCommand> waveLineMap = odoCommand.getOdoLineIdwaveLineMap();
+                    if (null == waveLineMap) {
+                        waveLineMap = new HashMap<>();
+                        odoCommand.setOdoLineIdwaveLineMap(waveLineMap);
+                    }
+                    waveLineMap.put(whWaveLineCommand.getOdoLineId(), whWaveLineCommand);
+                }
+                // 处理摘果出库单
+                if (!singleOdoPickModeOdoIdList.isEmpty()) {
+                    this.packingForSingleOdoPickMode(singleOdoPickModeOdoIdList, odoCommandMap, distributionPatternRuleMap, ouId, logId);
+                }
 
-            if (whOdoIdList.isEmpty()) {
+                // 处理非摘果的出库单，考虑分成两个线程
+                if (!batchOdoPickModeOdoListMap.isEmpty()) {
+                    this.packingForBatchOdoPickMode(batchOdoPickModeOdoListMap, odoCommandMap, distributionPatternRuleMap, ouId, logId);
+                }
+                // 判断是否有出库单未推荐出库箱，但是还在波次内
+                List<Long> afterRecOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
+                List<Long> odoOutboundBoxOdoIdList = odoOutBoundBoxMapper.getWaveOdoIdList(whWaveCommand.getId(), ouId);
+                afterRecOdoIdList.removeAll(odoOutboundBoxOdoIdList);
+                if (!afterRecOdoIdList.isEmpty()) {
+                    for (Long odoId : afterRecOdoIdList) {
+                        whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_UNKNOWN, warehouse);
+                    }
+                }
                 // 设置波次的波次阶段为下一个阶段
                 whWaveManager.changeWavePhaseCode(whWaveCommand.getId(), ouId);
-                continue;
+                // 波次取消需要取消补货任务
+                whWaveManager.checkReplenishmentTaskForWave(whWaveCommand.getId(), ouId);
+            } catch (Exception e) {
+                log.error("OutboundBoxRecManagerProxyImpl.recommendOutboundBox error waveCode: " + whWaveCommand.getCode(), e);
             }
-            // 波次下出库单列表
-            List<OdoCommand> whOdoCommandList = odoManager.getWhOdoListById(whOdoIdList, ouId);
-
-            // 配货模式规则, <distributionPatternCode, rule>
-            Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
-
-            // 摘果模式由于要匹配规则，只使用ID即可
-            List<Long> singleOdoPickModeOdoIdList = new ArrayList<>();
-            // 非摘果模式的出库单直接推荐周转箱,按照拣货模式分组<pickingMode, List<OdoCommand>>
-            Map<String, List<OdoCommand>> batchOdoPickModeOdoListMap = new HashMap<>();
-            // 方便根据出库单ID获取出库单<odoId, odoCommand>
-            Map<Long, OdoCommand> odoCommandMap = new HashMap<>();
-
-            // 将出库单和波次绑定，并且将出库单按照拣货模式分组，分成摘果出库单和非摘果出库单
-            for (OdoCommand odoCommand : whOdoCommandList) {
-                odoCommand.setWhWaveCommand(whWaveCommand);
-                odoCommandMap.put(odoCommand.getId(), odoCommand);
-
-                WhDistributionPatternRule rule = distributionPatternRuleMap.get(odoCommand.getDistributeMode());
-                if (null == rule) {
-                    // 踢出波次
-                    whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_DISTRIBUTE_MODE_ERROR, warehouse);
-                    continue;
-                }
-                if (Constants.PICKING_MODE_PICKING.equals(rule.getPickingMode().toString())) {
-                    singleOdoPickModeOdoIdList.add(odoCommand.getId());
-                } else {
-                    List<OdoCommand> batchOdoPickModeOdoList = batchOdoPickModeOdoListMap.get(rule.getPickingMode().toString());
-                    if (null == batchOdoPickModeOdoList) {
-                        batchOdoPickModeOdoList = new ArrayList<>();
-                        batchOdoPickModeOdoListMap.put(rule.getPickingMode().toString(), batchOdoPickModeOdoList);
-                    }
-                    batchOdoPickModeOdoList.add(odoCommand);
-                }
-            }
-
-            // 将波次明细绑定到出库单，将所有波次明细按照出库单分组，绑定到出库单
-            List<WhWaveLineCommand> whWaveLineCommandList = whWaveLineManager.findWaveLineCommandListByWaveId(whWaveCommand.getId(), ouId);
-            for (WhWaveLineCommand whWaveLineCommand : whWaveLineCommandList) {
-                OdoCommand odoCommand = odoCommandMap.get(whWaveLineCommand.getOdoId());
-                if (null == odoCommand) {
-                    // 波次错误
-                    log.warn("波次明细对应的出库单为空");
-                    continue;
-                }
-                // <odoLineId, waveLine>
-                Map<Long, WhWaveLineCommand> waveLineMap = odoCommand.getOdoLineIdwaveLineMap();
-                if (null == waveLineMap) {
-                    waveLineMap = new HashMap<>();
-                    odoCommand.setOdoLineIdwaveLineMap(waveLineMap);
-                }
-                waveLineMap.put(whWaveLineCommand.getOdoLineId(), whWaveLineCommand);
-            }
-
-            // 处理摘果出库单
-            if (!singleOdoPickModeOdoIdList.isEmpty()) {
-                this.packingForSingleOdoPickMode(singleOdoPickModeOdoIdList, odoCommandMap, distributionPatternRuleMap, ouId, logId);
-            }
-
-            // 处理非摘果的出库单，考虑分成两个线程
-            if (!batchOdoPickModeOdoListMap.isEmpty()) {
-                this.packingForBatchOdoPickMode(batchOdoPickModeOdoListMap, odoCommandMap, distributionPatternRuleMap, ouId, logId);
-            }
-
-            // 判断是否有出库单未推荐出库箱，但是还在波次内
-            List<Long> afterRecOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
-            List<Long> odoOutboundBoxOdoIdList = odoOutBoundBoxMapper.getWaveOdoIdList(whWaveCommand.getId(), ouId);
-            afterRecOdoIdList.removeAll(odoOutboundBoxOdoIdList);
-            if(!afterRecOdoIdList.isEmpty()){
-                for(Long odoId : afterRecOdoIdList){
-                    whWaveManager.deleteWaveLinesAndReleaseInventoryByOdoId(whWaveCommand.getId(), odoId, Constants.CREATE_OUTBOUND_CARTON_REC_BOX_UNKNOWN, warehouse);
-                }
-            }
-
-
-            // 设置波次的波次阶段为下一个阶段
-            whWaveManager.changeWavePhaseCode(whWaveCommand.getId(), ouId);
-
-            // 波次取消需要取消补货任务
-            whWaveManager.checkReplenishmentTaskForWave(whWaveCommand.getId(), ouId);
         }
-
+        log.info("OutboundBoxRecManagerProxyImpl.recommendOutboundBox end!");
     }
 
     /**
@@ -350,7 +342,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
         // 未匹配小车的出库单分配周转箱
         if (!unmatchedTrolleyOdoListDistributeMap.isEmpty()) {
-            List<OdoCommand> unmatchedTurnoverBoxOdoList = this.allocateTurnoverBoxForUnPackingOdo(unmatchedTrolleyOdoListDistributeMap,distributionPatternRuleMap,  ouId, logId);
+            List<OdoCommand> unmatchedTurnoverBoxOdoList = this.allocateTurnoverBoxForUnPackingOdo(unmatchedTrolleyOdoListDistributeMap, distributionPatternRuleMap, ouId, logId);
             if (!unmatchedTurnoverBoxOdoList.isEmpty()) {
                 // 未匹配周转箱的出库单,待踢出波次
                 this.releaseOdoFromWave(unmatchedTurnoverBoxOdoList, Constants.CREATE_OUTBOUND_CARTON_UNMATCHED_BOX, ouId, logId);
@@ -568,7 +560,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             OdoLineCommand odoLine = sortedOdoLineIterator.next();
             WhWaveLineCommand waveLineCommand = singlePickOdoLineIdWaveLineMap.get(odoLine.getId());
             if (waveLineCommand.getIsPalletContainer()) {
-                //记录整托中的箱子，在整箱中排除
+                // 记录整托中的箱子，在整箱中排除
                 Set<Long> wholeTrayInsideContainerIdSet = new HashSet<>();
                 // 判断整托占用
                 if (null != waveLineCommand.getTrayIds() && !"".equals(waveLineCommand.getTrayIds())) {
@@ -578,10 +570,10 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         outerContainerIdList.add(Long.valueOf(outerContainerIdStr));
                     }
 
-                    //一个明细占用的整托，只有一种商品
+                    // 一个明细占用的整托，只有一种商品
                     List<WhSkuInventoryCommand> skuInvList = outboundBoxRecManager.findSkuInvListByWholeTray(outerContainerIdList, ouId);
-                    for(WhSkuInventoryCommand skuInv : skuInvList){
-                        //记录整托中的箱子，在整箱中排除
+                    for (WhSkuInventoryCommand skuInv : skuInvList) {
+                        // 记录整托中的箱子，在整箱中排除
                         wholeTrayInsideContainerIdSet.add(skuInv.getInsideContainerId());
 
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
@@ -617,14 +609,14 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     List<Long> innerContainerIdList = new ArrayList<>();
                     List<String> innerContainerIdStrList = Arrays.asList(waveLineCommand.getPackingCaseIds().split(","));
                     for (String innerContainerIdStr : innerContainerIdStrList) {
-                        //只添加不在整托中的箱子
-                        if(!wholeTrayInsideContainerIdSet.contains(Long.valueOf(innerContainerIdStr))){
+                        // 只添加不在整托中的箱子
+                        if (!wholeTrayInsideContainerIdSet.contains(Long.valueOf(innerContainerIdStr))) {
                             innerContainerIdList.add(Long.valueOf(innerContainerIdStr));
                         }
                     }
-                    //一个明细占用的整托，只有一种商品
+                    // 一个明细占用的整托，只有一种商品
                     List<WhSkuInventoryCommand> skuInvList = outboundBoxRecManager.findSkuInvListByWholeContainer(innerContainerIdList, ouId);
-                    for(WhSkuInventoryCommand skuInv : skuInvList){
+                    for (WhSkuInventoryCommand skuInv : skuInvList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(skuInv.getOnHandQty());
                         odoOutBoundBoxCommand.setOuId(ouId);
@@ -706,7 +698,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
                 boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
-                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                // boolean isSkuAvailable =
+                // boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(),
+                // sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，添加到下一出库箱范围
                     unmatchedBoxOdoLineList.add(odoLine);
@@ -727,7 +721,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
                 // 创建出库箱编码，设置包裹的出库箱编码
                 String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
-                //TODO 校验出库箱编码是否已被使用
+                // TODO 校验出库箱编码是否已被使用
                 for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
                     odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
                     newBoxOdoOutboundBoxList.add(odoOutBoundBox);
@@ -770,7 +764,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(odoLineBox.getLength(), odoLineBox.getWidth(), odoLineBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
             boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
             boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
-            //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+            // boolean isSkuAvailable =
+            // boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(),
+            // sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
             if (!isSkuAvailable) {
                 // 商品边长不合适，添加到下一出库箱范围
                 unmatchedBoxOdoLineList.add(odoLine);
@@ -817,7 +813,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(skuBox.getLength(), skuBox.getWidth(), skuBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
             boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
             boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
-            //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+            // boolean isSkuAvailable =
+            // boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(),
+            // sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
             if (!isSkuAvailable) {
                 // 商品边长不合适，添加到下一出库箱范围
                 unmatchedBoxOdoLineList.add(odoLine);
@@ -907,7 +905,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
                 // 创建出库箱编码，设置包裹的出库箱编码，编码服务未配置
                 String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
-                //TODO 校验出库箱编码是否已被使用
+                // TODO 校验出库箱编码是否已被使用
                 for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
                     odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
                     newBoxOdoOutboundBoxList.add(odoOutBoundBox);
@@ -970,7 +968,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
                 boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
-                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                // boolean isSkuAvailable =
+                // boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(),
+                // sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，下一个明细,该处不移除，需要在下一次遍历中找出合适的箱子
                     continue;
@@ -987,7 +987,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<WhOdoOutBoundBoxCommand> newBoxOdoOutboundBoxList = new ArrayList<>();
                 // 创建出库箱编码，设置包裹的出库箱编码
                 String outboundBoxCode = this.codeManager.generateCode(Constants.WMS, Constants.OUTBOUNDBOX_CODE, null, null, null);
-                //TODO 校验出库箱编码是否已被使用
+                // TODO 校验出库箱编码是否已被使用
                 for (WhOdoOutBoundBoxCommand odoOutBoundBox : odoLineOutBoundBoxMap.values()) {
                     odoOutBoundBox.setOutbounxboxTypeCode(outboundBoxCode);
                     newBoxOdoOutboundBoxList.add(odoOutBoundBox);
@@ -1055,7 +1055,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             this.odoListOrderByBoxNumDesc(distributeModeOdoList);
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
             while (!distributeModeOdoList.isEmpty()) {
                 List<OdoCommand> batchOdoList = new ArrayList<>();
@@ -1128,7 +1129,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         Container2ndCategoryCommand availableTrolley = this.findAvailableTrolley(odoCommand, ouId, logId);
                         // 获取可用容器，设置包裹的outContainerId
                         Container trolleyContainer = null;
-                        if(null !=  availableTrolley){
+                        if (null != availableTrolley) {
                             trolleyContainer = this.getUseAbleContainer(availableTrolley, ouId, logId);
                         }
                         if (null == availableTrolley || null == trolleyContainer) {
@@ -1214,7 +1215,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             List<OdoCommand> distributeModeOdoList = distributeModeUnPackingOdoMap.get(distributeMode);
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
             while (!distributeModeOdoList.isEmpty()) {
                 List<OdoCommand> batchOdoList = new ArrayList<>();
@@ -1228,14 +1230,14 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 出库单信息<odoLineId, waveLine>
                     boolean isWholeCase = false;
                     Map<Long, WhWaveLineCommand> singlePickOdoLineIdWaveLineMap = odoCommand.getOdoLineIdwaveLineMap();
-                    for(WhWaveLineCommand whWaveLineCommand : singlePickOdoLineIdWaveLineMap.values()){
+                    for (WhWaveLineCommand whWaveLineCommand : singlePickOdoLineIdWaveLineMap.values()) {
                         if (whWaveLineCommand.getIsPalletContainer() && (!StringUtil.isEmpty(whWaveLineCommand.getPackingCaseIds()) || !StringUtil.isEmpty(whWaveLineCommand.getTrayIds()))) {
-                           isWholeCase = true;
+                            isWholeCase = true;
                             break;
                         }
                     }
 
-                    if(isWholeCase) {
+                    if (isWholeCase) {
                         List<OdoCommand> unmatchedTrolleyOdoDistributeList = unmatchedTrolleyOdoListDistributeMap.get(distributeMode);
                         if (null == unmatchedTrolleyOdoDistributeList) {
                             unmatchedTrolleyOdoDistributeList = new ArrayList<>();
@@ -1252,7 +1254,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                 }
 
-                if(batchOdoList.isEmpty()){
+                if (batchOdoList.isEmpty()) {
                     break;
                 }
 
@@ -1352,7 +1354,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             List<OdoCommand> distributeModeOdoList = distributeModePackingOdoMap.get(distributeMode);
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
             while (!distributeModeOdoList.isEmpty()) {
                 List<OdoCommand> batchOdoList = new ArrayList<>();
@@ -1417,7 +1420,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     for (Container2ndCategoryCommand container2ndCategory : packingTurnoverBoxList) {
                         // 创建周转箱
                         Container turnoverBox = this.getUseAbleContainer(container2ndCategory, ouId, logId);
-                        if(null == turnoverBox){
+                        if (null == turnoverBox) {
                             isAllocateBoxSuccess = false;
                             break;
                         }
@@ -1429,7 +1432,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         }
 
                     }
-                    if(!isAllocateBoxSuccess){
+                    if (!isAllocateBoxSuccess) {
                         // 有明细无法匹配周转箱，整单踢出波次
                         unmatchedTurnoverBoxOdoList.add(odoCommand);
                         continue;
@@ -1625,7 +1628,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         new SimpleCubeCalculator(trolley.getGridLength(), trolley.getGridWidth(), trolley.getGridHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
                 boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 boolean isGridAvailable = boxAvailableCalculator.calculateAvailable();
-                //boolean isGridAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                // boolean isGridAvailable =
+                // boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(),
+                // sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
 
                 // 出库单明细的商品
                 if (!isGridAvailable) {
@@ -1721,9 +1726,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     for (String outerContainerIdStr : outerContainerIdStrList) {
                         outerContainerIdList.add(Long.valueOf(outerContainerIdStr));
                     }
-                    //一个明细占用的整托，只有一种商品
+                    // 一个明细占用的整托，只有一种商品
                     List<WhSkuInventoryCommand> skuInvList = outboundBoxRecManager.findSkuInvListByWholeTray(outerContainerIdList, ouId);
-                    for(WhSkuInventoryCommand skuInv : skuInvList){
+                    for (WhSkuInventoryCommand skuInv : skuInvList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(skuInv.getOnHandQty());
                         odoOutBoundBoxCommand.setOuId(ouId);
@@ -1760,9 +1765,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         innerContainerIdList.add(Long.valueOf(innerContainerIdStr));
                     }
 
-                    //一个明细占用的整托，只有一种商品
+                    // 一个明细占用的整托，只有一种商品
                     List<WhSkuInventoryCommand> skuInvList = outboundBoxRecManager.findSkuInvListByWholeContainer(innerContainerIdList, ouId);
-                    for(WhSkuInventoryCommand skuInv : skuInvList){
+                    for (WhSkuInventoryCommand skuInv : skuInvList) {
                         WhOdoOutBoundBoxCommand odoOutBoundBoxCommand = new WhOdoOutBoundBoxCommand();
                         odoOutBoundBoxCommand.setQty(skuInv.getOnHandQty());
                         odoOutBoundBoxCommand.setOuId(ouId);
@@ -1819,7 +1824,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             List<OdoCommand> batchSingleOdoList = distributeModeOdoMap.get(distributeMode);
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
             while (!batchSingleOdoList.isEmpty()) {
                 List<OdoCommand> batchOdoList = new ArrayList<>();
@@ -1886,7 +1892,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                         // 创建周转箱
                         Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
-                        if(null == turnoverBox){
+                        if (null == turnoverBox) {
                             throw new BusinessException("没有可用周转箱");
                         }
 
@@ -1940,7 +1946,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             }
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
 
             for (String skuCode : skuBatchMap.keySet()) {
@@ -2011,7 +2018,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
                             Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
-                            if(null == turnoverBox){
+                            if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
 
@@ -2067,7 +2074,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             }
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
 
             for (Long mainSkuId : batchMainOdoListMap.keySet()) {
@@ -2184,7 +2192,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
                             Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
-                            if(null == turnoverBox){
+                            if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
 
@@ -2239,7 +2247,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             }
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
 
             for (String skuGroupCode : skuGroupBatchMap.keySet()) {
@@ -2343,7 +2352,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
                             Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
-                            if(null == turnoverBox){
+                            if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
 
@@ -2388,7 +2397,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         for (String distributeMode : distributeModeOdoMap.keySet()) {
 
             // 配货模式规则, <distributionPatternCode, rule>
-            //Map<String, WhDistributionPatternRule> distributionPatternRuleMap = this.getDistributionPatternRule(ouId);
+            // Map<String, WhDistributionPatternRule> distributionPatternRuleMap =
+            // this.getDistributionPatternRule(ouId);
             WhDistributionPatternRule rule = distributionPatternRuleMap.get(distributeMode);
             if (rule.getOrdersUpperLimit() < seedingOdoQty) {
                 // 按照小的限制划分批次
@@ -2517,7 +2527,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     // 批次下的库存列表
                     List<WhSkuInventoryCommand> batchSkuInventoryList = new ArrayList<>();
 
-                    if( !batchOccLineIdList.isEmpty()) {
+                    if (!batchOccLineIdList.isEmpty()) {
                         batchSkuInventoryList = outboundBoxRecManager.findListByOccLineIdListOrderByPickingSort(batchOccLineIdList, ouId);
                     }
                     try {
@@ -2527,7 +2537,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
                             Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
-                            if(null == turnoverBox){
+                            if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
 
@@ -2642,7 +2652,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
                 boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
-                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                // boolean isSkuAvailable =
+                // boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(),
+                // sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，下一个明细,该处不移除，需要在下一次遍历中找出合适的箱子
                     continue;
@@ -3149,7 +3161,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 SimpleCubeCalculator boxAvailableCalculator = new SimpleCubeCalculator(newBox.getLength(), newBox.getWidth(), newBox.getHigh(), SimpleCubeCalculator.SYS_UOM, Constants.OUTBOUND_BOX_AVAILABILITY, this.getLenUomConversionRate());
                 boxAvailableCalculator.accumulationStuffVolume(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 boolean isSkuAvailable = boxAvailableCalculator.calculateAvailable();
-                //boolean isSkuAvailable = boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(), sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
+                // boolean isSkuAvailable =
+                // boxAvailableCalculator.calculateLengthAvailable(sku.getLength(), sku.getWidth(),
+                // sku.getHeight(), SimpleCubeCalculator.SYS_UOM);
                 if (!isSkuAvailable) {
                     // 商品边长不合适，下一个明细,该处不移除，需要在下一次遍历中找出合适的箱子
                     continue;
@@ -3420,14 +3434,14 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         }
     }
 
-    /**
-     * 定时任务的操作人
-     *
-     * @return 操作人ID
-     */
-    private Long getUserId() {
-        return 1L;
-    }
+    // /**
+    // * 定时任务的操作人
+    // *
+    // * @return 操作人ID
+    // */
+    // private Long getUserId() {
+    // return 1L;
+    // }
 
     /**
      * 根据二级容器类型创建容器
@@ -3437,7 +3451,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @return 新建的容器对象
      */
     private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId, String logId) {
-        if(null == availableContainer){
+        if (null == availableContainer) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         Container searchContainer = new Container();
@@ -3448,12 +3462,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         searchContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
         List<Container> containerList = outboundBoxRecManager.findUseAbleContainerByContainerType(searchContainer);
         Container useAbleContainer = null;
-        if(null != containerList && !containerList.isEmpty()){
+        if (null != containerList && !containerList.isEmpty()) {
             useAbleContainer = containerList.get(0);
             useAbleContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
             int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
-            if(1 != updateCount){
+            if (1 != updateCount) {
                 log.error("outboundBoxRecManagerProxyImpl getUseAbleContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
