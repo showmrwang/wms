@@ -1986,7 +1986,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
 
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
-                this.createReplenishmentAfterPicking(operationId, ouId, userId);
+//                this.createReplenishmentAfterPicking(operationId, ouId, userId);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
                 // 更改出库单状态
