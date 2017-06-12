@@ -4031,6 +4031,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * 拣货后触发补货工作
      * 
      */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createReplenishmentAfterPicking(Long operationId, Long ouId, Long userId) {
         try {
             OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId + "");
