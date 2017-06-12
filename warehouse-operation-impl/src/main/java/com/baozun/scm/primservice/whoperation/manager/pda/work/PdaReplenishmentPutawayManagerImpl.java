@@ -836,6 +836,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             whSkuInventoryManager.replenishmentSplitContainerPutaway(list,skuCmd.getScanSkuQty(), skuAttrIdNoSn, locationId, operationId, ouId, isTabbInvTotal, userId, workCode, turnoverBoxId, newTurnoverBoxId);
             // 周转箱内部所有sku扫描完毕在缓存
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayCacheTurnoverBox(operationId, turnoverBoxId,locationId,ouId,false);
+            Long insideContainerId = null;
+            if(null != newTurnoverBoxId){
+                insideContainerId = newTurnoverBoxId;
+            }else{
+                insideContainerId = turnoverBoxId;
+            }
+            //判断当前库位是否有拣货工作
+            this.judeLocationIsPicking(insideContainerId, locationId, ouId, userId,null,operationId);
+            
             pdaReplenishmentPutawayCacheManager.pdaReplenishPutwayRemoveAllCache(operationId,turnoverBoxId, locationId,false);
             //提示一下个周转箱
             Long tipTurnoverBoxId = csrCmd.getTipiInsideContainerId();
@@ -976,107 +985,72 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         Double sum = 0.0;
                         for(WhWorkLineCommand workLineCmd:workLineList) {
                           String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
+                              if(null != turnoverBoxId){
+                                  if(turnoverBoxId.equals(workLineCmd.getFromInsideContainerId())){
+                                      continue;
+                                  }
+                              }
                             if(workSkuAttrId.equals(skuAttrId) && invCmd.getOccupationLineId().longValue() == workLineCmd.getOdoLineId().longValue()) {
-                                      Double onHandQty = invCmd.getOnHandQty();
-                                      Double lineQty = workLineCmd.getQty();
-                                      if(lineQty.doubleValue() > onHandQty.doubleValue()) {
-                                          WhWorkLine workLine = new WhWorkLine();
-                                          BeanUtils.copyProperties(workLineCmd, workLine);
-                                          workLine.setQty(onHandQty);
-                                          workLine.setId(null);
-                                          workLine.setCreateTime(new Date());
-                                          workLine.setLastModifyTime(new Date());
-                                          String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
-                                          workLine.setLineCode(workLineCode);
-                                          workLine.setFromInsideContainerId(insideId);
-                                          if(null == outerContainerId) {
-                                              workLine.setFromOuterContainerId(null);
-                                          }else{
-                                              workLine.setFromOuterContainerId(outerId);
-                                          }
-                                          whWorkLineDao.insert(workLine);
-                                          insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
-                                          //修改原来的记录
-                                          WhWorkLine workLine1 = new WhWorkLine();
-                                          BeanUtils.copyProperties(workLineCmd, workLine1);
-                                          workLine1.setFromInsideContainerId(null);
-                                          workLine.setFromOuterContainerId(null);
-                                          workLine1.setQty(lineQty-onHandQty);
-                                          whWorkLineDao.saveOrUpdateByVersion(workLine1);
-                                          insertGlobalLog(GLOBAL_LOG_UPDATE,workLine1, ouId, userId, null, null);
-                                          break;
-                                       }
-                                       if(lineQty.doubleValue() == onHandQty.doubleValue()){
-                                              WhWorkLine workLine = new WhWorkLine();
-                                              BeanUtils.copyProperties(workLineCmd, workLine);
-                                              workLine.setFromInsideContainerId(insideId);
-                                              if(null == outerContainerId) {
-                                                  workLine.setFromOuterContainerId(null);
-                                              }else{
-                                                  workLine.setFromOuterContainerId(outerId);
-                                              }
-                                              workLine.setQty(onHandQty);
-                                              whWorkLineDao.saveOrUpdateByVersion(workLine);
-                                              insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
-                                              break;
-                                       }
-                                       if(lineQty.doubleValue() < onHandQty.doubleValue()){
-                                             sum += lineQty;
-                                             if(onHandQty.doubleValue() < sum.doubleValue()){
-                                                 Double qty = onHandQty-(sum-lineQty);
-                                                 WhWorkLine workLine = new WhWorkLine();
-                                                 BeanUtils.copyProperties(workLineCmd, workLine);
-                                                 workLine.setQty(qty); 
-                                                 workLine.setId(null);
-                                                 workLine.setCreateTime(new Date());
-                                                 workLine.setLastModifyTime(new Date());
-                                                 workLine.setFromInsideContainerId(insideId);
-                                                 if(null == outerContainerId) {
-                                                     workLine.setFromOuterContainerId(null);
-                                                 }else{
-                                                     workLine.setFromOuterContainerId(outerId);
-                                                 }
-                                                 String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
-                                                 workLine.setLineCode(workLineCode);
-                                                 whWorkLineDao.insert(workLine);
-                                                 //修改原来的工作明细
-                                                 WhWorkLine workLine1 = new WhWorkLine();
-                                                 BeanUtils.copyProperties(workLineCmd, workLine1);
-                                                 workLine1.setFromInsideContainerId(null);
-                                                 workLine.setFromOuterContainerId(null);
-                                                 workLine1.setQty(lineQty-qty);
-                                                 whWorkLineDao.saveOrUpdateByVersion(workLine1);
-                                                 insertGlobalLog(GLOBAL_LOG_UPDATE, workLine1, ouId, userId, null, null);
-                                                 break;
-                                             }
-                                             if(onHandQty.doubleValue() == sum.doubleValue()){
-                                                 WhWorkLine workLine = new WhWorkLine();
-                                                 BeanUtils.copyProperties(workLineCmd, workLine);
-                                                 workLine.setFromInsideContainerId(insideId);
-                                                 if(null == outerContainerId) {
-                                                     workLine.setFromOuterContainerId(null);
-                                                 }else{
-                                                     workLine.setFromOuterContainerId(outerId);
-                                                 }
-                                                 workLine.setQty(lineQty);
-                                                 whWorkLineDao.saveOrUpdateByVersion(workLine);
-                                                 insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
-                                                 break;                               
-                                             }
-                                             if(onHandQty.doubleValue() > sum.doubleValue()){
-                                                 WhWorkLine workLine = new WhWorkLine();
-                                                 BeanUtils.copyProperties(workLineCmd, workLine);
-                                                 workLine.setFromInsideContainerId(insideId);
-                                                 if(null == outerContainerId) {
-                                                     workLine.setFromOuterContainerId(null);
-                                                 }else{
-                                                     workLine.setFromOuterContainerId(outerId);
-                                                 }
-                                                 workLine.setQty(lineQty);
-                                                 whWorkLineDao.saveOrUpdateByVersion(workLine);
-                                                 insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
-                                                 continue;
-                                             }
+                                     Double onHandQty = invCmd.getOnHandQty();
+                                     Double lineQty = workLineCmd.getQty();
+                                     sum += lineQty;
+                                     if(onHandQty.doubleValue() < sum.doubleValue()){
+                                         Double qty = onHandQty-(sum-lineQty);
+                                         WhWorkLine workLine = new WhWorkLine();
+                                         BeanUtils.copyProperties(workLineCmd, workLine);
+                                         workLine.setQty(qty); 
+                                         workLine.setId(null);
+                                         workLine.setCreateTime(new Date());
+                                         workLine.setLastModifyTime(new Date());
+                                         workLine.setFromInsideContainerId(insideId);
+                                         if(null == outerContainerId) {
+                                             workLine.setFromOuterContainerId(null);
+                                         }else{
+                                             workLine.setFromOuterContainerId(outerId);
+                                         }
+                                         String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                         workLine.setLineCode(workLineCode);
+                                         whWorkLineDao.insert(workLine);
+                                         //修改原来的工作明细
+                                         WhWorkLine workLine1 = new WhWorkLine();
+                                         BeanUtils.copyProperties(workLineCmd, workLine1);
+                                         workLine1.setFromInsideContainerId(null);
+                                         workLine.setFromOuterContainerId(null);
+                                         workLine1.setQty(lineQty-qty);
+                                         whWorkLineDao.saveOrUpdateByVersion(workLine1);
+                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine1, ouId, userId, null, null);
+                                         break;
+                                     }
+                                     if(onHandQty.doubleValue() == sum.doubleValue()){
+                                         WhWorkLine workLine = new WhWorkLine();
+                                         BeanUtils.copyProperties(workLineCmd, workLine);
+                                         workLine.setFromInsideContainerId(insideId);
+                                         if(null == outerContainerId) {
+                                             workLine.setFromOuterContainerId(null);
+                                         }else{
+                                             workLine.setFromOuterContainerId(outerId);
+                                         }
+                                         workLine.setQty(onHandQty);
+                                         whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                         break;                               
+                                     }
+                                     if(onHandQty.doubleValue() > sum.doubleValue()){
+                                         WhWorkLine workLine = new WhWorkLine();
+                                         BeanUtils.copyProperties(workLineCmd, workLine);
+                                         workLine.setQty(lineQty); 
+                                         workLine.setCreateTime(new Date());
+                                         workLine.setLastModifyTime(new Date());
+                                         workLine.setFromInsideContainerId(insideId);
+                                         if(null == outerContainerId) {
+                                             workLine.setFromOuterContainerId(null);
+                                         }else{
+                                             workLine.setFromOuterContainerId(outerId);
+                                         }
+                                         String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
+                                         workLine.setLineCode(workLineCode);
+                                         whWorkLineDao.saveOrUpdateByVersion(workLine);;
+                                         continue;
                                      }
                                }
                           }
@@ -1084,118 +1058,82 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                }
             }
         //先添加作业明细,后删除原始作业明细
-        List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(outerContainerId,turnoverBoxId,ouId, locationId);
-        if(null != skuInvCmdList && skuInvCmdList.size() != 0) {
-            for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
-                List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId,replenishmentCode);
-                if(null != operLineCmdList && operLineCmdList.size() != 0) {
+         List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findReplenishmentBylocationId(outerContainerId,turnoverBoxId,ouId, locationId);
+          if(null != skuInvCmdList && skuInvCmdList.size() != 0) {
+             for(WhSkuInventoryCommand invCmd:skuInvCmdList) {
                     Double sum = 0.0;
-                    for(WhOperationLineCommand operLineCmd:operLineCmdList){
-                       Double lineQty = operLineCmd.getQty();
-                       String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
+                    List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId,replenishmentCode);
+                    if(null != operLineCmdList && operLineCmdList.size() != 0) {
+                       for(WhOperationLineCommand operLineCmd:operLineCmdList){
+                        Double lineQty = operLineCmd.getQty();
+                        String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
                         Long insideId = invCmd.getInsideContainerId();
                         Long outerId = invCmd.getOuterContainerId();
                         Long occupationId = invCmd.getOccupationLineId();
                         String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+                        if(null != turnoverBoxId){
+                            if(turnoverBoxId.equals(operLineCmd.getFromInsideContainerId())){
+                                continue;
+                            }
+                        }
                         if(workSkuAttrId.equals(skuAttrId) && occupationId.longValue() == operLineCmd.getOdoLineId().longValue()) {
-                            Double onHandQty = invCmd.getOnHandQty();
-                            if(lineQty.doubleValue() > onHandQty.doubleValue()) {
+                            sum += lineQty;
+                            if(invCmd.getOnHandQty().doubleValue() < sum.doubleValue()){
+                                Double qty = invCmd.getOnHandQty()-(sum-lineQty);
+                                WhOperationLine opLine = new WhOperationLine();
+                                BeanUtils.copyProperties(operLineCmd, opLine);
+                                opLine.setQty(qty);
+                                opLine.setId(null);
+                                opLine.setCreateTime(new Date());
+                                opLine.setLastModifyTime(new Date());
+                                opLine.setFromInsideContainerId(insideId);
+                                if(null == outerContainerId) {
+                                    opLine.setFromOuterContainerId(null);
+                                }else{
+                                    opLine.setFromOuterContainerId(outerId);
+                                }
+                                whOperationLineDao.insert(opLine);
+                                insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
+                                //修改原来的作业明细
+                                WhOperationLine opLine1 = new WhOperationLine();
+                                BeanUtils.copyProperties(operLineCmd, opLine1);
+                                opLine1.setFromInsideContainerId(null);
+                                opLine.setFromOuterContainerId(null);
+                                opLine1.setQty(invCmd.getOnHandQty()-qty);
+                                whOperationLineDao.saveOrUpdateByVersion(opLine1);
+                                insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                break;
+                            }
+                            if(invCmd.getOnHandQty().doubleValue() == sum.doubleValue()){
                                 WhOperationLine opLine = new WhOperationLine();
                                 BeanUtils.copyProperties(operLineCmd, opLine);
                                 opLine.setFromInsideContainerId(insideId);
                                 if(null == outerContainerId) {
                                     opLine.setFromOuterContainerId(null);
                                 }else{
-                                    opLine.setFromOuterContainerId(outerId); 
+                                    opLine.setFromOuterContainerId(outerId);
                                 }
-                                opLine.setQty(onHandQty);
-                                opLine.setId(null);
+                                opLine.setQty(invCmd.getOnHandQty());
+                                whOperationLineDao.saveOrUpdateByVersion(opLine);
+                                insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                break;                               
+                            }
+                            if(invCmd.getOnHandQty().doubleValue() > sum.doubleValue()){
+                                WhOperationLine opLine = new WhOperationLine();
+                                BeanUtils.copyProperties(operLineCmd, opLine);
+                                opLine.setQty( lineQty);
                                 opLine.setCreateTime(new Date());
                                 opLine.setLastModifyTime(new Date());
-                                whOperationLineDao.insert(opLine);
+                                opLine.setFromInsideContainerId(insideId);
+                                if(null == outerContainerId) {
+                                    opLine.setFromOuterContainerId(null);
+                                }else{
+                                    opLine.setFromOuterContainerId(outerId);
+                                }
+                                whOperationLineDao.saveOrUpdateByVersion(opLine);
                                 insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
-                                //修改原来的数据
-                                WhOperationLine opLine1 = new WhOperationLine();
-                                BeanUtils.copyProperties(operLineCmd, opLine1);
-                                opLine1.setFromInsideContainerId(null);
-                                opLine.setFromOuterContainerId(null);
-                                opLine1.setQty(lineQty-onHandQty);
-                                whOperationLineDao.saveOrUpdateByVersion(opLine1);
-                                insertGlobalLog(GLOBAL_LOG_UPDATE, opLine1, ouId, userId, null, null);
-                                break;
-                              
-                             }
-                             if(lineQty.doubleValue() == onHandQty.doubleValue()){
-                                    WhOperationLine opLine = new WhOperationLine();
-                                    BeanUtils.copyProperties(operLineCmd, opLine);
-                                    opLine.setFromInsideContainerId(insideId);
-                                    if(null == outerContainerId) {
-                                        opLine.setFromOuterContainerId(null);
-                                    }else{
-                                        opLine.setFromOuterContainerId(outerId); 
-                                    }
-                                    opLine.setQty(onHandQty);
-                                    whOperationLineDao.saveOrUpdateByVersion(opLine);
-                                    insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
-                                    break;
-                             }
-                             if(lineQty.doubleValue() < onHandQty.doubleValue()){
-                                    sum += lineQty;
-                                    if(onHandQty.doubleValue() < sum.doubleValue()){
-                                        Double qty = onHandQty-(sum-lineQty);
-                                        WhOperationLine opLine = new WhOperationLine();
-                                        BeanUtils.copyProperties(operLineCmd, opLine);
-                                        opLine.setQty(qty);
-                                        opLine.setId(null);
-                                        opLine.setCreateTime(new Date());
-                                        opLine.setLastModifyTime(new Date());
-                                        opLine.setFromInsideContainerId(insideId);
-                                        if(null == outerContainerId) {
-                                            opLine.setFromOuterContainerId(null);
-                                        }else{
-                                            opLine.setFromOuterContainerId(outerId); 
-                                        }
-                                        whOperationLineDao.insert(opLine);
-                                        insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
-                                        //修改原来的作业明细
-                                        WhOperationLine opLine1 = new WhOperationLine();
-                                        BeanUtils.copyProperties(operLineCmd, opLine1);
-                                        opLine1.setFromInsideContainerId(null);
-                                        opLine.setFromOuterContainerId(null);
-                                        opLine1.setQty(lineQty);
-                                        whOperationLineDao.saveOrUpdateByVersion(opLine1);
-                                        insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
-                                        break;
-                                    }
-                                    if(onHandQty.doubleValue() == sum.doubleValue()){
-                                        WhOperationLine opLine = new WhOperationLine();
-                                        BeanUtils.copyProperties(operLineCmd, opLine);
-                                        opLine.setFromInsideContainerId(insideId);
-                                        if(null == outerContainerId) {
-                                            opLine.setFromOuterContainerId(null);
-                                        }else{
-                                            opLine.setFromOuterContainerId(outerId); 
-                                        }
-                                        opLine.setQty(lineQty);
-                                        whOperationLineDao.saveOrUpdateByVersion(opLine);
-                                        insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
-                                        break;                               
-                                    }
-                                    if(onHandQty.doubleValue() > sum.doubleValue()){
-                                        WhOperationLine opLine = new WhOperationLine();
-                                        BeanUtils.copyProperties(operLineCmd, opLine);
-                                        opLine.setFromInsideContainerId(insideId);
-                                        if(null == outerContainerId) {
-                                            opLine.setFromOuterContainerId(null);
-                                        }else{
-                                            opLine.setFromOuterContainerId(outerId); 
-                                        }
-                                        opLine.setQty(lineQty);
-                                        whOperationLineDao.saveOrUpdateByVersion(opLine);
-                                        insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
-                                        continue;
-                                    }
-                              }
+                                continue;
+                            }
                          }
                     }
                  }
