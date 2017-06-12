@@ -1144,23 +1144,34 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     public void updateStatus(Long operationId, String workCode,Long ouId,Long userId) {
         // TODO Auto-generated method stub
         log.info("PdaReplenishmentPutawayManagerImpl updateStatus is start");
-        WhOperation whOperation = whOperationDao.findOperationByIdExt(operationId,ouId);
-        if(null == whOperation) {
-            log.error("whOperation id is not normal, operationId is:[{}]", operationId);
-            throw new BusinessException(ErrorCodes.OPATION_NO_EXIST);
-        }
-        whOperation.setStatus(WorkStatus.FINISH);
-        whOperation.setModifiedId(userId);
-        whOperationDao.saveOrUpdateByVersion(whOperation);
-        insertGlobalLog(GLOBAL_LOG_UPDATE, whOperation, ouId, userId, null, null);
         WhWorkCommand workCmd = whWorkDao.findWorkByWorkCode(workCode, ouId);
         if(null == workCmd) {
             log.error("whOperation id is not normal, operationId is:[{}]", operationId);
             throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
         }
+        int operationCount = whOperationLineDao.findOperationLineCount(ouId, operationId);
+        int workCount = whWorkLineDao.findWorkLineCount(workCmd.getId(), ouId);
+        WhOperation whOperation = whOperationDao.findOperationByIdExt(operationId,ouId);
+        if(null == whOperation) {
+            log.error("whOperation id is not normal, operationId is:[{}]", operationId);
+            throw new BusinessException(ErrorCodes.OPATION_NO_EXIST);
+        }
+        if(operationCount == workCount){
+            whOperation.setStatus(WorkStatus.FINISH);
+        }else{
+            whOperation.setStatus(WorkStatus.PARTLY_FINISH); 
+        }
+        whOperation.setStatus(WorkStatus.FINISH);
+        whOperation.setModifiedId(userId);
+        whOperationDao.saveOrUpdateByVersion(whOperation);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, whOperation, ouId, userId, null, null);
         WhWork work = new WhWork();
         BeanUtils.copyProperties(workCmd, work);
-        work.setStatus(WorkStatus.FINISH);
+        if(operationCount == workCount){
+            work.setStatus(WorkStatus.FINISH);
+        }else{
+            work.setStatus(WorkStatus.PARTLY_FINISH);
+        }
         whWorkDao.saveOrUpdateByVersion(work);
         insertGlobalLog(GLOBAL_LOG_UPDATE, work, ouId, userId, null, null);
         log.info("PdaReplenishmentPutawayManagerImpl updateStatus is end");
