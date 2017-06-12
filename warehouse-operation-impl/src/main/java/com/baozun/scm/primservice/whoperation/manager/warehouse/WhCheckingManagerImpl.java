@@ -673,7 +673,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             checkingCommand = whCheckingList.get(0);
             // TODO
             // 需要判断是否有绑定出库箱, 意味着是否是主副品或者套装.如果有则把出库箱对应的复核明细也缓存到页面
-            if (Constants.PICKING_MODE_BATCH_GROUP.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checkingCommand.getPickingMode())) {
+            if (Constants.PICKING_MODE_BATCH_GROUP.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checkingCommand.getPickingMode())) {
                 whCheckingCommand.setTip(Constants.TIP_BATCH);
                 command.setCheckingCommand(whCheckingCommand);
                 return true;
@@ -1375,13 +1375,18 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 修改播种墙状态
             int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
             if (count == 0) {
-                WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-                if (null == facility) {
-                    throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+                // 没有播种墙库存信息 查看此播种墙是否还有待播种数据
+                int occupationCnt = whSeedingCollectionDao.countOccupationByFacilityCode(seedingWallCode, ouId);
+                if (0 == occupationCnt) {
+                    // 没有待播种数据 释放播种墙
+                    WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+                    if (null == facility) {
+                        throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+                    }
+                    facility.setStatus("1");
+                    facility.setBatch(null);
+                    whOutboundFacilityDao.saveOrUpdateByVersion(facility);
                 }
-                facility.setStatus("1");
-                facility.setBatch(null);
-                whOutboundFacilityDao.saveOrUpdateByVersion(facility);
             }
         }
     }
