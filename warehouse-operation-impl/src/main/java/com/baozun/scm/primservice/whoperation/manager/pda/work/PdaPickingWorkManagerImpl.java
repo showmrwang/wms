@@ -1986,9 +1986,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
 
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
-//                this.createReplenishmentAfterPicking(operationId, ouId, userId);
-                // 清除缓存
-                pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
                 // 更改出库单状态
                 List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
                 for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
@@ -2044,6 +2041,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         log.info("PdaPickingWorkManagerImpl scanSku is end");
         return command;
+    }
+    
+    public void removeCache(Long operationId,Boolean isPicking, Long locationId){
+        // 清除缓存
+        pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
     }
 
     /**
