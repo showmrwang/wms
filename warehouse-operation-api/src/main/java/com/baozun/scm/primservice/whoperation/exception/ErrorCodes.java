@@ -501,9 +501,9 @@ public class ErrorCodes {
     // 20001-30000 shenjian
 
     // 30001-40000 zhanglei
-    /** [称重] 输入的编码未查询到相应的出库信息*/
+    /** [称重] 输入的编码未查询到相应的出库信息 */
     public static final int WEIGHTING_INPUT_NOT_CORRECT = 30101;
-    /** [集货] 该出库箱未能找到集货信息*/
+    /** [集货] 该出库箱未能找到集货信息 */
     public static final int CONCENTRATION_NO_INFO_RETURN = 30102;
     // 30001-40000 zhanglei
 
@@ -1200,6 +1200,8 @@ public class ErrorCodes {
     public static final int NO_WAYBILL_CODE_OR_TRANSPORT_CODE = 110023;
     /** 该面单未绑定出库箱 */
     public static final int WAYBILL_CODE_NO_OUTBOUNDBOX_CODE = 110024;
+    /** 请先交接出库箱 */
+    public static final int HANDOVERSTATION_IS_NULL = 110025;
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;

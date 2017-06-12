@@ -533,4 +533,10 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     public String findStoreCodeByStoreId(Long storeId) {
         return storeDao.findById(storeId).getStoreCode();
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int cancelBoxToHandoverstation(String outboundBoxCode, Long ouId) {
+        return handoverCollectionDao.deleteByOutboundboxCodeAndOuId(outboundBoxCode, ouId);
+    }
 }
