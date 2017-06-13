@@ -10706,22 +10706,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
             // 记录入库库存日志(这个实现的有问题)
             insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-            insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-            String uuid1 = invCmd.getUuid();
-            Double oldQty1 = 0.0;
-            if (true == isTabbInvTotal) {
-                try {
-                    oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
-                } catch (Exception e) {
-                    log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-                }
-            } else {
-                oldQty1 = 0.0;
-            }
-            insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-            // 删除原来的库存
-            whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
+//            String uuid1 = invCmd.getUuid();
+//            Double oldQty1 = 0.0;
+//            if (true == isTabbInvTotal) {
+//                try {
+//                    oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
+//                } catch (Exception e) {
+//                    log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+//                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+//                }
+//            } else {
+//                oldQty1 = 0.0;
+//            }
+//            insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+//            // 删除原来的库存
+//            whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
             // 操作sn/残次信息
             int count = 0;
             for (WhSkuInventorySnCommand cSnCmd : snList) {
