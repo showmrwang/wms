@@ -216,6 +216,6 @@ public interface PoManager extends BaseManager {
 
     WhPo findWhpoByPoCodeToInfo(String poCode, Long ouId);
 
-    void createReceivingFinishPoAsnToShard(List<WhSkuInventory> list, WhPo po, List<WhPoLine> poLine, ContainerCommand container, Long ouId);
+    void createReceivingFinishPoAsnToShard(List<WhSkuInventory> list, WhPo po, List<WhPoLine> poLine, ContainerCommand container, String odoCode, Long ouId);
 
 }
