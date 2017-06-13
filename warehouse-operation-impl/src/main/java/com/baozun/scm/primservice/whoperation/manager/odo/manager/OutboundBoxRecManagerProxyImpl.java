@@ -1066,7 +1066,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 获取可用容器，设置包裹的outContainerId
                         Container trolleyContainer = null;
                         if (null != availableTrolley) {
-                            trolleyContainer = this.getNewContainer(availableTrolley, ouId, logId);
+                            // 查找小车数据
+                            trolleyContainer = this.getUseAbleContainer(availableTrolley, ouId, logId);
                         }
                         if (null == availableTrolley || null == trolleyContainer) {
                             // 没有可用小车，保存数据
