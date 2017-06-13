@@ -1280,13 +1280,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Override
     public void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long ouId) {
-        WhSkuInventory skuInventory = new WhSkuInventory();
-        skuInventory.setInsideContainerId(recCommand.getContainerId());
-        skuInventory.setOuId(ouId);
-        List<WhSkuInventory> invList = this.whSkuInventoryDao.findListByParam(skuInventory);
+        List<WhSkuInventory> invList = this.whSkuInventoryDao.findListByInsideContainerId(recCommand.getContainerId(), ouId);
         if (null == invList || invList.isEmpty()) {
             log.error("skuInventory is empty, InsideContainerId:" + recCommand.getContainerId());
-            throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_INV_NULL);
         }
         for (WhSkuInventory inv : invList) {
             switch (destinationType) {
