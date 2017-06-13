@@ -1359,7 +1359,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             recFacilityPath.setContainerCode(containerCode);
             recFacilityPath.setOdoIdList(workCommand.getOdoIdList());
             recFacilityPath.setLastContainer(workCommand.getIsLastContainer());
-            recFacilityPath.setAreaId(workCommand.getLastLocationId());
+            // recFacilityPath.setAreaId(workCommand.getLastLocationId());
+            recFacilityPath.setAreaId(workCommand.getAreaId());
             recFacilityPath.setPickingMode(Constants.PICKING_MODE_SEED);
             // 调用播种墙推荐逻辑
             RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);

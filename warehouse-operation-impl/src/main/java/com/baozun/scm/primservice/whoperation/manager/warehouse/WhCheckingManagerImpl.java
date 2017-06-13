@@ -281,12 +281,14 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         } else {
             WhOdodeliveryInfo info = odoManagerProxy.getLogisticsInfoByOdoId(odoId, "gianni_test", ouId);
             if (null != info) {
+                log.info("mail no =======>" + info.getId());
                 if (null != info.getWaybillCode()) {
                     waybillType = Constants.ELECTRONIC_WAY_BILL;
                 } else {
                     waybillType = Constants.PAPER_WAY_BILL;
                 }
             } else {
+                log.info("retrieve mail no =======> failure");
                 throw new BusinessException("获取运单号失败");
             }
         }

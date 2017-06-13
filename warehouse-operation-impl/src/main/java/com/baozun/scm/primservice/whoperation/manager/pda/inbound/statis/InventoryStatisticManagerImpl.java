@@ -1554,12 +1554,14 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                         Map<Long, Set<String>> allLocSkuAttrs = insideContainerLocSkuAttrIds.get(icId);
                         if (null != allLocSkuAttrs && !allLocSkuAttrs.isEmpty()) {
                             for (Long lId : allLocSkuAttrs.keySet()) {
-                                Location loc = locationDao.findByIdExt(lId, ouId);
-                                if (null == loc) {
-                                    log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
-                                    throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                                if (null != lId) {
+                                    Location loc = locationDao.findByIdExt(lId, ouId);
+                                    if (null == loc) {
+                                        log.error("location is null error, locId is:[{}], logId is:[{}]", lId, logId);
+                                        throw new BusinessException(ErrorCodes.COMMON_LOCATION_IS_NOT_EXISTS);
+                                    }
+                                    sortLocs.add(loc);  
                                 }
-                                sortLocs.add(loc);
                             }
                             Collections.sort(sortLocs, new LocationShelfSorter());
                             for (Location sortLoc : sortLocs) {
