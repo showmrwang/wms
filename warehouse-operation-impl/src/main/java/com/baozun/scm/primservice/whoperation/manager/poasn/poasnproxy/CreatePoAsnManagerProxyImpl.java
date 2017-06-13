@@ -2152,7 +2152,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             Double skuQty = qtyMap.get(odoCode);
             List<WhPoLine> poLine = poLineMap.get(odoCode);
             WhPo po = this.getWhPo(odo, skuQty, userId, ouId);
-            poManager.createReceivingFinishPoAsnToShard(list, po, poLine, container, ouId);
+            poManager.createReceivingFinishPoAsnToShard(list, po, poLine, container, odoCode, ouId);
         }
     }
 

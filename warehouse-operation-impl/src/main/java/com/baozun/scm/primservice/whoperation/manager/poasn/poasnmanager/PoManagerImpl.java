@@ -1042,7 +1042,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void createReceivingFinishPoAsnToShard(List<WhSkuInventory> list, WhPo po, List<WhPoLine> poLine, ContainerCommand container, Long ouId) {
+    public void createReceivingFinishPoAsnToShard(List<WhSkuInventory> list, WhPo po, List<WhPoLine> poLine, ContainerCommand container, String odoCode, Long ouId) {
         // 保存Po和PoLine
         whPoDao.insert(po);
         for (WhPoLine whPoLine : poLine) {
@@ -1088,23 +1088,25 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
         }
         // 更新库存
         for (WhSkuInventory inv : list) {
-            WhSkuInventory skuInv = whSkuInventoryDao.findWhSkuInventoryById(inv.getId(), ouId);
-            skuInv.setOuterContainerId(null);
-            skuInv.setInsideContainerId(container.getId());
-            skuInv.setSeedingWallCode(null);
-            skuInv.setContainerLatticeNo(null);
-            skuInv.setOutboundboxCode(null);
-            skuInv.setOccupationLineId(null);
-            skuInv.setOccupationCode(asnCode);
-            skuInv.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ASN_EXCEPTION);
-            try {
-                skuInv.setUuid(SkuInventoryUuid.invUuid(skuInv));
-            } catch (Exception e) {
-                log.error("GENERATE_SKU_UUID_ERROR!");
-            }
-            int updateCount = whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-            if (updateCount == 0) {
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            if (null != odoCode && odoCode.equals(inv.getOccupationCode())) {
+                WhSkuInventory skuInv = whSkuInventoryDao.findWhSkuInventoryById(inv.getId(), ouId);
+                skuInv.setOuterContainerId(null);
+                skuInv.setInsideContainerId(container.getId());
+                skuInv.setSeedingWallCode(null);
+                skuInv.setContainerLatticeNo(null);
+                skuInv.setOutboundboxCode(null);
+                skuInv.setOccupationLineId(null);
+                skuInv.setOccupationCode(asnCode);
+                skuInv.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ASN_EXCEPTION);
+                try {
+                    skuInv.setUuid(SkuInventoryUuid.invUuid(skuInv));
+                } catch (Exception e) {
+                    log.error("GENERATE_SKU_UUID_ERROR!");
+                }
+                int updateCount = whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+                if (updateCount == 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
             }
         }
         containerDao.updateContainerStatusByIdAndOuId(container.getId(), ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY, ouId);
