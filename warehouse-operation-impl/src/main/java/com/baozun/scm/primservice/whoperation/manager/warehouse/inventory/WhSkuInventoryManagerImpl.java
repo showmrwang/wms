@@ -10510,6 +10510,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if (Constants.WAY_6.equals(checkingPattern)) {
                 skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, null);
             }
+            Boolean isContainue = false;
             for (WhSkuInventoryCommand invSnCmd : skuInvSnList) {
                 if (invSnCmd.getUuid().equals(checkingLine.getUuid())) {
                     List<WhSkuInventoryCommand> skuInvList = null;
@@ -10539,30 +10540,30 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                     Double sum = 0.0;
                     for (WhSkuInventoryCommand invCmd : skuInvList) {// 一单多箱的情况库存记录大于复合明细记录,
-                        if (invCmd.getOnHandQty().doubleValue() == Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
-                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, Double.valueOf(checkingLine.getCheckingQty()), outboundboxCode, isTabbInvTotal, ouId, userId);
-                            // 删除容器库存
-                            this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
-                            break;
-                        }
-
-                        if (invCmd.getOnHandQty().doubleValue() > Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
-                            Double qty = invCmd.getOnHandQty() - checkingLine.getCheckingQty();
-                            Double oldQty = Double.valueOf(checkingLine.getCheckingQty());
-                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, Double.valueOf(checkingLine.getCheckingQty()), outboundboxCode, isTabbInvTotal, ouId, userId);
-                            // 修改容器库存
-                            this.updateContainerInventory(qty, invCmd, ouId, userId, isTabbInvTotal, oldQty);
-                            break;
-
-                        }
-
-                        if (invCmd.getOnHandQty().doubleValue() < Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
+//                        if (invCmd.getOnHandQty().doubleValue() == Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
+//                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, Double.valueOf(checkingLine.getCheckingQty()), outboundboxCode, isTabbInvTotal, ouId, userId);
+//                            // 删除容器库存
+//                            this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
+//                            break;
+//                        }
+//
+//                        if (invCmd.getOnHandQty().doubleValue() > Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
+//                            Double qty = invCmd.getOnHandQty() - checkingLine.getCheckingQty();
+//                            Double oldQty = Double.valueOf(checkingLine.getCheckingQty());
+//                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, Double.valueOf(checkingLine.getCheckingQty()), outboundboxCode, isTabbInvTotal, ouId, userId);
+//                            // 修改容器库存
+//                            this.updateContainerInventory(qty, invCmd, ouId, userId, isTabbInvTotal, oldQty);
+//                            break;
+//
+//                        }
+//                        if (invCmd.getOnHandQty().doubleValue() < Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
                             sum += invCmd.getOnHandQty();
                             if (sum.doubleValue() == Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
                                 this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
                                 // 删除容器库存
                                 this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
-                                continue;
+                                isContainue = true;
+                                break;
                             }
                             if (sum.doubleValue() < Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
                                 this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
@@ -10575,9 +10576,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, qty, outboundboxCode, isTabbInvTotal, ouId, userId);
                                 // 修改容器库存
                                 this.updateContainerInventory(invCmd.getOnHandQty() - qty, invCmd, ouId, userId, isTabbInvTotal, qty);
+                                isContainue = true;
                                 break;
                             }
-                        }
+//                        }
+                    }
+                    if(isContainue){
+                        break;
                     }
                 }
             }
