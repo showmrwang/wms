@@ -1109,7 +1109,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                 }
             }
         }
-        containerDao.updateContainerStatusByIdAndOuId(container.getId(), ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY, ouId);
+        containerDao.updateContainerStatusByIdAndOuId(container.getId(), ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY, ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED, ouId);
     }
 
 	
