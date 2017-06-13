@@ -525,6 +525,9 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
         try {
             Long userId = asn.getUserId();
             Long ouId = asn.getOuId();
+
+            whpo = this.whPoDao.findWhPoById(whpo.getId(), ouId);
+
             WhAsn whAsn = new WhAsn();
             BeanUtils.copyProperties(whpo, whAsn);
             // WMS单据号 调用HUB编码生成器获得
@@ -588,7 +591,8 @@ public class AsnManagerImpl extends BaseManagerImpl implements AsnManager {
             // 存放已生成的箱信息
             Map<String, Long> containerMap = null;
             if (whPoLines != null && whPoLines.size() > 0) {
-                for (WhPoLine pl : whPoLines) {
+                for (WhPoLine l : whPoLines) {
+                    WhPoLine pl = this.whPoLineDao.findWhPoLineById(l.getId(), ouId);
                     if (pl.getQtyPlanned() >= pl.getAvailableQty() && StringUtil.isEmpty(pl.getUuid()) && pl.getAvailableQty() > 0) {
                         // 计划数量比如大于可用数量并且UUID为空才能创建
                         WhAsnLine al = new WhAsnLine();
