@@ -23,11 +23,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.baozun.scm.baseservice.sac.manager.CodeManager;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.system.GlobalLogCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundConfirmCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
 import com.baozun.scm.primservice.whoperation.dao.poasn.BiPoDao;
@@ -36,6 +39,8 @@ import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhAsnLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -50,9 +55,13 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
+import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
+import com.baozun.scm.primservice.whoperation.util.StringUtil;
 
 
 /**
@@ -74,17 +83,23 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @Autowired
     private WhAsnLineDao whAsnLineDao;
     @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
+    @Autowired
     private GlobalLogManager globalLogManager;
     @Autowired
     private BiPoDao biPoDao;
     @Autowired
     private BiPoLineDao biPoLineDao;
     @Autowired
+    private ContainerDao containerDao;
+    @Autowired
     private WhInboundManager whInboundManager;
     @Autowired
     private WhSkuInventoryManager whSkuInventoryManager;
     @Autowired
     private WarehouseManager warehouseManager;
+    @Autowired
+    private CodeManager codeManager;
     /**
      * 读取拆分库PO单数据
      * 
@@ -1023,6 +1038,76 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public WhPo findWhpoByPoCodeToInfo(String poCode, Long ouId) {
         return this.whPoDao.findWhPoByCode(poCode, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void createReceivingFinishPoAsnToShard(List<WhSkuInventory> list, WhPo po, List<WhPoLine> poLine, ContainerCommand container, Long ouId) {
+        // 保存Po和PoLine
+        whPoDao.insert(po);
+        for (WhPoLine whPoLine : poLine) {
+            whPoLine.setPoId(po.getId());
+            whPoLineDao.insert(whPoLine);
+        }
+        // 保存WhAsn和WhAsnLine
+        WhAsn whAsn = new WhAsn();
+        BeanUtils.copyProperties(po, whAsn);
+        // WMS单据号 调用HUB编码生成器获得
+        String asnCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_INNER, null, null);
+        String asnExtCode = codeManager.generateCode(Constants.WMS, Constants.WHASN_MODEL_URL, Constants.WMS_ASN_EXT, null, null);
+        if (StringUtil.isEmpty(asnCode) || StringUtils.isEmpty(asnExtCode)) {
+            log.warn("CreateAsnBatch warn asnCode generateCode is null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+        }
+        whAsn.setId(null);
+        whAsn.setOuId(ouId);
+        whAsn.setAsnCode(asnCode);
+        whAsn.setAsnExtCode(asnExtCode);
+        whAsn.setPoId(po.getId());
+        whAsn.setPoOuId(ouId);
+        whAsn.setAsnType(po.getPoType());
+        whAsn.setStatus(PoAsnStatus.ASN_RCVD_FINISH);
+        whAsn.setCreateTime(new Date());
+        whAsn.setLastModifyTime(new Date());
+        whAsnDao.insert(whAsn);
+        for (WhPoLine whPoLine : poLine) {
+            WhAsnLine whAsnLine = new WhAsnLine();
+            BeanUtils.copyProperties(whPoLine, whAsnLine);
+            whAsnLine.setId(null);
+            whAsnLine.setPoLineId(whPoLine.getId());
+            whAsnLine.setPoLinenum(whPoLine.getLinenum());
+            whAsnLine.setAsnId(whAsn.getId());
+            whAsnLine.setStatus(PoAsnStatus.ASNLINE_RCVD_FINISH);
+            whAsnLineDao.insert(whAsnLine);
+        }
+        if (null == container.getId()) {
+            Container newContainer = new Container();
+            BeanUtils.copyProperties(container, newContainer);
+            containerDao.insert(newContainer);
+            container.setId(newContainer.getId());
+        }
+        // 更新库存
+        for (WhSkuInventory inv : list) {
+            WhSkuInventory skuInv = whSkuInventoryDao.findWhSkuInventoryById(inv.getId(), ouId);
+            skuInv.setOuterContainerId(null);
+            skuInv.setInsideContainerId(container.getId());
+            skuInv.setSeedingWallCode(null);
+            skuInv.setContainerLatticeNo(null);
+            skuInv.setOutboundboxCode(null);
+            skuInv.setOccupationLineId(null);
+            skuInv.setOccupationCode(asnCode);
+            skuInv.setOccupationCodeSource(Constants.SKU_INVENTORY_OCCUPATION_SOURCE_ASN_EXCEPTION);
+            try {
+                skuInv.setUuid(SkuInventoryUuid.invUuid(skuInv));
+            } catch (Exception e) {
+                log.error("GENERATE_SKU_UUID_ERROR!");
+            }
+            int updateCount = whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+            if (updateCount == 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+        containerDao.updateContainerStatusByIdAndOuId(container.getId(), ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY, ouId);
     }
 
 	

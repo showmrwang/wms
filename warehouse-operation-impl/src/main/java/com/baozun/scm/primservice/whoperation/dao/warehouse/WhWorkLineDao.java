@@ -73,5 +73,13 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
      * @return
      */
     List<WhWorkLineCommand> findWorkLineByToLocationId(@Param("toLocationId") Long toLocationId, @Param("ouId") Long ouId);
+    
+   /**
+    * 获取当前工作明细中药拣货的数量
+    * @param id
+    * @param ouId
+    * @return
+    */
+    public int findWorkLineCount(@Param("workId") Long id, @Param("ouId") Long ouId);
 	
 }

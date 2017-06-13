@@ -1046,5 +1046,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             wave_id = #{waveId}
             AND ou_id = #{ouId}
     </select>
-
+	
+	<select id="countWaveLineByWaveId" resultType="long">
+		select
+            count(1)
+        from 
+        	t_wh_wave_line
+        where
+            wave_id = #{waveId}
+            and ou_id = #{ouId}
+	</select>
 </mapper>

@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.baseservice.sac.manager.CodeManager;
-import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdSnCacheCommand;
@@ -34,12 +33,14 @@ import com.baozun.scm.primservice.whoperation.command.poasn.BiPoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhAsnCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhAsnRcvdLogCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.PoAsnStatus;
+import com.baozun.scm.primservice.whoperation.constant.PoAsnType;
 import com.baozun.scm.primservice.whoperation.excel.ExcelContext;
 import com.baozun.scm.primservice.whoperation.excel.ExcelImport;
 import com.baozun.scm.primservice.whoperation.excel.exception.ExcelException;
@@ -51,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.manager.archiv.OdoArchivManager;
 import com.baozun.scm.primservice.whoperation.manager.bi.OutPutStreamToServersManager;
 import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivIndexManager;
 import com.baozun.scm.primservice.whoperation.manager.collect.WhOdoArchivLineIndexManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.rcvd.GeneralRcvdManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.AsnManager;
@@ -58,18 +60,20 @@ import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoLin
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.BiPoManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.poasn.poasnmanager.PoManager;
-import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.CustomerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.StoreManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.SupplierManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.carton.WhCartonManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.bi.ImportExcel;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.BiPoLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
@@ -80,8 +84,10 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
@@ -120,16 +126,11 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     @Autowired
     private BiPoManager biPoManager;
     @Autowired
-    private PkManager pkManager;
-    @Autowired
     private BiPoLineManager biPoLineManager;
-
     @Autowired
     private CustomerManager customerManager;
     @Autowired
     private StoreManager storeManager;
-    @Autowired
-    private SkuRedisManager skuRedisManager;
     @Autowired
     private OdoArchivManager odoArchivManager;
     @Autowired
@@ -150,6 +151,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     private WhOdoArchivIndexManager whOdoArchivIndexManager;
     @Autowired
     private WhOdoArchivLineIndexManager whOdoArchivLineIndexManager;
+    @Autowired
+    private WhSkuInventoryManager whSkuInventoryManager;
+    @Autowired
+    private ContainerManager containerManager;
+    @Autowired
+    private OdoManager odoManager;
 
     /**
      * 验证po单数据是否完整
@@ -2092,6 +2099,124 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
     @Override
     public String generateExtCode() {
         return this.getUniqueCode(null, Constants.BIPO_MODEL_URL, Constants.WMS_PO_EXT, null, null);
+    }
+
+    @Override
+    public void createReceivingFinishPoAsn(String packingContainer, Long twoLevelType, String containerCode, String latticNo, Integer target, Long userId, Long ouId) {
+        ContainerCommand container = null;
+        if (target == 4) {
+            // 扫描的出库箱,需要转换为周转箱
+            container = containerManager.useOutBoundBoxToContainer(containerCode, twoLevelType, userId, ouId);
+        } else {
+            container = containerManager.checkContainerStatus(packingContainer, target, ouId);
+        }
+        // 查找库存
+        List<WhSkuInventory> list = whSkuInventoryManager.findContainerSkuInventory(containerCode, latticNo, target, ouId);
+        Map<String, List<WhPoLine>> poLineMap = new HashMap<String, List<WhPoLine>>();
+        Map<String, Double> qtyMap = new HashMap<String, Double>();
+        for (WhSkuInventory inv : list) {
+            String odoCode = inv.getOccupationCode();
+            if (StringUtils.isEmpty(odoCode)) {
+                throw new BusinessException(ErrorCodes.ODO_NOT_FIND);
+            }
+            List<WhPoLine> poLine = poLineMap.get(odoCode);
+            if (null == poLine) {
+                poLine = new ArrayList<WhPoLine>();
+            }
+            // 生成poLine
+            WhPoLine line = this.getPoLine(inv, poLine.size() + 1, userId, ouId);
+            poLine.add(line);
+            poLineMap.put(odoCode, poLine);
+            // 记录数量
+            Double skuQty = qtyMap.get(odoCode);
+            if (null == skuQty) {
+                skuQty = Constants.DEFAULT_DOUBLE;
+            }
+            skuQty += inv.getOnHandQty();
+            qtyMap.put(odoCode, skuQty);
+        }
+        if (target == 1 || target == 3 || target == 4) {
+            if (poLineMap.size() != 1) {
+                // 含有不同的出库单
+                throw new BusinessException(ErrorCodes.SKU_INV_HAVE_MORE_ODO);
+            }
+        }
+        for (Entry<String, List<WhPoLine>> entry : poLineMap.entrySet()) {
+            String odoCode = entry.getKey();
+            WhOdo odo = odoManager.findByOdoCodeAndOuId(odoCode, ouId);
+            if (null == odo) {
+                log.error("odo not exists, odoCode:{}", odoCode);
+                throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+            }
+            // 生成WhPo
+            Double skuQty = qtyMap.get(odoCode);
+            List<WhPoLine> poLine = poLineMap.get(odoCode);
+            WhPo po = this.getWhPo(odo, skuQty, userId, ouId);
+            poManager.createReceivingFinishPoAsnToShard(list, po, poLine, container, ouId);
+        }
+    }
+
+    private WhPo getWhPo(WhOdo odo, Double skuQty, Long userId, Long ouId) {
+        WhPo po = new WhPo();
+        String poCode = this.getUniqueCode();
+        String poExtCode = this.generateExtCode();
+        if (StringUtil.isEmpty(poCode) || StringUtil.isEmpty(poExtCode)) {
+            log.warn("CreatePo warn poCode or poExtCode generateCode is null");
+            throw new BusinessException(ErrorCodes.GET_GENERATECODE_NULL);
+        }
+        po.setPoCode(poCode);
+        po.setExtCode(poExtCode);
+        po.setOuId(ouId);
+        po.setCustomerId(odo.getCustomerId());
+        po.setStoreId(odo.getStoreId());
+        po.setPoType(PoAsnType.POTYPE_1);
+        po.setStatus(PoAsnStatus.PO_CLOSE);
+        po.setIsIqc(Boolean.FALSE);
+        po.setPoDate(new Date());
+        po.setEta(new Date());
+        po.setDeliveryTime(new Date());
+        po.setQtyPlanned(skuQty);
+        po.setQtyRcvd(skuQty);
+        po.setCtnPlanned(Constants.DEFAULT_INTEGER);
+        po.setCtnRcvd(Constants.DEFAULT_INTEGER);
+        po.setStartTime(new Date());
+        po.setStopTime(new Date());
+        po.setIsWms(Boolean.TRUE);
+        po.setCreateTime(new Date());
+        po.setIsAutoClose(Boolean.TRUE);
+        po.setDataSource(Constants.DATA_SOURCE_WMS_ERROR);
+        po.setCreatedId(userId);
+        po.setLastModifyTime(new Date());
+        po.setModifiedId(userId);
+        return po;
+    }
+
+    private WhPoLine getPoLine(WhSkuInventory inv, int lineNum, Long userId, Long ouId) {
+        WhPoLine line = new WhPoLine();
+        line.setOuId(ouId);
+        line.setLinenum(lineNum);
+        line.setSkuId(inv.getSkuId());
+        line.setQtyPlanned(inv.getOnHandQty());
+        line.setAvailableQty(Constants.DEFAULT_DOUBLE);
+        line.setQtyRcvd(inv.getOnHandQty());
+        line.setStatus(PoAsnStatus.POLINE_RCVD_FINISH);
+        line.setIsIqc(Boolean.FALSE);
+        line.setMfgDate(inv.getMfgDate());
+        line.setExpDate(inv.getExpDate());
+        line.setBatchNo(inv.getBatchNumber());
+        line.setCountryOfOrigin(inv.getCountryOfOrigin());
+        line.setInvStatus(inv.getInvStatus());
+        line.setInvAttr1(inv.getInvAttr1());
+        line.setInvAttr2(inv.getInvAttr2());
+        line.setInvAttr3(inv.getInvAttr3());
+        line.setInvAttr4(inv.getInvAttr4());
+        line.setInvAttr5(inv.getInvAttr5());
+        line.setInvType(inv.getInvType());
+        line.setCreateTime(new Date());
+        line.setCreatedId(userId);
+        line.setLastModifyTime(new Date());
+        line.setModifiedId(userId);
+        return line;
     }
 
 }

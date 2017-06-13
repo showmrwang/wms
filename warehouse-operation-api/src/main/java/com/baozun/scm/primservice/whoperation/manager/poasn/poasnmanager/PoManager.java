@@ -8,9 +8,11 @@ import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
 import com.baozun.scm.primservice.whoperation.command.poasn.WhPoCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
 public interface PoManager extends BaseManager {
 
@@ -213,5 +215,7 @@ public interface PoManager extends BaseManager {
     WhPo findWhpoByPoCodeToShard(String poCode, Long ouId);
 
     WhPo findWhpoByPoCodeToInfo(String poCode, Long ouId);
+
+    void createReceivingFinishPoAsnToShard(List<WhSkuInventory> list, WhPo po, List<WhPoLine> poLine, ContainerCommand container, Long ouId);
 
 }

@@ -93,7 +93,6 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             if (pathList != null && pathList.size() > 0) {// 存在推荐成功的信息
                 prePath = pathList.get(0);
             }
-
             if (prePath == null) {
                 // 模式
                 if (StringUtils.isEmpty(wh.getSeedingMode())) {
@@ -130,9 +129,8 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             } else {
                 this.whFacilityRecPathManager.occupyFacilityAndlocation(null, prePath, recFacilityPath, wh);
             }
-
-
         } catch (Exception e) {
+            log.error("WaveFacilityManagerProxyImpl.matchSeedingWallWhenSeeding error", e);
             return responseMsgForFacility(recFacilityPath, 0);
         }
         return responseMsgForFacility(recFacilityPath, 1);

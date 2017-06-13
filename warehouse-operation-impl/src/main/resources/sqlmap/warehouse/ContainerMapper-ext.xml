@@ -344,6 +344,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</select>
 		
-		
+		<update id="updateContainerStatusByIdAndOuId">
+			update
+				t_wh_container
+			set 
+				status = #{status}
+			where
+				id = #{id}
+				and ou_id = #{ouId}
+		</update>
 		
 </mapper>

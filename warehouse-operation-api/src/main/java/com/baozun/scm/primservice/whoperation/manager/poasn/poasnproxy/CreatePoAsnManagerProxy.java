@@ -178,6 +178,13 @@ public interface CreatePoAsnManagerProxy extends BaseManager {
      * [业务方法]生成BIPO相关单据号
      */
     String generateExtCode();
+    
+    /**
+     * 根据容器库存创建收货完成PoAsn单
+     * @author kai.zhu
+     * @version 2017年6月9日
+     */
+    void createReceivingFinishPoAsn(String packingContainer, Long twoLevelType, String containerCode, String latticNo, Integer target, Long userId, Long ouId);
 
 
 }

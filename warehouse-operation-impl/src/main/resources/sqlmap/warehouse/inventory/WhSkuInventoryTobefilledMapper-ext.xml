@@ -550,4 +550,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			AND replenishTask.location_id = invTobefilled.location_id
 			AND replenishTask.ou_id = #{taskOuId} 
 	</select>
+	
+	<delete id="deleteByReplenishmentCode">
+		delete from
+			t_wh_sku_inventory_tobefilled
+		where 
+			replenishment_code = #{replenishmentCode}
+			and ou_id = #{ouId}
+	</delete>
 </mapper>

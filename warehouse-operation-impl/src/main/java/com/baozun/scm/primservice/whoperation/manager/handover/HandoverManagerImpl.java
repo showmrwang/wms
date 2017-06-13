@@ -520,7 +520,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         List<WhOdoTransportService> findListByParam = whOdoTransportServiceDao.findListByParam(whOdoTransportService);
         if (findListByParam.size() < 1 || null == findListByParam) {
             log.error("handover error whhandovermanager.whOdoTransportServiceDao  , findListByParam is null");
-            throw new BusinessException(ErrorCodes.CHECKING_ODO_TRANSPORT_SERVICE_ERROR);
+            return false;
         }
         Boolean isOl = findListByParam.get(0).getIsOl();
         return isOl;
@@ -532,5 +532,11 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public String findStoreCodeByStoreId(Long storeId) {
         return storeDao.findById(storeId).getStoreCode();
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public int cancelBoxToHandoverstation(String outboundBoxCode, Long ouId) {
+        return handoverCollectionDao.deleteByOutboundboxCodeAndOuId(outboundBoxCode, ouId);
     }
 }

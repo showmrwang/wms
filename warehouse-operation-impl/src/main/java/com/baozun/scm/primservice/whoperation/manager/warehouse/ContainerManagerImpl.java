@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
@@ -14,18 +16,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baozun.scm.baseservice.sac.manager.CodeManager;
-import com.baozun.scm.baseservice.sac.manager.PkManager;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.system.SysDictionaryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.system.GlobalLogManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 
 @Service("containerManager")
 @Transactional
@@ -38,12 +43,9 @@ public class ContainerManagerImpl extends BaseManagerImpl implements ContainerMa
 
     @Autowired
     private Container2ndCategoryDao container2ndCategoryDao;
-
+    
     @Autowired
-    private CodeManager codeManager;
-
-    @Autowired
-    private PkManager pkManager;
+    private OutBoundBoxTypeDao outBoundBoxTypeDao;
 
     @Autowired
     private GlobalLogManager globalLogManager;
@@ -135,7 +137,60 @@ public class ContainerManagerImpl extends BaseManagerImpl implements ContainerMa
     }
 
 
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public ContainerCommand checkContainerStatus(String packingContainer, Integer target, Long ouId) {
+        ContainerCommand container = containerDao.getContainerByCode(packingContainer, ouId);
+        if (null == container) {
+            // 容器信息不存在
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER_IS_NOT_EXISTS);
+        }
+        if (target != 2) {
+            if (ContainerStatus.CONTAINER_LIFECYCLE_USABLE != container.getLifecycle() 
+                    || ContainerStatus.CONTAINER_STATUS_USABLE != container.getStatus()) {
+                // 容器状态不可用
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
+        }
+        Long insideContainerCate = container.getTwoLevelType();
+        if (null == insideContainerCate) {
+            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+        }
+        Container2ndCategory insideContainer2 = container2ndCategoryDao.findByIdExt(insideContainerCate, ouId);
+        if (null == insideContainer2) {
+            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+        }
+        if (1 != insideContainer2.getLifecycle()) {
+            // 二级容器状态不可用
+            throw new BusinessException(ErrorCodes.COMMON_TWO_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+        }
+        return container;
+    }
 
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public ContainerCommand useOutBoundBoxToContainer(String outboundBoxCode, Long twoLevelType, Long userId, Long ouId) {
+        ContainerCommand container = containerDao.getContainerByCode(outboundBoxCode, ouId);
+        if (null == container) {
+            if (null == twoLevelType) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            container = new ContainerCommand();
+            container.setCode(outboundBoxCode);
+            container.setName(outboundBoxCode);
+            container.setIsFull(Boolean.FALSE);
+            container.setCreateTime(new Date());
+            container.setLastModifyTime(new Date());
+            container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+            container.setOneLevelType(Constants.CONTAINER_TYPE_BOX);
+            container.setOuId(ouId);
+            container.setOperatorId(userId);
+            container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+            container.setTwoLevelType(twoLevelType);
+        }
+        return container;
+    }
 
 
 }

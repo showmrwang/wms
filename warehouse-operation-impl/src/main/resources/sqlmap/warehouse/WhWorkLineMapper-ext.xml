@@ -532,4 +532,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				OR line.qty > SUM(operation.qty)
 			) line
     </select>
+    
+    <select id="findWorkLineCount" resultType="java.lang.Integer">
+    	select 
+    		sum(qty)
+	    from 
+	    	t_wh_work_line
+	    where
+			ou_id = #{ouId} and work_id=#{workId}
+    </select>
 </mapper>
