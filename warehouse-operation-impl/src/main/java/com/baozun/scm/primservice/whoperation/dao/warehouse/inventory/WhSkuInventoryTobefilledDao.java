@@ -168,4 +168,6 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      */
     List<WhSkuInventoryTobefilledCommand> getInReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
     List<WhSkuInventoryTobefilledCommand> getOutReplenishmentLst(ReplenishmentRuleCommand replenishmentRuleCommand);
+
+    int deleteByReplenishmentCode(@Param("replenishmentCode") String repCode, @Param("ouId") Long ouId);
 }

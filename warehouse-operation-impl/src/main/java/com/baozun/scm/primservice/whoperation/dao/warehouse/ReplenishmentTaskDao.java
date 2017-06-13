@@ -49,4 +49,13 @@ public interface ReplenishmentTaskDao extends BaseDao<ReplenishmentTask,Long>{
      */
 	ReplenishmentTask findReplenishmentTaskByCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId);
 	
+	/**
+     * 根据波次Id查询信息
+     * 
+     * @param replenishmentCode
+     * @param ouId
+     * @return
+     */
+    ReplenishmentTask findReplenishmentTaskByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+	
 }

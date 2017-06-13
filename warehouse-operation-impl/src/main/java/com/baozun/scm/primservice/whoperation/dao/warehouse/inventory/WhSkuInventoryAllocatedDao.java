@@ -157,4 +157,6 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
      */
     public List<WhSkuInventoryAllocated> findskuInventoryAllocateds(WhSkuInventoryAllocated whSkuInventoryAllocated);
 
+    int deleteByReplenishmentCode(@Param("replenishmentCode") String repCode, @Param("ouId") Long ouId);
+
 }

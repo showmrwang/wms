@@ -111,4 +111,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
     </select>
 	
+	<select id="findReplenishmentTaskByWaveId" resultMap="replenishmentTaskResultExt">
+		select
+			<include refid="replenishmentTaskColumnsExt"/>
+		from 
+			t_wh_replenishment_task
+		where
+			wave_id = #{waveId}
+			and ou_id = #{ouId}
+	</select>
 </mapper>
