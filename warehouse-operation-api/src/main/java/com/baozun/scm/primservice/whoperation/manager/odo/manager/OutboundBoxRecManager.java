@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2013 Baozun All Rights Reserved.
  * <p/>
- * This software is the confidential and proprietary information of Baozun.
- * You shall not disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Baozun.
+ * This software is the confidential and proprietary information of Baozun. You shall not disclose
+ * such Confidential Information and shall use it only in accordance with the terms of the license
+ * agreement you entered into with Baozun.
  * <p/>
- * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
- * SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
- * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
- * THIS SOFTWARE OR ITS DERIVATIVES.
+ * BAOZUN MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. BAOZUN SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS
+ * DERIVATIVES.
  */
 
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
@@ -61,12 +59,12 @@ public interface OutboundBoxRecManager extends BaseManager {
 
     public List<Container2ndCategoryCommand> getTurnoverBoxByOuIdOrderByVolumeDesc(Long ouId);
 
-    public List<UomCommand> findUomByGroupCode(String groupCode,Integer lifecycle);
+    public List<UomCommand> findUomByGroupCode(String groupCode, Integer lifecycle);
 
     public Container2ndCategory findContainer2ndCategoryById(Long id, Long ouId);
 
 
-    public  List<Container> findUseAbleContainerByContainerType(Container container);
+    public List<Container> findUseAbleContainerByContainerType(Container container);
 
     public List<WhOutInventoryboxRelationship> getOutInvBoxRelationshipByType(String type, Long relationshipId, Long ouId);
 
@@ -75,7 +73,7 @@ public interface OutboundBoxRecManager extends BaseManager {
     public void releaseOdoFromWave(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, String logId);
 
     /**
-     *根据占用码查询库存
+     * 根据占用码查询库存
      *
      * @author mingwei.xie
      * @param occupationCode
@@ -92,7 +90,7 @@ public interface OutboundBoxRecManager extends BaseManager {
      * @param ouId
      * @return
      */
-    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray( List<Long> outContainerIdList,  Long ouId);
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray(List<Long> outContainerIdList, Long ouId);
 
 
     /**
@@ -103,7 +101,7 @@ public interface OutboundBoxRecManager extends BaseManager {
      * @param ouId
      * @return
      */
-    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList,  Long ouId);
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList, Long ouId);
 
     /**
      * 占用出库箱推荐的容器
@@ -114,7 +112,7 @@ public interface OutboundBoxRecManager extends BaseManager {
     public int occupationContainerByRecOutboundBox(Container container);
 
     /**
-     *根据占用码查询库存
+     * 根据占用码查询库存
      *
      * @author mingwei.xie
      * @param occLineIdList
@@ -122,4 +120,6 @@ public interface OutboundBoxRecManager extends BaseManager {
      * @return
      */
     public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId);
+
+    Long createContainer(Container container, Long ouId);
 }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1131,7 +1132,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                         // 获取可用容器，设置包裹的outContainerId
                         Container trolleyContainer = null;
                         if (null != availableTrolley) {
-                            trolleyContainer = this.getUseAbleContainer(availableTrolley, ouId, logId);
+                            trolleyContainer = this.getNewContainer(availableTrolley, ouId, logId);
                         }
                         if (null == availableTrolley || null == trolleyContainer) {
                             // 没有可用小车，保存数据
@@ -1290,7 +1291,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             // 小车是否可用
                             boolean isTrolleyAvailable = this.packingIntoTrolley(trolley, odoCommand, odoBoxList, ouId, logId);
                             // 创建新容器
-                            Container trolleyContainer = this.getUseAbleContainer(trolley, ouId, logId);
+                            Container trolleyContainer = this.getNewContainer(trolley, ouId, logId);
                             if (!isTrolleyAvailable || null == trolleyContainer) {
                                 // 小车不可用或者小车已分配完
                                 continue;
@@ -1420,7 +1421,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     boolean isAllocateBoxSuccess = true;
                     for (Container2ndCategoryCommand container2ndCategory : packingTurnoverBoxList) {
                         // 创建周转箱
-                        Container turnoverBox = this.getUseAbleContainer(container2ndCategory, ouId, logId);
+                        Container turnoverBox = this.getNewContainer(container2ndCategory, ouId, logId);
                         if (null == turnoverBox) {
                             isAllocateBoxSuccess = false;
                             break;
@@ -1892,7 +1893,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                     for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                         // 创建周转箱
-                        Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
+                        Container turnoverBox = this.getNewContainer(container, ouId, logId);
                         if (null == turnoverBox) {
                             throw new BusinessException("没有可用周转箱");
                         }
@@ -2018,7 +2019,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
+                            Container turnoverBox = this.getNewContainer(container, ouId, logId);
                             if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -2192,7 +2193,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
+                            Container turnoverBox = this.getNewContainer(container, ouId, logId);
                             if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -2352,7 +2353,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
+                            Container turnoverBox = this.getNewContainer(container, ouId, logId);
                             if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -2537,7 +2538,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
                         for (Container2ndCategoryCommand container : packingTurnoverBoxList) {
                             // 创建周转箱
-                            Container turnoverBox = this.getUseAbleContainer(container, ouId, logId);
+                            Container turnoverBox = this.getNewContainer(container, ouId, logId);
                             if (null == turnoverBox) {
                                 throw new BusinessException("没有可用周转箱");
                             }
@@ -3469,7 +3470,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
             int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
             if (1 != updateCount) {
-                log.error("outboundBoxRecManagerProxyImpl getUseAbleContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
+                log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
         }
@@ -3493,6 +3494,38 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
         outboundBoxRecManager.releaseOdoFromWave(unmatchedTurnoverBoxOdoList.get(0).getWhWaveCommand().getId(), unmatchedTurnoverBoxOdoIdList, reason, warehouse, logId);
     }
+
+    /**
+     * 根据二级容器类型创建容器
+     *
+     * @param availableContainer 二级容器类型
+     * @param ouId 仓库组织ID
+     * @return 新建的容器对象
+     */
+    private Container getNewContainer(Container2ndCategoryCommand availableContainer, Long ouId, String logId) {
+        String containerCode = codeManager.generateCode(Constants.WMS, Constants.CONTAINER_MODEL_URL, availableContainer.getCodeGenerator(), availableContainer.getPrefix(), availableContainer.getSuffix());// GenerateUtil.recoveryCode();
+        if (StringUtil.isEmpty(containerCode)) {
+            throw new BusinessException(ErrorCodes.CODE_INTERFACE_REEOR);
+        }
+        Container newContainer = new Container();
+        newContainer.setCreateTime(new Date());
+        newContainer.setCode(containerCode);
+        newContainer.setName(availableContainer.getCategoryName());
+        newContainer.setOneLevelType(availableContainer.getOneLevelType());
+        newContainer.setTwoLevelType(availableContainer.getId());
+        newContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+        newContainer.setOuId(ouId);
+        newContainer.setLastModifyTime(new Date());
+        newContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX); // 出库箱推荐
+        // 主键在插入时自动添加了
+        // Long pkId = pkManager.generatePk(Constants.WMS, Constants.CONTAINER_MODEL_URL);
+        // newContainer.setId(pkId);
+
+        // 在保存批次包裹时一个事务中创建
+        outboundBoxRecManager.createContainer(newContainer, ouId);
+        return newContainer;
+    }
+
 
     /**
      * 踢出波次

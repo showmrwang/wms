@@ -372,7 +372,7 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
     }
 
     /**
-     *根据占用码查询库存
+     * 根据占用码查询库存
      *
      * @author mingwei.xie
      * @param occupationCode
@@ -381,7 +381,7 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId){
+    public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId) {
         List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findListByOccupationCode(occupationCode, ouId);
         List<WhSkuInventoryCommand> skuInvToBeFillList = whSkuInventoryTobefilledDao.findListByOccupationCode(occupationCode, ouId);
         List<WhSkuInventoryCommand> allSkuInvList = new ArrayList<>();
@@ -401,7 +401,7 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray( List<Long> outContainerIdList,  Long ouId){
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeTray(List<Long> outContainerIdList, Long ouId) {
         List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findSkuInvListByWholeTray(outContainerIdList, ouId);
 
         return skuInvList;
@@ -417,7 +417,7 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList,  Long ouId){
+    public List<WhSkuInventoryCommand> findSkuInvListByWholeContainer(List<Long> innerContainerIdList, Long ouId) {
         List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findSkuInvListByWholeContainer(innerContainerIdList, ouId);
 
         return skuInvList;
@@ -431,12 +431,12 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int occupationContainerByRecOutboundBox(Container container){
+    public int occupationContainerByRecOutboundBox(Container container) {
         return containerDao.saveOrUpdateByVersion(container);
     }
 
     /**
-     *根据占用码查询库存
+     * 根据占用码查询库存
      *
      * @author mingwei.xie
      * @param occLineIdList
@@ -445,7 +445,7 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId){
+    public List<WhSkuInventoryCommand> findListByOccLineIdListOrderByPickingSort(List<Long> occLineIdList, Long ouId) {
         List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
         List<WhSkuInventoryCommand> skuInvToBeFillList = whSkuInventoryTobefilledDao.findListByOccLineIdListOrderByPickingSort(occLineIdList, ouId);
         List<WhSkuInventoryCommand> allSkuInvList = new ArrayList<>();
@@ -455,13 +455,13 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
         Collections.sort(allSkuInvList, new Comparator<WhSkuInventoryCommand>() {
             @Override
             public int compare(WhSkuInventoryCommand skuInventoryCommand, WhSkuInventoryCommand t1) {
-                if(null == skuInventoryCommand.getPickSort() && null == t1.getPickSort()){
+                if (null == skuInventoryCommand.getPickSort() && null == t1.getPickSort()) {
                     return 0;
                 }
-                if(null == skuInventoryCommand.getPickSort()){
+                if (null == skuInventoryCommand.getPickSort()) {
                     return 1;
                 }
-                if(null == t1.getPickSort()){
+                if (null == t1.getPickSort()) {
                     return -1;
                 }
                 return skuInventoryCommand.getPickSort().compareTo(t1.getPickSort());
@@ -469,5 +469,14 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
         });
 
         return allSkuInvList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Long createContainer(Container container, Long ouId) {
+        container.setOuId(ouId);
+        Long count = containerDao.insert(container);
+        insertGlobalLog(GLOBAL_LOG_INSERT, container, ouId, null, null, null);
+        return count;
     }
 }
