@@ -246,6 +246,8 @@ public interface OdoManager extends BaseManager {
      */
     WaveCommand findWaveSumDatabyOdoIdList(List<Long> odoIdList, Long ouId);
 
+    WaveCommand findWaveSumDatabyOdoId(Long odoId, Long ouId);
+
     /**
      * 【业务方法】延迟创建波次
      * 

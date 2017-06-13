@@ -3182,6 +3182,21 @@
 			#{odoId}
 		</foreach>
 	</select>
+	<select id="findWaveSumDatabyOdoId" resultMap="OdoWaveCommand">
+		select
+			count(DISTINCT odoLine.sku_id) as skuCategoryQty,
+			SUM(odoLine.qty*sku.volume) as totalVolume,
+			sum(odoLine.qty*sku.weight) as totalWeight,
+			count(1) as totalOdoLineQty,
+			sum(odoLine.line_amt) as totalAmount,
+			sum(odoLine.qty) as totalSkuQty,
+			1 as totalOdoQty
+		from t_wh_odo_line odoLine
+		inner join t_wh_odo odo on odo.id=odoLine.odo_id
+		inner join t_wh_sku sku on sku.id=odoLine.sku_id
+	
+		where odoLine.ou_id=#{ouId} and odoLine.odo_id =#{odoId}
+	</select>
 	
 	<update id="addOdoToWave" parameterType="map">
 	   update 
