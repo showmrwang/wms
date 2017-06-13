@@ -129,6 +129,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    from t_wh_handover 
 		        where 
 		        handover_batch = #{batch} 
+		        limit 1
 		    ]]>
 		</select>	
 </mapper>
