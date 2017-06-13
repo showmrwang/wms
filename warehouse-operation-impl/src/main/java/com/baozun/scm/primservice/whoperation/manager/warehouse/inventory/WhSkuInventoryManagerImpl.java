@@ -9770,7 +9770,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (null == invList || invList.size() == 0) {
             throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO); // 分配库存不存在
         }
-        Boolean isPickingEnd = false;
         for (WhOperationExecLine execLine : execLineList) {
             execLineIds.add(execLine.getId());
             Boolean isContinueExec = false;
@@ -9808,8 +9807,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 isContinueExec = true; //扫描数量大于当前明细行数量
                                 //修改已分配
                                 this.updateAllocateCmd(allocateCmd, allocateCmd.getQty()-qty, ouId, userId); 
-                                // 删除已分配库存
-                                this.repplenishDeleLoc(ouId, userId, allocateCmd);
+//                                // 删除已分配库存
+//                                this.repplenishDeleLoc(ouId, userId, allocateCmd);
                             }
                             if(sum.doubleValue() == execLineQty.doubleValue()){
                              // 添加容器库存
@@ -9818,7 +9817,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 invSkuIds.add(newId);
                                  // 删除已分配库存
                                 this.repplenishDeleLoc(ouId, userId, allocateCmd);
-                                isPickingEnd = true; 
+                                isContinueExec = true; 
                             }
                             if(sum.doubleValue() < execLineQty.doubleValue()){
                              // 添加容器库存
@@ -9835,9 +9834,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         break;
                     }
                 }
-            }
-            if (isPickingEnd) {
-                break;
             }
         }
         if (!isShortPicking) {
