@@ -1207,8 +1207,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                             List<WhOdoOutBoundBoxCommand> odoBoxList = new ArrayList<>();
                             // 小车是否可用
                             boolean isTrolleyAvailable = this.packingIntoTrolley(trolley, odoCommand, odoBoxList, ouId, logId);
-                            // 创建新容器
-                            Container trolleyContainer = this.getNewContainer(trolley, ouId, logId);
+                            // 匹配小车
+                            Container trolleyContainer = this.getUseAbleContainer(trolley, ouId, logId);
                             if (!isTrolleyAvailable || null == trolleyContainer) {
                                 // 小车不可用或者小车已分配完
                                 continue;
@@ -3197,35 +3197,31 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param ouId 仓库组织ID
      * @return 新建的容器对象
      */
-    // private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long
-    // ouId, String logId) {
-    // if (null == availableContainer) {
-    // throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-    // }
-    // Container searchContainer = new Container();
-    // searchContainer.setOneLevelType(availableContainer.getOneLevelType());
-    // searchContainer.setTwoLevelType(availableContainer.getId());
-    // searchContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-    // searchContainer.setOuId(ouId);
-    // searchContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-    // List<Container> containerList =
-    // outboundBoxRecManager.findUseAbleContainerByContainerType(searchContainer);
-    // Container useAbleContainer = null;
-    // if (null != containerList && !containerList.isEmpty()) {
-    // useAbleContainer = containerList.get(0);
-    // useAbleContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-    // useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
-    // int updateCount =
-    // outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
-    // if (1 != updateCount) {
-    // log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]",
-    // useAbleContainer, logId);
-    // throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-    // }
-    // }
-    //
-    // return useAbleContainer;
-    // }
+    private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId, String logId) {
+        if (null == availableContainer) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        Container searchContainer = new Container();
+        searchContainer.setOneLevelType(availableContainer.getOneLevelType());
+        searchContainer.setTwoLevelType(availableContainer.getId());
+        searchContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+        searchContainer.setOuId(ouId);
+        searchContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+        List<Container> containerList = outboundBoxRecManager.findUseAbleContainerByContainerType(searchContainer);
+        Container useAbleContainer = null;
+        if (null != containerList && !containerList.isEmpty()) {
+            useAbleContainer = containerList.get(0);
+            useAbleContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+            useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
+            int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
+            if (1 != updateCount) {
+                log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+        }
+
+        return useAbleContainer;
+    }
 
     /**
      * 踢出波次
