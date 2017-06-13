@@ -517,7 +517,11 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 工作类别编码
         whWorkCommand.setWorkCategory("REPLENISHMENT");
         // 是否锁定 默认值：1
-        whWorkCommand.setIsLocked(true);
+        if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
+            whWorkCommand.setIsLocked(false);
+        }else{
+            whWorkCommand.setIsLocked(true);    
+        }
         // 是否已迁出
         whWorkCommand.setIsAssignOut(false);
         // 是否短拣--执行时判断
@@ -903,7 +907,11 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 当前工作明细设计到的所有库区编码信息列表
         whWorkCommand.setWorkArea(workArea);
         // 是否锁定 默认值：1
-        whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
+        if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
+            whWorkCommand.setIsLocked(false);
+        }else{
+            whWorkCommand.setIsLocked(true);    
+        }
         // 工作优先级
         whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
 
@@ -1168,7 +1176,11 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 工作类别编码
         whWorkCommand.setWorkCategory("PICKING");
         // 是否锁定 默认值：1
-        whWorkCommand.setIsLocked(true);
+        if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
+            whWorkCommand.setIsLocked(false);
+        }else{
+            whWorkCommand.setIsLocked(true);    
+        }
         // 是否已迁出
         whWorkCommand.setIsAssignOut(false);
         // 当前工作明细设计到的所有库区编码信息列表--更新时获取数据
@@ -1593,7 +1605,12 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 当前工作明细设计到的所有库区编码信息列表
         whWorkCommand.setWorkArea(workArea);
         // 是否锁定 默认值：1
-        whWorkCommand.setIsLocked(whWaveMaster.getIsAutoReleaseWork());
+        if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
+            whWorkCommand.setIsLocked(false);
+        }else{
+            whWorkCommand.setIsLocked(true);    
+        }
+        
         // 工作优先级
         if (null != replenishmentTaskLst && 0 < replenishmentTaskLst.size()) {
             whWorkCommand.setWorkPriority(null != whWaveMaster.getPickingExtPriority() ? whWaveMaster.getPickingExtPriority() : workType.getPriority());
