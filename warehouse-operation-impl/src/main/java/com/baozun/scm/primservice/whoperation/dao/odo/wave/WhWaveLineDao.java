@@ -188,4 +188,6 @@ public interface WhWaveLineDao extends BaseDao<WhWaveLine, Long> {
 
     List<WhWaveLine> getWhWaveLinesByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 
+    long countWaveLineByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+
 }

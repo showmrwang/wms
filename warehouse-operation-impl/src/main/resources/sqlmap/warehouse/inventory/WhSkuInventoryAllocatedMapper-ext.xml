@@ -1122,4 +1122,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        and ou_id = #{ouId}
 	    ]]>
 	</select>
+	
+	<delete id="deleteByReplenishmentCode">
+		delete from
+			t_wh_sku_inventory_allocated
+		where 
+			replenishment_code = #{replenishmentCode}
+			and ou_id = #{ouId}
+	</delete>
 </mapper>

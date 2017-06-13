@@ -2173,6 +2173,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         po.setStatus(PoAsnStatus.PO_CLOSE);
         po.setIsIqc(Boolean.FALSE);
         po.setPoDate(new Date());
+        po.setEta(new Date());
         po.setDeliveryTime(new Date());
         po.setQtyPlanned(skuQty);
         po.setQtyRcvd(skuQty);

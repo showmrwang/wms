@@ -829,29 +829,38 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         /** 补货剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
-            WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
-            // 删除已分配库存
-            List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odoCode, ouId);
-            if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
-                for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
-                    invAllocated.setOccupationCode(null);
-                    invAllocated.setOccupationLineId(null);
-                    int updateCount = this.whSkuInventoryAllocatedDao.saveOrUpdateByVersion(invAllocated);
-                    if (updateCount <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId);
+            if (count > 0) {
+                // 删除已分配库存
+                List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odoCode, ouId);
+                if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
+                    for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
+                        invAllocated.setOccupationCode(null);
+                        invAllocated.setOccupationLineId(null);
+                        int updateCount = this.whSkuInventoryAllocatedDao.saveOrUpdateByVersion(invAllocated);
+                        if (updateCount <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
                     }
                 }
-            }
-            // 删除待移入库存
-            List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odoCode, ouId);
-            if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
-                for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
-                    invTobefilled.setOccupationCode(null);
-                    invTobefilled.setOccupationLineId(null);
-                    int updateCount = this.whSkuInventoryTobefilledDao.saveOrUpdateByVersion(invTobefilled);
-                    if (updateCount <= 0) {
-                        throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                // 删除待移入库存
+                List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odoCode, ouId);
+                if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
+                    for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
+                        invTobefilled.setOccupationCode(null);
+                        invTobefilled.setOccupationLineId(null);
+                        int updateCount = this.whSkuInventoryTobefilledDao.saveOrUpdateByVersion(invTobefilled);
+                        if (updateCount <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
                     }
+                }
+            } else {
+                ReplenishmentTask task = replenishmentTaskDao.findReplenishmentTaskByWaveId(waveId, ouId);
+                if (null != task) {
+                    String repCode = task.getReplenishmentCode();
+                    whSkuInventoryAllocatedDao.deleteByReplenishmentCode(repCode, ouId);
+                    whSkuInventoryTobefilledDao.deleteByReplenishmentCode(repCode, ouId);
                 }
             }
         }
