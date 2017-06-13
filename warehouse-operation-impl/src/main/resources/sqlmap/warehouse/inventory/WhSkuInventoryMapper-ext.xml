@@ -3929,6 +3929,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	            <if test="turnoverBoxId!=null and turnoverBoxId!=''">
 					         and inside_container_id=#{turnoverBoxId}
 	           </if>
+	           <if test="outerContainerId==null">
+				          	 and outer_container_id is null
+	            </if>
+	            <if test="turnoverBoxId==null">
+					         and inside_container_id is null
+	           </if>
 	</select>
 	
 	<select id="findSeedingDataByContainerId" resultMap="WhSeedingCollectionLineResult">
