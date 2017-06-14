@@ -117,7 +117,7 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
     }
 
     @Override
-    public Long reduceQty(Long facilityId, Long skuId, String outboundboxCode, Long ouId, Long userId) {
+    public Long reduceQty(Long facilityId, String odoCode, Long skuId, String outboundboxCode, Long ouId, Long userId) {
         // List<Long> locationIds = locationSkuVolumeDao.findLocationIdsByfacilityId(facilityId,
         // ouId);
         // 耗材原来库存
@@ -143,6 +143,7 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
                     oldQty = inv.getOnHandQty();
                     inv.setOnHandQty(1.0);
                     inv.setOccupationCode(outboundboxCode);
+                    inv.setOccupationCodeSource(odoCode);
                     inv.setId(null);
                     try {
                         // 插入被扣减的库存信息
@@ -157,6 +158,7 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
                             inv.setId(oldInvId);
                             inv.setOnHandQty(newQty);
                             inv.setOccupationCode(null);
+                            inv.setOccupationCodeSource(null);
                             this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
                         }
                         return lsv.getLocationId();
@@ -226,8 +228,10 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
         Long ouId = command.getOuId();
         Long userId = command.getModifiedId();
         String outboundboxCode = command.getOutboundboxCode();
+        Long odoId = command.getOdoId();
+        String odoCode = command.getOdoCode();
         // 1.扣减耗材
-        Long locationId = this.reduceQty(facilityId, skuId, outboundboxCode, ouId, userId);
+        Long locationId = this.reduceQty(facilityId, odoCode, skuId, outboundboxCode, ouId, userId);
         // 2.保存出库箱
         // updateCheckOutboundBox(command);
         LocationSkuVolume lsv = this.getLocationSkuVolumeByLocationIdAndOuid(ouId, locationId);

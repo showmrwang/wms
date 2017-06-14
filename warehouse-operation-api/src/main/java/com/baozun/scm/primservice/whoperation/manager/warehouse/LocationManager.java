@@ -57,13 +57,14 @@ public interface LocationManager extends BaseManager {
      * [通用方法] 扣减耗材
      * 
      * @param facilityId
+     * @param odoCode
      * @param skuId
      * @param ouId
      * @param userId
      * @param outboundboxCode
      * @return
      */
-    Long reduceQty(Long facilityId, Long skuId, String outboundboxCode, Long ouId, Long userId);
+    Long reduceQty(Long facilityId, String odoCode, Long skuId, String outboundboxCode, Long ouId, Long userId);
 
     /**
      * [业务方法] 扣减耗材并且保存出库箱

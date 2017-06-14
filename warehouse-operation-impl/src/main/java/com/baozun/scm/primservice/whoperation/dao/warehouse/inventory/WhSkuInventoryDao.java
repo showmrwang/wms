@@ -1254,11 +1254,18 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @author kai.zhu
      */
     List<WhSkuInventory> findSkuInventoryByOutBoundBoxCode(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
-    
+
     /**
      * 根据内部容器查找库存
      * @author kai.zhu
      * @version 2017年6月13日
      */
     List<WhSkuInventory> findListByInsideContainerId(@Param("insideContainerId") Long containerId, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 释放异常流程被占用的耗材
+     * @param occupationCodeSource
+     * @param ouId
+     */
+    void releaseInventoryByOdo(@Param("occupationCodeSource") String occupationCodeSource, @Param("ouId") Long ouId);
 }

@@ -317,7 +317,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         // 查找复核明细数据
         List<WhCheckingLineCommand> whCheckingLineList = whCheckingLineDao.findListByParamExt(whCheckingLine);
+
         if (null != whCheckingLineList && !whCheckingLineList.isEmpty()) {
+            // 释放耗材
+            String occupationCodeSource = whCheckingLineList.get(0).getOdoCode();
+            Long sourceOuId = whCheckingLineList.get(0).getOuId();
+            this.whSkuInventoryDao.releaseInventoryByOdo(occupationCodeSource, sourceOuId);
             whCheckingLineList = setDicLabel(whCheckingLineList);
             for (WhCheckingLineCommand command : whCheckingLineList) {
                 command.setSkuCode(command.getSkuBarCode());
@@ -1404,7 +1409,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // List<WhCheckingLineCommand> whCheckingLineList =
             // findWhCheckingLineByChecking(whCheckingCommand);
             // whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
+            // 获取复合明细
             whCheckingByOdoCommand = findWhCheckingLineByChecking(whCheckingByOdoCommand);
+            // 获取页面显示
             whCheckingByOdoCommand = this.findCheckingInfo(whCheckingByOdoCommand);
             return whCheckingByOdoCommand;
         } else {

@@ -3166,6 +3166,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.ou_id = #{ouId}
 	</update>
 
+	<update id="releaseInventoryByOdo" parameterType="map">
+		update 
+			t_wh_sku_inventory inv 
+		set 
+			inv.occupation_code = null,
+			inv.occupation_code_source = null,
+			inv.occupation_line_id = null 
+		where 
+			inv.occupation_code_source = #{occupationCodeSource} 
+			and inv.ou_id = #{ouId}
+	</update>
+
     <!-- -->
 	<select id="findWhSkuInventoryCountsByContainerId" resultMap="WhSkuInventoryResultExt">
 		select <include refid="whSkuInventoryColumnsInvExt"/>
