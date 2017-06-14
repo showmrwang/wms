@@ -291,6 +291,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    left join t_wh_operation_line l on o.id = l.operation_id
 		<where> 
 				o.ou_id = #{ouId}
+			and o.status != 17 
 			<if test="status!=null">
 				and o.status != #{status}
 			</if>
