@@ -2001,31 +2001,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(operationId, workCode, ouId, userId);
                 // 更改出库单状态
-                List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(operationId, ouId);
-                for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
-                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOdoId(), null, false, whOperationLineCommand.getOuId());
-                    List<WhOperationCommand> operationCommandByOdo = whOperationDao.findOperationCommandByOdo(whOperationLineCommand.getOdoId(), null, 10, whOperationLineCommand.getOuId());
-                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), false, whOperationLineCommand.getOuId());
-                    List<WhOperationCommand> operationCommandByOdoLine = whOperationDao.findOperationCommandByOdo(null, whOperationLineCommand.getOdoLineId(), 10, whOperationLineCommand.getOuId());
-                    if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
-                        // 根据出库单code获取出库单信息
-                        WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                        if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
-                            odo.setOdoStatus(OdoStatus.PICKING_FINISH);
-                            odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
-                        } else {
-                            odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
-                            odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
-                        }
-                        odoDao.update(odo);
-                    }
-                    if (0 == odoOutBoundBoxByOdoLine.size() && 0 == operationCommandByOdoLine.size()) {
-                        // 根据出库单code获取出库单信息
-                        WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
-                        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
-                        whOdoLineDao.update(whOdoLine);
-                    }
-                }
+                this.changeOdoStatus(pickingMode, operationId, ouId, userId);
             }
             if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) { // 补货中的拣货(库位库存变成容器库存)
                 if (Constants.REPLENISH_WAY_TWO != pickingWay && Constants.REPLENISH_WAY_THREE != pickingWay) {
@@ -2340,24 +2316,24 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if (skuAttrId.equals(opLskuAttrId) && locationId.longValue() == oLCmd.getFromLocationId().longValue() && ioIds.equals(lineioIds)) {
                 operationLineId = oLCmd.getId(); // 获取当前作业明细id
                 WhOperationExecLine whOperationExecLine = new WhOperationExecLine();
-                if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay) && (Constants.REPLENISH_WAY_TWO == pickingWay || Constants.REPLENISH_WAY_THREE == pickingWay)) {
-                    whOperationExecLine = this.getWhOperationExecLine(userId, null, null, null, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
-                } else {
+//                if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay) && (Constants.REPLENISH_WAY_TWO == pickingWay || Constants.REPLENISH_WAY_THREE == pickingWay)) {
+//                    whOperationExecLine = this.getWhOperationExecLine(userId, null, null, null, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
+//                } else {
                     whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
-                }
+//                }
                 whOperationExecLine.setIsUseNew(false);
                 if (isShortPicking) {// 短拣商品
                     whOperationExecLine.setIsShortPicking(true);
                 }
 
-                if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_TWO) {// 补货整托
-                    whOperationExecLine.setUseOuterContainerId(outerContainerId);
-                    whOperationExecLine.setUseContainerId(insideContainerId);
-                }
-                if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_THREE) {// 补货整箱
-                    whOperationExecLine.setUseContainerId(insideContainerId);
-                }
-                if (!Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_THREE) {// 出库箱流程
+//                if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_TWO) {// 补货整托
+//                    whOperationExecLine.setUseOuterContainerId(outerContainerId);
+//                    whOperationExecLine.setUseContainerId(insideContainerId);
+//                }
+//                if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_THREE) {// 补货整箱
+//                    whOperationExecLine.setUseContainerId(insideContainerId);
+//                }
+                if (Constants.PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_THREE) {// 出库箱流程
                     OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
                     if (null == operatorLine) {
                         throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -2370,7 +2346,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
 
                 }
-                if (pickingWay == Constants.PICKING_WAY_FOUR) {// 周转箱流程
+                if (Constants.PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_FOUR) {// 周转箱流程
                     OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
                     if (null == operatorLine) {
                         throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -3250,7 +3226,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if (cSRCmd.getIsNeedTipInsideContainer()) {
             Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
             command.setTipInsideContainerCode(ic.getCode());
-            command.setIsNeedTipOutContainer(true);
+            command.setIsNeedTipInsideContainer(true);
         }
         
         if (cSRCmd.getIsNeedTipOutContainer()) {
@@ -3301,32 +3277,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 String pickingMode = this.insertIntoCollection(command, command.getOuId(), command.getUserId());
                 command.setPickingMode(pickingMode);
                 // 更改出库单状态
-                List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
-                for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
-                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOdoId(), null, false, whOperationLineCommand.getOuId());
-                    List<WhOperationCommand> operationCommandByOdo = whOperationDao.findOperationCommandByOdo(whOperationLineCommand.getOdoId(), null, 10, whOperationLineCommand.getOuId());
-                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), false, whOperationLineCommand.getOuId());
-                    List<WhOperationCommand> operationCommandByOdoLine = whOperationDao.findOperationCommandByOdo(null, whOperationLineCommand.getOdoLineId(), 10, whOperationLineCommand.getOuId());
-                    if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
-                        // 根据出库单code获取出库单信息
-                        WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                        if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
-                            odo.setOdoStatus(OdoStatus.PICKING_FINISH);
-                            odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
-                        } else {
-                            odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
-                            odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
-                        }
-                        odoDao.update(odo);
-                    }
-                    if (0 == odoOutBoundBoxByOdoLine.size() && 0 == operationCommandByOdoLine.size()) {
-                        // 根据出库单code获取出库单信息
-                        WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
-                        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
-                        whOdoLineDao.update(whOdoLine);
-                    }
-                }
-                
+                this.changeOdoStatus(pickingMode, command.getOperationId(), command.getOuId(), command.getUserId());
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(command.getOperationId(), command.getWorkBarCode(), command.getOuId(), command.getUserId());
             }
@@ -3362,14 +3313,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         cSRCmd = pdaPickingWorkCacheManager.wholeCaseCacheAndCheck(command.getLocationId(), null, insideContainerId, operationId);
         
         if (cSRCmd.getIsNeedTipInsideContainer()) {
-            Container ic = containerDao.findByIdExt(cSRCmd.getTipOuterContainerId(), command.getOuId());
+            Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
             command.setTipInsideContainerCode(ic.getCode());
-            command.setIsNeedTipOutContainer(true);
+            command.setIsNeedTipInsideContainer(true);
             command = this.wholeCaseOperationExecLine(command, null, insideContainerId, isTabbInvTotal);
         }
         
         if (cSRCmd.getIsNeedTipOutContainer()) {
-            Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
+            Container ic = containerDao.findByIdExt(cSRCmd.getTipOuterContainerId(), command.getOuId());
             command.setTipOuterContainerCode(ic.getCode());
             command.setIsNeedTipOutContainer(true);
             command = this.wholeCaseOperationExecLine(command, null, insideContainerId, isTabbInvTotal);
@@ -3422,31 +3373,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
                 }
                 // 更改出库单状态
-                List<WhOperationLineCommand> whOperationLineCommandLst = whOperationLineDao.findOperationLineByOperationId(command.getOperationId(), command.getOuId());
-                for (WhOperationLineCommand whOperationLineCommand : whOperationLineCommandLst) {
-                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whOperationLineCommand.getOdoId(), null, false, whOperationLineCommand.getOuId());
-                    List<WhOperationCommand> operationCommandByOdo = whOperationDao.findOperationCommandByOdo(whOperationLineCommand.getOdoId(), null, 10, whOperationLineCommand.getOuId());
-                    List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = whOdoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whOperationLineCommand.getOdoLineId(), false, whOperationLineCommand.getOuId());
-                    List<WhOperationCommand> operationCommandByOdoLine = whOperationDao.findOperationCommandByOdo(null, whOperationLineCommand.getOdoLineId(), 10, whOperationLineCommand.getOuId());
-                    if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
-                        // 根据出库单code获取出库单信息
-                        WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                        if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
-                            odo.setOdoStatus(OdoStatus.PICKING_FINISH);
-                            odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
-                        } else {
-                            odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
-                            odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
-                        }
-                        odoDao.update(odo);
-                    }
-                    if (0 == odoOutBoundBoxByOdoLine.size() && 0 == operationCommandByOdoLine.size()) {
-                        // 根据出库单code获取出库单信息
-                        WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
-                        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
-                        whOdoLineDao.update(whOdoLine);
-                    }
-                }
+                this.changeOdoStatus(pickingMode, command.getOperationId(), command.getOuId(), command.getUserId());
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaPickingUpdateStatus(command.getOperationId(), command.getWorkBarCode(), command.getOuId(), command.getUserId()); 
             }

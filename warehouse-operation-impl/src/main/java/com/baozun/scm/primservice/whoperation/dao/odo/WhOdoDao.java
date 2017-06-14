@@ -267,6 +267,8 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      */
     WaveCommand findWaveSumDatabyOdoIdList(@Param("odoIdList") List<Long> subList, @Param("ouId") Long ouId);
 
+    WaveCommand findWaveSumDatabyOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
     int addOdoToWave(@Param("odoIdList") List<Long> subList, @Param("ouId") Long ouId, @Param("userId") Long userId, @Param("waveCode") String code, @Param("odoStatus") String odoStatus);
 
     List<Long> findOdoToBeAddedToWave(@Param("waveCode") String waveCode, @Param("ouId") Long ouId);
@@ -353,5 +355,7 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
     List<Long> getCancelOdoIdListByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 
     long countOdoIndexIsNull(@Param("waveCode") String waveCode, @Param("ouId") Long ouId);
+
+
 
 }

@@ -1031,7 +1031,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 获取工作明细信息列表
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByWorkId(whWorkCommand.getId(), ouId);
         // 获取作业头信息
-        WhOperationCommand WhOperationCommand = this.operationDao.findOperationByCode(replenishmentOperationCode, ouId);
+        WhOperationCommand whOperationCommand = this.operationDao.findOperationByCode(replenishmentOperationCode, ouId);
         Map<String, Double> allocatedMap = new HashMap<String, Double>();
         if(null != skuInventoryAllocatedCommandLst){
             for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : skuInventoryAllocatedCommandLst){
@@ -1045,7 +1045,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             }
             WhOperationLineCommand WhOperationLineCommand = new WhOperationLineCommand();
             // 作业ID
-            WhOperationLineCommand.setOperationId(WhOperationCommand.getId());
+            WhOperationLineCommand.setOperationId(whOperationCommand.getId());
             // 工作明细ID
             WhOperationLineCommand.setWorkLineId(whWorkLineCommand.getId());
             // 仓库组织ID
@@ -1134,6 +1134,14 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 operationLineDao.insert(whOperationLine);
             }
             count = count + 1;
+        }
+        
+        if(null != skuInventoryAllocatedCommandLst && skuInventoryAllocatedCommandLst.size() != whWorkLineCommandList.size()){
+            WhOperation whOperation = new WhOperation();
+            // 复制数据
+            BeanUtils.copyProperties(whOperationCommand, whOperation);
+            whOperation.setIsWholeCase(false);
+            operationDao.saveOrUpdateByVersion(whOperation);
         }
         return count;
     }

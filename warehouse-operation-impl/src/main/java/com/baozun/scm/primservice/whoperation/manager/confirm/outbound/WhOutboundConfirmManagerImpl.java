@@ -176,6 +176,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             // 有对应数据进行封装
             WhOutboundAttrConfirm attrConfirm = new WhOutboundAttrConfirm();
             BeanUtils.copyProperties(attr, attrConfirm);
+            attrConfirm.setId(null);
             attrConfirm.setOutboundId(outboundid);
             Long attrCount = whOutboundAttrConfirmDao.insert(attrConfirm);
             if (attrCount.intValue() == 0) {
@@ -199,6 +200,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             for (WhOdoLine whOdoLine : whOdoLines) {
                 WhOutboundLineConfirm line = new WhOutboundLineConfirm();
                 BeanUtils.copyProperties(whOdoLine, line);
+                line.setId(null);
                 line.setOutbouncConfirmId(outboundid);
                 line.setWmsOdoCode(whOdo.getOdoCode());
                 line.setExtLineNum(whOdoLine.getExtLinenum());
@@ -228,6 +230,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 for (WhOutboundboxLine boxLine : outboundboxLines) {
                     WhOutboundLineConfirm line = new WhOutboundLineConfirm();
                     BeanUtils.copyProperties(boxLine, line);
+                    line.setId(null);
                     line.setOutbouncConfirmId(outboundid);
                     line.setWmsOdoCode(whOdo.getOdoCode());
                     line.setOutboundBoxCode(whOutboundbox.getOutboundboxCode());
@@ -257,6 +260,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                         // 有数据保存SN/残次反馈信息
                         WhOutboundSnLineConfirm sn = new WhOutboundSnLineConfirm();
                         BeanUtils.copyProperties(lineSnCommand, sn);
+                        sn.setId(null);
                         sn.setOutboundLineConfirmId(line.getId());
                         if (Constants.SKU_SN_DEFECT_SOURCE_WH.equals(sn.getDefectSource())) {
                             // 仓库残次原因/类型
@@ -291,7 +295,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
         WhInvoice whInvoice = whInvoiceDao.findWhInvoiceByOdoId(odoCode, ouid);
         if (null != whInvoice) {
             WhOutboundInvoiceConfirm w = new WhOutboundInvoiceConfirm();
-            BeanUtils.copyProperties(whInvoice, w, "id");
+            BeanUtils.copyProperties(whInvoice, w);
+            w.setId(null);
             w.setOutboundConfirmId(outboundid);
             Long invCount = whOutboundInvoiceConfirmDao.insert(w);
             if (invCount.intValue() == 0) {
@@ -302,7 +307,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             List<WhInvoiceLine> whInvoiceLines = whInvoiceLineDao.findWhInvoiceLineByInvoiceId(whInvoice.getId(), ouid);
             for (WhInvoiceLine whInvoiceLine : whInvoiceLines) {
                 WhOutboundInvoiceLineConfirm line = new WhOutboundInvoiceLineConfirm();
-                BeanUtils.copyProperties(whInvoiceLine, line, "id");
+                BeanUtils.copyProperties(whInvoiceLine, line);
+                line.setId(null);
                 line.setOutboundInvoiceConfirmId(w.getId());
                 if (null != whInvoiceLine.getQty()) {
                     line.setQty(whInvoiceLine.getQty().doubleValue());
