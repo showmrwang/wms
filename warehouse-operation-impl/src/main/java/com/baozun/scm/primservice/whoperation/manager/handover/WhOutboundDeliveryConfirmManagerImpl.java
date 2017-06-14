@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.logistics.manager.OrderConfirmContentManager;
 import com.baozun.scm.primservice.logistics.model.OrderConfirmContent;
+import com.baozun.scm.primservice.logistics.model.OrderConfirmResponse;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -115,9 +116,17 @@ public class WhOutboundDeliveryConfirmManagerImpl extends BaseManagerImpl implem
             paramOrderConfirmContent.setScsource(Constants.WMS4);
             paramOrderConfirmContent.setCreatetime(new Date());
             paramOrderConfirmContent.setCaseNumber(whOutboundDeliveryConfirm.getOutboundboxCode());
-            orderConfirmContentManager.mialOrderComfirm(paramOrderConfirmContent, Constants.WMS4);
-            whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.FINISH);
-            whOutboundDeliveryConfirmDao.saveOrUpdateByVersion(whOutboundDeliveryConfirm);
+            OrderConfirmResponse mialOrderComfirm = orderConfirmContentManager.mialOrderComfirm(paramOrderConfirmContent, Constants.WMS4);
+            Integer status = mialOrderComfirm.getStatus();
+            if (status == 1) {
+                whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.FINISH);
+                whOutboundDeliveryConfirmDao.saveOrUpdateByVersion(whOutboundDeliveryConfirm);
+            } else {
+                log.error("whOutboundDeliveryConfirmManager.OutboundDeliveryConfirm error",mialOrderComfirm.getMsg());
+                whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.EXCEPTION);
+                whOutboundDeliveryConfirmDao.saveOrUpdateByVersion(whOutboundDeliveryConfirm);
+            }
+
         } catch (NumberFormatException e) {
             log.error("whOutboundDeliveryConfirmManager.OutboundDeliveryConfirm error");
             whOutboundDeliveryConfirm.setStatus(OutboundDeliveryConfirmStatus.EXCEPTION);

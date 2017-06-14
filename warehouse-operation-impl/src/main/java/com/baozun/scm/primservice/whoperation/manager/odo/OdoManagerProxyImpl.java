@@ -219,7 +219,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             msg.setMsg((e.getErrorCode() != 0) ? (e.getErrorCode() + "") : e.getMessage());
             return msg;
         } catch (Exception ex) {
-            log.error("" + ex);
+            log.error("", ex);
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
             msg.setMsg(ErrorCodes.PARAMS_ERROR + "");
             return msg;
@@ -487,6 +487,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             trans.setOutboundTargetType(sourceOdoTrans.getOutboundTargetType());
             trans.setOutboundTarget(sourceOdoTrans.getOutboundTarget());
             trans.setTransportServiceProvider(sourceOdoTrans.getTransportServiceProvider());
+            // @mender yimin.lu 2017/6/14 运输服务商迁移
+            trans.setInsuranceCoverage(sourceOdoTrans.getInsuranceCoverage());
+            trans.setTimeEffectType(sourceOdoTrans.getTimeEffectType());
+            trans.setCourierServiceType(sourceOdoTrans.getCourierServiceType());
             trans.setModeOfTransport(sourceOdoTrans.getModeOfTransport());
             trans.setIsCod(sourceOdoTrans.getIsCod());
             trans.setCodAmt(sourceOdoTrans.getCodAmt());
@@ -512,7 +516,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             throw ex;
 
         } catch (Exception e) {
-            log.error(e + "");
+            log.error("", e);
         }
     }
 
@@ -2435,6 +2439,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             cursor = this.createWaveWithCursor(master, waveMasterId, ouId, userId, odoIdList, cursor, waveCodeList);
 
         }
+        if (waveCodeList == null || waveCodeList.size() == 0) {
+            throw new BusinessException(ErrorCodes.CREATE_WAVE_ERROR);
+        }
+
         String waveCode="";
         for(int i=0;i<waveCodeList.size();i++){
             if(i==waveCodeList.size()-1){
@@ -2494,6 +2502,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
                 boolean isSuit = this.isWaveSuit(master, totalOdoQty, skuCategoryQty, totalVolume, totalWeight, odolineCount, totalAmt, totalSkuQty);
                 if (!isSuit) {
+                    if (waveOdoIdList == null || waveOdoIdList.size() == 0) {
+                        return odoIdList.size();
+                    }
                     String waveCode = this.createWave(waveMasterId, ouId, master, userId, waveOdoIdList);
                     waveCodeList.add(waveCode);
                     return cursor;
