@@ -1486,12 +1486,21 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         mailNoContent.setOwnerCode(store.getStoreCode());
         mailNoContent.setLpCode(transMgmt.getTransportServiceProvider());
         mailNoContent.setExpressType(transMgmt.getCourierServiceType());
-        mailNoContent.setTotalActual(new BigDecimal(odo.getAmt().doubleValue()));
         mailNoContent.setTimeType(transMgmt.getTimeEffectType());
         // mailNoContent.setSfWhCode("BZ021NOTCOD"); 目前物流服务项目配置获取
         mailNoContent.setQuantity(1); // 获取面单数量1
         mailNoContent.setType(1); // 销售单
         mailNoContent.setIsCod(transMgmt.getIsCod() == null ? false : transMgmt.getIsCod());
+        if (mailNoContent.getIsCod()) {
+            Double codAmt = transMgmt.getCodAmt();
+            if (null == codAmt) {
+                log.error("codAmt is null, odoCode:" + odo.getOdoCode());
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            mailNoContent.setTotalActual(new BigDecimal(codAmt.doubleValue()));
+        } else {
+            mailNoContent.setTotalActual(new BigDecimal(odo.getAmt().doubleValue()));
+        }
         // 有保价增值服务, 则设置isBj
         if (isInsured) {
             mailNoContent.setIsBj(Boolean.TRUE);
