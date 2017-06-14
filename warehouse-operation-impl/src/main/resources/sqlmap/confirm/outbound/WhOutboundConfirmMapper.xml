@@ -26,7 +26,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ou_id as ouId,
 	        	data_source as dataSource,
 	        	is_outbound_finish as isOutboundFinish,
-	        	create_time as createTime
+	        	create_time as createTime,
+	        	outbound_target_type as outboundTargetType,
+                outbound_target as outboundTarget
 	    ]]>
 	</sql>
 	<sql id="whOutboundConfirmConditionWhereExt">
@@ -119,7 +121,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	ou_id ,
 		        	data_source ,
 		        	is_outbound_finish ,
-		        	create_time 
+		        	create_time ,
+		        	outbound_target_type ,
+		        	outbound_target
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{extOdoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -133,7 +137,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{outboundTargetType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{outboundTarget,javaType=java.lang.String,jdbcType=VARCHAR}
 		        )
 		    ]]>
 
@@ -154,7 +160,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        data_source = #{dataSource,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        is_outbound_finish = #{isOutboundFinish,javaType=java.lang.Boolean,jdbcType=BIT} ,
-		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        outbound_target_type = #{outboundTargetType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outbound_target = #{outboundTarget,javaType=java.lang.String,jdbcType=VARCHAR}
 	        WHERE 
 		        id = #{id} 
 	    ]]>

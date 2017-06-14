@@ -54,6 +54,10 @@ public class WhOutboundConfirm extends BaseModel {
     private Boolean isOutboundFinish = true;
     /** 创建时间 */
     private Date createTime;
+    /** 出库目标类型 */
+    private String outboundTargetType;
+    /** 出库目标对象 */
+    private String outboundTarget;
 
     /** 出库单反馈明细 */
     private List<WhOutboundLineConfirm> whOutBoundLineConfirm;
@@ -180,6 +184,22 @@ public class WhOutboundConfirm extends BaseModel {
 
     public void setEcOrderCode(String ecOrderCode) {
         this.ecOrderCode = ecOrderCode;
+    }
+
+    public String getOutboundTargetType() {
+        return outboundTargetType;
+    }
+
+    public void setOutboundTargetType(String outboundTargetType) {
+        this.outboundTargetType = outboundTargetType;
+    }
+
+    public String getOutboundTarget() {
+        return outboundTarget;
+    }
+
+    public void setOutboundTarget(String outboundTarget) {
+        this.outboundTarget = outboundTarget;
     }
 
 

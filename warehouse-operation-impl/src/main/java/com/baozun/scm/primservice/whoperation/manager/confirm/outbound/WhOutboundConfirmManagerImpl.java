@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundSnL
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceLineDao;
@@ -46,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundS
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
@@ -93,6 +95,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
     private WhOutboundboxLineSnDao whOutboundboxLineSnDao;
     @Autowired
     private WhOutboundSnLineConfirmDao whOutboundSnLineConfirmDao;
+    @Autowired
+    private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
 
 
     /**
@@ -133,6 +137,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 for (InventoryStatus inv : inventoryStatus) {
                     invMap.put(inv.getId(), inv.getName());
                 }
+                // 获取出库目标对象&&出库目标类型
+                WhOdoTransportMgmt transportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(whOdo.getId(), ouid);
                 // 封装出库单反馈头信息
                 WhOutboundConfirm ob = new WhOutboundConfirm();
                 ob.setExtOdoCode(whOdo.getExtCode());
@@ -145,6 +151,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 ob.setOuId(ouid);
                 ob.setEcOrderCode(whOdo.getEcOrderCode());
                 ob.setDataSource(whOdo.getDataSource());
+                ob.setOutboundTargetType(transportMgmt.getOutboundTargetType());
+                ob.setOutboundTarget(transportMgmt.getOutboundTarget());
                 // TODO 后续增加是否整单出库完成逻辑
                 ob.setCreateTime(new Date());
                 Long obcount = whOutboundConfirmDao.insert(ob);

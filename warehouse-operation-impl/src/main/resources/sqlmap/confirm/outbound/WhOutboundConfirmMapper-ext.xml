@@ -23,7 +23,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ou_id as ouId,
 	        	data_source as dataSource,
 	        	is_outbound_finish as isOutboundFinish,
-	        	create_time as createTime
+	        	create_time as createTime,
+	        	outbound_target_type as outboundTargetType,
+                outbound_target as outboundTarget
 	    ]]>
 	</sql>
 	
