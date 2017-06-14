@@ -219,7 +219,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             msg.setMsg((e.getErrorCode() != 0) ? (e.getErrorCode() + "") : e.getMessage());
             return msg;
         } catch (Exception ex) {
-            log.error("" + ex);
+            log.error("", ex);
             msg.setResponseStatus(ResponseMsg.STATUS_ERROR);
             msg.setMsg(ErrorCodes.PARAMS_ERROR + "");
             return msg;
@@ -487,6 +487,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             trans.setOutboundTargetType(sourceOdoTrans.getOutboundTargetType());
             trans.setOutboundTarget(sourceOdoTrans.getOutboundTarget());
             trans.setTransportServiceProvider(sourceOdoTrans.getTransportServiceProvider());
+            // @mender yimin.lu 2017/6/14 运输服务商迁移
+            trans.setInsuranceCoverage(sourceOdoTrans.getInsuranceCoverage());
+            trans.setTimeEffectType(sourceOdoTrans.getTimeEffectType());
+            trans.setCourierServiceType(sourceOdoTrans.getCourierServiceType());
             trans.setModeOfTransport(sourceOdoTrans.getModeOfTransport());
             trans.setIsCod(sourceOdoTrans.getIsCod());
             trans.setCodAmt(sourceOdoTrans.getCodAmt());
@@ -512,7 +516,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             throw ex;
 
         } catch (Exception e) {
-            log.error(e + "");
+            log.error("", e);
         }
     }
 
