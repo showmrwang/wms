@@ -2673,7 +2673,42 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 // 缓存上一个托盘
                 this.cacheOuterContainerCode(locationId, outerContainerId, operationId);
             }
-        }else{
+        }else if (null == outerContainerId && null != insideContainerId){
+            // 判断是否还有货箱
+            if (isCacheAllExists(locInsideContainerIds, cacheInsideContainerIds)) {
+                cssrCmd.setIsPicking(true);
+                if (cssrCmd.getIsPicking()) {
+                    // 获取下一个库位
+                    Long tipLocId = null;
+                    for (Long lId : locationIds) {
+                        if (!cacheLocaitionIds.contains(lId)) {
+                            tipLocId = lId;
+                        }
+                    }
+                    if (null != tipLocId) {
+                        cssrCmd.setIsNeedTipLoc(true);
+                        cssrCmd.setIsPicking(false);
+                        cssrCmd.setTipLocationId(tipLocId);
+                        // 缓存上一个托盘内最后扫描的一个内部容器
+                        this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId, operationId);
+                    }
+                }
+            }else{
+                // 判断库位上是否有单独货箱
+                Long tipicId = null; 
+                for (Long id : locInsideContainerIds) {
+                    if (!cacheInsideContainerIds.contains(id)) {
+                        tipicId = id;
+                        break;
+                    }
+                }
+                cssrCmd.setTipiInsideContainerId(tipicId);
+                cssrCmd.setIsNeedTipInsideContainer(true);
+                cssrCmd.setIsHaveOuterContainer(false);
+                // 缓存上一个托盘内最后扫描的一个内部容器
+                this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId, operationId);
+            }
+        }else if (null != outerContainerId && null != insideContainerId){
             // 判断是否还有货箱
             if (isCacheAllExists(insideContainerIds, cacheInsideContainerIds)) {
                 // 判断是否还有托盘

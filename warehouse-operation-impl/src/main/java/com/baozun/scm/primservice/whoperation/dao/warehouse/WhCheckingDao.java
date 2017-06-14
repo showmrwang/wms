@@ -221,7 +221,27 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
 
     Long findBatchOdoCntByParam(@Param("batch") String batch, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 通过出库箱查询待当前箱子待复核数量
+     * @param outboundBoxCode
+     * @param ouId
+     * @return
+     */
     Long findBatchOdoCntCheckByParam(@Param("batch") String batch, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 通过出库单编码查询待当前出库单待复核数量
+     * @param outboundBoxCode
+     * @param ouId
+     * @return
+     */
     Long findOdoSkuCntByParam(@Param("odoCode") String odoCode, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 通过出库箱查询待当前箱子待复核数量
+     * @param outboundBoxCode
+     * @param ouId
+     * @return
+     */
+    Long findBoxSkuCntByBoxAndOuId(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 }

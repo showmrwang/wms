@@ -10,7 +10,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.project.sdk>2.0</version.project.sdk>
+		<version.project.sdk>2.1</version.project.sdk>
 		<name.project.sdk>wh-operation-interface</name.project.sdk>
 		<groupid.project.sdk>WMS4-RMI</groupid.project.sdk>
 		<!-- 快递服务 -->

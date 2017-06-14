@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.dao.confirm.outbound.WhOutboundSnL
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAttrDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.InventoryStatusDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhInvoiceLineDao;
@@ -46,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.model.confirm.outbound.WhOutboundS
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAttr;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
@@ -93,6 +95,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
     private WhOutboundboxLineSnDao whOutboundboxLineSnDao;
     @Autowired
     private WhOutboundSnLineConfirmDao whOutboundSnLineConfirmDao;
+    @Autowired
+    private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
 
 
     /**
@@ -133,6 +137,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 for (InventoryStatus inv : inventoryStatus) {
                     invMap.put(inv.getId(), inv.getName());
                 }
+                // 获取出库目标对象&&出库目标类型
+                WhOdoTransportMgmt transportMgmt = whOdoTransportMgmtDao.findTransportMgmtByOdoIdOuId(whOdo.getId(), ouid);
                 // 封装出库单反馈头信息
                 WhOutboundConfirm ob = new WhOutboundConfirm();
                 ob.setExtOdoCode(whOdo.getExtCode());
@@ -145,6 +151,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 ob.setOuId(ouid);
                 ob.setEcOrderCode(whOdo.getEcOrderCode());
                 ob.setDataSource(whOdo.getDataSource());
+                ob.setOutboundTargetType(transportMgmt.getOutboundTargetType());
+                ob.setOutboundTarget(transportMgmt.getOutboundTarget());
                 // TODO 后续增加是否整单出库完成逻辑
                 ob.setCreateTime(new Date());
                 Long obcount = whOutboundConfirmDao.insert(ob);
@@ -176,6 +184,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             // 有对应数据进行封装
             WhOutboundAttrConfirm attrConfirm = new WhOutboundAttrConfirm();
             BeanUtils.copyProperties(attr, attrConfirm);
+            attrConfirm.setId(null);
             attrConfirm.setOutboundId(outboundid);
             Long attrCount = whOutboundAttrConfirmDao.insert(attrConfirm);
             if (attrCount.intValue() == 0) {
@@ -199,6 +208,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             for (WhOdoLine whOdoLine : whOdoLines) {
                 WhOutboundLineConfirm line = new WhOutboundLineConfirm();
                 BeanUtils.copyProperties(whOdoLine, line);
+                line.setId(null);
                 line.setOutbouncConfirmId(outboundid);
                 line.setWmsOdoCode(whOdo.getOdoCode());
                 line.setExtLineNum(whOdoLine.getExtLinenum());
@@ -228,6 +238,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                 for (WhOutboundboxLine boxLine : outboundboxLines) {
                     WhOutboundLineConfirm line = new WhOutboundLineConfirm();
                     BeanUtils.copyProperties(boxLine, line);
+                    line.setId(null);
                     line.setOutbouncConfirmId(outboundid);
                     line.setWmsOdoCode(whOdo.getOdoCode());
                     line.setOutboundBoxCode(whOutboundbox.getOutboundboxCode());
@@ -257,6 +268,7 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
                         // 有数据保存SN/残次反馈信息
                         WhOutboundSnLineConfirm sn = new WhOutboundSnLineConfirm();
                         BeanUtils.copyProperties(lineSnCommand, sn);
+                        sn.setId(null);
                         sn.setOutboundLineConfirmId(line.getId());
                         if (Constants.SKU_SN_DEFECT_SOURCE_WH.equals(sn.getDefectSource())) {
                             // 仓库残次原因/类型
@@ -291,7 +303,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
         WhInvoice whInvoice = whInvoiceDao.findWhInvoiceByOdoId(odoCode, ouid);
         if (null != whInvoice) {
             WhOutboundInvoiceConfirm w = new WhOutboundInvoiceConfirm();
-            BeanUtils.copyProperties(whInvoice, w, "id");
+            BeanUtils.copyProperties(whInvoice, w);
+            w.setId(null);
             w.setOutboundConfirmId(outboundid);
             Long invCount = whOutboundInvoiceConfirmDao.insert(w);
             if (invCount.intValue() == 0) {
@@ -302,7 +315,8 @@ public class WhOutboundConfirmManagerImpl extends BaseManagerImpl implements WhO
             List<WhInvoiceLine> whInvoiceLines = whInvoiceLineDao.findWhInvoiceLineByInvoiceId(whInvoice.getId(), ouid);
             for (WhInvoiceLine whInvoiceLine : whInvoiceLines) {
                 WhOutboundInvoiceLineConfirm line = new WhOutboundInvoiceLineConfirm();
-                BeanUtils.copyProperties(whInvoiceLine, line, "id");
+                BeanUtils.copyProperties(whInvoiceLine, line);
+                line.setId(null);
                 line.setOutboundInvoiceConfirmId(w.getId());
                 if (null != whInvoiceLine.getQty()) {
                     line.setQty(whInvoiceLine.getQty().doubleValue());
