@@ -373,6 +373,9 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                 WhOdoPackageInfo whOdoPackageInfo = whOdoPackageInfoDao.findByOdoIdAndOutboundBoxCode(odoId, outboundbox.getOutboundboxCode(), ouId);
                 if (null != whOdoPackageInfo) {
                     whOutboundDeliveryConfirm.setFloats(whOdoPackageInfo.getFloats());
+                    if (whOdoPackageInfo.getActualWeight() != null) {
+                        whOutboundDeliveryConfirm.setWeight(whOdoPackageInfo.getActualWeight());
+                    }
                     whOutboundDeliveryConfirm.setWeight(whOdoPackageInfo.getCalcWeight());
                 }
                 whOutboundDeliveryConfirm.setEcOrderCode(odo.getEcOrderCode());
