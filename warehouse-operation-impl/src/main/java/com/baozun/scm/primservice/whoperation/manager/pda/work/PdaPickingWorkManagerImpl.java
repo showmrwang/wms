@@ -3250,7 +3250,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if (cSRCmd.getIsNeedTipInsideContainer()) {
             Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
             command.setTipInsideContainerCode(ic.getCode());
-            command.setIsNeedTipOutContainer(true);
+            command.setIsNeedTipInsideContainer(true);
         }
         
         if (cSRCmd.getIsNeedTipOutContainer()) {
@@ -3362,14 +3362,14 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         cSRCmd = pdaPickingWorkCacheManager.wholeCaseCacheAndCheck(command.getLocationId(), null, insideContainerId, operationId);
         
         if (cSRCmd.getIsNeedTipInsideContainer()) {
-            Container ic = containerDao.findByIdExt(cSRCmd.getTipOuterContainerId(), command.getOuId());
+            Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
             command.setTipInsideContainerCode(ic.getCode());
-            command.setIsNeedTipOutContainer(true);
+            command.setIsNeedTipInsideContainer(true);
             command = this.wholeCaseOperationExecLine(command, null, insideContainerId, isTabbInvTotal);
         }
         
         if (cSRCmd.getIsNeedTipOutContainer()) {
-            Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
+            Container ic = containerDao.findByIdExt(cSRCmd.getTipOuterContainerId(), command.getOuId());
             command.setTipOuterContainerCode(ic.getCode());
             command.setIsNeedTipOutContainer(true);
             command = this.wholeCaseOperationExecLine(command, null, insideContainerId, isTabbInvTotal);
