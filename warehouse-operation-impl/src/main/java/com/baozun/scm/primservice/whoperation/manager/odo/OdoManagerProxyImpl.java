@@ -2435,6 +2435,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             cursor = this.createWaveWithCursor(master, waveMasterId, ouId, userId, odoIdList, cursor, waveCodeList);
 
         }
+        if (waveCodeList == null || waveCodeList.size() == 0) {
+            throw new BusinessException(ErrorCodes.CREATE_WAVE_ERROR);
+        }
+
         String waveCode="";
         for(int i=0;i<waveCodeList.size();i++){
             if(i==waveCodeList.size()-1){
@@ -2494,6 +2498,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
                 boolean isSuit = this.isWaveSuit(master, totalOdoQty, skuCategoryQty, totalVolume, totalWeight, odolineCount, totalAmt, totalSkuQty);
                 if (!isSuit) {
+                    if (waveOdoIdList == null || waveOdoIdList.size() == 0) {
+                        return odoIdList.size();
+                    }
                     String waveCode = this.createWave(waveMasterId, ouId, master, userId, waveOdoIdList);
                     waveCodeList.add(waveCode);
                     return cursor;
