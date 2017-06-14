@@ -1455,6 +1455,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             checkingDisplayCommand.setOutboundboxCount(batchBoxCnt);
             Long batchBoxCntCheck = whCheckingDao.findBatchBoxCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
             checkingDisplayCommand.setToBeCheckedOutboundboxCount(batchBoxCntCheck);
+            Long boxSkuCnt = whCheckingDao.findBoxSkuCntByBoxAndOuId(whCheckingCommand.getOutboundboxCode(), whCheckingCommand.getOuId());
+            checkingDisplayCommand.setBoxSkuCnt(boxSkuCnt);
         } else {
             checkingDisplayCommand.setOutboundboxCount(0L);
             checkingDisplayCommand.setToBeCheckedOutboundboxCount(0L);
