@@ -3529,7 +3529,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             }
                             insertSkuInventoryLog(oldSkuInventory.getId(), -oldSkuInventory.getOnHandQty(), oldQty1, isTabbInvTotal, command.getOuId(), command.getUserId(), InvTransactionType.PICKING);
                             // 删除原库存
-                            whSkuInventoryDao.delete(oldSkuInventory.getId());
+                            whSkuInventoryDao.deleteByIdExt(oldSkuInventory.getId(), oldSkuInventory.getOuId());
                             insertGlobalLog(GLOBAL_LOG_DELETE, oldSkuInventory, command.getOuId(), command.getUserId(), null, null);
                         }   
                     }
@@ -3539,7 +3539,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     for (WhSkuInventoryAllocated whSkuInventoryAllocated : whSkuInventoryAllocatedLst) {
                         if ((null != outerContainerId && outerContainerId.longValue() == whSkuInventoryAllocated.getOuterContainerId().longValue())
                                 || (null != insideContainerId && insideContainerId.longValue() == whSkuInventoryAllocated.getInsideContainerId().longValue())) {
-                            whSkuInventoryAllocatedDao.delete(whSkuInventoryAllocated.getId());
+                            whSkuInventoryAllocatedDao.deleteExt(whSkuInventoryAllocated.getId(), whSkuInventoryAllocated.getOuId());
                         }
                     }
                 }
