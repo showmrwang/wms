@@ -134,7 +134,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       public CheckScanResultCommand pdaPickingyCacheSkuAndCheckContainer(Integer latticeNo,Integer pickingWay,Map<String,Long> latticeSkuQty,Map<String,Long> latticeInsideSkuQty,String operationWay,Long ouId,Map<Long, Set<Long>> locSkuIds, Map<Long, Map<String, Set<String>>>     insideSkuAttrIdsSnDefect, Map<Long, Map<String, Set<String>>>    skuAttrIdsSnDefect,Map<Long, Map<Long, Map<String, Long>>> insideSkuAttrIds,Map<Long, Map<Long, Map<String, Long>>> locSkuAttrIdsQty,String skuAttrIds,Integer scanPattern,List<Long> locationIds, Map<Long, Long> locSkuQty,Long locationId,Set<Long> icSkuIds,Set<Long> outerContainerIds,ContainerCommand outerContainerCmd,Long operatorId,
                                                                          Map<Long, Set<Long>> insideContainerSkuIds,Set<Long> insideContainerIds,Set<Long> locInsideContainerIds,ContainerCommand insideContainerCmd,WhSkuCommand skuCmd);
     
-      public CheckScanResultCommand palletPickingCacheAndCheck(Long locationId, Set<Long> insideContainerIds, Long outerContainerId, Long insideContainerId,Long operationId);
+      CheckScanResultCommand wholeCaseCacheAndCheck(Long locationId, Long outerContainerId, Long insideContainerId,Long operationId);
       
       /***
        * 有小车，而且有出库箱的时候，提示出库箱

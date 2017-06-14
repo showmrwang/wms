@@ -116,5 +116,7 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @return
      */
     public int findOperationLineCount(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
+    
+    List<WhOperationLine> findByOuterContainerId(@Param("operationId") Long operationId, @Param("fromOuterContainerId") Long fromOuterContainerId, @Param("ouId") Long ouId);
 	
 }

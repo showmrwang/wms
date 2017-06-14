@@ -1256,6 +1256,14 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WaveCommand findWaveSumDatabyOdoId(Long odoId, Long ouId) {
+        WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoId(odoId, ouId);
+        waveCommand.setTotalOdoQty(1);
+        return waveCommand;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void createOdoWaveNew(WhWave wave, Long waveTemplateId, List<Long> odoIdList) {
         // 验证所有出库单上店铺所配置的发票公司和发票模板一致 @mender yimin.lu 此处不验证
         // int invoiceCount = this.whOdoDao.countInvoiceInfo(odoIdList, wave.getOuId());

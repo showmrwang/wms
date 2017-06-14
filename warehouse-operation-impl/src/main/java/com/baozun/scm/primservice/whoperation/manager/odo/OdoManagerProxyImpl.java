@@ -479,8 +479,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             trans.setPlanDeliverGoodsTime(DateUtils.parseDate(sourceOdoTrans.getPlanDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
             odo.setPriorityLevel(sourceOdo.getPriorityLevel());
             odo.setIsLocked(sourceOdo.getIsLocked());
-            odo.setIsWholeOrderOutbound(sourceOdo.getIsWholeOrderOutbound());
-            odo.setCrossDockingSymbol(sourceOdo.getCrossDockingSymbol());
+            // odo.setIsWholeOrderOutbound(sourceOdo.getIsWholeOrderOutbound());
+            // odo.setCrossDockingSymbol(sourceOdo.getCrossDockingSymbol());
             odo.setOutboundCartonType(sourceOdo.getOutboundCartonType());
             trans.setDeliverGoodsTimeMode(sourceOdoTrans.getDeliverGoodsTimeMode());
             trans.setDeliverGoodsTime(DateUtils.parseDate(sourceOdoTrans.getDeliverGoodsTimeStr(), Constants.DATE_PATTERN_YMD));
@@ -718,11 +718,14 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             line.setCreatedId(userId);
             line.setLastModifyTime(new Date());
             line.setModifiedId(userId);
+            // @mender yimin.lu 是否复核，整行出库标志，部分出库测量 2017/6/13
+            line.setIsCheck(true);
+            line.setFullLineOutbound(true);
+            // line.setIsCheck(lineCommand.getIsCheck());
+            // line.setFullLineOutbound(lineCommand.getFullLineOutbound());
+            line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
         }
         line.setOdoLineStatus(OdoStatus.ODOLINE_TOBECREATED);
-        line.setIsCheck(lineCommand.getIsCheck());
-        line.setFullLineOutbound(lineCommand.getFullLineOutbound());
-        line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
         line.setOutboundCartonType(lineCommand.getOutboundCartonType());
         line.setMixingAttr(lineCommand.getMixingAttr());
         line.setInvStatus(lineCommand.getInvStatus());
@@ -2412,69 +2415,123 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
         }
 
-        // 波次出库单总单数
-        int odoCount = odoIdList.size();
+        boolean isWaveCheck = this.isWaveCheck(master);
+        // 如果波次不校验
+        if (!isWaveCheck) {
+            return this.createWave(waveMasterId, ouId, master, userId, odoIdList);
+        }
         if (master.getMinOdoQty() != null) {
-            if (master.getMinOdoQty() > odoCount) {
+            if (master.getMinOdoQty() > odoIdList.size()) {
                 throw new BusinessException("出库单数目不满足波次最小出库单数");
             }
         }
-        if (master.getMaxOdoQty() != null) {
-            if (master.getMaxOdoQty() < odoCount) {
-                throw new BusinessException("出库单数不满足波次最大出库单数");
+
+        Integer cursor = 0;
+        int maxCursor = odoIdList.size() - 1;// 最大的指针
+        List<String> waveCodeList = new ArrayList<String>();
+
+        while (cursor <= maxCursor) {
+
+            cursor = this.createWaveWithCursor(master, waveMasterId, ouId, userId, odoIdList, cursor, waveCodeList);
+
+        }
+        String waveCode="";
+        for(int i=0;i<waveCodeList.size();i++){
+            if(i==waveCodeList.size()-1){
+                
+                waveCode+=waveCodeList.get(i);
+            }else{
+                waveCode+= waveCodeList.get(i)+",";
             }
         }
-        WaveCommand waveCommand = this.odoManager.findWaveSumDatabyOdoIdList(odoIdList, ouId);
-        // 商品种类数
-        int skuCategoryQty = waveCommand.getSkuCategoryQty();
+
+        return waveCode;
+
+    }
+
+    private int createWaveWithCursor(WhWaveMaster master, Long waveMasterId, Long ouId, Long userId, List<Long> odoIdList, int cursor, List<String> waveCodeList) {
+        // 商品种类总数
+        int skuCategoryQty = Constants.DEFAULT_INTEGER;
         // 总体积
-        double totalVolume = waveCommand.getTotalVolume();
+        double totalVolume = Constants.DEFAULT_DOUBLE;
         // 总重量
-        double totalWeight = waveCommand.getTotalWeight();
+        double totalWeight = Constants.DEFAULT_DOUBLE;
         // 波次明细数
-        int odolineCount = waveCommand.getTotalOdoLineQty();
+        int odolineCount = Constants.DEFAULT_INTEGER;
         // 总金额
-        double totalAmt = waveCommand.getTotalAmount();
+        double totalAmt = Constants.DEFAULT_DOUBLE;
         // 商品总件数
-        double totalSkuQty = waveCommand.getTotalSkuQty();
+        double totalSkuQty = Constants.DEFAULT_DOUBLE;
+        // 出库单总数
+        int totalOdoQty = Constants.DEFAULT_INTEGER;
+        // 波次出库单
+        List<Long> waveOdoIdList = new ArrayList<Long>();
+
+        for (; cursor < odoIdList.size(); cursor++) {
+            WaveCommand waveCommand = this.odoManager.findWaveSumDatabyOdoId(odoIdList.get(cursor), ouId);
+            try {
+                // 出库单总数
+                totalOdoQty++;
+                // 商品种类数
+                skuCategoryQty += waveCommand.getSkuCategoryQty();
+                // 总体积
+                totalVolume += waveCommand.getTotalVolume();
+                // 总重量
+                totalWeight += waveCommand.getTotalWeight();
+                // 波次明细数
+                odolineCount += waveCommand.getTotalOdoLineQty();
+                // 总金额
+                totalAmt += waveCommand.getTotalAmount();
+                // 商品总件数
+                totalSkuQty += waveCommand.getTotalSkuQty();
 
 
+            } catch (Exception e) {
+                log.error("", e);
+                log.error("createWave get odo sum data error ,odoId:[{}]", odoIdList.get(cursor));
+            }
+            if (master.getMinOdoQty() == null || (master.getMinOdoQty() != null && master.getMinOdoQty() <= totalOdoQty)) {
 
-        if (master.getMinOdoQty() != null) {
-            if (master.getMinOdoQty() > odoCount) {
-                throw new BusinessException("出库单数目不满足波次最小出库单数");
+                boolean isSuit = this.isWaveSuit(master, totalOdoQty, skuCategoryQty, totalVolume, totalWeight, odolineCount, totalAmt, totalSkuQty);
+                if (!isSuit) {
+                    String waveCode = this.createWave(waveMasterId, ouId, master, userId, waveOdoIdList);
+                    waveCodeList.add(waveCode);
+                    return cursor;
+                }
+                if (1 == (odoIdList.size() - cursor)) {
+                    waveOdoIdList.add(odoIdList.get(cursor));
+                    String waveCode = this.createWave(waveMasterId, ouId, master, userId, waveOdoIdList);
+                    waveCodeList.add(waveCode);
+
+                }
             }
+
+            waveOdoIdList.add(odoIdList.get(cursor));
+
         }
-        if (master.getMaxOdoQty() != null) {
-            if (master.getMaxOdoQty() < odoCount) {
-                throw new BusinessException("出库单数不满足波次最大出库单数");
-            }
+        return cursor;
+    }
+
+
+    private boolean isWaveSuit(WhWaveMaster master, int totalOdoQty, int skuCategoryQty, double totalVolume, double totalWeight, int odolineCount, double totalAmt, double totalSkuQty) {
+        if (((master.getMaxOdoQty() != null && master.getMaxOdoQty() < totalOdoQty) || (master.getMaxOdoLineQty() != null && master.getMaxOdoLineQty() < odolineCount) || (master.getMaxSkuQty() != null && master.getMaxSkuQty() < totalSkuQty)
+                || (master.getMaxSkuCategoryQty() != null && master.getMaxSkuCategoryQty() < skuCategoryQty) || (master.getMaxVolume() != null && master.getMaxVolume() < totalVolume)
+ || (master.getMaxWeight() != null && master.getMaxWeight() < totalWeight))) {
+            return false;
         }
-        if (master.getMaxOdoLineQty() != null) {
-            if (master.getMaxOdoLineQty() < odolineCount) {
-                throw new BusinessException("出库单明细数不满足波次最大出库明细数");
-            }
+        return true;
+    }
+
+
+    private boolean isWaveCheck(WhWaveMaster master) {
+        if (master.getMinOdoQty() == null && master.getMaxOdoQty() == null && master.getMaxOdoLineQty() == null && master.getMaxSkuQty() == null && master.getMaxSkuCategoryQty() == null && master.getMaxVolume() == null && master.getMaxWeight() == null) {
+            return false;
         }
-        if (master.getMaxSkuQty() != null) {
-            if (master.getMaxSkuQty() < totalSkuQty) {
-                throw new BusinessException("商品数不满足波次最大出库商品数");
-            }
-        }
-        if (master.getMaxSkuCategoryQty() != null) {
-            if (master.getMaxSkuCategoryQty() < skuCategoryQty) {
-                throw new BusinessException("商品种类数不满足波次最大出库商品种类数");
-            }
-        }
-        if (master.getMaxVolume() != null) {
-            if (master.getMaxVolume() < totalVolume) {
-                throw new BusinessException("体积不满足波次最大出库体积");
-            }
-        }
-        if (master.getMaxWeight() != null) {
-            if (master.getMaxWeight() < totalWeight) {
-                throw new BusinessException("重量不满足波次最大出库重量");
-            }
-        }
+        return true;
+    }
+
+
+    private String createWave(Long waveMasterId, Long ouId, WhWaveMaster master, Long userId, List<Long> odoIdList) {
         /**
          * 创建波次头
          */
@@ -2512,7 +2569,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
         this.odoManager.createOdoWaveNew(wave, master.getWaveTemplateId(), odoIdList);
         return waveCode;
+
     }
+
 
     @Override
     public List<WhWave> findWaveToBeCreated(Long ouId) {
