@@ -8333,6 +8333,32 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                 }
             }
+        }else{
+            // 如果库位跟踪容器号,修改容器状态
+            if (null != turnoverBoxId) { // 修改托盘
+                Container container = containerDao.findByIdExt(turnoverBoxId, ouId);
+                if (null == container) {
+                    throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS);
+                }
+                container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                containerDao.saveOrUpdateByVersion(container);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+            }
+            if (null != outerContainerId) { // 修改托盘
+                // 判断是否该托盘是否还有货箱没有上架
+                int count = whSkuInventoryDao.findAllInventoryCountsByOuterContainerId(ouId, outerContainerId);
+                if (count == 0) {
+                    Container container = containerDao.findByIdExt(outerContainerId, ouId);
+                    if (null == container) {
+                        throw new BusinessException(ErrorCodes.COMMON_OUTER_CONTAINER_IS_NOT_EXISTS);
+                    }
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                }
+            }
         }
     }
 
