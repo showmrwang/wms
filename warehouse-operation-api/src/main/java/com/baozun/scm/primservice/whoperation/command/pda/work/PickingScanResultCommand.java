@@ -211,6 +211,8 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isContinueScanSn = false; // 默认不继续扫描sn
     
     private Integer tempReplenishWay;
+    
+    private String tipSkuMutilBarcode;
 
 
     /**
@@ -1175,6 +1177,14 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setTempReplenishWay(Integer tempReplenishWay) {
         this.tempReplenishWay = tempReplenishWay;
+    }
+
+    public String getTipSkuMutilBarcode() {
+        return tipSkuMutilBarcode;
+    }
+
+    public void setTipSkuMutilBarcode(String tipSkuMutilBarcode) {
+        this.tipSkuMutilBarcode = tipSkuMutilBarcode;
     }
 
     

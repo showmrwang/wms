@@ -47,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
+import com.baozun.scm.primservice.whoperation.dao.sku.SkuBarcodeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
@@ -82,6 +83,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.outbound.Checkin
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
+import com.baozun.scm.primservice.whoperation.model.sku.SkuBarcode;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
@@ -96,6 +98,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkOper;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
+import com.baozun.scm.primservice.whoperation.util.ParamsUtil;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.utilities.type.StringUtil;
 
@@ -175,6 +178,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private WhSkuInventoryLogManager whSkuInventoryLogManager;
     @Autowired
     private CreateWorkManagerProxy createWorkManagerProxy;
+    @Autowired
+    private SkuBarcodeDao skuBarcodeDao;
 
 
 
@@ -1124,6 +1129,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             command.setSkuId(skuId);
             this.tipSkuDetailAspect(command, skuAttrId, skuAttrIdsQty, logId);
             command.setIsNeedScanSkuSn(cSRCmd.getIsNeedScanSkuSn());
+            List<SkuBarcode> list = skuBarcodeDao.findSkuBarcodeBySkuIdShared(skuId, ouId);
+            String mutilBarcodes = "";
+            if (null != list && list.size() > 0) {
+                for (SkuBarcode bc : list) {
+                    if (!StringUtils.isEmpty(bc.getBarCode())) {
+                        mutilBarcodes = ParamsUtil.concatParam(mutilBarcodes, bc.getBarCode());
+                    }
+                }
+            }
+            command.setTipSkuMutilBarcode(mutilBarcodes);
         } else {
             command.setIsNeedTipSku(false);
         }
