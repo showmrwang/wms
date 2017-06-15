@@ -10905,6 +10905,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
                 uuidMap.put(key, newSnList);
             }
+            this.whSkuInventoryTobefilledDao.deleteByExt(tobeFilled.getId(), ouId);
         }
 
     }
