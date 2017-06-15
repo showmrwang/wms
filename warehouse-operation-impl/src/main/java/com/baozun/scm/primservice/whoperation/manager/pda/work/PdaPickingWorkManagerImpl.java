@@ -3240,6 +3240,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         
         if (cSRCmd.getIsNeedTipInsideContainer()) {
             Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
+            if(null == cSRCmd.getTipOuterContainerId()){
+                command.setTipOuterContainerCode(null);
+            }
             command.setTipInsideContainerCode(ic.getCode());
             command.setIsNeedTipInsideContainer(true);
         }
@@ -3265,14 +3268,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         
         if (cSRCmd.getIsPicking()) {
             command.setIsPicking(true);
-            command.setTempReplenishWay(null);
             command = this.wholeCaseOperationExecLine(command, outerContainerId, null, isTabbInvTotal);
             
             WhOperationCommand operationCmd = whOperationManager.findOperationById(command.getOperationId(), command.getOuId());
             operationCmd.setIsPickingFinish(true);
             operationCmd.setModifiedId(command.getUserId());
             whOperationManager.saveOrUpdate(operationCmd);
-            
+
             if (null != command.getPickingWay()) {
                 // 判断是拣完在播，是否是最后一箱
                 WhWorkCommand work = workManager.findWorkByWorkCode(command.getWorkBarCode(), command.getOuId());
@@ -3355,7 +3357,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         
         if (cSRCmd.getIsPicking()) {
             command.setIsPicking(true);
-            command.setTempReplenishWay(null);
             command = this.wholeCaseOperationExecLine(command, null, insideContainerId, isTabbInvTotal);
             
             if (null == command.getTempReplenishWay() || (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay())) {
@@ -3364,7 +3365,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 operationCmd.setModifiedId(command.getUserId());
                 whOperationManager.saveOrUpdate(operationCmd);
             }
-            
+
             if (null != command.getPickingWay()) {
                 // 判断是拣完在播，是否是最后一箱
                 WhWorkCommand work = workManager.findWorkByWorkCode(command.getWorkBarCode(), command.getOuId());
@@ -3390,7 +3391,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 更改出库单状态
                 this.changeOdoStatus(pickingMode, command.getOperationId(), command.getOuId(), command.getUserId());
                 // 更新工作及作业状态
-                pdaPickingWorkCacheManager.pdaPickingUpdateStatus(command.getOperationId(), command.getWorkBarCode(), command.getOuId(), command.getUserId()); 
+                pdaPickingWorkCacheManager.pdaPickingUpdateStatus(command.getOperationId(), command.getWorkBarCode(), command.getOuId(), command.getUserId());
             }
         }
         
