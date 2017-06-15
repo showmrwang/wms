@@ -204,6 +204,6 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param locationCode
      * @param ouId
      */
-    public void putawayEndRemoveCache(String outerContainerCode, String insideContainerCode, String locationCode,Long ouId);
+    public void putawayEndRemoveCache(String outerContainerCode, String insideContainerCode, String locationCode,Long ouId,WhSkuCommand skuCmd,Warehouse warehouse,Long funcId,Long userId);
     
 }
