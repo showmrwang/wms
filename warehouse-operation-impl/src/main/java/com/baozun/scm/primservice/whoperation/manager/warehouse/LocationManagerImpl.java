@@ -133,6 +133,9 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
             for (LocationSkuVolume lsv : lsvList) {
                 if (null != lsv) {
                     // 这里是任意取一条库存明细做操作 没有优先级
+                    if (null == lsv.getLocationId()) {
+                        throw new BusinessException("没有库位id");
+                    }
                     List<WhSkuInventory> invList = whSkuInventoryDao.findSkuInvByLocationIdWithOnHandQty(lsv.getLocationId(), skuId, ouId);
                     if (null == invList || invList.isEmpty()) {
                         // 找不到耗材 返回为空
