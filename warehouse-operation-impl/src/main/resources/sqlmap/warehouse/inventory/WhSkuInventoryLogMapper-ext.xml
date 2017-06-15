@@ -43,7 +43,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ext_code as extCode,
 	        	color as color,
 	        	style as style,
-	        	size as size
+	        	size as size,
+	        	inv_transaction_type as invTransactionType,
+	        	seeding_wall_code as seedingWallCode,
+	        	container_lattice_no as containerLatticeNo,
+	        	outboundbox_code as outboundboxCode
 	    ]]>
 	</sql>
 	

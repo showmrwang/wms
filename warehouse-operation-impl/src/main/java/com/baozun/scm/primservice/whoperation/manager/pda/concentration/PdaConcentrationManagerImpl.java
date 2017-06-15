@@ -3,8 +3,10 @@ package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import lark.common.annotation.MoreDB;
@@ -1082,9 +1084,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     /**
      * 判断推荐结果表中当前容器对应的小批次是否关联当前目的地
+     * @param map 
      */
     @Override
-    public boolean checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId) {
+    public Map<String, Object> checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("flag", true);
         if (StringUtils.isEmpty(containerCode) || StringUtils.isEmpty(destinationCode) || null == destinationType) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -1101,27 +1106,33 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             String seedingWallCode = whFacilityRecPathDao.getRecommendSeedingWallCodeByBatch(batch, ouId);
             if (!StringUtils.isEmpty(seedingWallCode)) {
                 if (seedingWallCode.equals(destinationCode)) {
-                    return true;
+                    return map;
                 } else {
-                    return false;
+                    map.put("flag", false);
+                    map.put("msg", seedingWallCode);
+                    return map;
                 }
             }
         } else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
             String temporaryStorageLocationCode = whFacilityRecPathDao.getRecommendTemporaryStorageLocationCodeByBatch(batch, ouId);
             if (!StringUtils.isEmpty(temporaryStorageLocationCode)) {
                 if (temporaryStorageLocationCode.equals(destinationCode)) {
-                    return true;
+                    return map;
                 } else {
-                    return false;
+                    map.put("flag", false);
+                    map.put("msg", temporaryStorageLocationCode);
+                    return map;
                 }
             }
         } else if (destinationType == Constants.TRANSIT_LOCATION) {
             String transitLocationCode = whFacilityRecPathDao.getRecommendTransitLocationCodeByBatch(batch, ouId);
             if (!StringUtils.isEmpty(transitLocationCode)) {
                 if (transitLocationCode.equals(destinationCode)) {
-                    return true;
+                    return map;
                 } else {
-                    return false;
+                    map.put("flag", false);
+                    map.put("msg", transitLocationCode);
+                    return map;
                 }
             }
         }
@@ -1134,7 +1145,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     facility.setBatch(batch);
                     facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_2));
                     whOutboundFacilityDao.saveOrUpdateByVersion(facility);
-                    return true;
+                    return map;
                 }
             } else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
                 WhTemporaryStorageLocation storageLocation = whTemporaryStorageLocationDao.findByCodeAndOuId(destinationCode, ouId);
@@ -1142,22 +1153,26 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     storageLocation.setBatch(batch);
                     storageLocation.setStatus(Constants.WH_FACILITY_STATUS_2);
                     whTemporaryStorageLocationDao.saveOrUpdateByVersion(storageLocation);
-                    return true;
+                    return map;
                 }
-                return true;
             } else if (destinationType == Constants.TRANSIT_LOCATION) {
-                return true;
+                return map;
             }
         }
-        return false;
+        map.put("flag", false);
+        return map;
     }
 
     @Override
-    public int manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId) {
+    public Map<String, Object> manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId) {
+        Map<String, Object> map = new HashMap<String, Object>();
         // 判断推荐结果表中当前容器对应的小批次是否关联当前目的地
-        boolean flag = this.checkContainerAssociatedWithDestination(containerCode, destinationCode, destinationType, userId, ouId);
+        Map<String, Object> checkDestinationMap = this.checkContainerAssociatedWithDestination(containerCode, destinationCode, destinationType, userId, ouId);
+        boolean flag = (boolean) checkDestinationMap.get("flag");
         if (!flag) {
-            return 2;
+            map.put("index", 2);
+            map.put("msg", checkDestinationMap.get("msg"));
+            return map;
         }
         if (StringUtils.isEmpty(containerCode) || StringUtils.isEmpty(destinationCode) || null == destinationType) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -1273,9 +1288,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         cacheManager.setObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId, containerCodeDeque, CacheConstants.CACHE_ONE_DAY);
         // 判断是否全部完成
         if (containerCodeDeque.isEmpty()) {
-            return 1;
+            map.put("index", 1);
+            return map;
         }
-        return 0;
+        map.put("index", 0);
+        return map;
     }
 
     @Override
@@ -1347,7 +1364,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             rec = recList.get(0);
         }
         if (null == rec) {
-            Long scanContainerId = containerCmd.getId();
+            log.error("containerCode:{},ouId:{}", containerCode, ouId);
+            throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
+            /*Long scanContainerId = containerCmd.getId();
             WorkCollectionCommand workCommand = this.createObject(batch, null, ouId, null, scanContainerId);
             // 推荐播种墙逻辑,并判断是否推荐成功
             RecFacilityPathCommand recFacilityPath = new RecFacilityPathCommand();
@@ -1373,7 +1392,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 }
             } else {
                 throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
-            }
+            }*/
         }
         // 缓存推荐结果
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_REC, userId.toString());
