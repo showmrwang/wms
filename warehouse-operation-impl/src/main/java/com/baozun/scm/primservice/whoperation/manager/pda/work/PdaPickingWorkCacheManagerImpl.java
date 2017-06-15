@@ -2572,41 +2572,44 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         Map<Long, Set<Long>> outerToInsideIds = operatorLine.getOuterToInside();
         // 库位上所有内部容器        
         Map<Long, Set<Long>> operLocInsideContainerIds = operatorLine.getInsideContainerIds();
-        // 库位上所有sku(不在容器内，散装sku)        
-        Map<Long, Set<Long>> locSkuIds = operatorLine.getSkuIds();
-        
         // 外部容器
         Set<Long> outerContainerIds = locOuterContainerIds.get(locationId); 
         // 内部容器(有外部容器)
         Set<Long> insideContainerIds = outerToInsideIds.get(outerContainerId);
         // 内部容器(无外部容器)      
         Set<Long> locInsideContainerIds = operLocInsideContainerIds.get(locationId);
-        
-        //获取缓存库位        
+        // 获取缓存库位        
         LocationTipCacheCommand cacheContainerCmd = cacheManager.getObject(CacheConstants.CACHE_LOCATION + operationId.toString() + locationId.toString());
+        // 获取缓存容器信息       
         ArrayDeque<Long> cacheInsideContainerIds = new ArrayDeque<Long>();
-        if (null != cacheContainerCmd) {
-            if (null == cacheContainerCmd.getTipOuterInsideContainerIds() || cacheContainerCmd.getTipOuterInsideContainerIds().size() == 0) {
-                cacheInsideContainerIds = new ArrayDeque<Long>();
-            } else {
-                cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
-            }
-        }
-        if(null != insideContainerId){
-            cacheInsideContainerIds.add(insideContainerId);    
-        }
-        
         ArrayDeque<Long> cacheOuterContainerIds = new ArrayDeque<Long>();
         if (null != cacheContainerCmd) {
+            // 内部容器
+            if(null != outerContainerId){
+                if (null == cacheContainerCmd.getTipOuterInsideContainerIds() || cacheContainerCmd.getTipOuterInsideContainerIds().size() == 0) {
+                    cacheInsideContainerIds = new ArrayDeque<Long>();
+                } else {
+                    cacheInsideContainerIds = cacheContainerCmd.getTipOuterInsideContainerIds().get(outerContainerId);
+                }
+            }else{
+                if (null == cacheContainerCmd.getTipLocInsideContainerIds() || cacheContainerCmd.getTipLocInsideContainerIds().size() == 0) {
+                    cacheInsideContainerIds = new ArrayDeque<Long>();
+                } else {
+                    cacheInsideContainerIds = cacheContainerCmd.getTipLocInsideContainerIds().get(locationId);
+                }
+            }
+            // 外部容器        
             if (null == cacheContainerCmd.getTipLocOuterContainerIds()) {
                 cacheOuterContainerIds = new ArrayDeque<Long>();
             } else {
                 cacheOuterContainerIds = cacheContainerCmd.getTipLocOuterContainerIds().get(locationId);
             }
         }
-        if (null == cacheOuterContainerIds) {
-            cacheOuterContainerIds = new ArrayDeque<Long>();
+        
+        if(null != insideContainerId){
+            cacheInsideContainerIds.add(insideContainerId);    
         }
+        
         if(null != outerContainerId){
             cacheOuterContainerIds.add(outerContainerId);    
         }
