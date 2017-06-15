@@ -10871,7 +10871,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         skuInventoryTobefilled.setOccupationLineId(line.getOdoLineId());
         skuInventoryTobefilled.setOuId(ouId);
         List<WhSkuInventoryTobefilled> skuInventoryTobefilledList = this.whSkuInventoryTobefilledDao.findskuInventoryTobefilleds(skuInventoryTobefilled);
-        if (skuInventoryTobefilledList == null || skuInventoryTobefilledList.size() > 0) {
+        if (skuInventoryTobefilledList == null || skuInventoryTobefilledList.size() == 0) {
             log.error("executeReplenishmentWork filled with no skuInv ,error");
             throw new BusinessException(ErrorCodes.TOBEFILLEDQTY_NULL_ERROR);
         }
@@ -10880,7 +10880,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             WhSkuInventory inv = new WhSkuInventory();
             Double onHandQty = tobeFilled.getQty();
             BeanUtils.copyProperties(tobeFilled, inv);
-            inv.setOccupationCode(null);
+            // inv.setOccupationCode(null);
             inv.setOnHandQty(tobeFilled.getQty());
             inv.setFrozenQty(Constants.DEFAULT_DOUBLE);
             this.whSkuInventoryDao.insert(inv);
