@@ -3739,7 +3739,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                         }
                         List<WhSkuInventoryCommand> invCList = null;
-                        if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
+                     /*   if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
                             if (null == containerId) {
                                 log.error("containerId is null error, logId is:[{}]", logId);
                                 throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
@@ -3751,7 +3751,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 throw new BusinessException(ErrorCodes.COMMON_INSIDE_CONTAINER_IS_NOT_EXISTS);
                             }
                             invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
-                        }
+                        }*/
+                        invCList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerAndUuid(ouId, insideContainerId, uuid);
                         if (null == invCList || 0 == invCList.size()) {
                             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR);
                         }
