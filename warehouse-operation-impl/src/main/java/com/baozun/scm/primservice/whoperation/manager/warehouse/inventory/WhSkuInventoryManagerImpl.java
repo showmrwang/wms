@@ -406,6 +406,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     @Override
     public void execBinding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("execBinding start, putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]", new Object[] {putawayPatternDetailType, userId, ouId, logId});
+        }
         if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
             // 拆箱上架
             Map<String, Set<Long>> invRecommendLocId = new HashMap<String, Set<Long>>();
@@ -724,6 +727,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 校验待移入库存是否正确
             // TODO
         }
+        if (log.isInfoEnabled()) {
+            log.info("execBinding end, putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]", new Object[] {putawayPatternDetailType, userId, ouId, logId});
+        }
     }
 
     /**
@@ -740,6 +746,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     @Override
     public void execUnbinding(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("execUnbinding start, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, putawayPatternDetailType, userId, ouId, logId});
+        }
         Long containerId = null;
         String containerCode = null;
         Long insideContainerId = null;
@@ -1196,6 +1206,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                 }
             }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("execUnbinding end, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, putawayPatternDetailType, userId, ouId, logId});
         }
     }
 
@@ -2114,6 +2128,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     @Override
     public void execPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("execPutaway start, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, putawayPatternDetailType, userId, ouId, logId});
+        }
         Long containerId = null;
         String containerCode = null;
         Long insideContainerId = null;
@@ -3071,7 +3089,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                 }
             }
-
+        }
+        if (log.isInfoEnabled()) {
+            log.info("execPutaway end, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, putawayPatternDetailType, userId, ouId, logId});
         }
     }
 
@@ -3091,6 +3112,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @Override
     public void execPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, WhSkuCommand skuCmd, List<String> skuAttrIds, Double scanQty, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId,
             Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("execPutaway start, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], skuBarcode is:[{}], skuAttrIds is:[{}], scanQty is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, (null != skuCmd ? skuCmd.getBarCode() : ""),
+                            (null != skuAttrIds ? skuAttrIds.toString() : ""), scanQty, putawayPatternDetailType, userId, ouId, logId});
+        }
         Long containerId = null;
         String containerCode = null;
         Long insideContainerId = null;
@@ -3581,6 +3607,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else {
             // 整托上架、整箱上架(整托,整箱可用强制上架的流程)
         }
+        if (log.isInfoEnabled()) {
+            log.info("execPutaway end, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], skuBarcode is:[{}], skuAttrIds is:[{}], scanQty is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, (null != skuCmd ? skuCmd.getBarCode() : ""),
+                            (null != skuAttrIds ? skuAttrIds.toString() : ""), scanQty, putawayPatternDetailType, userId, ouId, logId});
+        }
     }
 
     /**
@@ -3602,6 +3633,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @Override
     public void execFinishPutaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, WhSkuCommand skuCmd, List<String> skuAttrIds, Double scanQty, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId,
             Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("execFinishPutaway start, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, putawayPatternDetailType, userId, ouId, logId});
+        }
         Long containerId = null;
 //        String containerCode = null;
         Long insideContainerId = null;
@@ -4130,6 +4165,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else {
             // 整托上架、整箱上架(整托,整箱可用强制上架的流程)
         }
+        if (log.isInfoEnabled()) {
+            log.info("execFinishPutaway end, containerCode is:[{}], insideContainerCode is:[{}], locationCode is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationCode, putawayPatternDetailType, userId, ouId, logId});
+        }
     }
 
     private boolean isCacheAllExists(Set<Long> ids, ArrayDeque<Long> cacheKeys) {
@@ -4475,6 +4514,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @Override
     public void manMadePutaway(Boolean isOuterContainer, Double scanSkuQty, WhSkuInventoryCommand invSkuCmd, ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long locationId, Long funcId, Warehouse warehouse,
             Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
+        if (log.isInfoEnabled()) {
+            log.info("manMadePutaway start, containerCode is:[{}], insideContainerCode is:[{}], locationId is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationId, putawayPatternDetailType, userId, ouId, logId});
+        }
         Long containerId = null;
         String containerCode = null;
         Long insideContainerId = null;
@@ -4853,6 +4896,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                 }
             }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("manMadePutaway end, containerCode is:[{}], insideContainerCode is:[{}], locationId is:[{}], putawayPatternDetailType is:[{}], userId is:[{}], ouId is:[{}], logId is:[{}]",
+                    new Object[] {(null != containerCmd ? containerCmd.getCode() : ""), (null != insideContainerCmd ? insideContainerCmd.getCode() : ""), locationId, putawayPatternDetailType, userId, ouId, logId});
         }
     }
 
