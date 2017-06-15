@@ -2,7 +2,6 @@ package com.baozun.scm.primservice.whoperation.manager.warehouse.inventory;
 
 import lark.common.annotation.MoreDB;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +24,10 @@ public class WhSkuInventoryLogManagerImpl implements WhSkuInventoryLogManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void insertSkuInventoryLog(WhSkuInventoryLog skuInvLog) {
-        WhSkuInventoryLog log = new WhSkuInventoryLog();
-        BeanUtils.copyProperties(skuInvLog, log);
-        log.setSysDate(DateUtil.getSysDate());
-        whSkuInventoryLogDao.insert(log);
+        // WhSkuInventoryLog log = new WhSkuInventoryLog();
+        // BeanUtils.copyProperties(skuInvLog, log);
+        skuInvLog.setSysDate(DateUtil.getSysDate());
+        whSkuInventoryLogDao.insert(skuInvLog);
     }
 
 
