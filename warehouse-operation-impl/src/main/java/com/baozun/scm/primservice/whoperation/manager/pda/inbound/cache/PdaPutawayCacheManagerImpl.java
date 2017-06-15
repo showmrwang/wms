@@ -4549,13 +4549,13 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }else{
                          // 判断是否需要提示下一个库位
                             if(null != locSkuAttrIds && locSkuAttrIds.size() != 0) {
-                                Set<Long> allLocIds = locSkuAttrIds.keySet();
-                                boolean isLocAllCache = isCacheAllExists(allLocIds, tipLocIds);
+//                                Set<Long> allLocIds = locSkuAttrIds.keySet();
+                                boolean isLocAllCache = isCacheAllExists(locationIds, tipLocIds);
                                 if (false == isLocAllCache) {
                                     // 提示下一个库位
 //                                    cssrCmd.setPutaway(true);// 可上架
                                     Long tipLocId = null;
-                                    for (Long lId : allLocIds) {
+                                    for (Long lId : locationIds) {
                                         if (0 == tipLocationId.compareTo(lId)) {
                                             continue;
                                         }
