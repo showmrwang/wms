@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.pda.concentration;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.pda.collection.WorkCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhFacilityRecPathCommand;
@@ -223,7 +224,7 @@ public interface PdaConcentrationManager extends BaseManager {
     /**
      * 判断推荐结果表中当前容器对应的小批次是否关联当前目的地
      */
-    boolean checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
+    Map<String, Object> checkContainerAssociatedWithDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
 
     /**
      * 判断人为集货进入目的地之前扫描容器不为null
@@ -247,7 +248,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param destinationType 目的地类型 1:播种墙 2:暂存库位 3:中转库位
      * @return
      */
-    int manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
+    Map<String, Object> manualMoveContainerToDestination(String containerCode, String destinationCode, Integer destinationType, Long userId, Long ouId);
 
     void removeManualContainerCodeFromCache(Long userId);
 

@@ -1095,7 +1095,7 @@ public class ErrorCodes {
     public static final int COLLECTION_CONTAINER_IS_NOT_IN_SCAN_LIST = 80007;
     /** 请在播种墙,暂存库位,中转库位中扫描正确的设施编码 */
     public static final int COLLECTION_DESTINATION_NOT_RIGHT = 80008;
-    /** 推荐失败无法携带 */
+    /** 无系统推荐结果,请使用人为不使用推荐结果方式集货 */
     public static final int COLLECTION_RECOMMEND_RESULT_ERROR = 80009;
     /** 系统错误,推荐结果不唯一 */
     public static final int COLLECTION_RECOMMEND_RESULT_NOT_UNIQE = 80010;
