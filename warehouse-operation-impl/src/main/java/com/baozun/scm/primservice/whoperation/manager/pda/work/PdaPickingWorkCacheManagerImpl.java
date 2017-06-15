@@ -2607,6 +2607,9 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         }
         
         if(null != insideContainerId){
+            if(null == cacheInsideContainerIds){
+                cacheInsideContainerIds = new ArrayDeque<Long>();    
+            }
             cacheInsideContainerIds.add(insideContainerId);    
         }
         
@@ -2723,6 +2726,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                             tipicId = id;
                             break;
                         }
+                        cssrCmd.setTipOuterContainerId(null);
                         cssrCmd.setTipiInsideContainerId(tipicId);
                         cssrCmd.setIsNeedTipInsideContainer(true);
                         cssrCmd.setIsHaveOuterContainer(false);
