@@ -1012,7 +1012,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                             if(workSkuAttrId.equals(skuAttrId) && invCmd.getOccupationLineId().longValue() == workLineCmd.getOdoLineId().longValue() && (!workIds.contains(workLineCmd.getId()))) {
                                      Double onHandQty = invCmd.getOnHandQty();
                                      Double lineQty = workLineCmd.getQty();
-                                     workIds.add(workLineCmd.getId());
                                      sum += lineQty;
                                      if(onHandQty.doubleValue() < sum.doubleValue()){
                                          Double qty = onHandQty-(sum-lineQty);
@@ -1036,6 +1035,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
                                          workLine.setLineCode(workLineCode);
                                          whWorkLineDao.insert(workLine);
+                                         workIds.add(workLine.getId());
                                          //修改原来的工作明细
                                          WhWorkLine workLine1 = new WhWorkLine();
                                          BeanUtils.copyProperties(workLineCmd, workLine1);
@@ -1063,6 +1063,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setQty(onHandQty);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
                                          insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
+                                         workIds.add(workLine.getId());
                                          break;                               
                                      }
                                      if(onHandQty.doubleValue() > sum.doubleValue()){
@@ -1084,7 +1085,8 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          }
                                          String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
                                          workLine.setLineCode(workLineCode);
-                                         whWorkLineDao.saveOrUpdateByVersion(workLine);;
+                                         whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                         workIds.add(workLine.getId());
                                          continue;
                                      }
                                }
@@ -1114,7 +1116,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         }
                         if(workSkuAttrId.equals(skuAttrId) && occupationId.longValue() == operLineCmd.getOdoLineId().longValue() && (!operationLineIds.contains(operLineCmd.getId()))) {
                             sum += lineQty;
-                            operationLineIds.add(operLineCmd.getId());
                             if(invCmd.getOnHandQty().doubleValue() < sum.doubleValue()){
                                 Double qty = invCmd.getOnHandQty()-(sum-lineQty);
                                 WhOperationLine opLine = new WhOperationLine();
@@ -1136,6 +1137,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                 }
                                 whOperationLineDao.insert(opLine);
                                 insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
+                                operationLineIds.add(opLine.getId());
                                 //修改原来的作业明细
                                 WhOperationLine opLine1 = new WhOperationLine();
                                 BeanUtils.copyProperties(operLineCmd, opLine1);
@@ -1163,6 +1165,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                 opLine.setQty(invCmd.getOnHandQty());
                                 whOperationLineDao.saveOrUpdateByVersion(opLine);
                                 insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
+                                operationLineIds.add(opLine.getId());
                                 break;                               
                             }
                             if(invCmd.getOnHandQty().doubleValue() > sum.doubleValue()){
@@ -1184,6 +1187,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                 }
                                 whOperationLineDao.saveOrUpdateByVersion(opLine);
                                 insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
+                                operationLineIds.add(opLine.getId());
                                 continue;
                             }
                          }
