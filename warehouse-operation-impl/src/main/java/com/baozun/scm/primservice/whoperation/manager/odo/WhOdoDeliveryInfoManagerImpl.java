@@ -1,8 +1,12 @@
 package com.baozun.scm.primservice.whoperation.manager.odo;
 
 import java.util.List;
+import java.util.Map;
 
 import lark.common.annotation.MoreDB;
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdodeliveryInfoCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -113,5 +118,11 @@ public class WhOdoDeliveryInfoManagerImpl extends BaseManagerImpl implements WhO
         } else {
             return null;
         }
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Pagination<WhOdodeliveryInfoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return whOdoDeliveryInfoDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
 }

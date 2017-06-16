@@ -8,6 +8,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="OdoDeliveryInfoResultExt" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo">
 	</resultMap>
 	
+	<resultMap id="WhOdodeliveryInfoCommandResultExt" type="com.baozun.scm.primservice.whoperation.command.odo.WhOdodeliveryInfoCommand">
+	</resultMap>
+	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="odoDeliveryInfoColumnsExt">
 	    <![CDATA[
@@ -33,6 +36,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	package_center_code as packageCenterCode,
 	        	package_center_name as packageCenterName,
 	        	ext_id as extId
+	    ]]>
+	</sql>
+	<sql id="WhOdodeliveryInfoCommandResultExtColumns">
+	    <![CDATA[
+	        	id as id,
+	        	odo_id as odoId,
+	        	transport_code as transportCode,
+	        	waybill_code as waybillCode,
+	        	outboundbox_id as outboundboxId,
+	        	outboundbox_code as outboundboxCode,
+	        	transport_service_type as serviceCode,
+	        	time_effect_type as ttCode,
+	        	create_id as createId,
+	        	create_time as createTime
 	    ]]>
 	</sql>
 	
@@ -89,25 +106,56 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouId}
 				</if>
 	       
-				<if test="lifecycle!=null">
-					and lifecycle = #{lifecycle}
+		</where>
+	</sql>
+	<sql id="WhOdodeliveryInfoCommandResultExtWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
 				</if>
 	       
-				<if test="createId!=null">
-					and create_id = #{createId}
+				<if test="odoId!=null">
+					and odo_id = #{odoId}
 				</if>
 	       
-				<if test="createTime!=null">
-					and create_time = #{createTime}
+	            <if test="outboundboxCode!=null and outboundboxCode!=''">
+					and outboundbox_code = #{outboundboxCode}
 				</if>
 	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
+		       <if test="waybillCode!=null and waybillCode!=''">
+					and waybill_code = #{waybillCode}
+				</if>
+				
+		       <if test="transportCode!=null and transportCode!=''">
+					and transport_code = #{transportCode}
 				</if>
 	       
-				<if test="modifiedId!=null">
-					and modified_id = #{modifiedId}
+		       <if test="serviceCode!=null and serviceCode!=''">
+					and transport_service_type = #{serviceCode}
 				</if>
+	       
+		       <if test="ttCode!=null and ttCode!=''">
+					and time_effect_type = #{ttCode}
+				</if>
+	       
+				<if test="transportvasCode!=null and transportvasCode!=''">
+					and odo_id in(SELECT DISTINCT(odo_id) from t_wh_odo_vas where express_vas_code =#{transportvasCode})
+				</if>
+				<if test="vasCode!=null and vasCode!=''">
+					and odo_id in(SELECT DISTINCT(odo_id) from t_wh_odo_vas where wh_vas_type =#{vasCode})
+				</if>
+	       
+				<if test="outboundboxId!=null">
+					and outboundbox_id = #{outboundboxId}
+				</if>
+	       
+	       
+				<if test="ouId!=null">
+					and ou_id = #{ouId}
+				</if>
+	        
 		</where>
 	</sql>
 	
@@ -215,4 +263,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        	id = #{id} 
        	and ou_id = #{ouId}
        	</select>
+       	
+       	
+     <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_odo_delivery_info
+		<include refid="WhOdodeliveryInfoCommandResultExtWhere"/>    
+    </select>
+     
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPageExt" resultMap="WhOdodeliveryInfoCommandResultExt">
+    	select <include refid="WhOdodeliveryInfoCommandResultExtColumns" />
+	    from t_wh_odo_delivery_info 
+		<include refid="WhOdodeliveryInfoCommandResultExtWhere"/>
+		
+    </select>
 </mapper>
