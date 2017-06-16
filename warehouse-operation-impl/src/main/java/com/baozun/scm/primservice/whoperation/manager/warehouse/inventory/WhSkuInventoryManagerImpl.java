@@ -179,6 +179,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param putawayPatternDetailType
      */
     @Override
+    @Deprecated
     public void binding(List<WhSkuInventoryCommand> invList, Warehouse warehouse, List<LocationRecommendResultCommand> lrrList, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
         if (WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {
             // 拆箱上架
@@ -1228,6 +1229,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param logId
      */
     @Override
+    @Deprecated
     public void putaway(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, String locationCode, Long funcId, Warehouse warehouse, Integer putawayPatternDetailType, Long ouId, Long userId, String logId) {
         Long containerId = null;
         String containerCode = null;
@@ -4071,7 +4073,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if (null != invList && !invList.isEmpty()) {
                 for (WhSkuInventoryCommand invCmd : invList) {
                     List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
-                    String uuid = "";
                     if (null == snList || 0 == snList.size()) {
                         // 删除待移入库存
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
