@@ -45,6 +45,8 @@ public interface WhFacilityRecPathDao extends BaseDao<WhFacilityRecPath, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhFacilityRecPath o);
+    
+    int update(WhFacilityRecPath o);
 
     /**
      * 查询容器是否有推荐结果
