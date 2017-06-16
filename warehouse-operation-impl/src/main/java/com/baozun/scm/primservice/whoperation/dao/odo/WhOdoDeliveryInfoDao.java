@@ -13,6 +13,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdodeliveryInfoCommand;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 
 public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
@@ -104,10 +105,14 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
 
     /**
      * [通用方法] 通过id查找运单信息
+     * 
      * @param id
      * @param ouId
      * @return
      */
     WhOdodeliveryInfo findByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<WhOdodeliveryInfoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
 }
