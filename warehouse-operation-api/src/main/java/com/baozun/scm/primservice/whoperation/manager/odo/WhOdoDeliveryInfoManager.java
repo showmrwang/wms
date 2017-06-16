@@ -1,7 +1,13 @@
 package com.baozun.scm.primservice.whoperation.manager.odo;
 
 import java.util.List;
+import java.util.Map;
 
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
+
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdodeliveryInfoCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 
@@ -61,5 +67,7 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
     public Boolean checkUniqueWaybillCode(String waybillCode, Long ouId);
 
     WhOdodeliveryInfo findByWaybillCode(String outboundboxCode, Long ouId);
+
+    Pagination<WhOdodeliveryInfoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
 }
