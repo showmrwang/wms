@@ -516,7 +516,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					line.last_modify_time AS lastModifyTime,
 					line.operator_id AS operatorId,
 					operation.id AS operationId,
-					SUM(operation.qty) AS operationQty
+					CASE
+					WHEN SUM(operation.qty) IS NULL THEN
+						0
+					ELSE
+						SUM(operation.qty)
+					END AS operationQty
 				FROM
 					t_wh_work_line line
 				LEFT JOIN t_wh_operation_line operation ON line.id = operation.work_line_id
