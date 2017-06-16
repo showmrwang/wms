@@ -121,6 +121,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                             this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, null, recFacilityPath, wh);
                             flag = true;
                         } catch (Exception e) {
+                            log.error("", e);
                             flag = false;
                         }
                     }

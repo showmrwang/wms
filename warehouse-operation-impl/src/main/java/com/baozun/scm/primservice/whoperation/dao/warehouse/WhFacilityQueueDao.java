@@ -44,6 +44,8 @@ public interface WhFacilityQueueDao extends BaseDao<WhFacilityQueue, Long> {
 
     @CommonQuery
     int saveOrUpdate(WhFacilityQueue o);
+    
+    int update(WhFacilityQueue o);
 
     int deleteExt(@Param("id") Long id, @Param("ouId") Long ouId);
 

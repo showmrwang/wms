@@ -150,7 +150,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
                 rec.setTemporaryStorageLocationCode(null);
             }
             rec.setBatchContainerQty(batchContainerQty);
-            int recUpdateCount = this.whFacilityRecPathDao.saveOrUpdate(rec);
+            int recUpdateCount = this.whFacilityRecPathDao.update(rec);
             if (recUpdateCount == 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
@@ -165,7 +165,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         if (queueList != null && queueList.size() > 0) {
             for (WhFacilityQueue queue : queueList) {
                 queue.setIsRec(true);
-                int queueUpdateCount = this.whFacilityQueueDao.saveOrUpdate(queue);
+                int queueUpdateCount = this.whFacilityQueueDao.update(queue);
                 if (queueUpdateCount == 0) {
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
@@ -400,7 +400,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
                     recPath.setSeedingwallCheckCode(facility.getCheckCode());
                     recPath.setSeedingwallCode(facility.getFacilityCode());
                     recPath.setSeedingwallUpperLimit(facility.getFacilityUpperLimit());
-                    int updateCount = this.whFacilityRecPathDao.saveOrUpdate(recPath);
+                    int updateCount = this.whFacilityRecPathDao.update(recPath);
                     if (updateCount <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }

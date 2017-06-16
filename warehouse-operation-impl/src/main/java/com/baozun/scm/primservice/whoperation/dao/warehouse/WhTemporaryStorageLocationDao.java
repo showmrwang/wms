@@ -40,7 +40,7 @@ public interface WhTemporaryStorageLocationDao extends BaseDao<WhTemporaryStorag
 	@CommonQuery
 	int saveOrUpdate(WhTemporaryStorageLocation o);
 	
-	@CommonQuery
+	//@CommonQuery
 	int saveOrUpdateByVersion(WhTemporaryStorageLocation o);
 	
 	WhTemporaryStorageLocation findByIdAndOuId(@Param("id") Long id, @Param("ouId") Long ouId);
