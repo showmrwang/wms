@@ -37,7 +37,7 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
     @CommonQuery
     int saveOrUpdate(WhOutboundFacility o);
 
-    @CommonQuery
+    //@CommonQuery
     int saveOrUpdateByVersion(WhOutboundFacility o);
 
     /**
