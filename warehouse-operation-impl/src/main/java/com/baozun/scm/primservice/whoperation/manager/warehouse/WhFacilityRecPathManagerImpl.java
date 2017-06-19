@@ -192,6 +192,7 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         // 暂存库位推荐
         WhTemporaryStorageLocation toLocation = this.getTopFreeStorageLocation(locationFlag, facilityGroup.getWorkingStorageSectionId(), batch, ouId);
         if (toLocation == null) {
+            log.info("matchSeedingWallWhenSeeding, not have WhTemporaryStorageLocation! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
             throw new BusinessException(ErrorCodes.FACILITYMATCH_NO_TEMPORARYSTORAGELOCATION);
         }
         // @mender yimin.lu 2017/4/13 中转库位逻辑修正
@@ -218,10 +219,12 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
             search.setCode(facilityPathList.get(0).getTransitLocationCode());
             List<Location> locationList = this.whLocationDao.findListByParam(search);
             if (locationList == null || locationList.size() == 0) {
-
+                log.info("matchSeedingWallWhenSeeding, not have transitLocation! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
             } else {
                 transitLocation = locationList.get(0);
             }
+        } else {
+            log.info("matchSeedingWallWhenSeeding, not have transitLocation! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
         }
 
 
@@ -229,6 +232,9 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         WhOutboundFacility facility = null;
         if (facilityFlag) {
             facility = this.getTopFreeOutBoundFacility(facilityFlag, facilityGroup.getId(), batch, ouId);
+            if (null == facility) {
+                log.info("matchSeedingWallWhenSeeding, not have WhOutboundFacility! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
+            }
         }
         recPath = this.insertByPickingMode(recFacilityPath, facility, transitLocation, toLocation, ouId);
         return recPath;
