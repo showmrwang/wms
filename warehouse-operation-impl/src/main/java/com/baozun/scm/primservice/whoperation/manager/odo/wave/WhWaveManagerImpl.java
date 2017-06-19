@@ -829,42 +829,57 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         /** 补货剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
-            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId);
+            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId); // 用于判断出库单是否取消
             if (count > 0) {
-                // 删除已分配库存
-                List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odoCode, ouId);
-                if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
-                    for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
-                        invAllocated.setOccupationCode(null);
-                        invAllocated.setOccupationLineId(null);
-                        int updateCount = this.whSkuInventoryAllocatedDao.saveOrUpdateByVersion(invAllocated);
-                        if (updateCount <= 0) {
-                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                        }
-                    }
-                }
-                // 删除待移入库存
-                List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odoCode, ouId);
-                if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
-                    for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
-                        invTobefilled.setOccupationCode(null);
-                        invTobefilled.setOccupationLineId(null);
-                        int updateCount = this.whSkuInventoryTobefilledDao.saveOrUpdateByVersion(invTobefilled);
-                        if (updateCount <= 0) {
-                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                        }
-                    }
-                }
+                // 清除编码
+                this.eliminateOccupationCode(odoCode, ouId);
             } else {
                 ReplenishmentTask task = replenishmentTaskDao.findReplenishmentTaskByWaveId(waveId, ouId);
                 if (null != task) {
-                    String repCode = task.getReplenishmentCode();
-                    whSkuInventoryAllocatedDao.deleteByReplenishmentCode(repCode, ouId);
-                    whSkuInventoryTobefilledDao.deleteByReplenishmentCode(repCode, ouId);
+                    if (null != task.getIsCreateWork() && task.getIsCreateWork()) {
+                        // 清除编码
+                        this.eliminateOccupationCode(odoCode, ouId);
+                    } else {
+                        String repCode = task.getReplenishmentCode();
+                        whSkuInventoryAllocatedDao.deleteByReplenishmentCode(repCode, ouId);
+                        whSkuInventoryTobefilledDao.deleteByReplenishmentCode(repCode, ouId);
+                    }
                 }
             }
         }
 
+    }
+    
+    /**
+     * 清除补货出库单占用编码
+     * @author kai.zhu
+     * @version 2017年6月19日
+     */
+    private void eliminateOccupationCode(String odoCode, Long ouId) {
+        // 删除已分配库存
+        List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odoCode, ouId);
+        if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
+            for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
+                invAllocated.setOccupationCode(null);
+                invAllocated.setOccupationLineId(null);
+                int updateCount = this.whSkuInventoryAllocatedDao.saveOrUpdateByVersion(invAllocated);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
+        // 删除待移入库存
+        List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odoCode, ouId);
+        if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
+            for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
+                invTobefilled.setOccupationCode(null);
+                invTobefilled.setOccupationLineId(null);
+                int updateCount = this.whSkuInventoryTobefilledDao.saveOrUpdateByVersion(invTobefilled);
+                if (updateCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
     }
 
     @Override
