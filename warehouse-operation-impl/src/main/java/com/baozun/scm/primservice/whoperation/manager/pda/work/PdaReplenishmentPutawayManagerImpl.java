@@ -987,13 +987,19 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
     private void judeLocationIsPicking(Boolean isTV,Long turnoverBoxId,Long locationId,Long ouId,Long userId,Long outerContainerId,Long operationId){
              List<WhOperationLine> operationLine = whOperationLineDao.findByOperationId(operationId, ouId);
              String replenishmentCode = operationLine.get(0).getReplenishmentCode();
+             Long tempTurnoverBoxId = turnoverBoxId;
             //更新到工作明细
              if(!isTV){
                  turnoverBoxId = null;
                  outerContainerId = null;
              }
              List<Long> workIds = new ArrayList<Long>();
-            List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findReplenishmentBylocationId(outerContainerId,turnoverBoxId,ouId, locationId);
+            List<WhSkuInventoryCommand> skuInvList = null;
+            if(null != outerContainerId){//整托
+                skuInvList = whSkuInventoryDao.findReplenishmentOuterContainerBylocationId(outerContainerId,ouId, locationId);
+            }else{//整箱或者拆箱
+                skuInvList = whSkuInventoryDao.findReplenishmentBylocationId(turnoverBoxId,ouId, locationId);
+            }
             if(null != skuInvList && skuInvList.size() != 0) {
                 for(WhSkuInventoryCommand invCmd:skuInvList) {
                     List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId,replenishmentCode);
@@ -1004,12 +1010,15 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         Double sum = 0.0;
                         for(WhWorkLineCommand workLineCmd:workLineList) {
                           String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
-                              if(null != turnoverBoxId){
-                                  if(turnoverBoxId.equals(workLineCmd.getFromInsideContainerId())){
-                                      continue;
-                                  }
+                          if(true == isTV && null != workLineCmd.getFromInsideContainerId()){
+                               continue;
+                          }
+                          if(null != workLineCmd.getFromInsideContainerId()){
+                              if(!(false == isTV && tempTurnoverBoxId.equals(workLineCmd.getFromInsideContainerId()))){
+                                  continue;
                               }
-                            if(workSkuAttrId.equals(skuAttrId) && invCmd.getOccupationLineId().longValue() == workLineCmd.getOdoLineId().longValue() && (!workIds.contains(workLineCmd.getId()))) {
+                          }
+                          if(workSkuAttrId.equals(skuAttrId) && invCmd.getOccupationLineId().longValue() == workLineCmd.getOdoLineId().longValue() && (!workIds.contains(workLineCmd.getId()))) {
                                      Double onHandQty = invCmd.getOnHandQty();
                                      Double lineQty = workLineCmd.getQty();
                                      sum += lineQty;
@@ -1103,17 +1112,21 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId,replenishmentCode);
                     if(null != operLineCmdList && operLineCmdList.size() != 0) {
                        for(WhOperationLineCommand operLineCmd:operLineCmdList){
+                        if(true == isTV && null != operLineCmd.getFromInsideContainerId()){
+                           continue;
+                        }
+                        if(null != operLineCmd.getFromInsideContainerId()){
+                            if(!(false == isTV && tempTurnoverBoxId.equals(operLineCmd.getFromInsideContainerId()))){
+                                continue;
+                            }
+                        }
+                        
                         Double lineQty = operLineCmd.getQty();
                         String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
                         Long insideId = invCmd.getInsideContainerId();
                         Long outerId = invCmd.getOuterContainerId();
                         Long occupationId = invCmd.getOccupationLineId();
                         String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
-                        if(null != turnoverBoxId){
-                            if(turnoverBoxId.equals(operLineCmd.getFromInsideContainerId())){
-                                continue;
-                            }
-                        }
                         if(workSkuAttrId.equals(skuAttrId) && occupationId.longValue() == operLineCmd.getOdoLineId().longValue() && (!operationLineIds.contains(operLineCmd.getId()))) {
                             sum += lineQty;
                             if(invCmd.getOnHandQty().doubleValue() < sum.doubleValue()){
