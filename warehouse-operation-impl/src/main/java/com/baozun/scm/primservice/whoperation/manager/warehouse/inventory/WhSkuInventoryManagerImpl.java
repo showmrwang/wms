@@ -4391,14 +4391,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             // 记录入库库存日志
             Double skuInvOnHandQty = invCmd.getOnHandQty() - scanSkuQty; // 上架后库存
-            insertSkuInventoryLog(whSkuInventory.getId(), skuInvOnHandQty, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
             if (skuInvOnHandQty == 0.0) {
+                insertSkuInventoryLog(whSkuInventory.getId(), -whSkuInventory.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                 whSkuInventoryDao.deleteWhSkuInventoryById(whskuInventoryId, ouId); // 上架完毕后，删除原来的库存记录
                 insertGlobalLog(GLOBAL_LOG_DELETE, whSkuInventory, ouId, userId, null, null);
             } else {
                 whSkuInventory.setOnHandQty(skuInvOnHandQty);
                 whSkuInventoryDao.saveOrUpdateByVersion(whSkuInventory); // 更新库存记录
                 insertGlobalLog(GLOBAL_LOG_UPDATE, whSkuInventory, ouId, userId, null, null);
+                insertSkuInventoryLog(whSkuInventory.getId(),-scanSkuQty, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
             }
 
         } else {
@@ -4453,14 +4454,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             // 记录入库库存日志
             Double skuInvOnHandQty = invCmd.getOnHandQty() - scanSkuQty; // 上架后库存
-            insertSkuInventoryLog(whSkuInventory.getId(), skuInvOnHandQty, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
             if (skuInvOnHandQty == 0.0) {
+                insertSkuInventoryLog(whSkuInventory.getId(), -whSkuInventory.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                 whSkuInventoryDao.deleteWhSkuInventoryById(whskuInventoryId, ouId); // 上架完毕后删除，原来的库存记录
                 insertGlobalLog(GLOBAL_LOG_DELETE, inv, ouId, userId, null, null);
             } else {
                 whSkuInventory.setOnHandQty(skuInvOnHandQty);
                 whSkuInventoryDao.saveOrUpdateByVersion(whSkuInventory); // 更新库存记录
                 insertGlobalLog(GLOBAL_LOG_UPDATE, inv, ouId, userId, null, null);
+                insertSkuInventoryLog(whSkuInventory.getId(),-scanSkuQty, oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
             }
 
             if (!uuid.equals(invCmd.getUuid())) {
