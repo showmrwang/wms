@@ -16,10 +16,12 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoOutBoundBoxMapper;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.CreateWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentRuleManager;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 
@@ -33,6 +35,9 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
     
     @Autowired
     private WhWaveManager whWaveManager;
+    
+    @Autowired
+    private OdoManager odoManager;
     
     @Autowired
     private ReplenishmentRuleManager replenishmentRuleManager;
@@ -82,6 +87,9 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             }
             whWaveManager.updateWaveByWhWave(whWave); 
         } catch (Exception e) {
+            // WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
+            // List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
+            // whWaveManager.eliminateWaveByWork(wave, odoList, ouId, userId);
             log.error("CreateWorkManagerProxyImpl createWorkInWave error" + e);
         }
     }

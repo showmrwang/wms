@@ -40,6 +40,8 @@ public interface ReplenishmentTaskDao extends BaseDao<ReplenishmentTask,Long>{
 	@CommonQuery
 	int saveOrUpdateByVersion(ReplenishmentTask o);
 	
+	int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+	
 	/**
      * 根据补货编码查询信息
      * 
