@@ -320,6 +320,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</update>
 
     <select id="getTrolleyListOrderByGridNumDesc" resultMap="Container2ndCategoryCommandResultExt">
+    <![CDATA[
         select
             <include refid="container2ndCategoryColumns" />
         from t_wh_container_2nd_category
@@ -327,6 +328,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             total_grid_num > 1
             and ou_id = #{ouId}
             and one_level_type = "BOX_TYPE"
+            and category_code <> "SYS_BOX_TYPE"
             and lifecycle = 1
             and id in (
                 SELECT
@@ -339,6 +341,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                     and container.status = 1
             )
         order by total_grid_num DESC
+    ]]>
     </select>
 
     <select id="getTurnoverBoxByOuIdOrderByVolumeDesc"  resultMap="Container2ndCategoryCommandResultExt">
