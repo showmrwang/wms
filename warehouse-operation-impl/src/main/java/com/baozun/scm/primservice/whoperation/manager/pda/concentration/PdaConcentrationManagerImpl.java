@@ -377,6 +377,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             try {
                 command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
             } catch (Exception e) {
+                log.error("", e);
                 command.setStatus(0);
             }
             if (1 == command.getStatus()) {
