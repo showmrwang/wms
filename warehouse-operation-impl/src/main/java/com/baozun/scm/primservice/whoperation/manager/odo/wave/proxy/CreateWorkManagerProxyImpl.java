@@ -87,9 +87,9 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             }
             whWaveManager.updateWaveByWhWave(whWave); 
         } catch (Exception e) {
-            // WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
-            // List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
-            // whWaveManager.eliminateWaveByWork(wave, odoList, ouId, userId);
+            WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
+            List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
+            whWaveManager.eliminateWaveByWork(wave, odoList, ouId, userId);
             log.error("CreateWorkManagerProxyImpl createWorkInWave error" + e);
         }
     }
@@ -134,13 +134,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             Map<String, List<WhSkuInventoryAllocatedCommand>> siacMap = createWorkManager.getSkuInventoryAllocatedCommandForGroup(replenishmentRuleCommand);
             // 循环统计的分组信息分别创建工作           
             for(String key : siacMap.keySet()){
-                try {
-                    resultCommand = createWorkManager.createReplenishmentWorkInWave(resultCommand.getWhWave(), siacMap.get(key), replenishmentRuleCommand, userId);
-                } catch (Exception e) {
-                    log.error("CreateWorkManagerProxyImpl createReplenishmentWorkInWave error" + e);
-                    isReplenishmentWorkInWave = false;
-                    continue;
-                }
+                resultCommand = createWorkManager.createReplenishmentWorkInWave(resultCommand.getWhWave(), siacMap.get(key), replenishmentRuleCommand, userId);
             }
         }
         resultCommand.setIsReplenishmentWorkInWave(isReplenishmentWorkInWave);
@@ -173,13 +167,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 List<WhOdoOutBoundBox> odoOutBoundBoxForGroup = odoOutBoundBoxMapper.getOdoOutBoundBoxForGroup(whOdoOutBoundBox);
                 //循环小批次下所有分组信息分别创建工作 和作业         
                 for(WhOdoOutBoundBox whOdoOutBoundBoxGroup : odoOutBoundBoxForGroup){
-                    try {
-                        resultCommand = createWorkManager.createPickingWorkInWave(resultCommand.getWhWave(), whOdoOutBoundBoxGroup, whOdoOutBoundBox, resultCommand, userId);
-                    } catch (Exception e) {
-                        log.error("CreateWorkManagerProxyImpl createPickingWorkInWave error" + e);
-                        isPickingWorkInWave = false;
-                        continue;
-                    }    
+                    resultCommand = createWorkManager.createPickingWorkInWave(resultCommand.getWhWave(), whOdoOutBoundBoxGroup, whOdoOutBoundBox, resultCommand, userId);
                 }
             }
     	}
