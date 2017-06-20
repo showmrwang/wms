@@ -91,9 +91,11 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, null, ouId);
             WhFacilityRecPath prePath = null;
             if (pathList != null && pathList.size() > 0) {// 存在推荐成功的信息
+                log.info("matchSeedingWallWhenSeeding, have prePath! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
                 prePath = pathList.get(0);
             }
             if (prePath == null) {
+                log.info("matchSeedingWallWhenSeeding, not have prePath! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
                 // 模式
                 if (StringUtils.isEmpty(wh.getSeedingMode())) {
                     return responseMsgForFacility(recFacilityPath, 0);
@@ -106,6 +108,7 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                 RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
                 List<WhSeedingWallRuleCommand> whSeedingWallRuleList = export.getWhSeedingWallRuleCommandList();
                 if (whSeedingWallRuleList == null || whSeedingWallRuleList.size() == 0) {
+                    log.info("matchSeedingWallWhenSeeding, not have whSeedingWallRuleList! batch:{}, container:{}", recFacilityPath.getBatch(), recFacilityPath.getContainerCode());
                     return responseMsgForFacility(recFacilityPath, 0);
                 }
                 // @mender yimin.lu 2017/4/12 当第一个规则失败时候，进行后续规则校验
@@ -120,8 +123,9 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                         try {
                             this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, null, recFacilityPath, wh);
                             flag = true;
+                            log.info("matchSeedingWallWhenSeeding, matchSuccess! batch:{}, container:{}", recFacilityPath.getBatch(), recFacilityPath.getContainerCode());
                         } catch (Exception e) {
-                            log.error("", e);
+                            log.error("matchSeedingWallWhenSeeding error", e);
                             flag = false;
                         }
                     }

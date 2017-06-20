@@ -3935,18 +3935,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		t_wh_sku_inventory
 		where	    ou_id = #{ouId}
 	            and location_id = #{locationId}
-	            <if test="outerContainerId!=null and outerContainerId!=''">
-				          	 and outer_container_id = #{outerContainerId}
-	            </if>
 	            <if test="turnoverBoxId!=null and turnoverBoxId!=''">
 					         and inside_container_id=#{turnoverBoxId}
 	           </if>
-	           <if test="outerContainerId==null">
-				          	 and outer_container_id is null
-	            </if>
 	            <if test="turnoverBoxId==null">
 					         and inside_container_id is null
 	           </if>
+	</select>
+	
+	<select id="findReplenishmentOuterContainerBylocationId" resultMap="WhSkuInventoryCommandResultExt">
+		select  <include refid="whSkuInventoryColumnsExt" />
+		from
+		t_wh_sku_inventory
+		where	    ou_id = #{ouId}
+	            and location_id = #{locationId}
+	            <if test="outerContainerId!=null and outerContainerId!=''">
+				          	 and outer_container_id = #{outerContainerId}
+	            </if>
+	           <if test="outerContainerId==null">
+				          	 and outer_container_id is null
+	            </if>
 	</select>
 	
 	<select id="findSeedingDataByContainerId" resultMap="WhSeedingCollectionLineResult">
