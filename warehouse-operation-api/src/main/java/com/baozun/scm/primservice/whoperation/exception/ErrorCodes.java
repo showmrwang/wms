@@ -492,6 +492,8 @@ public class ErrorCodes {
     public static final int CANCEL_ASN_ERROR = 11110;
     /** 拣货工作和补货工作外，其余工作类型暂时不支持签入签出 */
     public static final int ASSIGN_IN_OUT_TYPE_ERROR = 11111;
+    /** 出库单未创建完成，请确认配送地址、明细已创建完毕 */
+    public static final int ODO_NOT_FINISH_CREATE = 11112;
     // 10001-20000 luyimin
 
 
