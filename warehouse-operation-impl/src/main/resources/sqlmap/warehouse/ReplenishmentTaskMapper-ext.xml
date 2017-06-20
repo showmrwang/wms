@@ -89,6 +89,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</update>
 	
+	<delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_replenishment_task where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	</delete>
+	
 	<select id="findReplenishmentTaskByCode" resultMap="replenishmentTaskResultExt">
     	select 
     		id as id,
