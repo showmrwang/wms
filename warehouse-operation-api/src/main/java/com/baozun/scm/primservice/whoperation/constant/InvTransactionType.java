@@ -58,5 +58,8 @@ public final class InvTransactionType {
 
     /** 播种 */
     public static final String SEEDING = "17";
+    
+    /** 异常处理上架 */
+    public static final String EXCEPTION_HANDLE_SHELF = "18";
 
 }
