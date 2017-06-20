@@ -1557,6 +1557,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         Long ouId = odoCommand.getOuId();
         Long userId = odoCommand.getUserId();
         String logId = odoCommand.getLogId();
+
+        WhOdoAddress address = this.odoAddressManager.findOdoAddressByOdoId(odoId, ouId);
+        if (address == null) {
+            throw new BusinessException(ErrorCodes.ODO_NOT_FINISH_CREATE);
+        }
         List<WhOdoLine> lineList = this.odoLineManager.findOdoLineListByOdoId(odoId, ouId);
         List<WhOdoLine> saveLineList = new ArrayList<WhOdoLine>();// 用于保存的明细行
         if (lineList != null && lineList.size() > 0) {
