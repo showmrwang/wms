@@ -20,7 +20,6 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.bi.UserImportExcelDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.bi.ImportExcel;
-import com.baozun.scm.primservice.whoperation.model.bi.UserImportExcel;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 
 @Service("outPutStreamToServersManager")
