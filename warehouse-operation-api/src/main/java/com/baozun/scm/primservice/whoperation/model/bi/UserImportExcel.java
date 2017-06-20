@@ -26,7 +26,7 @@ public class UserImportExcel extends BaseModel {
      * 
      */
     private static final long serialVersionUID = -6597448559984915911L;
-    
+
     /** 导入编码 */
     private String importCode;
     /** 导入文件名 */
@@ -41,9 +41,9 @@ public class UserImportExcel extends BaseModel {
     private Long ouId;
     /** 创建时间 */
     private Date createTime;
-    /** 是否执行成功 0:否 1:是 */
+    /** 是否执行成功 0:执行中 1:成功 2:文件数据有误 3:导入失败 */
     private Boolean isSuccess = false;
-    
+
     public String getImportCode() {
         return this.importCode;
     }

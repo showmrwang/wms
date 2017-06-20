@@ -63,14 +63,17 @@ public class OutPutStreamToServersManagerImpl extends BaseManagerImpl implements
             os = new FileOutputStream(file);
             ie.getWorkbook().write(os);
             // 更新导入用户信息表数据
-            UserImportExcel u = userImportExcelDao.findUserImportExcelByIdAndOuId(ie.getUserImportExcelId(), ie.getOuId());
-            if (null == u) {
-                log.error("uploadImportFileError Error UserImportExcel is null UserImportExcelId: " + ie.getUserImportExcelId());
-                returnString = Constants.ERROR;
-                return returnString;
-            }
-            u.setErrorFileName(fileName);
-            userImportExcelDao.saveOrUpdate(u);
+            // UserImportExcel u =
+            // userImportExcelDao.findUserImportExcelByIdAndOuId(ie.getUserImportExcelId(),
+            // ie.getOuId());
+            // if (null == u) {
+            // log.error("uploadImportFileError Error UserImportExcel is null UserImportExcelId: " +
+            // ie.getUserImportExcelId());
+            // returnString = Constants.ERROR;
+            // return returnString;
+            // }
+            // u.setErrorFileName(fileName);
+            // userImportExcelDao.saveOrUpdate(u);
             // byte[] byteStr = new byte[2048];
             // int len = 0;
             // while ((len = in.read(byteStr)) > 0) {
