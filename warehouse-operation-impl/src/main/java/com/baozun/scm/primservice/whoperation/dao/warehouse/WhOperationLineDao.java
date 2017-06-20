@@ -45,6 +45,8 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
 	@CommonQuery
 	int saveOrUpdateByVersion(WhOperationLine o);
 	
+    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+	
 	/**
      * 根据作业头Id和ouId获取作业明细信息
      * 
@@ -92,9 +94,6 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
      * @return
      */
     public int findInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("fromOuterContainerId") Long fromOuterContainerId,@Param("operationId") Long operationId);
-    
-    
-    public void deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
     
     /**
      * 判断当前作业是否拣货完成

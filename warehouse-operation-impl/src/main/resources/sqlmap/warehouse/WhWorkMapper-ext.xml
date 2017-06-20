@@ -186,46 +186,54 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 
-		<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork">
-		    <![CDATA[
-		        UPDATE t_wh_work SET
-			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        work_type = #{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        work_category = #{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_assign_out = #{isAssignOut,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_short_picking = #{isShortPicking,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_wave_replenish = #{isWaveReplenish,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_picking_tobefilled = #{isPickingTobefilled,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        is_multi_operation = #{isMultiOperation,javaType=java.lang.Boolean,jdbcType=BIT} ,
-			        work_area = #{workArea,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        assign_out_batch = #{assignOutBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        order_code = #{orderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        location_code = #{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
-		        WHERE 
-			        id = #{id} 
-			        and ou_id = #{ouId}
-			        and last_modify_time <= #{lastModifyTime}    
-		    ]]>
-		</update>
+	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhWork">
+	    <![CDATA[
+	        UPDATE t_wh_work SET
+		        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        work_type = #{workType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        work_category = #{workCategory,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        is_locked = #{isLocked,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_assign_out = #{isAssignOut,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_short_picking = #{isShortPicking,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_wave_replenish = #{isWaveReplenish,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_picking_tobefilled = #{isPickingTobefilled,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        is_multi_operation = #{isMultiOperation,javaType=java.lang.Boolean,jdbcType=BIT} ,
+		        work_area = #{workArea,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        work_priority = #{workPriority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        assign_out_batch = #{assignOutBatch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        distribution_mode = #{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        picking_mode = #{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        wave_id = #{waveId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        order_code = #{orderCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        location_code = #{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		        and last_modify_time <= #{lastModifyTime}    
+	    ]]>
+	</update>
+	
+	<delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_work where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	</delete>
 		
 	<select id="findWorkByWorkCode" resultMap="WhWorkCommandResultExt">
     	select 
