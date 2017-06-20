@@ -4831,6 +4831,22 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 List<WhSkuInventorySnCommand> snList = invCmd.getWhSkuInventorySnCommandList();
                 String uuid = "";
                 if (null == snList || 0 == snList.size()) {
+                    //先扣减容器库存日志
+                    WhSkuInventory skuInv = new WhSkuInventory();
+                    BeanUtils.copyProperties(invCmd, skuInv);
+                    Double oldQty1 = 0.0;
+                    if (true == warehouse.getIsTabbInvTotal()) {
+                        try {
+                            oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty1 = 0.0;
+                    }
+                    insertSkuInventoryLog(skuInv.getId(), -skuInv.getOnHandQty(), oldQty1, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
+                    //添加库位库存
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setLocationId(locationId);
@@ -4887,6 +4903,22 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     // 记录入库库存日志
                     insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), oldQty, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
                 } else { // 存在SN,残次库存信息
+                    //先扣减容器库存日志
+                    WhSkuInventory skuInv = new WhSkuInventory();
+                    BeanUtils.copyProperties(invCmd, skuInv);
+                    Double oldQty1 = 0.0;
+                    if (true == warehouse.getIsTabbInvTotal()) {
+                        try {
+                            oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
+                        } catch (Exception e) {
+                            log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                            throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                        }
+                    } else {
+                        oldQty1 = 0.0;
+                    }
+                    insertSkuInventoryLog(skuInv.getId(), -skuInv.getOnHandQty(), oldQty1, warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
+                    //添加库位库存
                     WhSkuInventory inv = new WhSkuInventory();
                     BeanUtils.copyProperties(invCmd, inv);
                     inv.setLocationId(locationId);
