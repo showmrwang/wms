@@ -1219,6 +1219,23 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         for (WhOdo odo : odoList) {
             this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), null, wh, WavePhase.EXECUTED);
         }
+        // 删除补货任务        
+        ReplenishmentTask taskSearch = new ReplenishmentTask();
+        taskSearch.setOuId(ouId);
+        taskSearch.setWaveId(waveId);
+        List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(taskSearch);
+        if (null != result && result.size() > 0) {
+            for (ReplenishmentTask task : result) {
+                if(null != task.getReplenishmentCode()){
+                    whSkuInventoryAllocatedDao.deleteByReplenishmentCode(task.getReplenishmentCode(), ouId);
+                    whSkuInventoryTobefilledDao.deleteByReplenishmentCode(task.getReplenishmentCode(), ouId);     
+                }
+                int delTaskCount = this.replenishmentTaskDao.deleteByIdExt(task.getId(), task.getOuId());
+                if (delTaskCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                }
+            }
+        }
     }
     
     private void deleteReplenishmentInWave(Long waveId, Long ouId) {
@@ -1256,19 +1273,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                             throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
                         }
                     }
-                }
-            }
-        }
-        
-        ReplenishmentTask taskSearch = new ReplenishmentTask();
-        taskSearch.setOuId(ouId);
-        taskSearch.setWaveId(waveId);
-        List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(taskSearch);
-        if (result != null && result.size() > 0) {
-            for (ReplenishmentTask task : result) {
-                int delTaskCount = this.replenishmentTaskDao.deleteByIdExt(task.getId(), task.getOuId());
-                if (delTaskCount <= 0) {
-                    throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
                 }
             }
         }
