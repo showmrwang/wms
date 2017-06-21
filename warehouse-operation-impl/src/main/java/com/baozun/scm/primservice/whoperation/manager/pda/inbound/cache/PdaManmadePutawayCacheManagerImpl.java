@@ -413,6 +413,13 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                   log.error("sys guide pallet putaway container2ndCategory is null error, icId is:[{}], 2endCategoryId is:[{}], logId is:[{}]", containerId, insideContainerCate, logId);
                   throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
               }
+              //所有内部容器:caselevel容器和非caselevel容器
+              WhCarton carton = whCartonDao.findWhCaselevelCartonById(ic.getId(), ouId);
+              if (null != carton) {
+                  caselevelContainerIds.add(ic.getId());  //统计caselevel内部容器信息
+              } else {
+                  notcaselevelContainerIds.add(ic.getId());   //统计非caselevel内部容器信息
+              }
 //              if (1 != insideContainer2.getLifecycle()) {
 //                  log.error("sys guide pallet putaway container2ndCategory lifecycle is not normal error, icId is:[{}], containerId is:[{}], logId is:[{}]", containerId, insideContainer2.getId(), logId);
 //                  throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
@@ -500,6 +507,8 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                           insideContainerSkuIdsQty.put(containerId, sq);                     //统计内部容器对应某个sku的总件数
                       }
                  }
+                manMadeContainer.setCaselevelContainerIds(caselevelContainerIds);
+                manMadeContainer.setNotcaselevelContainerIds(notcaselevelContainerIds);
                 manMadeContainer.setInsideContainerCode(manMadePutawayCommand.getInsideContainerCode());
                 manMadeContainer.setInsideContainerId(containerId);
                 manMadeContainer.setInsideContainerIdSkuIds(insideContainerIdSkuIds);
