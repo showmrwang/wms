@@ -70,4 +70,6 @@ public interface WhOdoDeliveryInfoManager extends BaseManager {
 
     Pagination<WhOdodeliveryInfoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    WhOdodeliveryInfo findbyWhOdoDeliveryId(Long whOdoDeliveryId);
+
 }
