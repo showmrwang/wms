@@ -1199,7 +1199,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId) {
+    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String reason) {
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
         Long waveId = wave.getId();
         // 删除补货工作        
@@ -1217,7 +1217,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // 当出库单为需要释放的时候，则将带移入和库存都回滚，并将和波次的绑定关系释放，置出库单状态为新建；
         // 否则则将出库单延迟释放：@mender yimin.lu 2017/5/9 不存在延迟取消的出库单
         for (WhOdo odo : odoList) {
-            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), null, wh, WavePhase.EXECUTED);
+            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), reason, wh, WavePhase.CREATE_WORK_NUM);
         }
         // 删除补货任务        
         ReplenishmentTask taskSearch = new ReplenishmentTask();
