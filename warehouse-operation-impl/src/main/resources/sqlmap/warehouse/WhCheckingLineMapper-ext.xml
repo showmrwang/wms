@@ -339,7 +339,8 @@
                 line.create_time as createTime,
                 line.modified_id as modifiedId,
                 status.name as invStatusStr,
-                odo.odo_code as odoCode
+                odo.odo_code as odoCode,
+                odo.ext_code as extCode
         ]]>
     </sql>
     
