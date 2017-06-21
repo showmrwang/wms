@@ -1456,6 +1456,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         CheckingDisplayCommand checkingDisplayCommand = new CheckingDisplayCommand();
         String odoCode = whCheckingByOdoCommand.getCheckingLineCommandList().get(0).getOdoCode();
         WhOdo odo = this.whOdoDao.findOdoByCodeAndOuId(odoCode, whCheckingCommand.getOuId());
+        Long ouId = whCheckingCommand.getOuId();
         if (null != odo) {
             // 出库单不为空(秒杀订单等模式在未匹配到商品前不显示出库单信息)
             checkingDisplayCommand.setOdoCode(odoCode);
@@ -1463,27 +1464,27 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         if (null != whCheckingCommand.getOutboundboxCode() && null != whCheckingCommand.getBatch()) {
             // 有出库箱信息
-            Long batchBoxCnt = whCheckingDao.findBatchBoxCntByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+            Long batchBoxCnt = whCheckingDao.findBatchBoxCntByParam(whCheckingCommand.getBatch(), ouId);
             checkingDisplayCommand.setOutboundboxCount(batchBoxCnt);
-            Long batchBoxCntCheck = whCheckingDao.findBatchBoxCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+            Long batchBoxCntCheck = whCheckingDao.findBatchBoxCntCheckByParam(whCheckingCommand.getBatch(), ouId);
             checkingDisplayCommand.setToBeCheckedOutboundboxCount(batchBoxCntCheck);
-            Long boxSkuCnt = whCheckingDao.findBoxSkuCntByBoxAndOuId(whCheckingCommand.getOutboundboxCode(), whCheckingCommand.getOuId());
+            Long boxSkuCnt = whCheckingDao.findBoxSkuCntByBoxAndOuId(whCheckingCommand.getOutboundboxCode(), ouId);
             checkingDisplayCommand.setBoxSkuCnt(boxSkuCnt);
-        } else if (null != whCheckingCommand.getContainerId() && ("3" == whCheckingCommand.getPickingMode() || "4" == whCheckingCommand.getPickingMode() || "5" == whCheckingCommand.getPickingMode() || "6" == whCheckingCommand.getPickingMode())) {
-            // 秒杀与单品单间
-        }
-
-
-        else {
+        } else if (null != whCheckingCommand.getContainerId() && ("1" == whCheckingCommand.getPickingMode() || "2" == whCheckingCommand.getPickingMode())) {
+            // 周转箱复核且是普通摘果 计算容器中商品数量与订单待复核商品数量 只要有一个数量为0就自动复核
+            Long containerId = whCheckingCommand.getContainerId();
+            Long containerSkuCnt = whCheckingDao.findContainerSkuCntByContainerAndOuId(containerId, ouId);
+            checkingDisplayCommand.setContainerSkuCnt(containerSkuCnt);
+        } else {
             // 无出库箱信息
             checkingDisplayCommand.setOutboundboxCount(0L);
             checkingDisplayCommand.setToBeCheckedOutboundboxCount(0L);
         }
-        Long batchOdoCnt = whCheckingDao.findBatchOdoCntByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+        Long batchOdoCnt = whCheckingDao.findBatchOdoCntByParam(whCheckingCommand.getBatch(), ouId);
         checkingDisplayCommand.setOdoCount(batchOdoCnt);
-        Long batchOdoCntCheck = whCheckingDao.findBatchOdoCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
+        Long batchOdoCntCheck = whCheckingDao.findBatchOdoCntCheckByParam(whCheckingCommand.getBatch(), ouId);
         checkingDisplayCommand.setToBeCheckedOdoCount(batchOdoCntCheck);
-        Long skuCnt = whCheckingDao.findOdoSkuCntByParam(odoCode, whCheckingCommand.getOuId());
+        Long skuCnt = whCheckingDao.findOdoSkuCntByParam(odoCode, ouId);
         checkingDisplayCommand.setSkuCnt(skuCnt);
         checkingDisplayCommand.setWaveCode(whCheckingCommand.getWaveCode());
         checkingDisplayCommand.setTransportName(whCheckingCommand.getTransportName());
