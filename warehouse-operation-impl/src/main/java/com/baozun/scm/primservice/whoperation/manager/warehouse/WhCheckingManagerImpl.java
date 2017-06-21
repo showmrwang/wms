@@ -1240,12 +1240,18 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
             // 添加出库箱明细
             for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
+                Long skuId = skuInvCmd.getSkuId();
+                //获取sku信息
+                WhSkuCommand skuCmd = skuDao.findWhSkuByIdExt(skuId, ouId);
+                if(null == skuCmd){
+                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+                }
                 WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
                 outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
-                outboundboxLine.setSkuCode(lineCmd.getSkuCode());
-                outboundboxLine.setSkuExtCode(lineCmd.getSkuExtCode());
-                outboundboxLine.setSkuBarCode(lineCmd.getSkuBarCode());
-                outboundboxLine.setSkuName(lineCmd.getSkuName());
+                outboundboxLine.setSkuCode(skuCmd.getCode());
+                outboundboxLine.setSkuExtCode(skuCmd.getExtCode());
+                outboundboxLine.setSkuBarCode(skuCmd.getBarCode());
+                outboundboxLine.setSkuName(skuCmd.getName());
                 outboundboxLine.setQty(skuInvCmd.getOnHandQty());
                 outboundboxLine.setCustomerCode(lineCmd.getCustomerCode());
                 outboundboxLine.setCustomerName(lineCmd.getCustomerName());
