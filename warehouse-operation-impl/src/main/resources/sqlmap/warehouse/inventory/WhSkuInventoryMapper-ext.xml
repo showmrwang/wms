@@ -4035,6 +4035,43 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 skuInv.occupation_code = #{occupationCode}
                 AND skuInv.ou_id = #{ouId}
     </select>
+    
+    <select id="findListByOccupationCodeAndAllocateArea" resultMap="WhSkuInventoryCommandResultExt">
+
+            SELECT
+                skuInv.id AS id,
+                skuInv.sku_id AS skuId,
+                skuInv.location_id AS locationId,
+                location.allocate_area_id AS allocateAreaId,
+                skuInv.outer_container_id AS outerContainerId,
+                skuInv.inside_container_id AS insideContainerId,
+                skuInv.customer_id AS customerId,
+                skuInv.store_id AS storeId,
+                skuInv.occupation_code AS occupationCode,
+                skuInv.occupation_line_id AS occupationLineId,
+                skuInv.on_hand_qty AS onHandQty,
+                skuInv.inv_status AS invStatus,
+                skuInv.inv_type AS invType,
+                skuInv.batch_number AS batchNumber,
+                skuInv.mfg_date AS mfgDate,
+                skuInv.exp_date AS expDate,
+                skuInv.country_of_origin AS countryOfOrigin,
+                skuInv.inv_attr1 AS invAttr1,
+                skuInv.inv_attr2 AS invAttr2,
+                skuInv.inv_attr3 AS invAttr3,
+                skuInv.inv_attr4 AS invAttr4,
+                skuInv.inv_attr5 AS invAttr5,
+                skuInv.uuid AS uuid,
+                skuInv.ou_id AS ouId,
+                skuInv.occupation_code_source AS occupationCodeSource
+            FROM
+                t_wh_sku_inventory AS skuInv,
+				t_wh_location location
+            WHERE
+            	skuInv.location_id = location.id
+				AND skuInv.occupation_code = #{occupationCode}
+                AND skuInv.ou_id = #{ouId}
+    </select>
 
     <select id="findSkuInvListByWholeTray" resultMap="WhSkuInventoryCommandResultExt">
 

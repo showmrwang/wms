@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
-import com.baozun.scm.primservice.whoperation.dao.bi.UserImportExcelDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.bi.ImportExcel;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
@@ -30,8 +29,6 @@ public class OutPutStreamToServersManagerImpl extends BaseManagerImpl implements
 
     @Autowired
     private ZkClient zkClient;
-    @Autowired
-    private UserImportExcelDao userImportExcelDao;
 
     // 获取zk信息
     @Value("${zk.cofing.root}")

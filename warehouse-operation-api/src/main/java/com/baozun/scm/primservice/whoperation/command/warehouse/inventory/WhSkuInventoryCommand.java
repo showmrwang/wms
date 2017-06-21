@@ -39,6 +39,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Long skuId;
     /** 库位ID 库位号 */
     private Long locationId;
+    /** 分配区域id*/
+    private Long allocateAreaId;
     /** 外部容器ID 托盘 货箱 */
     private Long outerContainerId;
     /** 内部容器ID 托盘 货箱 */
@@ -1191,5 +1193,13 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setPickSort(String pickSort) {
         this.pickSort = pickSort;
+    }
+
+    public Long getAllocateAreaId() {
+        return allocateAreaId;
+    }
+
+    public void setAllocateAreaId(Long allocateAreaId) {
+        this.allocateAreaId = allocateAreaId;
     }
 }

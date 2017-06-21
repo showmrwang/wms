@@ -922,6 +922,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     public List<WhSkuInventoryCommand> findListByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
 
     /**
+     * 根据占用码查询库存和分配区域
+     * 
+     * @author kaifei.zhang
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCodeAndAllocateArea(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
+    
+    /**
      * 出库箱推荐用 根据外部容器查询库存 只用于统计箱内商品种类和数量
      *
      * @author mingwei.xie
