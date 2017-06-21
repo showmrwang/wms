@@ -4699,8 +4699,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         }
                     }
                 }
-                // 记录SN日志
-                insertSkuInventorySnLog(inv.getUuid(), ouId);
+//                // 记录SN日志
+//                insertSkuInventorySnLog(inv.getUuid(), ouId);
             }
         }
     }

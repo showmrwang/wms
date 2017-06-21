@@ -2031,7 +2031,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     this.wholeCaseOperationExecLine(command, outerContainerId, insideContainerId, isTabbInvTotal); 
                 }
                 // 更新工作及作业状态
-                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
+                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId,workCode);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
             }
@@ -2043,7 +2043,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 已分配的库位库存转变为容器库存
                 whSkuInventoryManager.invMoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
                 // 更新工作及作业状态
-                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
+                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId,workCode);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
             }

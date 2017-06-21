@@ -1218,7 +1218,6 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         }else{
             whOperation.setStatus(WorkStatus.PARTLY_FINISH); 
         }
-        whOperation.setStatus(WorkStatus.FINISH);
         whOperation.setModifiedId(userId);
         whOperationDao.saveOrUpdateByVersion(whOperation);
         insertGlobalLog(GLOBAL_LOG_UPDATE, whOperation, ouId, userId, null, null);
