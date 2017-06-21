@@ -1279,7 +1279,7 @@
 		WHERE
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
-			and odo.status != 60
+			and odo.odo_status != 60
     </select>
 
     <select id="findBatchOdoCntCheckByParam" resultType="java.lang.Long" flushCache="false">
