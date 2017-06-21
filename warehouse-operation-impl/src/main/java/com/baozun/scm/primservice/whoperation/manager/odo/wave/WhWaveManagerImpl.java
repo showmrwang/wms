@@ -151,7 +151,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhWave getWaveByIdAndOuId(Long waveId, Long ouId) {
         if (null == waveId || null == ouId) {
-            throw new BusinessException("软分配 : 没有参数");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         WhWave whWave = new WhWave();
         whWave.setId(waveId);
@@ -160,7 +160,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         whWave.setAllocatePhase(null);
         List<WhWave> whWaveList = this.whWaveDao.findListByParam(whWave);
         if (null == whWaveList || 1 != whWaveList.size()) {
-            throw new BusinessException("多个波次");
+            throw new BusinessException(ErrorCodes.MULTI_RESULT_RESPONSE);
         }
         return whWaveList.get(0);
     }
@@ -169,7 +169,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<SoftAllocationCommand> getSkuInvTotalQty(Long waveId, Long ouId) {
         if (null == waveId || null == ouId) {
-            throw new BusinessException("软分配 : 没有参数");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         List<SoftAllocationCommand> commandList = this.whWaveDao.getSkuInvTotalQty(waveId, ouId);
         return commandList;
@@ -179,7 +179,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<SoftAllocationCommand> getSkuInvOccupiedQty(Long waveId, Long ouId) {
         if (null == waveId || null == ouId) {
-            throw new BusinessException("软分配 : 没有参数");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         List<SoftAllocationCommand> commandList = this.whWaveDao.getSkuInvOccupiedQty(waveId, ouId);
         return commandList;
@@ -483,14 +483,14 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
             return;
         }
-        boolean flag = false;   // 标记是否需要重新计算波次头信息
+        boolean flag = false; // 标记是否需要重新计算波次头信息
         // 剔除已取消的出库单
         List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
         if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
             this.eliminateOdo(cancelOdoIdList, waveId, Constants.ODO_IS_CANCEL, false, ouId);
             flag = true;
         }
-        
+
         List<WhWaveLine> lines = whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
         // 获取下一个波次阶段编码
         WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
@@ -759,11 +759,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         /** 合并出库单剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.MERGE_ODO_NUM) {}
         /** 硬分配剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {
-        }
+        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {}
         /** 补货剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
-        }
+        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {}
         /** 配货模式计算剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM) {}
         /** 创建出库箱/容器剔除逻辑 */
@@ -848,7 +846,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
         }
     }
-    
+
     /**
      * 清除补货出库单占用编码
      * @author kai.zhu
@@ -1191,7 +1189,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
 
     }
-    
+
     /**
      * 波次中创工作失败，波次剔除(后期可能会和别的方法合并)
      * @author qiming.liu
@@ -1202,9 +1200,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String reason) {
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
         Long waveId = wave.getId();
-        // 删除补货工作        
+        // 删除补货工作
         this.deleteReplenishmentInWave(waveId, ouId);
-        // 删除拣货工作        
+        // 删除拣货工作
         this.deletePickingInWave(waveId, ouId);
         // 更新波次状态
         wave.setStatus(WaveStatus.WAVE_CANCEL);
@@ -1219,16 +1217,16 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         for (WhOdo odo : odoList) {
             this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), reason, wh, WavePhase.CREATE_WORK_NUM);
         }
-        // 删除补货任务        
+        // 删除补货任务
         ReplenishmentTask taskSearch = new ReplenishmentTask();
         taskSearch.setOuId(ouId);
         taskSearch.setWaveId(waveId);
         List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(taskSearch);
         if (null != result && result.size() > 0) {
             for (ReplenishmentTask task : result) {
-                if(null != task.getReplenishmentCode()){
+                if (null != task.getReplenishmentCode()) {
                     whSkuInventoryAllocatedDao.deleteByReplenishmentCode(task.getReplenishmentCode(), ouId);
-                    whSkuInventoryTobefilledDao.deleteByReplenishmentCode(task.getReplenishmentCode(), ouId);     
+                    whSkuInventoryTobefilledDao.deleteByReplenishmentCode(task.getReplenishmentCode(), ouId);
                 }
                 int delTaskCount = this.replenishmentTaskDao.deleteByIdExt(task.getId(), task.getOuId());
                 if (delTaskCount <= 0) {
@@ -1237,7 +1235,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
         }
     }
-    
+
     private void deleteReplenishmentInWave(Long waveId, Long ouId) {
         WhWave wave = this.whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
         WhWork workSearch = new WhWork();
@@ -1318,7 +1316,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
         }
     }
-    
+
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWave> findWaveToBeCreated(Long ouId) {
@@ -1575,5 +1573,5 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         WhWaveMasterPrintCondition c = whWaveMasterDao.findPrintConditionByWaveMasterId(wave.getWaveMasterId(), printType, ouId);
         return c;
     }
-    
+
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
@@ -29,6 +32,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("whWaveSoftManagerProxy")
 public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
+
+    private static final Logger log = LoggerFactory.getLogger(WhWaveSoftManagerProxy.class);
 
     @Autowired
     private WhWaveManager whWaveManager;
@@ -115,9 +120,15 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
 
     @Override
     public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long waveLineId, Long ouId, Map<Long, Long> skuInvAvailableQtyMap) {
+        log.info("WhWaveSoftManagerProxy.occupiedOperation(waveId={}, skuId={}, ouId={}) start......", waveId, skuId, ouId);
         if (null == waveId || null == skuId || null == waveLineId || null == ouId) {
             if (null == waveId || null == ouId) {
-                throw new BusinessException("软分配 : 没有参数");
+                log.error("input param error");
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            if (null == skuInvAvailableQtyMap) {
+                log.error("sku inventory available qty map is null");
+                throw new BusinessException(ErrorCodes.SKU_INV_AVAILABLE_QTY_MAP_NULL);
             }
         }
         // 1.判断商品是否在空库存列表中
@@ -127,15 +138,23 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
             // 库存不为0
             // 2.计算每个波次明细行是否可以占用库存
             WhWaveLine whWaveLine = this.whWaveLineManager.getWaveLineByIdAndOuId(waveLineId, ouId);
+            if (null == whWaveLine) {
+                log.info("whWaveLine is null, waveLineId:{}, ouId:{}", waveLineId, ouId);
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            Long odoLineId = whWaveLine.getOdoLineId();
+            Long odoId = whWaveLine.getOdoId();
             Double skuQty = whWaveLine.getQty();
+            log.info("soft allocation occupiedOperation params:odoId:{}, odoLineId:{}, skuId:{}, skuQty:{}", odoId, odoLineId, skuId, skuQty);
             Long qty = skuInvAvailableQtyMap.get(skuId);
             if (qty == null) {
                 qty = 0L;
             }
             if (qty >= skuQty) {
+                log.info("qty bigger than skuQty");
                 // 实际可用数量 > 需求数量:可以占用 执行占用方法
-                Long odoLineId = whWaveLine.getOdoLineId();
-                Long odoId = whWaveLine.getOdoId();
+                // Long odoLineId = whWaveLine.getOdoLineId();
+                // Long odoId = whWaveLine.getOdoId();
                 // 更新出库单明细和出库单头的状态为波次中
                 boolean result = this.updateOdoStatus(odoId, odoLineId, ouId);
                 if (result) {
@@ -150,9 +169,10 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
                     // command.setQty(quantity);
                     command.setSuccess(true);
                 } else {
-                    throw new BusinessException("更新状态失败");
+                    throw new BusinessException(ErrorCodes.UPDATE_FAILURE);
                 }
             } else {
+                log.info("qty less than skuQty");
                 command.setSkuId(skuId);
                 command.setQty(qty);
                 command.setSkuInvAvailableQtyMap(skuInvAvailableQtyMap);
