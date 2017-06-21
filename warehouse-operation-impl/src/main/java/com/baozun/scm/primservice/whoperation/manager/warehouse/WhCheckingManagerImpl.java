@@ -1240,12 +1240,18 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
             // 添加出库箱明细
             for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
+                Long skuId = skuInvCmd.getSkuId();
+                //获取sku信息
+                WhSkuCommand skuCmd = skuDao.findWhSkuByIdExt(skuId, ouId);
+                if(null == skuCmd){
+                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+                }
                 WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
                 outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
-                outboundboxLine.setSkuCode(lineCmd.getSkuCode());
-                outboundboxLine.setSkuExtCode(lineCmd.getSkuExtCode());
-                outboundboxLine.setSkuBarCode(lineCmd.getSkuBarCode());
-                outboundboxLine.setSkuName(lineCmd.getSkuName());
+                outboundboxLine.setSkuCode(skuCmd.getCode());
+                outboundboxLine.setSkuExtCode(skuCmd.getExtCode());
+                outboundboxLine.setSkuBarCode(skuCmd.getBarCode());
+                outboundboxLine.setSkuName(skuCmd.getName());
                 outboundboxLine.setQty(skuInvCmd.getOnHandQty());
                 outboundboxLine.setCustomerCode(lineCmd.getCustomerCode());
                 outboundboxLine.setCustomerName(lineCmd.getCustomerName());
@@ -1402,13 +1408,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhCheckingByOdoCommand retrieveCheckData(WhCheckingCommand whCheckingCommand) {
         WhCheckingByOdoCommand whCheckingByOdoCommand = new WhCheckingByOdoCommand();
+        // 复核头信息
         List<WhCheckingCommand> checkingList = whCheckingDao.findListByParamExt(whCheckingCommand);
         if (null != checkingList && !checkingList.isEmpty()) {
             whCheckingCommand = checkingList.get(0);
             whCheckingByOdoCommand.setCheckingCommand(whCheckingCommand);
-            // List<WhCheckingLineCommand> whCheckingLineList =
-            // findWhCheckingLineByChecking(whCheckingCommand);
-            // whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
             // 获取复合明细
             whCheckingByOdoCommand = findWhCheckingLineByChecking(whCheckingByOdoCommand);
             // 获取页面显示
@@ -1423,6 +1427,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateCheckOutboundBox(WhCheckingCommand whCheckingCommand) {
         WhChecking checking = new WhChecking();
+        Long userId = whCheckingCommand.getModifiedId();
         String outboundboxCode = whCheckingCommand.getOutboundboxCode();
         checking.setOuterContainerId(whCheckingCommand.getOuterContainerId());
         checking.setFacilityId(whCheckingCommand.getFacilityId());
@@ -1430,16 +1435,20 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         checking.setContainerLatticeNo(whCheckingCommand.getContainerLatticeNo());
         List<WhChecking> checkingList = whCheckingDao.findListByParamWithNoFinish(checking);
         if (null != checkingList && !checkingList.isEmpty()) {
+            // 更新出库箱信息到复核头;
             checking = checkingList.get(0);
             checking.setOutboundboxCode(outboundboxCode);
+            checking.setModifiedId(userId);
             whCheckingDao.update(checking);
             WhCheckingLine whCheckingLine = new WhCheckingLine();
             whCheckingLine.setCheckingId(checking.getId());
             whCheckingLine.setOuId(checking.getOuId());
             List<WhCheckingLine> checkingLineList = whCheckingLineDao.findListByParam(whCheckingLine);
             if (null != checkingLineList && !checkingLineList.isEmpty()) {
+                // 更新出库箱信息到复核明细
                 for (WhCheckingLine line : checkingLineList) {
                     line.setOutboundboxCode(outboundboxCode);
+                    line.setModifiedId(userId);
                     whCheckingLineDao.saveOrUpdateByVersion(line);
                 }
             }
@@ -1454,17 +1463,25 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         String odoCode = whCheckingByOdoCommand.getCheckingLineCommandList().get(0).getOdoCode();
         WhOdo odo = this.whOdoDao.findOdoByCodeAndOuId(odoCode, whCheckingCommand.getOuId());
         if (null != odo) {
+            // 出库单不为空(秒杀订单等模式在未匹配到商品前不显示出库单信息)
             checkingDisplayCommand.setOdoCode(odoCode);
             checkingDisplayCommand.setExtCode(odo.getExtCode());
         }
         if (null != whCheckingCommand.getOutboundboxCode() && null != whCheckingCommand.getBatch()) {
+            // 有出库箱信息
             Long batchBoxCnt = whCheckingDao.findBatchBoxCntByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
             checkingDisplayCommand.setOutboundboxCount(batchBoxCnt);
             Long batchBoxCntCheck = whCheckingDao.findBatchBoxCntCheckByParam(whCheckingCommand.getBatch(), whCheckingCommand.getOuId());
             checkingDisplayCommand.setToBeCheckedOutboundboxCount(batchBoxCntCheck);
             Long boxSkuCnt = whCheckingDao.findBoxSkuCntByBoxAndOuId(whCheckingCommand.getOutboundboxCode(), whCheckingCommand.getOuId());
             checkingDisplayCommand.setBoxSkuCnt(boxSkuCnt);
-        } else {
+        } else if (null != whCheckingCommand.getContainerId() && ("3" == whCheckingCommand.getPickingMode() || "4" == whCheckingCommand.getPickingMode() || "5" == whCheckingCommand.getPickingMode() || "6" == whCheckingCommand.getPickingMode())) {
+            // 秒杀与单品单间
+        }
+
+
+        else {
+            // 无出库箱信息
             checkingDisplayCommand.setOutboundboxCount(0L);
             checkingDisplayCommand.setToBeCheckedOutboundboxCount(0L);
         }
@@ -1482,20 +1499,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         checkingDisplayCommand.setStoreName(whCheckingCommand.getStoreName());
         checkingDisplayCommand.setBatch(whCheckingCommand.getBatch());
         checkingDisplayCommand.setCheckingMode(whCheckingCommand.getCheckingMode());
-        // CheckingDisplayCommand command =
-        // this.whCheckingDao.findCheckingInfoByBatchAndOuId(whCheckingCommand.getBatch(),
-        // whCheckingCommand.getOuId());
-        // checkingDisplayCommand.setOutboundboxCount(command.getOutboundboxCount());
-        // checkingDisplayCommand.setToBeCheckedOutboundboxCount(command.getToBeCheckedOutboundboxCount());
-        // checkingDisplayCommand.setOdoCount(command.getOdoCount());
-        // checkingDisplayCommand.setToBeCheckedOdoCount(command.getToBeCheckedOdoCount());
-        // checkingDisplayCommand.setSkuCode(command.getSkuCode());
-        // checkingDisplayCommand.setSkuName(command.getSkuName());
-
         whCheckingByOdoCommand.setCheckingDisplayCommand(checkingDisplayCommand);
         return whCheckingByOdoCommand;
     }
-
 
 
     /**

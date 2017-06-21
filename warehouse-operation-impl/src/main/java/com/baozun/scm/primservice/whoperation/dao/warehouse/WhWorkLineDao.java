@@ -45,6 +45,8 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
 	@CommonQuery
 	int saveOrUpdateByVersion(WhWorkLine o);
 	
+	int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+	
 	List<WhWorkLineCommand> findWorkLineByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
 	
 	public List<WhWorkLineCommand> findWorkLineByLocationId(@Param("locationId") Long locationId,@Param("ouId") Long ouId,@Param("replenishmentCode") String replenishmentCode);
@@ -60,9 +62,6 @@ public interface WhWorkLineDao extends BaseDao<WhWorkLine,Long>{
     Double getTotalQtyByReplenishmentCode(@Param("replenishmentCode") String replenishmentCode, @Param("ouId") Long ouId, @Param("workCategory") String workCategory);
 
     List<WhWorkLine> findWorkLineByWorkIdOuId(@Param("workId") Long id, @Param("ouId") Long ouId);
-    
-    
-    public void deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
     
     /**
      * 获取需要补充的工作明细

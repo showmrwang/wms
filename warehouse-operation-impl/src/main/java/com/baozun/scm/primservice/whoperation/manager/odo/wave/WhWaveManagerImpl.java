@@ -847,7 +847,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 }
             }
         }
-
     }
     
     /**
@@ -1192,7 +1191,134 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
 
     }
+    
+    /**
+     * 波次中创工作失败，波次剔除(后期可能会和别的方法合并)
+     * @author qiming.liu
+     * @version 2017年6月20日
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId) {
+        Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
+        Long waveId = wave.getId();
+        // 删除补货工作        
+        this.deleteReplenishmentInWave(waveId, ouId);
+        // 删除拣货工作        
+        this.deletePickingInWave(waveId, ouId);
+        // 更新波次状态
+        wave.setStatus(WaveStatus.WAVE_CANCEL);
+        wave.setModifiedId(userId);
+        int updateWaveCount = this.whWaveDao.saveOrUpdateByVersion(wave);
+        if (updateWaveCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
+        // 遍历所有的的出库单
+        // 当出库单为需要释放的时候，则将带移入和库存都回滚，并将和波次的绑定关系释放，置出库单状态为新建；
+        // 否则则将出库单延迟释放：@mender yimin.lu 2017/5/9 不存在延迟取消的出库单
+        for (WhOdo odo : odoList) {
+            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), null, wh, WavePhase.EXECUTED);
+        }
+        // 删除补货任务        
+        ReplenishmentTask taskSearch = new ReplenishmentTask();
+        taskSearch.setOuId(ouId);
+        taskSearch.setWaveId(waveId);
+        List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(taskSearch);
+        if (null != result && result.size() > 0) {
+            for (ReplenishmentTask task : result) {
+                if(null != task.getReplenishmentCode()){
+                    whSkuInventoryAllocatedDao.deleteByReplenishmentCode(task.getReplenishmentCode(), ouId);
+                    whSkuInventoryTobefilledDao.deleteByReplenishmentCode(task.getReplenishmentCode(), ouId);     
+                }
+                int delTaskCount = this.replenishmentTaskDao.deleteByIdExt(task.getId(), task.getOuId());
+                if (delTaskCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                }
+            }
+        }
+    }
+    
+    private void deleteReplenishmentInWave(Long waveId, Long ouId) {
+        WhWave wave = this.whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        WhWork workSearch = new WhWork();
+        workSearch.setWaveCode(wave.getCode());
+        workSearch.setWorkCategory(Constants.WORK_CATEGORY_REPLENISHMENT);
+        workSearch.setOuId(ouId);
+        List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
+        if (workList != null && workList.size() > 0) {
+            for (WhWork work : workList) {
+                int updateWorkCount = this.whWorkDao.deleteByIdExt(work.getId(), work.getOuId());
+                if (updateWorkCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                }
+                List<WhWorkLine> lineList = this.whWorkLineDao.findWorkLineByWorkIdOuId(work.getId(), ouId);
+                if (lineList != null && lineList.size() > 0) {
+                    for (WhWorkLine workLine : lineList) {
+                        int delCount = this.whWorkLineDao.deleteByIdExt(workLine.getId(), workLine.getOuId());
+                        if (delCount <= 0) {
+                            throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                        }
+                    }
+                }
+                WhOperation operation = this.whOperationDao.findOperationByWorkId(work.getId(), ouId);
+                int delOpCount = this.whOperationDao.deleteByIdExt(operation.getId(), operation.getOuId());
+                if (delOpCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                List<WhOperationLine> oplineList = this.whOperationLineDao.findByOperationId(operation.getId(), ouId);
+                if (oplineList != null && oplineList.size() > 0) {
+                    for (WhOperationLine line : oplineList) {
+                        int delCount = this.whOperationLineDao.deleteByIdExt(line.getId(), line.getOuId());
+                        if (delCount <= 0) {
+                            throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    private void deletePickingInWave(Long waveId, Long ouId) {
+        WhWave wave = this.whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+        WhWork workSearch = new WhWork();
+        workSearch.setWaveCode(wave.getCode());
+        workSearch.setWorkCategory(Constants.WORK_CATEGORY_PICKING);
+        workSearch.setOuId(ouId);
+        List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
+        if (workList != null && workList.size() > 0) {
+            for (WhWork work : workList) {
+                int delWorkCount = this.whWorkDao.deleteByIdExt(work.getId(), work.getOuId());
+                if (delWorkCount <= 0) {
+                    throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                }
+                List<WhWorkLine> lineList = this.whWorkLineDao.findWorkLineByWorkIdOuId(work.getId(), ouId);
+                if (lineList != null && lineList.size() > 0) {
+                    for (WhWorkLine workLine : lineList) {
+                        int delCount = this.whWorkLineDao.deleteByIdExt(workLine.getId(), workLine.getOuId());
+                        if (delCount <= 0) {
+                            throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                        }
+                    }
+                }
+                WhOperation operation = this.whOperationDao.findOperationByWorkId(work.getId(), ouId);
+                operation.setStatus(OperationStatus.CANCEL);
+                int updateOpCount = this.whOperationDao.saveOrUpdateByVersion(operation);
+                if (updateOpCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+                List<WhOperationLine> oplineList = this.whOperationLineDao.findByOperationId(operation.getId(), ouId);
+                if (oplineList != null && oplineList.size() > 0) {
+                    for (WhOperationLine line : oplineList) {
+                        int delCount = this.whOperationLineDao.deleteByIdExt(line.getId(), line.getOuId());
+                        if (delCount <= 0) {
+                            throw new BusinessException(ErrorCodes.DELETE_CODE_ERROR);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhWave> findWaveToBeCreated(Long ouId) {
@@ -1449,5 +1575,5 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         WhWaveMasterPrintCondition c = whWaveMasterDao.findPrintConditionByWaveMasterId(wave.getWaveMasterId(), printType, ouId);
         return c;
     }
-
+    
 }

@@ -279,6 +279,16 @@ public interface WhWaveManager extends BaseManager {
      * @param userId
      */
     public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
+    
+    /**
+     * [业务方法]波次中创工作失败，波次剔除
+     * 
+     * @param wave
+     * @param odoList
+     * @param ouId
+     * @param userId
+     */
+    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
 
     /**
      * [业务方法]查找延迟创建的波次

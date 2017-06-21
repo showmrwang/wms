@@ -42,6 +42,8 @@ public interface WhOperationDao extends BaseDao<WhOperation, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhOperation o);
+    
+    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * 获取作业头信息

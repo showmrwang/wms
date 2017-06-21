@@ -2467,8 +2467,8 @@
 			sum(odoLine.line_amt) as amt
 		from t_wh_odo_line odoLine
 			inner join t_wh_odo odo on odoLine.odo_id=odo.id
-			left join t_wh_odo_address address on address.odo_id=odo.id
-			left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id
+			inner join t_wh_odo_address address on address.odo_id=odo.id
+			inner join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id=odo.id
 			<include refid="whOdoDynamicWherePageExt" />
     </select>
     

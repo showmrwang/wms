@@ -151,6 +151,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     /** 待扫描属性 */
     private String attrIndex;
     private Double odoLineqty;
+    /** 出库单ext code*/
+    private String extCode;
 
     public Double getOdoLineqty() {
         return odoLineqty;
@@ -646,6 +648,14 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
+    }
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
     }
 
 }

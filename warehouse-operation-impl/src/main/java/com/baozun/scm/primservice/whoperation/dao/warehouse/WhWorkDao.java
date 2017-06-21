@@ -42,6 +42,8 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhWork o);
+    
+    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
     * 根据code和ouId查找工作头信息

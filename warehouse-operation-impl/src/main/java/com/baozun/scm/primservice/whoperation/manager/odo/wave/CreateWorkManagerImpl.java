@@ -1438,9 +1438,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 原始库位
                 whWorkLineCommand.setFromLocationId(whSkuInventoryTobefilled.getLocationId());
                 // 原始库位外部容器
-                whWorkLineCommand.setFromOuterContainerId(whSkuInventoryTobefilled.getOuterContainerId());
+                whWorkLineCommand.setFromOuterContainerId(null);
                 // 原始库位内部容器
-                whWorkLineCommand.setFromInsideContainerId(whSkuInventoryTobefilled.getInsideContainerId());
+                whWorkLineCommand.setFromInsideContainerId(null);
                 // 使用出库箱，耗材ID
                 whWorkLineCommand.setUseOutboundboxId(skuId);
                 // 使用出库箱编码
