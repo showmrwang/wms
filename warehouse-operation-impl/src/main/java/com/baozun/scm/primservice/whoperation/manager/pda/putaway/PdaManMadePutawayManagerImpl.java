@@ -2170,8 +2170,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             whSkuInventoryManager.manMadePutaway(command.getIsOuterContainer(),  scanSkuQty, invSkuCmd, outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,
                     command.getUserId(), logId);
             // //清楚缓存
-            // pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(outerCommand,
-            // insideCommand,false,false,logId,skuCmd.getId());
+//             pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(true,contianerId,outerCommand,insideCommand,false,logId,skuCmd.getId());
         }
         if (csRcmd.isNeedTipContainer()) {
             command.setIsNeedScanContainer(true);
@@ -2179,7 +2178,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             whSkuInventoryManager.manMadePutaway(command.getIsOuterContainer(),  scanSkuQty, invSkuCmd, outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,
                     command.getUserId(), logId);
             // 清楚缓存
-            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(contianerId,outerCommand, insideCommand, false, logId, skuCmd.getId());
+            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(false,contianerId,outerCommand, insideCommand, false, logId, skuCmd.getId());
         }
         if (csRcmd.isPutaway()) {
             command.setPutway(true);
@@ -2187,7 +2186,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             whSkuInventoryManager.manMadePutaway(command.getIsOuterContainer(),  scanSkuQty, invSkuCmd, outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,
                     command.getUserId(), logId);
             // 清楚缓存
-            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(contianerId,outerCommand, insideCommand, true, logId, skuCmd.getId());
+            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(false,contianerId,outerCommand, insideCommand, true, logId, skuCmd.getId());
         }
     }
 
@@ -2296,7 +2295,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 whSkuInventoryManager.manMadePutaway(command.getIsOuterContainer(),  scanSkuQty, invSkuCmd, outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,
                         command.getUserId(), logId);
                 // 清楚缓存
-                pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(containerId,outerCommand, insideCommand,  false, logId, skuCmd.getId());
+                pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(false,containerId,outerCommand, insideCommand,  false, logId, skuCmd.getId());
             }
             if (csRcmd.isPutaway()) {
                 command.setPutway(true);
@@ -2304,7 +2303,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
                 whSkuInventoryManager.manMadePutaway(command.getIsOuterContainer(),  scanSkuQty, invSkuCmd, outerCommand, insideCommand, locationId, functionId, warehouse, command.getPutawayPatternDetailType(), ouId,
                         command.getUserId(), logId);
                 // 清楚缓存
-                pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(containerId,outerCommand, insideCommand,  true, logId, skuCmd.getId());
+                pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(false,containerId,outerCommand, insideCommand,  true, logId, skuCmd.getId());
             }
         } else {
             command.setIsScanSkuSnDefect(true); // 需要扫描商品的sn/残次信息
@@ -2561,6 +2560,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             // 直接上架
             whSkuInventoryManager.manMadePutaway(mPaCmd.getIsOuterContainer(), skuCmd.getScanSkuQty(), invSkuCmd, outCommand, insideCommand, locationId, functionId, warehouse, mPaCmd.getPutawayPatternDetailType(), ouId,
                     mPaCmd.getUserId(), logId);
+            // 清楚缓存
+            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(true,containerId,outCommand, insideCommand, false, logId, skuId);
         }
         if (csRcmd.isNeedTipContainer()) { //
             mPaCmd.setIsNeedScanContainer(true);
@@ -2568,7 +2569,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             whSkuInventoryManager.manMadePutaway(mPaCmd.getIsOuterContainer(),  skuCmd.getScanSkuQty(), invSkuCmd, outCommand, insideCommand, locationId, functionId, warehouse, mPaCmd.getPutawayPatternDetailType(), ouId,
                     mPaCmd.getUserId(), logId);
             // 清楚缓存
-            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(containerId,outCommand, insideCommand, false, logId, skuId);
+            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(false,containerId,outCommand, insideCommand, false, logId, skuId);
         }
         if (csRcmd.isPutaway()) { // 所有的已经扫描完毕
             mPaCmd.setPutway(true);
@@ -2576,7 +2577,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             whSkuInventoryManager.manMadePutaway(mPaCmd.getIsOuterContainer(),  skuCmd.getScanSkuQty(), invSkuCmd, outCommand, insideCommand, locationId, functionId, warehouse, mPaCmd.getPutawayPatternDetailType(), ouId,
                     mPaCmd.getUserId(), logId);
             // 清楚缓存
-            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(containerId,outCommand, insideCommand, true, logId, skuId);
+            pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayRemoveAllCache(false,containerId,outCommand, insideCommand, true, logId, skuId);
         }
         return mPaCmd;
     }

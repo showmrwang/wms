@@ -4509,6 +4509,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setInboundTime(new Date());
             inv.setIsLocked(false);
             inv.setOnHandQty(scanSkuQty);
+            inv.setLastModifyTime(new Date());
             inv.setId(null);
             try {
                 uuid = SkuInventoryUuid.invUuid(inv);
