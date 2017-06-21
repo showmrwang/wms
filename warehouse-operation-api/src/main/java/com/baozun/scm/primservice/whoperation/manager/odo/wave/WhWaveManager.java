@@ -288,7 +288,7 @@ public interface WhWaveManager extends BaseManager {
      * @param ouId
      * @param userId
      */
-    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
+    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String reason);
 
     /**
      * [业务方法]查找延迟创建的波次
