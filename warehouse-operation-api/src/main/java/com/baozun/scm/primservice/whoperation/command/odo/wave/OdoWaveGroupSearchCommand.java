@@ -73,6 +73,8 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     private boolean needStore;
     private boolean needDeliverGoodsTime;
     private String pageOption;
+
+    private String waveCode;
     // ---------------------------
     private Long ouId;
     private Long userId;
@@ -122,6 +124,14 @@ public class OdoWaveGroupSearchCommand extends BaseCommand {
     private List<Long> storeList;
 
 
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
+    }
 
     public List<Long> getCustomerList() {
         return customerList;

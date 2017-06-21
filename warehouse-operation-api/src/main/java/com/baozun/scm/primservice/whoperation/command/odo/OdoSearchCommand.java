@@ -72,6 +72,8 @@ public class OdoSearchCommand extends BaseCommand {
     private boolean needDeliverGoodsTime;
     private String pageOption;
 
+    private String waveCode;// 波次号
+
     private Long ouId;
     private Long userId;
     private Long groupCustomerId;
@@ -107,6 +109,14 @@ public class OdoSearchCommand extends BaseCommand {
     private Integer limit;
     private String sqlCondition;
 
+
+    public String getWaveCode() {
+        return waveCode;
+    }
+
+    public void setWaveCode(String waveCode) {
+        this.waveCode = waveCode;
+    }
 
     public String getSqlCondition() {
         return sqlCondition;
