@@ -256,6 +256,8 @@ public class GeneralRcvdManagerImpl extends BaseManagerImpl implements GeneralRc
             for (WhSkuInventory inv : saveInvList) {
                 WhSkuInventory skuInv = this.whSkuInventoryDao.findWhSkuInventoryByUuid(inv.getOuId(), inv.getUuid());
                 if (null == skuInv) {
+                    // @mender yimin.lu 2017/6/21 必填
+                    inv.setLastModifyTime(new Date());
                     this.whSkuInventoryDao.insert(inv);
                     this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.RECEIVING);
                 } else {

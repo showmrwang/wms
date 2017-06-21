@@ -3,7 +3,6 @@ package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreateWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -87,9 +87,31 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
             }
             whWaveManager.updateWaveByWhWave(whWave); 
         } catch (Exception e) {
-            WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
-            List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
-            whWaveManager.eliminateWaveByWork(wave, odoList, ouId, userId);
+            if(e instanceof BusinessException){
+                String reason = "";
+                switch(((BusinessException) e).getErrorCode()){
+                    case ErrorCodes.ALLOCATED_TOBEFILLED_QTY_ERROR:
+                        reason = Constants.CREATE_WORK_ALLOCATED_TOBEFILLED_QTY_ERROR;
+                        break;
+                    case ErrorCodes.INVENTORY_ODOOUTBOUNDBOX_QTY_ERROR:
+                        reason = Constants.CREATE_WORK_INVENTORY_ODOOUTBOUNDBOX_QTY_ERROR;
+                        break;
+                    case ErrorCodes.DISTRIBUTION_PATTERN_RULE_IS_NULL:
+                        reason = Constants.CREATE_WORK_DISTRIBUTION_PATTERN_RULE_IS_NULL;
+                        break;
+                    case ErrorCodes.WORK_LINE_QTY_IS_ERROR:
+                        reason = Constants.CREATE_WORK_WORK_LINE_QTY_IS_ERROR;
+                        break;
+                    case ErrorCodes.OPERATION_LINE_QTY_IS_ERROR:
+                        reason = Constants.CREATE_WORK_OPERATION_LINE_QTY_IS_ERROR;
+                        break;
+                    default:
+                        reason = null;
+                }
+                WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
+                List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
+                whWaveManager.eliminateWaveByWork(wave, odoList, ouId, userId, reason);
+            }
             log.error("CreateWorkManagerProxyImpl createWorkInWave error" + e);
         }
     }

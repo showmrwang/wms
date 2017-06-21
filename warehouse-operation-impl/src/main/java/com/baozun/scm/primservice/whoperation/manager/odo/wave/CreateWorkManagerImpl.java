@@ -191,8 +191,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 判断分配量与待移入量是否相等
                 Boolean isAllocatedAndTobefilledQty = this.isAllocatedAndTobefilledQty(skuInventoryAllocatedCommand);
                 if (false == isAllocatedAndTobefilledQty) {
-                    log.error("qty != toQty", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
-                    throw new BusinessException(ErrorCodes.QTY_TOQTY_ERROR);
+                    log.error("allocatedQty != tobefilledQty, allocatedQty:{}, tobefilledQty:{}", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
+                    throw new BusinessException(ErrorCodes.ALLOCATED_TOBEFILLED_QTY_ERROR);
                 }
                 // 创建补货工作明细
                 this.saveReplenishmentWorkLine(replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
@@ -205,7 +205,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 校验工作明细数量是否正确
             if (rWorkLineTotal != whSkuInventoryAllocatedCommandLst.size()) {
                 log.error("rWorkLineTotal is error", rWorkLineTotal);
-                throw new BusinessException(ErrorCodes.WORK_LINE_TOTAL_ERROR);
+                throw new BusinessException(ErrorCodes.WORK_LINE_QTY_IS_ERROR);
             }
             // 更新补货工作头信息
             this.updateReplenishmentWork(replenishmentRuleCommand.getWaveId(), replenishmentWorkCode, siaCommand);
@@ -218,24 +218,17 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 校验作业明细
                 if (replenishmentOperationLineCount != rWorkLineTotal) {
                     log.error("replenishmentOperationLineCount is error", rWorkLineTotal);
-                    throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+                    throw new BusinessException(ErrorCodes.OPERATION_LINE_QTY_IS_ERROR);
                 }
             } else {
-                // 计算目标库位容器
+                // 计算目标库位容量
                 List<WhSkuInventoryAllocatedCommand> skuInventoryAllocatedCommandLst = locationReplenishmentCalculation(whSkuInventoryAllocatedCommandLst, replenishmentRuleCommand.getTaskOuId());
-                if(null == skuInventoryAllocatedCommandLst){
-                    // 获取作业头信息
-                    WhOperationCommand WhOperationCommand = this.operationDao.findOperationByCode(replenishmentOperationCode, replenishmentRuleCommand.getTaskOuId());
-                    operationDao.delete(WhOperationCommand.getId());
-                    log.error("skuInventoryAllocatedCommandLst is error", skuInventoryAllocatedCommandLst);  
-                    throw new BusinessException(ErrorCodes.ALLOCATED_LIST_IS_NULL);
-                }
                 if (null != skuInventoryAllocatedCommandLst && 0 < skuInventoryAllocatedCommandLst.size()) {
                     // 基于目标库位容器及工作明细生成作业明细
                     int replenishmentOperationLineCount = this.saveReplenishmentOperationLine(replenishmentWorkCode, replenishmentOperationCode, replenishmentRuleCommand.getTaskOuId(), skuInventoryAllocatedCommandLst);
                     if (replenishmentOperationLineCount != skuInventoryAllocatedCommandLst.size()) {
                         log.error("replenishmentOperationLineCount is error", skuInventoryAllocatedCommandLst.size());
-                        throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+                        throw new BusinessException(ErrorCodes.OPERATION_LINE_QTY_IS_ERROR);
                     }
                 }
             }
@@ -323,7 +316,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 如果不满足，则抛出异常
                 if (0 != onHandQty.compareTo(odoLineIdAndQty)) {
                     log.error("onHandQty != odoLineIdAndQty", onHandQty, odoLineIdAndQty);
-                    throw new BusinessException(ErrorCodes.QTY_ERROR);
+                    throw new BusinessException(ErrorCodes.INVENTORY_ODOOUTBOUNDBOX_QTY_ERROR);
                 }
                 // 分配数量
                 Double odoOutBoundBoxQty = whOdoOutBoundBoxCommand.getQty();
@@ -442,8 +435,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 判断分配量与待移入量是否相等
                 Boolean isAllocatedAndTobefilledQty = this.isAllocatedAndTobefilledQty(skuInventoryAllocatedCommand);
                 if (false == isAllocatedAndTobefilledQty) {
-                    log.error("qty != toQty, qty:{}, toQty:{}", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
-                    throw new BusinessException(ErrorCodes.QTY_TOQTY_ERROR);
+                    log.error("allocatedQty != tobefilledQty, allocatedQty:{}, tobefilledQty:{}", skuInventoryAllocatedCommand.getQty(), skuInventoryAllocatedCommand.getToQty());
+                    throw new BusinessException(ErrorCodes.ALLOCATED_TOBEFILLED_QTY_ERROR);
                 }
                 // 创建补货工作明细
                 this.saveReplenishmentWorkLine(replenishmentWorkCode, userId, skuInventoryAllocatedCommand);
@@ -454,7 +447,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 校验工作明细数量是否正确
             if (rWorkLineTotal != whSkuInventoryAllocatedCommandLst.size()) {
                 log.error("rWorkLineTotal is error, rWorkLineTotal:{}", rWorkLineTotal);
-                throw new BusinessException(ErrorCodes.WORK_LINE_TOTAL_ERROR);
+                throw new BusinessException(ErrorCodes.WORK_LINE_QTY_IS_ERROR);
             }
             // 更新补货工作头信息
             this.updateOutReplenishmentWork(replenishmentWorkCode, siaCommand);
@@ -465,7 +458,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 校验作业明细
             if (replenishmentOperationLineCount != rWorkLineTotal) {
                 log.error("replenishmentOperationLineCount is error, replenishmentOperationLineCount:{}", replenishmentOperationLineCount);
-                throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+                throw new BusinessException(ErrorCodes.OPERATION_LINE_QTY_IS_ERROR);
             }
             // 判断补货单号对应库存是否都创完工作
             for (String replenishmentCode : replenishmentCodes) {
@@ -1501,7 +1494,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 获取工作明细信息列表
         List<WhWorkLineCommand> whWorkLineCommandList = this.workLineDao.findWorkLineByWorkId(whWorkCommand.getId(), odoOutBoundBox.getOuId());
         if (null == whWorkLineCommandList) {
-            throw new BusinessException(ErrorCodes.WORK_LINE_IS_NULL);
+            throw new BusinessException(ErrorCodes.WORK_LINE_QTY_IS_ERROR);
         }
         // 查询波次主档信息
         WhWaveMaster whWaveMaster = waveMasterDao.findByIdExt(whWave.getWaveMasterId(), whWave.getOuId());
@@ -2578,7 +2571,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 int replenishmentOperationLineCount = this.supplementReplenishmentOperationLine(workLineCommandList);
                 if (replenishmentOperationLineCount != workLineCommandList.size()) {
                     log.error("replenishmentOperationLineCount is error", workLineCommandList.size());
-                    throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+                    throw new BusinessException(ErrorCodes.OPERATION_LINE_QTY_IS_ERROR);
                 }
             }    
         }
@@ -2598,7 +2591,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         WhWorkLineCommand workLineCommand = new WhWorkLineCommand();
         workLineCommand = whWorkLineCommandList.get(0);
         if (null == workLineCommand || null == workLineCommand.getToLocationId() || null == workLineCommand.getOuId()) {
-            throw new BusinessException(ErrorCodes.OPERATION_LINE_TOTAL_ERROR);
+            throw new BusinessException(ErrorCodes.OPERATION_LINE_QTY_IS_ERROR);
         }
         Long locationId = workLineCommand.getToLocationId();
         Long ouId = workLineCommand.getOuId();

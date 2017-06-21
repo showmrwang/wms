@@ -25,8 +25,8 @@ public class WhSkuManagerImpl extends BaseManagerImpl implements WhSkuManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhSkuCommand getSkuBybarCode(String barcode, Long ouId) {
-        WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByBarcodeExt(barcode, ouId);
+    public WhSkuCommand getSkuBybarCode(String barcode, String customerCode, Long ouId) {
+        WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByBarcodeExt(barcode, customerCode, ouId);
         return whSkuCommand;
     }
 

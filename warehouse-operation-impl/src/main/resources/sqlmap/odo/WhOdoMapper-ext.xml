@@ -281,6 +281,9 @@
 			<if test="odoCode!=null and odoCode!=''">
 				and odo.odo_code like #{odoCode}
 			</if>
+			<if test="waveCode!=null and waveCode!=''">
+				and odo.wave_code like #{waveCode}
+			</if>
 			<if test="extCode!=null and extCode!=''">
 				and odo.ext_code LIKE #{extCode}
 			</if>

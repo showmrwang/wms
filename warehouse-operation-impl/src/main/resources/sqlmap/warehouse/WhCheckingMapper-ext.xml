@@ -1275,9 +1275,11 @@
 			count(distinct line.odo_id)
 		FROM
 			t_wh_checking checking left join t_wh_checking_line line on checking.id = line.checking_id
+			left join t_wh_odo odo on odo.id = line.odo_id
 		WHERE
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
+			and odo.odo_status != 60
     </select>
 
     <select id="findBatchOdoCntCheckByParam" resultType="java.lang.Long" flushCache="false">
@@ -1315,5 +1317,19 @@
 		AND checking.ou_id = #{ouId}
 		AND checking.`status` != 10
     </select>
+
+    <select id="findContainerSkuCntByContainerAndOuId" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			sum(line.qty) - sum(line.checking_qty)
+		FROM
+			t_wh_checking checking
+		LEFT JOIN t_wh_checking_line line ON checking.id = line.checking_id
+		WHERE
+			checking.container_id = #{containerId}
+		AND checking.ou_id = #{ouId}
+		AND checking.`status` != 10
+    </select>
+    
+    
 
 </mapper>

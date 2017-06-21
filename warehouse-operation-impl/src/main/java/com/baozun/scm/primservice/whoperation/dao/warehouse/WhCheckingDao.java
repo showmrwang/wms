@@ -244,4 +244,12 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      * @return
      */
     Long findBoxSkuCntByBoxAndOuId(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 通过周转箱id查找容器商品数量
+     * @param containerId
+     * @param ouId
+     * @return
+     */
+    Long findContainerSkuCntByContainerAndOuId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
 }

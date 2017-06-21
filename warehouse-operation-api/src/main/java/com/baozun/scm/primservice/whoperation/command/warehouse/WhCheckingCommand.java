@@ -128,6 +128,8 @@ public class WhCheckingCommand extends BaseCommand {
     private Long skuCnt;
     /** 当前容器待扫描商品总件数*/
     private Long boxSkuCnt;
+    /** 容器中商品数量*/
+    private Long containerSkuCnt;
 
 
 
@@ -681,6 +683,14 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setBoxSkuCnt(Long boxSkuCnt) {
         this.boxSkuCnt = boxSkuCnt;
+    }
+
+    public Long getContainerSkuCnt() {
+        return containerSkuCnt;
+    }
+
+    public void setContainerSkuCnt(Long containerSkuCnt) {
+        this.containerSkuCnt = containerSkuCnt;
     }
 
 }
