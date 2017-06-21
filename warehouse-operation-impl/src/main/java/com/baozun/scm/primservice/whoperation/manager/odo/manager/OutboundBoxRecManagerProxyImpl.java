@@ -1013,7 +1013,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 创建批次号
                 String batchNo = outboundBoxRecManager.getBatchNo(ouId);
                 // 按照出库单涉及的区域将出库单分组<areaIdListStr, List<Odo>>
-                Map<List<Long>, List<OdoCommand>> allocateAreaOdoListMap = this.odoGroupByAllocateArea(batchOdoList, ouId, logId);
+                Map<List<Long>, List<OdoCommand>> allocateAreaOdoListMap = this.odoGroupByAllocateAreaNew(batchOdoList, ouId, logId);
                 // 按区域分组后的areaId列表集合，为了查询子集用
                 List<List<Long>> allocateAreaIdListCollection = new ArrayList<>(allocateAreaOdoListMap.keySet());
                 // 将区域列表按照数量降序排序
@@ -1186,7 +1186,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 创建批次号
                 String batchNo = outboundBoxRecManager.getBatchNo(ouId);
                 // 按照出库单涉及的区域将出库单分组<areaIdListStr, List<Odo>>
-                Map<List<Long>, List<OdoCommand>> allocateAreaOdoListMap = this.odoGroupByAllocateArea(batchOdoList, ouId, logId);
+                Map<List<Long>, List<OdoCommand>> allocateAreaOdoListMap = this.odoGroupByAllocateAreaNew(batchOdoList, ouId, logId);
                 // 按区域分组后的areaId列表集合，为了查询子集用
                 List<List<Long>> allocateAreaIdListCollection = new ArrayList<>(allocateAreaOdoListMap.keySet());
                 // 将区域列表按照数量降序排序
@@ -2646,6 +2646,78 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                     }
                     for (WhSkuInventoryCommand skuInv : skuInvList) {
                         odoAllocateAreaIdSet.add(skuInv.getLocationId());
+                    }
+                }
+            } catch (BusinessException be) {
+                log.error("odoLine occupy skuInventory error, exception is:[{}], logId is:[{}]", be, logId);
+                // 踢出波次
+                Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(odoCommand.getWhWaveCommand().getId(), odoCommand.getId(), Constants.CREATE_OUTBOUND_CARTON_OCC_INVENTORY_ERROR, warehouse, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
+                distributeModeOdoIterator.remove();
+                continue;
+            }
+            // 出库单涉及的分配区域列表
+            List<Long> allocateAreaIdList = new ArrayList<>(odoAllocateAreaIdSet);
+            // 出库单记录库存列表
+            odoCommand.setSkuInventoryCommandList(skuInventoryList);
+            // 将区域ID排序
+            Collections.sort(allocateAreaIdList);
+            // 出库单记录涉及分配区域列表
+            odoCommand.setAllocateAreaIdList(allocateAreaIdList);
+            // 涉及相同区域的出库单列表
+            List<OdoCommand> areaGroupOdoList = allocateAreaOdoListMap.get(allocateAreaIdList);
+            if (null == areaGroupOdoList) {
+                areaGroupOdoList = new ArrayList<>();
+                allocateAreaOdoListMap.put(allocateAreaIdList, areaGroupOdoList);
+            }
+            areaGroupOdoList.add(odoCommand);
+        }// end-for 同一批次下的出库单
+        return allocateAreaOdoListMap;
+    }
+    
+    
+    /**
+     * 按照分配区域将拣货模式分组
+     *
+     * @param distributeModeOdoList 同一配货模式下的出库单集合
+     * @param ouId 仓库组织ID
+     * @param logId 日志ID
+     * @return Map<List<areaId>, List<OdoCommand>> 涉及相同区域的出库单集合
+     */
+    private Map<List<Long>, List<OdoCommand>> odoGroupByAllocateAreaNew(List<OdoCommand> distributeModeOdoList, Long ouId, String logId) {
+        // 记录哪些出库单涉及相同的区域集合
+        Map<List<Long>, List<OdoCommand>> allocateAreaOdoListMap = new HashMap<>();
+        // 分别统计每个出库单的区域
+        Iterator<OdoCommand> distributeModeOdoIterator = distributeModeOdoList.iterator();
+        while (distributeModeOdoIterator.hasNext()) {
+            OdoCommand odoCommand = distributeModeOdoIterator.next();
+            // 出库单涉及的区域ID集合
+            Set<Long> odoAllocateAreaIdSet = new HashSet<>();
+            // 根据明细ID查询库存表对应的占用的库存记录，获得分配区域
+            List<OdoLineCommand> odoLineCommandList = odoLineManager.findOdoLineCommandListByOdoId(odoCommand.getId(), odoCommand.getOuId());
+            // 获取出库单的库存记录
+            List<WhSkuInventoryCommand> skuInventoryList = outboundBoxRecManager.findListByOccupationCodeAndAllocateArea(odoCommand.getOdoCode(), ouId);
+            // 出库单明细占用的库存记录<odoLineId, List<skuInv>>
+            Map<Long, List<WhSkuInventoryCommand>> odoLineIdSkuInvMap = new HashMap<>();
+            for (WhSkuInventoryCommand skuInventory : skuInventoryList) {
+                // 库存占用明细ID就是出库单明细ID
+                List<WhSkuInventoryCommand> skuInvList = odoLineIdSkuInvMap.get(skuInventory.getOccupationLineId());
+                if (null == skuInvList) {
+                    skuInvList = new ArrayList<>();
+                    odoLineIdSkuInvMap.put(skuInventory.getOccupationLineId(), skuInvList);
+                }
+                skuInvList.add(skuInventory);
+            }
+            try {
+                // 封装该出库单涉及的分配区域
+                for (OdoLineCommand odoLineCommand : odoLineCommandList) {
+                    List<WhSkuInventoryCommand> skuInvList = odoLineIdSkuInvMap.get(odoLineCommand.getId());
+                    if (null == skuInvList || skuInvList.isEmpty()) {
+                        // 出库单明细不可能没有占用的库存
+                        throw new BusinessException("数据异常");
+                    }
+                    for (WhSkuInventoryCommand skuInv : skuInvList) {
+                        odoAllocateAreaIdSet.add(skuInv.getAllocateAreaId());
                     }
                 }
             } catch (BusinessException be) {
