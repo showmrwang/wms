@@ -352,6 +352,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             total_grid_num = 1
             and ou_id = #{ouId}
             and one_level_type = "BOX_TYPE"
+            <![CDATA[
+            and category_code <> "SYS_BOX_TYPE"
+    		]]>
             and lifecycle = 1
             and id in (
                 SELECT
