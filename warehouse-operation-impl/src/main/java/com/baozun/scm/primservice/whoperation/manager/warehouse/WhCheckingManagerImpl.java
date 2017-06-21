@@ -1476,7 +1476,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             checkingDisplayCommand.setToBeCheckedOutboundboxCount(batchBoxCntCheck);
             Long boxSkuCnt = whCheckingDao.findBoxSkuCntByBoxAndOuId(whCheckingCommand.getOutboundboxCode(), ouId);
             checkingDisplayCommand.setBoxSkuCnt(boxSkuCnt);
-        } else if (null != whCheckingCommand.getContainerId() && ("1" == whCheckingCommand.getPickingMode() || "2" == whCheckingCommand.getPickingMode())) {
+        } else if (null != whCheckingCommand.getContainerId() && ("1".equals(whCheckingCommand.getPickingMode()) || "2".equals(whCheckingCommand.getPickingMode()))) {
             // 周转箱复核且是普通摘果 计算容器中商品数量与订单待复核商品数量 只要有一个数量为0就自动复核
             Long containerId = whCheckingCommand.getContainerId();
             Long containerSkuCnt = whCheckingDao.findContainerSkuCntByContainerAndOuId(containerId, ouId);
