@@ -94,7 +94,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			-- 工作类型为 "拣货/补货"
 			and workType.work_category = #{category}
 			-- 工作状态为 "新建/部分完成"
-			and work.status in (1)
+			and work.status in (1, 9)
 			-- 查找作业
 			and work.id = operation.work_id
 			and operation.status = 1
@@ -130,7 +130,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and workAreaType.work_type_id = workType.id
 				and workType.code = work.work_type
 				and workType.work_category = work.work_category
-				and work.status in (1)
+				and work.status in (1, 9)
 				and work.id = operation.work_id
 				and loc.work_area_id  = area.id
 				
@@ -195,7 +195,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and workAreaType.work_type_id = workType.id
 				and workType.code = work.work_type
 				and workType.work_category = work.work_category
-				and work.status in (1)
+				and work.status in (1, 9)
 				and work.id = operation.work_id
 				and loc.work_area_id  = area.id
 				
