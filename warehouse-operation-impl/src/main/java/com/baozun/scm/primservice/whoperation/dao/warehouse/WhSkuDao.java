@@ -66,11 +66,12 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
      * 根据条码获取商品信息
      * 
      * @author lichuan
-     * @param id
+     * @param barcode
+     * @param customerCode
      * @param ouId
      * @return
      */
-    WhSkuCommand findWhSkuByBarcodeExt(@Param("barcode") String barcode, @Param("ouId") Long ouId);
+    WhSkuCommand findWhSkuByBarcodeExt(@Param("barcode") String barcode, @Param("customerCode") String customerCode, @Param("ouId") Long ouId);
 
     /**
      * 根据商品id和组织id获取商品所有相关属性

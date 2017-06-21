@@ -1241,9 +1241,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 添加出库箱明细
             for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
                 Long skuId = skuInvCmd.getSkuId();
-                //获取sku信息
+                // 获取sku信息
                 WhSkuCommand skuCmd = skuDao.findWhSkuByIdExt(skuId, ouId);
-                if(null == skuCmd){
+                if (null == skuCmd) {
                     throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                 }
                 WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
@@ -1301,7 +1301,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Double sum = 0.0;
         for (WhCheckingLineCommand whCheckingLineCommand : checkingLineList) {
             Double actualWeight = 0.0;
-            WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), ouId);
+            WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), whCheckingLineCommand.getCustomerCode(), ouId);
             actualWeight = weightCalculator.calculateStuffWeight(whSkuCommand.getWeight()) * whCheckingLineCommand.getCheckingQty();
             sum += actualWeight;
 

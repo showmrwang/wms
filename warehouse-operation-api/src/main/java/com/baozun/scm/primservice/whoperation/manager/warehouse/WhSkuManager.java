@@ -11,10 +11,11 @@ public interface WhSkuManager extends BaseManager {
      * 
      * @author qiming.liu
      * @param barcode
+     * @param customerCode
      * @param ouId
      * @return
      */
-    WhSkuCommand getSkuBybarCode(String barcode, Long ouId);
+    WhSkuCommand getSkuBybarCode(String barcode, String customerCode, Long ouId);
 
     WhSku getskuById(Long skuId, Long ouId);
 
