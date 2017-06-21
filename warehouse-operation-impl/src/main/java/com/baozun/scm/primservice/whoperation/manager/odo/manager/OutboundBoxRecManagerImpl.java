@@ -390,6 +390,26 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
 
         return allSkuInvList;
     }
+    
+    /**
+     * 根据占用码查询库存和分配区域
+     *
+     * @author kaifei.zhang
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSkuInventoryCommand> findListByOccupationCodeAndAllocateArea(String occupationCode, Long ouId) {
+        List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findListByOccupationCodeAndAllocateArea(occupationCode, ouId);
+        List<WhSkuInventoryCommand> skuInvToBeFillList = whSkuInventoryTobefilledDao.findListByOccupationCodeAndAllocateArea(occupationCode, ouId);
+        List<WhSkuInventoryCommand> allSkuInvList = new ArrayList<>();
+        allSkuInvList.addAll(skuInvList);
+        allSkuInvList.addAll(skuInvToBeFillList);
+
+        return allSkuInvList;
+    }
 
     /**
      * 根据外部容器查询库存

@@ -126,6 +126,15 @@ public interface WhSkuInventoryTobefilledDao extends BaseDao<WhSkuInventoryTobef
      */
     public List<WhSkuInventoryCommand> findListByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
 
+    /**
+     *根据占用码查询库存和分配区域
+     *
+     * @author kaifei.zhang
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCodeAndAllocateArea(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
 
     /**
      *根据占用码查询库存

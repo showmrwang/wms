@@ -81,6 +81,16 @@ public interface OutboundBoxRecManager extends BaseManager {
      * @return
      */
     public List<WhSkuInventoryCommand> findListByOccupationCode(String occupationCode, Long ouId);
+    
+    /**
+     * 根据占用码查询库存和分配区域
+     *
+     * @author kaifei.zhang
+     * @param occupationCode
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findListByOccupationCodeAndAllocateArea(String occupationCode, Long ouId);
 
     /**
      * 根据外部容器查询库存

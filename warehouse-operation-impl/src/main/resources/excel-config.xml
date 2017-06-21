@@ -83,7 +83,7 @@
 	<field name="originalOdoCode" title="对应原始出库单CODE"/>
 </excel>
 <excel id="whOdoAddress" class="com.baozun.scm.primservice.whoperation.command.odo.OdoAddressCommand" sheetname="出库单地址列表" defaultColumnWidth="5000" enableStyle="true">
-	<field name="odoExtCode" title="出库单外接编码" isNull="false" nullErrorCode="error.excel.isNull"/>
+	<field name="odoExtCode" title="外部对接编码" isNull="false" nullErrorCode="error.excel.isNull"/>
 	<field name="account" title="购买人平台账号"/>
 	<field name="distributionTargetName" title="配送对象姓名" isNull="false" nullErrorCode="error.excel.isNull"/>
 	<field name="distributionTargetMobilePhone" title="配送对象手机"/>
@@ -109,7 +109,7 @@
 	<field name="consigneeTargetZip" title="收货人邮编"/>
 </excel>
 <excel id="whOdoTransportMgmt" class="com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand" sheetname="出库单运输服务商列表" defaultColumnWidth="5000" enableStyle="true">
-	<field name="odoExtCode" title="出库单外接编码" isNull="false" nullErrorCode="error.excel.isNull"/>
+	<field name="odoExtCode" title="外部对接编码" isNull="false" nullErrorCode="error.excel.isNull"/>
 	<field name="transportServiceProvider" title="运输服务商"/>
 	<field name="modeOfTransport" title="运输方式"/>
 	<field name="courierServiceType" title="快递服务类型"/>
