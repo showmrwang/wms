@@ -1838,41 +1838,46 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
      * @param isAfterPutawayTipContainer
      * @param logId
      */
-    public void manMadeSplitContainerPutawayRemoveAllCache(Long containerId,ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd,Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId){
-        if (null != outerContainerCmd) {
-            Long ocId = outerContainerCmd.getId();
-            Long icId = insideContainerCmd.getId();
-            ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
-            if (null != isCmd) {
-                                Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
-                                Set<Long> skuIds = insideContainerSkuIds.get(icId);
-                                for (Long skuId : skuIds) {
-                                    // 清楚扫描商品数量
-                                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
-//                                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+icId.toString()+skuId.toString());
-//                                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN+icId.toString()+skuId.toString());
-                                    cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT,icId.toString()+skuId.toString());
-                                    cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN,icId.toString()+skuId.toString());
-                            }
-                                //清楚扫描商品队列
-                            cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
+    public void manMadeSplitContainerPutawayRemoveAllCache(Boolean isPartPutaway,Long containerId,ContainerCommand outerContainerCmd, ContainerCommand insideContainerCmd,Boolean isAfterPutawayTipContainer, String logId,Long scanSkuId){
+        if(isPartPutaway){
+            cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+insideContainerCmd.getId().toString()+scanSkuId.toString());
+            cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN,insideContainerCmd.getId().toString()+scanSkuId.toString());
+        }else{
+            if (null != outerContainerCmd) {
+                Long ocId = outerContainerCmd.getId();
+                Long icId = insideContainerCmd.getId();
+                ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+                if (null != isCmd) {
+                                    Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
+                                    Set<Long> skuIds = insideContainerSkuIds.get(icId);
+                                    for (Long skuId : skuIds) {
+                                        // 清楚扫描商品数量
+                                        cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
+//                                        cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+icId.toString()+skuId.toString());
+//                                        cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN+icId.toString()+skuId.toString());
+                                        cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+icId.toString()+skuId.toString());
+                                        cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN,icId.toString()+skuId.toString());
+                                }
+                                    //清楚扫描商品队列
+                                cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
+                }
+                if(isAfterPutawayTipContainer == true) {    //一个托盘内的所有货箱扫描完毕
+                    // 1.再清除所有提示容器队列
+                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_CONTAINER_QUEUE + ocId.toString());
+                    // 2.清除所有库存统计信息
+                    cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, ocId.toString());
+                    // 3.清除所有库存缓存信息
+                    cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, ocId.toString());
+                }
+            } else {
+                Long icId = insideContainerCmd.getId();
+                // 0.清除所有商品队列
+                cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
+                // 1.清除所有库存统计信息
+                cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, icId.toString());
+                // 2.清除所有库存缓存信息
+                cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, icId.toString());
             }
-            if(isAfterPutawayTipContainer == true) {    //一个托盘内的所有货箱扫描完毕
-                // 1.再清除所有提示容器队列
-                cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_CONTAINER_QUEUE + ocId.toString());
-                // 2.清除所有库存统计信息
-                cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, ocId.toString());
-                // 3.清除所有库存缓存信息
-                cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, ocId.toString());
-            }
-        } else {
-            Long icId = insideContainerCmd.getId();
-            // 0.清除所有商品队列
-            cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
-            // 1.清除所有库存统计信息
-            cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, icId.toString());
-            // 2.清除所有库存缓存信息
-            cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY, icId.toString());
         }
     }
 
@@ -2008,7 +2013,7 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                  Map<Long,Set<Long>> insideContainerSkuIds = manCmd.getInsideContainerIdSkuIds();
                  Set<Long> skuIds = insideContainerSkuIds.get(insideContainerId);
                  for(Long skuId:skuIds){
-                     cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT,insideContainerId.toString()+skuId.toString());
+                     cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+insideContainerId.toString()+skuId.toString());
                      cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN,insideContainerId.toString()+skuId.toString());
                  }
            }else if(cancelPattern == CancelPattern.PUTAWAY_SCAN_LOCATION_CANCEL){
@@ -2025,6 +2030,8 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                Set<Long> skuIds = insideContainerSkuIds.get(insideContainerId);
                for(Long skuId:skuIds){
                    cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + insideContainerId.toString() + skuId.toString());
+                   cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+insideContainerId.toString()+skuId.toString());
+                   cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN,insideContainerId.toString()+skuId.toString());
                }
                cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + insideContainerId.toString());
            }else if(cancelPattern == CancelPattern.PUTAWAY_SKU_CANCEL){
