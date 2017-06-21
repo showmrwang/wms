@@ -177,7 +177,7 @@ public interface PdaPickingWorkCacheManager extends BaseManager{
       * @param operationId
       * @param ouId
       */
-     public void pdaReplenishmentUpdateOperation(Long operationId,Long ouId,Long userId);
+     public void pdaReplenishmentUpdateOperation(Long operationId,Long ouId,Long userId,String workCode);
       
      /***
       * 拣货取消流程

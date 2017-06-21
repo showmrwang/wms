@@ -2031,7 +2031,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     this.wholeCaseOperationExecLine(command, outerContainerId, insideContainerId, isTabbInvTotal); 
                 }
                 // 更新工作及作业状态
-                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
+                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId,workCode);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
             }
@@ -2043,7 +2043,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 已分配的库位库存转变为容器库存
                 whSkuInventoryManager.invMoveContainerInventory(isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode, skuCmd.getScanSkuQty());
                 // 更新工作及作业状态
-                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId);
+                pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId,workCode);
                 // 清除缓存
                 pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, true, locationId);
             }
@@ -3446,9 +3446,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             }
                             if (null != command.getReplenishWay() || null != command.getPickingWay()) {
                                 WhOdo whOdo = odoDao.findByIdOuId(operationLineCommand.getOdoId(), operationLineCommand.getOuId());
-                                newSkuInventory.setOccupationCode(whOdo.getOdoCode());
+                                if(null != whOdo){
+                                    newSkuInventory.setOccupationCode(whOdo.getOdoCode()); 
+                                    newSkuInventory.setOccupationLineId(operationLineCommand.getOdoLineId());
+                                }
                             }
-                            newSkuInventory.setOccupationLineId(operationLineCommand.getOdoLineId());
                             newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
                             // 内部对接码
                             try {

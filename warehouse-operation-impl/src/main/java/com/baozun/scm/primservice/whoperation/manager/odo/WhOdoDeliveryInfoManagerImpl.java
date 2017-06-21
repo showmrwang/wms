@@ -125,4 +125,9 @@ public class WhOdoDeliveryInfoManagerImpl extends BaseManagerImpl implements WhO
     public Pagination<WhOdodeliveryInfoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
         return whOdoDeliveryInfoDao.findListByQueryMapWithPageExt(page, sorts, params);
     }
+
+    @Override
+    public WhOdodeliveryInfo findbyWhOdoDeliveryId(Long whOdoDeliveryId) {
+        return whOdoDeliveryInfoDao.findById(whOdoDeliveryId);
+    }
 }

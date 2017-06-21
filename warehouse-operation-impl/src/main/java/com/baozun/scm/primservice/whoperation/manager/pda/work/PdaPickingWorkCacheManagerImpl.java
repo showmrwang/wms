@@ -39,6 +39,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventorySnDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -74,7 +75,8 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
     private WhWorkDao whWorkDao;
     @Autowired
     private WhSkuInventorySnDao whSkuInventorySnDao;
-
+    @Autowired
+    private WhWorkLineDao whWorkLineDao;
     /***
      * 有小车，而且有出库箱的时候，提示出库箱
      * @param operatorLineList
@@ -3221,12 +3223,23 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @param operationId
      * @param ouId
      */
-    public void pdaReplenishmentUpdateOperation(Long operationId, Long ouId, Long userId) {
+    public void pdaReplenishmentUpdateOperation(Long operationId, Long ouId, Long userId,String workCode) {
         WhOperation operation = whOperationDao.findOperationByIdExt(operationId, ouId);
         if (null == operation) {
             throw new BusinessException(ErrorCodes.OPATION_NO_EXIST);
         }
-        operation.setIsPickingFinish(true);
+        WhWorkCommand workCmd = whWorkDao.findWorkByWorkCode(workCode, ouId);
+        if(null == workCmd) {
+            log.error("whOperation id is not normal, operationId is:[{}]", operationId);
+            throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
+        }
+        int operationCount = whOperationLineDao.findOperationLineCount(ouId, operationId);
+        int workCount = whWorkLineDao.findWorkLineCount(workCmd.getId(), ouId);
+        if(operationCount == workCount){
+            operation.setIsPickingFinish(true);
+        }else{
+            operation.setIsPickingFinish(false);
+        }
         operation.setModifiedId(userId);
         whOperationDao.saveOrUpdateByVersion(operation);
     }
