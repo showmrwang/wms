@@ -225,7 +225,7 @@
                 ) VALUES (
                     #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
                     #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	ifnull(#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER},ifnull((select max(linenum) from t_wh_po_line line where line.po_id=#{poId}),0)+1),
+		        	ifnull(#{linenum,javaType=java.lang.Integer,jdbcType=INTEGER},ifnull((select max(linenum) from t_wh_odo_line line where line.odo_id=#{odoId}),0)+1),
 		        	#{originalLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{storeId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{extLinenum,javaType=java.lang.Integer,jdbcType=INTEGER} ,
