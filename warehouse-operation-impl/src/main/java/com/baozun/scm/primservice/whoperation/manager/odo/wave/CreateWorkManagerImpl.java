@@ -731,7 +731,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 出库单ID
         whWorkLineCommand.setOdoId(odo == null ? null : odo.getId());
         // 出库单明细ID
-        whWorkLineCommand.setOdoLineId(skuInventoryAllocatedCommand.getOccupationLineId());
+        whWorkLineCommand.setOdoLineId(odo == null ? null : skuInventoryAllocatedCommand.getOccupationLineId());
         // 补货单据号
         whWorkLineCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
         // 创建时间
