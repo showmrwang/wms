@@ -906,17 +906,17 @@ public final class Constants {
     public static final int IMPORT_BIPOLINE_TITLE_INDEX = 0;// 入库单导入读取行
 
     public static final String IMPORT_WHODO_EXCEL_CONFIG_ID = "whOdo";
-    public static final int IMPORT_WHODO_TITLE_INDEX = 1;
+    public static final int IMPORT_WHODO_TITLE_INDEX = 0;
 
     public static final String IMPORT_WHODO_LINE_EXCEL_CONFIG_ID = "whOdoLine";
-    public static final int IMPORT_WHODO_LINE_TITLE_INDEX = 1;
+    public static final int IMPORT_WHODO_LINE_TITLE_INDEX = 0;
 
     public static final String IMPORT_WHODO_ADDRESS_EXCEL_CONFIG_ID = "whOdoAddress";
-    public static final int IMPORT_WHODO_ADDRESS_TITLE_INDEX = 1;
+    public static final int IMPORT_WHODO_ADDRESS_TITLE_INDEX = 0;
 
 
     public static final String IMPORT_WHODO_TRANSPORTMGMT_EXCEL_CONFIG_ID = "whOdoTransportMgmt";
-    public static final int IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX = 1;
+    public static final int IMPORT_WHODO_TRANSPORTMGMT_TITLE_INDEX = 0;
 
     /** 库存初始化导入 */
     public static final String IMPORT_SKUINV_INIT_EXCEL_CONFIG_ID = "whSkuInventoryInit";// 库存初始化导入
