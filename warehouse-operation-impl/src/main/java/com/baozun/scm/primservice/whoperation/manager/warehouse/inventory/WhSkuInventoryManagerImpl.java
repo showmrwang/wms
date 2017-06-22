@@ -5791,6 +5791,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     // TODO zhukai
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    @Deprecated
     public void replenishmentToLines(List<WhWaveLine> lines, Long odoId, String bhCode, Map<String, List<ReplenishmentRuleCommand>> ruleMap, Map<String, String> map, Warehouse wh) {
         Long ouId = wh.getId();
         // tempMap用来存储这一组明细优化数据, 当这一组明细全部补货成功之后再回传给map
@@ -5806,7 +5807,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
             FLAG: for (ReplenishmentRuleCommand rule : repRules) {
                 Long ruleId = rule.getId();
-                Long targetLocation = rule.getLocationId();
+                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, ouId);
                 List<ReplenishmentStrategyCommand> replenishmentStrategyList = rule.getReplenishmentStrategyCommandList();
                 String key = skuId + "_" + rule.getId();
                 String data = tempMap.get(key);
@@ -6105,7 +6106,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
             FLAG: for (ReplenishmentRuleCommand rule : repRules) {
                 Long ruleId = rule.getId();
-                Long targetLocation = rule.getLocationId();
+                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, ouId);
                 List<ReplenishmentStrategyCommand> replenishmentStrategyList = rule.getReplenishmentStrategyCommandList();
                 String key = skuId + "_" + rule.getId();
                 String data = tempMap.get(key);
@@ -6235,6 +6236,28 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         map.clear();
         map.putAll(tempMap);
         return map;
+    }
+    
+    /**
+     * 匹配目标库位
+     * @author kai.zhu
+     */
+    private Long getTargetLoctionId(List<Long> locationIdList, Boolean isStatic, Long ouId) {
+        if (isStatic) {
+            return locationIdList.get(0);
+        } else {
+            for (int i = 0; i < locationIdList.size(); i++) {
+                Long loctionId = locationIdList.get(i);
+                long count = whSkuInventoryTobefilledDao.countByLoctionId(loctionId, ouId);
+                if (count == 0) {
+                    locationIdList.remove(i);
+                    return loctionId;
+                } else {
+                    locationIdList.remove(i--);
+                }
+            }
+        }
+        return null;
     }
 
     private Double replenishmentDown(List<WhSkuInventoryCommand> invs, Double useableQty, String bhCode, String occupyCode, Long occupyLineId, Long targetLocation, Long ruleId, Warehouse wh) {
@@ -11205,8 +11228,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         allocatedQty = 0d;
                         break;
                     } else {
-                        this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
                         this.insertSkuInventoryLog(inv.getId(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.REPLENISHMENT);
+                        this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
                         allocatedQty -= inv.getOnHandQty();
                     }
 
@@ -11332,11 +11355,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     log.error("executePickingWork update skuInv error");
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
-                this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
+                this.insertSkuInventoryLog(inv.getId(), inv.getOccupationCode(), inv.getOccupationCodeSource(), inv.getOnHandQty(), onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
                 qty = 0d;
                 break;
             } else {
-                this.insertSkuInventoryLog(inv.getId(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
+                this.insertSkuInventoryLog(inv.getId(), inv.getOccupationCode(), inv.getOccupationCodeSource(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId,InvTransactionType.PICKING);
                 this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
                 qty -= inv.getOnHandQty();
             }
@@ -11350,6 +11373,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
         newInv.setOnHandQty(line.getQty());
         newInv.setId(null);
+        // @mender yimin.lu 2017/6/21补货上架：入库时间
+        newInv.setInboundTime(new Date());
         this.whSkuInventoryDao.insert(newInv);
         this.insertSkuInventoryLog(newInv.getId(), newInv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), ouId, userId, InvTransactionType.PICKING);
 
