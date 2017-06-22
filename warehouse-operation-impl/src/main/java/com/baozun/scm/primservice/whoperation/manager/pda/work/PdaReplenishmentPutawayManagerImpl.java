@@ -1001,6 +1001,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             }
             if(null != skuInvList && skuInvList.size() != 0) {
                 for(WhSkuInventoryCommand invCmd:skuInvList) {
+                    if(null == invCmd.getOccupationLineId()){
+                         continue;   //向上补货的数据占用明细id为空
+                    }
                     List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId,replenishmentCode);
                     if(null != workLineList && workLineList.size() != 0) {
                         Long insideId = invCmd.getInsideContainerId();
@@ -1101,6 +1104,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
            List<Long> operationLineIds = new ArrayList<Long>();
           if(null != skuInvList && skuInvList.size() != 0) {
              for(WhSkuInventoryCommand invCmd:skuInvList) {
+                    if(null == invCmd.getOccupationLineId()){
+                       continue;   //向上补货的数据占用明细id为空
+                    }
                     Double sum = 0.0;
                     List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId,replenishmentCode);
                     if(null != operLineCmdList && operLineCmdList.size() != 0) {
