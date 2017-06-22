@@ -100,7 +100,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
             throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
         }
         if (log.isInfoEnabled()) {
-            log.info("generateCheckingData by checkingCollection start, workCode is:[{}], logId is:[{}]", workCmd.getCode(), logId);
+            log.info("generateCheckingData by checkingCollection start, workCode is:[{}], logId is:[{}], listSize is:[{}]", workCmd.getCode(), logId, execLineCommandList.size());
         }
         // 计算复核模式(一期首单复核和副品复核归到按单复核流程)
         String distributionMode = workCmd.getDistributionMode();
