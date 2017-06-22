@@ -682,6 +682,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
             rm.setResponseStatus(ResponseMsg.DATA_ERROR);
             return rm;
         }
+        int success = ResponseMsg.STATUS_SUCCESS;
         if (PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
             List<WhPo> whpoList = this.poManager.findWhPoByExtCodeStoreIdToInfo(bipo.getExtCode(), bipo.getStoreId());
             if (whpoList != null) {
@@ -701,7 +702,7 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                     rm.setResponseStatus(ResponseMsg.DATA_ERROR);
                     return rm;
                 }
-                int success = ResponseMsg.STATUS_SUCCESS;
+
                 for (WhPo whpo : whpoList) {
                     if (PoAsnStatus.PO_CANCELED == whpo.getStatus()) {
 
@@ -711,14 +712,21 @@ public class EditPoAsnManagerProxyImpl implements EditPoAsnManagerProxy {
                         if (ResponseMsg.STATUS_SUCCESS != cancelPoRm.getResponseStatus() && (ResponseMsg.STATUS_SUCCESS == success)) {
                             success = ResponseMsg.STATUS_ERROR;
                         }
-                    } 
+                    } else {
+                        success = ResponseMsg.STATUS_ERROR;
+                        rm.setMsg("BiPo status is error,can not cancel!");
+                        rm.setResponseStatus(ResponseMsg.DATA_ERROR);
+                        return rm;
+                    }
                 }
             }
 
 
         }
         try {
-            this.biPoManager.cancelBiPo(poId, userId);
+            if (ResponseMsg.STATUS_SUCCESS == success) {
+                this.biPoManager.cancelBiPo(poId, userId);
+            }
         } catch (BusinessException e) {
             rm.setResponseStatus(ResponseMsg.STATUS_ERROR);
             rm.setMsg(e.getErrorCode() + "");
