@@ -1300,6 +1300,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             }
         }
         SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
+        log.info("whcheckingManagerImpl checkingLineList:"+ checkingLineList.size());
         Double sum = 0.0;
         for (WhCheckingLineCommand whCheckingLineCommand : checkingLineList) {
             Double actualWeight = 0.0;
@@ -1317,6 +1318,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             log.info("whcheckingManagerImpl consumableSku:"+ consumableSku.getWeight());
             sum += consumableSku.getWeight();
         }
+        log.info("whcheckingManagerImpl sum:"+ sum);
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
         if (null != odoPackageInfo) {
             odoPackageInfo.setCalcWeight(sum);
