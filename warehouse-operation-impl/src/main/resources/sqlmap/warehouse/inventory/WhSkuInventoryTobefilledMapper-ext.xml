@@ -594,4 +594,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			replenishment_code = #{replenishmentCode}
 			and ou_id = #{ouId}
 	</delete>
+	
+	<select id="countByLoctionId" resultType="long">
+		select
+			count(1)
+		from 
+			t_wh_sku_inventory_tobefilled
+		where
+			location_id = #{loctionId}
+			and ou_id = #{ouId}
+	</select>
 </mapper>
