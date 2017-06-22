@@ -507,6 +507,10 @@ public class ErrorCodes {
     public static final int WEIGHTING_INPUT_NOT_CORRECT = 30101;
     /** [集货] 该出库箱未能找到集货信息 */
     public static final int CONCENTRATION_NO_INFO_RETURN = 30102;
+    /** 找到多条数据 */
+    public static final int MULTI_RESULT_RESPONSE = 30103;
+    /** [软分配] 商品可用库存map为空 */
+    public static final int SKU_INV_AVAILABLE_QTY_MAP_NULL = 30104;
     // 30001-40000 zhanglei
 
     // 40001-50000 lichuan

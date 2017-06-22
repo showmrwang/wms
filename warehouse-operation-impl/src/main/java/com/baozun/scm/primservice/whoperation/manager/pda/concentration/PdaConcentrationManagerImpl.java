@@ -259,7 +259,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WorkCollectionCommand createObject(String batch, Long workId, Long ouId, Boolean isLastContainer, Long scanContainerId) {
-
+        log.info("PdaConcentrationManager.createObject() start...");
+        log.info("params: batch:{}, workId:{}, ouId{}, isLastContainer:{}, scanContainerId{};", batch, workId, ouId, isLastContainer, scanContainerId);
         WorkCollectionCommand command = new WorkCollectionCommand();
         // TODO 需要odoIds, 最后一个库位位子, 容器列表
         // 通过工作和组织找到批次下的所有拣货工作使用的容器和出库单列表
@@ -301,6 +302,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 odoIdSet.add(execLineCommand.getOdoId());
                 if ((null != isLastContainer) && isLastContainer) {
                     // 计算最后一个容器库位
+                    log.info("last location id:" + execLineCommand.getFromLocationId());
                     command.setLastLocationId(execLineCommand.getFromLocationId()); // 最后一个容器库位
                 }
             }
@@ -311,6 +313,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         command.setContainerList(containerList); // 容器列表
         command.setOdoIdList(odoIdList); // 出库单列表
         command.setBatch(batch); // 批次号
+        log.info("PdaConcentrationManager.createObject() finish...");
         return command;
     }
 
@@ -325,6 +328,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WorkCollectionCommand recommendSeedingWall(WorkCollectionCommand workCollectionCommand) {
+        log.info("PdaConcentrationManager.recommendSeedingWall start...");
         // TODO 根据workId查出批次号以及是否是播种模式
         WhWorkCommand work = this.whWorkDao.findWorkByWorkCode(workCollectionCommand.getWorkCode(), workCollectionCommand.getOuId());
         WhOdo odo = new WhOdo();
@@ -332,12 +336,13 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         odo.setOuId(workCollectionCommand.getOuId());
         List<WhOdo> odoList = whOdoDao.findListByParam(odo);
         if (null == odoList || odoList.isEmpty()) {
-            throw new BusinessException("no odo");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         WhDistributionPatternRule whDistributionPatternRule = this.whDistributionPatternRuleDao.findByOdoIdAndOuId(odoList.get(0).getId(), workCollectionCommand.getOuId());
         Integer pickingMode = whDistributionPatternRule.getPickingMode(); // 拣货模式
         String batch = work.getBatch();
         workCollectionCommand.setBatch(batch);
+        log.info("pickingMode:{}, waveCode:{}, workId:{}, batch:{}", pickingMode, work.getWaveCode(), work.getId(), batch);
         // Long userId = workCollectionCommand.getUserId();
         // Boolean flag = false;
         Boolean hasRec = false;
@@ -347,6 +352,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         // TODO flag
         workCollectionCommand.setIsSuccess(hasRec);
+        log.info("PdaConcentrationManager.recommendSeedingWall finish...");
         return workCollectionCommand;
     }
 
@@ -357,6 +363,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      * @return [false:容器列表为空]/[true:容器列表不为空]
      */
     private Boolean initRecFacilityPath(WorkCollectionCommand workCollectionCommand) {
+        log.info("PdaConcentrationManager.initRecFacilityPath start...");
         Boolean hasSuccess = false;
         Long userId = workCollectionCommand.getUserId();
         Long ouId = workCollectionCommand.getOuId();
@@ -365,6 +372,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         List<String> failContainerList = new ArrayList<String>();
         RecFacilityPathCommand recFacilityPath = new RecFacilityPathCommand();
         for (String containerCode : containerList) {
+            log.info("batch:{}, containerCode:{}, areaId:{}, isLastContainer:{}", batch, containerCode, workCollectionCommand.getAreaId(), workCollectionCommand.getIsLastContainer());
             recFacilityPath.setOuId(ouId);
             recFacilityPath.setBatch(batch);
             recFacilityPath.setContainerCode(containerCode);
@@ -375,7 +383,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             // TODO 调用播种墙推荐逻辑
             RecFacilityPathCommand command = new RecFacilityPathCommand();
             try {
+                log.info("start recommend facility...");
                 command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
+                log.info("finish recommend facility...");
             } catch (Exception e) {
                 log.error("", e);
                 command.setStatus(0);
@@ -415,8 +425,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         if (containerList.isEmpty()) {
             // 容器列表为空
+            log.info("PdaConcentrationManager.initRecFacilityPath finish...");
             return false;
         }
+        log.info("PdaConcentrationManager.initRecFacilityPath finish...");
         return true;
     }
 
@@ -1367,33 +1379,27 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null == rec) {
             log.error("containerCode:{},ouId:{}", containerCode, ouId);
             throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
-            /*Long scanContainerId = containerCmd.getId();
-            WorkCollectionCommand workCommand = this.createObject(batch, null, ouId, null, scanContainerId);
-            // 推荐播种墙逻辑,并判断是否推荐成功
-            RecFacilityPathCommand recFacilityPath = new RecFacilityPathCommand();
-            recFacilityPath.setOuId(ouId);
-            recFacilityPath.setBatch(batch);
-            recFacilityPath.setContainerCode(containerCode);
-            recFacilityPath.setOdoIdList(workCommand.getOdoIdList());
-            recFacilityPath.setLastContainer(workCommand.getIsLastContainer());
-            // recFacilityPath.setAreaId(workCommand.getLastLocationId());
-            recFacilityPath.setAreaId(workCommand.getAreaId());
-            recFacilityPath.setPickingMode(Constants.PICKING_MODE_SEED);
-            // 调用播种墙推荐逻辑
-            RecFacilityPathCommand command = waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath);
-            if (1 == command.getStatus()) {
-                // 推荐成功
-                // rec = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode,
-                // batch, ouId);
-                List<WhFacilityRecPathCommand> recList2 = whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
-                if (null != recList2 && !recList2.isEmpty()) {
-                    rec = recList2.get(0);
-                } else {
-                    throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
-                }
-            } else {
-                throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
-            }*/
+            /*
+             * Long scanContainerId = containerCmd.getId(); WorkCollectionCommand workCommand =
+             * this.createObject(batch, null, ouId, null, scanContainerId); // 推荐播种墙逻辑,并判断是否推荐成功
+             * RecFacilityPathCommand recFacilityPath = new RecFacilityPathCommand();
+             * recFacilityPath.setOuId(ouId); recFacilityPath.setBatch(batch);
+             * recFacilityPath.setContainerCode(containerCode);
+             * recFacilityPath.setOdoIdList(workCommand.getOdoIdList());
+             * recFacilityPath.setLastContainer(workCommand.getIsLastContainer()); //
+             * recFacilityPath.setAreaId(workCommand.getLastLocationId());
+             * recFacilityPath.setAreaId(workCommand.getAreaId());
+             * recFacilityPath.setPickingMode(Constants.PICKING_MODE_SEED); // 调用播种墙推荐逻辑
+             * RecFacilityPathCommand command =
+             * waveFacilityManagerProxy.matchOutboundFacility(recFacilityPath); if (1 ==
+             * command.getStatus()) { // 推荐成功 // rec =
+             * whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, // batch,
+             * ouId); List<WhFacilityRecPathCommand> recList2 =
+             * whFacilityRecPathDao.getRecommendResultByContainerCode(containerCode, batch, ouId);
+             * if (null != recList2 && !recList2.isEmpty()) { rec = recList2.get(0); } else { throw
+             * new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR); } } else { throw
+             * new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR); }
+             */
         }
         // 缓存推荐结果
         List<WhFacilityRecPathCommand> recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_REC, userId.toString());
