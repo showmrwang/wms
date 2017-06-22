@@ -11204,8 +11204,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         allocatedQty = 0d;
                         break;
                     } else {
-                        this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
                         this.insertSkuInventoryLog(inv.getId(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.REPLENISHMENT);
+                        this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
                         allocatedQty -= inv.getOnHandQty();
                     }
 
@@ -11331,11 +11331,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     log.error("executePickingWork update skuInv error");
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
-                this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
+                this.insertSkuInventoryLog(inv.getId(), inv.getOccupationCode(), inv.getOccupationCodeSource(), inv.getOnHandQty(), onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
                 qty = 0d;
                 break;
             } else {
-                this.insertSkuInventoryLog(inv.getId(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.PICKING);
+                this.insertSkuInventoryLog(inv.getId(), inv.getOccupationCode(), inv.getOccupationCodeSource(), Constants.DEFAULT_DOUBLE, onHandQty, wh.getIsTabbInvTotal(), inv.getOuId(), userId,InvTransactionType.PICKING);
                 this.whSkuInventoryDao.deleteWhSkuInventoryById(inv.getId(), ouId);
                 qty -= inv.getOnHandQty();
             }
@@ -11349,6 +11349,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
         newInv.setOnHandQty(line.getQty());
         newInv.setId(null);
+        // @mender yimin.lu 2017/6/21补货上架：入库时间
+        newInv.setInboundTime(new Date());
         this.whSkuInventoryDao.insert(newInv);
         this.insertSkuInventoryLog(newInv.getId(), newInv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), ouId, userId, InvTransactionType.PICKING);
 

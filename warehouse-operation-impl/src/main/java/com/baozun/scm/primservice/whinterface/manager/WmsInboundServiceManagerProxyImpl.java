@@ -44,8 +44,8 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
             }
 
             BiPo bipo = bipoList.get(0);
-
-            if (null == bipo.getStatus() || PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
+            // @mender yimin.lu 2017/6/22
+            if (null == bipo.getStatus() || (PoAsnStatus.BIPO_NEW != bipo.getStatus() && PoAsnStatus.BIPO_ALLOT != bipo.getStatus())) {
                 return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.STATUS_CANCEL_ERROR, "PO_STATUS_CANCEL_ERROR");
             }
             if (wmsInBoundCancel.getIsPoCancel()) {

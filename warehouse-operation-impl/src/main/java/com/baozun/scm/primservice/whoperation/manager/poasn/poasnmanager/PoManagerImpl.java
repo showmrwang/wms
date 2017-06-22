@@ -346,7 +346,7 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
             List<WhAsn> asnList = this.whAsnDao.findWhAsnByPoIdOuId(whPo.getId(), ouId);
             if (asnList != null && asnList.size() > 0) {
                 for (WhAsn asn : asnList) {
-                    if (PoAsnStatus.ASN_NEW != asn.getStatus() || PoAsnStatus.ASN_CANCELED != asn.getStatus()) {
+                    if (PoAsnStatus.ASN_NEW != asn.getStatus() && PoAsnStatus.ASN_CANCELED != asn.getStatus()) {
                         log.error("cancel po error:asn is not allow to cancel");
                         throw new BusinessException(ErrorCodes.CANCEL_ASN_ERROR);
                     }
