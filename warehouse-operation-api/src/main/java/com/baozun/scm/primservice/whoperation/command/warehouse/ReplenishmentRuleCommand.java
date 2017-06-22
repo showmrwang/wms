@@ -79,7 +79,7 @@ public class ReplenishmentRuleCommand extends BaseCommand {
     
     // 自定义
     /** 匹配目标库位 */
-    private Long locationId;
+    private List<Long> locationIds;
     /** 波次Id -- 创补货工作*/
     private Long waveId;
     /** ouId -- 补货任务*/
@@ -262,14 +262,6 @@ public class ReplenishmentRuleCommand extends BaseCommand {
         this.testResult = testResult;
     }
 
-	public Long getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(Long locationId) {
-		this.locationId = locationId;
-	}
-
     public Integer getReleaseWorkWay() {
         return releaseWorkWay;
     }
@@ -324,5 +316,13 @@ public class ReplenishmentRuleCommand extends BaseCommand {
 
     public void setTaskOuId(Long taskOuId) {
         this.taskOuId = taskOuId;
+    }
+
+    public List<Long> getLocationIds() {
+        return locationIds;
+    }
+
+    public void setLocationIds(List<Long> locationIds) {
+        this.locationIds = locationIds;
     }
 }
