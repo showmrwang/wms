@@ -1295,6 +1295,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 uomCode = lenUom.getUomCode();
                 uomRate = lenUom.getConversionRate();
                 weightUomConversionRate.put(uomCode, uomRate);
+                log.info("whcheckingManagerImpl sku uomCode:"+uomCode);
+                log.info("whcheckingManagerImpl sku uomRate:"+uomRate);
             }
         }
         SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
@@ -1302,13 +1304,17 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         for (WhCheckingLineCommand whCheckingLineCommand : checkingLineList) {
             Double actualWeight = 0.0;
             WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), whCheckingLineCommand.getCustomerCode(), ouId);
+            log.info("whcheckingManagerImpl sku weight:"+whSkuCommand.getWeight());
+            log.info("whcheckingManagerImpl sku qty:"+ whCheckingLineCommand.getCheckingQty());
             actualWeight = weightCalculator.calculateStuffWeight(whSkuCommand.getWeight()) * whCheckingLineCommand.getCheckingQty();
+            log.info("whcheckingManagerImpl actualWeight:"+ actualWeight);
             sum += actualWeight;
 
         }
         // @Gianni 计重包括耗材重量
         WhSkuCommand consumableSku = whSkuManager.findBySkuIdAndOuId(outboundboxId, ouId);
         if (null != consumableSku) {
+            log.info("whcheckingManagerImpl consumableSku:"+ consumableSku.getWeight());
             sum += consumableSku.getWeight();
         }
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
