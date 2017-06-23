@@ -82,6 +82,8 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
 
     /** 唯一sku与工作明细ID和uuid对应关系 */
     private Map<String, String> workLineIdToOnlySku = new HashMap<String, String>();
+    /** 是否部分完成 */
+    private Boolean isPartlyFinish = false;
 
     // columns END
 
@@ -291,6 +293,14 @@ public class OperatioLineStatisticsCommand extends BaseCommand {
 
     public void setLatticeInsideSkuAttrIdsQty(Map<String, Map<Long, Map<String, Long>>> latticeInsideSkuAttrIdsQty) {
         this.latticeInsideSkuAttrIdsQty = latticeInsideSkuAttrIdsQty;
+    }
+
+    public Boolean getIsPartlyFinish() {
+        return isPartlyFinish;
+    }
+
+    public void setIsPartlyFinish(Boolean isPartlyFinish) {
+        this.isPartlyFinish = isPartlyFinish;
     }
 
 }
