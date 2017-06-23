@@ -225,8 +225,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param odoCommandMap 波次下出库单集合
      * @param ouId 仓库组织ID
      * @param logId 日志ID
+     * @throws InterruptedException 
      */
-    private void packingForSingleOdoPickMode(List<Long> singleOdoPickModeOdoIdList, Map<Long, OdoCommand> odoCommandMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) {
+    private void packingForSingleOdoPickMode(List<Long> singleOdoPickModeOdoIdList, Map<Long, OdoCommand> odoCommandMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) throws InterruptedException {
         if (null == singleOdoPickModeOdoIdList || singleOdoPickModeOdoIdList.isEmpty()) {
             log.info("singleOdoPickModeOdoIdList is null or empty");
             return;
@@ -986,8 +987,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param singleOdoPickModePackedOdoMap 按照配货模式分组后的出库单
      * @param ouId 仓库组织ID
      * @param logId 日志ID
+     * @throws InterruptedException 
      */
-    private void allocateTrolleyForSingleOdoPickModePackedOdo(Map<String, List<OdoCommand>> singleOdoPickModePackedOdoMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) {
+    private void allocateTrolleyForSingleOdoPickModePackedOdo(Map<String, List<OdoCommand>> singleOdoPickModePackedOdoMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) throws InterruptedException {
         // 将小批次的出库单分别标记涉及的区域;
         for (String distributeMode : singleOdoPickModePackedOdoMap.keySet()) {
             // 摘果的出库单分组下，一个配货模式就是一个小批次
@@ -1139,8 +1141,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param ouId 仓库组织ID
      * @param logId 日志ID
      * @return 按照配货模式分组后的未分配小车的出库单
+     * @throws InterruptedException 
      */
-    private Map<String, List<OdoCommand>> allocateTrolleyForUnPackingOdo(Map<String, List<OdoCommand>> distributeModeUnPackingOdoMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) {
+    private Map<String, List<OdoCommand>> allocateTrolleyForUnPackingOdo(Map<String, List<OdoCommand>> distributeModeUnPackingOdoMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) throws InterruptedException {
         // 未分配小车的出库单
         Map<String, List<OdoCommand>> unmatchedTrolleyOdoListDistributeMap = new HashMap<>();
         for (String distributeMode : distributeModeUnPackingOdoMap.keySet()) {
@@ -3269,8 +3272,9 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param availableContainer 二级容器类型
      * @param ouId 仓库组织ID
      * @return 新建的容器对象
+     * @throws InterruptedException 
      */
-    private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId, String logId) {
+    private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId, String logId) throws InterruptedException {
         if (null == availableContainer) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -3280,16 +3284,25 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         searchContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
         searchContainer.setOuId(ouId);
         searchContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-        List<Container> containerList = outboundBoxRecManager.findUseAbleContainerByContainerType(searchContainer);
         Container useAbleContainer = null;
-        if (null != containerList && !containerList.isEmpty()) {
-            useAbleContainer = containerList.get(0);
-            useAbleContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-            useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
-            int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
-            if (1 != updateCount) {
-                log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
-                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        for (int i = 1; i <= 5; i++) {
+            // 每次尝试更新5次 避免并发情况
+            // 延迟200毫秒
+            Thread.sleep(200);
+            List<Container> containerList = outboundBoxRecManager.findContainerListByParam(searchContainer);
+            useAbleContainer = null;
+            if (null != containerList && !containerList.isEmpty()) {
+                useAbleContainer = containerList.get(0);
+                useAbleContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
+                int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
+                if (0 == updateCount) {
+                    log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
+                    continue;
+                    // throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                } else {
+                    break;
+                }
             }
         }
 
