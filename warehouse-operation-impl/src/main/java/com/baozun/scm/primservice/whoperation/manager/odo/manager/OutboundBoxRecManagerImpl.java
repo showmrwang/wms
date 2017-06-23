@@ -310,6 +310,12 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
     public List<Container> findUseAbleContainerByContainerType(Container container) {
         return containerDao.findListByParam(container);
     }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Container> findContainerListByParam(Container container) {
+        return containerDao.findContainerListByParam(container);
+    }
 
 
     @Override

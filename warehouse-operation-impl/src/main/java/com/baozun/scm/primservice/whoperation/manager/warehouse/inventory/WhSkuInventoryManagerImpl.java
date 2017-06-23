@@ -6107,6 +6107,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             FLAG: for (ReplenishmentRuleCommand rule : repRules) {
                 Long ruleId = rule.getId();
                 Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, ouId);
+                if (null == targetLocation) {
+                    log.error("targetLocation is null, odoId:" + odoId);
+                    throw new BusinessException(1);
+                }
                 List<ReplenishmentStrategyCommand> replenishmentStrategyList = rule.getReplenishmentStrategyCommandList();
                 String key = skuId + "_" + rule.getId();
                 String data = tempMap.get(key);
@@ -6243,6 +6247,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @author kai.zhu
      */
     private Long getTargetLoctionId(List<Long> locationIdList, Boolean isStatic, Long ouId) {
+        if (null == locationIdList || locationIdList.isEmpty()) {
+            return null;
+        }
         if (isStatic) {
             return locationIdList.get(0);
         } else {

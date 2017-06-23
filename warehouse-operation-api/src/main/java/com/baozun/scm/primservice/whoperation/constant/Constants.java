@@ -479,6 +479,8 @@ public final class Constants {
     public static final String CREATE_WORK_WORK_LINE_QTY_IS_ERROR = "ERROR018";
     /** 创工作阶段 作业明细数量不正确 */
     public static final String CREATE_WORK_OPERATION_LINE_QTY_IS_ERROR = "ERROR019";
+    /** 补货阶段 未匹配到目标库位 */
+    public static final String REPLENISHED_NO_MATCH_TARGET_LOCATION = "ERROR020";
 
     
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出

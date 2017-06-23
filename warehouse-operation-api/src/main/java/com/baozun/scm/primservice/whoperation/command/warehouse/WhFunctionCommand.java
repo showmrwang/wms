@@ -53,6 +53,8 @@ public class WhFunctionCommand extends BaseCommand {
     private Long operatorId;
     /** 是否启用 1:启用 0:停用 */
     private Integer lifecycle;
+    /** 是否鎖定1:是 0:否 */
+    private Integer isLock;
     /** 功能模板中文名称 */
     private String functionTempletName;
 
@@ -468,6 +470,14 @@ public class WhFunctionCommand extends BaseCommand {
 
     public void setIsInvattrDiscrepancyAllowrcvd(Boolean isInvattrDiscrepancyAllowrcvd) {
         this.isInvattrDiscrepancyAllowrcvd = isInvattrDiscrepancyAllowrcvd;
+    }
+
+    public Integer getIsLock() {
+        return isLock;
+    }
+
+    public void setIsLock(Integer isLock) {
+        this.isLock = isLock;
     }
 
 
