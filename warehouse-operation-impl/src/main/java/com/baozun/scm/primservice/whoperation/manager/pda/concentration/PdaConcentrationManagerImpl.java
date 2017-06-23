@@ -443,23 +443,33 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         String targetPosUrl = "";
         String targetPos = "";
+        String targetPosCheck = "";
         // String containerCode = rfp.getContainerCode();
         // String batch = command.getBatch();
         // Long ouId = command.getOuId();
         // WhFacilityRecPath whFacilityRecPath =
         // whFacilityRecPathDao.findWhFacilityRecPathByBatchAndContainer(batch, containerCode,
         // ouId);
-        String transitLocationCode = rfp.getTransitLocationCheckCode(); // 中转库位编码
+        String transitLocationCode = rfp.getTransitLocationCode(); // 中转库位编码
+        String transitLocationCheckCode = rfp.getTransitLocationCheckCode(); // 中转库位校验码
         String temporaryStorageLocationCode = rfp.getTemporaryStorageLocationCode(); // 暂存区域库位编码
+        String temporaryStorageLocationCheckCode = rfp.getTemporaryStorageLocationCheckCode(); // 暂存区域库位校验码
         String seedingwallCode = rfp.getSeedingwallCode(); // 播种墙编码
+        String seedingwallCheckCode = rfp.getSeedingwallCheckCode(); // 播种墙校验码
         if (StringUtils.hasText(transitLocationCode) && CacheConstants.PDA_CACHE_COLLECTION_REC.equals(cacheKey)) {
             // 有中转库位且是推荐播种墙逻辑
             targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_5 : Constants.TARGET_6;
+            // targetPos = (!command.getIsScanCheckCode()) ? transitLocationCode :
+            // transitLocationCheckCode;
             targetPos = transitLocationCode;
+            targetPosCheck = transitLocationCheckCode;
         } else {
             if (!StringUtils.hasText(seedingwallCode)) {
                 targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_3 : Constants.TARGET_4;
+                // targetPos = (!command.getIsScanCheckCode()) ? temporaryStorageLocationCode :
+                // temporaryStorageLocationCheckCode;
                 targetPos = temporaryStorageLocationCode;
+                targetPosCheck = temporaryStorageLocationCheckCode;
             } else {
                 // isRecPath: 如果是集货操作, 设为false; 如果是推荐操作, 设为true
                 int flag = checkSeedingWallCapacity(seedingwallCode, rfp.getBatch(), rfp.getOuId(), containerQty, isRecPath);
@@ -472,16 +482,22 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 } else if (Constants.SEEDING_WALL_MOVE_ONE == flag) {
                     // 按箱移动到播种墙
                     targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_1 : Constants.TARGET_2;
+                    // targetPos = (!command.getIsScanCheckCode()) ? seedingwallCode :
+                    // seedingwallCheckCode;
                     targetPos = seedingwallCode;
+                    targetPosCheck = seedingwallCheckCode;
                 } else {
                     // 按箱移动到暂存库位
                     targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_3 : Constants.TARGET_4;
+                    // targetPos = (!command.getIsScanCheckCode()) ? temporaryStorageLocationCode :
+                    // temporaryStorageLocationCheckCode;
                     targetPos = temporaryStorageLocationCode;
+                    targetPosCheck = temporaryStorageLocationCheckCode;
                 }
             }
         }
         // TODO 提示容器号 而不是编码
-        return targetPosUrl + "$" + rfp.getContainerCode() + "$" + targetPos;
+        return targetPosUrl + "$" + rfp.getContainerCode() + "$" + targetPos + "$" + targetPosCheck;
     }
 
     /**
@@ -1027,6 +1043,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     public void removeRecommendResultListCache(String batch, Long userId) {
         cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
+        cacheManager.removeMapValue(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId.toString(), batch);
     }
 
     /**

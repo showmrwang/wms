@@ -468,7 +468,7 @@ public final class Constants {
     public static final String ODO_IS_CANCEL = "ERROR013";
     /** 出库箱推荐 未知原因未推荐出库箱 */
     public static final String CREATE_OUTBOUND_CARTON_REC_BOX_UNKNOWN = "ERROR014";
-    
+
     /** 创工作阶段 分配量与待移入量不相等 */
     public static final String CREATE_WORK_ALLOCATED_TOBEFILLED_QTY_ERROR = "ERROR015";
     /** 创工作阶段 库存和推荐出库箱数量不正确 */
@@ -480,7 +480,7 @@ public final class Constants {
     /** 创工作阶段 作业明细数量不正确 */
     public static final String CREATE_WORK_OPERATION_LINE_QTY_IS_ERROR = "ERROR019";
 
-    
+
     public static final String ALLOCATE_STRATEGY_FIRSTINFIRSTOUT = "1"; // 先入先出
     public static final String ALLOCATE_STRATEGY_FIRSTINLASTOUT = "2"; // 先入后出
     public static final String ALLOCATE_STRATEGY_FIRSTEXPIRATIONFIRSTOUT = "3"; // 先到期先出
@@ -863,6 +863,8 @@ public final class Constants {
     public static final String STORE_RETURNEDPURCHASESTORE_OUTBOUND = "outbound";
     /** 拣货功能页面*/
     public static final String PICKING_WORK_PAGE = "PICKING_WORK_PAGE";
+    /**[集货功能]找不到推荐路径*/
+    public static final String CONCENTRATION_NOT_REC_PATH = "CONCENTRATION_NOT_REC_PATH";
 
 
     /** 出库目标对象 */
