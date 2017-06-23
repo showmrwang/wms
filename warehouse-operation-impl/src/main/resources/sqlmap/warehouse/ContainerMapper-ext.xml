@@ -356,4 +356,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and ou_id = #{ouId}
 		</update>
 		
+		<select id="findContainerListByParam" parameterType="map" resultMap="ContainerResultExt" flushCache="false">
+			SELECT
+				<include refid="containerColumnsExt" />
+			FROM
+				t_wh_container
+			WHERE
+				one_level_type = #{oneLevelType}
+				AND two_level_type = #{twoLevelType}
+				AND lifecycle = #{lifecycle}
+				AND ou_id = #{ouId}
+				AND status = #{status};
+		</select>
+		
 </mapper>
