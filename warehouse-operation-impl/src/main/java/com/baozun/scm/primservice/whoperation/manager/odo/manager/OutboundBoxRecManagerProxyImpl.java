@@ -3285,6 +3285,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         searchContainer.setOuId(ouId);
         searchContainer.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
         Container useAbleContainer = null;
+        boolean b = false;
         for (int i = 1; i <= 5; i++) {
             // 每次尝试更新5次 避免并发情况
             // 延迟200毫秒
@@ -3297,13 +3298,17 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
                 int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
                 if (0 == updateCount) {
-                    log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
+                    b= true;
                     continue;
-                    // throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 } else {
+                    b=false;
                     break;
                 }
             }
+        }
+        if(b){
+            log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
 
         return useAbleContainer;
