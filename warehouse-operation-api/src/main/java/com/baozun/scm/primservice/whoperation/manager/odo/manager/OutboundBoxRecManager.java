@@ -65,6 +65,8 @@ public interface OutboundBoxRecManager extends BaseManager {
 
 
     public List<Container> findUseAbleContainerByContainerType(Container container);
+    
+    public List<Container> findContainerListByParam(Container container);
 
     public List<WhOutInventoryboxRelationship> getOutInvBoxRelationshipByType(String type, Long relationshipId, Long ouId);
 

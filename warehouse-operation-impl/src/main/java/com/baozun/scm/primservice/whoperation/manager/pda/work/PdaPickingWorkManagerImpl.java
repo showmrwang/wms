@@ -1597,6 +1597,23 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
         }
         String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd); // 没有sn/残次信息
+        if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货
+            List<WhSkuInventoryCommand>  skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId,operationId, outerContainerId, insideContainerId);
+            if (null == skuInvList || skuInvList.size() == 0) {
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
+            Boolean isExistInventory = false;
+            for(WhSkuInventoryCommand skuInvCmd : skuInvList){
+                String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+                if(skuAttrId.equals(skuAttrIds)){
+                    isExistInventory = true;
+                    break;
+                }
+            }
+            if(!isExistInventory){
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
+        }
         pdaPickingWorkCacheManager.cacheSkuAttrIdNoSn(locationId, skuAttrIds, insideContainerId, operationId);
         if (!StringUtil.isEmpty(command.getSkuSn()) || !StringUtils.isEmpty(command.getSkuDefect())) {
             // 缓存sn数据
@@ -1853,6 +1870,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     // 已分配的库位库存转变为容器库存
                     whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
                             skuCmd.getScanSkuQty(), pickingWay);
+                }else if(false == cSRCmd.getIsHaveOuterContainer() && Constants.REPLENISH_WAY_TWO == pickingWay){
+                    this.wholeCaseOperationExecLine(command, outerContainerId, insideContainerId, isTabbInvTotal); 
                 }else if(Constants.REPLENISH_WAY_THREE == pickingWay){
                     this.wholeCaseOperationExecLine(command, null, insideContainerId, isTabbInvTotal); 
                 }
@@ -3451,7 +3470,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                     newSkuInventory.setOccupationLineId(operationLineCommand.getOdoLineId());
                                 }
                             }
-                            newSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
+                            // 如果库存大于明细数量，容器库存数量为明细数量并且跳出库存循环                            
+                            newSkuInventory.setOnHandQty(onHandQty);
                             // 内部对接码
                             try {
                                 newSkuInventory.setUuid(SkuInventoryUuid.invUuid(newSkuInventory));
@@ -3484,9 +3504,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                                 }
                                 count = count + 1;
                             }
-                            // 删除原库存
+                            // 修改原库存
                             oldSkuInventory.setOnHandQty(oldSkuInventory.getOnHandQty() - onHandQty);
                             whSkuInventoryDao.update(oldSkuInventory);
+                            break;
                         } else {
                             // 生成容器库存
                             WhSkuInventory newSkuInventory = new WhSkuInventory();
@@ -3549,6 +3570,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             // 删除原库存
                             whSkuInventoryDao.deleteByIdExt(oldSkuInventory.getId(), oldSkuInventory.getOuId());
                             insertGlobalLog(GLOBAL_LOG_DELETE, oldSkuInventory, command.getOuId(), command.getUserId(), null, null);
+                            onHandQty = onHandQty - oldSkuInventory.getOnHandQty();
                         }   
                     }
                 }

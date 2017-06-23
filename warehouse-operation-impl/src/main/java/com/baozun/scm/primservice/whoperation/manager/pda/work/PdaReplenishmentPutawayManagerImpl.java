@@ -1001,6 +1001,9 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
             }
             if(null != skuInvList && skuInvList.size() != 0) {
                 for(WhSkuInventoryCommand invCmd:skuInvList) {
+                    if(null == invCmd.getOccupationLineId()){
+                         continue;   //向上补货的数据占用明细id为空
+                    }
                     List<WhWorkLineCommand> workLineList = whWorkLineDao.findWorkLineByLocationId(locationId, ouId,replenishmentCode);
                     if(null != workLineList && workLineList.size() != 0) {
                         Long insideId = invCmd.getInsideContainerId();
@@ -1009,12 +1012,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         Double sum = 0.0;
                         for(WhWorkLineCommand workLineCmd:workLineList) {
                           String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhWorkLineCommand(workLineCmd);
-                          if(null == workLineCmd.getFromInsideContainerId() && false == isTV){
-                                  continue;
-                          }
+//                          if(null == workLineCmd.getFromInsideContainerId() && false == isTV){
+//                                  //只更新uuid
+//                                  continue;
+//                          }
                           if(workSkuAttrId.equals(skuAttrId) && invCmd.getOccupationLineId().longValue() == workLineCmd.getOdoLineId().longValue() && (!workIds.contains(workLineCmd.getId()))) {
                                      Double onHandQty = invCmd.getOnHandQty();
                                      Double lineQty = workLineCmd.getQty();
+                                     String uuid = invCmd.getUuid();
                                      sum += lineQty;
                                      if(onHandQty.doubleValue() < sum.doubleValue()){
                                          Double qty = onHandQty-(sum-lineQty);
@@ -1037,6 +1042,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          }
                                          String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
                                          workLine.setLineCode(workLineCode);
+                                         workLine.setUuid(uuid);
                                          whWorkLineDao.insert(workLine);
                                          workIds.add(workLine.getId());
                                          //修改原来的工作明细
@@ -1064,6 +1070,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                              workLine.setFromOuterContainerId(null);
                                          }
                                          workLine.setQty(onHandQty);
+                                         workLine.setUuid(uuid);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
                                          insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
                                          workIds.add(workLine.getId());
@@ -1088,6 +1095,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          }
                                          String workLineCode = codeManager.generateCode(Constants.WMS, Constants.WHWORKLINE_MODEL_URL, "", "WORKLINE", null);
                                          workLine.setLineCode(workLineCode);
+                                         workLine.setUuid(uuid);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
                                          workIds.add(workLine.getId());
                                          continue;
@@ -1097,17 +1105,20 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                     }
                }
             }
-        //先添加作业明细,后删除原始作业明细
+           //先添加作业明细,后删除原始作业明细
            List<Long> operationLineIds = new ArrayList<Long>();
           if(null != skuInvList && skuInvList.size() != 0) {
              for(WhSkuInventoryCommand invCmd:skuInvList) {
+                    if(null == invCmd.getOccupationLineId()){
+                       continue;   //向上补货的数据占用明细id为空
+                    }
                     Double sum = 0.0;
                     List<WhOperationLineCommand> operLineCmdList = whOperationLineDao.findOperationLineByLocationId(ouId, locationId,replenishmentCode);
                     if(null != operLineCmdList && operLineCmdList.size() != 0) {
                        for(WhOperationLineCommand operLineCmd:operLineCmdList){
-                        if(null == operLineCmd.getFromInsideContainerId() && false == isTV){
-                                continue;
-                        }
+//                        if(null == operLineCmd.getFromInsideContainerId() && false == isTV){
+//                                continue;
+//                        }
                         
                         Double lineQty = operLineCmd.getQty();
                         String workSkuAttrId = SkuCategoryProvider.getSkuAttrIdByOperationLine(operLineCmd);
@@ -1117,6 +1128,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
                         if(workSkuAttrId.equals(skuAttrId) && occupationId.longValue() == operLineCmd.getOdoLineId().longValue() && (!operationLineIds.contains(operLineCmd.getId()))) {
                             sum += lineQty;
+                            String uuid = invCmd.getUuid();
                             if(invCmd.getOnHandQty().doubleValue() < sum.doubleValue()){
                                 Double qty = invCmd.getOnHandQty()-(sum-lineQty);
                                 WhOperationLine opLine = new WhOperationLine();
@@ -1136,6 +1148,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setFromInsideContainerId(null);
                                     opLine.setFromOuterContainerId(null);
                                 }
+                                opLine.setUuid(uuid);
                                 whOperationLineDao.insert(opLine);
                                 insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
                                 operationLineIds.add(opLine.getId());
@@ -1164,6 +1177,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setFromOuterContainerId(null);
                                 }
                                 opLine.setQty(invCmd.getOnHandQty());
+                                opLine.setUuid(uuid);
                                 whOperationLineDao.saveOrUpdateByVersion(opLine);
                                 insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
                                 operationLineIds.add(opLine.getId());
@@ -1186,6 +1200,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setFromInsideContainerId(null);
                                     opLine.setFromOuterContainerId(null);
                                 }
+                                opLine.setUuid(uuid);
                                 whOperationLineDao.saveOrUpdateByVersion(opLine);
                                 insertGlobalLog(GLOBAL_LOG_INSERT, opLine, ouId, userId, null, null);
                                 operationLineIds.add(opLine.getId());
@@ -1872,6 +1887,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                          String containerCode = this.judeContainer(tipTurnoverBoxId, ouId);
                          command.setTipTurnoverBoxCode(containerCode);
                          command.setIsNeedScanTurnoverBox(true);
+                         command.setOuterContainerCode(null);
                          whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
                          //整托上架更新内部容器状态
                          this.updateInsideContainerStatus(isTV,containerIds, ouId, userId);

@@ -44,8 +44,8 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
             }
 
             BiPo bipo = bipoList.get(0);
-
-            if (null == bipo.getStatus() || PoAsnStatus.BIPO_NEW != bipo.getStatus()) {
+            // @mender yimin.lu 2017/6/22
+            if (null == bipo.getStatus() || (PoAsnStatus.BIPO_NEW != bipo.getStatus() && PoAsnStatus.BIPO_ALLOT != bipo.getStatus())) {
                 return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.STATUS_CANCEL_ERROR, "PO_STATUS_CANCEL_ERROR");
             }
             if (wmsInBoundCancel.getIsPoCancel()) {
@@ -53,7 +53,7 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
                 if (msg == null) {
                     return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
                 }
-                if (ResponseMsg.STATUS_SUCCESS == msg.getReasonStatus()) {
+                if (ResponseMsg.STATUS_SUCCESS == msg.getResponseStatus()) {
                     return new WmsResponse(WmsResponse.STATUS_SUCCESS, null, null);
                 } else {
                     return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());
@@ -67,7 +67,7 @@ public class WmsInboundServiceManagerProxyImpl implements WmsInboundServiceManag
                 if (msg == null) {
                     return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.SYSTEM_EXCEPTION, "SYSTEM_EXCEPTION ");
                 }
-                if (ResponseMsg.STATUS_SUCCESS == msg.getReasonStatus()) {
+                if (ResponseMsg.STATUS_SUCCESS == msg.getResponseStatus()) {
                     return new WmsResponse(WmsResponse.STATUS_SUCCESS, null, null);
                 } else {
                     return new WmsResponse(WmsResponse.STATUS_ERROR, WmsErrorCode.UPDATE_DATA_ERROR, msg.getMsg());

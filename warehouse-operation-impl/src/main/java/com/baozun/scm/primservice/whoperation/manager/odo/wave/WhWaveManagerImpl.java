@@ -752,26 +752,57 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         // @mender yimin.lu 2017/5/9
         // 库存的操作逻辑：
-        this.releaseInventory(waveId, odoId, wavePhase, odo.getOdoCode(), wh);
+        // this.releaseInventory(waveId, odoId, wavePhase, odo.getOdoCode(), wh);
         // 其余额外的操作逻辑
         /** 软分配剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.WEAK_ALLOCATED_NUM) {}
         /** 合并出库单剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.MERGE_ODO_NUM) {}
         /** 硬分配剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {}
+        if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {
+            // 出库单释放库存
+            whSkuInventoryDao.releaseInventoryOccupyCode(odo.getOdoCode(), ouId);
+            // 修改出库单明细已分配数量
+            whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
+        }
         /** 补货剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {}
+        if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
+            // 按单据删除待移入和已分配
+
+            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId); // 用于判断出库单是否取消
+            if (count > 0) {
+                // 清除编码
+                this.eliminateOccupationCode(odo.getOdoCode(), ouId);
+            } else {
+                ReplenishmentTask task = replenishmentTaskDao.findReplenishmentTaskByWaveId(waveId, ouId);
+                if (null != task) {
+                    if (null != task.getIsCreateWork() && task.getIsCreateWork()) {
+                        // 清除编码
+                        this.eliminateOccupationCode(odo.getOdoCode(), ouId);
+                    } else {
+                        String repCode = task.getReplenishmentCode();
+                        whSkuInventoryAllocatedDao.deleteByReplenishmentCode(repCode, ouId);
+                        whSkuInventoryTobefilledDao.deleteByReplenishmentCode(repCode, ouId);
+                    }
+                }
+            }
+
+        }
         /** 配货模式计算剔除逻辑 */
-        if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM) {}
+        if (wavePhase.intValue() >= WavePhase.DISTRIBUTION_NUM) {
+            // 按单据删除待移入和已分配
+        }
         /** 创建出库箱/容器剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.CREATE_OUTBOUND_CARTON_NUM) {
+            // 按单据删除待移入和已分配
             this.releaseOutBoundBox(waveId, odoId, wh);
         }
         /** 创建工作剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.CREATE_WORK_NUM) {
             // 拣货工作不回滚，拣货工作回滚 @mender yimin.lu 2017/6/8
-            // releate to
+            // 按补货编码删除待移入和已分配
+
+
         }
     }
 
@@ -853,7 +884,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
      * @version 2017年6月19日
      */
     private void eliminateOccupationCode(String odoCode, Long ouId) {
-        // 删除已分配库存
+        // 已分配库存:清除占用单据号
         List<WhSkuInventoryAllocated> skuInvAllocatedList = this.whSkuInventoryAllocatedDao.findbyOccupationCode(odoCode, ouId);
         if (skuInvAllocatedList != null && skuInvAllocatedList.size() > 0) {
             for (WhSkuInventoryAllocated invAllocated : skuInvAllocatedList) {
@@ -865,7 +896,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 }
             }
         }
-        // 删除待移入库存
+        // 待移入库存：清除占用单据号
         List<WhSkuInventoryTobefilled> skuInvTobefilledList = this.whSkuInventoryTobefilledDao.findbyOccupationCode(odoCode, ouId);
         if (skuInvTobefilledList != null && skuInvTobefilledList.size() > 0) {
             for (WhSkuInventoryTobefilled invTobefilled : skuInvTobefilledList) {
@@ -1088,6 +1119,26 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), null, wh, WavePhase.EXECUTED);
 
         }
+        // 3.拣货工作：释放补货工作
+        this.realeaseReplenishmentTaskFromWave(waveId, ouId);
+
+    }
+
+    private void realeaseReplenishmentTaskFromWave(Long waveId, Long ouId) {
+        ReplenishmentTask taskSearch = new ReplenishmentTask();
+        taskSearch.setOuId(ouId);
+        taskSearch.setWaveId(waveId);
+        List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(taskSearch);
+        if (result != null && result.size() > 0) {
+            for (ReplenishmentTask task : result) {
+                task.setWaveId(null);// 补货工作不绑定波次
+                task.setOperatorId(null);
+                int updateTaskCount = this.replenishmentTaskDao.saveOrUpdateByVersion(task);
+                if (updateTaskCount <= 0) {
+                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                }
+            }
+        }
 
     }
 
@@ -1170,21 +1221,6 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     }
                 }
 
-            }
-        }
-
-        ReplenishmentTask taskSearch = new ReplenishmentTask();
-        taskSearch.setOuId(ouId);
-        taskSearch.setWaveId(waveId);
-        List<ReplenishmentTask> result = this.replenishmentTaskDao.findListByParam(taskSearch);
-        if (result != null && result.size() > 0) {
-            for (ReplenishmentTask task : result) {
-                task.setWaveId(null);// 补货工作不绑定波次
-                task.setOperatorId(null);
-                int updateTaskCount = this.replenishmentTaskDao.saveOrUpdateByVersion(task);
-                if (updateTaskCount <= 0) {
-                    throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
-                }
             }
         }
 

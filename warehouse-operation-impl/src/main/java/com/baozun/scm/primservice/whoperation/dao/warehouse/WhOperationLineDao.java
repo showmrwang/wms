@@ -29,6 +29,7 @@ import lark.orm.dao.supports.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 
 
@@ -117,5 +118,9 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
     public int findOperationLineCount(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
     
     List<WhOperationLine> findByOuterContainerId(@Param("operationId") Long operationId, @Param("fromOuterContainerId") Long fromOuterContainerId, @Param("ouId") Long ouId);
+    
+    
+    public List<WhSkuInventoryCommand> getWhSkuInventoryCmdByOccupationLineId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
+        @Param("insideContainerId") Long insideContainerId);
 	
 }

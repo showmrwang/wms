@@ -34,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -54,11 +55,13 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilityManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
@@ -130,6 +133,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhWorkManager workManager;
+    
+    @Autowired
+    private WarehouseManager warehouseManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -1292,7 +1298,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
 
         // 2.将容器移动到目的地
-        this.updateContainerSkuInventory(recCommand, destinationType, ouId);
+        this.updateContainerSkuInventory(recCommand, destinationType, userId, ouId);
 
         // 3.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
@@ -1326,7 +1332,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     }
 
     @Override
-    public void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long ouId) {
+    public void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long userId, Long ouId) {
+        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+        if (null == warehouse) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         List<WhSkuInventory> invList = this.whSkuInventoryDao.findListByInsideContainerId(recCommand.getContainerId(), ouId);
         if (null == invList || invList.isEmpty()) {
             log.error("skuInventory is empty, InsideContainerId:" + recCommand.getContainerId());
@@ -1355,6 +1365,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 log.error("SkuInventoryUuid.invUuid error");
             }
             int cnt = this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
+            this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), inv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.FACILITY_GOODS_COLLECTION);
             if (0 >= cnt) {
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
@@ -1437,7 +1448,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     public void moveContainerToDestination(WhFacilityRecPathCommand recCommand, Integer destinationType, Boolean isManual, Long userId, Long ouId) {
         // 1.将容器移动到目的地
-        this.updateContainerSkuInventory(recCommand, destinationType, ouId);
+        this.updateContainerSkuInventory(recCommand, destinationType, userId, ouId);
 
         // 2.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
