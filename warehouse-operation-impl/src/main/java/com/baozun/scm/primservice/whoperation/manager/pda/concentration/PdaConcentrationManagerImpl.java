@@ -133,7 +133,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhWorkManager workManager;
-    
+
     @Autowired
     private WarehouseManager warehouseManager;
 
@@ -660,7 +660,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                         whSeedingCollection.setLocationId(null);
                         whSeedingCollection.setTemporaryLocationId(null);
                         whSeedingCollection.setCollectionStatus(CollectionStatus.TO_SEED);
-                        updateRecPath(workCollectionCommand.getBatch(), workCollectionCommand.getContainerCode(), ouId);
+                        // @Gianni 2017-06-23 取消更新推荐路径状态
+                        // updateRecPath(workCollectionCommand.getBatch(),
+                        // workCollectionCommand.getContainerCode(), ouId);
                         break;
                     case Constants.TEMPORARY_STORAGE_LOCATION:
                         whSeedingCollection.setLocationId(null);
