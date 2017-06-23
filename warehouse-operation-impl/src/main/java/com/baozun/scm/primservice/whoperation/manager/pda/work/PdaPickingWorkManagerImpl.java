@@ -677,7 +677,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         statisticsCommand.setContainers(containers);
         // 库位排序
         List<Long> sortLocationIds = new ArrayList<Long>();
-        sortLocationIds = locationManager.sortByIds(locationIds, whOperationCommand.getOuId());
+        if(null != locationIds && 0 < locationIds.size()){
+            sortLocationIds = locationManager.sortByIds(locationIds, whOperationCommand.getOuId());    
+        }
         // 所有库位
         statisticsCommand.setLocationIds(sortLocationIds);
         // 库位上所有外部容器
