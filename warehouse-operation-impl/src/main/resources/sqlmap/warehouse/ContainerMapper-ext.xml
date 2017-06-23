@@ -358,7 +358,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
 		<select id="findContainerListByParam" parameterType="map" resultMap="ContainerResultExt" flushCache="false">
 			SELECT
-				<include refid="containerColumns" />
+				<include refid="containerColumnsExt" />
 			FROM
 				t_wh_container
 			WHERE
