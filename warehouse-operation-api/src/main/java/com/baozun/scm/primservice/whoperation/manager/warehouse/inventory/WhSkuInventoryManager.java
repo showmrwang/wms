@@ -432,4 +432,44 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @version 2017年6月9日
      */
     List<WhSkuInventory> findContainerSkuInventory(String containerCode, String latticNo, int target, Long ouId);
+    
+    /**
+     * 出库箱占用耗材库存
+     * 
+     * @author containerCode出库箱号
+     * @param skuId 商品ID
+     * @param ouId
+     * @param userId
+     * 
+     */
+    public Long occupyConsumablesInventory(String containerCode, Long skuId, Long ouId, Long userId);
+    
+    /**
+     * 取消出库箱占用的耗材库存
+     * 
+     * @author containerCode出库箱号
+     * @param skuId 商品ID
+     * @param ouId
+     * 
+     */
+    public Long cancelConsumablesInventory(String containerCode, Long skuId, Long ouId, Long userId);
+    
+    /**
+     * 货箱拆分移动库存操作
+     * 
+     * @param sourceContainerCode 源容器编号
+     * @param sourceContainerId 源容器ID
+     * @param containerLatticNo 货格号
+     * @param targetContainerCode目标出库箱
+     * @param scanObject 扫描对象(播种墙,小车,出库箱)
+     * @param scanSkuAttrIdsQty 商品属性为key,value是移动数量
+     * @param warehouse 仓库信息
+     * @param scanSkuQty 扫描数量
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param logId
+     * 
+     */
+    public void execuBoxMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticNo,String targetContainerCode , String scanObject, Map<String, List<String>> scanSkuAttrIdsQty, Warehouse warehouse,Double scanSkuQty,Long ouId, Long userId, String logId);
 }

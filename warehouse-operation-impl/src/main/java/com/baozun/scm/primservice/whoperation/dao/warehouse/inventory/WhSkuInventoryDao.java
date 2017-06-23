@@ -1261,4 +1261,13 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @version 2017年6月13日
      */
     List<WhSkuInventory> findListByInsideContainerId(@Param("insideContainerId") Long containerId, @Param("ouId") Long ouId);
+    
+    /**
+     * 出库箱或播种墙或小车货格库存移动功能查询出库存信息
+     * 
+     * @author feng.hu
+     * @param WhSkuInventoryCommand
+     * @return
+     */
+    public List<WhSkuInventoryCommand> findSkuInventoryAndSnInfo(@Param("outboundboxCode") String outboundboxCode, @Param("seedingWallCode") String seedingWallCode, @Param("outerContainerId") Long outerContainerId,@Param("containerLatticeNo") Integer containerLatticeNo, @Param("ouId") Long ouId);
 }
