@@ -423,4 +423,47 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where line.ou_id=#{ouId}
 			and line.operation_id=#{operationId}
 	</select>
+	
+	
+	 <select id="getWhSkuInventoryCmdByOccupationLineId" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand">
+			select 
+					distinct operLine.id as invId,
+					operLine.sku_id as skuId,
+					operLine.from_location_id as locationId,
+					operLine.from_outer_container_id as outerContainerId,
+					operLine.from_inside_container_id as insideContainerId,
+					operLine.qty as onHandQty,
+					operLine.inv_status as invStatus,
+					operLine.inv_type as invType,
+					operLine.batch_number as batchNumber,
+					operLine.mfg_date as mfgDate,
+					operLine.exp_date as expDate,
+					operLine.country_of_origin as countryOfOrigin,
+					operLine.inv_attr1 as invAttr1,
+					operLine.inv_attr2 as invAttr2,
+					operLine.inv_attr3 as invAttr3,
+					operLine.inv_attr4 as invAttr4,
+					operLine.inv_attr5 as invAttr5,
+					operLine.uuid as uuid,
+					operLine.ou_id as ouId
+					from 
+						t_wh_operation_line operLine
+                    where 
+                         operLine.ou_id = #{ouId}
+                    and operLine.from_location_id = #{locationId}
+                    and operLine.operation_id = #{operationId}
+                   <if test="outerContainerId!=null and outerContainerId!=''">
+					 and operLine.from_outer_container_id = #{outerContainerId}
+				   </if>
+				   <if test="insideContainerId!=null and insideContainerId!=''">
+								 and operLine.from_inside_container_id=#{insideContainerId}
+				   </if>
+				   <if test="outerContainerId==null">
+					 and operLine.from_outer_container_id is null
+				   </if>
+				   <if test="insideContainerId==null">
+					 and operLine.from_inside_container_id is null
+				   </if>
+				   and operLine.qty != operLine.complete_qty
+    </select>
 </mapper>
