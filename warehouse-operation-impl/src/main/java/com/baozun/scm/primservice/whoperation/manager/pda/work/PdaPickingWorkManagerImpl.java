@@ -1597,20 +1597,22 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
         }
         String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd); // 没有sn/残次信息
-        List<WhSkuInventoryCommand>  skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId,operationId, outerContainerId, insideContainerId);
-        if (null == skuInvList || skuInvList.size() == 0) {
-            throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
-        }
-        Boolean isExistInventory = false;
-        for(WhSkuInventoryCommand skuInvCmd : skuInvList){
-            String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
-            if(skuAttrId.equals(skuAttrIds)){
-                isExistInventory = true;
-                break;
+        if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货
+            List<WhSkuInventoryCommand>  skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId,operationId, outerContainerId, insideContainerId);
+            if (null == skuInvList || skuInvList.size() == 0) {
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
             }
-        }
-        if(!isExistInventory){
-            throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            Boolean isExistInventory = false;
+            for(WhSkuInventoryCommand skuInvCmd : skuInvList){
+                String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+                if(skuAttrId.equals(skuAttrIds)){
+                    isExistInventory = true;
+                    break;
+                }
+            }
+            if(!isExistInventory){
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
         }
         pdaPickingWorkCacheManager.cacheSkuAttrIdNoSn(locationId, skuAttrIds, insideContainerId, operationId);
         if (!StringUtil.isEmpty(command.getSkuSn()) || !StringUtils.isEmpty(command.getSkuDefect())) {
