@@ -4086,4 +4086,28 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             log.error("PdaPickingWorkManagerImpl createReplenishmentAfterPicking error" + e);
         }
     }
+    
+    public void isCreateReplenishmentWork(Long locationId,Long  ouId, Long operationId, String outerContainerCode, String insideContainerCode,Long userId){
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            ContainerCommand container = containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == container){
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = container.getId();
+        }
+        Long insideContainerId = null;
+        if(!StringUtils.isEmpty(insideContainerCode)){
+            ContainerCommand container = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if(null == container){
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = container.getId();
+        }
+        List<WhSkuInventoryCommand>  skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId,operationId, outerContainerId, insideContainerId);
+        if (null == skuInvList || skuInvList.size() == 0) {
+            //创建补货工作
+            this.createReplenishmentAfterPicking(operationId, ouId, userId);
+        }
+    }
 }
