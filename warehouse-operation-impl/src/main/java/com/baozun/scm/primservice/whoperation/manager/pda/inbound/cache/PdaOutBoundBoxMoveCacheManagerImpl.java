@@ -35,11 +35,6 @@ import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanSk
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.TipScanSkuCacheCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
-import com.baozun.scm.primservice.whoperation.constant.WhOutBoundBoxMoveType;
-import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
@@ -57,211 +52,10 @@ public class PdaOutBoundBoxMoveCacheManagerImpl extends BaseManagerImpl implemen
     protected static final Logger log = LoggerFactory.getLogger(PdaOutBoundBoxMoveCacheManagerImpl.class);
     
     @Autowired
-    InventoryStatisticManager inventoryStatisticManager;
-    @Autowired
-    private WhSkuInventoryDao whSkuInventoryDao;
+    InventoryStatisticManager inventoryStatisticManager;    
     @Autowired
     private CacheManager cacheManager;
-    @Autowired
-    private ContainerDao containerDao;
     
-    @Autowired
-    private WhLocationDao locationDao;
-    
-    /**
-     * pda出库箱整箱移动复核sku并缓存及提示后续操作判断
-     * @author feng.hu
-     * @param sourceContainerCode
-     * @param insideContainerSkuIds
-     * @param insideContainerSkuIdsQty
-     * @param skuCmd
-     * @param scanPattern
-     * @param logId
-     * @return
-     */
-    @Override
-    public CheckScanSkuResultCommand sysOutBoundboxContainerFullMoveCacheSkuAndCheck(String sourceContainerCode, Map<String, Set<Long>> insideContainerSkuIds,
-                      Map<String, Map<Long, Long>> insideContainerSkuIdsQty, WhSkuCommand skuCmd, Integer scanPattern, String logId) {
-        if (log.isInfoEnabled()) {
-            log.info("sysOutBoundboxContainerFullMoveCacheSkuAndCheck start, sourceContainerCode is:[{}],  scanPattern is:[{}], barCode is:[{}], logId is:[{}]",
-                    new Object[] {sourceContainerCode,scanPattern, (null != skuCmd ? skuCmd.getBarCode() : ""),logId});
-        }
-        //返回的对象
-        CheckScanSkuResultCommand cssrCmd = new CheckScanSkuResultCommand();
-
-        // 1.得到当前出库箱的所有商品并复核商品
-        Long skuId = skuCmd.getId();
-        Double skuQty = skuCmd.getScanSkuQty();
-        //获取缓存中的出库箱包含的所有商品ID
-        Set<Long> sourceSkusIds = insideContainerSkuIds.get(sourceContainerCode);
-        boolean skuExists = false;
-        //循环判断当前扫描的商品是否包含在缓存的出库箱商品中，以及扫描数量
-        for (Long sId : sourceSkusIds) {
-            if (0 == skuId.compareTo(sId)) {
-                skuExists = true;
-                Map<Long, Long> sourceSkuAndQty = insideContainerSkuIdsQty.get(sourceContainerCode);
-                Long sourceSkuQty = sourceSkuAndQty.get(skuId);
-                if (WhScanPatternType.ONE_BY_ONE_SCAN == scanPattern) {
-                    TipScanSkuCacheCommand tipScanSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode);
-                    ArrayDeque<Long> oneByOneScanSkuIds = null;
-                    if (null != tipScanSkuCmd) {
-                        oneByOneScanSkuIds = tipScanSkuCmd.getOneByOneScanSkuIds();
-                    }
-                    if (null != oneByOneScanSkuIds && !oneByOneScanSkuIds.isEmpty()) {
-                        boolean isExists = false;
-                        Iterator<Long> iter = oneByOneScanSkuIds.iterator();
-                        while (iter.hasNext()) {
-                            Long value = iter.next();
-                            if (null == value) value = -1L;
-                            if (0 == skuId.compareTo(new Long(value))) {
-                                isExists = true;
-                                break;
-                            }
-                        }
-                        long value = 0L;
-                        if (false == isExists) {
-                            oneByOneScanSkuIds.addFirst(skuId);// 先加入逐件扫描的队列
-                            tipScanSkuCmd.setOneByOneScanSkuIds(oneByOneScanSkuIds);
-                        } else {
-                            // 取到扫描的数量
-                            String cacheValue = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + skuId.toString());
-                            if (!StringUtils.isEmpty(cacheValue)) {
-                                value = new Long(cacheValue).longValue();
-                            }
-                        }
-                        if ((value + skuQty.longValue()) > sourceSkuQty.longValue()) {
-                            log.error("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, value + skuQty.longValue(), sourceSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_OUT_BOUND_BOX_QTY, new Object[] {value + skuQty.longValue()});
-                        }
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + skuId.toString(), skuQty.intValue());
-                        if (cacheValue == sourceSkuQty.longValue()) {
-                            ArrayDeque<Long> cacheSkuIds = tipScanSkuCmd.getScanSkuIds();
-                            if (null == cacheSkuIds || cacheSkuIds.isEmpty()) {
-                                cacheSkuIds = new ArrayDeque<Long>();
-                            }
-                            cacheSkuIds.addFirst(skuId);
-                            tipScanSkuCmd.setScanSkuIds(cacheSkuIds);
-                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode, tipScanSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                            if (isCacheAllExists(sourceSkusIds, cacheSkuIds)) {
-                                // 全部商品已复核完毕
-                                cssrCmd.setPutaway(true);// 可结束
-                            } else {
-                                // 继续扫描下一件商品
-                                cssrCmd.setNeedScanSku(true);
-                            }
-                            break;
-                        } else if (cacheValue < sourceSkuQty.longValue()) {
-                            // 继续扫描下一件商品
-                            cssrCmd.setNeedScanSku(true);
-                            break;
-                        } else {
-                            log.error("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, sourceSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_OUT_BOUND_BOX_QTY, new Object[] {cacheValue});
-                        }
-                    } else {
-                        // 不考虑功能参数复合过程中改变的情况
-                        TipScanSkuCacheCommand cacheSkuCmd = new TipScanSkuCacheCommand();
-                        cacheSkuCmd.setPutawayPatternDetailType(WhOutBoundBoxMoveType.FULL_BOX_MOVE);
-                        cacheSkuCmd.setInsideContainerCode(sourceContainerCode);
-                        ArrayDeque<Long> oneByOneCacheSkuIds = new ArrayDeque<Long>();
-                        oneByOneCacheSkuIds.addFirst(skuId);
-                        cacheSkuCmd.setOneByOneScanSkuIds(oneByOneCacheSkuIds);
-                        long value = 0L;
-                        if ((value + skuQty.longValue()) > sourceSkuQty.longValue()) {
-                            log.error("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, sku scan qty has already more than rcvd qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, value + skuQty.longValue(), sourceSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_OUT_BOUND_BOX_QTY, new Object[] {value + skuQty.longValue()});
-                        }
-                        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + skuId.toString(), skuQty.intValue());
-                        if (cacheValue == sourceSkuQty.longValue()) {
-                            ArrayDeque<Long> cacheSkuIds = new ArrayDeque<Long>();
-                            cacheSkuIds.addFirst(skuId);
-                            cacheSkuCmd.setScanSkuIds(cacheSkuIds);
-                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode, cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                            if (isCacheAllExists(sourceSkusIds, cacheSkuIds)) {
-                                // 全部商品已复核完毕
-                                cssrCmd.setPutaway(true);// 可结束
-                            } else {
-                                // 继续扫描下一件商品
-                                cssrCmd.setNeedScanSku(true);
-                            }
-                            break;
-                        } else if (cacheValue < sourceSkuQty.longValue()) {
-                            // 继续扫描下一件商品
-                            cssrCmd.setNeedScanSku(true);
-                            break;
-                        } else {
-                            log.error("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, sku scan qty has already more than outbound box qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", skuId, cacheValue, sourceSkuQty, logId);
-                            throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_IS_MORE_THAN_OUT_BOUND_BOX_QTY, new Object[] {cacheValue});
-                        }
-                    }
-                } else {
-                    if (skuQty.longValue() == sourceSkuQty.longValue()) {
-                        TipScanSkuCacheCommand cacheSkuCmd = cacheManager.getObject(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode);
-                        ArrayDeque<Long> cacheSkuIds = null;
-                        if (null != cacheSkuCmd) {
-                            cacheSkuIds = cacheSkuCmd.getScanSkuIds();
-                        }
-                        if (null != cacheSkuIds && !cacheSkuIds.isEmpty()) {
-                            boolean isExists = false;
-                            Iterator<Long> iter = cacheSkuIds.iterator();
-                            while (iter.hasNext()) {
-                                Long value = iter.next();
-                                if (null == value) value = -1L;
-                                if (0 == value.compareTo(skuId)) {
-                                    isExists = true;
-                                    break;
-                                }
-                            }
-                            if (false == isExists) {
-                                cacheSkuIds.addFirst(skuId);
-                                cacheSkuCmd.setScanSkuIds(cacheSkuIds);
-                                cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode, cacheSkuCmd, CacheConstants.CACHE_ONE_DAY);
-                                if (isCacheAllExists(sourceSkusIds, cacheSkuIds)) {
-                                    // 全部商品已复核完毕
-                                    cssrCmd.setPutaway(true);// 可上架
-                                } else {
-                                    // 继续复核
-                                    cssrCmd.setNeedScanSku(true);
-                                }
-                                break;
-                            } else {
-                                log.error("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, scan sku has already checked, containerCode is:[{}], scanSkuId is:[{}], logId is:[{}]", sourceContainerCode, skuId, logId);
-                                throw new BusinessException(ErrorCodes.OUT_BOUND_BOX_SKU_HAS_ALREADY_SCANNED, new Object[] {sourceContainerCode, skuId});
-                            }
-                        } else {
-                            TipScanSkuCacheCommand tipCmd = new TipScanSkuCacheCommand();
-                            tipCmd.setPutawayPatternDetailType(WhOutBoundBoxMoveType.FULL_BOX_MOVE);
-                            tipCmd.setInsideContainerCode(sourceContainerCode);
-                            ArrayDeque<Long> tipSkuIds = new ArrayDeque<Long>();
-                            tipSkuIds.addFirst(skuId);
-                            tipCmd.setScanSkuIds(tipSkuIds);
-                            cacheManager.setObject(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode, tipCmd, CacheConstants.CACHE_ONE_DAY);
-                            if (isCacheAllExists(sourceSkusIds, tipSkuIds)) {
-                                // 全部商品已复核完毕
-                                cssrCmd.setPutaway(true);// 可结束
-                            } else {
-                                // 继续扫描商品
-                                cssrCmd.setNeedScanSku(true);
-                            }
-                            break;
-                        }
-                    } else {
-                        log.error("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, scan sku qty is not equal with outbound box inv qty, containerCode is:[{}], scanSkuId is:[{}], logId is:[{}]", sourceContainerCode, skuId, logId);
-                        throw new BusinessException(ErrorCodes.OUT_BOUND_BOX_SKU_QTY_ERROR, new Object[] {sourceContainerCode, skuId});
-                    }
-                }
-            }
-        }
-        if (false == skuExists) {
-            log.error("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, scan sku is not found in current outbountd box error, containerCode is:[{}], scanSkuId is:[{}], logId is:[{}]", sourceContainerCode, skuId, logId);
-            throw new BusinessException(ErrorCodes.OUT_BOUND_BOX_NOT_FOUND_SCAN_SKU_ERROR, new Object[] {sourceContainerCode});
-        }
-        if (log.isInfoEnabled()) {
-            log.info("sysOutBoundboxContainerFullMoveCacheSkuAndCheck end, sourceContainerCode is:[{}],  scanPattern is:[{}], barCode is:[{}], logId is:[{}]",
-                    new Object[] {sourceContainerCode,scanPattern, (null != skuCmd ? skuCmd.getBarCode() : ""),logId});
-        }
-        return cssrCmd;
-    }
     
     /**
      * pda出库箱整箱移动复核sku并缓存及提示后续操作判断
@@ -451,30 +245,30 @@ public class PdaOutBoundBoxMoveCacheManagerImpl extends BaseManagerImpl implemen
         return cssrCmd;
     }
     
-    private boolean isCacheAllExists(Set<Long> ids, ArrayDeque<Long> cacheKeys) {
-        boolean allExists = true;
-        if (null != cacheKeys && !cacheKeys.isEmpty()) {
-            for (Long id : ids) {
-                Long cId = id;
-                boolean isExists = false;
-                Iterator<Long> iter = cacheKeys.iterator();
-                while (iter.hasNext()) {
-                    Long value = iter.next();
-                    if (null == value) value = -1L;
-                    if (0 == value.compareTo(cId)) {
-                        isExists = true;
-                        break;
-                    }
-                }
-                if (false == isExists) {
-                    allExists = false;
-                }
-            }
-        } else {
-            allExists = false;
-        }
-        return allExists;
-    }
+//    private boolean isCacheAllExists(Set<Long> ids, ArrayDeque<Long> cacheKeys) {
+//        boolean allExists = true;
+//        if (null != cacheKeys && !cacheKeys.isEmpty()) {
+//            for (Long id : ids) {
+//                Long cId = id;
+//                boolean isExists = false;
+//                Iterator<Long> iter = cacheKeys.iterator();
+//                while (iter.hasNext()) {
+//                    Long value = iter.next();
+//                    if (null == value) value = -1L;
+//                    if (0 == value.compareTo(cId)) {
+//                        isExists = true;
+//                        break;
+//                    }
+//                }
+//                if (false == isExists) {
+//                    allExists = false;
+//                }
+//            }
+//        } else {
+//            allExists = false;
+//        }
+//        return allExists;
+//    }
     
     private boolean isCacheAllExists2(Set<String> ids, ArrayDeque<String> cacheKeys) {
         boolean allExists = true;

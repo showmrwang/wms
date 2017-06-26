@@ -142,4 +142,16 @@ public interface PdaOutBoundBoxMoveManager extends BaseManager{
        * @return
        */
       public void cancelScanSku(String sourceContainerCode,Integer containerLatticNo, String scanType, Long ouId,String logId,Long userId);
+      
+      /***
+       * 取消出库箱移库操作的素有缓存
+       * @param containerCode
+       * @param targetContainerCode
+       * @param boxMove
+       * @param ouId
+       * @param logId
+       * @param userId
+       * @return
+       */
+      public void moveFinishScanContainer(String sourceContainerCode,String targetContainerCode,WhFunctionOutboundboxMove boxMove, Long ouId,String logId,Long userId);
 }

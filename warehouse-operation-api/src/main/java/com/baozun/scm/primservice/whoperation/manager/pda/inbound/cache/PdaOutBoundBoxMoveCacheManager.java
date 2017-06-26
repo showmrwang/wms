@@ -38,21 +38,6 @@ public interface PdaOutBoundBoxMoveCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    public CheckScanSkuResultCommand sysOutBoundboxContainerFullMoveCacheSkuAndCheck(String sourceContainerCode, Map<String, Set<Long>> insideContainerSkuIds,
-                                  Map<String, Map<Long, Long>> insideContainerSkuIdsQty, WhSkuCommand skuCmd, Integer scanPattern, String logId);
-    
-    
-    /**
-     * pda出库箱整箱移动复核sku并缓存及提示后续操作判断
-     * @author feng.hu
-     * @param sourceContainerCode
-     * @param insideContainerSkuIds
-     * @param insideContainerSkuIdsQty
-     * @param skuCmd
-     * @param scanPattern
-     * @param logId
-     * @return
-     */
     public CheckScanSkuResultCommand sysOutBoundboxContainerSplitMoveCacheSkuAndCheck(String sourceContainerCode, Map<String, Set<String>> insideContainerSkuAttrIds,
                                Map<String, Long> skuAttrIdsQty,Map<String, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, WhSkuCommand skuCmd, Integer movePattern, String logId);
 

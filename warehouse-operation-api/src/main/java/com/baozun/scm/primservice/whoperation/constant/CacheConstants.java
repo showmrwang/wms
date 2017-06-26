@@ -64,6 +64,12 @@ public final class CacheConstants {
     public static final String SCAN_SKU_QUEUE_SN_COUNT = "SCAN_SKU_QUEUE_SN_COUNT";
     
     public static final String SUGGEST_SCAN_SKU_QUEUE_SN = "SUGGEST_SCAN_SKU_QUEUE_SN";
+    /**货箱拆分整箱移动时缓存信息*/
+    public static final String SCAN_SKU_SN_FOR_CONTAINER = "SCAN_SKU_SN_FOR_CONTAINER_";
+    /**货箱拆分整箱移动时缓存数量*/
+    public static final String SCAN_SKU_QTY_FOR_CONTAINER = "SCAN_SKU_QTY_FOR_CONTAINER_";
+    /** 已扫描Sku数量计数器 */
+    public static final String SCAN_SKU_QTY_COUNT = "SCAN_SKU_QTY_COUNT_";
     
     /***
      *  缓存sku,sn

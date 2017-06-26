@@ -462,14 +462,14 @@ public interface WhSkuInventoryManager extends BaseManager {
      * @param containerLatticNo 货格号
      * @param targetContainerCode目标出库箱
      * @param scanObject 扫描对象(播种墙,小车,出库箱)
-     * @param scanSkuAttrIdsQty 商品属性为key,value是移动数量
+     * @param scanSkuAttrIdsSn 商品属性为key,value是移动SN信息
      * @param warehouse 仓库信息
-     * @param scanSkuQty 扫描数量
+     * @param scanSkuAttrIdsQty 商品属性为key,value是移动数量
      * @param funcId
      * @param ouId
      * @param userId
      * @param logId
      * 
      */
-    public void execuBoxMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticNo,String targetContainerCode , String scanObject, Map<String, List<String>> scanSkuAttrIdsQty, Warehouse warehouse,Double scanSkuQty,Long ouId, Long userId, String logId);
+    public void execuBoxMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticNo,String targetContainerCode , String scanObject, Map<String, List<String>> scanSkuAttrIdsSn, Warehouse warehouse,Map<String,Double> scanSkuAttrIdsQty,Long ouId, Long userId, String logId);
 }

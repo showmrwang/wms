@@ -11198,9 +11198,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param containerLatticNo 货格号
      * @param targetContainerCode目标出库箱
      * @param scanObject 扫描对象(播种墙,小车,出库箱)
-     * @param scanSkuAttrIdsQty 商品属性为key,value是移动数量
+     * @param scanSkuAttrIdsSn 商品属性为key,value是移动SN信息
      * @param warehouse 仓库信息
-     * @param scanSkuQty 扫描商品数量
+     * @param scanSkuAttrIdsQty 商品属性为key,value是移动数量
      * @param funcId
      * @param ouId
      * @param userId
@@ -11209,9 +11209,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void execuBoxMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode, String scanObject, Map<String, List<String>> scanSkuAttrIdsQty, Warehouse warehouse,Double scanSkuQty, Long ouId, Long userId, String logId) {   
+    public void execuBoxMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode, String scanObject, Map<String, List<String>> scanSkuAttrIdsSn, Warehouse warehouse,Map<String,Double> scanSkuAttrIdsQty, Long ouId, Long userId, String logId) {   
         log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is start");
-        if (StringUtils.isEmpty(sourceContainerCode) || StringUtils.isEmpty(targetContainerCode) || StringUtils.isEmpty(scanObject) || null == scanSkuAttrIdsQty || scanSkuAttrIdsQty.size() == 0) {
+        if (StringUtils.isEmpty(sourceContainerCode) || StringUtils.isEmpty(targetContainerCode) || StringUtils.isEmpty(scanObject) || null == scanSkuAttrIdsSn || scanSkuAttrIdsSn.size() == 0 || null == scanSkuAttrIdsQty || scanSkuAttrIdsQty.size() == 0) {
             // 传入需要变动的库存为空
             log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is end, param is empty.");
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -11241,7 +11241,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is end, inventory list empty.");
             throw new BusinessException(ErrorCodes.MOVE_INVENTORY_NOT_EXIST);
         }
-        Set<String> scanSkuAttrIds = scanSkuAttrIdsQty.keySet();
+        Set<String> scanSkuAttrIds = scanSkuAttrIdsSn.keySet();
         //循环扫描数量移动库存
         for (String scanSkuAttrId : scanSkuAttrIds) {
             if (StringUtils.isEmpty(scanSkuAttrId)) {
@@ -11250,13 +11250,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             long scanSurplusQty = 0;
             int invSurplusQty = 0;             
             //获取扫描数量
-            int scanQty = scanSkuQty.intValue();
+            Double scanQty = scanSkuAttrIdsQty.get(scanSkuAttrId);
             if (scanQty == 0) {
                 continue;
             }
-            scanSurplusQty = scanQty;
+            scanSurplusQty = scanQty.longValue();
             //通过缓存获取每个key下面的所有含有sn信息的key
-            List<String> skuAttrSnIds = scanSkuAttrIdsQty.get(scanSkuAttrId);
+            List<String> skuAttrSnIds = scanSkuAttrIdsSn.get(scanSkuAttrId);
             //记录已经更新过的含有SN信息的key
             Map<String,String> upSkuAttrSnIds = new HashMap<String,String>();
             //循环出库箱库存进行移库操作
@@ -11283,7 +11283,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     scanSurplusQty = scanSurplusQty-onHandQty.longValue();
                 } else {
                     moveInv.setOnHandQty(new Double(scanSurplusQty));
-                    invSurplusQty = onHandQty.intValue()-scanQty;
+                    invSurplusQty = onHandQty.intValue()-scanQty.intValue();
                     scanSurplusQty = 0;
                     
                 }
@@ -11365,8 +11365,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                             if (currentSnDefect.equals(snDefect) && !upSkuAttrSnIds.containsKey(skuAttrSnId)) {
                                 WhSkuInventorySn moveInvSn = new WhSkuInventorySn();
                                 BeanUtils.copyProperties(snCmd, moveInvSn);
-                                moveInv.setId(null);
-                                moveInv.setUuid(newUuid);
+                                moveInvSn.setId(null);
+                                moveInvSn.setUuid(newUuid);
                                 whSkuInventorySnDao.insert(moveInvSn);
                                 insertGlobalLog(GLOBAL_LOG_INSERT, moveInvSn, ouId, userId, null, null);
                                 // 记录SN日志
