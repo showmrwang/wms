@@ -64,5 +64,14 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
      * @return
      */
     Long findListCountByParamExt(WhPrintInfo whPrintInfo);
+    
+    /**
+     * 根据出库单号查询打印信息
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    List<WhPrintInfo> findPrintInfoByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
 }
