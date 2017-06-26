@@ -308,6 +308,7 @@ public class CreateInWarehouseMoveWorkManagerImpl extends BaseManagerImpl implem
             this.saveInWarehouseMoveWorkOperationLine(inWarehouseMoveWorkCode, inWarehouseMoveWorkOperationCode, whSkuInventoryAllocatedCommand);
         } catch (Exception e) {
             log.error("", e);
+            log.error("Exception");
             throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
         }
         return inWarehouseMoveWorkCode;    

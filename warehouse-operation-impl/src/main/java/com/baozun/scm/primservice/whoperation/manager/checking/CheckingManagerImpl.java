@@ -15,6 +15,7 @@
 package com.baozun.scm.primservice.whoperation.manager.checking;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -725,6 +726,8 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void printDefect(WhCheckingResultCommand whCheckingResultCommand) {
         Long ouId = whCheckingResultCommand.getOuId();
+        Long userId = whCheckingResultCommand.getUserId();
+        Long odoId = whCheckingResultCommand.getWhOdo().getId();
         // 查询功能是否配置复核打印单据配置
         WhFunctionOutBound whFunctionOutBound = whFunctionOutBoundManager.findByFunctionIdExt(whCheckingResultCommand.getFunctionId(), ouId);
         String checkingPrint = whFunctionOutBound.getCheckingPrint();
@@ -737,6 +740,9 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
                     WhPrintInfo whPrintInfo = new WhPrintInfo();
+                    whPrintInfo.setOdoId(odoId);
+                    whPrintInfo.setOdoCode(whCheckingResultCommand.getWhOdo().getOdoCode());
+                    whPrintInfo.setWaybillCode(whCheckingResultCommand.getWhOdodeliveryInfo().getWaybillCode());
                     whPrintInfo.setFacilityId(whCheckingCommand.getFacilityId());
                     if (null != whCheckingCommand.getContainerId()) {
                         whPrintInfo.setContainerId(whCheckingCommand.getContainerId());
@@ -760,25 +766,32 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                     whPrintInfo.setOutboundboxCode(whOutboundbox.getOutboundboxCode());
                     whPrintInfo.setPrintType(checkingPrintArray[i]);
                     whPrintInfo.setPrintCount(1);
+                    whPrintInfo.setCreateId(userId);
+                    whPrintInfo.setCreateTime(new Date());
+                    whPrintInfo.setLastModifyTime(new Date());
+                    whPrintInfo.setModifiedId(userId);
                     whPrintInfoDao.insert(whPrintInfo);
                 }
                 try {
                     if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
                         // 装箱清单
-                        this.printPackingList(idsList, whCheckingResultCommand.getUserId(), ouId);
+                        this.printPackingList(idsList, userId, ouId);
                     }
                     if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
-                        idsList.add(whCheckingResultCommand.getWhOdo().getId());
-                        // 销售清单
-                        this.printSalesList(idsList, whCheckingResultCommand.getUserId(), ouId);
+                        List<WhPrintInfo> printInfoLst = whPrintInfoDao.findPrintInfoByOdoId(odoId, ouId);
+                        if(null != printInfoLst && 1 == printInfoLst.size()){
+                            idsList.add(odoId);
+                            // 销售清单
+                            this.printSalesList(idsList, userId, ouId);    
+                        }
                     }
                     if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                         // 面单
-                        this.printSinglePlane(outboundBoxCode, whCheckingResultCommand.getWhOdodeliveryInfo().getWaybillCode(), whCheckingResultCommand.getUserId(), ouId, whCheckingResultCommand.getWhOdo().getId());
+                        this.printSinglePlane(outboundBoxCode, whCheckingResultCommand.getWhOdodeliveryInfo().getWaybillCode(), userId, ouId, odoId);
                     }
                     if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
                         // 箱标签
-                        this.printBoxLabel(outboundBoxCode, whCheckingResultCommand.getUserId(), ouId, whCheckingResultCommand.getWhOdo().getId());
+                        this.printBoxLabel(outboundBoxCode, userId, ouId, odoId);
                     }
                 } catch (Exception e) {
                     log.error(e + "");
@@ -786,6 +799,5 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
             }
         }
     }
-
 
 }

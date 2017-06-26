@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.system.SysTimedTaskLogDao">
+	<resultMap id="SysTimedTaskLogResultExt" type="com.baozun.scm.primservice.whoperation.model.system.SysTimedTaskLog">
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="sysTimedTaskLogColumnsExt">
+	    <![CDATA[
+	        	id as id,
+	        	task_bean_name as taskBeanName,
+	        	task_method_name as taskMethodName,
+	        	ou_code as ouCode,
+	        	document_code as documentCode,
+	        	document_id as documentId,
+	        	time_start as timeStart,
+	        	time_end as timeEnd,
+	        	time_spent as timeSpent,
+	        	handle_qty as handleQty,
+	        	is_success as isSuccess
+	    ]]>
+	</sql>
+	
+	<sql id="sysTimedTaskLogDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="taskBeanName!=null and taskBeanName!=''">
+					and task_bean_name = #{taskBeanName}
+				</if>
+	       
+	       
+		       <if test="taskMethodName!=null and taskMethodName!=''">
+					and task_method_name = #{taskMethodName}
+				</if>
+	       
+	       
+		       <if test="documentCode!=null and documentCode!=''">
+					and document_code = #{documentCode}
+				</if>
+	       
+				<if test="documentId!=null">
+					and document_id = #{documentId}
+				</if>
+	       
+				<if test="timeStart!=null">
+					and time_start = #{timeStart}
+				</if>
+	       
+				<if test="timeEnd!=null">
+					and time_end = #{timeEnd}
+				</if>
+	       
+	       
+		       <if test="timeSpent!=null and timeSpent!=''">
+					and time_spent = #{timeSpent}
+				</if>
+	       
+				<if test="handleQty!=null">
+					and handle_qty = #{handleQty}
+				</if>
+	       
+				<if test="isSuccess!=null">
+					and is_success = #{isSuccess}
+				</if>
+		</where>
+	</sql>
+	
+</mapper>

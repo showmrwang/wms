@@ -152,7 +152,7 @@ public interface PdaConcentrationManager extends BaseManager {
      * 
      * @param destinationType
      */
-    void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long ouId);
+    void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long userId, Long ouId);
 
     /**
      * 记录容器到播种墙上集货信息

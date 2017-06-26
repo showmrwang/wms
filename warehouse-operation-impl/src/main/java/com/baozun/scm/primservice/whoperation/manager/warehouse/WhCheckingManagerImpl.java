@@ -766,9 +766,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 checking = whCheckingList.get(0);
                 if (null != checking.getContainerLatticeNo()) {
                     // 货格
-                    // whCheckingCommand.setBatch(input);
-                    // whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
-                    // return true;
                     int size = whCheckingList.size();
                     if (1 == size) {
                         // 只有一个货格
@@ -799,14 +796,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         // 多个货格
                         if (null != checking.getFacilityId()) {
                             // 播种墙加货格
-                            // Long facilityId = checking.getFacilityId();
-                            // WhOutboundFacility seedingwall =
-                            // whOutboundFacilityDao.findByIdAndOuId(facilityId, ouId);
-                            // whCheckingCommand.setFacilityId(facilityId);
-                            // whCheckingCommand.setSeedingWallCode(seedingwall.getFacilityCode());
-                            // whCheckingCommand.setPickingMode(checking.getPickingMode());
-                            // whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO);
-                            // whCheckingCommand.setTip(Constants.TIP_CONTAINER_OR_FACILITY);
                             whCheckingCommand.setTip(Constants.ORDER_IN_MULTI_FACILITY);
                         } else {
                             // 小车加货格
@@ -834,6 +823,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     }
                 }
                 if (null != checking.getContainerId()) {
+                    int size = whCheckingList.size();
                     // 周转箱
                     if (Constants.PICKING_MODE_BATCH_SINGLE.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_GROUP.equals(checking.getPickingMode()) || Constants.PICKING_MODE_BATCH_SECKILL.equals(checking.getPickingMode())
                             || Constants.PICKING_MODE_BATCH_MAIN.equals(checking.getPickingMode())) {
@@ -845,13 +835,19 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         whCheckingCommand.setPickingMode(checking.getPickingMode());
                         whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
                     } else {
-                        // 普通摘果
-                        whCheckingCommand.setTip(Constants.TIP_GENERAL_CHECKING);
-                        whCheckingCommand.setContainerId(checking.getContainerId());
-                        Container container = containerDao.findByIdExt(checking.getContainerId(), ouId);
-                        whCheckingCommand.setContainerCode(container.getCode());
-                        whCheckingCommand.setPickingMode(checking.getPickingMode());
-                        whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
+                        if (size > 1) {
+                            // 一个出库单占用多个周转箱, 需要提示扫描周转箱
+                            whCheckingCommand.setTip(Constants.TIP_BATCH_MULTIPLE_CONTAINER);
+                        } else {
+                            // 一个出库单只有一个周转箱
+                            // 普通摘果
+                            whCheckingCommand.setTip(Constants.TIP_GENERAL_CHECKING);
+                            whCheckingCommand.setContainerId(checking.getContainerId());
+                            Container container = containerDao.findByIdExt(checking.getContainerId(), ouId);
+                            whCheckingCommand.setContainerCode(container.getCode());
+                            whCheckingCommand.setPickingMode(checking.getPickingMode());
+                            whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
+                        }
                     }
                 }
                 // 可以执行复核操作
@@ -943,6 +939,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
         log.info("whcheckingManagerImpl checkingByOdo is start");
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
+        List<String> snList = cmd.getSn();
+        if (null != snList && !snList.isEmpty()) {
+            // 如果待复核商品是sn商品 需要通过扫描的sn号重新匹配复核明细行
+            checkingLineList = matchCheckLine(checkingLineList, snList, ouId);
+        }
         String outboundbox = cmd.getOutboundBoxCode();
         Long outboundboxId = cmd.getOutboundboxId();
         Long facilityId = cmd.getFacilityId();
@@ -1024,10 +1025,20 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         return null;
     }
 
+    /**
+     * [业务方法] 重新匹配复核明细
+     * @param checkingLineList
+     * @param ouId
+     * @return
+     */
+    private List<WhCheckingLineCommand> matchCheckLine(List<WhCheckingLineCommand> checkingLineList, List<String> snList, Long ouId) {
+
+        return checkingLineList;
+    }
+
     private WhOutboundConsumable createOutboundConsumable(WhOutboundFacilityCommand facilityCommand, String outboundBoxCode, WhCheckingCommand orgChecking, String locationCode, Long outboundBoxId, WhOdo whOdo, Long userId, Long ouId, String logId) {
 
         WhOutboundConsumable whOutboundConsumable = new WhOutboundConsumable();
-
 
         WhLocationSkuVolumeCommand locationSkuVolume = whLocationSkuVolumeManager.findFacilityLocSkuVolumeByLocSku(facilityCommand.getId(), locationCode, outboundBoxId, ouId);
         if (null == locationSkuVolume) {
@@ -1295,30 +1306,30 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 uomCode = lenUom.getUomCode();
                 uomRate = lenUom.getConversionRate();
                 weightUomConversionRate.put(uomCode, uomRate);
-                log.info("whcheckingManagerImpl sku uomCode:"+uomCode);
-                log.info("whcheckingManagerImpl sku uomRate:"+uomRate);
+                log.info("whcheckingManagerImpl sku uomCode:" + uomCode);
+                log.info("whcheckingManagerImpl sku uomRate:" + uomRate);
             }
         }
         SimpleWeightCalculator weightCalculator = new SimpleWeightCalculator(weightUomConversionRate);
-        log.info("whcheckingManagerImpl checkingLineList:"+ checkingLineList.size());
+        log.info("whcheckingManagerImpl checkingLineList:" + checkingLineList.size());
         Double sum = 0.0;
         for (WhCheckingLineCommand whCheckingLineCommand : checkingLineList) {
             Double actualWeight = 0.0;
             WhSkuCommand whSkuCommand = whSkuManager.getSkuBybarCode(whCheckingLineCommand.getSkuBarCode(), whCheckingLineCommand.getCustomerCode(), ouId);
-            log.info("whcheckingManagerImpl sku weight:"+whSkuCommand.getWeight());
-            log.info("whcheckingManagerImpl sku qty:"+ whCheckingLineCommand.getCheckingQty());
+            log.info("whcheckingManagerImpl sku weight:" + whSkuCommand.getWeight());
+            log.info("whcheckingManagerImpl sku qty:" + whCheckingLineCommand.getCheckingQty());
             actualWeight = weightCalculator.calculateStuffWeight(whSkuCommand.getWeight()) * whCheckingLineCommand.getCheckingQty();
-            log.info("whcheckingManagerImpl actualWeight:"+ actualWeight);
+            log.info("whcheckingManagerImpl actualWeight:" + actualWeight);
             sum += actualWeight;
 
         }
         // @Gianni 计重包括耗材重量
         WhSkuCommand consumableSku = whSkuManager.findBySkuIdAndOuId(outboundboxId, ouId);
         if (null != consumableSku) {
-            log.info("whcheckingManagerImpl consumableSku:"+ consumableSku.getWeight());
+            log.info("whcheckingManagerImpl consumableSku:" + consumableSku.getWeight());
             sum += consumableSku.getWeight();
         }
-        log.info("whcheckingManagerImpl sum:"+ sum);
+        log.info("whcheckingManagerImpl sum:" + sum);
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
         if (null != odoPackageInfo) {
             odoPackageInfo.setCalcWeight(sum);
@@ -1404,7 +1415,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     if (null == facility) {
                         throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
                     }
-                    facility.setStatus("1");
+                    facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_2));
                     facility.setBatch(null);
                     whOutboundFacilityDao.saveOrUpdateByVersion(facility);
                 }

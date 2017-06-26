@@ -595,13 +595,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and ou_id = #{ouId}
 	</delete>
 	
-	<select id="countByLoctionId" resultType="long">
+	<select id="countSkuByLoctionId" resultType="long">
 		select
-			count(1)
+			sku_id
 		from 
 			t_wh_sku_inventory_tobefilled
 		where
 			location_id = #{loctionId}
 			and ou_id = #{ouId}
+		group by 
+			sku_id
 	</select>
 </mapper>

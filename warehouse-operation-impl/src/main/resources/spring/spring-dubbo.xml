@@ -213,5 +213,7 @@
 
 
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportServiceManager" ref="odoTransportServiceManager" />
+    
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SysTimedTaskLogManager" ref="sysTimedTaskLogManager" />
 
 </beans>
