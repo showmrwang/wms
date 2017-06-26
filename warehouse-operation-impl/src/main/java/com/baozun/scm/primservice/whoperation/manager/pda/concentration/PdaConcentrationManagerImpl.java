@@ -34,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -54,11 +55,13 @@ import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilityManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollection;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingCollectionLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhDistributionPatternRule;
@@ -130,6 +133,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhWorkManager workManager;
+
+    @Autowired
+    private WarehouseManager warehouseManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -443,23 +449,33 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         String targetPosUrl = "";
         String targetPos = "";
+        String targetPosCheck = "";
         // String containerCode = rfp.getContainerCode();
         // String batch = command.getBatch();
         // Long ouId = command.getOuId();
         // WhFacilityRecPath whFacilityRecPath =
         // whFacilityRecPathDao.findWhFacilityRecPathByBatchAndContainer(batch, containerCode,
         // ouId);
-        String transitLocationCode = rfp.getTransitLocationCheckCode(); // 中转库位编码
+        String transitLocationCode = rfp.getTransitLocationCode(); // 中转库位编码
+        String transitLocationCheckCode = rfp.getTransitLocationCheckCode(); // 中转库位校验码
         String temporaryStorageLocationCode = rfp.getTemporaryStorageLocationCode(); // 暂存区域库位编码
+        String temporaryStorageLocationCheckCode = rfp.getTemporaryStorageLocationCheckCode(); // 暂存区域库位校验码
         String seedingwallCode = rfp.getSeedingwallCode(); // 播种墙编码
+        String seedingwallCheckCode = rfp.getSeedingwallCheckCode(); // 播种墙校验码
         if (StringUtils.hasText(transitLocationCode) && CacheConstants.PDA_CACHE_COLLECTION_REC.equals(cacheKey)) {
             // 有中转库位且是推荐播种墙逻辑
             targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_5 : Constants.TARGET_6;
+            // targetPos = (!command.getIsScanCheckCode()) ? transitLocationCode :
+            // transitLocationCheckCode;
             targetPos = transitLocationCode;
+            targetPosCheck = transitLocationCheckCode;
         } else {
             if (!StringUtils.hasText(seedingwallCode)) {
                 targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_3 : Constants.TARGET_4;
+                // targetPos = (!command.getIsScanCheckCode()) ? temporaryStorageLocationCode :
+                // temporaryStorageLocationCheckCode;
                 targetPos = temporaryStorageLocationCode;
+                targetPosCheck = temporaryStorageLocationCheckCode;
             } else {
                 // isRecPath: 如果是集货操作, 设为false; 如果是推荐操作, 设为true
                 int flag = checkSeedingWallCapacity(seedingwallCode, rfp.getBatch(), rfp.getOuId(), containerQty, isRecPath);
@@ -472,16 +488,22 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 } else if (Constants.SEEDING_WALL_MOVE_ONE == flag) {
                     // 按箱移动到播种墙
                     targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_1 : Constants.TARGET_2;
+                    // targetPos = (!command.getIsScanCheckCode()) ? seedingwallCode :
+                    // seedingwallCheckCode;
                     targetPos = seedingwallCode;
+                    targetPosCheck = seedingwallCheckCode;
                 } else {
                     // 按箱移动到暂存库位
                     targetPosUrl = (!command.getIsScanCheckCode()) ? Constants.TARGET_3 : Constants.TARGET_4;
+                    // targetPos = (!command.getIsScanCheckCode()) ? temporaryStorageLocationCode :
+                    // temporaryStorageLocationCheckCode;
                     targetPos = temporaryStorageLocationCode;
+                    targetPosCheck = temporaryStorageLocationCheckCode;
                 }
             }
         }
         // TODO 提示容器号 而不是编码
-        return targetPosUrl + "$" + rfp.getContainerCode() + "$" + targetPos;
+        return targetPosUrl + "$" + rfp.getContainerCode() + "$" + targetPos + "$" + targetPosCheck;
     }
 
     /**
@@ -638,7 +660,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                         whSeedingCollection.setLocationId(null);
                         whSeedingCollection.setTemporaryLocationId(null);
                         whSeedingCollection.setCollectionStatus(CollectionStatus.TO_SEED);
-                        updateRecPath(workCollectionCommand.getBatch(), workCollectionCommand.getContainerCode(), ouId);
+                        // @Gianni 2017-06-23 取消更新推荐路径状态
+                        // updateRecPath(workCollectionCommand.getBatch(),
+                        // workCollectionCommand.getContainerCode(), ouId);
                         break;
                     case Constants.TEMPORARY_STORAGE_LOCATION:
                         whSeedingCollection.setLocationId(null);
@@ -1027,6 +1051,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     public void removeRecommendResultListCache(String batch, Long userId) {
         cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
+        cacheManager.removeMapValue(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId.toString(), batch);
     }
 
     /**
@@ -1275,7 +1300,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
 
         // 2.将容器移动到目的地
-        this.updateContainerSkuInventory(recCommand, destinationType, ouId);
+        this.updateContainerSkuInventory(recCommand, destinationType, userId, ouId);
 
         // 3.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
@@ -1309,7 +1334,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     }
 
     @Override
-    public void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long ouId) {
+    public void updateContainerSkuInventory(WhFacilityRecPathCommand recCommand, Integer destinationType, Long userId, Long ouId) {
+        Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
+        if (null == warehouse) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
         List<WhSkuInventory> invList = this.whSkuInventoryDao.findListByInsideContainerId(recCommand.getContainerId(), ouId);
         if (null == invList || invList.isEmpty()) {
             log.error("skuInventory is empty, InsideContainerId:" + recCommand.getContainerId());
@@ -1338,6 +1367,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 log.error("SkuInventoryUuid.invUuid error");
             }
             int cnt = this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
+            this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), inv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.FACILITY_GOODS_COLLECTION);
             if (0 >= cnt) {
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
@@ -1420,7 +1450,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     public void moveContainerToDestination(WhFacilityRecPathCommand recCommand, Integer destinationType, Boolean isManual, Long userId, Long ouId) {
         // 1.将容器移动到目的地
-        this.updateContainerSkuInventory(recCommand, destinationType, ouId);
+        this.updateContainerSkuInventory(recCommand, destinationType, userId, ouId);
 
         // 2.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);

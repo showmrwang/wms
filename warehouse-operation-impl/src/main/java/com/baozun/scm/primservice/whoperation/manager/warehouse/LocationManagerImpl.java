@@ -6,6 +6,8 @@ import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 @Service("locationManagerProxy")
 @Transactional
 public class LocationManagerImpl extends BaseManagerImpl implements LocationManager {
+    protected static final Logger log = LoggerFactory.getLogger(LocationManager.class);
     @Autowired
     private WhLocationDao whLocationDao;
     @Autowired

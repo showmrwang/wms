@@ -330,6 +330,11 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
                 }
             }
         }
+        infoPo.setStatus(PoAsnStatus.PO_CANCELED);
+        int updateCount = this.whPoDao.saveOrUpdateByVersion(infoPo);
+        if (updateCount <= 0) {
+            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+        }
     }
 
     /**

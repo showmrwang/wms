@@ -285,9 +285,11 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             Integer lowerCapacity = whLocationSkuVolume.getLowerCapacity();
             Integer upperCapacity = whLocationSkuVolume.getUpperCapacity();
             if (null == skuId) {
+                log.info("no sku found ===> locationSkuVolumeId:[{}],serialNum:[{}]", whLocationSkuVolume.getId(), whLocationSkuVolume.getSerialNumber());
                 // 复核台库位上没有绑定商品 需要从复核台组上查找绑定的商品
                 WhFacilityGroupSkuVolume whFacilityGroupSkuVolume = this.whFacilityGroupSkuVolumeManager.findSkuByCheckLocationSerialNumber(whLocationSkuVolume.getId(), whLocationSkuVolume.getSerialNumber(), ouId);
                 if (null != whFacilityGroupSkuVolume) {
+                    log.info("sku on group ===> group:[{}], skuId:[{}]", whFacilityGroupSkuVolume.getFacilityGroupId(), whFacilityGroupSkuVolume.getSkuId());
                     skuId = whFacilityGroupSkuVolume.getSkuId();
                     lowerCapacity = whFacilityGroupSkuVolume.getLowerCapacity();
                     upperCapacity = whFacilityGroupSkuVolume.getUpperCapacity();
@@ -298,28 +300,35 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             }
             this.checkLocationReplenishmentMsg(wh, lowerCapacity, upperCapacity, location.getId(), skuId);
         } catch (Exception e) {
-
+            return;
         }
 
     }
 
     private void checkLocationReplenishmentMsg(Warehouse wh, Integer lowerCapacity, Integer upperCapacity, Long locationId, Long skuId) {
+        log.info("checkLocationReplenishmentMsg start...");
+        log.info("param: whId:[{}], lowerCapacity:[{}], upperCapacity:[{}], locationId:[{}], skuId:[{}]", wh.getId(), lowerCapacity, upperCapacity, locationId, skuId);
         try {
             // 计算是否需要补货
             Long ouId = wh.getId();
 
             if (lowerCapacity == null || upperCapacity == null) {
+                log.info("lowerCapacity == null || upperCapacity == null");
+                log.info("checkLocationReplenishmentMsg finish...");
                 return;
             }
             Long invSkuId = whskuInventoryManager.findSkuInInventoryByLocation(locationId, ouId);
             if (invSkuId != skuId) {
                 log.info("checkLocationReplenishmentMsg: sku not match");
+                log.info("checkLocationReplenishmentMsg finish...");
                 return;
             }
             // 库位库存量=库位在库库存+库位待移入库存
             double invQty = this.whskuInventoryManager.findInventoryByLocation(locationId, ouId);
 
             if (invQty >= lowerCapacity) {
+                log.info("invQty >= lowerCapacity");
+                log.info("checkLocationReplenishmentMsg finish...");
                 return;
             }
 
@@ -334,14 +343,20 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                 replenishmentMsg.setCreateTime(new Date());
                 replenishmentMsg.setLastModifyTime(new Date());
                 this.replenishmentMsgManager.insert(replenishmentMsg);
+                log.info("replenishmentMsgManager.insert");
+                log.info("checkLocationReplenishmentMsg finish...");
                 return;
             }
             if (replenishmentMsg.getUpperLimitQty() == null || replenishmentMsg.getUpperLimitQty().longValue() != replenishmentQty) {
                 replenishmentMsg.setUpperLimitQty(replenishmentQty);
                 this.replenishmentMsgManager.updateByVersion(replenishmentMsg);
+                log.info("replenishmentMsgManager.updateByVersion");
+                log.info("checkLocationReplenishmentMsg finish...");
             }
         } catch (Exception e) {
-
+            log.info(e.getMessage());
+            log.info("checkLocationReplenishmentMsg finish...");
+            return;
         }
     }
 

@@ -17,6 +17,8 @@ public class PickingScanResultCommand extends BaseCommand {
     private Boolean isLastWork =false;  //是否是最后一箱
     
     private Boolean isShortPickingEnd;   //是否短拣
+    
+    private Boolean isPartlyFinish = false;   //是否部分完成
 
     private Long workAreaId;
     /** 小批次 */
@@ -1187,5 +1189,11 @@ public class PickingScanResultCommand extends BaseCommand {
         this.tipSkuMutilBarcode = tipSkuMutilBarcode;
     }
 
-    
+    public Boolean getIsPartlyFinish() {
+        return isPartlyFinish;
+    }
+
+    public void setIsPartlyFinish(Boolean isPartlyFinish) {
+        this.isPartlyFinish = isPartlyFinish;
+    }
 }
