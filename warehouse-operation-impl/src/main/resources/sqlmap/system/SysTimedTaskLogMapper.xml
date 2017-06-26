@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<mapper namespace="com.baozun.scm.primservice.whoperation.dao.system.SysTimedTaskLogDao">
+	<resultMap id="SysTimedTaskLogResult" type="com.baozun.scm.primservice.whoperation.model.system.SysTimedTaskLog">
+	</resultMap>
+	<resultMap id="SysTimedTaskLogPaginationResult" type="lark.common.dao.Pagination">
+    	<collection property="items" javaType="ArrayList" resultMap="SysTimedTaskLogResult"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="sysTimedTaskLogColumns">
+	    <![CDATA[
+	        	id as id,
+	        	task_bean_name as taskBeanName,
+	        	task_method_name as taskMethodName,
+	        	ou_code as ouCode,
+	        	document_code as documentCode,
+	        	document_id as documentId,
+	        	time_start as timeStart,
+	        	time_end as timeEnd,
+	        	time_spent as timeSpent,
+	        	handle_qty as handleQty,
+	        	is_success as isSuccess
+	    ]]>
+	</sql>
+	<sql id="sysTimedTaskLogConditionWhereExt">
+		<where>
+			<if test="likeEqualsMap != null">
+				<foreach collection="likeEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} like CONCAT('%',#{value},'%') 
+				</foreach> 
+			</if> 
+			<if test="equalsMap != null"> 
+				<foreach collection="equalsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} = #{value} 
+				</foreach> 
+			</if> 
+			<if test="notEqualsMap != null"> 
+				<foreach collection="notEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} != #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateMap != null"> 
+				<foreach collection="greateMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="greateEqualsMap != null"> 
+				<foreach collection="greateEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &gt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessMap != null"> 
+				<foreach collection="lessMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt; #{value} 
+				</foreach> 
+			</if> 
+			<if test="lessEqualsMap != null"> 
+				<foreach collection="lessEqualsMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} &lt;= #{value} 
+				</foreach> 
+			</if> 
+			<if test="nullMap != null"> 
+				<foreach collection="nullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is null 
+				</foreach> 
+			</if> 
+			<if test="notNullMap != null"> 
+				<foreach collection="notNullMap" index="key"  item="value" separator="and" open=" and "> 
+					${key} is not null 
+				</foreach> 
+			</if> 
+			<if test="inMap != null"> 
+				<foreach collection="inMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="or"> 
+						${key} = #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+			<if test="notInMap != null"> 
+				<foreach collection="notInMap" index="key"  item="value" separator="and" open=" and (" close=")"> 
+					<foreach collection="value" item="itemin" index="index" separator="and"> 
+						${key} != #{itemin} 
+					</foreach> 
+				</foreach> 
+			</if> 
+		</where>
+		<if test="sortBy != null"> 
+			<foreach collection="sortBy" item="item" separator=","  open=" order by "> 
+				${item.field} ${item.type}
+			</foreach> 
+		</if>
+	</sql>
+	
+		<!-- 如果有自增字段 -->
+		
+			<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+			<insert id="insert" parameterType="com.baozun.scm.primservice.whoperation.model.system.SysTimedTaskLog" 
+				
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        sys_timed_task_log${sysDate} (
+		        	id,
+		        	task_bean_name ,
+		        	task_method_name ,
+		        	ou_code ,
+		        	document_code ,
+		        	document_id ,
+		        	time_start ,
+		        	time_end ,
+		        	time_spent ,
+		        	handle_qty ,
+		        	is_success 
+		        ) VALUES (
+		       		#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{taskBeanName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{taskMethodName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{documentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{documentId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{timeStart,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{timeEnd,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{timeSpent,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{handleQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{isSuccess,javaType=java.lang.Integer,jdbcType=INTEGER} 
+		        )
+		    ]]>
+
+		</insert>
+		
+		
+		<update id="update" parameterType="com.baozun.scm.primservice.whoperation.model.system.SysTimedTaskLog">
+	    <![CDATA[
+	        UPDATE sys_timed_task_log${sysDate} SET
+		        task_bean_name = #{taskBeanName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        task_method_name = #{taskMethodName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        ou_code = #{ouCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        document_code = #{documentCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        document_id = #{documentId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        time_start = #{timeStart,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        time_end = #{timeEnd,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        time_spent = #{timeSpent,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        handle_qty = #{handleQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        is_success = #{isSuccess,javaType=java.lang.Integer,jdbcType=INTEGER} 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+		</update>
+		<update id="batchUpdate">
+	        UPDATE sys_timed_task_log${sysDate} SET
+	        	<foreach collection="batchUpdateMap" index="key"  item="value" separator=",">
+	        		${key} = #{value}
+	        	</foreach>
+	        	<include refid="sysTimedTaskLogConditionWhereExt"/>
+		</update>
+		
+	   <delete id="delete" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from sys_timed_task_log${sysDate} where
+		        id = #{id} 
+	    ]]>
+	    </delete> 
+	    
+	     <delete id="deleteByIds" parameterType="list">
+	    
+	        delete from sys_timed_task_log${sysDate} 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>	
+	  
+	    </delete>  
+	    <update id="batchDelete">
+	        delete from sys_timed_task_log${sysDate} <include refid="sysTimedTaskLogConditionWhereExt"/>
+		</update>
+	         
+	    <select id="findById" parameterType="java.lang.Long" resultMap="SysTimedTaskLogResult" flushCache="false">
+			select <include refid="sysTimedTaskLogColumns" />
+		    <![CDATA[
+			    from sys_timed_task_log${sysDate} 
+		        where 
+		        id = #{id} 
+		    ]]>
+		</select>	
+		<select id="getByIds" parameterType="list"  resultMap="SysTimedTaskLogResult" flushCache="false">
+			select <include refid="sysTimedTaskLogColumns" />
+			    from sys_timed_task_log${sysDate} 
+		        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+#{item}				</foreach>					
+		</select>	
+	<sql id="sysTimedTaskLogDynamicWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and id = #{id}
+				</if>
+	       
+	       
+		       <if test="taskBeanName!=null and taskBeanName!=''">
+					and task_bean_name = #{taskBeanName}
+				</if>
+	       
+	       
+		       <if test="taskMethodName!=null and taskMethodName!=''">
+					and task_method_name = #{taskMethodName}
+				</if>
+	       
+	       
+		       <if test="documentCode!=null and documentCode!=''">
+					and document_code = #{documentCode}
+				</if>
+	       
+				<if test="documentId!=null">
+					and document_id = #{documentId}
+				</if>
+	       
+				<if test="timeStart!=null">
+					and time_start = #{timeStart}
+				</if>
+	       
+				<if test="timeEnd!=null">
+					and time_end = #{timeEnd}
+				</if>
+	       
+	       
+		       <if test="timeSpent!=null and timeSpent!=''">
+					and time_spent = #{timeSpent}
+				</if>
+	       
+				<if test="handleQty!=null">
+					and handle_qty = #{handleQty}
+				</if>
+	       
+				<if test="isSuccess!=null">
+					and is_success = #{isSuccess}
+				</if>
+		</where>
+	</sql>
+	
+
+	<select id="getCount" resultType="long">
+        select count(*) from sys_timed_task_log${sysDate} 
+    </select>
+    <select id="findListCountByQueryMap" resultType="long">
+        select count(*) from sys_timed_task_log${sysDate} 
+		<include refid="sysTimedTaskLogDynamicWhere"/>    
+    </select>
+    
+    <select id="findListCountByParam" resultType="long">
+        select count(*) from sys_timed_task_log${sysDate} 
+		<include refid="sysTimedTaskLogDynamicWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPage" resultMap="SysTimedTaskLogResult">
+    	select <include refid="sysTimedTaskLogColumns" />
+	    from sys_timed_task_log${sysDate} 
+		<include refid="sysTimedTaskLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByQueryMap" resultMap="SysTimedTaskLogResult">
+    	select <include refid="sysTimedTaskLogColumns" />
+	    from sys_timed_task_log${sysDate} 
+		<include refid="sysTimedTaskLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="findListByParam" resultMap="SysTimedTaskLogResult">
+    	select <include refid="sysTimedTaskLogColumns" />
+	    from sys_timed_task_log${sysDate} 
+		<include refid="sysTimedTaskLogDynamicWhere"/>
+		
+    </select>
+    
+    <select id="query" resultMap="SysTimedTaskLogResult">
+		select <include refid="sysTimedTaskLogColumns" />
+	    from sys_timed_task_log${sysDate}  
+		<include refid="sysTimedTaskLogConditionWhereExt"/>
+    </select>
+    
+    <select id="queryCount" resultType="long">
+		select count(*) from sys_timed_task_log${sysDate}  
+		<include refid="sysTimedTaskLogConditionWhereExt"/>
+    </select>
+
+	
+</mapper>

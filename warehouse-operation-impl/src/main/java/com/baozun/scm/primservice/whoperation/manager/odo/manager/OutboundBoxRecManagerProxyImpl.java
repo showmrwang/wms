@@ -62,6 +62,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
+import com.baozun.scm.primservice.whoperation.manager.system.SysTimedTaskLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.OutBoundBoxTypeManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
@@ -69,6 +70,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
+import com.baozun.scm.primservice.whoperation.model.system.SysTimedTaskLog;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
@@ -126,6 +128,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
 
     @Autowired
     private OdoOutBoundBoxMapper odoOutBoundBoxMapper;
+    @Autowired
+    private SysTimedTaskLogManager sysTimedTaskLogManager;
 
     public void recommendOutboundBox(Long ouId, String logId) {
         log.info("OutboundBoxRecManagerProxyImpl.recommendOutboundBox begin!");
@@ -134,6 +138,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         Warehouse warehouse = warehouseManager.findWarehouseByIdExt(ouId);
         // 根据波次查询对应的出库单
         for (WhWaveCommand whWaveCommand : whWaveCommandList) {
+            // 记录此波次定时开始
+            SysTimedTaskLog sysLog = sysTimedTaskLogManager.beginSysTimedTaskLog("outboundBoxRecTaskManager", "recommendOutboundBox", warehouse.getCode(), whWaveCommand.getCode(), whWaveCommand.getId(), null);
             try {
                 // 根据波次获得出库单ID集合
                 List<Long> whOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
@@ -212,8 +218,12 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 波次取消需要取消补货任务
                 whWaveManager.checkReplenishmentTaskForWave(whWaveCommand.getId(), ouId);
             } catch (Exception e) {
+                // 此波次报错记录定时失败
+                sysTimedTaskLogManager.endSysTimedTaskLog(sysLog, true);
                 log.error("OutboundBoxRecManagerProxyImpl.recommendOutboundBox error waveCode: " + whWaveCommand.getCode(), e);
             }
+            // 此波次结束 记录定时结束
+            sysTimedTaskLogManager.endSysTimedTaskLog(sysLog, false);
         }
         log.info("OutboundBoxRecManagerProxyImpl.recommendOutboundBox end!");
     }
@@ -225,7 +235,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param odoCommandMap 波次下出库单集合
      * @param ouId 仓库组织ID
      * @param logId 日志ID
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     private void packingForSingleOdoPickMode(List<Long> singleOdoPickModeOdoIdList, Map<Long, OdoCommand> odoCommandMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) throws InterruptedException {
         if (null == singleOdoPickModeOdoIdList || singleOdoPickModeOdoIdList.isEmpty()) {
@@ -987,7 +997,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param singleOdoPickModePackedOdoMap 按照配货模式分组后的出库单
      * @param ouId 仓库组织ID
      * @param logId 日志ID
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     private void allocateTrolleyForSingleOdoPickModePackedOdo(Map<String, List<OdoCommand>> singleOdoPickModePackedOdoMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) throws InterruptedException {
         // 将小批次的出库单分别标记涉及的区域;
@@ -1141,7 +1151,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param ouId 仓库组织ID
      * @param logId 日志ID
      * @return 按照配货模式分组后的未分配小车的出库单
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     private Map<String, List<OdoCommand>> allocateTrolleyForUnPackingOdo(Map<String, List<OdoCommand>> distributeModeUnPackingOdoMap, Map<String, WhDistributionPatternRule> distributionPatternRuleMap, Long ouId, String logId) throws InterruptedException {
         // 未分配小车的出库单
@@ -2677,8 +2687,8 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
         }// end-for 同一批次下的出库单
         return allocateAreaOdoListMap;
     }
-    
-    
+
+
     /**
      * 按照分配区域将拣货模式分组
      *
@@ -3272,7 +3282,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
      * @param availableContainer 二级容器类型
      * @param ouId 仓库组织ID
      * @return 新建的容器对象
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     private Container getUseAbleContainer(Container2ndCategoryCommand availableContainer, Long ouId, String logId) throws InterruptedException {
         if (null == availableContainer) {
@@ -3298,15 +3308,15 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 useAbleContainer.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
                 int updateCount = outboundBoxRecManager.occupationContainerByRecOutboundBox(useAbleContainer);
                 if (0 == updateCount) {
-                    b= true;
+                    b = true;
                     continue;
                 } else {
-                    b=false;
+                    b = false;
                     break;
                 }
             }
         }
-        if(b){
+        if (b) {
             log.error("outboundBoxRecManagerProxyImpl getNewContainer error, outboundBoxRecManager.occupationContainerByRecOutboundBox updateCount != 1, container is:[{}], logId is:[{}]", useAbleContainer, logId);
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
