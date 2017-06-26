@@ -8504,10 +8504,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param turnoverBoxId
      */
     public void replenishmentContianerPutaway(Long outerContainerId, Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, Long turnoverBoxId) {
-        List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
-        if (null == invTobefilledList || 0 == invTobefilledList.size()) {
-            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
-        }
         List<WhSkuInventoryCommand> invSnList = null;
         if (null == outerContainerId) {// 整箱
             invSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByReplenishment(null, ouId, turnoverBoxId);// 获取容器库存/关联sn的记录
@@ -8530,7 +8526,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         isVM = (null == loc.getIsValidMgt() ? false : loc.getIsValidMgt());
         // 2.执行上架(一入一出)
         for (WhSkuInventoryCommand invCmd : invSnList) {
-            String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+            List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
+            if (null == invTobefilledList || 0 == invTobefilledList.size()) {
+                throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
+            }
             List<WhSkuInventoryCommand> invList = null;
             if (null == outerContainerId) {// 整箱
                 invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(null, ouId, turnoverBoxId, invCmd.getUuid());
@@ -8538,6 +8537,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(outerContainerId, ouId, null, invCmd.getUuid());
             }
             for (WhSkuInventoryCommand skuInvCmd : invList) {
+                String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
                 this.replenishmentAddInventory(skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, outerContainerId, isTabbInvTotal);
                 String uuid1 = skuInvCmd.getUuid();
                 Double oldQty1 = 0.0;
@@ -8553,51 +8553,67 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
                 insertSkuInventoryLog(skuInvCmd.getId(), -skuInvCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
                 whSkuInventoryDao.deleteWhSkuInventoryById(skuInvCmd.getId(), ouId);
-            }
-            // 删除待移入
-            Double sumQty = 0.0;
-            for (WhSkuInventoryTobefilled invTobefilled : invTobefilledList) {
-                    if(null != invTobefilled.getOuterContainerId() && invTobefilled.getOuterContainerId().equals(outerContainerId)){
-                        WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                        BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                        insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                    }
-                    if(null != invTobefilled.getInsideContainerId() && turnoverBoxId.equals(invTobefilled.getInsideContainerId())){
-                        WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                        BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                        insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                    }
-                    if(null == invTobefilled.getOuterContainerId() && null == invTobefilled.getInsideContainerId()){
-                        String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(invTobefilled);
-                        if (skuAttrIds.equals(toBeSkuAttrId)) {
-                            sumQty += invTobefilled.getQty();
-                            Double tobefilledQty = sumQty - invCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
-                            if (tobefilledQty.doubleValue() < 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                                insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                                continue;
-                            }
-                            if (tobefilledQty.doubleValue() == 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                                insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                                break;
-                            }
-                            if (tobefilledQty.doubleValue() > 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                cInv.setQty(tobefilledQty);
-                                whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
-                                insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
-                                break;
-                            }
+                // 删除待移入
+                 Double sumQty = 0.0;
+                for (WhSkuInventoryTobefilled invTobefilled : invTobefilledList) {
+                      String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(invTobefilled);
+                       if(null != turnoverBoxId && null != invTobefilled.getInsideContainerId() && turnoverBoxId.equals(invTobefilled.getInsideContainerId())){
+                           if (skuAttrIds.equals(toBeSkuAttrId)) {
+                               sumQty += invTobefilled.getQty();
+                               Double tobefilledQty = sumQty - skuInvCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
+                               if (tobefilledQty.doubleValue() < 0) {
+                                   WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                                   BeanUtils.copyProperties(invTobefilled, cInv);
+                                   whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                                   insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                                   continue;
+                               }
+                               if (tobefilledQty.doubleValue() == 0) {
+                                   WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                                   BeanUtils.copyProperties(invTobefilled, cInv);
+                                   whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                                   insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                                   break;
+                               }
+                               if (tobefilledQty.doubleValue() > 0) {
+                                   WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                                   BeanUtils.copyProperties(invTobefilled, cInv);
+                                   cInv.setQty(tobefilledQty);
+                                   whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
+                                   insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
+                                   break;
+                               }
+                           }
                         }
-                }
+                       if(null == invTobefilled.getOuterContainerId() && null == invTobefilled.getInsideContainerId()){
+                           if (skuAttrIds.equals(toBeSkuAttrId)) {
+                               sumQty += invTobefilled.getQty();
+                               Double tobefilledQty = sumQty - skuInvCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
+                               if (tobefilledQty.doubleValue() < 0) {
+                                   WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                                   BeanUtils.copyProperties(invTobefilled, cInv);
+                                   whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                                   insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                                   continue;
+                               }
+                               if (tobefilledQty.doubleValue() == 0) {
+                                   WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                                   BeanUtils.copyProperties(invTobefilled, cInv);
+                                   whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                                   insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                                   break;
+                               }
+                               if (tobefilledQty.doubleValue() > 0) {
+                                   WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                                   BeanUtils.copyProperties(invTobefilled, cInv);
+                                   cInv.setQty(tobefilledQty);
+                                   whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
+                                   insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
+                                   break;
+                               }
+                           }
+                     }
+                    }
             }
         }
         if (isTV) {
