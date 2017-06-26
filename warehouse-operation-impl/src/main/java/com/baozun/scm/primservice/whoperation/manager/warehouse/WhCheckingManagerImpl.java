@@ -1415,7 +1415,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     if (null == facility) {
                         throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
                     }
-                    facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_2));
+                    facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
                     facility.setBatch(null);
                     whOutboundFacilityDao.saveOrUpdateByVersion(facility);
                 }
