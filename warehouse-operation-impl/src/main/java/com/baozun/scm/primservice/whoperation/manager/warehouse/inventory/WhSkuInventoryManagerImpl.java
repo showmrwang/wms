@@ -5807,7 +5807,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
             FLAG: for (ReplenishmentRuleCommand rule : repRules) {
                 Long ruleId = rule.getId();
-                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, ouId);
+                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, skuId, ouId);
                 List<ReplenishmentStrategyCommand> replenishmentStrategyList = rule.getReplenishmentStrategyCommandList();
                 String key = skuId + "_" + rule.getId();
                 String data = tempMap.get(key);
@@ -6106,7 +6106,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
             FLAG: for (ReplenishmentRuleCommand rule : repRules) {
                 Long ruleId = rule.getId();
-                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, ouId);
+                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, skuId, ouId);
                 if (null == targetLocation) {
                     log.error("targetLocation is null, odoId:" + odoId);
                     throw new BusinessException(1);
@@ -6246,7 +6246,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * 匹配目标库位
      * @author kai.zhu
      */
-    private Long getTargetLoctionId(List<Long> locationIdList, Boolean isStatic, Long ouId) {
+    private Long getTargetLoctionId(List<Long> locationIdList, Boolean isStatic, Long skuId, Long ouId) {
         if (null == locationIdList || locationIdList.isEmpty()) {
             return null;
         }
@@ -6255,12 +6255,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else {
             for (int i = 0; i < locationIdList.size(); i++) {
                 Long loctionId = locationIdList.get(i);
-                long count = whSkuInventoryTobefilledDao.countByLoctionId(loctionId, ouId);
-                if (count == 0) {
-                    locationIdList.remove(i);
+                List<Long> skuList = whSkuInventoryTobefilledDao.countSkuByLoctionId(loctionId, ouId);
+                if (skuList == null || skuList.isEmpty() || skuList.contains(skuId)) {
                     return loctionId;
-                } else {
-                    locationIdList.remove(i--);
                 }
             }
         }
