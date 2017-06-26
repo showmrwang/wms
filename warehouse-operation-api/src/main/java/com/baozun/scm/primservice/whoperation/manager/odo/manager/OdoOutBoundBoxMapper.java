@@ -71,5 +71,19 @@ public interface OdoOutBoundBoxMapper extends BaseManager {
      * @return
      */
     List<Long> getWaveOdoIdList(Long waveId, Long ouId);
-
+    
+    /**
+     * 查询波次下已经创建周转箱或推荐小车的记录
+     * 
+     * @param waveId
+     * @return
+     */
+    List<WhOdoOutBoundBox> findOdoOutBoundByWaveId(Long waveId);
+    
+    /**
+     * 重置波次推荐的周转箱或小车
+     * @param boxList
+     */
+    void ResetWaveBox(List<WhOdoOutBoundBox> boxList);
+    
 }

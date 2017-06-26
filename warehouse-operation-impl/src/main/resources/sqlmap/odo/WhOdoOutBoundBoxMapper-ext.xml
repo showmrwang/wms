@@ -356,4 +356,25 @@
                 id = #{id} and ou_id=#{ouId}
         ]]>
     </delete>
+    
+    <select id="findOdoOutBoundByWaveId" resultMap="WhOdoOutBoundBoxResultExt">
+        SELECT
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		FROM
+			t_wh_odo_outboundbox
+		WHERE
+			is_create_work = 0
+		AND
+			wave_id=#{waveId}
+    </select>
+    
+    <delete id="deleteWaveByIds" parameterType="list">
+	delete from t_wh_odo_outboundbox
+	where id in
+	<foreach item="item" index="index" collection="list" open="("
+		separator="," close=")">
+		#{item}
+	</foreach>
+	</delete>
+    
 </mapper>
