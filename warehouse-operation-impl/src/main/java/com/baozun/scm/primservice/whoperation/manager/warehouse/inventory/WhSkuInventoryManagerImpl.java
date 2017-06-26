@@ -11255,6 +11255,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 continue;
             }
             scanSurplusQty = scanQty;
+            //通过缓存获取每个key下面的所有含有sn信息的key
+            List<String> skuAttrSnIds = scanSkuAttrIdsQty.get(scanSkuAttrId);
+            //记录已经更新过的含有SN信息的key
+            Map<String,String> upSkuAttrSnIds = new HashMap<String,String>();
             //循环出库箱库存进行移库操作
             for (WhSkuInventoryCommand orginInv : orginInvList) {
                 if (null == orginInv) {
@@ -11308,15 +11312,27 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
                     throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
                 }
+                //本次循环修改数量
+                int currentQty = moveInv.getOnHandQty().intValue();
+//                // 判断当前生成的新uuid是否有同样的记录
+//                WhSkuInventory checkInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, newUuid);
+//                if (null == checkInv || null == checkInv.getId()) {
+                    // 不存在新的uuid记录新增记录 
                 moveInv.setInboundTime(new Date());
                 moveInv.setLastModifyTime(new Date());
                 whSkuInventoryDao.insert(moveInv);
                 insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);                
                 // 记录入库库存日志(这个实现的有问题)
                 insertSkuInventoryLog(moveInv.getId(), moveInv.getOnHandQty(), orginInv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
-                //本次循环修改数量
-                int currentQty = moveInv.getOnHandQty().intValue();
-                
+//                } else {
+//                    // 存在新的uuid记录的数据更新库存数
+//                    moveInv.setId(checkInv.getId());
+//                    moveInv.setLastModifyTime(new Date());
+//                    Double upOnHandQty =  moveInv.getOnHandQty() + checkInv.getOnHandQty();
+//                    moveInv.setOnHandQty(upOnHandQty);
+//                    whSkuInventoryDao.saveOrUpdate(moveInv);
+//                    insertGlobalLog(GLOBAL_LOG_UPDATE, moveInv, ouId, userId, null, null);
+//                }
                 // 更新原有库存信息
                 WhSkuInventory oldInv = new WhSkuInventory();
                 BeanUtils.copyProperties(orginInv, oldInv);
@@ -11329,25 +11345,24 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     oldInv.setOnHandQty(new Double(invSurplusQty));
                     oldInv.setLastModifyTime(new Date());
                     whSkuInventoryDao.saveOrUpdate(oldInv);
-                    insertGlobalLog(GLOBAL_LOG_DELETE, oldInv, ouId, userId, null, null);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, oldInv, ouId, userId, null, null);
                 }
                 //获取当前库存是否有sn信息
                 List<WhSkuInventorySnCommand> snList = orginInv.getWhSkuInventorySnCommandList();
-                if (null != snList && snList.size() > 0) {
-                    List<String> skuAttrSnIds = scanSkuAttrIdsQty.get(scanSkuAttrId);
+                if (null != snList && snList.size() > 0) {                    
                     int count = 0;
-                    for (String skuAttrSnId :skuAttrSnIds) {
-                        if(StringUtils.isEmpty(skuAttrSnId)) {
+                    //有sn数据进行sn数据移库操作
+                    for (WhSkuInventorySnCommand snCmd : snList) {
+                        if (null == snCmd) {
                             continue;
-                        }                    
-                        //有sn数据进行sn数据移库操作
-                        for (WhSkuInventorySnCommand snCmd : snList) {
-                            if (null == snCmd) {
+                        }
+                        String currentSnDefect = SkuCategoryProvider.concatSkuAttrId(snCmd.getSn(), snCmd.getDefectWareBarcode());
+                        for (String skuAttrSnId :skuAttrSnIds) {
+                            if(StringUtils.isEmpty(skuAttrSnId)) {
                                 continue;
                             }
-                            String currentSnDefect = SkuCategoryProvider.concatSkuAttrId(snCmd.getSn(), snCmd.getDefectWareBarcode());
                             String snDefect = SkuCategoryProvider.getSnDefect(skuAttrSnId);
-                            if (currentSnDefect.equals(snDefect)) {
+                            if (currentSnDefect.equals(snDefect) && !upSkuAttrSnIds.containsKey(skuAttrSnId)) {
                                 WhSkuInventorySn moveInvSn = new WhSkuInventorySn();
                                 BeanUtils.copyProperties(snCmd, moveInvSn);
                                 moveInv.setId(null);
@@ -11361,17 +11376,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 BeanUtils.copyProperties(snCmd, oldSn);
                                 whSkuInventorySnDao.deleteByIdExt(oldSn.getId(), ouId);
                                 insertGlobalLog(GLOBAL_LOG_DELETE, oldSn, ouId, userId, null, null);
-                                
                                 count++;
+                                //更新过的含有SN信息的KEY加入判断对象中
+                                upSkuAttrSnIds.put(skuAttrSnId, skuAttrSnId);
                             }
-                            //修改数量等于移动数量退出循环
-                            if (currentQty == count) {
-                                break;
-                            }
+                        }
+                        //修改数量等于移动数量退出循环
+                        if (currentQty == count) {
+                            break;
                         }
                     }
                 }
-                
                 if (scanSurplusQty == 0) {
                     break;
                 }
