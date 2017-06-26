@@ -84,6 +84,7 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
         OperatioLineStatisticsCommand statisticsCommand = pdaPickingWorkCacheManager.getOperatioLineStatistics(whOperationCommand.getId(), whOperationCommand.getOuId());
         // 返回结果初始化 
         PickingScanResultCommand psRCmd = new PickingScanResultCommand();
+        psRCmd.setIsPartlyFinish(statisticsCommand.getIsPartlyFinish());    
         // 作业id 
         psRCmd.setOperationId(whOperationCommand.getId());
         // 捡货方式           

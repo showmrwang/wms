@@ -34,6 +34,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecL
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
@@ -76,6 +77,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusM
 import com.baozun.scm.primservice.whoperation.manager.warehouse.LocationManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOperationManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkLineManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryLogManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
@@ -124,6 +126,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private WhOperationManager whOperationManager;
     @Autowired
     private WhOperationLineManager whOperationLineManager;
+    @Autowired
+    private WhWorkLineManager whWorkLineManager;
     @Autowired
     private WhWorkOperDao whWorkOperDao;
     @Autowired
@@ -296,16 +300,31 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Map<String, Map<String, Long>> latticeSkuAttrIdsQty = new HashMap<String, Map<String, Long>>();
         // 货格+库位对应唯一sku对应的数量(有货箱的)
         Map<String, Map<Long, Map<String, Long>>> latticeInsideSkuAttrIdsQty = new HashMap<String, Map<Long, Map<String, Long>>>();
-
+        // 是否部分完成
+        Boolean isPartlyFinish = true;
         // 根据作业id获取作业明细信息
         List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), whOperationCommand.getOuId());
+        List<WhWorkLineCommand> workLineCommandLst = whWorkLineManager.findWorkLineByWorkId(whOperationCommand.getWorkId(), whOperationCommand.getOuId());
         for (WhOperationLineCommand operationLine : operationLineList) {
+            List<WhWorkLineCommand> whWorkLineCommandLst = new ArrayList<WhWorkLineCommand>();
+            // 判断是否部分拣货            
+            for(WhWorkLineCommand workLineCommand : workLineCommandLst){
+                int partlyFinishQty = operationLine.getQty().compareTo(operationLine.getCompleteQty());
+                int workLineQty = workLineCommand.getId().compareTo(operationLine.getWorkLineId());
+                if(0 == workLineQty && 0 == partlyFinishQty){
+                    whWorkLineCommandLst.add(workLineCommand);
+                }
+            }
+            workLineCommandLst.removeAll(whWorkLineCommandLst);
             // 计划量减执行量
             int lineQty = operationLine.getQty().compareTo(operationLine.getCompleteQty());
             // 如果计划量减执行量等于0，跳出循环
             if (0 == lineQty) {
                 continue;
+            }else{
+                isPartlyFinish = false;
             }
+            
             // 流程相关统计信息
             if (whOperationCommand.getIsWholeCase() == false) {
                 // 所有小车
@@ -677,7 +696,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         statisticsCommand.setContainers(containers);
         // 库位排序
         List<Long> sortLocationIds = new ArrayList<Long>();
-        sortLocationIds = locationManager.sortByIds(locationIds, whOperationCommand.getOuId());
+        if(null != locationIds && 0 < locationIds.size()){
+            sortLocationIds = locationManager.sortByIds(locationIds, whOperationCommand.getOuId());    
+        }
         // 所有库位
         statisticsCommand.setLocationIds(sortLocationIds);
         // 库位上所有外部容器
@@ -714,7 +735,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         statisticsCommand.setLatticeSkuAttrIdsQty(latticeSkuAttrIdsQty);
         // 货格+库位对应唯一sku对应的数量(有货箱的)
         statisticsCommand.setLatticeInsideSkuAttrIdsQty(latticeInsideSkuAttrIdsQty);
-
+        // 是否部分完成
+        if(true == isPartlyFinish && (null == workLineCommandLst || 0 == workLineCommandLst.size())){
+            statisticsCommand.setIsPartlyFinish(true);   
+        }
         // 缓存统计分析结果
         pdaPickingWorkCacheManager.operatioLineStatisticsRedis(whOperationCommand.getId(), statisticsCommand);
         this.removeOutBoundBox(whOperationCommand.getId());
@@ -1597,6 +1621,23 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
         }
         String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd); // 没有sn/残次信息
+        if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货
+            List<WhSkuInventoryCommand>  skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId,operationId, outerContainerId, insideContainerId);
+            if (null == skuInvList || skuInvList.size() == 0) {
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
+            Boolean isExistInventory = false;
+            for(WhSkuInventoryCommand skuInvCmd : skuInvList){
+                String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+                if(skuAttrId.equals(skuAttrIds)){
+                    isExistInventory = true;
+                    break;
+                }
+            }
+            if(!isExistInventory){
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
+        }
         pdaPickingWorkCacheManager.cacheSkuAttrIdNoSn(locationId, skuAttrIds, insideContainerId, operationId);
         if (!StringUtil.isEmpty(command.getSkuSn()) || !StringUtils.isEmpty(command.getSkuDefect())) {
             // 缓存sn数据

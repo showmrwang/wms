@@ -518,7 +518,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         // ouId,operationWay);
         List<WhSkuInventoryCommand> skuInvList = null;
         if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货
-            skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId, operationId, outerContainerId, insideContainerId);
+            skuInvList = whOperationLineDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId, operationId, outerContainerId, insideContainerId);
         }
         if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {// 补货
             skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId, locationId, outerContainerId, insideContainerId);
@@ -541,7 +541,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                     // }else{
                     // break;
                     // }
-                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
+                    Boolean result = this.judeSkuIsExistSn(skuInvList,locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                     if (result) {
                         scanResult.setIsNeedScanSkuSn(true);
                     }
@@ -557,7 +557,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                     // }else{
                     // break;
                     // }
-                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
+                    Boolean result = this.judeSkuIsExistSn(skuInvList,locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                     if (result) {
                         scanResult.setIsNeedScanSkuSn(true);
                     }
@@ -693,20 +693,22 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
     }
 
 
-    private Boolean judeSkuIsExistSn(Long locationId, Long ouId, Long operationId, Long outerContainerId, Long insideContainerId, String tipSkuAttrIds, String operationWay) {
+    private Boolean judeSkuIsExistSn(List<WhSkuInventoryCommand> skuInvList,Long locationId, Long ouId, Long operationId, Long outerContainerId, Long insideContainerId, String tipSkuAttrIds, String operationWay) {
         Boolean result = false; // 默认不是sn
-        List<WhSkuInventoryCommand> skuInvList = null;
-        if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货
-            skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId, operationId, outerContainerId, insideContainerId);
-        }
-        if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {// 补货
-            skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId, locationId, outerContainerId, insideContainerId);
-        }
-        if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) {// 库内移动
-            skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByInvMove(ouId, operationId, locationId, outerContainerId, insideContainerId);
-        }
-        if (null == skuInvList || skuInvList.size() == 0) {
-            throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+        if(null == skuInvList){
+//            List<WhSkuInventoryCommand> skuInvList = null;
+            if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货
+                skuInvList = whOperationLineDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId, operationId, outerContainerId, insideContainerId);
+            }
+            if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {// 补货
+                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOperationId(ouId, operationId, locationId, outerContainerId, insideContainerId);
+            }
+            if (Constants.INVMOVE_PICKING_INVENTORY.equals(operationWay)) {// 库内移动
+                skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByInvMove(ouId, operationId, locationId, outerContainerId, insideContainerId);
+            }
+            if (null == skuInvList || skuInvList.size() == 0) {
+                throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            }
         }
         for (WhSkuInventoryCommand skuCmd : skuInvList) {
             String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(skuCmd);
@@ -921,7 +923,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cssrCmd.setIsTipNewLattice(true);
                                     // 判断当前sku是否是sn商品
                                     if (isSnLine) {// 有sn/残次信息
-                                        Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
+                                        Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                                         if (result) {
                                             cssrCmd.setIsNeedScanSkuSn(true);
                                         }
@@ -950,7 +952,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + insideContainerId.toString() + skuId.toString());
                                     cssrCmd.setIsTipNewLattice(true);
                                 }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -1079,7 +1081,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                         cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + insideContainerId.toString() + skuId.toString());
                                         cssrCmd.setIsTipNewLattice(true);
                                     }
-                                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
+                                    Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
                                     if (result) {
                                         cssrCmd.setIsNeedScanSkuSn(true);
                                     }
@@ -1113,7 +1115,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // logId);
                                 // throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                 // }//二期
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -1152,7 +1154,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cssrCmd.setIsTipNewLattice(true);
                                     // 判断当前sku是否是sn商品
                                     if (isSnLine) {// 有sn/残次信息
-                                        Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
+                                        Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                                         if (result) {
                                             cssrCmd.setIsNeedScanSkuSn(true);
                                         }
@@ -1199,7 +1201,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // cssrCmd.setTipSkuAttrId(skuAttrIdSn);
                                 // }
                                 // }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -1360,7 +1362,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     // throw new
                                     // BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                     // }
-                                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
+                                    Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, tipSkuAttrId, operationWay);
                                     if (result) {
                                         cssrCmd.setIsNeedScanSkuSn(true);
                                     }
@@ -1397,7 +1399,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // logId);
                                 // throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                 // }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, outerContainerId, insideContainerId, skuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -1602,7 +1604,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cssrCmd.setIsTipNewLattice(true);
                                     // 判断当前sku是否是sn商品
                                     if (isSnLine) {// 有sn/残次信息
-                                        Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
+                                        Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
                                         if (result) {
                                             cssrCmd.setIsNeedScanSkuSn(true);
                                         }
@@ -1633,7 +1635,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + insideContainerId.toString() + skuId.toString());
                                     cssrCmd.setIsTipNewLattice(true);
                                 }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -1761,7 +1763,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     // throw new
                                     // BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                     // }
-                                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
+                                    Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
                                     if (result) {
                                         cssrCmd.setIsNeedScanSkuSn(true);
                                     }
@@ -1800,7 +1802,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // logId);
                                 // throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                 // }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -1838,7 +1840,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cssrCmd.setIsTipNewLattice(true);
                                     // 判断当前sku是否是sn商品
                                     if (isSnLine) {// 有sn/残次信息
-                                        Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
+                                        Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
                                         if (result) {
                                             cssrCmd.setIsNeedScanSkuSn(true);
                                         }
@@ -1869,7 +1871,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + insideContainerId.toString() + skuId.toString());
                                     cssrCmd.setIsTipNewLattice(true);
                                 }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -1982,7 +1984,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     // throw new
                                     // BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                     // }
-                                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
+                                    Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, tipSkuAttrId, operationWay);
                                     if (result) {
                                         cssrCmd.setIsNeedScanSkuSn(true);
                                     }
@@ -2021,7 +2023,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // logId);
                                 // throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                 // }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, insideContainerId, skuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -2190,7 +2192,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cssrCmd.setIsTipNewLattice(true);
                                     // 判断当前sku是否是sn商品
                                     if (isSnLine) {// 有sn/残次信息
-                                        Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, skuAttrId, operationWay);
+                                        Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, skuAttrId, operationWay);
                                         if (result) {
                                             cssrCmd.setIsNeedScanSkuSn(true);
                                         }
@@ -2250,7 +2252,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // cssrCmd.setTipSkuAttrId(skuAttrIdSn);
                                 // }
                                 // }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -2319,7 +2321,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                         cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + locationId.toString() + skuId.toString());
                                         cssrCmd.setIsTipNewLattice(true);
                                     }
-                                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
+                                    Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
                                     if (result) {
                                         cssrCmd.setIsNeedScanSkuSn(true);
                                     }
@@ -2355,7 +2357,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // logId);
                                 // throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                 // }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, skuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, skuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -2392,7 +2394,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cssrCmd.setIsTipNewLattice(true);
                                     // 判断当前sku是否是sn商品
                                     if (isSnLine) {// 有sn/残次信息
-                                        Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, skuAttrId, operationWay);
+                                        Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, skuAttrId, operationWay);
                                         if (result) {
                                             cssrCmd.setIsNeedScanSkuSn(true);
                                         }
@@ -2432,7 +2434,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                     cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + locationId.toString() + skuId.toString());
                                     cssrCmd.setIsTipNewLattice(true);
                                 }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }
@@ -2491,7 +2493,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                         cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + locationId.toString() + skuId.toString());
                                         cssrCmd.setIsTipNewLattice(true);
                                     }
-                                    Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
+                                    Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, tipSkuAttrIdNoSn, operationWay);
                                     if (result) {
                                         cssrCmd.setIsNeedScanSkuSn(true);
                                     }
@@ -2527,7 +2529,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                                 // logId);
                                 // throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                                 // }
-                                Boolean result = this.judeSkuIsExistSn(locationId, ouId, operationId, null, null, skuAttrId, operationWay);
+                                Boolean result = this.judeSkuIsExistSn(null,locationId, ouId, operationId, null, null, skuAttrId, operationWay);
                                 if (result) {
                                     cssrCmd.setIsNeedScanSkuSn(true);
                                 }

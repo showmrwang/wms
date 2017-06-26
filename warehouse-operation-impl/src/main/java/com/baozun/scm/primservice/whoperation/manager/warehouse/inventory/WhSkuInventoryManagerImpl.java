@@ -5807,7 +5807,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
             FLAG: for (ReplenishmentRuleCommand rule : repRules) {
                 Long ruleId = rule.getId();
-                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, ouId);
+                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, skuId, ouId);
                 List<ReplenishmentStrategyCommand> replenishmentStrategyList = rule.getReplenishmentStrategyCommandList();
                 String key = skuId + "_" + rule.getId();
                 String data = tempMap.get(key);
@@ -6106,7 +6106,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
             FLAG: for (ReplenishmentRuleCommand rule : repRules) {
                 Long ruleId = rule.getId();
-                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, ouId);
+                Long targetLocation = this.getTargetLoctionId(rule.getLocationIds(), isStatic, skuId, ouId);
                 if (null == targetLocation) {
                     log.error("targetLocation is null, odoId:" + odoId);
                     throw new BusinessException(1);
@@ -6246,7 +6246,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * 匹配目标库位
      * @author kai.zhu
      */
-    private Long getTargetLoctionId(List<Long> locationIdList, Boolean isStatic, Long ouId) {
+    private Long getTargetLoctionId(List<Long> locationIdList, Boolean isStatic, Long skuId, Long ouId) {
         if (null == locationIdList || locationIdList.isEmpty()) {
             return null;
         }
@@ -6255,12 +6255,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else {
             for (int i = 0; i < locationIdList.size(); i++) {
                 Long loctionId = locationIdList.get(i);
-                long count = whSkuInventoryTobefilledDao.countByLoctionId(loctionId, ouId);
-                if (count == 0) {
-                    locationIdList.remove(i);
+                List<Long> skuList = whSkuInventoryTobefilledDao.countSkuByLoctionId(loctionId, ouId);
+                if (skuList == null || skuList.isEmpty() || skuList.contains(skuId)) {
                     return loctionId;
-                } else {
-                    locationIdList.remove(i--);
                 }
             }
         }
@@ -8557,50 +8554,19 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 删除待移入
             Double sumQty = 0.0;
             for (WhSkuInventoryTobefilled invTobefilled : invTobefilledList) {
-                if(null != outerContainerId){
-                    if(null != invTobefilled.getOuterContainerId() && outerContainerId.equals(invTobefilled.getOuterContainerId())){
+                    if(null != invTobefilled.getOuterContainerId() && invTobefilled.getOuterContainerId().equals(outerContainerId)){
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invTobefilled, cInv);
                         whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                        break;
-                    }else{
-                        String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(invTobefilled);
-                        if (skuAttrIds.equals(toBeSkuAttrId)) {
-                            sumQty += invTobefilled.getQty();
-                            Double tobefilledQty = sumQty - invCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
-                            if (tobefilledQty.doubleValue() < 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                                insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                                continue;
-                            }
-                            if (tobefilledQty.doubleValue() == 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                                insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                                break;
-                            }
-                            if (tobefilledQty.doubleValue() > 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                cInv.setQty(tobefilledQty);
-                                whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
-                                insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
-                                break;
-                            }
-                        }
                     }
-                }else{
                     if(null != invTobefilled.getInsideContainerId() && turnoverBoxId.equals(invTobefilled.getInsideContainerId())){
                         WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
                         BeanUtils.copyProperties(invTobefilled, cInv);
                         whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                        break;
-                    }else{
+                    }
+                    if(null == invTobefilled.getOuterContainerId() && null == invTobefilled.getInsideContainerId()){
                         String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(invTobefilled);
                         if (skuAttrIds.equals(toBeSkuAttrId)) {
                             sumQty += invTobefilled.getQty();
@@ -8628,7 +8594,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                                 break;
                             }
                         }
-                    }
                 }
             }
         }
@@ -9102,7 +9067,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 Double onHandQty = invCmd.getOnHandQty();
                 if (skuScanQty.doubleValue() == onHandQty.doubleValue()) {
                     // 添加库位库存
-                    this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, skuScanQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, newTurnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
+                    this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, skuScanQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
                     // 删除容器库存
                     this.replenishmentUpdateContainerInventory(invCmd, skuScanQty, isTabbInvTotal, ouId, userId);
                     isPutaway = true;
@@ -9112,7 +9077,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     sum += onHandQty.doubleValue();
                     if (skuScanQty.doubleValue() == sum.doubleValue()) {
                         // 添加库位库存
-                        this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, onHandQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, newTurnoverBoxId, isTabbInvTotal, ouId, userId,
+                        this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, onHandQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal, ouId, userId,
                                 whSkuAttrId);
                         // 删除容器库存
                         this.replenishmentUpdateContainerInventory(invCmd, onHandQty, isTabbInvTotal, ouId, userId);
@@ -9120,7 +9085,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                     if (skuScanQty.doubleValue() > sum.doubleValue()) {
                         // 添加库位库存
-                        this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, onHandQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, newTurnoverBoxId, isTabbInvTotal, ouId, userId,
+                        this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, onHandQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal, ouId, userId,
                                 whSkuAttrId);
                         // 删除容器库存
                         this.replenishmentUpdateContainerInventory(invCmd, onHandQty, isTabbInvTotal, ouId, userId);
@@ -9129,7 +9094,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     if (skuScanQty.doubleValue() < sum.doubleValue()) {
                         Double qty = skuScanQty - (sum - onHandQty);
                         // 添加库位库存
-                        this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, qty, locationId, newTurnoverBoxId, isTV, isBM, isVM, newTurnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
+                        this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, qty, locationId, newTurnoverBoxId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
                         // 删除容器库存
                         this.replenishmentUpdateContainerInventory(invCmd, qty, isTabbInvTotal, ouId, userId);
                         isPutaway = true;
@@ -9138,7 +9103,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
                 if (skuScanQty.doubleValue() < onHandQty.doubleValue()) {
                     // 添加库位库存
-                    this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, skuScanQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, newTurnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
+                    this.replenishmentSplitPutaway(occupationLineId, occupationCode, cacehSnList, invTobefilledList, invSnCmd, invCmd, skuScanQty, locationId, newTurnoverBoxId, isTV, isBM, isVM, turnoverBoxId, isTabbInvTotal, ouId, userId, whSkuAttrId);
                     // 删除容器库存
                     this.replenishmentUpdateContainerInventory(invCmd, skuScanQty, isTabbInvTotal, ouId, userId);
                     isPutaway = true;

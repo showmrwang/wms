@@ -60,11 +60,11 @@ public final class CacheConstants {
     public static final String LOCATION_RECOMMEND = "LOCATION_RECOMMEND";
 
     public static final String SCAN_SKU_QUEUE_SN = "SCAN_SKU_QUEUE_SN";
-    
+
     public static final String SCAN_SKU_QUEUE_SN_COUNT = "SCAN_SKU_QUEUE_SN_COUNT";
-    
+
     public static final String SUGGEST_SCAN_SKU_QUEUE_SN = "SUGGEST_SCAN_SKU_QUEUE_SN";
-    
+
     /***
      *  缓存sku,sn
      */
@@ -118,21 +118,21 @@ public final class CacheConstants {
     public static final String CACHE_TURNOVERBOX_IDS = "CACHE_TURNOVERBOX_IDS";
     /** 缓存作业执行明细统计信息 */
     public static final String CACHE_OPERATION_EXEC_LINE = "CACHE_OPERATION_EXEC_LINE";
-    
+
     /**缓存sn*/
     public static final String CACHE_LATTICE_NO = "CACHE_LATTICE_NO_";
-    
+
     /** pda拣货:有小车的情况已经扫描的sku */
     public static final String PDA_PICKING_SCAN_SKU_LATTICE_NO = "PDA_PICKING_SCAN_SKU_LATTICE_NO_";
-    
+
     /**缓存sku*/
     public static final String PDA_REPLENISH_PUTAWAY_SCAN_SKU = "PDA_REPLENISH_PUTAWAY_SCAN_SKU";
-    
+
     /**缓存sku*/
-    public static final String PDA_REPLENISH_PUTAWAY_SCAN_SN= "PDA_REPLENISH_PUTAWAY_SCAN_SN";
-    
+    public static final String PDA_REPLENISH_PUTAWAY_SCAN_SN = "PDA_REPLENISH_PUTAWAY_SCAN_SN";
+
     /**整托/整箱缓存短拣sku*/
-    public static final String PDA_PICKING_SHORTPICKING_SKU="PDA_PICKING_SHORTPICKING_SKU";
+    public static final String PDA_PICKING_SHORTPICKING_SKU = "PDA_PICKING_SHORTPICKING_SKU";
 
     /************************************* 播种缓存 ***********************************/
 
