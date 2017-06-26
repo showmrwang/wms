@@ -91,6 +91,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
 
     @Override
     public WmsResponse wmsOutBoundCancel(WmsOutBoundCancel wmsOutBoundCancel) {
+        log.info("wmsOutBoundCancel params:[{}]", wmsOutBoundCancel);
         try {
             WmsResponse checkResponse = this.checkParamsForOutBoundCancel(wmsOutBoundCancel);
             if (WmsResponse.STATUS_ERROR == checkResponse.getStatus()) {
