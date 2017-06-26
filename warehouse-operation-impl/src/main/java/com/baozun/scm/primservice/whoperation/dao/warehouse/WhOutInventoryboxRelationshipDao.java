@@ -108,4 +108,22 @@ public interface WhOutInventoryboxRelationshipDao extends BaseDao<WhOutInventory
      * @return
      */
     List<WhOutInventoryboxRelationship> getGeneralRelationship(@Param("ouId") Long ouId);
+    
+    /**
+     * 获取客户id
+     * @param type
+     * @param ouId
+     * @param skuId
+     * @return
+     */
+    public Long findCustomerId(@Param("type") String type,@Param("ouId") Long ouId,@Param("skuId") Long skuId);
+    
+    /**
+     * 获取客户id
+     * @param type
+     * @param ouId
+     * @param skuId
+     * @return
+     */
+    public Long findCustomerIdById(@Param("type") String type,@Param("ouId") Long ouId,@Param("outboundboxCode") String outboundboxCode);
 }

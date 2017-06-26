@@ -14,6 +14,7 @@ import java.util.Set;
 
 import lark.common.annotation.MoreDB;
 
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationLineCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -42,6 +44,7 @@ import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -56,6 +59,8 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutInventoryboxRelationshipDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkOperDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
@@ -180,6 +185,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private CreateWorkManagerProxy createWorkManagerProxy;
     @Autowired
     private SkuBarcodeDao skuBarcodeDao;
+    @Autowired
+    private WhOutboundboxDao whOutboundboxDao;
+    @Autowired
+    private WhOutInventoryboxRelationshipDao whOutInventoryboxRelationshipDao;
 
 
 
@@ -841,18 +850,21 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long functionId = command.getFunctionId();
         Long operationId = command.getOperationId();
         String containerCode = command.getOuterContainer(); // 小车
+        Long userId = command.getUserId();
         OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         if (null == operatorLine) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
         }
         if (pickingWay == Constants.PICKING_WAY_ONE) {
+            String tipOuterContainer = command.getTipOuterContainer();  //系统推荐小车
             // 修改小车状态
-            this.updateContainerStauts(containerCode, ouId);
-            // 提示货格
+            this.updateContainerStauts(containerCode, ouId,tipOuterContainer,operationId,userId);
+            
         }
         if (pickingWay == Constants.PICKING_WAY_TWO) { // 使用外部(小车)，有出库箱拣货流程
+            String tipOuterContainer = command.getTipOuterContainer();  //系统推荐小车
             // 修改小车状态
-            this.updateContainerStauts(containerCode, ouId);
+            this.updateContainerStauts(containerCode, ouId,tipOuterContainer,operationId,userId);
             Map<Integer, String> carStockToOutgoingBox = operatorLine.getCarStockToOutgoingBox(); // 出库箱和货格对应关系
             List<WhOperationLineCommand> operatorLineList = whOperationLineManager.findOperationLineByOperationId(operationId, ouId);
             CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipOutBounxBoxCode(operatorLineList, operationId, carStockToOutgoingBox);
@@ -869,9 +881,21 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 command.setIsNeedScanLatticeNo(false);
             }
         }
+        if(pickingWay == Constants.PICKING_WAY_THREE){ //出库箱
+            String outBoundBoxCode = command.getOutBounxBoxCode();  //扫描出库箱
+            String tipOutBoundBoxCode = command.getTipOutBounxBoxCode();  //推荐出库箱
+            if(!outBoundBoxCode.equals(tipOutBoundBoxCode)){  //判断扫描的出库箱是否是相同客户下的
+                this.judeOutboundBoxIsUse(outBoundBoxCode,tipOutBoundBoxCode, ouId);
+                //扣减耗材库存
+                if(command.getIsMgmtConsumableSku()){  //管理耗材
+                    
+                }
+            }
+        }
         if (pickingWay == Constants.PICKING_WAY_FOUR) { // 周转箱
             String turnoverBoxCode = command.getTurnoverBoxCode();
-            this.updateContainerStauts(turnoverBoxCode, ouId);
+            String tipTrunoverBoxCode = command.getTipTurnoverBoxCode();
+            this.updateContainerStauts(turnoverBoxCode, ouId,tipTrunoverBoxCode,operationId,userId);
         }
         command.setOuterContainer(containerCode); // 外部容器号(小车，单个出库箱)
         WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
@@ -898,21 +922,89 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         return command;
     }
 
-    private void updateContainerStauts(String containerCode, Long ouId) {
+    private void updateContainerStauts(String containerCode, Long ouId,String tipOuterContainer,Long operationId,Long userId) {
         log.info("PdaPickingWorkManagerImpl updateContainerStauts is start");
         Container container = new Container();
         ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
         if (null == containerCmd) {
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
+        if(!containerCode.equals(tipOuterContainer)){  //当前扫描的小车不是系统推荐的小车或者周转箱
+          // 验证容器状态是否可用
+          if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+            log.error("container lifecycle is not normal, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+          }
+         // 验证容器状态是否是待上架
+          if (!container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+            log.error("container lifecycle is not normal, logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
+          }
+         //释放推荐小车/周转箱状态
+          ContainerCommand cmd = containerDao.getContainerByCode(tipOuterContainer, ouId);
+          if (null == cmd) {
+              throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+          }
+          Long tipCategoryId = cmd.getId();
+          Long categoryId = containerCmd.getTwoLevelType();
+          //判断当前小车是否和推荐的类型相同
+          Container2ndCategory    c2nd = container2ndCategoryDao.findByIdExt(categoryId,ouId);
+          if(null == c2nd){
+            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+          }
+          int count1 = c2nd.getTotalGridNum();   //扫描的容器货格数
+          Container2ndCategory    c2ndC = container2ndCategoryDao.findByIdExt(tipCategoryId,ouId);
+          if(null == c2ndC){
+            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+          }
+          int count2 = c2ndC.getTotalGridNum();   //提示的容器货格数
+          //获取
+          if(count1 != count2){
+              throw new BusinessException(ErrorCodes.SCAN_CONTAINER_IS_ERROR);  //扫描容器类型不正确
+          }
+          //释放推荐的小车或者出库箱
+          Container c = new Container();
+          BeanUtils.copyProperties(cmd, c);
+          container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE );
+          container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+          containerDao.saveOrUpdateByVersion(c);
+          insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
+        }
         BeanUtils.copyProperties(containerCmd, container);
         container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
         container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING);
         containerDao.saveOrUpdateByVersion(container);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
         log.info("PdaPickingWorkManagerImpl updateContainerStauts is end");
-
     }
-
+    
+    /**
+     * 判断新扫的出库箱是否可用
+     * @param outBoundBoxCode
+     * @param tipOutBoundBoxCode
+     * @param ouId
+     */
+    public void judeOutboundBoxIsUse(String outboundBoxCode,String tipOutboundBoxCode,Long ouId){
+        log.info("PdaPickingWorkManagerImpl judeOutboundBoxIsUse is start");
+        WhOutboundboxCommand outboundBoxCmd = whOutboundboxDao.getwhOutboundboxCommandByCode(outboundBoxCode, ouId);
+        if(null != outboundBoxCmd){
+            //已存在且交接出库单出库箱或不存在的出库箱号,t_wh_outboundbox中如果出库箱存在且状态为交接完成的则箱号可用
+            if(!OutboundboxStatus.FINISH.equals(outboundBoxCmd.getStatus())){
+                throw new BusinessException(ErrorCodes.OUT_BOUNDBOX_STATUS_IS_ERROR); 
+            }
+            //新扫描的出库箱必须和推荐的出库箱是同一个顾客的
+            Long outboundboxId = outboundBoxCmd.getOutboundboxId();
+            Long customerId = whOutInventoryboxRelationshipDao.findCustomerId(Constants.OUTBOUNDBOX_RELATIONSHIP_TYPE_CUSTOMER, ouId,outboundboxId);
+            //查询推荐出库箱对应的顾客
+            Long tipCustomerId = whOutInventoryboxRelationshipDao.findCustomerIdById(Constants.OUTBOUNDBOX_RELATIONSHIP_TYPE_CUSTOMER, ouId, tipOutboundBoxCode);
+            if(customerId.longValue() != tipCustomerId.longValue()){
+                throw new BusinessException(ErrorCodes.SCAN_OUT_BOUNDBOX_IS_ERROR); 
+            }
+        }
+        
+        log.info("PdaPickingWorkManagerImpl judeOutboundBoxIsUse is end");
+    }
+    
     /**
      * pda拣货确认提示外部容器托盘
      * @author tangming

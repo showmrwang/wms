@@ -213,6 +213,9 @@ public class PickingScanResultCommand extends BaseCommand {
     private Integer tempReplenishWay;
     
     private String tipSkuMutilBarcode;
+    
+    
+    private Boolean isMgmtConsumableSku;   //是否管理耗材
 
 
     /**
@@ -1185,6 +1188,14 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setTipSkuMutilBarcode(String tipSkuMutilBarcode) {
         this.tipSkuMutilBarcode = tipSkuMutilBarcode;
+    }
+
+    public Boolean getIsMgmtConsumableSku() {
+        return isMgmtConsumableSku;
+    }
+
+    public void setIsMgmtConsumableSku(Boolean isMgmtConsumableSku) {
+        this.isMgmtConsumableSku = isMgmtConsumableSku;
     }
 
     
