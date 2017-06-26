@@ -152,6 +152,8 @@
        		batch = #{batch}
        		and ou_id = #{ouId}
        		and container_code = #{containerCode}
+       		order by id desc
+       		limit 1
     </select>
     
     <select id="findWhFacilityRecPathByBatch" resultMap="WhFacilityRecPathResultExt">
