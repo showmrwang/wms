@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.model.ResponseMsg;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.util.JsonUtil;
 
 @Service("wmsOutboundServiceManagerProxy")
 public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceManagerProxy {
@@ -91,7 +92,7 @@ public class WmsOutboundServiceManagerProxyImpl implements WmsOutboundServiceMan
 
     @Override
     public WmsResponse wmsOutBoundCancel(WmsOutBoundCancel wmsOutBoundCancel) {
-        log.info("wmsOutBoundCancel params:[{}]", wmsOutBoundCancel);
+        log.info("wmsOutBoundCancel params:[{}]", JsonUtil.beanToJson(wmsOutBoundCancel));
         try {
             WmsResponse checkResponse = this.checkParamsForOutBoundCancel(wmsOutBoundCancel);
             if (WmsResponse.STATUS_ERROR == checkResponse.getStatus()) {
