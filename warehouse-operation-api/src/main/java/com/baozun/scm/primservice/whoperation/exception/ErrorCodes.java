@@ -494,6 +494,8 @@ public class ErrorCodes {
     public static final int ASSIGN_IN_OUT_TYPE_ERROR = 11111;
     /** 出库单未创建完成，请确认配送地址、明细已创建完毕 */
     public static final int ODO_NOT_FINISH_CREATE = 11112;
+    /** 已签出的出库单才允许打印拣货单 */
+    public static final int WORK_PRINT_REFUSE_NO_ASSIGNOUT = 11113;
     // 10001-20000 luyimin
 
 
