@@ -679,8 +679,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void cancelOdo(WhOdo odo, Long ouId, String logId) {
+        log.info("logId:{},method cancelOdo start", logId);
         try {
             if (odo == null) {
+                log.error("logId:{},method cancelOdo throw error [odo == null]", logId);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
             // 明细取消
@@ -690,6 +692,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     line.setOdoLineStatus(OdoStatus.ODOLINE_CANCEL);
                     int updateLineCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
                     if (updateLineCount <= 0) {
+                        log.error("logId:{},method cancelOdo ->update odo line[{}] throw error [version error]", logId, line.getId());
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 }
@@ -700,8 +703,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             odo.setIsCancel(true);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
+                log.error("logId:{},method cancelOdo ->update odo [{}] throw error [version error]", logId, odo.getId());
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {

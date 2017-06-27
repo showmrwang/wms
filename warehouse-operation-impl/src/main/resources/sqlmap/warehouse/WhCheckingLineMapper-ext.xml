@@ -579,4 +579,14 @@
         group by odo_line_id
     </select>
     
+     <select id="findCheckQty" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			sum(line.qty) - sum(line.checking_qty)
+		FROM
+			t_wh_checking_line line
+		WHERE
+			line.ou_id = #{ouId}
+		AND line.odo_line_id = #{odoLineId}
+    </select>
+    
 </mapper>

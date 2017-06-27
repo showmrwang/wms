@@ -1290,7 +1290,7 @@
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
 			and checking.status != 10
-			and odo.odo_status != 60
+			and odo.odo_status in ('0','1', '5','8', '10','20', '25','30', '35','40', '45','50', '55')
     </select>
     
     <select id="findOdoSkuCntByParam" resultType="java.lang.Long" flushCache="false">
