@@ -215,6 +215,13 @@
         </where>
     </sql>
     
+    <delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_checking where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	  </delete>
     
      <select id="findByWaybillCode" resultMap="WeightingCommand" flushCache="false">
         SELECT
