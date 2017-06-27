@@ -20,7 +20,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="storeId" column="storeId"/>
 		<result property="occupationCode" column="invOccupationCode"/>
 		<result property="occupationLineId" column="invOccupationLineId"/>
-		<result property="replenishmentCode" column="replenishmentCode"/>
+		<result property="replenishmentCode" column="invReplenishmentCode"/>
 		<result property="qty" column="qty"/>
 		<result property="invStatus" column="invStatus"/>
 		<result property="invType" column="invType"/>
@@ -47,6 +47,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<result property="defectSource" column="snDefectSource" />
 			<result property="defectTypeId" column="snDefectTypeId" />
 			<result property="defectReasonsId" column="snDefectReasonsId" />
+			<result property="replenishmentCode" column="snReplenishmentCode" />
 			<result property="status" column="snStatus" />
 			<result property="invAttr" column="snInvAttr" />
 			<result property="uuid" column="snUuid" />
@@ -877,7 +878,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          allocated.storeId,
 	          allocated.invOccupationCode,
 	          allocated.invOccupationLineId,
-	          allocated.replenishmentCode,
+	          allocated.invReplenishmentCode,
 	          allocated.qty,
 	          allocated.invStatus,
 	          allocated.invType,
@@ -906,6 +907,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          sn.inv_attr AS snInvAttr,
 	          sn.uuid AS snUuid,
 	          sn.ou_id AS snOuId,
+	          sn.replenishment_code as snReplenishmentCode,
 	          sn.sys_uuid AS snSysUuid
 			      from (SELECT
 							inv.id AS alloctedId,
@@ -916,7 +918,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 							inv.customer_id AS customerId,
 							inv.store_id AS storeId,
 							inv.occupation_code AS invOccupationCode,
-							inv.replenishment_code as replenishmentCode,
+							inv.replenishment_code as invReplenishmentCode,
 							sum(inv.qty) AS qty,
 							inv.inv_status AS invStatus,
 							inv.inv_type AS invType,

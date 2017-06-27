@@ -363,5 +363,7 @@ public interface WhWaveManager extends BaseManager {
      * @version 2017年5月3日
      */
     WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printOrderType13, Long ouId);
+
+    public void checkWaveHardAllocateRule(Long waveId, Long ouId);
     
 }

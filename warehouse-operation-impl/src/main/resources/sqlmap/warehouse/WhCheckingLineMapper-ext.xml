@@ -264,6 +264,14 @@
             checkingLine.ou_id = #{ouId}
             and checkingLine.checking_id = #{checkingId}
     </select>
+    
+    <delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_checking_line where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	  </delete>
 
     <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine">
         <![CDATA[
@@ -621,6 +629,16 @@
         where
             checkingLine.ou_id = #{ouId}
             and checkingLine.checking_id = #{checkingId}
+     </select>
+
+     <select id="findCheckQty" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			sum(line.qty) - sum(line.checking_qty)
+		FROM
+			t_wh_checking_line line
+		WHERE
+			line.ou_id = #{ouId}
+		AND line.odo_line_id = #{odoLineId}
     </select>
     
 </mapper>

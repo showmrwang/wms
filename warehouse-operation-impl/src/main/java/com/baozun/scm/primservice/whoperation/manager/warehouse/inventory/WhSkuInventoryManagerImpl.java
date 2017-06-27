@@ -9119,6 +9119,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             Long occupationLineId = invCmd.getOccupationLineId();
             String occupationCode = invCmd.getOccupationCode();
+            for (WhOperationExecLine execLine : execLineList) {
+                Long locId = execLine.getToLocationId();
+                if(locId.longValue() != locationId.longValue()){
+                        continue;
+                }
+            }
             // 更新作业执行明细
             this.updateOperationExecLine(skuScanQty, execLineList, whSkuAttrId, occupationLineId, ouId, userId);
             List<WhSkuInventoryCommand> skuInvSnList = whSkuInventoryDao.findWhSkuInventorySnByOccupationLineId(ouId, occupationCode, occupationLineId, invCmd.getUuid());
@@ -9327,13 +9333,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setOuterContainerId(null);
             inv.setLocationId(locationId);
             if (null != newTurnoverBoxId) {// 引用新容器
-                inv.setInsideContainerId(newTurnoverBoxId);
-            } else {
                 if (false == isTV) {
                     inv.setInsideContainerId(null);
-                } else {
-                    inv.setInsideContainerId(turnoverBoxId);
+                }else{
+                    inv.setInsideContainerId(newTurnoverBoxId);
                 }
+            } else {
+                    inv.setInsideContainerId(null);
             }
             if (false == isBM) {
                 inv.setBatchNumber(null);
@@ -9410,13 +9416,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 拆箱上架默认不跟踪容器号
             inv.setOuterContainerId(null);
             if (null != newTurnoverBoxId) {// 引用新容器
-                inv.setInsideContainerId(newTurnoverBoxId);
-            } else {
                 if (false == isTV) {
                     inv.setInsideContainerId(null);
-                } else {
-                    inv.setInsideContainerId(turnoverBoxId);
+                }else{
+                    inv.setInsideContainerId(newTurnoverBoxId);
                 }
+            } else {
+                    inv.setInsideContainerId(null);
             }
             if (false == isBM) {
                 inv.setBatchNumber(null);
