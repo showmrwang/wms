@@ -9106,6 +9106,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             Long occupationLineId = invCmd.getOccupationLineId();
             String occupationCode = invCmd.getOccupationCode();
+            for (WhOperationExecLine execLine : execLineList) {
+                Long locId = execLine.getToLocationId();
+                if(locId.longValue() != locationId.longValue()){
+                        continue;
+                }
+            }
             // 更新作业执行明细
             this.updateOperationExecLine(skuScanQty, execLineList, whSkuAttrId, occupationLineId, ouId, userId);
             List<WhSkuInventoryCommand> skuInvSnList = whSkuInventoryDao.findWhSkuInventorySnByOccupationLineId(ouId, occupationCode, occupationLineId, invCmd.getUuid());
