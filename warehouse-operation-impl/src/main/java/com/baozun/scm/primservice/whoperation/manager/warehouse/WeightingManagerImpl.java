@@ -99,6 +99,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         if (null == command) {
             throw new BusinessException(ErrorCodes.WEIGHTING_INPUT_NOT_CORRECT);
         }
+        checkOdoStatus(command.getOdoId(), command.getOuId());
         if (function.getIsValidateWeight()) {
             command.setFloats(function.getWeightFloatPercentage());
         }
@@ -128,6 +129,21 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             }
         }
         return command;
+    }
+
+    /**
+     * [业务方法] 取消订单不允许进行称重
+     * @param odoId
+     * @param ouId
+     */
+    private void checkOdoStatus(Long odoId, Long ouId) {
+        WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
+        if (null != odo) {
+            String status = odo.getOdoStatus();
+            if (OdoStatus.CANCEL.equals(status)) {
+                throw new BusinessException(ErrorCodes.CHECKING_ODO_CANCEL_ERROR);
+            }
+        }
     }
 
     @Override

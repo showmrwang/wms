@@ -52,11 +52,13 @@ import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportServiceDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -88,6 +90,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
@@ -186,6 +189,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     private WhLocationDao locationDao;
     @Autowired
     private WhOdoDeliveryInfoManager whOdoDeliveryInfoManager;
+
+    @Autowired
+    private WhOdoLineDao whOdoLineDao;
 
 
     @Override
@@ -1003,15 +1009,20 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             }
         }
         Boolean result = whCheckingLineManager.judeIsLastBox(ouId, odoId);
+        List<Long> odoLineIds = new ArrayList<Long>(); // 待复核出库单明细id列表
+        for (WhCheckingLineCommand checkingLine : checkingLineList) {
+            odoLineIds.add(checkingLine.getOdoLineId());
+        }
         if (result) {
             // 更新出库单状态
-            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode());
+            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode(), odoLineIds);
         } else {
-            WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
-            // 修改出库单状态为复核完成状态。
-            whOdo.setOdoStatus(OdoStatus.CHECKING);
-            whOdoDao.saveOrUpdateByVersion(whOdo);
-            insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
+            // 修改出库单状态为复核中状态。
+            this.updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING);
+            // WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
+            // whOdo.setOdoStatus(OdoStatus.CHECKING);
+            // whOdoDao.saveOrUpdateByVersion(whOdo);
+            // insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
         }
         // List<WeightingCommand> commandList =
         // whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId,
@@ -1109,10 +1120,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         Long checkingId = null;
-        for (WhCheckingLineCommand lineCmd : checkingLineList) {
-            checkingId = lineCmd.getCheckingId(); // 复合头id
-            break;
-        }
+        checkingId = checkingLineList.get(0).getCheckingId(); // 复合头id
         // 查询当前复合头对应的要复合的数量,复合明细中出库箱悟为空
         if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern) || Constants.WAY_5.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
@@ -1356,20 +1364,71 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     }
 
     /**
+     * [业务方法] 更新出库单与出库单明细状态
+     * @param odoId
+     * @param ouId
+     * @param userId
+     */
+    private void updateOdoStatus(Long odoId, Long ouId, Long userId, List<Long> odoLineIds, String status) {
+        log.info("updateOdoStatus start...");
+        log.info("updateOdoStatus: odoId:[{}], ouId:[{}], userId:[{}], odoLineIds:[{}], status:[{}]", odoId, ouId, userId, odoLineIds, status);
+        WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
+        // 修改出库单状态为复核完成状态。
+        if (!OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
+            log.info("odo status is not cancel");
+            // 订单状态不为取消 才执行更新出库单状态
+            whOdo.setOdoStatus(status);
+            whOdo.setLagOdoStatus(status);
+            whOdo.setModifiedId(userId);
+            whOdoDao.saveOrUpdateByVersion(whOdo);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
+            log.info("odo status:[{}]", status);
+            if (OdoStatus.CHECKING_FINISH.equals(status)) {
+                // 更新出库单明细状态 该出库单已经复核完成
+                for (Long odoLineId : odoLineIds) {
+                    WhOdoLine whOdoLine = whOdoLineDao.findOdoLineById(odoLineId, ouId);
+                    whOdoLine.setModifiedId(userId);
+                    whOdoLine.setOdoLineStatus(OdoLineStatus.CHECKING_FINISH);
+                    whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, whOdoLine, ouId, userId, null, null);
+                }
+            } else {
+                // 部分更新出库单明细状态 该出库单只是部分复核完成
+                for (Long odoLineId : odoLineIds) {
+                    WhOdoLine whOdoLine = whOdoLineDao.findOdoLineById(odoLineId, ouId);
+                    Long checkingQty = this.whCheckingLineDao.findCheckingQty(odoLineId, ouId);
+                    if (0L == checkingQty) {
+                        log.info("checking qty == 0, odo line status: check finish");
+                        // 出库单明细行待复核数量为0, 则更新出库单明细行状态为已复核
+                        whOdoLine.setModifiedId(userId);
+                        whOdoLine.setOdoLineStatus(OdoLineStatus.CHECKING_FINISH);
+                        whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, whOdoLine, ouId, userId, null, null);
+                    } else {
+                        log.info("checking qty != 0, odo line status: checking");
+                        // 出库单明细行待复核数量不为0, 则更新出库单明细行状态为复核中
+                        whOdoLine.setModifiedId(userId);
+                        whOdoLine.setOdoLineStatus(OdoLineStatus.CHECKING);
+                        whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, whOdoLine, ouId, userId, null, null);
+                    }
+                }
+            }
+        }
+        log.info("updateOdoStatus start...");
+    }
+
+    /**
      * 更新出库单状态(按单复合只更新一个出库单)
      * 
      * 
      * @author
      * @param whCheckingResultCommand
      */
-    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode) {
+    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode, List<Long> odoLineIds) {
         // 修改出库单状态为复核完成状态。
-        WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
-        // 修改出库单状态为复核完成状态。
-        whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
-        whOdo.setLagOdoStatus(OdoStatus.CHECKING_FINISH);
-        whOdoDao.saveOrUpdateByVersion(whOdo);
-        insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
+        updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING_FINISH);
+
         if (!StringUtils.isEmpty(outerContainerCode)) {
             // 修改小车
             ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
