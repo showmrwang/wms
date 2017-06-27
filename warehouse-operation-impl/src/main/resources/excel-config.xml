@@ -109,7 +109,7 @@
 	<field name="consigneeTargetZip" title="收货人邮编"/>
 </excel>
 <excel id="whOdoTransportMgmt" class="com.baozun.scm.primservice.whoperation.command.odo.OdoTransportMgmtCommand" sheetname="出库单运输服务商列表" defaultColumnWidth="5000" enableStyle="true">
-	<field name="odoExtCode" title="外部对接编码" isNull="false" nullErrorCode="error.excel.isNull"/>
+	<field name="odoExtCode" title="外部对接编码"  isNull="false" nullErrorCode="error.excel.isNull"/>
 	<field name="transportServiceProvider" title="运输服务商"/>
 	<field name="modeOfTransport" title="运输方式"/>
 	<field name="courierServiceType" title="快递服务类型"/>
