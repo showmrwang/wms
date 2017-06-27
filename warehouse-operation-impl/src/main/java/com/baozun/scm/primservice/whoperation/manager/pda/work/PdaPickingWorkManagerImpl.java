@@ -42,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -4052,23 +4053,37 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
                 // 根据出库单code获取出库单信息
                 WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
-                    odo.setOdoStatus(OdoStatus.PICKING_FINISH);
-                    odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
-                } else {
-                    odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
-                    odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                if(null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())){
+                    if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
+                        odo.setOdoStatus(OdoStatus.PICKING_FINISH);
+                        odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
+                    } else {
+                        odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
+                        odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                    }
+                    odoDao.update(odo);    
                 }
-                odoDao.update(odo);
             }
             if (0 == odoOutBoundBoxByOdoLine.size() && 0 == operationCommandByOdoLine.size()) {
                 // 根据出库单code获取出库单信息
                 WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
-                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
-                whOdoLineDao.update(whOdoLine);
+                if(null != whOdoLine){
+                    if(null != whOdoLine.getOdoId()){
+                        WhOdo odo = odoDao.findByIdOuId(whOdoLine.getOdoId(), whOperationLineCommand.getOuId());
+                        if(null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())){
+                            whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
+                            whOdoLineDao.update(whOdoLine);
+                        }    
+                    }else{
+                        if(!OdoLineStatus.CANCEL.equals(whOdoLine.getOdoLineStatus())){
+                            whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
+                            whOdoLineDao.update(whOdoLine);
+                        }
+                          
+                    }
+                }
             }
         }
-
     }
     
     /**
