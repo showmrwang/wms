@@ -1074,17 +1074,21 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
      */
     @Override
     public ResponseMsg cancel(WhOdo odo, Long ouId, Boolean isOdoCancel, List<WhOdoLine> lineList, Long userId, String logId) {
+        log.info("logID:{},odo cancel ->params:[odo:{},ouId:{},isWholeCancel:{}]", logId, odo, ouId, isOdoCancel);
         try{
             // 创建中的出库单删除操作
             if (OdoStatus.CREATING.equals(odo.getOdoStatus())) {
                 try {
+                    log.info("logId:{}, cancel from creating_odo", logId);
                     this.deleteOdoLine(lineList);
                 } catch (Exception ex) {
+                    log.error("logId:{},method cancel throw error:{}", logId, ex);
                     throw new BusinessException(ErrorCodes.DELETE_DATA_ERROR);
                 }
             } else {
                 // @mender yimin.lu 2017/4/10 屏蔽部分取消接口
                 if (!isOdoCancel) {
+                    log.error("logId:{},method cancel throw error:ODO_CANCEL_NO_SUPPORT_LINE_ERROR", logId);
                     throw new BusinessException(ErrorCodes.ODO_CANCEL_NO_SUPPORT_LINE_ERROR);
                 }
                 // @mender yimin.lu 2017/5/5 当出库单大于某个状态时候，不允许取消
@@ -1096,15 +1100,19 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                         odoStatus = Long.parseLong(odo.getOdoStatus());
                         cancelNode = Long.parseLong(wh.getOdoNotCancelNode());
                     } catch (Exception ex) {
+                        log.error("logId:{},method cancel throw WAREHOUSE_CANCEL_NODE_ERROR", logId);
                         throw new BusinessException(ErrorCodes.WAREHOUSE_CANCEL_NODE_ERROR);
                     }
                     if (odoStatus >= cancelNode) {
+                        log.error("logId:{},method cancel throw ODO_CANCEL_ERROR", logId);
                         throw new BusinessException(ErrorCodes.ODO_CANCEL_ERROR);
                     }
                 }
                 if (isOdoCancel) {
+                    log.info("logId:{},method cancel invoke cancelOdo", logId);
                     this.cancelOdo(odo, ouId, logId);
                 } else {
+                    log.info("logId:{},method cancel invoke cancelLines", logId);
                     this.cancelLines(odo, lineList, ouId, userId, logId);
                 }
             }

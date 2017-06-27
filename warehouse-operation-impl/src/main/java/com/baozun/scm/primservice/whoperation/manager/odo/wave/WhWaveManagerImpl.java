@@ -485,12 +485,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         boolean flag = false; // 标记是否需要重新计算波次头信息
         // 剔除已取消的出库单
-        List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
-        if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
-            this.eliminateOdo(cancelOdoIdList, waveId, Constants.ODO_IS_CANCEL, false, ouId);
-            flag = true;
-        }
-
+        flag = whWaveLineManager.deleteWaveLinesForCancelOdoByWaveId(waveId, ouId);
+        
         List<WhWaveLine> lines = whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
         // 获取下一个波次阶段编码
         WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
@@ -632,6 +628,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setTotalOdoLineQty(waveHeadInfo.getTotalOdoLineQty());
         wave.setTotalAmount(waveHeadInfo.getTotalAmount());
         wave.setTotalSkuQty(waveHeadInfo.getTotalSkuQty());
+        wave.setTotalOdoQty(waveHeadInfo.getTotalOdoQty());
         int updateCount = whWaveDao.saveOrUpdateByVersion(wave);
         if (updateCount == 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -719,12 +716,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     private void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, Integer wavePhase) {
-        Long ouId = wh.getId();
         for (Long odoId : odoIds) {
             log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, wh.getId());
             this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, wavePhase);
         }
-        this.calculateWaveHeadInfo(waveId, ouId);
     }
 
     @Override
@@ -1608,6 +1603,24 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         WhWaveMasterPrintCondition c = whWaveMasterDao.findPrintConditionByWaveMasterId(wave.getWaveMasterId(), printType, ouId);
         return c;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void checkWaveHardAllocateRule(Long waveId, Long ouId) {
+        boolean flag = false;   // 标示是否计算波次头信息
+        // 提出取消的出库单据
+        flag = whWaveLineManager.deleteWaveLinesForCancelOdoByWaveId(waveId, ouId);
+        List<Long> odoIdList = whWaveLineDao.findNoRuleOdoIdListByWaveId(waveId, ouId);
+        if (null != odoIdList && !odoIdList.isEmpty()) {
+            whWaveLineManager.deleteWaveLinesByOdoIdList(odoIdList, waveId, ouId, Constants.RULE_ALLOCATION_FAILURE);
+            flag = true;
+        }
+        if (flag) {
+            this.calculateWaveHeadInfo(waveId, ouId);
+        }
+        // 进入硬分配库存
+        whWaveDao.updateWhWaveInHardAllocate(waveId, ouId);
     }
 
 }

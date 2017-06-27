@@ -2637,15 +2637,18 @@
 		from 
 			t_wh_wave w,
 			t_wh_wave_line l,
-			t_wh_wave_master m
+			t_wh_wave_master m,
+			t_wh_odo o
 		where 
 			w.id = l.wave_id 
 			and w.wave_master_id = m.id 
+			and o.id = l.odo_id
 			and l.allocate_rule_id is null 
 			and l.wave_id in 
 			<foreach collection="waveIdList" item="id" open="(" separator="," close=")">
 				#{id}
 			</foreach> 
+			and o.odo_status != '88'
 			and w.ou_id = #{ouId}
 		group by l.odo_id,l.wave_id,m.is_whole_order_outbound
 	</select>
@@ -3451,4 +3454,17 @@
 			and o.odo_index is null
 			and o.ou_id = #{ouId}
 	</select>
+	
+	<update id="updateOdoByCancel">
+		update
+			t_wh_odo
+		set
+			wave_code = null,
+	    	is_assign_success = 0,
+	        assign_fail_reason = #{reason},
+	        last_modify_time = now()
+	    where
+	    	id = #{odoId}
+	    	and ou_id = #{ouId}
+	</update>
 </mapper>
