@@ -454,7 +454,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		t_bi_customer customer on sku.customer_id = customer.id
 		where sku.ou_id = #{ouId}
 		and sku.bar_code = #{barcode}
+		<if test="customerCode != null and customerCode != ''">
 		and customer.customer_code = #{customerCode}
+		</if>
 		and sku.lifecycle = 1
 	</select>
 

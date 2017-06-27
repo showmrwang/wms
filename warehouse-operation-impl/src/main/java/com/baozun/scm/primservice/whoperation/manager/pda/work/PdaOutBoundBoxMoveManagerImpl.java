@@ -319,7 +319,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         ScanResultCommand srCommand = new ScanResultCommand();
         
         //通过耗材编码查询耗材是否存在
-        WhSkuCommand skuCommand = this.whSkuDao.findWhSkuByBarcodeExt(skuBarCode, ouId);
+        WhSkuCommand skuCommand = this.whSkuDao.findWhSkuByBarcodeExt(skuBarCode,null, ouId);
         if (null == skuCommand) {
             throw new BusinessException(ErrorCodes.TARGET_CONSUMABLES_NOT_EXIST, new Object[] {skuBarCode});
         }
@@ -908,7 +908,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             log.info("PdaOutBoundBoxMoveManagerImpl cancelScanConsumables param , ouId is:[{}],  containerCode is:[{}]", ouId,  sourceContainerCode);
         }
         //通过耗材编码查询耗材是否存在
-        WhSkuCommand skuCommand = this.whSkuDao.findWhSkuByBarcodeExt(consumablesCode, ouId);
+        WhSkuCommand skuCommand = this.whSkuDao.findWhSkuByBarcodeExt(consumablesCode,null, ouId);
         if (null == skuCommand) {
             throw new BusinessException(ErrorCodes.TARGET_CONSUMABLES_NOT_EXIST, new Object[] {consumablesCode});
         }
