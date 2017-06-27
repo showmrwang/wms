@@ -93,6 +93,14 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     List<WhCheckingLineCommand> findQtyAndOdolineIdByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 查询出库明细未复核的数量
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    Long findCheckingQty(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
+
 
 
 }

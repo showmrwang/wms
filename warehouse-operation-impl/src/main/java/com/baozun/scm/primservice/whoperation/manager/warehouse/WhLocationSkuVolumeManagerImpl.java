@@ -4,6 +4,8 @@ import java.util.List;
 
 import lark.common.annotation.MoreDB;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +14,14 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhLocationSkuVol
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationSkuVolumeDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhLocationSkuVolume;
 
 @Transactional
 @Service("whLocationSkuVolumeManager")
 public class WhLocationSkuVolumeManagerImpl extends BaseManagerImpl implements WhLocationSkuVolumeManager {
+    private static final Logger log = LoggerFactory.getLogger(WhLocationSkuVolumeManager.class);
 
     @Autowired
     private WhLocationSkuVolumeDao whLocationSkuVolumeDao;
@@ -25,13 +29,17 @@ public class WhLocationSkuVolumeManagerImpl extends BaseManagerImpl implements W
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhLocationSkuVolume findSkuByCheckLocation(Long locationId, Long ouId) {
+        log.info("WhLocationSkuVolumeManager.findSkuByCheckLocation start...");
+        log.info("param: locationId: [{}], ouId: [{}]", locationId, ouId);
         WhLocationSkuVolume whLocationSkuVolume = new WhLocationSkuVolume();
         whLocationSkuVolume.setLocationId(locationId);
         whLocationSkuVolume.setOuId(ouId);
         List<WhLocationSkuVolume> whLocationSkuVolumeList = this.whLocationSkuVolumeDao.findListByParam(whLocationSkuVolume);
         if (null == whLocationSkuVolumeList || whLocationSkuVolumeList.isEmpty()) {
-            throw new BusinessException("没有库位");
+            log.error("location not found");
+            throw new BusinessException(ErrorCodes.LOCATION_BARCODE_IS_ERROR);
         }
+        log.info("WhLocationSkuVolumeManager.findSkuByCheckLocation finish...");
         return whLocationSkuVolumeList.get(0);
     }
 
@@ -71,7 +79,7 @@ public class WhLocationSkuVolumeManagerImpl extends BaseManagerImpl implements W
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhLocationSkuVolumeCommand findFacilityLocSkuVolumeByLocSku(Long facilityId, String locationCode, Long skuId, Long ouId){
+    public WhLocationSkuVolumeCommand findFacilityLocSkuVolumeByLocSku(Long facilityId, String locationCode, Long skuId, Long ouId) {
         return whLocationSkuVolumeDao.findFacilityLocSkuVolumeByLocSku(facilityId, locationCode, skuId, ouId);
     }
 }

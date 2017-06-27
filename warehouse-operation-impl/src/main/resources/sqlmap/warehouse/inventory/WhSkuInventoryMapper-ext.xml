@@ -366,7 +366,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
-	
 	<sql id="whSkuInventoryCommandMapExt">
 	    <![CDATA[
 			t.id as id,
@@ -854,7 +853,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="customerId" column="customerId"/>
 		<result property="storeId" column="storeId"/>
 		<result property="occupationCode" column="invOccupationCode"/>
-		<result property="occupationLineId" column="invOccupationLineId"/>
+		<result property="occupationLineId" column="invOccupationLineId"/>		
+		<result property="seedingWallCode" column="seedingWallCode"/>
+		<result property="containerLatticeNo" column="containerLatticeNo"/>
+		<result property="outboundboxCode" column="outboundboxCode"/>		
 		<result property="onHandQty" column="onHandQty"/>
 		<result property="allocatedQty" column="allocatedQty"/>
 		<result property="toBeFilledQty" column="toBeFilledQty"/>
@@ -883,6 +885,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<result property="sn" column="snSn" />
 			<result property="occupationCode" column="snOccupationCode" />
 			<result property="occupationLineId" column="snOccupationLineId" />
+			<result property="replenishmentCode" column="snReplenishmentCode" />
 			<result property="defectWareBarcode" column="snDefectWareBarcode" />
 			<result property="defectSource" column="snDefectSource" />
 			<result property="defectTypeId" column="snDefectTypeId" />
@@ -5119,10 +5122,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       	inv.last_modify_time as lastModifyTime
 		from
 			t_wh_sku_inventory inv 
-		where 
-			inv.location_id =#{locationId}
+		where
+			inv.sku_id = #{skuId} 
 			and inv.ou_id = #{ouId}
-			and inv.sku_id = #{skuId}
+			<if test="locationId != null and locationId !=''">
+			 and inv.location_id =#{locationId}
+		  	</if>
 			and IFNULL(inv.is_locked,0) != 1
 			and inv.occupation_code is null
 			and inv.on_hand_qty > 0.0
@@ -5973,4 +5978,73 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.ou_id = #{ouId}
 			and inv.inside_container_id = #{insideContainerId}
 	</select>
+	
+	<select id="findSkuInventoryAndSnInfo" resultMap="WhSkuInventoryCommandSnResultExt">
+			select 
+					inv.id as invId,
+					inv.sku_id as skuId,
+					inv.location_id as locationId,
+					inv.outer_container_id as outerContainerId,
+					inv.inside_container_id as insideContainerId,
+					inv.customer_id as customerId,
+					inv.store_id as storeId,
+					inv.occupation_code as invOccupationCode,
+					inv.on_hand_qty as onHandQty,
+					inv.allocated_qty as allocatedQty,
+					inv.to_be_filled_qty as toBeFilledQty,
+					inv.frozen_qty as frozenQty,
+					inv.inv_status as invStatus,
+					inv.inv_type as invType,
+					inv.batch_number as batchNumber,
+					inv.mfg_date as mfgDate,
+					inv.exp_date as expDate,
+					inv.country_of_origin as countryOfOrigin,
+					inv.inv_attr1 as invAttr1,
+					inv.inv_attr2 as invAttr2,
+					inv.inv_attr3 as invAttr3,
+					inv.inv_attr4 as invAttr4,
+					inv.inv_attr5 as invAttr5,
+					inv.uuid as invUuid,
+					inv.is_locked as isLocked,
+					inv.ou_id as invOuId,
+					inv.occupation_code_source as occupationCodeSource,
+					inv.inbound_time as inboundTime,
+					inv.last_modify_time as lastModifyTime,
+					inv.container_lattice_no as containerLatticeNo,
+					inv.outboundbox_code as outboundboxCode,
+					inv.temporary_location_id as temporaryLocationId,
+					inv.occupation_line_id as invOccupationLineId,
+					inv.seeding_wall_code as seedingWallCode,
+					sn.id as snId,
+					sn.sn as snSn,
+					sn.occupation_code as snOccupationCode,
+					sn.occupation_line_id  as snOccupationLineId,
+					sn.replenishment_code as snReplenishmentCode,
+					sn.defect_ware_barcode as snDefectWareBarcode,
+					sn.defect_source as snDefectSource,
+					sn.defect_type_id as snDefectTypeId,
+					sn.defect_reasons_id as snDefectReasonsId,
+					sn.status as snStatus,
+					sn.inv_attr as snInvAttr,
+					sn.uuid as snUuid,
+					sn.ou_id as snOuId,
+					sn.sys_uuid as snSysUuid
+				from 
+					t_wh_sku_inventory as inv
+					left join t_wh_sku_inventory_sn as sn on inv.uuid = sn.uuid
+				where inv.ou_id = #{ouId}
+					<if test="outboundboxCode != null and outboundboxCode != ''">
+						and inv.outboundbox_code = #{outboundboxCode}
+					</if>
+					<if test="seedingWallCode != null and seedingWallCode != ''">
+						and inv.seeding_wall_code = #{seedingWallCode}
+					</if>
+					<if test="outerContainerId != null and outerContainerId != ''">
+						and inv.outer_container_id = #{outerContainerId}
+					</if>
+					<if test="containerLatticeNo != null and containerLatticeNo != ''">
+						and inv.container_lattice_no = #{containerLatticeNo}
+					</if>
+    </select>
+	
 </mapper>

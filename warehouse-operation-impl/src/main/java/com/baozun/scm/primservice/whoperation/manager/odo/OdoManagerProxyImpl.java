@@ -119,6 +119,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Supplier;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget;
+import com.baozun.scm.primservice.whoperation.util.JsonUtil;
 
 @Service("odoManagerProxy")
 public class OdoManagerProxyImpl implements OdoManagerProxy {
@@ -2759,7 +2760,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 封装数据匹配物流sql推荐实体
         SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
         trans.setWhCode(wh.getCode());
-
+        log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransContentCommand:{}", odoId, JsonUtil.beanToJson(trans));
         WhOdoTransportService transportService = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
         // 获取增值服务
         // 没有调用过或调用失败, 则调用物流增值服务推荐
@@ -2796,6 +2797,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             MaTransport transport = maTransportManager.findMaTransportByCode(transMgmt.getTransportServiceProvider(), Constants.WMS4);
             // 纸质面单
             if (Constants.WAYBILL_TYPE_PAPER.equals(transport.getWaybillType())) {
+                log.info("getLogisticsInfoByOdoId,odoId:{}, waybill_type_paper");
                 odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 3, null, false, ouId);
                 WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
                 delivery.setTransportCode(transMgmt.getTransportServiceProvider());
@@ -2807,8 +2809,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             // 电子面单,获取运单号
             MailnoGetContentCommand mailNoContent = odoManager.getMailNoContent(odo, address, transMgmt, odoLineList, isInsured, wh);
+            log.info("getLogisticsInfoByOdoId,odoId:{}, MailnoGetContentCommand:{}", odoId, JsonUtil.beanToJson(mailNoContent));
             // 循环获取5次
             MailnoGetResponse res = this.getMailnoGetResponse(mailNoContent);
+            log.info("getLogisticsInfoByOdoId,odoId:{}, MailnoGetResponse:{}", odoId, JsonUtil.beanToJson(res));
             if (null != res && null != res.getStatus() && res.getStatus() == 1) {
                 WhOdodeliveryInfo delivery = new WhOdodeliveryInfo();
                 delivery.setOdoId(odoId);
@@ -2853,6 +2857,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private boolean callSuggestTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, Long odoId, Long ouId) {
         try {
             SuggestTransResult transResult = transServiceManager.suggestTransService(trans, Constants.WMS4);
+            log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransResult:{}", odoId, JsonUtil.beanToJson(transResult));
             if (null != transResult && transResult.getStatus() == 1) {
                 List<LpCodeList> lpList = transResult.getLpList();
                 if (null != lpList && !lpList.isEmpty()) {
@@ -2898,6 +2903,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private boolean callVasTransService(SuggestTransContentCommand trans, WhOdoTransportMgmt transMgmt, Long odoId, Long ouId) {
         try {
             VasTransResult vasResult = transServiceManager.vasTransService(trans, Constants.WMS4);
+            log.info("getLogisticsInfoByOdoId,odoId:{}, VasTransResult:{}", odoId, JsonUtil.beanToJson(vasResult));
             if (null != vasResult && vasResult.getStatus() == 1) {
                 List<VasLine> vasList = vasResult.getVasList();
                 if (null != vasList && !vasList.isEmpty()) {
@@ -3023,6 +3029,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             if (flag) {
                 odoManager.updateOdoIndexByBatchExt(batchPrintConditionMap, ouId);
             } else {
+                log.error("wave_odoindex_sort_error, waveId:" + waveId);
                 throw new BusinessException(ErrorCodes.WAVE_ODOINDEX_SORT_ERROR);
             }
         }

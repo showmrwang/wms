@@ -204,6 +204,7 @@
 	
 	<!-- Pda容器拆分移动 start-->
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.work.PdaOutBoundBoxMoveManager"  ref="pdaOutBoundBoxMoveManager" />
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaOutBoundBoxMoveCacheManager"  ref="pdaOutBoundBoxMoveCacheManager" />
     <!-- Pda容器拆分移动 end-->
 
 
@@ -213,5 +214,7 @@
 
 
     <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportServiceManager" ref="odoTransportServiceManager" />
+    
+    <dubbo:service interface="com.baozun.scm.primservice.whoperation.manager.system.SysTimedTaskLogManager" ref="sysTimedTaskLogManager" />
 
 </beans>

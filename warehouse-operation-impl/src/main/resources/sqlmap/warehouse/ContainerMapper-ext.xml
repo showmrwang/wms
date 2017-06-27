@@ -165,13 +165,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </delete>
 	    
 	    <delete id="deleteByIdsExt" parameterType="list">
-	    
 	        delete from t_wh_container 
 	        where id in
 				<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
 			#{item}			
 			</foreach>	
 	  		and ou_id = #{ouId}
+	    </delete>
+	    
+	    <delete id="deleteBoxTypeByIds" parameterType="list">
+	        delete from t_wh_container 
+	        where id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}			
+			</foreach>
 	    </delete>  
 	    
 	    <select id="findByIdExt" parameterType="java.lang.Long" resultMap="ContainerResult" flushCache="false">
@@ -212,6 +219,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        WHERE 
 		        id = #{id} 
 		        and ou_id = #{ouId}
+	    ]]>
+		</update>
+		
+		<update id="updateCarTypeByIds" parameterType="list">
+	    <![CDATA[
+	        UPDATE t_wh_container SET
+		        is_full = 0 ,
+		        lifecycle = 1 ,
+		        status=1 
+	        WHERE 
+		        id in
+		        <foreach collection="list" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
 	    ]]>
 		</update>
 		

@@ -1,5 +1,6 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lark.common.annotation.MoreDB;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoOutBoundBoxCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
@@ -25,6 +27,9 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
     
     @Autowired
     private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
+    
+    @Autowired
+    private ContainerDao containerDao;
     
     /**
      * [业务方法] 波次中创拣货工作-获取波次中的所有小批次
@@ -115,5 +120,53 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
     public List<Long> getWaveOdoIdList(Long waveId, Long ouId){
         List<Long> waveOdoIdList = whOdoOutBoundBoxDao.getWaveOdoIdList(waveId, ouId);
         return waveOdoIdList;
+    }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> getWaveOdoIdListByOdoStatus(Long waveId, String odoStatus, Long ouId){
+        List<Long> waveOdoIdList = whOdoOutBoundBoxDao.getWaveOdoIdListByOdoStatus(waveId, odoStatus, ouId);
+        return waveOdoIdList;
+    }
+
+    /**
+     * 查询波次下已经创建周转箱或推荐小车的记录
+     * 
+     * @param waveId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOdoOutBoundBox> findOdoOutBoundByWaveId(Long waveId) {
+        return whOdoOutBoundBoxDao.findOdoOutBoundByWaveId(waveId);
+    }
+
+    /**
+     * 重置波次推荐的周转箱或小车
+     * @param boxList
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void ResetWaveBox(List<WhOdoOutBoundBox> boxList) {
+        List<Long> containerId=new ArrayList<Long>();
+        List<Long> outerContainerId=new ArrayList<Long>();
+        List<Long> odoOutBoundBoxId=new ArrayList<Long>();
+        for(WhOdoOutBoundBox box:boxList){
+            //周转箱id
+            if(box.getContainerId()!=null && !"".equals(box.getContainerId())){
+                containerId.add(box.getContainerId());
+            }
+            //小车id
+            if(box.getOuterContainerId()!=null && !"".equals(box.getOuterContainerId())){
+                outerContainerId.add(box.getOuterContainerId());
+            }
+            odoOutBoundBoxId.add(box.getId());
+        }
+        //删除波次的推荐记录
+        whOdoOutBoundBoxDao.deleteWaveByIds(odoOutBoundBoxId);
+        //删除容器列表的周转箱
+        containerDao.deleteBoxTypeByIds(containerId);
+        //释放小车
+        containerDao.updateCarTypeByIds(outerContainerId);
     }
 }

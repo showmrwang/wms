@@ -114,6 +114,7 @@
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress" value="com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoiceAddress"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice" value="com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoice"> </entry>
 				<entry key="com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine" value="com.baozun.scm.primservice.whinfo.model.whinterface.invoice.WhInvoiceLine"> </entry>
+				<entry key="com.baozun.scm.primservice.whoperation.model.system.SysTimedTaskLog" value="com.baozun.scm.primservice.whinfo.model.system.SysTimedTaskLog"> </entry>
 			</map>
 			</property>
 		</bean>

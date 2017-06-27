@@ -11,126 +11,119 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="whPrintInfoColumnsExt">
 	    <![CDATA[
-	        	id as id,
-	        	odo_id as odoId,
-	        	odo_code as odoCode,
-	        	waybill_code as waybillCode,
-	        	facility_id as facilityId,
-	        	container_id as containerId,
-	        	container_code as containerCode,
-	        	batch as batch,
-	        	wave_code as waveCode,
-	        	ou_id as ouId,
-	        	outer_container_id as outerContainerId,
-	        	outer_container_code as outerContainerCode,
-	        	container_lattice_no as containerLatticeNo,
-	        	outboundbox_id as outboundboxId,
-	        	outboundbox_code as outboundboxCode,
-	        	print_type as printType,
-	        	print_count as printCount,
-	        	create_id as createId,
-	        	create_time as createTime,
-	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	       	id as id,
+	       	odo_id as odoId,
+	       	odo_code as odoCode,
+	       	waybill_code as waybillCode,
+	       	facility_id as facilityId,
+	       	container_id as containerId,
+	       	container_code as containerCode,
+	       	batch as batch,
+	       	wave_code as waveCode,
+	       	ou_id as ouId,
+	       	outer_container_id as outerContainerId,
+	       	outer_container_code as outerContainerCode,
+	       	container_lattice_no as containerLatticeNo,
+	       	outboundbox_id as outboundboxId,
+	       	outboundbox_code as outboundboxCode,
+	       	print_type as printType,
+	       	print_count as printCount,
+	       	create_id as createId,
+	       	create_time as createTime,
+	       	last_modify_time as lastModifyTime,
+	       	modified_id as modifiedId
 	    ]]>
 	</sql>
 	
 	<sql id="whPrintInfoDynamicWhereExt">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
-	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
-	       
-				<if test="facilityId!=null">
-					and facility_id = #{facilityId}
-				</if>
-	       
-				<if test="containerId!=null">
-					and container_id = #{containerId}
-				</if>
-	       
-	       
-		       <if test="containerCode!=null and containerCode!=''">
-					and container_code = #{containerCode}
-				</if>
-	       
-	       
-		       <if test="batch!=null and batch!=''">
-					and batch = #{batch}
-				</if>
-	       
-	       
-		       <if test="waveCode!=null and waveCode!=''">
-					and wave_code = #{waveCode}
-				</if>
-	       
-				<if test="ouId!=null">
-					and ou_id = #{ouId}
-				</if>
-	       
-				<if test="outerContainerId!=null">
-					and outer_container_id = #{outerContainerId}
-				</if>
-	       
-	       
-		       <if test="outerContainerCode!=null and outerContainerCode!=''">
-					and outer_container_code = #{outerContainerCode}
-				</if>
-	       
-				<if test="containerLatticeNo!=null">
-					and container_lattice_no = #{containerLatticeNo}
-				</if>
-	       
-				<if test="outboundboxId!=null">
-					and outboundbox_id = #{outboundboxId}
-				</if>
-	       
-	       
-		       <if test="outboundboxCode!=null and outboundboxCode!=''">
-					and outboundbox_code = #{outboundboxCode}
-				</if>
-	       
-	       
-		       <if test="printType!=null and printType!=''">
-					and print_type = #{printType}
-				</if>
-	       
-				<if test="printCount!=null">
-					and print_count = #{printCount}
-				</if>
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+	      
+			<if test="facilityId!=null">
+				and facility_id = #{facilityId}
+			</if>
+	      
+			<if test="containerId!=null">
+				and container_id = #{containerId}
+			</if>
+	      
+	        <if test="containerCode!=null and containerCode!=''">
+				and container_code = #{containerCode}
+			</if>
+	      
+	        <if test="batch!=null and batch!=''">
+				and batch = #{batch}
+			</if>
+	      
+	        <if test="waveCode!=null and waveCode!=''">
+				and wave_code = #{waveCode}
+			</if>
+	      
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+	      
+			<if test="outerContainerId!=null">
+				and outer_container_id = #{outerContainerId}
+			</if>
+	      
+	        <if test="outerContainerCode!=null and outerContainerCode!=''">
+				and outer_container_code = #{outerContainerCode}
+			</if>
+	      
+			<if test="containerLatticeNo!=null">
+				and container_lattice_no = #{containerLatticeNo}
+			</if>
+	      
+			<if test="outboundboxId!=null">
+				and outboundbox_id = #{outboundboxId}
+			</if>
+	      
+	        <if test="outboundboxCode!=null and outboundboxCode!=''">
+				and outboundbox_code = #{outboundboxCode}
+			</if>
+	      
+	        <if test="printType!=null and printType!=''">
+				and print_type = #{printType}
+			</if>
+	      
+			<if test="printCount!=null">
+				and print_count = #{printCount}
+			</if>
 		</where>
 	</sql>
 	
 	<update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo">
-		    <![CDATA[
-		        UPDATE t_wh_print_info SET
-			        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        print_type = #{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
-			        print_count = #{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
-			        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
-			        last_modify_time = now() ,
-			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
-		        WHERE 
-			        id = #{id} 
-			        and ou_id = #{ouId}
-			        and last_modify_time	=  #{lastModifyTime}    
-		    ]]>
-		</update>
+	    <![CDATA[
+	        UPDATE t_wh_print_info SET
+		        odo_id = #{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        odo_code = #{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        waybill_code = #{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        facility_id = #{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_id = #{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        container_code = #{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        batch = #{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        wave_code = #{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        outer_container_id = #{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outer_container_code = #{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        container_lattice_no = #{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        outboundbox_id = #{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        outboundbox_code = #{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        print_type = #{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        print_count = #{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        create_id = #{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        last_modify_time = now() ,
+		        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} 
+	        WHERE 
+		        id = #{id} 
+		        and ou_id = #{ouId}
+		        and last_modify_time	=  #{lastModifyTime}    
+	    ]]>
+	</update>
 	
 	<select id="findByOutboundboxCodeAndPrintType" resultMap="WhPrintInfoResultExt">
     	select 
@@ -144,7 +137,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     </select>
     
 	<select id="findFromcheckingCollectionByOutboundboxCode" resultMap="WhPrintInfoResultExt">
-  select 
+		select 
     		<include refid="whPrintInfoColumnsExt" />
 	   	from  
 	   		t_wh_print_info 
@@ -156,109 +149,109 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <sql id="whPrintInfoDynamicWhereExt1">
 		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
 		<where>
+			<if test="id!=null">
+				and id = #{id}
+			</if>
 	       
-				<if test="id!=null">
-					and id = #{id}
-				</if>
+			<if test="odoId!=null">
+				and odo_id = #{odoId}
+			</if>
 	       
-				<if test="odoId!=null">
-					and odo_id = #{odoId}
-				</if>
+	        <if test="odoCode!=null and odoCode!=''">
+				and odo_code = #{odoCode}
+			</if>
 	       
+	       	<if test="waybillCode!=null and waybillCode!=''">
+				and waybill_code = #{waybillCode}
+			</if>
 	       
-		       <if test="odoCode!=null and odoCode!=''">
-					and odo_code = #{odoCode}
-				</if>
+			<if test="facilityId!=null">
+				and facility_id = #{facilityId}
+			</if>
 	       
+			<if test="containerId!=null">
+				and container_id = #{containerId}
+			</if>
 	       
-		       <if test="waybillCode!=null and waybillCode!=''">
-					and waybill_code = #{waybillCode}
-				</if>
-	       
-				<if test="facilityId!=null">
-					and facility_id = #{facilityId}
-				</if>
-	       
-				<if test="containerId!=null">
-					and container_id = #{containerId}
-				</if>
-	       
-	       
-		       <if test="containerCode!=null and containerCode!=''">
-					and container_code = #{containerCode}
-				</if>
-	       
-	       
-		       <if test="batch!=null and batch!=''">
-					and batch = #{batch}
-				</if>
-	       
-	       
-		       <if test="waveCode!=null and waveCode!=''">
-					and wave_code = #{waveCode}
-				</if>
-	       
-				<if test="ouId!=null">
-					and ou_id = #{ouId}
-				</if>
-	       
-				<if test="outerContainerId!=null">
-					and outer_container_id = #{outerContainerId}
-				</if>
-	       
-	       
-		       <if test="outerContainerCode!=null and outerContainerCode!=''">
-					and outer_container_code = #{outerContainerCode}
-				</if>
-	       
-				<if test="containerLatticeNo!=null">
-					and container_lattice_no = #{containerLatticeNo}
-				</if>
-	       
-				<if test="outboundboxId!=null">
-					and outboundbox_id = #{outboundboxId}
-				</if>
-	       
-	       
-		       <if test="outboundboxCode!=null and outboundboxCode!=''">
-					and outboundbox_code = #{outboundboxCode}
-				</if>
-	       
-	       
-		       <if test="printType!=null and printType!=''">
-					and print_type = #{printType}
-				</if>
-	       
-				<if test="printCount!=null">
-					and print_count = #{printCount}
-				</if>
-	       
-				<if test="createId!=null">
-					and create_id = #{createId}
-				</if>
-	       
-				<if test="createTime!=null">
-					and create_time = #{createTime}
-				</if>
-	       
-				<if test="lastModifyTime!=null">
-					and last_modify_time = #{lastModifyTime}
-				</if>
-	       
-				<if test="modifiedId!=null">
-					and modified_id = #{modifiedId}
-				</if>
+	       	<if test="containerCode!=null and containerCode!=''">
+				and container_code = #{containerCode}
+			</if>
+			
+	       	<if test="batch!=null and batch!=''">
+				and batch = #{batch}
+			</if>
+       
+	       	<if test="waveCode!=null and waveCode!=''">
+				and wave_code = #{waveCode}
+			</if>
+       
+			<if test="ouId!=null">
+				and ou_id = #{ouId}
+			</if>
+
+			<if test="outerContainerId!=null">
+				and outer_container_id = #{outerContainerId}
+			</if>
+       
+	        <if test="outerContainerCode!=null and outerContainerCode!=''">
+				and outer_container_code = #{outerContainerCode}
+			</if>
+       
+			<if test="containerLatticeNo!=null">
+				and container_lattice_no = #{containerLatticeNo}
+			</if>
+       
+			<if test="outboundboxId!=null">
+				and outboundbox_id = #{outboundboxId}
+			</if>
+       
+	        <if test="outboundboxCode!=null and outboundboxCode!=''">
+				and outboundbox_code = #{outboundboxCode}
+			</if>
+       
+	        <if test="printType!=null and printType!=''">
+				and print_type = #{printType}
+			</if>
+       
+			<if test="printCount!=null">
+				and print_count = #{printCount}
+			</if>
+       
+			<if test="createId!=null">
+				and create_id = #{createId}
+			</if>
+       
+			<if test="createTime!=null">
+				and create_time = #{createTime}
+			</if>
+       
+			<if test="lastModifyTime!=null">
+				and last_modify_time = #{lastModifyTime}
+			</if>
+       
+			<if test="modifiedId!=null">
+				and modified_id = #{modifiedId}
+			</if>
 		</where>
 	</sql>
     
-    
     <select id="findListCountByParamExt" resultType="long">
-        select count(*) from t_wh_print_info 
+        select 
+        	count(*) 
+        from 
+        	t_wh_print_info 
 		<include refid="whPrintInfoDynamicWhereExt1"/>    
     </select>
     
-    
-    
-    
+	<select id="findPrintInfoByOdoId" resultMap="WhPrintInfoResultExt">
+		select 
+    		<include refid="whPrintInfoColumnsExt" />
+	   	from  
+	   		t_wh_print_info 
+	   	where
+			odo_id = #{odoId}
+			and print_type = #{printType}
+			and ou_id = #{ouId}
+	</select>
 	
 </mapper>
