@@ -277,6 +277,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
     // ================================wms4.0一期需求:复核台补货逻辑================================
     @Override
     public void checkLocationReplenishmentMsg(Warehouse wh, Location location) {
+        log.info("LocationReplenishmentManagerProxy.checkLocationReplenishmentMsg start...");
         try {
             Long ouId = wh.getId();
             // 查找复核库位绑定的商品
@@ -284,6 +285,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             Long skuId = whLocationSkuVolume.getSkuId();
             Integer lowerCapacity = whLocationSkuVolume.getLowerCapacity();
             Integer upperCapacity = whLocationSkuVolume.getUpperCapacity();
+            log.info("param: lowerCapacity:[{}], upperCapacity:[{}], locationId:[{}], skuId:[{}]", lowerCapacity, upperCapacity, location.getId(), skuId);
             if (null == skuId) {
                 log.info("no sku found ===> locationSkuVolumeId:[{}],serialNum:[{}]", whLocationSkuVolume.getId(), whLocationSkuVolume.getSerialNumber());
                 // 复核台库位上没有绑定商品 需要从复核台组上查找绑定的商品
@@ -296,10 +298,14 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                 }
             }
             if (skuId == null) {
+                log.info("sku id not found");
+                log.info("LocationReplenishmentManagerProxy.checkLocationReplenishmentMsg finish...");
                 return;
             }
             this.checkLocationReplenishmentMsg(wh, lowerCapacity, upperCapacity, location.getId(), skuId);
         } catch (Exception e) {
+            log.error(e.getMessage());
+            log.info("LocationReplenishmentManagerProxy.checkLocationReplenishmentMsg finish...");
             return;
         }
 
