@@ -13,6 +13,8 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRul
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.CreateWorkResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryAllocatedCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -21,9 +23,11 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoOutBoundBox
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.CreateWorkManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentRuleManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
 @Service("createWorkManagerProxy")
 public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
@@ -44,6 +48,9 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
     
     @Autowired
     private OdoOutBoundBoxMapper odoOutBoundBoxMapper;
+    
+    @Autowired
+    private WarehouseManager warehouseManager;
 
     
     /**
@@ -56,6 +63,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      */
     public void createWorkInWave(Long waveId, Long ouId, Long userId) {
         try {
+            this.deleteWaveLinesFromWaveByWavePhase(waveId, ouId, userId);
             CreateWorkResultCommand createWorkResultCommand = new CreateWorkResultCommand();
             // 查询波次中的所有小批次
             WhWave whWave = whWaveManager.getWaveByWaveIdAndOuId(waveId, ouId);
@@ -238,6 +246,26 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 log.error("CreateWorkManagerProxyImpl createReplenishmentAfterPicking error" + e);
                 continue;
             }
+        }
+    }
+    
+    /**
+     * 出库单从波次中剔除
+     * 
+     * @param waveId
+     * @param ouId
+     * @param userId
+     * @return
+     */
+    public void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long ouId, Long userId) {
+        Warehouse wh = warehouseManager.findWarehouseById(ouId);
+        List<Long> odoIdLst= odoOutBoundBoxMapper.getWaveOdoIdListByOdoStatus(waveId, OdoStatus.CANCEL, ouId);
+        try {
+            for(Long odoId : odoIdLst){
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, null, wh, WavePhase.CREATE_WORK_NUM);    
+            }
+        } catch (Exception e) {
+            log.error("CreateWorkManagerProxyImpl deleteWaveLinesFromWaveByWavePhase error" + e);
         }
     }
 }

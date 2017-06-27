@@ -73,6 +73,17 @@ public interface OdoOutBoundBoxMapper extends BaseManager {
     List<Long> getWaveOdoIdList(Long waveId, Long ouId);
     
     /**
+     * 获取波次下所有取消状态的出库单ID
+     *
+     * @param waveId
+     * @param ouId
+     * @return
+     */
+    List<Long> getWaveOdoIdListByOdoStatus(Long waveId, String odoStatus, Long ouId);
+    
+    
+    
+    /**
      * 查询波次下已经创建周转箱或推荐小车的记录
      * 
      * @param waveId

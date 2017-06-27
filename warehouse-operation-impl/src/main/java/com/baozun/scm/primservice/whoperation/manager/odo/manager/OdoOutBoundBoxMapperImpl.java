@@ -121,6 +121,13 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
         List<Long> waveOdoIdList = whOdoOutBoundBoxDao.getWaveOdoIdList(waveId, ouId);
         return waveOdoIdList;
     }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> getWaveOdoIdListByOdoStatus(Long waveId, String odoStatus, Long ouId){
+        List<Long> waveOdoIdList = whOdoOutBoundBoxDao.getWaveOdoIdListByOdoStatus(waveId, odoStatus, ouId);
+        return waveOdoIdList;
+    }
 
     /**
      * 查询波次下已经创建周转箱或推荐小车的记录
