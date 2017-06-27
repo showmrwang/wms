@@ -324,7 +324,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                 return;
             }
             Long invSkuId = whskuInventoryManager.findSkuInInventoryByLocation(locationId, ouId);
-            if (invSkuId != skuId) {
+            if (!invSkuId.equals(skuId)) {
                 log.info("checkLocationReplenishmentMsg: sku not match");
                 log.info("checkLocationReplenishmentMsg finish...");
                 return;
