@@ -769,7 +769,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
             // 按单据删除待移入和已分配
 
-            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId); // 用于判断出库单是否取消
+            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId); // 用于判断波次是否取消
             if (count > 0) {
                 // 清除编码
                 this.eliminateOccupationCode(odo.getOdoCode(), ouId);

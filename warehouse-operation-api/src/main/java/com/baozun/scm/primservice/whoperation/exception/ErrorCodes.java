@@ -1209,7 +1209,7 @@ public class ErrorCodes {
     // 120000-130000 zhaozili
     /** 出库箱不存在 */
     public static final int OUT_BOUND_BOX_NOT_EXSIT = 120001;
-    /** 出库箱不满足容器拆分条件 */
+    /** 原出库箱不满足容器拆分条件 */
     public static final int OUT_BOUND_BOX_NOT_MOVE_CONDITION = 120002;
     /** 目标出库箱出库单号与原始出库箱/货格出库单不一致 */
     public static final int OUT_BOUND_BOX_ODO_CODE_NOT_MATCH = 120003;
@@ -1217,6 +1217,36 @@ public class ErrorCodes {
     public static final int CONTAINER_NOT_FOUND_INV_ERROR = 120004;
     /** 容器号[{0}]未找到库存信息 */
     public static final int CONTAINER_INVENTORY_STATISTIC_ERROR = 120005;
+    /** 目标出库箱不满足容器拆分条件 */
+    public static final int TARGET_BOUND_BOX_NOT_MOVE_CONDITION = 120006;
+    /** 目标出库箱耗材未找到 */
+    public static final int TARGET_CONSUMABLES_NOT_EXIST = 120007;
+    /** 目标出库箱耗材未找到库存信息 */
+    public static final int TARGET_CONSUMABLES_INV_NOT_EXIST = 120008;
+    /** 未找到货箱拆分移动需要变更的库存信息 */
+    public static final int MOVE_INVENTORY_NOT_EXIST = 120009;
+    /** 货箱拆分传入拆分类型错误 */
+    public static final int MOVE_BOUND_BOX_MOVE_TYPE_ERROR = 120010;
+    /** 源容器[{0}]复核数据未找到 */
+    public static final int CHECKING_DATE_NOT_EXIST = 120011;
+    /** 源容器[{0}]中存在出库箱,请直接扫描出库箱拆分商品 */
+    public static final int CHECKING_DATE_EXIST_OUT_BOUND_BOX = 120012;
+    /**  源容器[{0}]中数据不满足容器拆分条件 */
+    public static final int CHECKING_DATE_NOT_MOVE_CONDITION = 120013;
+    /** 源容器[{0}]未找到库存信息 */
+    public static final int FACILITY_NOT_FOUND_INV_ERROR = 120014;
+    /** 部分移动时,源器号[{0}]中的库存商品属性不是唯一,不符合拆分条件 */
+    public static final int SKU_INV_NOT_UNIQUE = 120015;
+    /** 商品扫描数量[{0}]大于源容器商品数量 */
+    public static final int SCAN_SKU_QTY_IS_MORE_THAN_OUT_BOUND_BOX_QTY = 120016;
+    /** 源容器[{0}]中不存在当前扫描的商品 */
+    public static final int OUT_BOUND_BOX_NOT_FOUND_SCAN_SKU_ERROR = 120017;
+    /** 源容器[{0}]中此商品[{1}]扫描数量不正确 */
+    public static final int OUT_BOUND_BOX_SKU_QTY_ERROR = 120018;
+    /** 源容器[{0}]中此商品[{1}]重复扫描 */
+    public static final int OUT_BOUND_BOX_SKU_HAS_ALREADY_SCANNED = 120019;
+    /** 源容器[{0}]中商品[{1}]扫描数[{2}]大于库存数 */
+    public static final int SCAN_SKU_QTY_GREATER_THAN_INV_QTY = 120020;
     // 120000-130000 zhaozili
 
     /** 文件不存在 */

@@ -72,6 +72,6 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
      * @param ouId
      * @return
      */
-    List<WhPrintInfo> findPrintInfoByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+    List<WhPrintInfo> findPrintInfoByOdoId(@Param("odoId") Long odoId, @Param("printType") String printType, @Param("ouId") Long ouId);
 
 }

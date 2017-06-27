@@ -725,6 +725,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void printDefect(WhCheckingResultCommand whCheckingResultCommand) {
+        log.info("CheckingManagerImpl printDefect is start");
         Long ouId = whCheckingResultCommand.getOuId();
         Long userId = whCheckingResultCommand.getUserId();
         Long odoId = whCheckingResultCommand.getWhOdo().getId();
@@ -738,6 +739,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 List<Long> idsList = new ArrayList<Long>();
                 WhCheckingCommand whCheckingCommand = whCheckingResultCommand.getOrgCheckingCommand();
                 List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
+                List<WhPrintInfo> printInfoLst = whPrintInfoDao.findPrintInfoByOdoId(odoId, CheckingPrint.SALES_LIST, ouId);
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
                     WhPrintInfo whPrintInfo = new WhPrintInfo();
                     whPrintInfo.setOdoId(odoId);
@@ -778,8 +780,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                         this.printPackingList(idsList, userId, ouId);
                     }
                     if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
-                        List<WhPrintInfo> printInfoLst = whPrintInfoDao.findPrintInfoByOdoId(odoId, ouId);
-                        if(null != printInfoLst && 1 == printInfoLst.size()){
+                        if(null == printInfoLst || 0 == printInfoLst.size()){
                             idsList.add(odoId);
                             // 销售清单
                             this.printSalesList(idsList, userId, ouId);    
@@ -798,6 +799,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 }
             }
         }
+        log.info("CheckingManagerImpl printDefect is end");
     }
 
 }

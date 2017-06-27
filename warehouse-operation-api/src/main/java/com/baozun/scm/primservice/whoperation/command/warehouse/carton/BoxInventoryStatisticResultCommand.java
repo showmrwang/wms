@@ -53,6 +53,9 @@ public class BoxInventoryStatisticResultCommand extends BaseCommand {
     Map<String, Map<String, Long>> outBoundBoxSkuIdSkuAttrIdQtys = new HashMap<String, Map<String, Long>>();
     /** 出库箱唯一sku对应所有残次条码 */
     Map<String, Map<String, Set<String>>> outBoundBoxSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
+    /** 出库箱唯一sku种类包含残次条码 */
+    Map<String, Set<String>> outBoundBoxSkuIdSkuAttrIdsSnDefect = new HashMap<String, Set<String>>();
+    
 	public Long getOutBoundBoxId() {
 		return outBoundBoxId;
 	}
@@ -123,8 +126,11 @@ public class BoxInventoryStatisticResultCommand extends BaseCommand {
 			Map<String, Map<String, Set<String>>> outBoundBoxSkuAttrIdsSnDefect) {
 		this.outBoundBoxSkuAttrIdsSnDefect = outBoundBoxSkuAttrIdsSnDefect;
 	}
-
+    public Map<String, Set<String>> getOutBoundBoxSkuIdSkuAttrIdsSnDefect() {
+        return outBoundBoxSkuIdSkuAttrIdsSnDefect;
+    }
+    public void setOutBoundBoxSkuIdSkuAttrIdsSnDefect(Map<String, Set<String>> outBoundBoxSkuIdSkuAttrIdsSnDefect) {
+        this.outBoundBoxSkuIdSkuAttrIdsSnDefect = outBoundBoxSkuIdSkuAttrIdsSnDefect;
+    }
     
-
-
 }

@@ -229,6 +229,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 // 此波次报错记录定时失败
                 sysTimedTaskLogManager.endSysTimedTaskLog(sysLog, true);
                 log.error("OutboundBoxRecManagerProxyImpl.recommendOutboundBox error waveCode: " + whWaveCommand.getCode(), e);
+                continue;
             }
             // 此波次结束 记录定时结束
             sysTimedTaskLogManager.endSysTimedTaskLog(sysLog, false);

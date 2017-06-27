@@ -331,6 +331,19 @@
             and ou_id = #{ouId}
     </select>
     
+    <select id="getWaveOdoIdListByOdoStatus" resultType="long">
+        select
+            distinct outboundbox.odo_id
+        from
+            t_wh_odo_outboundbox outboundbox,
+			t_wh_odo odo
+        where
+            outboundbox.odo_id = odo.id
+			and odo.odo_status = #{odoStatus}
+			and outboundbox.wave_id = #{waveId}
+			and outboundbox.ou_id = #{ouId}
+    </select>
+    
     <select id="findOutboundboxListByWaveIdAndOdoIdAndOdoLineIdAndOuId" resultMap="WhOdoOutBoundBoxResultExt">
 		select
 			 <include refid="whOdoOutBoundBoxColumns"/>
