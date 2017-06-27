@@ -68,6 +68,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhDistributionPatternRuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.system.SysTimedTaskLog;
@@ -141,6 +142,13 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
             // 记录此波次定时开始
             SysTimedTaskLog sysLog = sysTimedTaskLogManager.beginSysTimedTaskLog("outboundBoxRecTaskManager", "recommendOutboundBox", warehouse.getCode(), whWaveCommand.getCode(), whWaveCommand.getId(), null);
             try {
+                //检查当前波次有没有被中断过，有就还原波次
+                List<WhOdoOutBoundBox> odoOutBoundList=new ArrayList<WhOdoOutBoundBox>();
+                odoOutBoundList=odoOutBoundBoxMapper.findOdoOutBoundByWaveId(whWaveCommand.getId());
+                if(odoOutBoundList.size()>0){
+                    odoOutBoundBoxMapper.ResetWaveBox(odoOutBoundList);
+                }
+                
                 // 根据波次获得出库单ID集合
                 List<Long> whOdoIdList = whWaveLineManager.getOdoIdListByWaveId(whWaveCommand.getId(), ouId);
                 if (whOdoIdList.isEmpty()) {
