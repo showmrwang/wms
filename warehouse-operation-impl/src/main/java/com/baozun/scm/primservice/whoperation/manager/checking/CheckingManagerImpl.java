@@ -725,6 +725,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void printDefect(WhCheckingResultCommand whCheckingResultCommand) {
+        log.info("CheckingManagerImpl printDefect is start");
         Long ouId = whCheckingResultCommand.getOuId();
         Long userId = whCheckingResultCommand.getUserId();
         Long odoId = whCheckingResultCommand.getWhOdo().getId();
@@ -778,7 +779,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                         this.printPackingList(idsList, userId, ouId);
                     }
                     if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
-                        List<WhPrintInfo> printInfoLst = whPrintInfoDao.findPrintInfoByOdoId(odoId, ouId);
+                        List<WhPrintInfo> printInfoLst = whPrintInfoDao.findPrintInfoByOdoId(odoId, CheckingPrint.SALES_LIST, ouId);
                         if(null != printInfoLst && 1 == printInfoLst.size()){
                             idsList.add(odoId);
                             // 销售清单
@@ -798,6 +799,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 }
             }
         }
+        log.info("CheckingManagerImpl printDefect is end");
     }
 
 }
