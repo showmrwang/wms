@@ -739,6 +739,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                 List<Long> idsList = new ArrayList<Long>();
                 WhCheckingCommand whCheckingCommand = whCheckingResultCommand.getOrgCheckingCommand();
                 List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(whCheckingCommand.getOutboundboxCode(), checkingPrintArray[i], ouId);
+                List<WhPrintInfo> printInfoLst = whPrintInfoDao.findPrintInfoByOdoId(odoId, CheckingPrint.SALES_LIST, ouId);
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
                     WhPrintInfo whPrintInfo = new WhPrintInfo();
                     whPrintInfo.setOdoId(odoId);
@@ -779,8 +780,7 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
                         this.printPackingList(idsList, userId, ouId);
                     }
                     if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
-                        List<WhPrintInfo> printInfoLst = whPrintInfoDao.findPrintInfoByOdoId(odoId, CheckingPrint.SALES_LIST, ouId);
-                        if(null != printInfoLst && 1 == printInfoLst.size()){
+                        if(null == printInfoLst || 0 == printInfoLst.size()){
                             idsList.add(odoId);
                             // 销售清单
                             this.printSalesList(idsList, userId, ouId);    
