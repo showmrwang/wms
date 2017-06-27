@@ -314,6 +314,17 @@ public class PdaReplenishmentWorkManagerImpl extends BaseManagerImpl implements 
             c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
             c.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
             containerDao.saveOrUpdateByVersion(c);
+        }else{
+            if (cmd.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE) && cmd.getStatus().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+                //修改周转箱状态
+                Container c = new Container();
+                BeanUtils.copyProperties(cmd, c);
+                c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                c.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                containerDao.saveOrUpdateByVersion(c);
+            }else{
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+            }
         }
     }
     
