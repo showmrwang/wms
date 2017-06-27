@@ -1247,6 +1247,8 @@ public class ErrorCodes {
     public static final int OUT_BOUND_BOX_SKU_HAS_ALREADY_SCANNED = 120019;
     /** 源容器[{0}]中商品[{1}]扫描数[{2}]大于库存数 */
     public static final int SCAN_SKU_QTY_GREATER_THAN_INV_QTY = 120020;
+    /** 未找到货箱拆分移动需要变更的复核信息 */
+    public static final int MOVE_CHECKING_NOT_EXIST = 120021;
     // 120000-130000 zhaozili
 
     /** 文件不存在 */

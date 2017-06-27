@@ -6046,5 +6046,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						and inv.container_lattice_no = #{containerLatticeNo}
 					</if>
     </select>
+    
+    <select id="findWhSkuInvCmdByOccupationCode" resultMap="WhSkuInventoryCommandResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+					where 
+					occupation_code = #{occupationCode} 
+					and ou_id = #{ouId}
+    </select>
 	
 </mapper>

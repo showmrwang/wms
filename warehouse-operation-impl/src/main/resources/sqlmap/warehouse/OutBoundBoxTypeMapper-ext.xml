@@ -342,6 +342,34 @@
                 #{item}
             </foreach>
     </select>
+    
+    <select id="findOutboundBoxIdByCode" resultType="com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType">
+        select 
+        	boxType.id as id,
+			boxType.sku_id as skuId,
+			boxType.ou_id as ouId,
+			boxType.code as code,
+			boxType.name as name,
+			boxType.description as description,
+			boxType.lifecycle as lifecycle,
+			boxType.length as length,
+			boxType.width as width,
+			boxType.high as high,
+			boxType.volume as volume,
+			boxType.weight as weight,
+			boxType.length_ext as lengthExt,
+			boxType.width_ext as widthExt,
+			boxType.high_ext as highExt,
+			boxType.volume_ext as volumeExt,
+			boxType.weight_ext as weightExt,
+			boxType.create_time as createTime,
+			boxType.last_modify_time as lastModifyTime,
+			boxType.created_id as createdId,
+			boxType.modified_id as modifiedId
+		from t_wh_outboundbox_type as boxType
+		inner join t_wh_odo_outboundbox as box on box.outbounxbox_type_id = boxType.id
+		where box.outbounxbox_type_code = #{outboundBoxCode} and box.ou_id = #{ouId}
+    </select>
 
 
 </mapper>
