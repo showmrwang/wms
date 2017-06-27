@@ -264,6 +264,14 @@
             checkingLine.ou_id = #{ouId}
             and checkingLine.checking_id = #{checkingId}
     </select>
+    
+    <delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_checking_line where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	  </delete>
 
     <update id="updateByVersion" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine">
         <![CDATA[
@@ -579,6 +587,50 @@
         group by odo_line_id
     </select>
     
+    <select id="findCheckingLineCommandByCheckingId" resultMap="WhCheckingLineCommand">
+        select
+            checkingLine.id as id,
+            checkingLine.checking_id as checkingId,
+            checkingLine.sku_code as skuCode,
+            checkingLine.sku_ext_code as skuExtCode,
+            checkingLine.sku_bar_code as skuBarCode,
+            checkingLine.sku_name as skuName,
+            checkingLine.qty as qty,
+            checkingLine.checking_qty as checkingQty,
+            checkingLine.customer_code as customerCode,
+            checkingLine.customer_name as customerName,
+            checkingLine.store_code as storeCode,
+            checkingLine.store_name as storeName,
+            checkingLine.inv_status as invStatus,
+            checkingLine.inv_type as invType,
+            checkingLine.batch_number as batchNumber,
+            checkingLine.mfg_date as mfgDate,
+            checkingLine.exp_date as expDate,
+            checkingLine.country_of_origin as countryOfOrigin,
+            checkingLine.inv_attr1 as invAttr1,
+            checkingLine.inv_attr2 as invAttr2,
+            checkingLine.inv_attr3 as invAttr3,
+            checkingLine.inv_attr4 as invAttr4,
+            checkingLine.inv_attr5 as invAttr5,
+            checkingLine.uuid as uuid,
+            checkingLine.ou_id as ouId,
+            checkingLine.odo_id as odoId,
+            checkingLine.odo_line_id as odoLineId,
+            checkingLine.last_modify_time as lastModifyTime,
+            checkingLine.create_id as createId,
+            checkingLine.create_time as createTime,
+            checkingLine.modified_id as modifiedId,
+            checkingLine.modified_id as modifiedId,
+			checkingLine.outboundbox_id as outboundboxId,
+            whSku.id as skuId
+        from
+            t_wh_checking_line as checkingLine
+            left join t_wh_sku as whSku on checkingLine.sku_code = whSku.code
+        where
+            checkingLine.ou_id = #{ouId}
+            and checkingLine.checking_id = #{checkingId}
+     </select>
+
      <select id="findCheckQty" resultType="java.lang.Long" flushCache="false">
 		SELECT
 			sum(line.qty) - sum(line.checking_qty)
