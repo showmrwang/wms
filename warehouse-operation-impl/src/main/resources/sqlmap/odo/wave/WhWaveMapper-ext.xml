@@ -309,6 +309,45 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        and last_modify_time	<=  #{lastModifyTime}    
 		    ]]>
 	</update>
+	
+	<update id="saveOrUpdateByVersion"
+		parameterType="com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave">
+		    <![CDATA[
+		        UPDATE t_wh_wave SET
+			        code = #{code,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        status = #{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        wave_master_id = #{waveMasterId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        phase_code = #{phaseCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+			        is_weak_allocated = #{isWeakAllocated,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        allocate_phase = #{allocatePhase,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_create_picking_work = #{isCreatePickingWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+	        		is_create_replenished_work = #{isCreateReplenishedWork,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        start_time = #{startTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        finish_time = #{finishTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        total_odo_qty = #{totalOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        total_odo_line_qty = #{totalOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        total_amount = #{totalAmount,javaType=Double,jdbcType=DECIMAL} ,
+			        total_volume = #{totalVolume,javaType=Double,jdbcType=DECIMAL} ,
+			        total_weight = #{totalWeight,javaType=Double,jdbcType=DECIMAL} ,
+			        total_sku_qty = #{totalSkuQty,javaType=Double,jdbcType=DECIMAL} ,
+			        sku_category_qty = #{skuCategoryQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        exec_odo_qty = #{execOdoQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        exec_odo_line_qty = #{execOdoLineQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        outbound_carton_qty = #{outboundCartonQty,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_error = #{isError,javaType=java.lang.Boolean,jdbcType=BIT} ,
+			        error_count = #{errorCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+			        last_modify_time = now() ,
+			        created_id = #{createdId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+			        lifecycle = #{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+			        is_run_wave=#{isRunWave,javaType=java.lang.Boolean,jdbcType=BIT} 
+		        WHERE 
+			        id = #{id} 
+			        and ou_id = #{ouId}
+			        and last_modify_time	<=  #{lastModifyTime}    
+		    ]]>
+	</update>
 
 
 	<select id="findSoftAllocationWhWaveLine" resultMap="WhWaveLineResultExt">
@@ -675,4 +714,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		order by
 			p.phase_order
     </select>
+    
+    <update id="updateWhWaveInHardAllocate">
+    	update
+    		t_wh_wave
+    	set 
+    		allocate_phase = 1
+    	where
+    		id = #{waveId}
+    		and ou_id = #{ouId}
+    </update>
 </mapper>

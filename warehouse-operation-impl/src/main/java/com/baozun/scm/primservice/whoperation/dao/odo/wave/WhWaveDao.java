@@ -104,4 +104,6 @@ public interface WhWaveDao extends BaseDao<WhWave, Long> {
      * @version 2017年3月14日
      */
 	List<Integer> findWavePhaseOrderListByWaveId(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
+
+    int updateWhWaveInHardAllocate(@Param("waveId") Long waveId, @Param("ouId") Long ouId);
 }

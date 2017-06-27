@@ -1247,6 +1247,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             waveCommand.setTotalOdoLineQty(Constants.DEFAULT_INTEGER);
             waveCommand.setTotalAmount(Constants.DEFAULT_DOUBLE);
             waveCommand.setTotalSkuQty(Constants.DEFAULT_DOUBLE);
+            waveCommand.setTotalOdoQty(Constants.DEFAULT_INTEGER);
             return waveCommand;
         }
         WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoIdList(odoIdList, ouId);

@@ -138,10 +138,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         // @mender yimin.lu 2017/06/27
         if (OdoStatus.CANCEL.equals(odo.getOdoStatus())) {
-            odo.setWaveCode(null);
-            odo.setAssignFailReason(Constants.ODO_IS_CANCEL);
-            odo.setIsAssignSuccess(false);
-            int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
+            int updateCount = this.whOdoDao.updateOdoByCancel(odoId, Constants.ODO_IS_CANCEL, ouId);
             if (updateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
@@ -363,5 +360,18 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @Override
     public List<Long> getOdoIdListByWaveIdList(List<Long> waveIdList, Long ouId) {
         return whWaveLineDao.getOdoIdListByWaveIdList(waveIdList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public boolean deleteWaveLinesForCancelOdoByWaveId(Long waveId, Long ouId) {
+        List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
+        if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
+            for (Long odoId : cancelOdoIdList) {
+                this.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.ODO_IS_CANCEL);
+            }
+            return true;
+        }
+        return false;
     }
 }
