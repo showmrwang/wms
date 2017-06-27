@@ -62,7 +62,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
-	        	uuid as uuid
+	        	uuid as uuid,
+	        	is_not_recommand as isNotRecommand
 	        	
 	    ]]>
 	</sql>
@@ -261,6 +262,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="operatorId!=null">
 				and operator_id = #{operatorId}
 			</if>
+			
+			<if test="isNotRecommand!=null">
+				and is_not_recommand = #{isNotRecommand}
+			</if>
 		</where>
 	</sql>
 
@@ -457,6 +462,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="operatorId!=null">
 				and line.operator_id = #{operatorId}
 			</if>
+			<if test="isNotRecommand!=null">
+				and line.is_not_recommand = #{isNotRecommand}
+			</if>
 		</where>
 	</sql>
 
@@ -508,7 +516,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        create_time = #{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 			        last_modify_time = now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
-			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} 
+			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+			        is_not_recommand=#{isNotRecommand,javaType=java.lang.Boolean,jdbcType=BIT} 
 		        WHERE 
 			        id = #{id} 
 			        and ou_id = #{ouId}
@@ -643,6 +652,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	line.create_time as createTime,
 		        	line.last_modify_time as lastModifyTime,
 		        	line.operator_id as operatorId,
+		        	line.is_not_recommand as isNotRecommand,
 		        	workLine.line_code as workLineCode,
 		        	work.code as workCode,
 		        	sku.code as skuCode,

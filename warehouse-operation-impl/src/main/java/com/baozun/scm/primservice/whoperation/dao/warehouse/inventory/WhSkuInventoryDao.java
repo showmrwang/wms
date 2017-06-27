@@ -1280,4 +1280,14 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param ouId
      */
     void releaseInventoryByOdo(@Param("occupationCodeSource") String occupationCodeSource, @Param("ouId") Long ouId);
+    
+    /**
+     * 通过耗材id，查询耗材库存
+     * 
+     * @param locationId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    List<WhSkuInventory> findSkuInvBySkuIdWithOnHandQty(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
 }

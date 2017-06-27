@@ -223,4 +223,6 @@ public interface PdaPickingWorkManager extends BaseManager {
     public void removeCache(Long operationId,Boolean isPicking, Long locationId);
     
     void createReplenishmentAfterPicking (Long operationId, Long ouId, Long userId);
+    
+    public void judeOutboundBoxIsUse(String outboundBoxCode,String tipOutboundBoxCode,Long ouId,Boolean isMgmtConsumableSku);
 }
