@@ -15,7 +15,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationRes
 import com.baozun.scm.primservice.whoperation.command.odo.wave.SoftAllocationWaveCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
-import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -218,7 +218,7 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
      * @return
      */
     private Boolean updateOdoStatus(Long odoId, Long odoLineId, Long ouId) {
-        Boolean res = odoManager.updateOdoStatus(odoId, odoLineId, ouId, OdoStatus.ODOLINE_WAVE);
+        Boolean res = odoManager.updateOdoStatus(odoId, odoLineId, ouId, OdoLineStatus.WAVE);
         if (res) {
             return true;
         }

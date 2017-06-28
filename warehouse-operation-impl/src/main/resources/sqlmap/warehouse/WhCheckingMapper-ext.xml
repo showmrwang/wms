@@ -1369,7 +1369,7 @@
 	            checking.modified_id as modifiedId
 				from 
 					t_wh_checking as checking
-				where checking.ou_id = #{ouId}
+				where checking.ou_id = #{ouId} and checking.status = 1
 					<if test="outboundboxCode != null and outboundboxCode != ''">
 						and checking.outboundbox_code = #{outboundboxCode}
 					</if>
@@ -1381,6 +1381,7 @@
 					</if>
 					<if test="containerLatticeNo != null and containerLatticeNo != ''">
 						and checking.container_lattice_no = #{containerLatticeNo}
+						and checking.outboundbox_code is null
 					</if>
     </select>
 

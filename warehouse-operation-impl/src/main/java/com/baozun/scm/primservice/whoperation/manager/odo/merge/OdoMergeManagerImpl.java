@@ -29,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoMergeCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoResultCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
@@ -938,10 +939,10 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     private WhOdoLine createNewOdoLine(WhOdoLine whOdoLine, String whOdoCode, Long newOdoId, Long userId) {
         // 原来子订单更新:
         // 状态:新建; 添加合并后出库单单号;
-        if (null != whOdoLine.getOdoLineStatus() && OdoStatus.ODOLINE_WAVE.equals(whOdoLine.getOdoLineStatus())) {
-            whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
+        if (null != whOdoLine.getOdoLineStatus() && OdoLineStatus.WAVE.equals(whOdoLine.getOdoLineStatus())) {
+            whOdoLine.setOdoLineStatus(OdoLineStatus.WAVE);
         } else {
-            whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+            whOdoLine.setOdoLineStatus(OdoLineStatus.NEW);
         }
         whOdoLine.setOdoId(newOdoId);
         whOdoLine.setOriginalOdoCode(whOdoCode);
@@ -969,11 +970,11 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         switch (option) {
             case Constants.ODO_LINE_MERGE:
                 // 状态:新建->已合并;
-                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_MERGE);
+                whOdoLine.setOdoLineStatus(OdoLineStatus.MERGE);
                 break;
             case Constants.ODO_LINE_CANCEL:
                 // 状态:新建->取消;
-                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_CANCEL);
+                whOdoLine.setOdoLineStatus(OdoStatus.MERGE);
                 break;
             case Constants.ODO_LINE_NEW:
                 // 状态:已合并->新建;

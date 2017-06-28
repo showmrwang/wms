@@ -62,6 +62,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
@@ -730,7 +731,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             // line.setFullLineOutbound(lineCommand.getFullLineOutbound());
             line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
         }
-        line.setOdoLineStatus(OdoStatus.ODOLINE_TOBECREATED);
+        line.setOdoLineStatus(OdoLineStatus.CREATING);
         line.setOutboundCartonType(lineCommand.getOutboundCartonType());
         line.setMixingAttr(lineCommand.getMixingAttr());
         line.setInvStatus(lineCommand.getInvStatus());
@@ -1275,7 +1276,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             // 如果没有选出库单明细状态，则默认为新建和部分出库
             if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {
-                search.setOdoLineStatus(Arrays.asList(new String[] {OdoStatus.ODOLINE_NEW, OdoStatus.ODOLINE_OUTSTOCK}));
+                search.setOdoLineStatus(Arrays.asList(new String[] {OdoLineStatus.NEW, OdoLineStatus.PARTLY_FINISH}));
             }
             for (OdoWaveGroupSearchCondition gsc : command.getConditionList()) {
                 search.setGroupCustomerId(gsc.getCustomerId());
@@ -1583,10 +1584,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             boolean isFragile = odo.getIncludeFragileCargo();
             Set<Long> skuIdSet = new HashSet<Long>();
             for (WhOdoLine line : lineList) {
-                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                if (OdoLineStatus.CANCEL.equals(line.getOdoLineStatus())) {
                     continue;
                 }
-                if (OdoStatus.ODOLINE_TOBECREATED.equals(line.getOdoLineStatus())) {
+                if (OdoLineStatus.CREATING.equals(line.getOdoLineStatus())) {
                     SkuRedisCommand skuMaster = skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), ouId, logId);
                     SkuMgmt skuMgmt = skuMaster.getSkuMgmt();
                     if (!isHazardous && skuMgmt.getIsHazardousCargo()) {
@@ -1596,7 +1597,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                         isFragile = true;
                     }
 
-                    line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                    line.setOdoLineStatus(OdoLineStatus.NEW);
                     line.setModifiedId(userId);
                     saveLineList.add(line);
                 }
@@ -2736,7 +2737,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             // 如果没有选出库单明细状态，则默认为新建和部分出库
             if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {
-                search.setOdoLineStatus(Arrays.asList(new String[] {OdoStatus.ODOLINE_NEW, OdoStatus.ODOLINE_OUTSTOCK}));
+                search.setOdoLineStatus(Arrays.asList(new String[] {OdoLineStatus.NEW, OdoLineStatus.PARTLY_FINISH}));
             }
             for (OdoWaveGroupSearchCondition gsc : command.getConditionList()) {
                 search.setGroupCustomerId(gsc.getCustomerId());
