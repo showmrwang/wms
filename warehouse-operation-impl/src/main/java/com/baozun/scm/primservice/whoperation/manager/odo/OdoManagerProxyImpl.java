@@ -3006,6 +3006,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 应用打印排序规则
         WhWaveMasterPrintCondition condition = whWaveManager.findPrintConditionByWaveId(waveId, Constants.PRINT_ORDER_TYPE_13, ouId);
         if (null != condition) {
+            Map<String, List<Long>> batchOdoListMap = odoManager.getBatchNoOdoIdListGroup(waveId, ouId);
             for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
                 String batchNo = entry.getKey();
                 String odoIdStr = StringUtils.collectionToCommaDelimitedString(entry.getValue());
@@ -3016,9 +3017,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 }
                 excuteSql = condition.getPrintSortSql().replace(Constants.ODOID_LIST_PLACEHOLDER, odoIdStr);
                 List<Long> sortOdoList = whWaveManager.excuteSortSql(excuteSql, ouId);
-                batchMap.put(batchNo, sortOdoList);
+                batchOdoListMap.put(batchNo, sortOdoList);
             }
-            odoManager.updateOdoIndexByBatch(batchMap, ouId);
+            odoManager.updateOdoIndexByBatch(batchOdoListMap, ouId);
         } else {
             // 波次主档未配置打印顺序, 查找打印条件配置顺序
             boolean flag = true;
