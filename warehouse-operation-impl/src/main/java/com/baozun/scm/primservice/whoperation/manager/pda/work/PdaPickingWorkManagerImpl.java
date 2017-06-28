@@ -4211,4 +4211,47 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
     }
     
+    /**
+     * 修改容器状态
+     * @param tipContainerCode
+     * @param containerCode
+     */
+    public void cancelUpdateContainer(String tipContainerCode,String containerCode,Long ouId,Long userId,Long operationId){
+        if(!tipContainerCode.equals(containerCode)){   //扫描的容器和提示的容器不相等
+            if (!StringUtils.isEmpty(tipContainerCode)) {
+                ContainerCommand c = containerDao.getContainerByCode(tipContainerCode, ouId);
+                if (null == c) {
+                    log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
+                if (c.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE) && c.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+                    Container container = new Container();
+                    BeanUtils.copyProperties(c, container);
+                    container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING);
+                    containerDao.saveOrUpdateByVersion(container);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+                  }
+                
+            }
+            if (!StringUtils.isEmpty(containerCode)) {
+                //查看库存
+                ContainerCommand cmd = containerDao.getContainerByCode(containerCode, ouId);
+                if (null == cmd) {
+                    log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
+                Long containerId  = cmd.getId();
+               Long count =  whOperationExecLineDao.getOperationExecLineCount(operationId, ouId, containerId);
+               if(null == count || count.longValue() == 0) {
+                   Container container = new Container();
+                   BeanUtils.copyProperties(cmd, container);
+                   container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                   container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                   containerDao.saveOrUpdateByVersion(container);
+                   insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
+               }
+            }
+        }
+    }
 }
