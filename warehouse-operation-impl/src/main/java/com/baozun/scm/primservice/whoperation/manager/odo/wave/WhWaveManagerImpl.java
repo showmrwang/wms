@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPa
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
@@ -340,7 +341,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         for (WhOdoLine line : odoLineList) {
             line.setWaveCode(null);
-            line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+            line.setOdoLineStatus(OdoLineStatus.NEW);
             this.whOdoLineDao.saveOrUpdateByVersion(line);
         }
     }
@@ -485,12 +486,8 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         boolean flag = false; // 标记是否需要重新计算波次头信息
         // 剔除已取消的出库单
-        List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
-        if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
-            this.eliminateOdo(cancelOdoIdList, waveId, Constants.ODO_IS_CANCEL, false, ouId);
-            flag = true;
-        }
-
+        flag = whWaveLineManager.deleteWaveLinesForCancelOdoByWaveId(waveId, ouId);
+        
         List<WhWaveLine> lines = whWaveLineDao.findNotEnoughAllocationQty(waveId, ouId);
         // 获取下一个波次阶段编码
         WhWave wave = whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
@@ -632,6 +629,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         wave.setTotalOdoLineQty(waveHeadInfo.getTotalOdoLineQty());
         wave.setTotalAmount(waveHeadInfo.getTotalAmount());
         wave.setTotalSkuQty(waveHeadInfo.getTotalSkuQty());
+        wave.setTotalOdoQty(waveHeadInfo.getTotalOdoQty());
         int updateCount = whWaveDao.saveOrUpdateByVersion(wave);
         if (updateCount == 0) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -639,19 +637,23 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh) {
+    public void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh, String logId) {
+        log.info("logId:{},method matchWaveDisTributionMode start", logId);
         // #mender yimin.lu 获取需要提出波次的出库单集合
         Long waveId = wave.getId();
         // 更新出库单
+        log.info("logId:{},method matchWaveDisTributionMode : update odo", logId);
         boolean flag = false;
         if (odoList != null && odoList.size() > 0) {
             for (WhOdo odo : odoList) {
                 if (StringUtils.hasText(odo.getDistributeMode())) {
                     int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
                     if (updateCount <= 0) {
+                        log.error("logId:{},method matchWaveDisTributionMode : update odo[id:{}] by version error", logId, odo.getId());
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 } else {
+                    log.info("logId:{},method matchWaveDisTributionMode : remove odo[id:{}] from wave[id:{}]", logId, odo.getId(), wave.getId());
                     this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM);
                     if (!flag) {
 
@@ -661,11 +663,14 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
         }
         if (flag) {
+            log.info("logId:{},method matchWaveDisTributionMode : recount wave[id:{}] head message", logId, wave.getId());
             this.calculateWaveHeadInfo(waveId, ouId);
         }
         // 更新波次的下一个阶段
+        log.info("logId:{},method matchWaveDisTributionMode : recount wave phase[id:{}] head message", logId, wave.getId());
         this.changeWavePhaseCode(waveId, ouId);
         // 波次取消需要取消补货任务
+        log.info("logId:{},method matchWaveDisTributionMode : cancel wave replenishment while wave[id:{}] cancelled", logId, wave.getId());
         this.checkReplenishmentTaskForWave(waveId, ouId);
     }
 
@@ -719,12 +724,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     private void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, Integer wavePhase) {
-        Long ouId = wh.getId();
         for (Long odoId : odoIds) {
             log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, wh.getId());
             this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, wavePhase);
         }
-        this.calculateWaveHeadInfo(waveId, ouId);
     }
 
     @Override
@@ -769,7 +772,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
             // 按单据删除待移入和已分配
 
-            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId); // 用于判断出库单是否取消
+            long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId); // 用于判断波次是否取消
             if (count > 0) {
                 // 清除编码
                 this.eliminateOccupationCode(odo.getOdoCode(), ouId);
@@ -989,7 +992,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             for (WhWaveLine waveLine : entry.getValue()) {
                 WhOdoLine odoLine = this.whOdoLineDao.findOdoLineById(waveLine.getOdoLineId(), ouId);
                 odoLine.setWaveCode("");
-                odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                odoLine.setOdoLineStatus(OdoLineStatus.NEW);
                 odoLine.setModifiedId(userId);
                 int odoLineUpdateCount = this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
                 if (odoLineUpdateCount <= 0) {
@@ -1060,20 +1063,24 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId) {
+    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId) {
+        log.info("logId:{},method cancelWaveForNew start", logId);
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();// 配货模式计算
         for (WhOdo odo : odoList) {
+            log.info("logId:{},method cancelWaveForNew: odo[id:{}] remove from wave", logId, odo.getId());
             odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
 
             List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
             for (WhOdoLine odoLine : odoLineList) {
                 odoLine.setModifiedId(userId);
-                odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                odoLine.setOdoLineStatus(OdoLineStatus.NEW);
                 odoLine.setWaveCode(null);
                 int updateOdoLineCount = this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
                 if (updateOdoLineCount <= 0) {
+                    log.error("logId:{},method cancelWaveForNew: update odoLine[id:{}] by version error", logId, odoLine.getId());
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odoLine, ouId, userId, odo.getOdoCode(), DbDataSource.MOREDB_SHARDSOURCE);
 
             }
             odo.setModifiedId(userId);
@@ -1081,29 +1088,36 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             odo.setWaveCode(null);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
+                log.error("logId:{},method cancelWaveForNew: update odo[id:{}] by version error", logId, odo.getId());
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, userId, null, DbDataSource.MOREDB_SHARDSOURCE);
         }
 
         int updateWaveCount = this.whWaveDao.saveOrUpdateByVersion(wave);
         if (updateWaveCount <= 0) {
+            log.error("logId:{},method cancelWaveForNew: update wave[id:{}] by version error", logId, wave.getId());
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
 
         // 重新计算配货模式
+        log.info("logId:{},method cancelWaveForNew: add odo to redis distribute count pool");
         this.distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
 
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId) {
+    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId) {
+        log.info("logId:{},method cancelWaveWithWork start", logId);
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
         Long waveId = wave.getId();
         // 工作的取消：
         // 1.补货工作：不取消
         // 2.拣货工作：取消
-        this.releaseReplenishmentFromWave(waveId, ouId);
+        log.info("logId:{},method cancelWaveWithWork invoke releaseReplenishmentFromWave start", logId);
+        this.releaseReplenishmentFromWave(waveId, ouId, userId, logId);
+        log.info("logId:{},method cancelWaveWithWork invoke releasePickingFromWave start", logId);
         this.releasePickingFromWave(waveId, ouId);
 
         wave.setStatus(WaveStatus.WAVE_CANCEL);
@@ -1171,16 +1185,21 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     }
 
-    private void releaseReplenishmentFromWave(Long waveId, Long ouId) {
+    private void releaseReplenishmentFromWave(Long waveId, Long ouId, Long userId, String logId) {
+        log.info("logId:{},method releaseReplenishmentFromWave[waveId:{},ouId:{}] start", logId, waveId, ouId);
         WhWave wave = this.whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+
+        log.info("logId:{},method releaseReplenishmentFromWave[waveId:{},ouId:{}] start", logId, waveId, ouId);
         WhWork workSearch = new WhWork();
         workSearch.setWaveCode(wave.getCode());
         workSearch.setWorkCategory(Constants.WORK_CATEGORY_REPLENISHMENT);
         workSearch.setOuId(ouId);
         // workSearch.setLifecycle(Constants.LIFECYCLE_START);
         List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
+        log.info("logId:{},method releaseReplenishmentFromWave update work List start", logId);
         if (workList != null && workList.size() > 0) {
             for (WhWork work : workList) {
+                log.debug("logId:{},method releaseReplenishmentFromWave update work[id:{}]", logId, work.getId());
                 work.setWaveId(null);
                 work.setWaveCode(null);
                 work.setOrderCode(null);
@@ -1188,27 +1207,35 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 // work.setIsLocked(false);
                 int updateWorkCount = this.whWorkDao.saveOrUpdateByVersion(work);
                 if (updateWorkCount <= 0) {
+                    log.error("logId:{},method releaseReplenishmentFromWave update work[id:{}] by version error ", logId, work.getId());
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, work, ouId, userId, null, DbDataSource.MOREDB_SHARDSOURCE);
                 List<WhWorkLine> lineList = this.whWorkLineDao.findWorkLineByWorkIdOuId(work.getId(), ouId);
                 if (lineList != null && lineList.size() > 0) {
                     for (WhWorkLine workLine : lineList) {
+                        log.debug("logId:{},method releaseReplenishmentFromWave update workLine[id:{}]", logId, workLine.getId());
                         workLine.setOdoId(null);
                         workLine.setOdoLineId(null);
                         int updateCount = this.whWorkLineDao.saveOrUpdateByVersion(workLine);
                         if (updateCount <= 0) {
+                            log.error("logId:{},method releaseReplenishmentFromWave update workLine[id:{}] by version error ", logId, workLine.getId());
                             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                         }
+                        this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, workLine, ouId, userId, work.getCode(), DbDataSource.MOREDB_SHARDSOURCE);
                     }
                 }
+                log.info("logId:{},method releaseReplenishmentFromWave update operation List start", logId);
                 WhOperation operation = this.whOperationDao.findOperationByWorkId(work.getId(), ouId);
                 operation.setWaveCode(null);
                 operation.setWaveId(null);
                 operation.setOrderCode(null);
                 int updateOpCount = this.whOperationDao.saveOrUpdateByVersion(operation);
                 if (updateOpCount <= 0) {
+                    log.error("logId:{},method releaseReplenishmentFromWave update operation[id:{}] by version error ", logId, operation.getId());
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, operation, ouId, userId, null, DbDataSource.MOREDB_SHARDSOURCE);
                 List<WhOperationLine> oplineList = this.whOperationLineDao.findByOperationId(operation.getId(), ouId);
                 if (oplineList != null && oplineList.size() > 0) {
                     for (WhOperationLine line : oplineList) {
@@ -1216,8 +1243,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                         line.setOdoLineId(null);
                         int updateCount = this.whOperationLineDao.saveOrUpdateByVersion(line);
                         if (updateCount <= 0) {
+                            log.error("logId:{},method releaseReplenishmentFromWave update operation[id:{}] by version error ", logId, line.getId());
                             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                         }
+                        this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, line, ouId, userId, operation.getCode(), DbDataSource.MOREDB_SHARDSOURCE);
                     }
                 }
 
@@ -1431,7 +1460,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     this.whWaveLineDao.insert(waveLine);
 
                     line.setWaveCode(wave.getCode());
-                    line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
+                    line.setOdoLineStatus(OdoLineStatus.WAVE);
                     int updateCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
                     if (updateCount <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -1452,7 +1481,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         Date date2 = new Date();
         log.info("operation:addOdoLineToWaveNew,update odo_lines,time start at {}", date2);
         // 更新明细数量
-        int updateCount = this.whOdoLineDao.updateOdoLineToWave(odoIdList, OdoStatus.ODOLINE_WAVE, wave.getCode(), ouId, userId);
+        int updateCount = this.whOdoLineDao.updateOdoLineToWave(odoIdList, OdoLineStatus.WAVE, wave.getCode(), ouId, userId);
         Date date3 = new Date();
         log.info("operation:addOdoLineToWaveNew,update odo_lines,time end at {},cost time {},update {} counts", date3, date3.getTime() - date2.getTime(), updateCount);
         // 插入波次明细数量
@@ -1608,6 +1637,24 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         WhWaveMasterPrintCondition c = whWaveMasterDao.findPrintConditionByWaveMasterId(wave.getWaveMasterId(), printType, ouId);
         return c;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void checkWaveHardAllocateRule(Long waveId, Long ouId) {
+        boolean flag = false;   // 标示是否计算波次头信息
+        // 提出取消的出库单据
+        flag = whWaveLineManager.deleteWaveLinesForCancelOdoByWaveId(waveId, ouId);
+        List<Long> odoIdList = whWaveLineDao.findNoRuleOdoIdListByWaveId(waveId, ouId);
+        if (null != odoIdList && !odoIdList.isEmpty()) {
+            whWaveLineManager.deleteWaveLinesByOdoIdList(odoIdList, waveId, ouId, Constants.RULE_ALLOCATION_FAILURE);
+            flag = true;
+        }
+        if (flag) {
+            this.calculateWaveHeadInfo(waveId, ouId);
+        }
+        // 进入硬分配库存
+        whWaveDao.updateWhWaveInHardAllocate(waveId, ouId);
     }
 
 }

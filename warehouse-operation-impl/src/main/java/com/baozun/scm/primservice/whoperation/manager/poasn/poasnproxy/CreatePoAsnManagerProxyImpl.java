@@ -84,10 +84,8 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
 import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
-import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
-import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectReasons;
 import com.baozun.scm.primservice.whoperation.model.warehouse.StoreDefectType;
@@ -1466,6 +1464,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.RCVD_CONTAINER_FINISH_ERROR);
         }
         Long asnId = commandList.get(0).getOccupationId();// ASN头ID
+        Long ArchivlineId= commandList.get(0).getArchivlineId();
         // 获取ASN
         WhAsn asn = this.asnManager.findWhAsnByIdToShard(asnId, ouId);
         if (null == asn) {
@@ -1478,7 +1477,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         if (null == po) {
             throw new BusinessException(ErrorCodes.PO_RCVD_GET_ERROR);
         }
-        Store store = this.getReturnedStore(asn.getStoreId(), isReturns);
+        Store store = this.getReturnedStore(asn.getStoreId(), isReturns, ArchivlineId, ouId);
         if (store == null) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
@@ -2054,7 +2053,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         return invStatusMap;
     }
 
-    private Store getReturnedStore(Long storeId, Boolean isReturns) {
+    private Store getReturnedStore(Long storeId, Boolean isReturns, Long archivlineId, Long ouId) {
         Store store = this.storeManager.findStoreById(storeId);
         if (store == null) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -2065,8 +2064,12 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
                 if (Constants.STORE_RETURNEDPURCHASESTORE_INBOUND.equals(store.getReturnedPurchaseStore())) {
                     return store;
                 } else {
-                    // #TODO
-                    Store returnedStore = this.storeManager.findStoreByCode(store.getReturnedPurchaseStore());
+                    // @mender yimin.lu 2017/6/26
+                    WhOdoArchivLineIndex archivLine = this.whOdoArchivLineIndexManager.findByIdToShard(archivlineId, ouId);
+                    if (null == archivLine) {
+                        throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+                    }
+                    Store returnedStore = this.storeManager.findStoreById(archivLine.getStoreId());
                     if (returnedStore == null) {
                         throw new BusinessException(ErrorCodes.PARAMS_ERROR);
                     }

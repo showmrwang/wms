@@ -51,20 +51,20 @@ public class OdoStatus implements Serializable {
     
     /** ODO */
 
-    /** ODO_LINE */
-    public static final String ODOLINE_NEW = "1";// 新建
-    public static final String ODOLINE_TOBECREATED = "99";// 待创建
-    public static final String ODOLINE_OUTSTOCK = "2";// 部分出库
-    public static final String ODOLINE_MERGE = "5";// 已合并
-    public static final String ODOLINE_WAVE = "8";// 波次中
-    public static final String ODOLINE_PUTAWAY = "11";// 待拣货
-    public static final String ODOLINE_PUTAWAY_FINISH = "12";// 拣货完成
-    public static final String ODOLINE_CHECK_FINISH = "13";// 已复核
-    public static final String ODOLINE_WEIGHT_FINISH = "15";// 已称重
-    public static final String ODOLINE_HANDOVER_FINISH = "16";// 已交接
-    public static final String ODOLINE_OUTSTOCK_FINISH = "10";// 全部出库
-    public static final String ODOLINE_CLOSE = "20";// 关闭
-    public static final String ODOLINE_CANCEL = "17";// 取消
+    /** ODO_LINE **/
+    // public static final String ODOLINE_NEW = "1";// 新建
+    // public static final String ODOLINE_TOBECREATED = "99";// 待创建
+    // public static final String ODOLINE_OUTSTOCK = "2";// 部分出库
+    // public static final String ODOLINE_MERGE = "5";// 已合并
+    // public static final String ODOLINE_WAVE = "8";// 波次中
+    // public static final String ODOLINE_PUTAWAY = "11";// 待拣货
+    // public static final String ODOLINE_PUTAWAY_FINISH = "12";// 拣货完成
+    // public static final String ODOLINE_CHECK_FINISH = "13";// 已复核
+    // public static final String ODOLINE_WEIGHT_FINISH = "15";// 已称重
+    // public static final String ODOLINE_HANDOVER_FINISH = "16";// 已交接
+    // public static final String ODOLINE_OUTSTOCK_FINISH = "10";// 全部出库
+    // public static final String ODOLINE_CLOSE = "20";// 关闭
+    // public static final String ODOLINE_CANCEL = "17";// 取消
     /** ODO_LINE */
 
 }

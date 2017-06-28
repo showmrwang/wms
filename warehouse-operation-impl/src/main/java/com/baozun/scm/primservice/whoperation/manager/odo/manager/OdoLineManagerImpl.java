@@ -12,6 +12,8 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
@@ -37,6 +40,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 @Service("odoLineManager")
 @Transactional
 public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManager {
+
+    protected static final Logger log = LoggerFactory.getLogger(OdoLineManager.class);
     @Autowired
     private WhOdoLineDao whOdoLineDao;
     @Autowired
@@ -181,7 +186,7 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         }
         if (lineList != null && lineList.size() > 0) {
             for (WhOdoLine line : lineList) {
-                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                if (OdoLineStatus.CANCEL.equals(line.getOdoLineStatus())) {
                     continue;
                 }
                 skuIdSet.add(line.getSkuId());
@@ -259,8 +264,11 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void deleteLines(List<WhOdoLine> lineList) {
+        log.info("deleteLines method start");
         for (WhOdoLine line : lineList) {
+            log.debug("delete odo lines [id:{},line:{}]", line.getId(), line);
             this.whOdoLineDao.deleteByIdOuId(line.getId(), line.getOuId());
         }
+        log.info("deleteLines method delete");
     }
 }

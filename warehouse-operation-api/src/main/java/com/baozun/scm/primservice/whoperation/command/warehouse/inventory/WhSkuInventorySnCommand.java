@@ -39,6 +39,10 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     private String sn;
     /** 占用单据号 */
     private String occupationCode;
+    /**占用单据明细行ID*/
+    private Long occupationLineId;
+    /**补货单号*/
+    private String replenishmentCode;
     /** 残次品条码 */
     private String defectWareBarcode;
     /** 残次类型来源 STORE店铺 WH仓库 */
@@ -99,7 +103,7 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     /** 上架规则 */
     private List<ShelveRecommendRuleCommand> shelveRecommendRuleCommandList;
     
-    private Long occupationLineId;
+    
 
     //更新前的uuid
     private String oldUuid;
@@ -375,4 +379,13 @@ public class WhSkuInventorySnCommand extends BaseCommand {
     public void setOldUuid(String oldUuid) {
         this.oldUuid = oldUuid;
     }
+
+    public String getReplenishmentCode() {
+        return replenishmentCode;
+    }
+
+    public void setReplenishmentCode(String replenishmentCode) {
+        this.replenishmentCode = replenishmentCode;
+    }
+    
 }

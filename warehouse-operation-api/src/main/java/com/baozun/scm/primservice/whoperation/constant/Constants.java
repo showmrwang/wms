@@ -826,8 +826,10 @@ public final class Constants {
     public static final String TIP_BATCH_UNIQUE_OUTBOUND_BOX = "BATCH_UNIQUE_OUTBOUND_BOX";
     /** 按单复核:普通摘果*/
     public static final String TIP_GENERAL_CHECKING = "GENERAL_CHECKING";
-
+    /** 按单复核:多个出库想*/
     public static final String TIP_BATCH_MULTIPLE_OUTBOUND_BOX = "BATCH_MULTIPLE_OUTBOUND_BOX";
+    /** 按单复核:多个周转箱*/
+    public static final String TIP_BATCH_MULTIPLE_CONTAINER = "BATCH_MULTIPLE_CONTAINER";
 
 
     /** 按单复核方式:小车出库箱流程 */

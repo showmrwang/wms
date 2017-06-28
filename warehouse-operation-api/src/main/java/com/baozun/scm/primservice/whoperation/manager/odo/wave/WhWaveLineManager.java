@@ -131,4 +131,11 @@ public interface WhWaveLineManager extends BaseManager {
      * @return
      */
     List<Long> getOdoIdListByWaveIdList(List<Long> waveIdList, Long ouId);
+    
+    /**
+     * 波次中提出取消的单据
+     * @author kai.zhu
+     * @version 2017年6月27日
+     */
+    boolean deleteWaveLinesForCancelOdoByWaveId(Long waveId, Long ouId);
 }

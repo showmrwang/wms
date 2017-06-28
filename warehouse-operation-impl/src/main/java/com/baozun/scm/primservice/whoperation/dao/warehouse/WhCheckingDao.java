@@ -30,6 +30,7 @@ import org.apache.ibatis.annotations.Param;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 
 public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
@@ -50,6 +51,8 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhChecking o);
+    
+    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     WeightingCommand findByWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
 
@@ -252,4 +255,13 @@ public interface WhCheckingDao extends BaseDao<WhChecking, Long> {
      * @return
      */
     Long findContainerSkuCntByContainerAndOuId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
+    
+    /**
+     * 出库箱或播种墙或小车货格库存移动功能查询出库存信息
+     * 
+     * @author feng.hu
+     * @param WhSkuInventoryCommand
+     * @return
+     */
+    public WhCheckingCommand findCheckingInfoByParam(@Param("outboundboxCode") String outboundboxCode, @Param("facilityId") Long facilityId, @Param("outerContainerId") Long outerContainerId,@Param("containerLatticeNo") Integer containerLatticeNo, @Param("ouId") Long ouId);
 }

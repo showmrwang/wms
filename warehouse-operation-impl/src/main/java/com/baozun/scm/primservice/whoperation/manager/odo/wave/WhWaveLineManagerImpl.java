@@ -18,11 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.command.odo.OdoCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
+import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
@@ -133,17 +134,29 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason) {
-        // 1.修改出库单明细waveCode为空
-        whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
-        // 2.修改出库单waveCode为空
-        whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
-        // 3.从波次明细中剔除出库单
-        whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
         // 4.提出的出库单加入配货模式
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
-        Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
-        odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
-        distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+        // @mender yimin.lu 2017/06/27
+        if (OdoStatus.CANCEL.equals(odo.getOdoStatus())) {
+            int updateCount = this.whOdoDao.updateOdoByCancel(odoId, Constants.ODO_IS_CANCEL, ouId);
+            if (updateCount <= 0) {
+                throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+            }
+            this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
+        } else {
+            // 1.修改出库单明细waveCode为空
+            whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
+            // 插入日志
+            this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
+            // 2.修改出库单waveCode为空
+            whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
+
+            Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
+            odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
+            distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+        }
+        // 3.从波次明细中剔除出库单
+        whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
         return odo;
     }
     
@@ -347,5 +360,18 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     @Override
     public List<Long> getOdoIdListByWaveIdList(List<Long> waveIdList, Long ouId) {
         return whWaveLineDao.getOdoIdListByWaveIdList(waveIdList, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public boolean deleteWaveLinesForCancelOdoByWaveId(Long waveId, Long ouId) {
+        List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
+        if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
+            for (Long odoId : cancelOdoIdList) {
+                this.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.ODO_IS_CANCEL);
+            }
+            return true;
+        }
+        return false;
     }
 }

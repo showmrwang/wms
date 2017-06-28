@@ -153,8 +153,9 @@ public interface WhWaveManager extends BaseManager {
      * @param wave
      * @param ouId
      * @param userId
+     * @param logId
      */
-    void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh);
+    void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh, String logId);
 
     /**
      * [通用方法] 根据WavePhaseCode波次编码查找波次ID集合
@@ -267,8 +268,9 @@ public interface WhWaveManager extends BaseManager {
      * @param odoList
      * @param ouId
      * @param userId
+     * @param logId
      */
-    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
+    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId);
 
     /**
      * [业务方法]波次取消
@@ -277,8 +279,9 @@ public interface WhWaveManager extends BaseManager {
      * @param odoList
      * @param ouId
      * @param userId
+     * @param logId
      */
-    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
+    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId);
     
     /**
      * [业务方法]波次中创工作失败，波次剔除
@@ -363,5 +366,7 @@ public interface WhWaveManager extends BaseManager {
      * @version 2017年5月3日
      */
     WhWaveMasterPrintCondition findPrintConditionByWaveId(Long waveId, String printOrderType13, Long ouId);
+
+    public void checkWaveHardAllocateRule(Long waveId, Long ouId);
     
 }

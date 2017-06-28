@@ -49,6 +49,8 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhCheckingLine o);
+    
+    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
      * 根据复核ID查询复核明细
@@ -93,6 +95,21 @@ public interface WhCheckingLineDao extends BaseDao<WhCheckingLine, Long> {
 
     List<WhCheckingLineCommand> findQtyAndOdolineIdByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
-
+    /**
+     * 出库箱移动库存根据复核ID查询复核明细
+     * 
+     * @param checkingId
+     * @param ouId
+     * @return
+     */
+    public List<WhCheckingLineCommand> findCheckingLineCommandByCheckingId(@Param("checkingId") Long checkingId, @Param("ouId") Long ouId);
+    
+    /**
+     * [业务方法] 查询出库明细未复核的数量
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    Long findCheckingQty(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
 }

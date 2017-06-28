@@ -93,12 +93,14 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
     public WeightingCommand findInfoByInput(WeightingCommand command) {
         // Boolean flag = this.checkParam(command);
         String outboundBoxCode = command.getOutboundBoxCode();
+        Long ouId = command.getOuId();
         String waybillCode = command.getWaybillCode();
         WhFunctionOutBound function = whFunctionOutBoundDao.findByFunctionIdExt(command.getFuncId(), command.getOuId());
         command = findInputResponse(command);
         if (null == command) {
             throw new BusinessException(ErrorCodes.WEIGHTING_INPUT_NOT_CORRECT);
         }
+        checkOdoStatus(command.getOdoId(), ouId);
         if (function.getIsValidateWeight()) {
             command.setFloats(function.getWeightFloatPercentage());
         }
@@ -128,6 +130,21 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             }
         }
         return command;
+    }
+
+    /**
+     * [业务方法] 取消订单不允许进行称重
+     * @param odoId
+     * @param ouId
+     */
+    private void checkOdoStatus(Long odoId, Long ouId) {
+        WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
+        if (null != odo) {
+            String status = odo.getOdoStatus();
+            if (OdoStatus.CANCEL.equals(status)) {
+                throw new BusinessException(ErrorCodes.CHECKING_ODO_CANCEL_ERROR);
+            }
+        }
     }
 
     @Override
@@ -275,7 +292,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         List<WhOdoLine> odoLineList = whOdoLineDao.findListByParamExt(line);
         if (null != odoLineList && !odoLineList.isEmpty()) {
             for (WhOdoLine odoLine : odoLineList) {
-                odoLine.setOdoLineStatus(OdoStatus.ODOLINE_WEIGHT_FINISH);
+                odoLine.setOdoLineStatus(OdoStatus.WEIGHING_FINISH);
                 odoLine.setModifiedId(userId);
                 whOdoLineDao.saveOrUpdateByVersion(odoLine);
             }

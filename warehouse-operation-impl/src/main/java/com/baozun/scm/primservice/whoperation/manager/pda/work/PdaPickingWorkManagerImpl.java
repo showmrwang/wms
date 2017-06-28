@@ -42,6 +42,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhScanPatternType;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
@@ -234,10 +235,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         for (WhOperationLineCommand operationLine : operationLineList) {
             // 根据出库单code获取出库单信息
             WhOdo odo = odoDao.findByIdOuId(operationLine.getOdoId(), operationLine.getOuId());
-            if (null != odo && !OdoStatus.PICKING.equals(odo.getOdoStatus())) {
+            if (null != odo && !OdoStatus.PICKING.equals(odo.getOdoStatus()) && !OdoStatus.CANCEL.equals(odo.getOdoStatus())) {
                 odo.setOdoStatus(OdoStatus.PICKING);
                 odo.setLagOdoStatus(OdoStatus.WAVE_FINISH);
                 odoDao.update(odo);
+            }
+            WhOdoLine odoLine = whOdoLineDao.findOdoLineById(operationLine.getOdoLineId(), operationLine.getOuId());
+            if (null != odoLine && !OdoLineStatus.PICKING.equals(odoLine.getOdoLineStatus()) && !OdoLineStatus.CANCEL.equals(odoLine.getOdoLineStatus())) {
+                odoLine.setOdoLineStatus(OdoLineStatus.PICKING);
+                whOdoLineDao.update(odoLine);
             }
         }
     }
@@ -2003,6 +2009,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             // 清除缓存
             pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(operationId, false, locationId);
         } else if (cSRCmd.getIsPicking()) {
+            command.setIsContinueScanSn(false);
             // 修改小车状态
             if (Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)) {
                 this.updateContainer(outerContainer, ouId);
@@ -4052,23 +4059,44 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             if (0 == odoOutBoundBoxByOdo.size() && 0 == operationCommandByOdo.size()) {
                 // 根据出库单code获取出库单信息
                 WhOdo odo = odoDao.findByIdOuId(whOperationLineCommand.getOdoId(), whOperationLineCommand.getOuId());
-                if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
-                    odo.setOdoStatus(OdoStatus.PICKING_FINISH);
-                    odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
-                } else {
-                    odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
-                    odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                if(null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())){
+                    if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
+                        odo.setOdoStatus(OdoStatus.PICKING_FINISH);
+                        odo.setLagOdoStatus(OdoStatus.PICKING_FINISH);
+                    } else {
+                        odo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
+                        odo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                    }
+                    odoDao.update(odo);    
                 }
-                odoDao.update(odo);
             }
             if (0 == odoOutBoundBoxByOdoLine.size() && 0 == operationCommandByOdoLine.size()) {
                 // 根据出库单code获取出库单信息
                 WhOdoLine whOdoLine = odoLineManager.findOdoLineById(whOperationLineCommand.getOdoLineId(), whOperationLineCommand.getOuId());
-                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
-                whOdoLineDao.update(whOdoLine);
+                if(null != whOdoLine){
+                    if(null != whOdoLine.getOdoId()){
+                        WhOdo odo = odoDao.findByIdOuId(whOdoLine.getOdoId(), whOperationLineCommand.getOuId());
+                        if(null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())){
+                            if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
+                            } else {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                            }
+                            whOdoLineDao.update(whOdoLine);
+                        }    
+                    }else{
+                        if(!OdoLineStatus.CANCEL.equals(whOdoLine.getOdoLineStatus())){
+                            if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
+                            } else {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                            }
+                            whOdoLineDao.update(whOdoLine);
+                        }
+                    }
+                }
             }
         }
-
     }
     
     /**
@@ -4084,6 +4112,30 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             createWorkManagerProxy.createReplenishmentAfterPicking(operatorLine.getLocationIds(), ouId, userId);
         } catch (Exception e) {
             log.error("PdaPickingWorkManagerImpl createReplenishmentAfterPicking error" + e);
+        }
+    }
+    
+    public void isCreateReplenishmentWork(Long locationId,Long  ouId, Long operationId, String outerContainerCode, String insideContainerCode,Long userId){
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            ContainerCommand container = containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == container){
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = container.getId();
+        }
+        Long insideContainerId = null;
+        if(!StringUtils.isEmpty(insideContainerCode)){
+            ContainerCommand container = containerDao.getContainerByCode(insideContainerCode, ouId);
+            if(null == container){
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            insideContainerId = container.getId();
+        }
+        List<WhSkuInventoryCommand>  skuInvList = whSkuInventoryDao.getWhSkuInventoryCmdByOccupationLineId(locationId, ouId,operationId, outerContainerId, insideContainerId);
+        if (null == skuInvList || skuInvList.size() == 0) {
+            //创建补货工作
+            this.createReplenishmentAfterPicking(operationId, ouId, userId);
         }
     }
 }

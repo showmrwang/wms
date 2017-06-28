@@ -640,6 +640,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         String skuBarCode = command.getSkuBarCode();
         String turnoverBoxCode = command.getTurnoverBoxCode(); // 周转箱
         String newTurnoverBoxCode = command.getNewTurnoverBoxCode();
+        String outerContainerCode = command.getOuterContainerCode();
         Long newTurnoverBoxId = null; 
         if (!StringUtils.isEmpty(newTurnoverBoxCode)) {
             ContainerCommand turnoverBoxCmd = containerDao.getContainerByCode(newTurnoverBoxCode, ouId);
@@ -657,6 +658,14 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             turnoverBoxId = turnoverBoxCmd.getId();
+        }
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)){
+            ContainerCommand c = containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == c){
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = c.getId();
         }
         boolean isTV = true;// 是否跟踪容器
         Location location = whLocationDao.findByIdExt(locationId, ouId);
@@ -775,7 +784,13 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         Map<String, Map<Long, Map<String, Long>>> locSkuAttrIdsQty = opExecLineCmd.getSkuAttrIds();
         Map<Long,Set<Long>> locTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
         Map<String,Set<Long>> locSkuIds = opExecLineCmd.getSkuIds();
-        Set<Long> turnoverBoxIds = locTurnoverBoxIds.get(locationId);
+        Map<Long, Set<Long>> palleToContainer  = opExecLineCmd.getPalleToContainer();
+        Set<Long> turnoverBoxIds = null;
+        if(null != outerContainerId){
+            turnoverBoxIds =  palleToContainer.get(outerContainerId);
+        }else{  //该货箱没有外部容器
+            turnoverBoxIds = locTurnoverBoxIds.get(locationId);
+        }
         Set<Long> skuIds = locSkuIds.get(key);
         Map<Long, Map<String, Long>> skuAttrIdsQty = locSkuAttrIdsQty.get(key);
         Map<String, Set<String>> skuAttrIdsSnDefect = locSkuAttrIdsSnDefect.get(key);
@@ -1044,6 +1059,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setLineCode(workLineCode);
                                          workLine.setUuid(uuid);
                                          whWorkLineDao.insert(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
                                          workIds.add(workLine.getId());
                                          //修改原来的工作明细
                                          WhWorkLine workLine1 = new WhWorkLine();
@@ -1069,7 +1085,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                              workLine.setFromInsideContainerId(null);
                                              workLine.setFromOuterContainerId(null);
                                          }
-                                         workLine.setQty(onHandQty);
+                                         workLine.setQty(lineQty);
                                          workLine.setUuid(uuid);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
                                          insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
@@ -1097,6 +1113,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setLineCode(workLineCode);
                                          workLine.setUuid(uuid);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
                                          workIds.add(workLine.getId());
                                          continue;
                                      }
@@ -1176,7 +1193,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setFromInsideContainerId(null);
                                     opLine.setFromOuterContainerId(null);
                                 }
-                                opLine.setQty(invCmd.getOnHandQty());
+                                opLine.setQty(lineQty);
                                 opLine.setUuid(uuid);
                                 whOperationLineDao.saveOrUpdateByVersion(opLine);
                                 insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);

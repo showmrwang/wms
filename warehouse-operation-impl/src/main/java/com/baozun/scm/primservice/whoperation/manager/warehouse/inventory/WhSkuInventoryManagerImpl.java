@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import lark.common.annotation.MoreDB;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRuleCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentStrategyCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
@@ -68,15 +67,19 @@ import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
 import com.baozun.scm.primservice.whoperation.constant.WavePhase;
+import com.baozun.scm.primservice.whoperation.constant.WhOutBoundBoxMoveType;
 import com.baozun.scm.primservice.whoperation.constant.WhPutawayPatternDetailType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoDao;
 import com.baozun.scm.primservice.whoperation.dao.poasn.WhPoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.OutBoundBoxTypeDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentMsgDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentStrategyDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ReplenishmentTaskDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
@@ -101,9 +104,12 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.AllocateStrategy;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
+import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentMsg;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ReplenishmentTask;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
@@ -111,6 +117,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInv
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryTobefilled;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
+
+import lark.common.annotation.MoreDB;
 
 /**
  * @author lichuan
@@ -168,6 +176,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private WhPoDao whPoDao;
     @Autowired
     private WhPoLineDao whPoLineDao;
+    @Autowired
+    private WhCheckingDao whCheckingDao;
+    @Autowired
+    private WhCheckingLineDao whCheckingLineDao;
+    @Autowired
+    private OutBoundBoxTypeDao outBoundBoxTypeDao;
 
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
@@ -8501,10 +8515,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
      * @param turnoverBoxId
      */
     public void replenishmentContianerPutaway(Long outerContainerId, Long locationId, Long operationId, Long ouId, Boolean isTabbInvTotal, Long userId, Long turnoverBoxId) {
-        List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
-        if (null == invTobefilledList || 0 == invTobefilledList.size()) {
-            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
-        }
         List<WhSkuInventoryCommand> invSnList = null;
         if (null == outerContainerId) {// 整箱
             invSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByReplenishment(null, ouId, turnoverBoxId);// 获取容器库存/关联sn的记录
@@ -8528,6 +8538,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         // 2.执行上架(一入一出)
         for (WhSkuInventoryCommand invCmd : invSnList) {
             String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+            List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
+            if (null == invTobefilledList || 0 == invTobefilledList.size()) {
+                throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
+            }
             List<WhSkuInventoryCommand> invList = null;
             if (null == outerContainerId) {// 整箱
                 invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(null, ouId, turnoverBoxId, invCmd.getUuid());
@@ -8551,51 +8565,96 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 insertSkuInventoryLog(skuInvCmd.getId(), -skuInvCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.REPLENISHMENT);
                 whSkuInventoryDao.deleteWhSkuInventoryById(skuInvCmd.getId(), ouId);
             }
+            
             // 删除待移入
             Double sumQty = 0.0;
             for (WhSkuInventoryTobefilled invTobefilled : invTobefilledList) {
-                    if(null != invTobefilled.getOuterContainerId() && invTobefilled.getOuterContainerId().equals(outerContainerId)){
-                        WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                        BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                        insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                  String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(invTobefilled);
+                  if(null != outerContainerId && null != invTobefilled.getOuterContainerId() && outerContainerId.equals(invTobefilled.getOuterContainerId())){
+                      if (skuAttrIds.equals(toBeSkuAttrId)) {
+                          sumQty += invTobefilled.getQty();
+                          Double tobefilledQty = sumQty - invCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
+                          if (tobefilledQty.doubleValue() < 0) {
+                              WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                              BeanUtils.copyProperties(invTobefilled, cInv);
+                              whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                              insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                              continue;
+                          }
+                          if (tobefilledQty.doubleValue() == 0) {
+                              WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                              BeanUtils.copyProperties(invTobefilled, cInv);
+                              whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                              insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                              break;
+                          }
+                          if (tobefilledQty.doubleValue() > 0) {
+                              WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                              BeanUtils.copyProperties(invTobefilled, cInv);
+                              cInv.setQty(tobefilledQty);
+                              whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
+                              insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
+                              break;
+                          }
+                      }
+                   }
+                   if(null != turnoverBoxId && null != invTobefilled.getInsideContainerId() && turnoverBoxId.equals(invTobefilled.getInsideContainerId())){
+                       if (skuAttrIds.equals(toBeSkuAttrId)) {
+                           sumQty += invTobefilled.getQty();
+                           Double tobefilledQty = sumQty - invCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
+                           if (tobefilledQty.doubleValue() < 0) {
+                               WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                               BeanUtils.copyProperties(invTobefilled, cInv);
+                               whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                               insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                               continue;
+                           }
+                           if (tobefilledQty.doubleValue() == 0) {
+                               WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                               BeanUtils.copyProperties(invTobefilled, cInv);
+                               whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                               insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                               break;
+                           }
+                           if (tobefilledQty.doubleValue() > 0) {
+                               WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                               BeanUtils.copyProperties(invTobefilled, cInv);
+                               cInv.setQty(tobefilledQty);
+                               whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
+                               insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
+                               break;
+                           }
+                       }
                     }
-                    if(null != invTobefilled.getInsideContainerId() && turnoverBoxId.equals(invTobefilled.getInsideContainerId())){
-                        WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                        BeanUtils.copyProperties(invTobefilled, cInv);
-                        whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                        insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                    }
-                    if(null == invTobefilled.getOuterContainerId() && null == invTobefilled.getInsideContainerId()){
-                        String toBeSkuAttrId = SkuCategoryProvider.getSkuAttrIdByWhSkuInvTobefilled(invTobefilled);
-                        if (skuAttrIds.equals(toBeSkuAttrId)) {
-                            sumQty += invTobefilled.getQty();
-                            Double tobefilledQty = sumQty - invCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
-                            if (tobefilledQty.doubleValue() < 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                                insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                                continue;
-                            }
-                            if (tobefilledQty.doubleValue() == 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
-                                insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
-                                break;
-                            }
-                            if (tobefilledQty.doubleValue() > 0) {
-                                WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
-                                BeanUtils.copyProperties(invTobefilled, cInv);
-                                cInv.setQty(tobefilledQty);
-                                whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
-                                insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
-                                break;
-                            }
-                        }
+                   if(null == invTobefilled.getOuterContainerId() && null == invTobefilled.getInsideContainerId()){
+                       if (skuAttrIds.equals(toBeSkuAttrId)) {
+                           sumQty += invTobefilled.getQty();
+                           Double tobefilledQty = sumQty - invCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
+                           if (tobefilledQty.doubleValue() < 0) {
+                               WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                               BeanUtils.copyProperties(invTobefilled, cInv);
+                               whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                               insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                               continue;
+                           }
+                           if (tobefilledQty.doubleValue() == 0) {
+                               WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                               BeanUtils.copyProperties(invTobefilled, cInv);
+                               whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
+                               insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                               break;
+                           }
+                           if (tobefilledQty.doubleValue() > 0) {
+                               WhSkuInventoryTobefilled cInv = new WhSkuInventoryTobefilled();
+                               BeanUtils.copyProperties(invTobefilled, cInv);
+                               cInv.setQty(tobefilledQty);
+                               whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
+                               insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
+                               break;
+                           }
+                       }
+                 }
                 }
-            }
         }
         if (isTV) {
             // 如果库位跟踪容器号,修改容器状态
@@ -9059,7 +9118,22 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 continue;
             }
             Long occupationLineId = invCmd.getOccupationLineId();
+            if(null == occupationLineId){
+                occupationLineId = 0L;
+            }
             String occupationCode = invCmd.getOccupationCode();
+            for (WhOperationExecLine execLine : execLineList) {
+                Long locId = execLine.getToLocationId();
+                if(locId.longValue() != locationId.longValue()){
+                    Long odoLineId = execLine.getOdoLineId();
+                    if(null == odoLineId){
+                        odoLineId = 0L;
+                    }
+                    if(odoLineId.longValue() != occupationLineId.longValue()){
+                        continue;
+                    }
+                }
+            }
             // 更新作业执行明细
             this.updateOperationExecLine(skuScanQty, execLineList, whSkuAttrId, occupationLineId, ouId, userId);
             List<WhSkuInventoryCommand> skuInvSnList = whSkuInventoryDao.findWhSkuInventorySnByOccupationLineId(ouId, occupationCode, occupationLineId, invCmd.getUuid());
@@ -9268,13 +9342,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             inv.setOuterContainerId(null);
             inv.setLocationId(locationId);
             if (null != newTurnoverBoxId) {// 引用新容器
-                inv.setInsideContainerId(newTurnoverBoxId);
-            } else {
                 if (false == isTV) {
                     inv.setInsideContainerId(null);
-                } else {
-                    inv.setInsideContainerId(turnoverBoxId);
+                }else{
+                    inv.setInsideContainerId(newTurnoverBoxId);
                 }
+            } else {
+                    inv.setInsideContainerId(null);
             }
             if (false == isBM) {
                 inv.setBatchNumber(null);
@@ -9351,13 +9425,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 拆箱上架默认不跟踪容器号
             inv.setOuterContainerId(null);
             if (null != newTurnoverBoxId) {// 引用新容器
-                inv.setInsideContainerId(newTurnoverBoxId);
-            } else {
                 if (false == isTV) {
                     inv.setInsideContainerId(null);
-                } else {
-                    inv.setInsideContainerId(turnoverBoxId);
+                }else{
+                    inv.setInsideContainerId(newTurnoverBoxId);
                 }
+            } else {
+                    inv.setInsideContainerId(null);
             }
             if (false == isBM) {
                 inv.setBatchNumber(null);
@@ -11397,4 +11471,510 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
         return list;
     }
+    
+    /**
+     * 出库箱占用耗材库存
+     * 
+     * @author containerCode出库箱号
+     * @param skuId 商品ID
+     * @param ouId
+     * 
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Long occupyConsumablesInventory(String containerCode, Long skuId, Long ouId, Long userId) {
+        log.info("WhSkuInventoryManagerImpl occupyConsumablesInventory is start");
+        // 耗材原来库存
+        Double oldQty = 0.0;
+        // 耗材扣减后库存
+        Double newQty = 0.0;
+        // 耗材原来库存id
+        Long oldInvId = 0L;
+        // 这里是任意取一条库存明细做操作 没有优先级
+        List<WhSkuInventory> invList = whSkuInventoryDao.findSkuInvByLocationIdWithOnHandQty(null, skuId, ouId);
+        if (null == invList || invList.isEmpty()) {
+            // 找不到耗材 返回为空
+            log.info("WhSkuInventoryManagerImpl occupyConsumablesInventory is end");
+            return null;
+        }
+        WhSkuInventory inv = invList.get(0);
+        oldInvId = inv.getId();
+        oldQty = inv.getOnHandQty();
+        inv.setOnHandQty(1.0);
+        inv.setOccupationCode(containerCode);
+        inv.setId(null);
+        try {
+            // 插入被扣减的库存信息
+            this.whSkuInventoryDao.insert(inv);
+            // newInvId = inv.getId();
+            // 更新库存:分两种:1是更新后在库库存量为0,直接删除;2是更新后数量不为0, 更新数据
+            newQty = oldQty - 1;
+            if (0 == newQty) {
+                // 直接删除原来的库位库存信息
+                this.whSkuInventoryDao.deleteWhSkuInventoryById(oldInvId, ouId);
+            } else {
+                inv.setId(oldInvId);
+                inv.setOnHandQty(newQty);
+                inv.setOccupationCode(null);
+                this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
+            }
+            // 插入log日志表
+             this.insertSkuInventoryLog(oldInvId, -1.0, oldQty, true, ouId, userId, InvTransactionType.CHECK);
+             log.info("WhSkuInventoryManagerImpl occupyConsumablesInventory is end. ");
+             return inv.getId();
+             
+            // 删除新插入库存明细
+            // this.whSkuInventoryDao.deleteWhSkuInventoryById(newInvId, ouId);
+        } catch (Exception e) {
+            log.info("WhSkuInventoryManagerImpl occupyConsumablesInventory is end, exception.");
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * 取消出库箱占用的耗材库存
+     * 
+     * @author containerCode出库箱号
+     * @param skuId 商品ID
+     * @param ouId
+     * 
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Long cancelConsumablesInventory(String containerCode, Long skuId, Long ouId, Long userId) {
+        log.info("WhSkuInventoryManagerImpl cancelConsumablesInventory is start");
+        
+        if (StringUtils.isEmpty(containerCode) || null == skuId) {
+            // 传入参数有错误
+            log.info("WhSkuInventoryManagerImpl cancelConsumablesInventory is end");
+            return null;
+        }
+        
+        WhSkuInventory whSkuInventory = new WhSkuInventory();
+        whSkuInventory.setSkuId(skuId);
+        whSkuInventory.setOccupationCode(containerCode);
+        whSkuInventory.setOnHandQty(1.0);
+        
+        // 通过出库箱信息查询占用的耗材库存
+        List<WhSkuInventory> invList = whSkuInventoryDao.getSkuInvListByPramas(whSkuInventory);
+        if (null == invList || invList.isEmpty()) {
+            // 找不到占用的耗材库存 返回为空
+            log.info("WhSkuInventoryManagerImpl cancelConsumablesInventory is end");
+            return null;
+        }
+        Long invId = null;
+        try {
+            for (WhSkuInventory inv : invList) {
+                if (null != inv && inv.getOccupationCode().equals(containerCode)) {                    
+                    inv.setOccupationCode(null);
+                    this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
+                    invId = inv.getId();
+                }
+            }
+            log.info("WhSkuInventoryManagerImpl cancelConsumablesInventory is end. ");
+            return invId;
+        } catch (Exception e) {
+            log.info("WhSkuInventoryManagerImpl cancelConsumablesInventory is end, exception.");
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * 货箱拆分移动库存操作
+     * @author feng.hu
+     * 
+     * @param sourceContainerCode 源容器编号
+     * @param sourceContainerId 源容器ID
+     * @param containerLatticNo 货格号
+     * @param targetContainerCode目标出库箱
+     * @param scanObject 扫描对象(播种墙,小车,出库箱)
+     * @param scanSkuAttrIdsSn 商品属性为key,value是移动SN信息
+     * @param warehouse 仓库信息
+     * @param scanSkuAttrIdsQty 商品属性为key,value是移动数量
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param logId
+     * 
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void execuBoxMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode, String scanObject, Map<String, List<String>> scanSkuAttrIdsSn, Warehouse warehouse,Map<String,Double> scanSkuAttrIdsQty, Long ouId, Long userId, String logId) {   
+        log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is start");
+        if (StringUtils.isEmpty(sourceContainerCode) || StringUtils.isEmpty(targetContainerCode) || StringUtils.isEmpty(scanObject) || null == scanSkuAttrIdsSn || scanSkuAttrIdsSn.size() == 0 || null == scanSkuAttrIdsQty || scanSkuAttrIdsQty.size() == 0) {
+            // 传入需要变动的库存为空
+            log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is end, param is empty.");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        //按照不同条件查询源容器所有库存信息
+        List<WhSkuInventoryCommand> orginInvList = null;
+        //查询复核头信息
+        WhCheckingCommand checkingHead = null;
+        //查询复核明细信息
+        List<WhCheckingLineCommand> checkLineList = null;
+        
+        if (WhOutBoundBoxMoveType.OUT_BOUND_CONTAINER.equals(scanObject)) {
+            //源容器为出库箱
+            orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(sourceContainerCode,null,null,null,ouId);
+            //复核头信息
+            checkingHead = whCheckingDao.findCheckingInfoByParam(sourceContainerCode,null,null,null,ouId);
+            //复核明细信息
+            if (null != checkingHead && null != checkingHead.getId()) {
+                checkLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(checkingHead.getId(), ouId);
+            }
+            
+        } else if (WhOutBoundBoxMoveType.OUT_BOUND_FACILITY.equals(scanObject)) {
+            //源容器为播种墙
+            if (null != containerLatticeNo) {
+                orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,sourceContainerCode, null,containerLatticeNo, ouId);
+                
+                //复核头信息
+                checkingHead = whCheckingDao.findCheckingInfoByParam(null,sourceContainerId,null,containerLatticeNo,ouId);
+                //复核明细信息
+                if (null != checkingHead && null != checkingHead.getId()) {
+                    checkLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(checkingHead.getId(), ouId);
+                }
+            }
+        } else if (WhOutBoundBoxMoveType.OUT_BOUND_SMAIL_CAR.equals(scanObject)) {
+            //源容器为小车
+            if (null != sourceContainerId && null != containerLatticeNo) {
+                orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,null,sourceContainerId,containerLatticeNo, ouId);
+                //复核头信息
+                checkingHead = whCheckingDao.findCheckingInfoByParam(null,null,sourceContainerId,containerLatticeNo,ouId);
+                //复核明细信息
+                if (null != checkingHead && null != checkingHead.getId()) {
+                    checkLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(checkingHead.getId(), ouId);
+                }
+            }
+        } else {
+            // 传入需要变动的库存为空
+            log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is end, scanObject is error.");
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        if (null == orginInvList || orginInvList.size() == 0) {
+            // 传入需要变动的库存为空
+            log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is end, inventory list empty.");
+            throw new BusinessException(ErrorCodes.MOVE_INVENTORY_NOT_EXIST);
+        }
+        if (null == checkingHead || null == checkLineList || checkLineList.size() == 0) {
+            // 传入需要变动的复核数据为空
+            log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is end, checking date empty.");
+            throw new BusinessException(ErrorCodes.MOVE_CHECKING_NOT_EXIST);
+        }
+        
+        Set<String> scanSkuAttrIds = scanSkuAttrIdsSn.keySet();
+        //循环扫描数量移动库存
+        for (String scanSkuAttrId : scanSkuAttrIds) {
+            if (StringUtils.isEmpty(scanSkuAttrId)) {
+                continue;
+            }
+            long scanSurplusQty = 0;
+            int invSurplusQty = 0;             
+            //获取扫描数量
+            Double scanQty = scanSkuAttrIdsQty.get(scanSkuAttrId);
+            if (scanQty == 0) {
+                continue;
+            }
+            scanSurplusQty = scanQty.longValue();
+            //通过缓存获取每个key下面的所有含有sn信息的key
+            List<String> skuAttrSnIds = scanSkuAttrIdsSn.get(scanSkuAttrId);
+            //记录已经更新过的含有SN信息的key
+            Map<String,String> upSkuAttrSnIds = new HashMap<String,String>();
+            //循环出库箱库存进行移库操作
+            for (WhSkuInventoryCommand orginInv : orginInvList) {
+                if (null == orginInv) {
+                    continue;
+                }
+                //获取当前库存数量
+                Double onHandQty = orginInv.getOnHandQty();                
+                if (null == onHandQty || onHandQty.longValue() == 0) {
+                    continue;
+                }
+                //获取当前库存属性唯一的key和扫描属性唯一key比较
+                String invSkuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(orginInv);
+                if (!scanSkuAttrId.equals(invSkuAttrId)) {
+                    continue;
+                }
+                //开始执行移动商品库存操作
+                WhSkuInventory moveInv = new WhSkuInventory();
+                BeanUtils.copyProperties(orginInv, moveInv);
+                moveInv.setId(null);
+                if (onHandQty.longValue() <= scanSurplusQty) {
+                    moveInv.setOnHandQty(onHandQty);
+                    scanSurplusQty = scanSurplusQty-onHandQty.longValue();
+                } else {
+                    moveInv.setOnHandQty(new Double(scanSurplusQty));
+                    invSurplusQty = onHandQty.intValue()-scanQty.intValue();
+                    scanSurplusQty = 0;
+                    
+                }
+                //商品库存出库箱信息保存
+                moveInv.setOutboundboxCode(targetContainerCode);
+                //生成新的商品uuid
+                String newUuid = null;
+                try {
+                    newUuid = SkuInventoryUuid.invUuid(moveInv);
+                    moveInv.setUuid(newUuid);// UUID
+                } catch (Exception e) {
+                    log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                    throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+                }
+                //本次循环修改数量
+                int currentQty = moveInv.getOnHandQty().intValue();
+//                // 判断当前生成的新uuid是否有同样的记录
+//                WhSkuInventory checkInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, newUuid);
+//                if (null == checkInv || null == checkInv.getId()) {
+                    // 不存在新的uuid记录新增记录 
+                moveInv.setInboundTime(new Date());
+                moveInv.setLastModifyTime(new Date());
+                whSkuInventoryDao.insert(moveInv);
+                insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);                
+                // 记录入库库存日志(这个实现的有问题)
+                insertSkuInventoryLog(moveInv.getId(), moveInv.getOnHandQty(), orginInv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
+//                } else {
+//                    // 存在新的uuid记录的数据更新库存数
+//                    moveInv.setId(checkInv.getId());
+//                    moveInv.setLastModifyTime(new Date());
+//                    Double upOnHandQty =  moveInv.getOnHandQty() + checkInv.getOnHandQty();
+//                    moveInv.setOnHandQty(upOnHandQty);
+//                    whSkuInventoryDao.saveOrUpdate(moveInv);
+//                    insertGlobalLog(GLOBAL_LOG_UPDATE, moveInv, ouId, userId, null, null);
+//                }
+                // 更新原有库存信息
+                WhSkuInventory oldInv = new WhSkuInventory();
+                BeanUtils.copyProperties(orginInv, oldInv);
+                if (invSurplusQty == 0) {
+                    //原有库存数已经全部移动完成,删除原有商品库存
+                    whSkuInventoryDao.deleteByIdExt(oldInv.getId(), ouId);
+                    insertGlobalLog(GLOBAL_LOG_DELETE, oldInv, ouId, userId, null, null);
+                } else {
+                    //原有库存数部分移动完成,修改原有商品库存数量
+                    oldInv.setOnHandQty(new Double(invSurplusQty));
+                    oldInv.setLastModifyTime(new Date());
+                    whSkuInventoryDao.saveOrUpdate(oldInv);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, oldInv, ouId, userId, null, null);
+                }
+                /**更新复核数据*/
+                //判断目标容器是否已经存在复核头数据
+                WhCheckingCommand targetChecking = whCheckingDao.findCheckingByOutboundBox(targetContainerCode, ouId);
+                Long targetCheckingId = null;
+                //目标容器不存在复核头数据进行新增
+                if (null == targetChecking) {
+                    WhChecking moveChecking = new WhChecking();
+                    BeanUtils.copyProperties(checkingHead, moveChecking);
+                    moveChecking.setId(null);
+                    moveChecking.setCreateTime(new Date());
+                    moveChecking.setLastModifyTime(new Date());
+                    moveChecking.setOutboundboxCode(targetContainerCode);
+                    moveChecking.setOutboundboxId(findOutboundboxIdByCode(targetContainerCode, ouId));
+                    whCheckingDao.insert(moveChecking);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, moveChecking, ouId, userId, null, null);
+                    
+                    targetCheckingId = moveChecking.getId();
+                } else {
+                    targetCheckingId = targetChecking.getId();
+                }
+                    
+                long chkScanQty = scanQty.longValue();
+                int chkSurplusQty = 0;
+                for (WhCheckingLineCommand checkLine : checkLineList) {
+                    if (null == checkLine) {                            
+                        continue;
+                    }
+                    //判断是否需要更新这条复合明细
+                    String checkLineSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(checkLine);
+                    if (invSkuAttrId.equals(checkLineSkuAttrId)) {
+                        //目标容器存在复核头数据,先获取复核明细
+                        boolean inserLineFlg = true;
+                        List<WhCheckingLineCommand> newLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(targetCheckingId, ouId);
+                        if (null != newLineList && newLineList.size() > 0) {
+                            for (WhCheckingLineCommand newLine : newLineList) {
+                                if (null == newLine) {
+                                    continue;
+                                }
+                                String newCheckSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(newLine);
+                                if (checkLineSkuAttrId.equals(newCheckSkuAttrId)) {
+                                    inserLineFlg = false;
+                                    break;
+                                }
+                            }
+                        }
+                        //不存在复核明细,新增数据
+                        if (inserLineFlg) {
+                            WhCheckingLine moveCheckLine = new WhCheckingLine();
+                            BeanUtils.copyProperties(checkLine, moveCheckLine);
+                            moveCheckLine.setCreateTime(new Date());
+                            moveCheckLine.setLastModifyTime(new Date());
+                            moveCheckLine.setId(null);
+                            moveCheckLine.setUuid(newUuid);
+                            moveCheckLine.setCheckingId(targetCheckingId);
+                            Long lineQty = checkLine.getQty();
+                            if (null == lineQty || lineQty.intValue() == 0) {
+                                log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory, checking line qty is null or zero, please check data.");
+                                continue;
+                            }
+                            if (lineQty.longValue() <= chkScanQty) {
+                                moveCheckLine.setQty(lineQty);
+                                chkScanQty = chkScanQty-lineQty.longValue();
+                            } else {
+                                moveCheckLine.setQty(chkScanQty);                                
+                                chkSurplusQty = lineQty.intValue()-scanQty.intValue();
+                                chkScanQty = 0;                                
+                            }                                
+                            whCheckingLineDao.insert(moveCheckLine);
+                            insertGlobalLog(GLOBAL_LOG_INSERT, moveCheckLine, ouId, userId, null, null);
+                            // 更新原有复核明细
+                            WhCheckingLine oldChkLine = new WhCheckingLine();
+                            BeanUtils.copyProperties(checkLine, oldChkLine);
+                            if (chkSurplusQty == 0) {
+                                //原有复核数据已经全部移动完成,删除原有复核明细
+                                whCheckingLineDao.deleteByIdExt(oldChkLine.getId(), ouId);
+                                insertGlobalLog(GLOBAL_LOG_DELETE, oldChkLine, ouId, userId, null, null);
+                            } else {
+                                //原有库存数部分移动完成,修改原有商品库存数量
+                                oldChkLine.setQty(new Long(chkSurplusQty));
+                                oldChkLine.setLastModifyTime(new Date());
+                                whCheckingLineDao.saveOrUpdate(oldChkLine);
+                                insertGlobalLog(GLOBAL_LOG_UPDATE, oldChkLine, ouId, userId, null, null);
+                            }
+                        } else {
+                            //存在复核明细,更新已有数据
+                            for (WhCheckingLineCommand newLine : newLineList) {
+                                if (null == newLine) {
+                                    continue;
+                                }
+                                String newCheckSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(newLine);
+                                if (checkLineSkuAttrId.equals(newCheckSkuAttrId)) {
+                                    WhCheckingLine upCheckLine = new WhCheckingLine();
+                                    BeanUtils.copyProperties(newLine, upCheckLine);
+                                    upCheckLine.setLastModifyTime(new Date());
+                                    Long lineQty = checkLine.getQty();
+                                    if (null == lineQty || lineQty.intValue() == 0) {
+                                        log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory, checking line qty is null or zero, please check data.");
+                                        continue;
+                                    }
+                                    Long existQty = upCheckLine.getQty();
+                                    if (lineQty.longValue() <= chkScanQty) {
+                                        upCheckLine.setQty(existQty+lineQty);
+                                        chkScanQty = chkScanQty-lineQty.longValue();
+                                    } else {
+                                        upCheckLine.setQty(existQty+chkScanQty);                                
+                                        chkSurplusQty = lineQty.intValue()-scanQty.intValue();
+                                        chkScanQty = 0;                                
+                                    }
+                                    whCheckingLineDao.saveOrUpdate(upCheckLine);
+                                    insertGlobalLog(GLOBAL_LOG_INSERT, upCheckLine, ouId, userId, null, null);
+                                    // 更新原有复核明细
+                                    WhCheckingLine oldChkLine = new WhCheckingLine();
+                                    BeanUtils.copyProperties(checkLine, oldChkLine);
+                                    if (chkSurplusQty == 0) {
+                                        //原有复核数据已经全部移动完成,删除原有复核明细
+                                        whCheckingLineDao.deleteByIdExt(oldChkLine.getId(), ouId);
+                                        insertGlobalLog(GLOBAL_LOG_DELETE, oldChkLine, ouId, userId, null, null);
+                                    } else {
+                                        //原有库存数部分移动完成,修改原有商品库存数量
+                                        oldChkLine.setQty(new Long(chkSurplusQty));
+                                        oldChkLine.setLastModifyTime(new Date());
+                                        whCheckingLineDao.saveOrUpdate(oldChkLine);
+                                        insertGlobalLog(GLOBAL_LOG_UPDATE, oldChkLine, ouId, userId, null, null);
+                                    }
+                                }
+                                if (chkScanQty == 0) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (chkScanQty == 0) {
+                        break;
+                    }
+                }
+                //判断原有的复核明细是否还存在
+                List<WhCheckingLineCommand> sourceCheckingLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(checkingHead.getId(), ouId);
+                if (null == sourceCheckingLineList || sourceCheckingLineList.size() == 0) {                        
+                    //删除原有的复核头数据
+                    WhChecking oldChecking = new WhChecking();
+                    BeanUtils.copyProperties(checkingHead, oldChecking);
+                    whCheckingDao.deleteByIdExt(oldChecking.getId(), ouId);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, oldChecking, ouId, userId, null, null);
+                }
+                
+                //获取当前库存是否有sn信息
+                List<WhSkuInventorySnCommand> snList = orginInv.getWhSkuInventorySnCommandList();
+                if (null != snList && snList.size() > 0) {
+                    int count = 0;
+                    //有sn数据进行sn数据移库操作
+                    for (WhSkuInventorySnCommand snCmd : snList) {
+                        if (null == snCmd) {
+                            continue;
+                        }
+                        String currentSnDefect = SkuCategoryProvider.concatSkuAttrId(snCmd.getSn(), snCmd.getDefectWareBarcode());
+                        for (String skuAttrSnId :skuAttrSnIds) {
+                            if(StringUtils.isEmpty(skuAttrSnId)) {
+                                continue;
+                            }
+                            String snDefect = SkuCategoryProvider.getSnDefect(skuAttrSnId);
+                            if (currentSnDefect.equals(snDefect) && !upSkuAttrSnIds.containsKey(skuAttrSnId)) {
+                                WhSkuInventorySn moveInvSn = new WhSkuInventorySn();
+                                BeanUtils.copyProperties(snCmd, moveInvSn);
+                                moveInvSn.setId(null);
+                                moveInvSn.setUuid(newUuid);
+                                whSkuInventorySnDao.insert(moveInvSn);
+                                insertGlobalLog(GLOBAL_LOG_INSERT, moveInvSn, ouId, userId, null, null);
+                                // 记录SN日志
+                                insertSkuInventorySnLog(moveInvSn.getId(), ouId);
+                                //删除原有SN库存信息
+                                WhSkuInventorySn oldSn = new WhSkuInventorySn();
+                                BeanUtils.copyProperties(snCmd, oldSn);
+                                whSkuInventorySnDao.deleteByIdExt(oldSn.getId(), ouId);
+                                insertGlobalLog(GLOBAL_LOG_DELETE, oldSn, ouId, userId, null, null);
+                                count++;
+                                //更新过的含有SN信息的KEY加入判断对象中
+                                upSkuAttrSnIds.put(skuAttrSnId, skuAttrSnId);
+                            }
+                        }
+                        //修改数量等于移动数量退出循环
+                        if (currentQty == count) {
+                            break;
+                        }
+                    }
+                }
+                if (scanSurplusQty == 0) {
+                    break;
+                }
+            }
+            if (scanSurplusQty > 0) {
+               //所有库存循环完成,还有扫描数量没有扣减,扫描数与库存数不符合                
+                log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory is end, scan sku qty greater than inv qty is error.");
+                throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_GREATER_THAN_INV_QTY, new Object[] {sourceContainerCode,SkuCategoryProvider.getSkuId(scanSkuAttrId),scanQty});
+            }
+        }
+    }
+    
+    /**
+     * 通过出库箱编号查找ID
+     * @param outboundboxCode
+     * @param ouId
+     * @return
+     */
+    private Long findOutboundboxIdByCode(String outboundboxCode, Long ouId) {
+        Long boxId = null;
+        //查询出库箱
+        OutBoundBoxType outboundBoxType = outBoundBoxTypeDao.findOutboundBoxIdByCode(outboundboxCode, ouId);
+        if (null == outboundBoxType) {
+            //查询出库箱是否占用耗材库存
+            List<WhSkuInventoryCommand> skuInvList = whSkuInventoryDao.findWhSkuInvCmdByOccupationCode(outboundboxCode, ouId);
+            if (null != null && skuInvList.size() > 0) {
+                WhSkuInventoryCommand invCommand = skuInvList.get(0);
+                boxId = invCommand.getSkuId();
+            }
+        } else {
+            boxId = outboundBoxType.getSkuId();
+        }
+        
+        return boxId;
+    }
+    
 }

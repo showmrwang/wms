@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -24,7 +25,7 @@ public class OdoVasManagerImpl extends BaseManagerImpl implements OdoVasManager 
     @Autowired
     private WhOdoVasDao whOdoVasDao;
     @Autowired
-    private OdoTransportMgmtManager odoTransportMgmtManager;
+    private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -74,7 +75,7 @@ public class OdoVasManagerImpl extends BaseManagerImpl implements OdoVasManager 
             // 保价
             if ("INSURED".equals(vasLine.getCode())) {
                 transMgmt.setInsuranceCoverage(vasLine.getInsuranceAmount().doubleValue());
-                int num = odoTransportMgmtManager.updateOdoTransportMgmt(transMgmt);
+                int num = whOdoTransportMgmtDao.updateWhOdoTransportMgmt(transMgmt);
                 if (num < 1) {
                     throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
                 }

@@ -215,6 +215,13 @@
         </where>
     </sql>
     
+    <delete id="deleteByIdExt" parameterType="java.lang.Long">
+	    <![CDATA[
+	        delete from t_wh_checking where
+		        id = #{id} 
+		        and ou_id = #{ouId}
+	    ]]>
+	  </delete>
     
      <select id="findByWaybillCode" resultMap="WeightingCommand" flushCache="false">
         SELECT
@@ -1290,7 +1297,7 @@
 			checking.batch = #{batch}
 			AND checking.ou_id = #{ouId}
 			and checking.status != 10
-			and odo.odo_status != 60
+			and odo.odo_status in ('0','1', '5','8', '10','20', '25','30', '35','40', '45','50', '55')
     </select>
     
     <select id="findOdoSkuCntByParam" resultType="java.lang.Long" flushCache="false">
@@ -1330,6 +1337,52 @@
 		AND checking.`status` != 10
     </select>
     
-    
+    <select id="findCheckingInfoByParam" resultMap="WhCheckingCommand">
+			select 
+				checking.id AS id,
+	            checking.facility_id AS facilityId,
+	            checking.container_id AS containerId,
+	            checking.batch AS batch,
+	            checking.wave_code AS waveCode,
+	            checking.customer_code AS customerCode,
+	            checking.customer_name AS customerName,
+	            checking.store_code AS storeCode,
+	            checking.store_name AS storeName,
+	            checking.transport_code AS transportCode,
+	            checking.transport_name AS transportName,
+	            checking.product_code AS productCode,
+	            checking.product_name AS productName,
+	            checking.time_effect_code AS timeEffectCode,
+	            checking.time_effect_name AS timeEffectName,
+	            checking.status AS status,
+	            checking.ou_id AS ouId,
+	            checking.outer_container_id AS outerContainerId,
+	            checking.container_lattice_no AS containerLatticeNo,
+	            checking.outboundbox_id AS outboundboxId,
+	            checking.outboundbox_code AS outboundboxCode,
+	            checking.distribution_mode AS distributionMode,
+	            checking.picking_mode AS pickingMode,
+	            checking.checking_mode AS checkingMode,
+	            checking.last_modify_time as lastModifyTime,
+	            checking.create_id as createId,
+	            checking.create_time as createTime,
+	            checking.modified_id as modifiedId
+				from 
+					t_wh_checking as checking
+				where checking.ou_id = #{ouId} and checking.status = 1
+					<if test="outboundboxCode != null and outboundboxCode != ''">
+						and checking.outboundbox_code = #{outboundboxCode}
+					</if>
+					<if test="facilityId != null and facilityId != ''">
+						and checking.facility_id = #{facilityId}
+					</if>
+					<if test="outerContainerId != null and outerContainerId != ''">
+						and checking.outer_container_id = #{outerContainerId}
+					</if>
+					<if test="containerLatticeNo != null and containerLatticeNo != ''">
+						and checking.container_lattice_no = #{containerLatticeNo}
+						and checking.outboundbox_code is null
+					</if>
+    </select>
 
 </mapper>

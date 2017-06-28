@@ -47,6 +47,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
@@ -395,7 +396,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
                         odoLine.setFullLineOutbound(true);
                     }
-                    odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                    odoLine.setOdoLineStatus(OdoLineStatus.NEW);
                     odoLine.setCurrentQty(lineCommand.getCurrentQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCurrentQty());
                     odoLine.setActualQty(lineCommand.getActualQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getActualQty());
                     odoLine.setCancelQty(lineCommand.getCancelQty() == null ? Constants.DEFAULT_DOUBLE : lineCommand.getCancelQty());
@@ -569,7 +570,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         }
         if (lineList != null && lineList.size() > 0) {
             for (WhOdoLine line : lineList) {
-                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                if (OdoLineStatus.CANCEL.equals(line.getOdoLineStatus())) {
                     continue;
                 }
                 skuIdSet.add(line.getSkuId());
@@ -679,17 +680,20 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void cancelOdo(WhOdo odo, Long ouId, String logId) {
+        log.info("logId:{},method cancelOdo start", logId);
         try {
             if (odo == null) {
+                log.error("logId:{},method cancelOdo throw error [odo == null]", logId);
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
             }
             // 明细取消
             List<WhOdoLine> lineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
             if (lineList != null && lineList.size() > 0) {
                 for (WhOdoLine line : lineList) {
-                    line.setOdoLineStatus(OdoStatus.ODOLINE_CANCEL);
+                    line.setOdoLineStatus(OdoLineStatus.CANCEL);
                     int updateLineCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
                     if (updateLineCount <= 0) {
+                        log.error("logId:{},method cancelOdo ->update odo line[{}] throw error [version error]", logId, line.getId());
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 }
@@ -700,8 +704,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             odo.setIsCancel(true);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
+                log.error("logId:{},method cancelOdo ->update odo [{}] throw error [version error]", logId, odo.getId());
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {
@@ -1050,7 +1056,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         for (WhOdoLine line : odolineList) {
             line.setModifiedId(userId);
             line.setWaveCode(wave.getCode());
-            line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
+            line.setOdoLineStatus(OdoLineStatus.WAVE);
             int count = this.whOdoLineDao.saveOrUpdateByVersion(line);
             if (count <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -1119,7 +1125,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             for (Long odoLineId : odoLineIds) {
                 WhOdoLine whOdoLine = this.whOdoLineDao.findOdoLineById(odoLineId, ouId);
                 whOdoLine.setWaveCode(null);
-                whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                whOdoLine.setOdoLineStatus(OdoLineStatus.NEW);
                 whOdoLine.setAssignFailReason(Constants.SOFT_ALLOCATION_FAIL);
                 whOdoLine.setIsAssignSuccess(false);
                 int cnt = this.whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
@@ -1141,7 +1147,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         WhOdoLine whOdoLine = new WhOdoLine();
         whOdoLine.setOdoId(odoId);
         whOdoLine.setOuId(ouId);
-        whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+        whOdoLine.setOdoLineStatus(OdoLineStatus.NEW);
         WhOdo whOdo = this.whOdoDao.findByIdOuId(odoId, ouId);
         Long cnt = this.whOdoLineDao.findListCountNotNew(whOdoLine);
         if (0 == cnt) {
@@ -1247,6 +1253,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             waveCommand.setTotalOdoLineQty(Constants.DEFAULT_INTEGER);
             waveCommand.setTotalAmount(Constants.DEFAULT_DOUBLE);
             waveCommand.setTotalSkuQty(Constants.DEFAULT_DOUBLE);
+            waveCommand.setTotalOdoQty(Constants.DEFAULT_INTEGER);
             return waveCommand;
         }
         WaveCommand waveCommand = this.whOdoDao.findWaveSumDatabyOdoIdList(odoIdList, ouId);
