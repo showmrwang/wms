@@ -235,7 +235,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         for (WhOperationLineCommand operationLine : operationLineList) {
             // 根据出库单code获取出库单信息
             WhOdo odo = odoDao.findByIdOuId(operationLine.getOdoId(), operationLine.getOuId());
-            if (null != odo && !OdoStatus.PICKING.equals(odo.getOdoStatus())) {
+            if (null != odo && !OdoStatus.PICKING.equals(odo.getOdoStatus()) && !OdoStatus.CANCEL.equals(odo.getOdoStatus())) {
                 odo.setOdoStatus(OdoStatus.PICKING);
                 odo.setLagOdoStatus(OdoStatus.WAVE_FINISH);
                 odoDao.update(odo);
@@ -4072,7 +4072,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if(null != whOdoLine.getOdoId()){
                         WhOdo odo = odoDao.findByIdOuId(whOdoLine.getOdoId(), whOperationLineCommand.getOuId());
                         if(null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())){
-                            whOdoLine.setOdoLineStatus(OdoStatus.ODOLINE_PUTAWAY_FINISH);
+                            whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
                             whOdoLineDao.update(whOdoLine);
                         }    
                     }else{

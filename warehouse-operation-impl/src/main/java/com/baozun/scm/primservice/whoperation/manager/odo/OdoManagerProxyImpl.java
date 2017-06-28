@@ -62,6 +62,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WaveLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.WaveStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
@@ -730,7 +731,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             // line.setFullLineOutbound(lineCommand.getFullLineOutbound());
             line.setPartOutboundStrategy(lineCommand.getPartOutboundStrategy());
         }
-        line.setOdoLineStatus(OdoStatus.ODOLINE_TOBECREATED);
+        line.setOdoLineStatus(OdoLineStatus.CREATING);
         line.setOutboundCartonType(lineCommand.getOutboundCartonType());
         line.setMixingAttr(lineCommand.getMixingAttr());
         line.setInvStatus(lineCommand.getInvStatus());
@@ -1275,7 +1276,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             // 如果没有选出库单明细状态，则默认为新建和部分出库
             if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {
-                search.setOdoLineStatus(Arrays.asList(new String[] {OdoStatus.ODOLINE_NEW, OdoStatus.ODOLINE_OUTSTOCK}));
+                search.setOdoLineStatus(Arrays.asList(new String[] {OdoLineStatus.NEW, OdoLineStatus.PARTLY_FINISH}));
             }
             for (OdoWaveGroupSearchCondition gsc : command.getConditionList()) {
                 search.setGroupCustomerId(gsc.getCustomerId());
@@ -1583,10 +1584,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             boolean isFragile = odo.getIncludeFragileCargo();
             Set<Long> skuIdSet = new HashSet<Long>();
             for (WhOdoLine line : lineList) {
-                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                if (OdoLineStatus.CANCEL.equals(line.getOdoLineStatus())) {
                     continue;
                 }
-                if (OdoStatus.ODOLINE_TOBECREATED.equals(line.getOdoLineStatus())) {
+                if (OdoLineStatus.CREATING.equals(line.getOdoLineStatus())) {
                     SkuRedisCommand skuMaster = skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), ouId, logId);
                     SkuMgmt skuMgmt = skuMaster.getSkuMgmt();
                     if (!isHazardous && skuMgmt.getIsHazardousCargo()) {
@@ -1596,7 +1597,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                         isFragile = true;
                     }
 
-                    line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                    line.setOdoLineStatus(OdoLineStatus.NEW);
                     line.setModifiedId(userId);
                     saveLineList.add(line);
                 }
@@ -1836,6 +1837,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 取消逻辑：
         // 新建状态下取消：-》取消
         // 完成状态下取消->取消处理中-》取消 @mender yimin.lu 2017/5/9 完成状态下，如果已有执行的工作，不允许取消
+        String logId=waveCommand.getLogId();
+        log.info("logId:{} method cancelWave start",logId);
         Long waveId = waveCommand.getId();
         Long ouId = waveCommand.getOuId();
         Long userId = waveCommand.getUserId();
@@ -1844,10 +1847,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
 
         // 新建状态下的波次
+        log.debug("logId:{} method cancelWave ,wave Status:{}", logId, wave.getStatus());
         if (WaveStatus.WAVE_NEW == wave.getStatus()) {
             wave.setModifiedId(userId);
             wave.setStatus(WaveStatus.WAVE_CANCEL);
-            this.waveManager.cancelWaveForNew(wave, odoList, ouId, userId);
+            log.info("logId:{} method cancelWave -> cancelWaveForNew start", logId);
+            this.waveManager.cancelWaveForNew(wave, odoList, ouId, userId, logId);
             return;
         }
         // 完成状态下的波次
@@ -1857,13 +1862,15 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 库存的回滚
 
         // @mender yimin.lu 2017/5/9 有正在执行的工作 不允许取消波次
+        log.info("logId:{} method cancelWave -> cancelWaveWithWork start", logId);
         List<WhWork> unLockWorkList = this.whWorkManager.findWorkByWaveWithUnLock(wave.getCode(), ouId);
         if (unLockWorkList != null && unLockWorkList.size() > 0) {
+            log.error("logId:{} method cancelWave -> cancelWaveWithWork throw error:work has released");
             throw new BusinessException(ErrorCodes.WAVE_CANCEL_WORK_ERROR);
         }
 
 
-        this.waveManager.cancelWaveWithWork(wave, odoList, ouId, userId);
+        this.waveManager.cancelWaveWithWork(wave, odoList, ouId, userId, logId);
         // this.waveManager.cancelWaveWithLazy(wave)
     }
 
@@ -2730,7 +2737,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             // 如果没有选出库单明细状态，则默认为新建和部分出库
             if (search.getOdoLineStatus() == null || search.getOdoLineStatus().size() == 0) {
-                search.setOdoLineStatus(Arrays.asList(new String[] {OdoStatus.ODOLINE_NEW, OdoStatus.ODOLINE_OUTSTOCK}));
+                search.setOdoLineStatus(Arrays.asList(new String[] {OdoLineStatus.NEW, OdoLineStatus.PARTLY_FINISH}));
             }
             for (OdoWaveGroupSearchCondition gsc : command.getConditionList()) {
                 search.setGroupCustomerId(gsc.getCustomerId());
@@ -2766,13 +2773,16 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         WarehouseCommand wh = warehouseManager.findWarehouseCommandById(ouId);
         boolean isInsured = transMgmt.getInsuranceCoverage() == null ? false : true;
         // 封装数据匹配物流sql推荐实体
-        SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
-        trans.setWhCode(wh.getCode());
-        log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransContentCommand:{}", odoId, JsonUtil.beanToJson(trans));
+        SuggestTransContentCommand trans = null;
         WhOdoTransportService transportService = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
         // 获取增值服务
         // 没有调用过或调用失败, 则调用物流增值服务推荐
         if (null == transportService || !transportService.getIsVasSuccess()) {
+            if (null == trans) {
+                trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
+                trans.setWhCode(wh.getCode());
+                log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransContentCommand:{}", odoId, JsonUtil.beanToJson(trans));
+            }
             boolean flag = this.callVasTransService(trans, transMgmt, odoId, ouId);
             if (!flag) {
                 return null;
@@ -2781,6 +2791,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 获取推荐物流商
         // 物流商 或 时效类型 或 产品类型为空则调用
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType()) || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
+            if (null == trans) {
+                trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
+                trans.setWhCode(wh.getCode());
+                log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransContentCommand:{}", odoId, JsonUtil.beanToJson(trans));
+            }
             boolean flag = this.callSuggestTransService(trans, transMgmt, odoId, ouId);
             if (!flag) {
                 return null;
@@ -3006,6 +3021,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 应用打印排序规则
         WhWaveMasterPrintCondition condition = whWaveManager.findPrintConditionByWaveId(waveId, Constants.PRINT_ORDER_TYPE_13, ouId);
         if (null != condition) {
+            Map<String, List<Long>> batchOdoListMap = odoManager.getBatchNoOdoIdListGroup(waveId, ouId);
             for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
                 String batchNo = entry.getKey();
                 String odoIdStr = StringUtils.collectionToCommaDelimitedString(entry.getValue());
@@ -3016,9 +3032,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 }
                 excuteSql = condition.getPrintSortSql().replace(Constants.ODOID_LIST_PLACEHOLDER, odoIdStr);
                 List<Long> sortOdoList = whWaveManager.excuteSortSql(excuteSql, ouId);
-                batchMap.put(batchNo, sortOdoList);
+                batchOdoListMap.put(batchNo, sortOdoList);
             }
-            odoManager.updateOdoIndexByBatch(batchMap, ouId);
+            odoManager.updateOdoIndexByBatch(batchOdoListMap, ouId);
         } else {
             // 波次主档未配置打印顺序, 查找打印条件配置顺序
             boolean flag = true;
