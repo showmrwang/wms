@@ -1071,4 +1071,16 @@
 		group by 
 			sku_id
 	</select>
+	
+	<select id="findCntByOdoIdAndOuId" resultType="long" flushCache="false">
+        select
+        	count(1)
+        from t_wh_odo_line 
+        where 
+            odo_id = #{odoId} and ou_id =#{ouId}
+            and odo_line_status in ('0', '1', '5', '8', '10', '20', '25', '30', '35');
+
+    </select>
+	
+	
 </mapper>

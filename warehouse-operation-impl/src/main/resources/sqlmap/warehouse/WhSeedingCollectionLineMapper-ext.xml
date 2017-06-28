@@ -273,4 +273,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and ou_id = #{ouId}
     </select>
 
+    <select id="findByScIdAndOuId" resultMap="WhSeedingCollectionLineResultExt">
+        select
+            <include refid="whSeedingCollectionLineColumnsExt"/>
+        from
+            t_wh_seeding_collection_line
+        where
+            seeding_collection_id = #{seedingCollectionId}
+            and ou_id = #{ouId}
+    </select>
+
 </mapper>
