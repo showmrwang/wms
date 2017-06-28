@@ -240,6 +240,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 odo.setLagOdoStatus(OdoStatus.WAVE_FINISH);
                 odoDao.update(odo);
             }
+            WhOdoLine odoLine = whOdoLineDao.findOdoLineById(operationLine.getOdoLineId(), operationLine.getOuId());
+            if (null != odoLine && !OdoLineStatus.PICKING.equals(odoLine.getOdoLineStatus()) && !OdoLineStatus.CANCEL.equals(odoLine.getOdoLineStatus())) {
+                odoLine.setOdoLineStatus(OdoLineStatus.PICKING);
+                whOdoLineDao.update(odoLine);
+            }
         }
     }
 
