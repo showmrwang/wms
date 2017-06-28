@@ -9118,11 +9118,20 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 continue;
             }
             Long occupationLineId = invCmd.getOccupationLineId();
+            if(null == occupationLineId){
+                occupationLineId = 0L;
+            }
             String occupationCode = invCmd.getOccupationCode();
             for (WhOperationExecLine execLine : execLineList) {
                 Long locId = execLine.getToLocationId();
                 if(locId.longValue() != locationId.longValue()){
+                    Long odoLineId = execLine.getOdoLineId();
+                    if(null == odoLineId){
+                        odoLineId = 0L;
+                    }
+                    if(odoLineId.longValue() != occupationLineId.longValue()){
                         continue;
+                    }
                 }
             }
             // 更新作业执行明细
