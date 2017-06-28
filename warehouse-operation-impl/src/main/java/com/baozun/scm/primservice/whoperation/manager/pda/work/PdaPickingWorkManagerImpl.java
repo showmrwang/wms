@@ -988,8 +988,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
           //释放推荐的小车或者出库箱
           Container c = new Container();
           BeanUtils.copyProperties(cmd, c);
-          container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE );
-          container.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+          c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE );
+          c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
           containerDao.saveOrUpdateByVersion(c);
           insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
         }
@@ -2472,6 +2472,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 WhOperationExecLine whOperationExecLine = new WhOperationExecLine();
                 whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
                 whOperationExecLine.setIsUseNew(false);
+                whOperationExecLine.setIsNotRecommand(false);
                 if (isShortPicking) {// 短拣商品
                     whOperationExecLine.setIsShortPicking(true);
                 }
@@ -2504,7 +2505,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         }else{
                             whOperationExecLine.setIsNotRecommand(true);
                         }
-                        whOperationExecLine.setOldContainerId(whOperationExecLine.getOldContainerId());
+                        whOperationExecLine.setOldContainerId(whOperationExecLine.getUseContainerId());
                         whOperationExecLine.setUseContainerId(turnoverBoxId);
                     }
                 }
@@ -2515,8 +2516,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
                     Set<Long> outContainers = operatorLine.getOuterContainers();
                     if (!outContainers.contains(containerId)) {
-                        whOperationExecLine.setIsUseNew(true);
-                        whOperationExecLine.setOldOuterContainerId(whOperationExecLine.getOldOuterContainerId());
+                        whOperationExecLine.setIsNotRecommand(true);
+                        whOperationExecLine.setOldOuterContainerId(whOperationExecLine.getUseOuterContainerId());
                         whOperationExecLine.setUseOuterContainerId(containerId);
                     }
                 }
@@ -2530,7 +2531,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Set<String> outbounxBoxs = operatorLine.getOutbounxBoxs();
                     if (!outContainers.contains(containerId)) {
                         whOperationExecLine.setIsNotRecommand(true);
-                        whOperationExecLine.setOldOuterContainerId(whOperationExecLine.getOldOuterContainerId());
+                        whOperationExecLine.setOldOuterContainerId(whOperationExecLine.getUseOuterContainerId());
                         whOperationExecLine.setUseOuterContainerId(containerId);
                     }
                     if (!outbounxBoxs.contains(outBoundBoxCode)) {
@@ -3092,27 +3093,27 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         WhOperationExecLine operationExecLine = new WhOperationExecLine();
         BeanUtils.copyProperties(operLineCommand, operationExecLine);
-        if (!StringUtils.isEmpty(outBoundBoxCode) && null != outBoundBoxId) { // 判断当前的出库箱和拣货的出库箱是否一致
-            if (!outBoundBoxCode.equals(operationExecLine.getUseOutboundboxCode())) { // 不一致的时候
-                operationExecLine.setIsUseNew(true);
-            } else {// 一致， 没有满箱的情况
-                operationExecLine.setIsUseNew(false);
-            }
-            operationExecLine.setUseOutboundboxCode(outBoundBoxCode);
-            operationExecLine.setUseOutboundboxId(outBoundBoxId);
-            operationExecLine.setOldOutboundboxId(operationExecLine.getUseOutboundboxId());
-            operationExecLine.setOldOutboundboxCode(operationExecLine.getUseOutboundboxCode());
-        }
-        if (null != turnoverBoxId) { // 判断当前的周转箱和拣货的周转箱是否一致
-            if (turnoverBoxId.equals(operationExecLine.getUseContainerId())) {
-                operationExecLine.setIsUseNew(false);
-            } else {// 有满箱的情况
-                operationExecLine.setIsUseNew(true);
-            }
-            operationExecLine.setOldContainerId(operationExecLine.getUseContainerId());
-            operationExecLine.setUseContainerId(turnoverBoxId);
-            operationExecLine.setToInsideContainerId(turnoverBoxId);
-        }
+//        if (!StringUtils.isEmpty(outBoundBoxCode) && null != outBoundBoxId) { // 判断当前的出库箱和拣货的出库箱是否一致
+//            if (!outBoundBoxCode.equals(operationExecLine.getUseOutboundboxCode())) { // 不一致的时候
+//                operationExecLine.setIsUseNew(true);
+//            } else {// 一致， 没有满箱的情况
+//                operationExecLine.setIsUseNew(false);
+//            }
+//            operationExecLine.setUseOutboundboxCode(outBoundBoxCode);
+//            operationExecLine.setUseOutboundboxId(outBoundBoxId);
+//            operationExecLine.setOldOutboundboxId(operationExecLine.getUseOutboundboxId());
+//            operationExecLine.setOldOutboundboxCode(operationExecLine.getUseOutboundboxCode());
+//        }
+//        if (null != turnoverBoxId) { // 判断当前的周转箱和拣货的周转箱是否一致
+//            if (turnoverBoxId.equals(operationExecLine.getUseContainerId())) {
+//                operationExecLine.setIsUseNew(false);
+//            } else {// 有满箱的情况
+//                operationExecLine.setIsUseNew(true);
+//            }
+//            operationExecLine.setOldContainerId(operationExecLine.getUseContainerId());
+//            operationExecLine.setUseContainerId(turnoverBoxId);
+//            operationExecLine.setToInsideContainerId(turnoverBoxId);
+//        }
         operationExecLine.setId(null);
         operationExecLine.setIsShortPicking(false);
         operationExecLine.setLastModifyTime(new Date());
