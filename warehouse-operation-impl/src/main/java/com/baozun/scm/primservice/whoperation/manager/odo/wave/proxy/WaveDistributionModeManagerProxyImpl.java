@@ -62,7 +62,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     @Override
     public void setWaveDistributionMode(Long waveId, Warehouse wh, Long userId) {
         String logId = this.getLogId();
-        log.info("logId:{},task ->method setWaveDistributionMode start ", logId);
+        logId += waveId + "$";
+        log.info("logId:{},waveId:{},task ->method setWaveDistributionMode start ", logId, waveId);
         Long ouId = wh.getId();
         if (userId == null) {
             userId = 1000001L;
@@ -133,19 +134,22 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 }
             } else {// 否：进入自定义分配模式计算流程
                 noModeOdoList.add(unitOdoId);
+                log.info("logId:{},method setWaveDistributionMode:odo[id:{}] no default mode ", logId, unitOdoId);
                 // odoIdCounterCodeMap.remove(unitOdoId);
                 it.remove();
             }
 
 
         }
-
+        log.info("logId:{},method setWaveDistributionMode: odoes has classify for default distribution mode ", logId);
         // 主副品的额外计算逻辑
         // 1.将主副品剔除出来
+        log.info("logId:{},method setWaveDistributionMode: counter twoSuits begin", logId);
         if (twoSuitsOdoSet.size() > 0) {
-            twoSuitsOdoMapIterator(twoSuitsOdoSet, twoSuitsSkuSet, master.getTwoSkuSuitOdoQtys(), twoSuitsOdoMap);
+            twoSuitsOdoMapIterator(twoSuitsOdoSet, twoSuitsSkuSet, master.getTwoSkuSuitOdoQtys(), twoSuitsOdoMap, logId);
         }
         // 2.再次计算套装组合
+        log.info("logId:{},method setWaveDistributionMode: counter twoSuits ->add noMode odo to suits", logId);
         if (twoSuitsOdoSet.size() > 0) {
             for (String codeId : twoSuitsOdoSet) {
                 String[] codeIdArray = codeId.split("\\|");
@@ -154,6 +158,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 calcSuits(code, master, unitOdoId, suitsOdoMap, noModeOdoList, null);
             }
         }
+        log.info("logId:{},method setWaveDistributionMode: counter secKill", logId);
         // 秒杀的额外计算逻辑：
         Map<Long, String> secKillSet = new HashMap<Long, String>();
         Iterator<Entry<String, Set<Long>>> secKillIt = secKillOdoMap.entrySet().iterator();
@@ -161,35 +166,43 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             Entry<String, Set<Long>> entry = secKillIt.next();
             for (Long seckillOdoId : entry.getValue()) {
                 if (entry.getValue().size() >= master.getSeckillOdoQtys()) {
+                    log.info("logId:{},method setWaveDistributionMode: secKill[{}] add odo[{}]", logId, entry.getKey(), seckillOdoId);
                     secKillSet.put(seckillOdoId, entry.getKey());
                 } else {
+                    log.info("logId:{},method setWaveDistributionMode: secKill-> no default mode of odo[{}]", logId, seckillOdoId);
                     noModeOdoList.add(seckillOdoId);
                 }
             }
         }
 
         // 套装额外计算逻辑：
+        log.info("logId:{},method setWaveDistributionMode: counter suits", logId);
         Map<Long, String> suitsSet = new HashMap<Long, String>();
         Iterator<Entry<String, Set<Long>>> suitsIt = suitsOdoMap.entrySet().iterator();
         while (suitsIt.hasNext()) {
             Entry<String, Set<Long>> entry = suitsIt.next();
             for (Long suitsOdoId : entry.getValue()) {
                 if (entry.getValue().size() >= master.getSuitsOdoQtys()) {
+                    log.info("logId:{},method setWaveDistributionMode: suits[{}] add odo[{}]", logId, entry.getKey(), suitsOdoId);
                     suitsSet.put(suitsOdoId, entry.getKey());
                 } else {
+                    log.info("logId:{},method setWaveDistributionMode: suits-> no default mode of odo[{}]", logId, suitsOdoId);
                     noModeOdoList.add(suitsOdoId);
                 }
             }
         }
         // 主副品：
+        log.info("logId:{},method setWaveDistributionMode: counter twosuits", logId);
         Map<Long, String> twoSuitsSet = new HashMap<Long, String>();
         Iterator<Entry<String, Set<Long>>> twoSuitsIt = twoSuitsOdoMap.entrySet().iterator();
         while (twoSuitsIt.hasNext()) {
             Entry<String, Set<Long>> entry = twoSuitsIt.next();
             for (Long twoSuitOdoId : entry.getValue()) {
+                log.info("logId:{},method setWaveDistributionMode: twosuits[{}] add odo[{}]", logId, entry.getKey(), twoSuitOdoId);
                 twoSuitsSet.put(twoSuitOdoId, entry.getKey());
             }
         }
+        log.info("logId:{},method setWaveDistributionMode :DIY rules for odoes ", logId);
         /**
          * 至此，所有的出库单已经分组为：秒杀/主副品/套装/未知； 下面的逻辑：将未分配的出库单，分配到用户预定义的出库单配货模式中；如果失败，则加入剔除序列
          */
@@ -206,10 +219,12 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 // List<Long> odoIdList =
                 // this.whWaveManager.findOdoListInWaveWhenDistributionPattern(waveId, ouId,
                 // ruleList.get(i).getRuleSql());// 某条规则对应的出库单集合
+                log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] for odoes ", logId, ruleCode);
                 List<Long> odoIdList = ruleList.get(i).getOdoIdList();
                 if (odoIdList != null && odoIdList.size() > 0) {
                     for (Long ruleOdoId : odoIdList) {
                         if (noModeOdoList.contains(ruleOdoId)) {
+                            log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] add odo[{}] ", logId, ruleCode, ruleOdoId);
                             diyOdoMap.put(ruleOdoId, ruleCode);
                             noModeOdoList.remove(ruleOdoId);
                         }
@@ -230,18 +245,23 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         for (WhOdo odo : odoList) {
             Long odoId = odo.getId();
             if (secKillSet.containsKey(odoId)) {
+                log.info("logId:{},method setWaveDistributionMode :secKill odo[{}]] ", logId, odoId);
                 odo.setDistributeMode(DistributionMode.DISTRIBUTION_SECKILL);
                 odo.setDistributionCode(secKillSet.get(odoId));
             } else if (twoSuitsSet.containsKey(odoId)) {
+                log.info("logId:{},method setWaveDistributionMode :twosuits odo[{}]] ", logId, odoId);
                 odo.setDistributeMode(DistributionMode.DISTRIBUTION_TWOSKUSUIT);
                 odo.setDistributionCode(twoSuitsSet.get(odoId));
             } else if (suitsSet.containsKey(odoId)) {
+                log.info("logId:{},method setWaveDistributionMode :suits odo[{}]] ", logId, odoId);
                 odo.setDistributeMode(DistributionMode.DISTRIBUTION_SUITS);
                 odo.setDistributionCode(suitsSet.get(odoId));
             } else if (diyOdoMap.containsKey(odoId)) {
+                log.info("logId:{},method setWaveDistributionMode :diyRule odo[{}]] ", logId, odoId);
                 odo.setDistributeMode(diyOdoMap.get(odoId));
                 odo.setDistributionCode(null);
             } else {
+                log.info("logId:{},method setWaveDistributionMode :noMode odo[{}]] ", logId, odoId);
                 odo.setDistributeMode(null);
                 odo.setDistributionCode(null);
                 odo.setAssignFailReason(Constants.DISTRIBUTE_MODE_FAIL);
@@ -261,7 +281,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         // @mender yimin.lu 2017/3/14 剔除波次 接口方法调整
         // packageWave(wave, waveLineMap, master, ouId, offOdoLineList, noModeOdoList.size());
         // 保存
-        this.whWaveManager.matchWaveDisTributionMode(odoList, wave, ouId, userId, wh);
+        log.info("logId:{},method setWaveDistributionMode :invoke whWaveManager.matchWaveDisTributionMode ", logId);
+        this.whWaveManager.matchWaveDisTributionMode(odoList, wave, ouId, userId, wh, logId);
 
     }
 
@@ -308,8 +329,9 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param logId
      */
     private void calcSuits(String code, WhWaveMaster master, Long odoId, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList, String logId) {
-        log.info("logId:{},");
+        log.info("logId:{}, method calcSuits start!params:[odoId:{}]", logId, odoId);
         if (!master.getIsCalcSuits()) {
+            log.info("logId:{}, odo[id:{}] no default mode suits", logId, odoId);
             noModeOdoList.add(odoId);
             return;
         }
@@ -317,11 +339,14 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         Integer skuType = Integer.parseInt(codeArray[1]);
         if (skuType < 2 || skuType > master.getSuitsMaxSkuCategorys()) {
             noModeOdoList.add(odoId);
+            log.info("logId:{}, odo[id:{}] add to calcSuits[code:{}] collections", logId, odoId, code);
             return;
         }
         if (suitsOdoMap.containsKey(code)) {
+            log.info("logId:{}, odo[id:{}] add to suits[code:{}] collections", logId, odoId, code);
             suitsOdoMap.get(code).add(odoId);
         } else {
+            log.info("logId:{}, odo[id:{}] add to suits[code:{}] collections", logId, odoId, code);
             Set<Long> odoSet = new HashSet<Long>();
             odoSet.add(odoId);
             suitsOdoMap.put(code, odoSet);
@@ -374,14 +399,17 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
     }
 
-    private void twoSuitsOdoMapIterator(Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Integer twoSkuSuitOdoQtys, Map<String, Set<Long>> twoSuitsOdoMap) {
+    private void twoSuitsOdoMapIterator(Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Integer twoSkuSuitOdoQtys, Map<String, Set<Long>> twoSuitsOdoMap, String logId) {
+        log.info("logId:{},method twoSuitsOdoMapIterator begin", logId);
         if (twoSuitsSkuSet.size() == 0) {
             return;
         }
         String unitSku = twoSuitsSkuSet.iterator().next();
+        log.info("logId:{},method twoSuitsOdoMapIterator : twoSuits:unit sku[{}]", unitSku);
         Set<Long> twoSuitsSet = new HashSet<Long>();// 记录此主品下的出库单
         int i = 0;
         for (String codeId : twoSuitsOdoSet) {
+            log.info("logId:{},method twoSuitsOdoMapIterator : twoSuits:unit sku[{}] add odo[{}]", codeId);
             if (codeId.contains("$" + unitSku + "$")) {
                 i++;
                 String[] codeIdArray = codeId.split("\\|");
@@ -400,7 +428,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             }
         }
         twoSuitsSkuSet.remove(unitSku);
-        twoSuitsOdoMapIterator(twoSuitsSkuSet, twoSuitsSkuSet, twoSkuSuitOdoQtys, twoSuitsOdoMap);
+        twoSuitsOdoMapIterator(twoSuitsSkuSet, twoSuitsSkuSet, twoSkuSuitOdoQtys, twoSuitsOdoMap, logId);
     }
 
 
