@@ -1059,6 +1059,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setLineCode(workLineCode);
                                          workLine.setUuid(uuid);
                                          whWorkLineDao.insert(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_INSERT, workLine, ouId, userId, null, null);
                                          workIds.add(workLine.getId());
                                          //修改原来的工作明细
                                          WhWorkLine workLine1 = new WhWorkLine();
@@ -1084,7 +1085,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                              workLine.setFromInsideContainerId(null);
                                              workLine.setFromOuterContainerId(null);
                                          }
-                                         workLine.setQty(onHandQty);
+                                         workLine.setQty(lineQty);
                                          workLine.setUuid(uuid);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
                                          insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
@@ -1112,6 +1113,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                          workLine.setLineCode(workLineCode);
                                          workLine.setUuid(uuid);
                                          whWorkLineDao.saveOrUpdateByVersion(workLine);
+                                         insertGlobalLog(GLOBAL_LOG_UPDATE, workLine, ouId, userId, null, null);
                                          workIds.add(workLine.getId());
                                          continue;
                                      }
@@ -1191,7 +1193,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                                     opLine.setFromInsideContainerId(null);
                                     opLine.setFromOuterContainerId(null);
                                 }
-                                opLine.setQty(invCmd.getOnHandQty());
+                                opLine.setQty(lineQty);
                                 opLine.setUuid(uuid);
                                 whOperationLineDao.saveOrUpdateByVersion(opLine);
                                 insertGlobalLog(GLOBAL_LOG_UPDATE, opLine, ouId, userId, null, null);
