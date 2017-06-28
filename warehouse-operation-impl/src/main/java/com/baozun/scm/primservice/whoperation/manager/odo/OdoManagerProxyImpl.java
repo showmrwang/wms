@@ -1836,6 +1836,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 取消逻辑：
         // 新建状态下取消：-》取消
         // 完成状态下取消->取消处理中-》取消 @mender yimin.lu 2017/5/9 完成状态下，如果已有执行的工作，不允许取消
+        String logId=waveCommand.getLogId();
+        log.info("logId:{} method cancelWave start",logId);
         Long waveId = waveCommand.getId();
         Long ouId = waveCommand.getOuId();
         Long userId = waveCommand.getUserId();
@@ -1844,10 +1846,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
 
         // 新建状态下的波次
+        log.debug("logId:{} method cancelWave ,wave Status:{}", logId, wave.getStatus());
         if (WaveStatus.WAVE_NEW == wave.getStatus()) {
             wave.setModifiedId(userId);
             wave.setStatus(WaveStatus.WAVE_CANCEL);
-            this.waveManager.cancelWaveForNew(wave, odoList, ouId, userId);
+            log.info("logId:{} method cancelWave -> cancelWaveForNew start", logId);
+            this.waveManager.cancelWaveForNew(wave, odoList, ouId, userId, logId);
             return;
         }
         // 完成状态下的波次
@@ -1857,13 +1861,15 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 库存的回滚
 
         // @mender yimin.lu 2017/5/9 有正在执行的工作 不允许取消波次
+        log.info("logId:{} method cancelWave -> cancelWaveWithWork start", logId);
         List<WhWork> unLockWorkList = this.whWorkManager.findWorkByWaveWithUnLock(wave.getCode(), ouId);
         if (unLockWorkList != null && unLockWorkList.size() > 0) {
+            log.error("logId:{} method cancelWave -> cancelWaveWithWork throw error:work has released");
             throw new BusinessException(ErrorCodes.WAVE_CANCEL_WORK_ERROR);
         }
 
 
-        this.waveManager.cancelWaveWithWork(wave, odoList, ouId, userId);
+        this.waveManager.cancelWaveWithWork(wave, odoList, ouId, userId, logId);
         // this.waveManager.cancelWaveWithLazy(wave)
     }
 

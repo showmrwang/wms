@@ -267,8 +267,9 @@ public interface WhWaveManager extends BaseManager {
      * @param odoList
      * @param ouId
      * @param userId
+     * @param logId
      */
-    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
+    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId);
 
     /**
      * [业务方法]波次取消
@@ -277,8 +278,9 @@ public interface WhWaveManager extends BaseManager {
      * @param odoList
      * @param ouId
      * @param userId
+     * @param logId
      */
-    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId);
+    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId);
     
     /**
      * [业务方法]波次中创工作失败，波次剔除

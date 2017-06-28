@@ -1055,9 +1055,11 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId) {
+    public void cancelWaveForNew(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId) {
+        log.info("logId:{},method cancelWaveForNew start", logId);
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();// 配货模式计算
         for (WhOdo odo : odoList) {
+            log.info("logId:{},method cancelWaveForNew: odo[id:{}] remove from wave", logId, odo.getId());
             odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
 
             List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
@@ -1067,8 +1069,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 odoLine.setWaveCode(null);
                 int updateOdoLineCount = this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
                 if (updateOdoLineCount <= 0) {
+                    log.error("logId:{},method cancelWaveForNew: update odoLine[id:{}] by version error", logId, odoLine.getId());
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odoLine, ouId, userId, odo.getOdoCode(), DbDataSource.MOREDB_SHARDSOURCE);
 
             }
             odo.setModifiedId(userId);
@@ -1076,29 +1080,36 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             odo.setWaveCode(null);
             int updateOdoCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateOdoCount <= 0) {
+                log.error("logId:{},method cancelWaveForNew: update odo[id:{}] by version error", logId, odo.getId());
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
+            this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, userId, null, DbDataSource.MOREDB_SHARDSOURCE);
         }
 
         int updateWaveCount = this.whWaveDao.saveOrUpdateByVersion(wave);
         if (updateWaveCount <= 0) {
+            log.error("logId:{},method cancelWaveForNew: update wave[id:{}] by version error", logId, wave.getId());
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
 
         // 重新计算配货模式
+        log.info("logId:{},method cancelWaveForNew: add odo to redis distribute count pool");
         this.distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
 
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId) {
+    public void cancelWaveWithWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String logId) {
+        log.info("logId:{},method cancelWaveWithWork start", logId);
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
         Long waveId = wave.getId();
         // 工作的取消：
         // 1.补货工作：不取消
         // 2.拣货工作：取消
-        this.releaseReplenishmentFromWave(waveId, ouId);
+        log.info("logId:{},method cancelWaveWithWork invoke releaseReplenishmentFromWave start", logId);
+        this.releaseReplenishmentFromWave(waveId, ouId, userId, logId);
+        log.info("logId:{},method cancelWaveWithWork invoke releasePickingFromWave start", logId);
         this.releasePickingFromWave(waveId, ouId);
 
         wave.setStatus(WaveStatus.WAVE_CANCEL);
@@ -1166,8 +1177,11 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
     }
 
-    private void releaseReplenishmentFromWave(Long waveId, Long ouId) {
+    private void releaseReplenishmentFromWave(Long waveId, Long ouId, Long userId, String logId) {
+        log.info("logId:{},method releaseReplenishmentFromWave[waveId:{},ouId:{}] start", logId, waveId, ouId);
         WhWave wave = this.whWaveDao.findWaveExtByIdAndOuId(waveId, ouId);
+
+        log.info("logId:{},method releaseReplenishmentFromWave[waveId:{},ouId:{}] start", logId, waveId, ouId);
         WhWork workSearch = new WhWork();
         workSearch.setWaveCode(wave.getCode());
         workSearch.setWorkCategory(Constants.WORK_CATEGORY_REPLENISHMENT);
@@ -1176,6 +1190,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
         if (workList != null && workList.size() > 0) {
             for (WhWork work : workList) {
+                log.debug("logId:{},method releaseReplenishmentFromWave update work[id:{}]", logId, work.getId());
                 work.setWaveId(null);
                 work.setWaveCode(null);
                 work.setOrderCode(null);
@@ -1183,17 +1198,22 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 // work.setIsLocked(false);
                 int updateWorkCount = this.whWorkDao.saveOrUpdateByVersion(work);
                 if (updateWorkCount <= 0) {
+                    log.error("logId:{},method releaseReplenishmentFromWave update work[id:{}] by version error ", logId, work.getId());
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, work, ouId, userId, null, DbDataSource.MOREDB_SHARDSOURCE);
                 List<WhWorkLine> lineList = this.whWorkLineDao.findWorkLineByWorkIdOuId(work.getId(), ouId);
                 if (lineList != null && lineList.size() > 0) {
                     for (WhWorkLine workLine : lineList) {
+                        log.debug("logId:{},method releaseReplenishmentFromWave update workLine[id:{}]", logId, workLine.getId());
                         workLine.setOdoId(null);
                         workLine.setOdoLineId(null);
                         int updateCount = this.whWorkLineDao.saveOrUpdateByVersion(workLine);
                         if (updateCount <= 0) {
+                            log.error("logId:{},method releaseReplenishmentFromWave update workLine[id:{}] by version error ", logId, workLine.getId());
                             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                         }
+                        this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, workLine, ouId, userId, work.getCode(), DbDataSource.MOREDB_SHARDSOURCE);
                     }
                 }
                 WhOperation operation = this.whOperationDao.findOperationByWorkId(work.getId(), ouId);
@@ -1202,8 +1222,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                 operation.setOrderCode(null);
                 int updateOpCount = this.whOperationDao.saveOrUpdateByVersion(operation);
                 if (updateOpCount <= 0) {
+                    log.error("logId:{},method releaseReplenishmentFromWave update operation[id:{}] by version error ", logId, operation.getId());
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, operation, ouId, userId, null, DbDataSource.MOREDB_SHARDSOURCE);
                 List<WhOperationLine> oplineList = this.whOperationLineDao.findByOperationId(operation.getId(), ouId);
                 if (oplineList != null && oplineList.size() > 0) {
                     for (WhOperationLine line : oplineList) {
@@ -1211,8 +1233,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                         line.setOdoLineId(null);
                         int updateCount = this.whOperationLineDao.saveOrUpdateByVersion(line);
                         if (updateCount <= 0) {
+                            log.error("logId:{},method releaseReplenishmentFromWave update operation[id:{}] by version error ", logId, line.getId());
                             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                         }
+                        this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, line, ouId, userId, operation.getCode(), DbDataSource.MOREDB_SHARDSOURCE);
                     }
                 }
 
