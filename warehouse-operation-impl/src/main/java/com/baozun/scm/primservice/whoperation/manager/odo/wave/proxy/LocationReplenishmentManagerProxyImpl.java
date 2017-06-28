@@ -304,7 +304,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             }
             this.checkLocationReplenishmentMsg(wh, lowerCapacity, upperCapacity, location.getId(), skuId);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getStackTrace().toString());
             log.info("LocationReplenishmentManagerProxy.checkLocationReplenishmentMsg finish...");
             return;
         }
@@ -324,6 +324,10 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                 return;
             }
             Long invSkuId = whskuInventoryManager.findSkuInInventoryByLocation(locationId, ouId);
+            if (null == invSkuId) {
+                // 如果库位为新绑定库位, 在库存表中找不到库存信息
+                skuId = invSkuId;
+            }
             if (!invSkuId.equals(skuId)) {
                 log.info("checkLocationReplenishmentMsg: sku not match");
                 log.info("checkLocationReplenishmentMsg finish...");
@@ -337,7 +341,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                 log.info("checkLocationReplenishmentMsg finish...");
                 return;
             }
-
+            log.info("invQty:[{}]", invQty);
             Long replenishmentQty = (long) Math.floor(upperCapacity - invQty);
             ReplenishmentMsg replenishmentMsg = this.replenishmentMsgManager.findMsgbyLocIdAndSkuId(locationId, skuId, ouId);
             if (replenishmentMsg == null) {
@@ -360,7 +364,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
                 log.info("checkLocationReplenishmentMsg finish...");
             }
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.info(e.getStackTrace().toString());
             log.info("checkLocationReplenishmentMsg finish...");
             return;
         }
