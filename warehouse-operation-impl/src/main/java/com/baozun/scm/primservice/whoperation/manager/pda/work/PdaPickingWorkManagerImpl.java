@@ -968,15 +968,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
           if (null == cmd) {
               throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
           }
-          Long tipCategoryId = cmd.getId();
-          Long categoryId = containerCmd.getTwoLevelType();
+          Long categoryId2 = cmd.getTwoLevelType();
+          Long categoryId1 = containerCmd.getTwoLevelType();
           //判断当前小车是否和推荐的类型相同
-          Container2ndCategory    c2nd = container2ndCategoryDao.findByIdExt(categoryId,ouId);
+          Container2ndCategory    c2nd = container2ndCategoryDao.findByIdExt(categoryId1,ouId);
           if(null == c2nd){
             throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
           }
           int count1 = c2nd.getTotalGridNum();   //扫描的容器货格数
-          Container2ndCategory    c2ndC = container2ndCategoryDao.findByIdExt(tipCategoryId,ouId);
+          Container2ndCategory    c2ndC = container2ndCategoryDao.findByIdExt(categoryId2,ouId);
           if(null == c2ndC){
             throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
           }
