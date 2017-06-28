@@ -637,19 +637,23 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh) {
+    public void matchWaveDisTributionMode(List<WhOdo> odoList, WhWave wave, Long ouId, Long userId, Warehouse wh, String logId) {
+        log.info("logId:{},method matchWaveDisTributionMode start", logId);
         // #mender yimin.lu 获取需要提出波次的出库单集合
         Long waveId = wave.getId();
         // 更新出库单
+        log.info("logId:{},method matchWaveDisTributionMode : update odo", logId);
         boolean flag = false;
         if (odoList != null && odoList.size() > 0) {
             for (WhOdo odo : odoList) {
                 if (StringUtils.hasText(odo.getDistributeMode())) {
                     int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
                     if (updateCount <= 0) {
+                        log.error("logId:{},method matchWaveDisTributionMode : update odo[id:{}] by version error", logId, odo.getId());
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                     }
                 } else {
+                    log.info("logId:{},method matchWaveDisTributionMode : remove odo[id:{}] from wave[id:{}]", logId, odo.getId(), wave.getId());
                     this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM);
                     if (!flag) {
 
@@ -659,11 +663,14 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             }
         }
         if (flag) {
+            log.info("logId:{},method matchWaveDisTributionMode : recount wave[id:{}] head message", logId, wave.getId());
             this.calculateWaveHeadInfo(waveId, ouId);
         }
         // 更新波次的下一个阶段
+        log.info("logId:{},method matchWaveDisTributionMode : recount wave phase[id:{}] head message", logId, wave.getId());
         this.changeWavePhaseCode(waveId, ouId);
         // 波次取消需要取消补货任务
+        log.info("logId:{},method matchWaveDisTributionMode : cancel wave replenishment while wave[id:{}] cancelled", logId, wave.getId());
         this.checkReplenishmentTaskForWave(waveId, ouId);
     }
 
