@@ -2489,7 +2489,14 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                             // 在库数量
                             double invQty = 0.00;
                             if(null != skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId())){
-                                invQty = skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId());    
+                                invQty = skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId()); 
+                                Double onHandQty = skuIdAndQty.get(whSkuInventoryAllocatedCommand.getSkuId());
+                                BigDecimal oldQty = new BigDecimal(onHandQty.toString());
+                                BigDecimal newQty = new BigDecimal(whSkuInventoryAllocatedCommand.getQty().toString());
+                                Double newOnHandQty = oldQty.add(newQty).doubleValue();
+                                skuIdAndQty.put(whSkuInventoryAllocatedCommand.getSkuId(), newOnHandQty);
+                            }else{
+                                skuIdAndQty.put(whSkuInventoryAllocatedCommand.getSkuId(), whSkuInventoryAllocatedCommand.getQty());
                             }
                             // 计算可用容量
                             replenishmentQty = (long) Math.floor(maxQty - invQty);
