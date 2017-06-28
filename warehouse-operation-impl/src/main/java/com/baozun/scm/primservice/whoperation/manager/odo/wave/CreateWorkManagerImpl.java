@@ -36,10 +36,12 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryTobefilledCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoOutBoundBoxDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveMasterDao;
@@ -66,6 +68,7 @@ import com.baozun.scm.primservice.whoperation.manager.warehouse.ReplenishmentTas
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoOutBoundBox;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWaveMaster;
@@ -120,6 +123,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
 
     @Autowired
     private WhOdoDao odoDao;
+    
+    @Autowired
+    private WhOdoLineDao odoLineDao;
 
     @Autowired
     private ContainerDao containerDao;
@@ -1812,6 +1818,11 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             if (!OdoStatus.PICKING.equals(odo.getOdoStatus())) {
                 odo.setOdoStatus(OdoStatus.WAVE_FINISH);
                 odoDao.update(odo);
+            }
+            WhOdoLine odoLine = odoLineDao.findOdoLineById(whWorkLineCommand.getOdoLineId(), whWorkLineCommand.getOuId());
+            if (null != odoLine && !OdoLineStatus.PICKING.equals(odoLine.getOdoLineStatus())) {
+                odoLine.setOdoLineStatus(OdoLineStatus.WAVE_FINISH);
+                odoLineDao.update(odoLine);
             }
         }
     }
