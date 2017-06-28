@@ -23,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
@@ -185,7 +186,7 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         }
         if (lineList != null && lineList.size() > 0) {
             for (WhOdoLine line : lineList) {
-                if (OdoStatus.ODOLINE_CANCEL.equals(line.getOdoLineStatus())) {
+                if (OdoLineStatus.CANCEL.equals(line.getOdoLineStatus())) {
                     continue;
                 }
                 skuIdSet.add(line.getSkuId());
