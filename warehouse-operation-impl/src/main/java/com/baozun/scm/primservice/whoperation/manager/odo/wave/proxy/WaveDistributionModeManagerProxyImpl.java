@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPa
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DistributionMode;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
@@ -60,6 +61,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
     @Override
     public void setWaveDistributionMode(Long waveId, Warehouse wh, Long userId) {
+        String logId = this.getLogId();
+        log.info("logId:{},task ->method setWaveDistributionMode start ", logId);
         Long ouId = wh.getId();
         if (userId == null) {
             userId = 1000001L;
@@ -74,13 +77,16 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         }
         // #TODO
         if (master == null) {
+            log.error("logId:{},task ->method setWaveDistributionMode get waveMaster[WaveId:{},ouId:{}] throw error", logId, waveId, ouId);
             return;
         }
         List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
 
         // 出库单集合
+        log.info("logId:{},task ->method setWaveDistributionMode:count odo Map ", logId);
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
         for (WhOdo odo : odoList) {
+            log.debug("logId:{},task ->method setWaveDistributionMode: add to odoIdCounterCodeMap[odoId:{},counterCode:{}]", logId, odo.getId(), odo.getCounterCode());
             odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
         }
 
@@ -99,6 +105,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         Set<String> twoSuitsOdoSet = new HashSet<String>();
         Set<String> twoSuitsSkuSet = new HashSet<String>();
 
+        log.info("logId:{},task ->method setWaveDistributionMode : default distributionMode count", logId);
         Map<String, Integer> twoSuitsCounterMap = new HashMap<String, Integer>();
         while (it.hasNext()) {
             Entry<Long, String> entry = it.next();
@@ -114,13 +121,13 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             if (unitSkuType.equals(unitSkuQty)) {
                 switch (Integer.valueOf(unitSkuType).intValue()) {
                     case 1:
-                        calcSeckill(unitCode, master, unitOdoId, secKillOdoMap, noModeOdoList);
+                        calcSeckill(unitCode, master, unitOdoId, secKillOdoMap, noModeOdoList, logId);
                         break;
                     case 2:
-                        calcTwoSuits(unitCode, unitOdoId, twoSuitsOdoSet, twoSuitsSkuSet, twoSuitsCounterMap, master, suitsOdoMap, noModeOdoList);
+                        calcTwoSuits(unitCode, unitOdoId, twoSuitsOdoSet, twoSuitsSkuSet, twoSuitsCounterMap, master, suitsOdoMap, noModeOdoList, logId);
                         break;
                     default:
-                        calcSuits(unitCode, master, unitOdoId, suitsOdoMap, noModeOdoList);
+                        calcSuits(unitCode, master, unitOdoId, suitsOdoMap, noModeOdoList, logId);
                         break;
 
                 }
@@ -144,7 +151,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 String[] codeIdArray = codeId.split("\\|");
                 Long unitOdoId = Long.parseLong(codeIdArray[4]);
                 String code = codeIdArray[0] + "|" + codeIdArray[1] + "|" + codeIdArray[2] + "|" + codeIdArray[3];
-                calcSuits(code, master, unitOdoId, suitsOdoMap, noModeOdoList);
+                calcSuits(code, master, unitOdoId, suitsOdoMap, noModeOdoList, null);
             }
         }
         // 秒杀的额外计算逻辑：
@@ -242,7 +249,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                 odo.setOdoStatus(OdoStatus.NEW);
                 List<WhOdoLine> odolineList = this.odoLineManager.findOdoLineListByOdoId(odoId, ouId);
                 for (WhOdoLine line : odolineList) {
-                    line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                    line.setOdoLineStatus(OdoLineStatus.NEW);
                     line.setWaveCode(null);
                     line.setAssignQty(null);
                 }
@@ -269,15 +276,20 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param odoId
      * @param secKillOdoMap
      * @param noModeOdoList
+     * @param logId
      */
-    private void calcSeckill(String code, WhWaveMaster master, Long odoId, Map<String, Set<Long>> secKillOdoMap, Set<Long> noModeOdoList) {
+    private void calcSeckill(String code, WhWaveMaster master, Long odoId, Map<String, Set<Long>> secKillOdoMap, Set<Long> noModeOdoList, String logId) {
+        log.info("logId:{}, method calcSeckill start!params:[odoId:{}]", logId, odoId);
         if (!master.getIsCalcSeckill()) {
+            log.info("logId:{}, odo[id:{}] no default mode suits", logId, odoId);
             noModeOdoList.add(odoId);
             return;
         }
         if (secKillOdoMap.containsKey(code)) {
+            log.info("logId:{}, odo[id:{}] add to secKill[code:{}] collections", logId, odoId, code);
             secKillOdoMap.get(code).add(odoId);
         } else {
+            log.info("logId:{}, odo[id:{}] add to secKill[code:{}] collections", logId, odoId, code);
             Set<Long> odoSet = new HashSet<Long>();
             odoSet.add(odoId);
             secKillOdoMap.put(code, odoSet);
@@ -293,8 +305,10 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param odoId
      * @param suitsOdoMap
      * @param noModeOdoList
+     * @param logId
      */
-    private void calcSuits(String code, WhWaveMaster master, Long odoId, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
+    private void calcSuits(String code, WhWaveMaster master, Long odoId, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList, String logId) {
+        log.info("logId:{},");
         if (!master.getIsCalcSuits()) {
             noModeOdoList.add(odoId);
             return;
@@ -322,11 +336,15 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
      * @param twoSuitsOdoMap
      * @param noModeOdoList
      * @param twoSuitsOdoSet
+     * @param logId
      */
-    private void calcTwoSuits(String code, Long odoId, Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Map<String, Integer> twoSuitsSkuMap, WhWaveMaster master, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList) {
+    private void calcTwoSuits(String code, Long odoId, Set<String> twoSuitsOdoSet, Set<String> twoSuitsSkuSet, Map<String, Integer> twoSuitsSkuMap, WhWaveMaster master, Map<String, Set<Long>> suitsOdoMap, Set<Long> noModeOdoList, String logId) {
+
         if (!master.getIsCalcTwoSkuSuit()) {
-            calcSuits(code, master, odoId, suitsOdoMap, noModeOdoList);
+            log.info("logId:{},method calcTwoSuits invoke calcSuits start! params:[code:{},odoId:{}]", logId, code, odoId);
+            calcSuits(code, master, odoId, suitsOdoMap, noModeOdoList, null);
         } else {
+            log.info("logId:{},method calcTwoSuits start! params:[code:{},odoId:{}]", logId, code, odoId);
             String[] unitCodeArray = code.split("\\|");
 
             String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("\\$");
@@ -346,10 +364,11 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             while (it.hasNext()) {
                 Entry<String, Integer> entry = it.next();
                 if (entry.getValue() >= master.getTwoSkuSuitOdoQtys()) {
+                    log.info("logId:{},method calcTwoSuits:odo[id:{}] add to TwoSuits[code:{}] collections", logId, odoId, entry.getKey());
                     twoSuitsSkuSet.add(entry.getKey());
                 }
             }
-
+            log.info("logId:{},method calcTwoSuits:odo[id:{}] add to TwoSuits collection", logId, odoId);
             twoSuitsOdoSet.add(code + "|" + odoId);
         }
 

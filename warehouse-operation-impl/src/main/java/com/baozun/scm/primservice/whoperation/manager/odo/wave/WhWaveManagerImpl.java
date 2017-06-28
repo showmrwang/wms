@@ -36,6 +36,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPa
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.constant.ReplenishmentTaskStatus;
@@ -340,7 +341,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         for (WhOdoLine line : odoLineList) {
             line.setWaveCode(null);
-            line.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+            line.setOdoLineStatus(OdoLineStatus.NEW);
             this.whOdoLineDao.saveOrUpdateByVersion(line);
         }
     }
@@ -984,7 +985,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             for (WhWaveLine waveLine : entry.getValue()) {
                 WhOdoLine odoLine = this.whOdoLineDao.findOdoLineById(waveLine.getOdoLineId(), ouId);
                 odoLine.setWaveCode("");
-                odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                odoLine.setOdoLineStatus(OdoLineStatus.NEW);
                 odoLine.setModifiedId(userId);
                 int odoLineUpdateCount = this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
                 if (odoLineUpdateCount <= 0) {
@@ -1065,7 +1066,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
             List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
             for (WhOdoLine odoLine : odoLineList) {
                 odoLine.setModifiedId(userId);
-                odoLine.setOdoLineStatus(OdoStatus.ODOLINE_NEW);
+                odoLine.setOdoLineStatus(OdoLineStatus.NEW);
                 odoLine.setWaveCode(null);
                 int updateOdoLineCount = this.whOdoLineDao.saveOrUpdateByVersion(odoLine);
                 if (updateOdoLineCount <= 0) {
@@ -1188,6 +1189,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         workSearch.setOuId(ouId);
         // workSearch.setLifecycle(Constants.LIFECYCLE_START);
         List<WhWork> workList = this.whWorkDao.findListByParam(workSearch);
+        log.info("logId:{},method releaseReplenishmentFromWave update work List start", logId);
         if (workList != null && workList.size() > 0) {
             for (WhWork work : workList) {
                 log.debug("logId:{},method releaseReplenishmentFromWave update work[id:{}]", logId, work.getId());
@@ -1216,6 +1218,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                         this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, workLine, ouId, userId, work.getCode(), DbDataSource.MOREDB_SHARDSOURCE);
                     }
                 }
+                log.info("logId:{},method releaseReplenishmentFromWave update operation List start", logId);
                 WhOperation operation = this.whOperationDao.findOperationByWorkId(work.getId(), ouId);
                 operation.setWaveCode(null);
                 operation.setWaveId(null);
@@ -1450,7 +1453,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     this.whWaveLineDao.insert(waveLine);
 
                     line.setWaveCode(wave.getCode());
-                    line.setOdoLineStatus(OdoStatus.ODOLINE_WAVE);
+                    line.setOdoLineStatus(OdoLineStatus.WAVE);
                     int updateCount = this.whOdoLineDao.saveOrUpdateByVersion(line);
                     if (updateCount <= 0) {
                         throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
@@ -1471,7 +1474,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         Date date2 = new Date();
         log.info("operation:addOdoLineToWaveNew,update odo_lines,time start at {}", date2);
         // 更新明细数量
-        int updateCount = this.whOdoLineDao.updateOdoLineToWave(odoIdList, OdoStatus.ODOLINE_WAVE, wave.getCode(), ouId, userId);
+        int updateCount = this.whOdoLineDao.updateOdoLineToWave(odoIdList, OdoLineStatus.WAVE, wave.getCode(), ouId, userId);
         Date date3 = new Date();
         log.info("operation:addOdoLineToWaveNew,update odo_lines,time end at {},cost time {},update {} counts", date3, date3.getTime() - date2.getTime(), updateCount);
         // 插入波次明细数量

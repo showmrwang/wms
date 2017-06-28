@@ -1251,6 +1251,10 @@ public class ErrorCodes {
     public static final int SCAN_SKU_QTY_GREATER_THAN_INV_QTY = 120020;
     /** 未找到货箱拆分移动需要变更的复核信息 */
     public static final int MOVE_CHECKING_NOT_EXIST = 120021;
+    /** 出库箱移动配置功能未配置,请确认配置信息 */
+    public static final int OUTBOUNDBOX_MOVE_FUCTION_NOT_EXIST = 120022;
+    /**当前小车未拣货完成,请确认小车状态是否正常.*/
+    public static final int CONTAINER_STATUS_IS_ERROR = 120023;
     // 120000-130000 zhaozili
 
     /** 文件不存在 */

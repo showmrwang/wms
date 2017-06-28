@@ -292,7 +292,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         List<WhOdoLine> odoLineList = whOdoLineDao.findListByParamExt(line);
         if (null != odoLineList && !odoLineList.isEmpty()) {
             for (WhOdoLine odoLine : odoLineList) {
-                odoLine.setOdoLineStatus(OdoStatus.ODOLINE_WEIGHT_FINISH);
+                odoLine.setOdoLineStatus(OdoStatus.WEIGHING_FINISH);
                 odoLine.setModifiedId(userId);
                 whOdoLineDao.saveOrUpdateByVersion(odoLine);
             }

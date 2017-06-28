@@ -404,114 +404,113 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
      */
     private BoxInventoryStatisticResultCommand cacheBoxInventoryStatistics(List<WhSkuInventoryCommand> invList,Long userId,Long ouId,String logId,String outboundBoxCode){
     	// 3.库存信息统计
-    	BoxInventoryStatisticResultCommand isrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, outboundBoxCode);
-        if(null == isrCmd){
-        	isrCmd = new BoxInventoryStatisticResultCommand();
-            /** 出库箱所有sku种类 */
-            Map<String, Set<Long>> outBoundBoxSkuIds = new HashMap<String, Set<Long>>();
-            /** 出库箱所有sku总件数 */
-            Map<String, Long> outBoundBoxSkuQty = new HashMap<String, Long>();
-            /** 出库箱单个sku总件数 */
-            Map<String, Map<Long, Long>> outBoundBoxSkuIdQtys = new HashMap<String, Map<Long, Long>>();
-            /** 出库箱唯一sku种类 */
-            Map<String, Set<String>> outBoundBoxSkuIdSkuAttrIds = new HashMap<String, Set<String>>();
-            /** 出库箱唯一sku总件数 */
-            Map<String, Map<String, Long>> outBoundBoxSkuIdSkuAttrIdQtys = new HashMap<String, Map<String, Long>>();
-            /** 出库箱唯一sku对应所有残次条码 */
-            Map<String, Map<String, Set<String>>> outBoundBoxSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
-            /** 出库箱唯一sku种类包含残次条码 */
-            Map<String, Set<String>> outBoundBoxSkuIdSkuAttrIdsSnDefect = new HashMap<String, Set<String>>();
-        	
-        	Set<Long> skuIds = new HashSet<Long>();// 容器中所有sku种类
-        	Map<Long, Long> skuIdsQty = new HashMap<Long, Long>();// 容器每个sku总件数
-        	Set<String> skuAttrIds = new HashSet<String>();//  容器对应唯一sku
-        	Map<String, Long> skuAttrIdsQty = new HashMap<String,Long>();// 容器对应唯一sku总件数
-        	Set<String> skuAttrIdsSnDefect = new HashSet<String>();//  容器对应唯一sku包含sn信息
-        	Long skuQty = 0L;		
-        	Map<String, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>(); //容器内唯一sku对应所有sn及残次条码
-        	for (WhSkuInventoryCommand invCmd : invList) {
-        		//获取SKU唯一属性
-        		String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
-                Long skuId = invCmd.getSkuId();
-                Double curerntSkuQty = 0.0;     //当前sku数量
-                curerntSkuQty  = invCmd.getOnHandQty();   //sku在库库存
-                skuQty +=  invCmd.getOnHandQty().longValue();
-                if (null != skuId) {
-                    skuIds.add(skuId);    //所有sku种类数
-                    WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
-                    if (null == skuCmd) {
-                    	outboundBoxCodeRemoveInventory(outboundBoxCode, ouId, logId);
-                        log.error("outbound box move SKU  is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
-                        throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
-                    }
+    	BoxInventoryStatisticResultCommand isrCmd = new BoxInventoryStatisticResultCommand();
+        
+    	isrCmd = new BoxInventoryStatisticResultCommand();
+        /** 出库箱所有sku种类 */
+        Map<String, Set<Long>> outBoundBoxSkuIds = new HashMap<String, Set<Long>>();
+        /** 出库箱所有sku总件数 */
+        Map<String, Long> outBoundBoxSkuQty = new HashMap<String, Long>();
+        /** 出库箱单个sku总件数 */
+        Map<String, Map<Long, Long>> outBoundBoxSkuIdQtys = new HashMap<String, Map<Long, Long>>();
+        /** 出库箱唯一sku种类 */
+        Map<String, Set<String>> outBoundBoxSkuIdSkuAttrIds = new HashMap<String, Set<String>>();
+        /** 出库箱唯一sku总件数 */
+        Map<String, Map<String, Long>> outBoundBoxSkuIdSkuAttrIdQtys = new HashMap<String, Map<String, Long>>();
+        /** 出库箱唯一sku对应所有残次条码 */
+        Map<String, Map<String, Set<String>>> outBoundBoxSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>();
+        /** 出库箱唯一sku种类包含残次条码 */
+        Map<String, Set<String>> outBoundBoxSkuIdSkuAttrIdsSnDefect = new HashMap<String, Set<String>>();
+    	
+    	Set<Long> skuIds = new HashSet<Long>();// 容器中所有sku种类
+    	Map<Long, Long> skuIdsQty = new HashMap<Long, Long>();// 容器每个sku总件数
+    	Set<String> skuAttrIds = new HashSet<String>();//  容器对应唯一sku
+    	Map<String, Long> skuAttrIdsQty = new HashMap<String,Long>();// 容器对应唯一sku总件数
+    	Set<String> skuAttrIdsSnDefect = new HashSet<String>();//  容器对应唯一sku包含sn信息
+    	Long skuQty = 0L;		
+    	Map<String, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<String, Map<String, Set<String>>>(); //容器内唯一sku对应所有sn及残次条码
+    	for (WhSkuInventoryCommand invCmd : invList) {
+    		//获取SKU唯一属性
+    		String skuAttrId = SkuCategoryProvider.getSkuAttrIdByInv(invCmd);
+            Long skuId = invCmd.getSkuId();
+            Double curerntSkuQty = 0.0;     //当前sku数量
+            curerntSkuQty  = invCmd.getOnHandQty();   //sku在库库存
+            skuQty +=  invCmd.getOnHandQty().longValue();
+            if (null != skuId) {
+                skuIds.add(skuId);    //所有sku种类数
+                WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
+                if (null == skuCmd) {
+                	outboundBoxCodeRemoveInventory(outboundBoxCode, ouId, logId);
+                    log.error("outbound box move SKU  is not exists error, skuId is:[{}], logId is:[{}]", skuId, logId);
+                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
                 }
-                //加载所有唯一的sku(包含库存属性)
-                skuAttrIds.add(skuAttrId);
-                //容器内每个SKU的总件数统计
-                if (null != skuIdsQty.get(skuId)) {
-                    skuIdsQty.put(skuId, skuIdsQty.get(skuId) + curerntSkuQty.longValue());
-                } else {
-                    skuIdsQty.put(skuId, curerntSkuQty.longValue());
-                }
-                //统计唯一SKU总件数
-                if (null != skuAttrIdsQty.get(skuAttrId)) {
-                    skuAttrIdsQty.put(skuAttrId, skuAttrIdsQty.get(skuAttrId) + curerntSkuQty.longValue());
-                } else {
-                    skuAttrIdsQty.put(skuAttrId, curerntSkuQty.longValue());
-                }            
-                //容器内唯一sku对应所有sn及残次条码                
-                List<WhSkuInventorySnCommand> snCmdList = invCmd.getWhSkuInventorySnCommandList();//获取库存的残次信息
-                Set<String> snDefects = null;
-                if (null != snCmdList && 0 < snCmdList.size()) {
-                    snDefects = new HashSet<String>();
-                    for (WhSkuInventorySnCommand snCmd : snCmdList) {
-                        if (null != snCmd) {
-                            String defectBar = snCmd.getDefectWareBarcode();
-                            String sn = snCmd.getSn();
-                            /**把sn信息拼到商品唯一属性后面*/
-                            String skuAttrIdsSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId, sn, defectBar);
-                            snDefects.add(skuAttrIdsSn);
-                            skuAttrIdsSnDefect.add(skuAttrIdsSn);
-                            if (null != snDefects) {
-                                if (null != insideContainerSkuAttrIdsSnDefect.get(outboundBoxCode)) {
-                                    Map<String, Set<String>> skuAttrIdsDefect = insideContainerSkuAttrIdsSnDefect.get(outboundBoxCode);
-                                    if (null != skuAttrIdsDefect.get(skuAttrId)) {
-                                        Set<String> defects = skuAttrIdsDefect.get(skuAttrId);
-                                        defects.addAll(snDefects);
-                                        skuAttrIdsDefect.put(skuAttrId, defects);
-                                        insideContainerSkuAttrIdsSnDefect.put(outboundBoxCode, skuAttrIdsDefect);
-                                    } else {
-                                        skuAttrIdsDefect.put(skuAttrId, snDefects);
-                                        insideContainerSkuAttrIdsSnDefect.put(outboundBoxCode, skuAttrIdsDefect);
-                                    }
+            }
+            //加载所有唯一的sku(包含库存属性)
+            skuAttrIds.add(skuAttrId);
+            //容器内每个SKU的总件数统计
+            if (null != skuIdsQty.get(skuId)) {
+                skuIdsQty.put(skuId, skuIdsQty.get(skuId) + curerntSkuQty.longValue());
+            } else {
+                skuIdsQty.put(skuId, curerntSkuQty.longValue());
+            }
+            //统计唯一SKU总件数
+            if (null != skuAttrIdsQty.get(skuAttrId)) {
+                skuAttrIdsQty.put(skuAttrId, skuAttrIdsQty.get(skuAttrId) + curerntSkuQty.longValue());
+            } else {
+                skuAttrIdsQty.put(skuAttrId, curerntSkuQty.longValue());
+            }            
+            //容器内唯一sku对应所有sn及残次条码                
+            List<WhSkuInventorySnCommand> snCmdList = invCmd.getWhSkuInventorySnCommandList();//获取库存的残次信息
+            Set<String> snDefects = null;
+            if (null != snCmdList && 0 < snCmdList.size()) {
+                snDefects = new HashSet<String>();
+                for (WhSkuInventorySnCommand snCmd : snCmdList) {
+                    if (null != snCmd) {
+                        String defectBar = snCmd.getDefectWareBarcode();
+                        String sn = snCmd.getSn();
+                        /**把sn信息拼到商品唯一属性后面*/
+                        String skuAttrIdsSn = SkuCategoryProvider.concatSkuAttrId(skuAttrId, sn, defectBar);
+                        snDefects.add(skuAttrIdsSn);
+                        skuAttrIdsSnDefect.add(skuAttrIdsSn);
+                        if (null != snDefects) {
+                            if (null != insideContainerSkuAttrIdsSnDefect.get(outboundBoxCode)) {
+                                Map<String, Set<String>> skuAttrIdsDefect = insideContainerSkuAttrIdsSnDefect.get(outboundBoxCode);
+                                if (null != skuAttrIdsDefect.get(skuAttrId)) {
+                                    Set<String> defects = skuAttrIdsDefect.get(skuAttrId);
+                                    defects.addAll(snDefects);
+                                    skuAttrIdsDefect.put(skuAttrId, defects);
+                                    insideContainerSkuAttrIdsSnDefect.put(outboundBoxCode, skuAttrIdsDefect);
                                 } else {
-                                    Map<String, Set<String>> skuAttrIdsDefect = new HashMap<String, Set<String>>();
                                     skuAttrIdsDefect.put(skuAttrId, snDefects);
                                     insideContainerSkuAttrIdsSnDefect.put(outboundBoxCode, skuAttrIdsDefect);
                                 }
-                            }                             
-                        }
+                            } else {
+                                Map<String, Set<String>> skuAttrIdsDefect = new HashMap<String, Set<String>>();
+                                skuAttrIdsDefect.put(skuAttrId, snDefects);
+                                insideContainerSkuAttrIdsSnDefect.put(outboundBoxCode, skuAttrIdsDefect);
+                            }
+                        }                             
                     }
-                } else {
-                    skuAttrIdsSnDefect.add(skuAttrId);
                 }
-        	}
-        	outBoundBoxSkuIds.put(outboundBoxCode, skuIds);//出库箱所有sku种类
-        	outBoundBoxSkuIdQtys.put(outboundBoxCode, skuIdsQty);//出库箱中每个sku的数量
-        	outBoundBoxSkuIdSkuAttrIds.put(outboundBoxCode, skuAttrIds);//出库箱中唯一SKU
-        	outBoundBoxSkuIdSkuAttrIdQtys.put(outboundBoxCode, skuAttrIdsQty);//出库箱中唯一sku总件数
-        	outBoundBoxSkuAttrIdsSnDefect=insideContainerSkuAttrIdsSnDefect;//容器内唯一sku对应所有sn及残次条码
-        	outBoundBoxSkuQty.put(outboundBoxCode, skuQty);//出库箱总SKU数量
-        	outBoundBoxSkuIdSkuAttrIdsSnDefect.put(outboundBoxCode, skuAttrIdsSnDefect);
-            isrCmd.setOutBoundBoxCode(outboundBoxCode);
-        	isrCmd.setOutBoundBoxSkuQty(outBoundBoxSkuQty);
-        	isrCmd.setOutBoundBoxSkuIds(outBoundBoxSkuIds);
-        	isrCmd.setOutBoundBoxSkuIdQtys(outBoundBoxSkuIdQtys);
-        	isrCmd.setOutBoundBoxSkuIdSkuAttrIds(outBoundBoxSkuIdSkuAttrIds);
-        	isrCmd.setOutBoundBoxSkuIdSkuAttrIdQtys(outBoundBoxSkuIdSkuAttrIdQtys);
-        	isrCmd.setOutBoundBoxSkuAttrIdsSnDefect(outBoundBoxSkuAttrIdsSnDefect);
-        	isrCmd.setOutBoundBoxSkuIdSkuAttrIdsSnDefect(outBoundBoxSkuIdSkuAttrIdsSnDefect);
-        }
+            } else {
+                skuAttrIdsSnDefect.add(skuAttrId);
+            }
+    	}
+    	outBoundBoxSkuIds.put(outboundBoxCode, skuIds);//出库箱所有sku种类
+    	outBoundBoxSkuIdQtys.put(outboundBoxCode, skuIdsQty);//出库箱中每个sku的数量
+    	outBoundBoxSkuIdSkuAttrIds.put(outboundBoxCode, skuAttrIds);//出库箱中唯一SKU
+    	outBoundBoxSkuIdSkuAttrIdQtys.put(outboundBoxCode, skuAttrIdsQty);//出库箱中唯一sku总件数
+    	outBoundBoxSkuAttrIdsSnDefect=insideContainerSkuAttrIdsSnDefect;//容器内唯一sku对应所有sn及残次条码
+    	outBoundBoxSkuQty.put(outboundBoxCode, skuQty);//出库箱总SKU数量
+    	outBoundBoxSkuIdSkuAttrIdsSnDefect.put(outboundBoxCode, skuAttrIdsSnDefect);
+        isrCmd.setOutBoundBoxCode(outboundBoxCode);
+    	isrCmd.setOutBoundBoxSkuQty(outBoundBoxSkuQty);
+    	isrCmd.setOutBoundBoxSkuIds(outBoundBoxSkuIds);
+    	isrCmd.setOutBoundBoxSkuIdQtys(outBoundBoxSkuIdQtys);
+    	isrCmd.setOutBoundBoxSkuIdSkuAttrIds(outBoundBoxSkuIdSkuAttrIds);
+    	isrCmd.setOutBoundBoxSkuIdSkuAttrIdQtys(outBoundBoxSkuIdSkuAttrIdQtys);
+    	isrCmd.setOutBoundBoxSkuAttrIdsSnDefect(outBoundBoxSkuAttrIdsSnDefect);
+    	isrCmd.setOutBoundBoxSkuIdSkuAttrIdsSnDefect(outBoundBoxSkuIdSkuAttrIdsSnDefect);
         return isrCmd;
     } 
     
@@ -863,9 +862,8 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             log.info("PdaOutBoundBoxMoveManagerImpl cancelScanContainerLattic param , ouId is:[{}],  containerCode is:[{}]", ouId,  sourceContainerCode);
         }
         //清除redis缓存
-//        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCode);
-//        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, containerCode);
-        
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceContainerCode);
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, sourceContainerCode);        
         log.info("PdaOutBoundBoxMoveManagerImpl cancelScanContainerLattic is  end"); 
     }
     
@@ -883,6 +881,8 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         if (log.isInfoEnabled()) {
             log.info("PdaOutBoundBoxMoveManagerImpl cancelScanTargetContainer param , ouId is:[{}],  containerCode is:[{}]", ouId,  sourceContainerCode);
         }
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceContainerCode);
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, sourceContainerCode);
         cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + "*");
         cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + sourceContainerCode + "*");
         cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + sourceContainerCode + "*");
@@ -1129,13 +1129,13 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
                     new Object[] {sourceContainerCode, (null != sourceContainerId ? sourceContainerId : 0),(null != containerLatticNo ? containerLatticNo : 0), targetContainerCode, (null != boxMoveFunc ? boxMoveFunc.getScanPattern() : ""), (null != skuCmd ? skuCmd.getBarCode() : ""), funcId, ouId, userId, logId});
             }
             //通过配置查看是否需要打印箱标签
-            if (boxMoveFunc.getIsPrintCartonLabel()) {
+            if (null != boxMoveFunc.getIsPrintCartonLabel() && boxMoveFunc.getIsPrintCartonLabel()) {
                 PrintDataCommand printDataCommand = new PrintDataCommand();
                 printDataCommand.setOutBoundBoxCode(targetContainerCode);
                 printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
             }
             //通过配置查看是否需要打印装箱清单
-            if (boxMoveFunc.getIsPrintPackingList()) {
+            if (null != boxMoveFunc.getIsPrintPackingList() && boxMoveFunc.getIsPrintPackingList()) {
                 PrintDataCommand printDataCommand = new PrintDataCommand();
                 printDataCommand.setOutBoundBoxCode(targetContainerCode);
                 printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_16, userId, ouId);
