@@ -389,7 +389,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             while (it.hasNext()) {
                 Entry<String, Integer> entry = it.next();
                 if (entry.getValue() >= master.getTwoSkuSuitOdoQtys()) {
-                    log.info("logId:{},method calcTwoSuits:odo[id:{}] add to TwoSuits[code:{}] collections", logId, odoId, entry.getKey());
+                    log.info("logId:{},method calcTwoSuits:odo[id:{}] add to TwoSuits[code:{},count:{}] collections", logId, odoId, entry.getKey(), entry.getValue());
                     twoSuitsSkuSet.add(entry.getKey());
                 }
             }
@@ -405,18 +405,19 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             return;
         }
         String unitSku = twoSuitsSkuSet.iterator().next();
-        log.info("logId:{},method twoSuitsOdoMapIterator : twoSuits:unit sku[{}]", unitSku);
+        log.info("logId:{},method twoSuitsOdoMapIterator : twoSuits:unit sku[{}]", logId, unitSku);
         Set<Long> twoSuitsSet = new HashSet<Long>();// 记录此主品下的出库单
         int i = 0;
         for (String codeId : twoSuitsOdoSet) {
-            log.info("logId:{},method twoSuitsOdoMapIterator : twoSuits:unit sku[{}] add odo[{}]", codeId);
             if (codeId.contains("$" + unitSku + "$")) {
+                log.info("logId:{},method twoSuitsOdoMapIterator : twoSuits:unit sku[{}] add odo[{}]", logId, unitSku, codeId);
                 i++;
                 String[] codeIdArray = codeId.split("\\|");
                 twoSuitsSet.add(Long.parseLong(codeIdArray[4]));
             }
         }
         if (i >= twoSkuSuitOdoQtys) {
+            log.info("logId:{},method twoSuitsOdoMapIterator : twoSuits:unit sku[{}]", logId, unitSku);
             twoSuitsOdoMap.put(unitSku, twoSuitsSet);
             Iterator<String> it = twoSuitsOdoSet.iterator();
             while (it.hasNext()) {
@@ -428,7 +429,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             }
         }
         twoSuitsSkuSet.remove(unitSku);
-        twoSuitsOdoMapIterator(twoSuitsSkuSet, twoSuitsSkuSet, twoSkuSuitOdoQtys, twoSuitsOdoMap, logId);
+        twoSuitsOdoMapIterator(twoSuitsOdoSet, twoSuitsSkuSet, twoSkuSuitOdoQtys, twoSuitsOdoMap, logId);
     }
 
 
