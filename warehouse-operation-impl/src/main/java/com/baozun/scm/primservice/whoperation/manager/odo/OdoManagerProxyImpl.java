@@ -2772,13 +2772,16 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         WarehouseCommand wh = warehouseManager.findWarehouseCommandById(ouId);
         boolean isInsured = transMgmt.getInsuranceCoverage() == null ? false : true;
         // 封装数据匹配物流sql推荐实体
-        SuggestTransContentCommand trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
-        trans.setWhCode(wh.getCode());
-        log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransContentCommand:{}", odoId, JsonUtil.beanToJson(trans));
+        SuggestTransContentCommand trans = null;
         WhOdoTransportService transportService = odoTransportMgmtManager.findTransportMgmtServiceByOdoIdOuId(odoId, ouId);
         // 获取增值服务
         // 没有调用过或调用失败, 则调用物流增值服务推荐
         if (null == transportService || !transportService.getIsVasSuccess()) {
+            if (null == trans) {
+                trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
+                trans.setWhCode(wh.getCode());
+                log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransContentCommand:{}", odoId, JsonUtil.beanToJson(trans));
+            }
             boolean flag = this.callVasTransService(trans, transMgmt, odoId, ouId);
             if (!flag) {
                 return null;
@@ -2787,6 +2790,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         // 获取推荐物流商
         // 物流商 或 时效类型 或 产品类型为空则调用
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider()) || StringUtils.isEmpty(transMgmt.getTimeEffectType()) || StringUtils.isEmpty(transMgmt.getCourierServiceType())) {
+            if (null == trans) {
+                trans = odoManager.getSuggestTransContent(odo, transMgmt, address, odoLineList, isInsured, logId, ouId);
+                trans.setWhCode(wh.getCode());
+                log.info("getLogisticsInfoByOdoId,odoId:{}, SuggestTransContentCommand:{}", odoId, JsonUtil.beanToJson(trans));
+            }
             boolean flag = this.callSuggestTransService(trans, transMgmt, odoId, ouId);
             if (!flag) {
                 return null;
