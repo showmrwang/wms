@@ -93,13 +93,14 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
     public WeightingCommand findInfoByInput(WeightingCommand command) {
         // Boolean flag = this.checkParam(command);
         String outboundBoxCode = command.getOutboundBoxCode();
+        Long ouId = command.getOuId();
         String waybillCode = command.getWaybillCode();
         WhFunctionOutBound function = whFunctionOutBoundDao.findByFunctionIdExt(command.getFuncId(), command.getOuId());
         command = findInputResponse(command);
         if (null == command) {
             throw new BusinessException(ErrorCodes.WEIGHTING_INPUT_NOT_CORRECT);
         }
-        checkOdoStatus(command.getOdoId(), command.getOuId());
+        checkOdoStatus(command.getOdoId(), ouId);
         if (function.getIsValidateWeight()) {
             command.setFloats(function.getWeightFloatPercentage());
         }
