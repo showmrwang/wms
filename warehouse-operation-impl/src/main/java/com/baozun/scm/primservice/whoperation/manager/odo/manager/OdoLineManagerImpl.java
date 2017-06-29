@@ -271,4 +271,13 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         }
         log.info("deleteLines method delete");
     }
+    
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void updateOdoLineTypeByOdoId(Long modified,String status,Long odoId) {
+        log.info("updateOdoLineTypeByOdoId method start");
+        this.whOdoLineDao.updateOdoLineTypeByOdoId(modified,status,odoId);
+        log.info("updateOdoLineTypeByOdoId method end");
+    }
+    
 }

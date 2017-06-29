@@ -123,6 +123,15 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * [业务方法] 修改出库单明细waveCode为空
      */
     int updateOdoLineByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
+    
+    /**
+     * 更新订单明细状态
+     * @param modified
+     * @param status
+     * @param odoId
+     * @return
+     */
+    int updateOdoLineTypeByOdoId(@Param("modified") Long modified, @Param("status") String status, @Param("odoId") Long odoId);
 
     /**
      * [业务方法] 修改出库单明细waveCode为空
