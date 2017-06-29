@@ -99,4 +99,12 @@ public interface Container2ndCategoryDao extends BaseDao<Container2ndCategory, L
     List<Container2ndCategoryCommand> getTurnoverBoxByOuIdOrderByVolumeDesc(@Param("ouId") Long ouId);
 
 	Container2ndCategory findByCodeAndOuId(@Param("categoryCode") String categoryCode, @Param("ouId") Long ouId);
+	
+	/**
+	 * 容器对应的货格总数
+	 * @param containerCode
+	 * @param ouId
+	 * @return
+	 */
+	public int findLatticeTotalGridNum(@Param("containerCode") String containerCode, @Param("ouId") Long ouId);
 }

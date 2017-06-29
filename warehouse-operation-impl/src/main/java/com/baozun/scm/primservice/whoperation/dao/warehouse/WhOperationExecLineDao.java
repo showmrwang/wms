@@ -138,6 +138,15 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      */
     public Long getOperationExecLineCount(@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("useContainerId") Long useContainerId);
     
+    /**
+     * 
+     * @param operationId
+     * @param ouId
+     * @param useContainerId
+     * @return
+     */
+    public Long getOperationExecLineCountByOuterId(@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("useOuterContainerId") Long useOuterContainerId);
+    
     
     /***
      * 获取当前作业下的所有执行明细
@@ -147,5 +156,7 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      */
     public List<WhOperationExecLine> findOperationExecLineByUseContainerId(@Param("useOuterContainerId") Long useOuterContainerId,@Param("locationId") Long locationId,@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("useContainerId") Long useContainerId);
 
+    
+    public int countOperationExecLineByOutboundbox(@Param("outboundBoxCode") String outboundBoxCode,@Param("ouId") Long ouId,@Param("operationId") Long operationId);
     
 }

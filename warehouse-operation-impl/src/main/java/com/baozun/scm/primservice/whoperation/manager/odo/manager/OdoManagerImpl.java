@@ -1662,4 +1662,12 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     public WhOdo findByOdoCodeAndOuId(String odoCode, Long ouId) {
         return whOdoDao.findOdoByCodeAndOuId(odoCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void updateOdoLineTypeByOdoId(WhOdoLine o) {
+        log.info("updateOdoLineTypeByOdoId method start");
+        this.whOdoLineDao.updateOdoLineTypeByOdoId(o);
+        log.info("updateOdoLineTypeByOdoId method end");
+    }
 }

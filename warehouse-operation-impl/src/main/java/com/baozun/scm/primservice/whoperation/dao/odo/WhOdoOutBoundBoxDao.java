@@ -140,7 +140,7 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      * @param waveIds
      * @return
      */
-    int deleteWaveByIds(@Param("list") List<Long> waveIds);
+    int deleteWaveByIds(@Param("list") List<Long> waveIds, @Param("ouId") Long ouId);
     
     /**
      * 

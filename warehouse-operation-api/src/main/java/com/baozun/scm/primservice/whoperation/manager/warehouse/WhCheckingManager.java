@@ -1,5 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.warehouse;
 
+import java.util.List;
+
 import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
@@ -74,4 +76,10 @@ public interface WhCheckingManager extends BaseManager {
      */
     public WhCheckingByOdoResultCommand bindkWaybillCode(Long funcationId, Long ouId, Long odoId, String outboundboxCode, Long consumableSkuId, Boolean binding);
 
+    /**
+     * [业务方法] 查询待复核数据
+     * @param command
+     * @return
+     */
+    public List<WhCheckingByOdoCommand> retrieveCheckDataGeneral(WhCheckingCommand command);
 }

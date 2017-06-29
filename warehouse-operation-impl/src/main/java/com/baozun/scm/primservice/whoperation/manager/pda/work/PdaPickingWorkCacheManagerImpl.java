@@ -232,14 +232,14 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 if (null == container) {
                     throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
                 }
-                // 验证容器Lifecycle是否有效
-                if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
-                    continue;
-                }
-                // 验证容器状态是否是
-                if (!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX) || container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PICKING))) {
-                    continue;
-                }
+//                // 验证容器Lifecycle是否有效
+//                if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+//                    continue;
+//                }
+//                // 验证容器状态是否是
+//                if (!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX) || container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PICKING))) {
+//                    continue;
+//                }
                 tipOuterContainer = container.getCode();
                 break;
             }

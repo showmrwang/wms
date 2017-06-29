@@ -95,6 +95,6 @@ public interface OdoOutBoundBoxMapper extends BaseManager {
      * 重置波次推荐的周转箱或小车
      * @param boxList
      */
-    void ResetWaveBox(List<WhOdoOutBoundBox> boxList);
+    void ResetWaveBox(List<WhOdoOutBoundBox> boxList,Long ouId);
     
 }

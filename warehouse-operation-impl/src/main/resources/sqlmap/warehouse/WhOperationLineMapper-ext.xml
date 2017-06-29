@@ -466,4 +466,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				   </if>
 				   and operLine.qty != operLine.complete_qty
     </select>
+    
 </mapper>

@@ -36,9 +36,10 @@ public interface WhFacilityRecPathManager extends BaseManager {
      * @param prePath
      * @param recFacilityPath
      * @param wh
+     * @param logId
      * @return
      */
-    void occupyFacilityAndlocation(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh);
+    void occupyFacilityAndlocation(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh, String logId);
 
     /**
      * 【定时任务】根据队列进行播种
