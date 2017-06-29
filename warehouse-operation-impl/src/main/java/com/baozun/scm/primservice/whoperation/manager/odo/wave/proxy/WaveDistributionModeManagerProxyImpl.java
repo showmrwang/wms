@@ -1,9 +1,12 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,10 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.baozun.redis.manager.CacheManager;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleAfferCommand;
 import com.baozun.scm.primservice.whoperation.command.rule.RuleExportCommand;
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheKeyConstant;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
@@ -28,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
+import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.rule.RuleManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -58,6 +64,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     private OdoLineManager odoLineManager;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
+    @Autowired
+    private SkuRedisManager skuRedisManager;
 
     @Override
     public void setWaveDistributionMode(Long waveId, Warehouse wh, Long userId) {
@@ -88,6 +96,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
         for (WhOdo odo : odoList) {
             log.debug("logId:{},task ->method setWaveDistributionMode: add to odoIdCounterCodeMap[odoId:{},counterCode:{}]", logId, odo.getId(), odo.getCounterCode());
+            // @mender yimin.lu 指定库存属性的出库单/有包装要求/有仓库增值服务/管理库存属性 不参与计算默认配货模式 2017/6/29
+            // boolean flag = this.isDefaultCounter(odo);
             odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
         }
 
@@ -146,6 +156,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         // 1.将主副品剔除出来
         log.info("logId:{},method setWaveDistributionMode: counter twoSuits begin", logId);
         if (twoSuitsOdoSet.size() > 0) {
+            twoSuitsSkuSet = this.sortTwoSuitsByFps(twoSuitsSkuSet, twoSuitsCounterMap);
             twoSuitsOdoMapIterator(twoSuitsOdoSet, twoSuitsSkuSet, master.getTwoSkuSuitOdoQtys(), twoSuitsOdoMap, logId);
         }
         // 2.再次计算套装组合
@@ -206,32 +217,39 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         /**
          * 至此，所有的出库单已经分组为：秒杀/主副品/套装/未知； 下面的逻辑：将未分配的出库单，分配到用户预定义的出库单配货模式中；如果失败，则加入剔除序列
          */
-        RuleAfferCommand ruleAffer = new RuleAfferCommand();
-        ruleAffer.setOuid(ouId);
-        ruleAffer.setWaveId(waveId);
-        ruleAffer.setRuleType(Constants.DISTRIBUTION_PATTERN);
+        if (noModeOdoList.size() > 0) {
+            // @mender yimin.lu 2017/6/29 序列号商品不能计算为播种模式
+            RuleAfferCommand ruleAffer = new RuleAfferCommand();
+            ruleAffer.setOuid(ouId);
+            ruleAffer.setWaveId(waveId);
+            ruleAffer.setRuleType(Constants.DISTRIBUTION_PATTERN);
 
-        RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
-        List<WhDistributionPatternRuleCommand> ruleList = export.getWhDistributionPatternRuleCommandList();// 获取规则的集合
-        if (ruleList != null && ruleList.size() > 0) {
-            for (int i = 0; i < ruleList.size(); i++) {
-                String ruleCode = ruleList.get(i).getDistributionPatternCode();
-                // List<Long> odoIdList =
-                // this.whWaveManager.findOdoListInWaveWhenDistributionPattern(waveId, ouId,
-                // ruleList.get(i).getRuleSql());// 某条规则对应的出库单集合
-                log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] for odoes ", logId, ruleCode);
-                List<Long> odoIdList = ruleList.get(i).getOdoIdList();
-                if (odoIdList != null && odoIdList.size() > 0) {
-                    for (Long ruleOdoId : odoIdList) {
-                        if (noModeOdoList.contains(ruleOdoId)) {
-                            log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] add odo[{}] ", logId, ruleCode, ruleOdoId);
-                            diyOdoMap.put(ruleOdoId, ruleCode);
-                            noModeOdoList.remove(ruleOdoId);
+            RuleExportCommand export = ruleManager.ruleExport(ruleAffer);
+            List<WhDistributionPatternRuleCommand> ruleList = export.getWhDistributionPatternRuleCommandList();// 获取规则的集合
+            if (ruleList != null && ruleList.size() > 0) {
+                for (int i = 0; i < ruleList.size(); i++) {
+                    String ruleCode = ruleList.get(i).getDistributionPatternCode();
+                    // List<Long> odoIdList =
+                    // this.whWaveManager.findOdoListInWaveWhenDistributionPattern(waveId, ouId,
+                    // ruleList.get(i).getRuleSql());// 某条规则对应的出库单集合
+                    log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] for odoes ", logId, ruleCode);
+                    List<Long> odoIdList = ruleList.get(i).getOdoIdList();
+                    if (odoIdList != null && odoIdList.size() > 0) {
+                        for (Long ruleOdoId : odoIdList) {
+                            // @mender yimin.lu 2017/6/29 出库单是否包含序列号商品
+                            if (this.isSn(ruleOdoId, ouId) && Constants.PICKING_MODE_SEED.equals(ruleList.get(i).getPickingMode().toString())) {
+                                continue;
+                            }
+                            if (noModeOdoList.contains(ruleOdoId)) {
+                                log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] add odo[{}] ", logId, ruleCode, ruleOdoId);
+                                diyOdoMap.put(ruleOdoId, ruleCode);
+                                noModeOdoList.remove(ruleOdoId);
+                            }
                         }
                     }
-                }
 
-            }
+                }
+        }
         }
 
         // 更新逻辑：
@@ -288,6 +306,56 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
 
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    private boolean isSn(Long ruleOdoId, Long ouId) {
+        boolean isSn = false;
+        WhOdo odo = this.odoManager.findOdoByIdOuId(ruleOdoId, ouId);
+        String counterCode = odo.getCounterCode();
+        if (StringUtils.hasText(counterCode)) {
+            String[] unitCodeArray = counterCode.split("\\|");
+
+            String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("\\$");
+
+            if (unitSkuIdArray != null && unitSkuIdArray.length > 0) {
+                for (String unitSkuId : unitSkuIdArray) {
+                    SkuRedisCommand s = this.skuRedisManager.findSkuMasterBySkuId(Long.parseLong(unitSkuId), ouId, null);
+                    if (s != null) {
+                        if (Constants.SERIAL_NUMBER_TYPE_ALL.equals(s.getSkuMgmt().getSerialNumberType())) {
+                            isSn = true;
+                        } else {
+                            isSn = false;
+                        }
+                    }
+                    if (!isSn) {
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        return isSn;
+    }
+
+
+    private Set<String> sortTwoSuitsByFps(Set<String> twoSuitsSkuSet, Map<String, Integer> twoSuitsCounterMap) {
+        Map<String, Integer> newCounterMap = new HashMap<String, Integer>();
+        for (String twoSuitsCode : twoSuitsSkuSet) {
+            newCounterMap.put(twoSuitsCode, twoSuitsCounterMap.get(twoSuitsCode));
+        }
+        Map<String, Integer> sortedMap = this.sortMapByValue(newCounterMap);
+        return sortedMap.keySet();
+    }
+
+
+    private boolean isDefaultCounter(WhOdo odo) {
+        boolean flag = true;
+
+
+
+        return false;
+    }
+
 
     /**
      * 秒杀分组
@@ -765,6 +833,33 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         }
     }
 
+
+    public Map<String, Integer> sortMapByValue(Map<String, Integer> oriMap) {
+        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+        if (oriMap != null && !oriMap.isEmpty()) {
+            List<Map.Entry<String, Integer>> entryList = new ArrayList<Map.Entry<String, Integer>>(oriMap.entrySet());
+            Collections.sort(entryList, new Comparator<Map.Entry<String, Integer>>() {
+                public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
+                    int value1 = 0, value2 = 0;
+                    try {
+                        value1 = entry1.getValue().intValue();
+                        value2 = entry2.getValue().intValue();
+                    } catch (NumberFormatException e) {
+                        value1 = 0;
+                        value2 = 0;
+                    }
+                    return value2 - value1;
+                }
+            });
+            Iterator<Map.Entry<String, Integer>> iter = entryList.iterator();
+            Map.Entry<String, Integer> tmpEntry = null;
+            while (iter.hasNext()) {
+                tmpEntry = iter.next();
+                sortedMap.put(tmpEntry.getKey(), tmpEntry.getValue());
+            }
+        }
+        return sortedMap;
+    }
 
 
 }
