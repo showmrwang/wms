@@ -631,7 +631,7 @@
             and checkingLine.checking_id = #{checkingId}
      </select>
 
-     <select id="findCheckQty" resultType="java.lang.Long" flushCache="false">
+     <select id="findCheckingQty" resultType="java.lang.Long" flushCache="false">
 		SELECT
 			sum(line.qty) - sum(line.checking_qty)
 		FROM
