@@ -643,6 +643,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         log.info("param: containerId:[{}], ouId:[{}]", containerId, ouId);
         // 根据容器查找集货信息
         WhSeedingCollection seedingCollection = this.whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, null, ouId);
+        // 集货终点标识, 到播种墙上为完成
+        boolean flag = seedingCollection.getFacilityId() == null ? false : true;
         if (null != seedingCollection) {
             Long scId = seedingCollection.getId();
             // 查找集货明细
@@ -655,8 +657,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     log.info("odoId:[{}], odoLineId:[{}]", odoId, odoLineId);
                     WhOdoLine whOdoLine = whOdoLineDao.findOdoLineById(odoLineId, ouId);
                     if (null != whOdoLine) {
-                        if (OdoLineStatus.PICKING_FINISH.equals(whOdoLine.getOdoLineStatus())) {
-                            whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                        if (OdoLineStatus.PICKING_FINISH.equals(whOdoLine.getOdoLineStatus()) || OdoLineStatus.COLLECTION.equals(whOdoLine.getOdoLineStatus())) {
+                            if (flag) {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                            } else {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION);
+                            }
                             whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
                         }
                     }
@@ -671,14 +677,36 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     if (0 == cnt) {
                         // 全部集货完成, 更改出库单头的状态为完成
                         log.info("all odo line finish collection");
-                        if ((OdoStatus.PICKING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION.equals(whOdo.getOdoStatus()))) {
+                        if (!OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.SEEDING.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CHECKING.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CHECKING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.WEIGHING.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.WEIGHING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.HANDOVER.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.HANDOVER_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
                             whOdo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
+                            whOdo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                            whOdoDao.saveOrUpdateByVersion(whOdo);
+                        } else if (!OdoStatus.COLLECTION_FINISH.equals(whOdo.getLagOdoStatus())) {
                             whOdo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
                             whOdoDao.saveOrUpdateByVersion(whOdo);
                         }
                     } else {
                         // 出库单明细还有未集货完成的状态, 更改出库单头的状态为集货中
-                        if (OdoStatus.PICKING_FINISH.equals(whOdo.getOdoStatus())) {
+                        if (!OdoStatus.COLLECTION.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.SEEDING.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CHECKING.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CHECKING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.WEIGHING.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.WEIGHING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.HANDOVER.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.HANDOVER_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
                             whOdo.setOdoStatus(OdoStatus.COLLECTION);
                             whOdoDao.saveOrUpdateByVersion(whOdo);
                         }
