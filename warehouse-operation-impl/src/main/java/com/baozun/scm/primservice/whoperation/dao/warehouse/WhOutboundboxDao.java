@@ -80,4 +80,6 @@ public interface WhOutboundboxDao extends BaseDao<WhOutboundbox, Long> {
 
     public WhOutboundboxCommand findByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 
+    List<String> findOutboundBoxCodeListByWaveCode(@Param("waveCode") String code, @Param("ouId") Long ouId);
+
 }

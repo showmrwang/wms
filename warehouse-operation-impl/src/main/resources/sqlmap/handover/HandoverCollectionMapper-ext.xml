@@ -263,4 +263,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ou_id = #{ouId}
 	    ]]>
 		</update>
+		
+		<select id="findByOutboundBoxCodeList" resultMap="HandoverCollectionResultExt">
+				select  <include refid="handoverCollectionColumnsExt" />
+					from 
+					t_wh_handover_collection 
+					where 
+					outboundbox_code in
+					<foreach item="item" index="index" collection="list" open="("
+						separator="," close=")">
+						#{item}
+					</foreach>
+					and ou_id = #{ouId}
+		 
+	
+    </select>
 </mapper>

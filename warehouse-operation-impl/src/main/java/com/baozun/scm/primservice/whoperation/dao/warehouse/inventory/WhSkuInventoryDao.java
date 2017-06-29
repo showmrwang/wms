@@ -900,7 +900,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
 
     public List<WhSkuInventoryCommand> findReplenishmentBylocationId(@Param("turnoverBoxId") Long turnoverBoxId, @Param("ouId") Long ouId, @Param("locationId") Long locationId);
-    
+
     public List<WhSkuInventoryCommand> findReplenishmentOuterContainerBylocationId(@Param("outerContainerId") Long outerContainerId, @Param("ouId") Long ouId, @Param("locationId") Long locationId);
 
     List<WhSeedingCollectionLine> findSeedingDataByContainerId(@Param("containerId") Long containerId, @Param("ouId") Long ouId);
@@ -930,10 +930,10 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     public List<WhSkuInventoryCommand> findListByOccupationCodeAndAllocateArea(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
-    
+
     /**
      * 出库箱推荐用 根据外部容器查询库存 只用于统计箱内商品种类和数量
-     *
+     * 
      * @author mingwei.xie
      * @param outContainerIdList
      * @param ouId
@@ -944,7 +944,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * 出库箱推荐用 根据内部容器查询库存 只用于统计箱内商品种类和数量
-     *
+     * 
      * @author mingwei.xie
      * @param innerContainerIdList
      * @param ouId
@@ -1189,7 +1189,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * 查找库位上商品在库库存量大于0的库存
-     *
+     * 
      * @param locationId
      * @param skuId
      * @param ouId
@@ -1199,7 +1199,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * 查询商品所在的所有库位
-     *
+     * 
      * @param skuId
      * @param ouId
      * @return
@@ -1269,6 +1269,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * 根据内部容器查找库存
+     * 
      * @author kai.zhu
      * @version 2017年6月13日
      */
@@ -1276,11 +1277,12 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
 
     /**
      * [业务方法] 释放异常流程被占用的耗材
+     * 
      * @param occupationCodeSource
      * @param ouId
      */
     void releaseInventoryByOdo(@Param("occupationCodeSource") String occupationCodeSource, @Param("ouId") Long ouId);
-    
+
     /**
      * 出库箱或播种墙或小车货格库存移动功能查询出库存信息
      * 
@@ -1288,8 +1290,11 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @param WhSkuInventoryCommand
      * @return
      */
-    public List<WhSkuInventoryCommand> findSkuInventoryAndSnInfo(@Param("outboundboxCode") String outboundboxCode, @Param("seedingWallCode") String seedingWallCode, @Param("outerContainerId") Long outerContainerId,@Param("containerLatticeNo") Integer containerLatticeNo, @Param("ouId") Long ouId);
-    
+    public List<WhSkuInventoryCommand> findSkuInventoryAndSnInfo(@Param("outboundboxCode") String outboundboxCode, @Param("seedingWallCode") String seedingWallCode, @Param("outerContainerId") Long outerContainerId,
+            @Param("containerLatticeNo") Integer containerLatticeNo, @Param("ouId") Long ouId);
+
     public List<WhSkuInventoryCommand> findWhSkuInvCmdByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
+
+    public List<WhSkuInventory> isAllChecked(@Param("list") List<String> odocodeList);
 
 }

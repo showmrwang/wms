@@ -119,4 +119,6 @@ public interface HandoverCollectionDao extends BaseDao<HandoverCollection, Long>
 
     int deleteByOutboundboxCodeAndOuId(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId);
 
+    List<HandoverCollection> findByOutboundBoxCodeList(@Param("list") List<String> outboundBoxCodeList, @Param("ouId") Long ouId);
+
 }
