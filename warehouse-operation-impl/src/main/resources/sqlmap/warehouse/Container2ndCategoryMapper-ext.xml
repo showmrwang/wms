@@ -378,4 +378,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	category_code = #{categoryCode} 
         	and ou_id = #{ouId}
 	</select>
+	
+	<select id="findLatticeTotalGridNum" resultType="java.lang.Integer">
+		select
+             category.total_grid_num
+        from 
+            t_wh_container container
+        	left join t_wh_container_2nd_category category on contianer.two_level_type = category.id
+        where
+        	container.code = #{containerCode} 
+        	and container.ou_id = #{ouId}
+	</select>
 </mapper>

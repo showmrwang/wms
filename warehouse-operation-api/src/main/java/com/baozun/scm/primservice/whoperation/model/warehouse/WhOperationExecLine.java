@@ -123,6 +123,8 @@ public class WhOperationExecLine extends BaseModel {
     private String replenishmentCode;
     
     private String uuid;
+    
+    private Boolean isNotRecommand;
 
     // columns END
     public Long getOperationId() {
@@ -493,4 +495,13 @@ public class WhOperationExecLine extends BaseModel {
         this.uuid = uuid;
     }
 
+    public Boolean getIsNotRecommand() {
+        return isNotRecommand;
+    }
+
+    public void setIsNotRecommand(Boolean isNotRecommand) {
+        this.isNotRecommand = isNotRecommand;
+    }
+
+    
 }

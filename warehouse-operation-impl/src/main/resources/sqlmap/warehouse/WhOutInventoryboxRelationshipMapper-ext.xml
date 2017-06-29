@@ -67,6 +67,31 @@
             and relation_id is null
             and type is null
     </select>
+    
+     <select id="findCustomerId" resultType="java.lang.Long">
+        select
+             realtion.relation_id
+        from
+            t_wh_outboundbox_relationship  realtion
+            left join t_wh_outboundbox_type boxType on realtion.outInventoryBox_id = boxType.id
+        where
+            realtion.ou_id = #{ouId}
+            and realtion.type #{type}
+            and boxType.skuId = #{skuId}
+    </select>
 
 
+     
+     <select id="findCustomerIdById" resultType="java.lang.Long">
+        select
+             realtion.relation_id
+        from
+            t_wh_outboundbox_relationship  realtion
+            left join t_wh_outboundbox_type boxType on realtion.outInventoryBox_id = boxType.id
+            left join  t_wh_odo_outboundbox odo on odo.outbounxbox_type_id = boxType.id
+        where
+            realtion.ou_id = #{ouId}
+            and realtion.type #{type}
+            and odo.outboundboxCode = #{outboundboxCode}
+    </select>
 </mapper>
