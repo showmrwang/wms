@@ -8537,10 +8537,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         isVM = (null == loc.getIsValidMgt() ? false : loc.getIsValidMgt());
         // 2.执行上架(一入一出)
         for (WhSkuInventoryCommand invCmd : invSnList) {
-            List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
-            if (null == invTobefilledList || 0 == invTobefilledList.size()) {
-                throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
-            }
             List<WhSkuInventoryCommand> invList = null;
             if (null == outerContainerId) {// 整箱
                 invList = whSkuInventoryDao.getWhSkuInventoryCommandByReplenishment(null, ouId, turnoverBoxId, invCmd.getUuid());
@@ -8549,6 +8545,10 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             for (WhSkuInventoryCommand skuInvCmd : invList) {
                 String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
+                List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
+                if (null == invTobefilledList || 0 == invTobefilledList.size()) {
+                    throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {});
+                }
                 this.replenishmentAddInventory(invTobefilledList,skuAttrIds,skuInvCmd, invCmd, ouId, userId, locationId, isTV, isBM, isVM, turnoverBoxId, outerContainerId, isTabbInvTotal);
                 String uuid1 = skuInvCmd.getUuid();
                 Double oldQty1 = 0.0;
@@ -9129,7 +9129,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             // 更新作业执行明细
             this.updateOperationExecLine(skuScanQty, execLineList, whSkuAttrId, occupationLineId, ouId, userId);
-         // 获取待移入库存
+            // 获取待移入库存
             List<WhSkuInventoryTobefilled> invTobefilledList = whSkuInventoryTobefilledDao.findWhSkuInventoryTobefilledByReplenish(operationId, locationId, ouId);
             if (null == invList || 0 == invList.size()) {
                 throw new BusinessException(ErrorCodes.TOBEFILLED_INVENTORY_NO_EXIST, new Object[] {});
