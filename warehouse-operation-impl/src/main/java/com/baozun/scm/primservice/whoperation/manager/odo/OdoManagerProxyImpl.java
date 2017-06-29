@@ -1139,12 +1139,6 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     private void deleteOdoLine(List<WhOdoLine> lineList) {
         this.odoLineManager.deleteLines(lineList);
     }
-    
-    @Override
-    public void updateOdoLineTypeByOdoId(Long modified,String status,Long odoId) {
-        this.odoLineManager.updateOdoLineTypeByOdoId(modified,status,odoId);
-    }
-
 
     private void cancelOdo(WhOdo odo, Long ouId, String logId) {
         this.odoManager.cancelOdo(odo, ouId, logId);

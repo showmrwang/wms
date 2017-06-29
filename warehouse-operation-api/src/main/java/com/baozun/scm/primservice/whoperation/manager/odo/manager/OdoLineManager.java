@@ -153,7 +153,5 @@ public interface OdoLineManager extends BaseManager {
     List<WhOdoLine> findOdoLineListByOdoIdAndLinenumList(Long odoId, Long ouId, List<Integer> lineSeq);
 
     void deleteLines(List<WhOdoLine> lineList);
-    
-    void updateOdoLineTypeByOdoId(Long modified,String status,Long odoId);
 
 }

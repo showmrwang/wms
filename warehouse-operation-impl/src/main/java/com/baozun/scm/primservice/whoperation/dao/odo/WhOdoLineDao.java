@@ -131,7 +131,7 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @param odoId
      * @return
      */
-    int updateOdoLineTypeByOdoId(@Param("modified") Long modified, @Param("status") String status, @Param("odoId") Long odoId);
+    int updateOdoLineTypeByOdoId(WhOdoLine o);
 
     /**
      * [业务方法] 修改出库单明细waveCode为空
