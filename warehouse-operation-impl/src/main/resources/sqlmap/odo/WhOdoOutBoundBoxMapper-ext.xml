@@ -383,7 +383,7 @@
     
     <delete id="deleteWaveByIds" parameterType="list">
 	delete from t_wh_odo_outboundbox
-	where id in
+	where ou_id=#{ouId} and id in
 	<foreach item="item" index="index" collection="list" open="("
 		separator="," close=")">
 		#{item}

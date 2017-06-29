@@ -1815,14 +1815,20 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             }
             // 根据出库单code获取出库单信息
             WhOdo odo = odoDao.findByIdOuId(whWorkLineCommand.getOdoId(), whWorkLineCommand.getOuId());
-            if (!OdoStatus.PICKING.equals(odo.getOdoStatus())) {
-                odo.setOdoStatus(OdoStatus.WAVE_FINISH);
-                odoDao.update(odo);
+            if (null != odo) {
+                int odoStatus = Integer.parseInt(odo.getOdoStatus());
+                if(10 > odoStatus){
+                    odo.setOdoStatus(OdoStatus.WAVE_FINISH);
+                    odoDao.update(odo);    
+                }
             }
             WhOdoLine odoLine = odoLineDao.findOdoLineById(whWorkLineCommand.getOdoLineId(), whWorkLineCommand.getOuId());
-            if (null != odoLine && !OdoLineStatus.PICKING.equals(odoLine.getOdoLineStatus())) {
-                odoLine.setOdoLineStatus(OdoLineStatus.WAVE_FINISH);
-                odoLineDao.update(odoLine);
+            if (null != odoLine) {
+                int odoLineStatus = Integer.parseInt(odoLine.getOdoLineStatus());
+                if(10 > odoLineStatus){
+                    odoLine.setOdoLineStatus(OdoLineStatus.WAVE_FINISH);
+                    odoLineDao.update(odoLine);    
+                }
             }
         }
     }

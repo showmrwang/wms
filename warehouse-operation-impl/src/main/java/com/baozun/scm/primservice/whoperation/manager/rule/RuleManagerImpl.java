@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lark.common.annotation.MoreDB;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +50,6 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInBoundRule;
 import com.baozun.scm.primservice.whoperation.util.StringUtil;
-
-import lark.common.annotation.MoreDB;
 
 @Service("ruleManager")
 @Transactional
@@ -618,10 +618,26 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
         if (null != ruleCommandList && !ruleCommandList.isEmpty()) {
             for (WhDistributionPatternRuleCommand ruleCommand : ruleCommandList) {
                 // 匹配配货模式规则的出库单
+                if (StringUtils.isEmpty(ruleCommand.getRuleExtend())) {
+                    continue;
+                }
+                List<Long> list = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleExtend(), ouId, waveId);
+                if (list == null || list.isEmpty()) {
+                    continue;
+                }
+
+                List<Long> unlist = null;
                 if (!StringUtil.isEmpty(ruleCommand.getRuleSql())) {
-                    List<Long> odoIdList = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleSql(), ouId, waveId);
-                    if (null != odoIdList && !odoIdList.isEmpty()) {
-                        ruleCommand.setOdoIdList(odoIdList);
+                    unlist = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleSql(), ouId, waveId);
+                }
+                if (unlist == null || unlist.isEmpty()) {
+
+                    ruleCommand.setOdoIdList(list);
+                } else {
+
+                    boolean flag = list.removeAll(unlist);
+                    if (flag) {
+                        ruleCommand.setOdoIdList(list);
                     }
                 }
             }

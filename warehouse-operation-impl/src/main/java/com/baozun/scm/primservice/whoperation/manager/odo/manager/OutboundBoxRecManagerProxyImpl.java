@@ -146,7 +146,7 @@ public class OutboundBoxRecManagerProxyImpl extends BaseManagerImpl implements O
                 List<WhOdoOutBoundBox> odoOutBoundList = new ArrayList<WhOdoOutBoundBox>();
                 odoOutBoundList = odoOutBoundBoxMapper.findOdoOutBoundByWaveId(whWaveCommand.getId());
                 if (odoOutBoundList.size() > 0) {
-                    odoOutBoundBoxMapper.ResetWaveBox(odoOutBoundList);
+                    odoOutBoundBoxMapper.ResetWaveBox(odoOutBoundList,ouId);
                 }
 
                 // 根据波次获得出库单ID集合
