@@ -39,9 +39,13 @@ import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao
 import com.baozun.scm.primservice.whoperation.dao.handover.WhHandoverStationDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.HandoverCollectionConditionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.HandoverCollectionRuleDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ma.DistributionTargetDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -49,7 +53,9 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
+import com.baozun.scm.primservice.whoperation.model.odo.wave.WhWave;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation;
+import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.ma.DistributionTarget;
 
 /**
@@ -79,6 +85,14 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
     private DistributionTargetDao distributionTargetDao;
     @Autowired
     private HandoverCollectionRuleDao handoverCollectionRuleDao;
+    @Autowired
+    private WhOutboundboxDao whOutboundboxDao;
+    @Autowired
+    private WhWaveDao whWaveDao;
+    @Autowired
+    private WhWaveLineDao whWaveLineDao;
+    @Autowired
+    private WhSkuInventoryDao whSkuInventoryDao;
 
     /**
      * @author lichuan
@@ -119,6 +133,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
         Long handoverStationId = null;
         String handoverStationType = "";
         String groupCondition = "";
+        List<HandoverCollectionConditionCommand> condition = null;
         for (HandoverCollectionRuleCommand rule : ruleList) {
             Long ruleId = rule.getId();
             if (null == ruleId) {
@@ -127,6 +142,7 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
             // 根据集货交接规则找到分组条件
             List<HandoverCollectionConditionCommand> conditionList = handoverCollectionConditionDao.findConditionListByRuleIdAndouId(ruleId, ouId);
             if (null != conditionList && conditionList.size() > 0) {
+                condition = conditionList;
                 for (HandoverCollectionConditionCommand condtion : conditionList) {
                     if (HandoverGroupCondition.STROE.equals(condtion.getRuleCondtionCode())) {
                         if (StringUtils.isEmpty(groupCondition)) {
@@ -243,9 +259,6 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                         // 运行规则sql可以的就下一步
                         continue;
                     }
-
-
-
                     // 判断集货交接应用类型
                     String applyType = rule.getApplyType();
                     if (HandoverApplyType.DESIGNATED_STATION.equals(applyType)) {
@@ -265,20 +278,27 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                             if (null == checkingFacilityId) {
                                 continue;
                             }
-                            List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByFacilityGroupId(checkingFacilityId, ouId);
+                            List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByFacilityGroupId(22100078L, ouId);
                             if (null == stations || 0 == stations.size()) {
                                 continue;
                             } else {
                                 for (WhHandoverStationCommand station : stations) {
 
                                     if (null != station) {
-                                        // 判断该工位是否已经装满出库箱 没满就推荐该工位
+
+                                        // 同波茨放一起 不論上限
+                                        if (null != condition) {
+                                            if (condition.size() == 1 && HandoverGroupCondition.WAVE_CODE.equals(condition.get(0).getRuleCondtionCode())) {
+                                                handoverStationId = station.getId();
+                                                break;
+                                            }
+                                        }
+                                        // 判断该工位是否已经装满出库箱
                                         // 当前出库箱数
                                         Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(station.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
                                         if (capacity >= station.getUpperCapacity()) {
                                             continue;
                                         }
-
                                         handoverStationId = station.getId();
                                         break;
                                     }
@@ -294,6 +314,14 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                                 for (WhHandoverStationCommand station : stations) {
 
                                     if (null != station) {
+
+                                        // 同波茨放一起 不論上限
+                                        if (null != condition) {
+                                            if (condition.size() == 1 && HandoverGroupCondition.WAVE_CODE.equals(condition.get(0).getRuleCondtionCode())) {
+                                                handoverStationId = station.getId();
+                                                break;
+                                            }
+                                        }
                                         // 判断该工位是否已经装满出库箱
                                         // 当前出库箱数
                                         Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(station.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
@@ -368,11 +396,56 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                     hc.setHandoverBatch(handoverBatch);
                     handoverCollectionDao.saveOrUpdateByVersion(hc);
                 }
-                // 提示可以执行交接
-                handoverStationCommand.setCode(handoverStation.getCode());
-                handoverStationCommand.setTipHandover(true);
-                handoverStationCommand.setHandover_batch(handoverBatch);
-                handoverStationCommand.setId(handoverStationId);
+                if (null != condition) {
+                    if (condition.size() == 1 && HandoverGroupCondition.WAVE_CODE.equals(condition.get(0).getRuleCondtionCode())) {
+                        // 规则是且只是波次时
+                        // 根據波次去庫存表查詢是否都符合（符合完才會生成出庫箱並沒有内外部容器了） 如果 都沒了 根據出庫箱去交接集貨查是否都交接了 沒有的話不提示交接
+                        WhOutboundboxCommand outboundBox = whOutboundboxDao.findByOutboundBoxCode(outboundboxCommand.getOutboundboxCode(), ouId);
+                        if (StringUtils.isNotEmpty(outboundBox.getWaveCode())) {
+                            WhWave wave = new WhWave();
+                            wave.setCode(outboundBox.getWaveCode());
+                            wave.setAllocatePhase(1);
+                            List<WhWave> waves = whWaveDao.findListByParam(wave);
+                            if (waves.size() == 0 || null == waves) {
+                                wave.setAllocatePhase(0);
+                                waves = whWaveDao.findListByParam(wave);
+                            }
+                            List<String> odocodeList = whWaveLineDao.findOdocodeByWaveId(waves.get(0).getId(), ouId);
+                            List<WhSkuInventory> skuInventories = whSkuInventoryDao.isAllChecked(odocodeList);
+                            if (skuInventories.size() < 1) {
+                                // 全部复核了 再判断是否全部交接
+                                List<String> OutboundBoxCodeList = whOutboundboxDao.findOutboundBoxCodeListByWaveCode(waves.get(0).getCode(), ouId);
+                                // 获取了所有出库箱 去交接集货查是否都在了
+                                List<HandoverCollection> handoveredBoxCollections = handoverCollectionDao.findByOutboundBoxCodeList(OutboundBoxCodeList, ouId);
+                                if (handoveredBoxCollections.size() == OutboundBoxCodeList.size()) {
+                                    // 全部交接
+                                    // 提示可以执行交接
+                                    handoverStationCommand.setCode(handoverStation.getCode());
+                                    handoverStationCommand.setTipHandover(true);
+                                    handoverStationCommand.setHandover_batch(handoverBatch);
+                                    handoverStationCommand.setId(handoverStationId);
+                                }
+                            } else {
+                                handoverStationCommand.setCode(handoverStation.getCode());
+                                handoverStationCommand.setTipHandover(false);
+                                handoverStationCommand.setId(handoverStationId);
+                            }
+                        }
+                    } else {
+                        // 提示可以执行交接
+                        handoverStationCommand.setCode(handoverStation.getCode());
+                        handoverStationCommand.setTipHandover(true);
+                        handoverStationCommand.setHandover_batch(handoverBatch);
+                        handoverStationCommand.setId(handoverStationId);
+                    }
+                } else {
+                    // 提示可以执行交接
+                    handoverStationCommand.setCode(handoverStation.getCode());
+                    handoverStationCommand.setTipHandover(true);
+                    handoverStationCommand.setHandover_batch(handoverBatch);
+                    handoverStationCommand.setId(handoverStationId);
+                }
+
             } else {
                 handoverStationCommand.setCode(handoverStation.getCode());
                 handoverStationCommand.setTipHandover(false);
@@ -384,5 +457,4 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
         }
         return handoverStationCommand;
     }
-
 }
