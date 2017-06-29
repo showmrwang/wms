@@ -147,7 +147,7 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void ResetWaveBox(List<WhOdoOutBoundBox> boxList) {
+    public void ResetWaveBox(List<WhOdoOutBoundBox> boxList,Long ouId) {
         List<Long> containerId=new ArrayList<Long>();
         List<Long> outerContainerId=new ArrayList<Long>();
         List<Long> odoOutBoundBoxId=new ArrayList<Long>();
@@ -163,10 +163,10 @@ public class OdoOutBoundBoxMapperImpl extends BaseManagerImpl implements OdoOutB
             odoOutBoundBoxId.add(box.getId());
         }
         //删除波次的推荐记录
-        whOdoOutBoundBoxDao.deleteWaveByIds(odoOutBoundBoxId);
+        whOdoOutBoundBoxDao.deleteWaveByIds(odoOutBoundBoxId,ouId);
         //删除容器列表的周转箱
-        containerDao.deleteBoxTypeByIds(containerId);
+        containerDao.deleteBoxTypeByIds(containerId,ouId);
         //释放小车
-        containerDao.updateCarTypeByIds(outerContainerId);
+        containerDao.updateCarTypeByIds(outerContainerId,ouId);
     }
 }
