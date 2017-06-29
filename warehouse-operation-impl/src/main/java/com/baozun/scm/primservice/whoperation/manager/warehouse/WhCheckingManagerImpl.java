@@ -374,7 +374,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 waybillType = findWaybillInfo(checking.getOdoId(), checking.getOuId());
                 checking.setWaybillType(waybillType);
             } catch (Exception e) {
-                whCheckingByOdoCommand.setMessage("获取运单号失败");
+                whCheckingByOdoCommand.setMessage("获取运单号失败, 请重新扫描开始复核");
             }
         }
         whCheckingByOdoCommand.setCheckingCommand(checking);
