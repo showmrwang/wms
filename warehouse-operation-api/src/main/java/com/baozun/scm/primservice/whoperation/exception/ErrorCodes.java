@@ -1254,7 +1254,64 @@ public class ErrorCodes {
     /** 出库箱移动配置功能未配置,请确认配置信息 */
     public static final int OUTBOUNDBOX_MOVE_FUCTION_NOT_EXIST = 120022;
     /**当前小车未拣货完成,请确认小车状态是否正常.*/
-    public static final int CONTAINER_STATUS_IS_ERROR = 120023;
+    public static final int CONTAINER_STATUS_IS_ERROR = 120023;    
+    /** 周转箱不存在 */
+    public static final int CONTAINER_NOT_EXSIT = 120024;
+    /** 原周转箱不满足容器拆分条件*/
+    public static final int CONTAINER_NOT_MOVE_CONDITION = 120025;
+    /** 目标周转箱中出库单号与原始周转箱/货格出库单不一致 */
+    public static final int CONTAINER_ODO_CODE_NOT_MATCH = 120026;
+    /** 周转箱[{0}]未找到库存信息 */
+    public static final int CONTAINER_NOT_FOUND_INV = 120027;
+    /** 周转箱[{0}]未找到库存信息 */
+    public static final int CONTAINER_NOT_FOUND_INVENTORY = 120028;
+    /** 目标周转箱不满足容器拆分条件 */
+    public static final int TARGET_CONTAINER_NOT_MOVE_CONDITION = 120029;
+    /** 目标周转箱耗材编码号[{0}]未找到 */
+    public static final int TARGET_CONTAINER_CONSUMABLES_NOT_EXIST = 120030;
+    /** 目标周转箱耗材编码号[{0}]未找到库存信息 */
+    public static final int TARGET_CONTAINER_CONSUMABLES_INV_NOT_EXIST = 120031;
+    /** 未找到周转箱拆分移动需要变更的库存信息 */
+    public static final int MOVE_CONTAINER_INVENTORY_NOT_EXIST = 120032;
+    /** 周转箱拆分传入拆分类型错误 */
+    public static final int CONTAINER_MOVE_TYPE_ERROR = 120033;
+    /** 源周转箱[{0}]复核数据未找到  */
+    public static final int CONTAINER_CHECKING_DATE_NOT_EXIST = 120034;
+    /** 源容器[{0}]中存在周转箱,请直接扫描周转箱拆分商品 */
+    public static final int CHECKING_DATA_EXIST_CONTAINER = 120035;
+    /**  源容器[{0}]中数据不满足容器拆分条件 */
+    public static final int CHECKING_DATA_NOT_MOVE_CONDITION = 120036;
+    /** 源容器[{0}]未找到库存信息 */
+    public static final int FACILITY_NOT_FOUND_INVENTORY_ERROR = 120037;
+    /** 部分移动时,源周转箱[{0}]中的库存商品属性不是唯一,不符合拆分条件 */
+    public static final int CONTAINER_SKU_INV_NOT_UNIQUE = 120038;
+    /** 商品扫描数量[{0}]大于源周转箱商品数量*/
+    public static final int SCAN_SKU_QTY_IS_MORE_THAN_CONTAINER_QTY = 120039;
+    /** 源周转箱[{0}]中不存在当前扫描的商品 */
+    public static final int CONTAINER_NOT_FOUND_SCAN_SKU = 120040;
+    /** 源周转箱[{0}]中此商品[{1}]扫描数量不正确 */
+    public static final int CONTAINER_SKU_QTY_ERROR = 120041;
+    /** 源周转箱[{0}]中此商品[{1}]重复扫描 */
+    public static final int CONTAINER_SKU_HAS_ALREADY_SCAN = 120042;
+    /** 源周转箱[{0}]中商品[{1}]扫描数[{2}]大于库存数 */
+    public static final int SCAN_SKU_QTY_GREATER_THAN_INVENTORY_QTY = 120043;
+    /** 未找到周转箱拆分移动需要变更的复核信息 */
+    public static final int MOVE_CONTAINER_CHECKING_NOT_EXIST = 120044;
+    /** 周转箱移动配置功能未配置,请确认配置信息 */
+    public static final int CONTAINER_MOVE_FUCTION_NOT_EXIST = 120045;
+    /**当前小车未拣货完成,请确认小车状态是否正常*/
+    public static final int MOVE_CONTAINER_STATUS_IS_ERROR = 120046;
+    /**输入的容器号[{0}]不存在,请输入正确的容器号*/
+    public static final int CONTAINER_CODE_IS_NOT_EXIST = 120047;
+    /**输入的容器号[{0}]状态[{1}]不正确,不能进行移动库存操作 */
+    public static final int CONTAINER_STATUS_NOT_RIGHT = 120048;
+    /**输入的目标容器号[{0}]不是周转箱,不能移动库存 */
+    public static final int TARGET_CONTAINER_NO_ERROR = 120049;
+    /**输入的目标周转箱[{0}]状态不对,不能进行入库周转箱移动库存操作 */
+    public static final int TARGET_CONTAINER_STATUS_NOT_IN_MOVE = 120050;
+    /**输入的目标周转箱[{0}]状态不对,不能进行出库周转箱移动库存操作 */
+    public static final int TARGET_CONTAINER_STATUS_NOT_OUT_MOVE = 120051;
+    
     // 120000-130000 zhaozili
 
     /** 文件不存在 */

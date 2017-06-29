@@ -455,6 +455,26 @@ public interface WhSkuInventoryManager extends BaseManager {
     public Long cancelConsumablesInventory(String containerCode, Long skuId, Long ouId, Long userId);
     
     /**
+     * 周转箱拆分移动库存操作
+     * 
+     * @param sourceContainerCode 源容器编号
+     * @param sourceContainerId 源容器ID
+     * @param containerLatticNo 货格号
+     * @param targetContainerCode目标周转箱
+     * @param targetContainerId目标周转箱ID
+     * @param scanObject 扫描对象(播种墙,小车,出库箱)
+     * @param scanSkuAttrIdsSn 商品属性为key,value是移动SN信息
+     * @param warehouse 仓库信息
+     * @param scanSkuAttrIdsQty 商品属性为key,value是移动数量
+     * @param funcId
+     * @param ouId
+     * @param userId
+     * @param logId
+     * 
+     */
+    public void execuContainerMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticNo,String targetContainerCode,Long targetContainerId,String scanObject, Map<String, List<String>> scanSkuAttrIdsSn, Warehouse warehouse,Map<String,Double> scanSkuAttrIdsQty,Long ouId, Long userId, String logId);
+    
+    /**
      * 货箱拆分移动库存操作
      * 
      * @param sourceContainerCode 源容器编号

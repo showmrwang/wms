@@ -1282,13 +1282,14 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     void releaseInventoryByOdo(@Param("occupationCodeSource") String occupationCodeSource, @Param("ouId") Long ouId);
     
     /**
-     * 出库箱或播种墙或小车货格库存移动功能查询出库存信息
+     * 出库箱或播种墙或小车货格或周转箱库存移动功能查询出库存信息
      * 
      * @author feng.hu
      * @param WhSkuInventoryCommand
      * @return
      */
-    public List<WhSkuInventoryCommand> findSkuInventoryAndSnInfo(@Param("outboundboxCode") String outboundboxCode, @Param("seedingWallCode") String seedingWallCode, @Param("outerContainerId") Long outerContainerId,@Param("containerLatticeNo") Integer containerLatticeNo, @Param("ouId") Long ouId);
+    public List<WhSkuInventoryCommand> findSkuInventoryAndSnInfo(@Param("outboundboxCode") String outboundboxCode, @Param("seedingWallCode") String seedingWallCode, @Param("outerContainerId") Long outerContainerId,@Param("containerLatticeNo") Integer containerLatticeNo,@Param("insideContainerId") Long insideContainerId, @Param("ouId") Long ouId);
+    
     
     public List<WhSkuInventoryCommand> findWhSkuInvCmdByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
 
