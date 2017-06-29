@@ -240,6 +240,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 odo.setLagOdoStatus(OdoStatus.WAVE_FINISH);
                 odoDao.update(odo);
             }
+            WhOdoLine odoLine = whOdoLineDao.findOdoLineById(operationLine.getOdoLineId(), operationLine.getOuId());
+            if (null != odoLine && !OdoLineStatus.PICKING.equals(odoLine.getOdoLineStatus()) && !OdoLineStatus.CANCEL.equals(odoLine.getOdoLineStatus())) {
+                odoLine.setOdoLineStatus(OdoLineStatus.PICKING);
+                whOdoLineDao.update(odoLine);
+            }
         }
     }
 
@@ -4072,15 +4077,22 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     if(null != whOdoLine.getOdoId()){
                         WhOdo odo = odoDao.findByIdOuId(whOdoLine.getOdoId(), whOperationLineCommand.getOuId());
                         if(null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())){
-                            whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
+                            if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
+                            } else {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                            }
                             whOdoLineDao.update(whOdoLine);
                         }    
                     }else{
                         if(!OdoLineStatus.CANCEL.equals(whOdoLine.getOdoLineStatus())){
-                            whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
+                            if (Constants.WH_PICKING_MODE.equals(pickingMode)) {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.PICKING_FINISH);
+                            } else {
+                                whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                            }
                             whOdoLineDao.update(whOdoLine);
                         }
-                          
                     }
                 }
             }

@@ -118,12 +118,21 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * [业务方法] 合并订单-通过合并后出库单code和原始出库单明细行 行号查找原始出库单明细行信息
      */
     WhOdoLine findByOdoCodeAndLineNum(@Param("lineNum") Integer lineNum, @Param("originalOdoCode") String originalOdoCode, @Param("ouId") Long ouId);
-    
+
     /**
      * [业务方法] 修改出库单明细waveCode为空
      */
     int updateOdoLineByAllocateFail(@Param("odoId") Long odoId, @Param("reason") String reason, @Param("ouId") Long ouId);
     
+    /**
+     * 更新订单明细状态
+     * @param modified
+     * @param status
+     * @param odoId
+     * @return
+     */
+    int updateOdoLineTypeByOdoId(@Param("modified") Long modified, @Param("status") String status, @Param("odoId") Long odoId);
+
     /**
      * [业务方法] 修改出库单明细waveCode为空
      */
@@ -145,14 +154,14 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @return
      */
     Long findListCountNotNew(WhOdoLine line);
-    
+
     /**
      * 根据OdoId把明细的分配数量变成0
      * @param odoId
      * @param ouId
      * @return
      */
-	int updateOdoLineAssignQtyIsZero(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+    int updateOdoLineAssignQtyIsZero(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
     /**
      * 【业务方法】根据出库单ID集合查找出库单明细
@@ -176,6 +185,7 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
     int updateOdoLineToWave(@Param("odoIdList") List<Long> odoIdList, @Param("status") String status, @Param("waveCode") String code, @Param("ouId") Long ouId, @Param("userId") Long userId);
 
     List<OdoLineCommand> findOdoLineListToWaveByOdoIdListOuId(@Param("odoIdList") List<Long> odoIdList, @Param("ouId") Long ouId);
+
     /**
      * 根据ODOLINEID和OUID查找ODOLINE
      *
@@ -217,9 +227,17 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
     List<OdoLineCommand> findOdoLineByOdoIdOrderByPickingSort(@Param("idList") List<Long> idList, @Param("ouId") Long ouId);
 
     List<WhOdoLine> findOdoLineListByOdoIdAndLinenumList(@Param("odoId") Long odoId, @Param("ouId") Long ouId, @Param("extLinenumList") List<Integer> lineSeq);
-    
+
     /**
      * 查找出库单中的商品id集合
      */
     List<Long> findSkuIdListByOdoIdOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 查找出库单所有明细状态
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    Long findCntByOdoIdAndOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 }

@@ -35,8 +35,11 @@ import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
+import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
+import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionLineDao;
@@ -58,6 +61,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.WaveFacilit
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhWorkManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
@@ -136,6 +140,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WarehouseManager warehouseManager;
+
+    @Autowired
+    private WhOdoLineDao whOdoLineDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -625,7 +632,50 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             isSuccess = false;
             throw new BusinessException("移动容器失败");
         }
+        try {
+            updateOdoStatus(workCollectionCommand.getContainerId(), workCollectionCommand.getOuId());
+        } catch (Exception e) {}
         return isSuccess;
+    }
+
+    private void updateOdoStatus(Long containerId, Long ouId) {
+        log.info("updateOdoStatus start...");
+        log.info("param: containerId:[{}], ouId:[{}]", containerId, ouId);
+        // 根据容器查找集货信息
+        WhSeedingCollection seedingCollection = this.whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, null, ouId);
+        if (null != seedingCollection) {
+            Long scId = seedingCollection.getId();
+            // 查找集货明细
+            List<WhSeedingCollectionLine> seedingCollectionLineList = this.whSeedingCollectionLineDao.findByScIdAndOuId(scId, ouId);
+            if (null != seedingCollectionLineList && !seedingCollectionLineList.isEmpty()) {
+                for (WhSeedingCollectionLine seedingCollectionLine : seedingCollectionLineList) {
+                    // 更新每个集货明细对应的出库单状态为集货完成
+                    Long odoId = seedingCollectionLine.getOdoId();
+                    Long odoLineId = seedingCollectionLine.getOdoLineId();
+                    log.info("odoId:[{}], odoLineId:[{}]", odoId, odoLineId);
+                    WhOdoLine whOdoLine = whOdoLineDao.findOdoLineById(odoLineId, ouId);
+                    if (null != whOdoLine) {
+                        whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                        whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+                    }
+                    // 查找出库单下所有出库单状态是否为集货完成
+                    Long cnt = whOdoLineDao.findCntByOdoIdAndOuId(odoId, ouId);
+                    if (0 == cnt) {
+                        log.info("all odo line finish collection");
+                        // 更新出库单状态为集货完成
+                        WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
+                        if (null != whOdo) {
+                            if (OdoStatus.PICKING_FINISH.equals(whOdo.getOdoStatus())) {
+                                whOdo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
+                            }
+                            whOdo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                            whOdoDao.saveOrUpdateByVersion(whOdo);
+                        }
+                    }
+                }
+            }
+        }
+        log.info("updateOdoStatus finish...");
     }
 
     /**

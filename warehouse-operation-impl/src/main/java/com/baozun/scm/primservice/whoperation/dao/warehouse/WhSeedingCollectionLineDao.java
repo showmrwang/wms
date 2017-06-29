@@ -47,4 +47,12 @@ public interface WhSeedingCollectionLineDao extends BaseDao<WhSeedingCollectionL
 
     public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByCollection(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 通过播种墙集货id查找集货明细行
+     * @param seedingCollectionId
+     * @param ouId
+     * @return
+     */
+    public List<WhSeedingCollectionLine> findByScIdAndOuId(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
+
 }
