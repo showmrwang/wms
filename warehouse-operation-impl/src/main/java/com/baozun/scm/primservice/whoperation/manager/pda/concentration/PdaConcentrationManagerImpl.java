@@ -655,20 +655,31 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     log.info("odoId:[{}], odoLineId:[{}]", odoId, odoLineId);
                     WhOdoLine whOdoLine = whOdoLineDao.findOdoLineById(odoLineId, ouId);
                     if (null != whOdoLine) {
-                        whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
-                        whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+                        if (OdoLineStatus.PICKING_FINISH.equals(whOdoLine.getOdoLineStatus())) {
+                            whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
+                            whOdoLineDao.saveOrUpdateByVersion(whOdoLine);
+                        }
                     }
                     // 查找出库单下所有出库单状态是否为集货完成
                     Long cnt = whOdoLineDao.findCntByOdoIdAndOuId(odoId, ouId);
+                    // 更新出库单状态为集货完成
+                    WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
+                    if (null == whOdo) {
+                        log.error("odo is null, odoId:" + odoId);
+                        throw new BusinessException(ErrorCodes.DATA_BIND_EXCEPTION);
+                    }
                     if (0 == cnt) {
+                        // 全部集货完成, 更改出库单头的状态为完成
                         log.info("all odo line finish collection");
-                        // 更新出库单状态为集货完成
-                        WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
-                        if (null != whOdo) {
-                            if (OdoStatus.PICKING_FINISH.equals(whOdo.getOdoStatus())) {
-                                whOdo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
-                            }
+                        if ((OdoStatus.PICKING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION.equals(whOdo.getOdoStatus()))) {
+                            whOdo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
                             whOdo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
+                            whOdoDao.saveOrUpdateByVersion(whOdo);
+                        }
+                    } else {
+                        // 出库单明细还有未集货完成的状态, 更改出库单头的状态为集货中
+                        if (OdoStatus.PICKING_FINISH.equals(whOdo.getOdoStatus())) {
+                            whOdo.setOdoStatus(OdoStatus.COLLECTION);
                             whOdoDao.saveOrUpdateByVersion(whOdo);
                         }
                     }
@@ -1354,8 +1365,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 3.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-
-        // 4.判断暂存库位,没有就释放
+        
+        // 4.更新出库单状态
+        this.updateOdoStatus(recCommand.getContainerId(), ouId);
+        
+        // 5.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
             int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
             if (count == 0) {
@@ -1504,7 +1518,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 2.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-
+        
+        // 3. 更新出库单状态
+        this.updateOdoStatus(recCommand.getContainerId(), ouId);
+        
         // 4.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
             int count = whSeedingCollectionDao.checkCountInDestination(recCommand.getBatch(), Constants.TEMPORARY_STORAGE_LOCATION, ouId);
@@ -1518,7 +1535,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
         }
 
-        // 3.清理缓存
+        // 5.清理缓存
         List<WhFacilityRecPathCommand> recPathList = null;
         if (null != isManual && isManual) {
             recPathList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_REC, userId.toString());
