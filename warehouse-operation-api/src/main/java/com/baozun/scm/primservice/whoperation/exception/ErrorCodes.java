@@ -1088,6 +1088,9 @@ public class ErrorCodes {
     
     /**扫描出库箱不可用*/
     public static final int SCAN_OUT_BOUNDBOX_IS_ERROR=70071;
+    
+    /**当前容器存在库存*/
+    public static final int CONTAINER_IS_INVENTORY=70072;
 
     // 70001-80000 tangming
 

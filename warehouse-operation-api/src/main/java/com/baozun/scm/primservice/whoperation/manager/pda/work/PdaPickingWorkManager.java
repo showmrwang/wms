@@ -224,7 +224,7 @@ public interface PdaPickingWorkManager extends BaseManager {
     
     void createReplenishmentAfterPicking (Long operationId, Long ouId, Long userId);
     
-    public void judeOutboundBoxIsUse(String outboundBoxCode,String tipOutboundBoxCode,Long ouId,Boolean isMgmtConsumableSku);
+    public void judeOutboundBoxIsUse(String outboundBoxCode,String tipOutboundBoxCode,Long ouId,Boolean isMgmtConsumableSku,Long operationId);
     
     /**
      * 修改容器状态

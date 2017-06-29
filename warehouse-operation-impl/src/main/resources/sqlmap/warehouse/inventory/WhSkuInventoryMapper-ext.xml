@@ -6020,4 +6020,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and inv.on_hand_qty > 0.0
 			order by inv.on_hand_qty DESC
 	</select>
+	
+		<select id="countInventoryByOutboundBoxCode" resultType="Integer">
+		    select count(*) 
+		    from t_wh_sku_inventory inv
+		    where inv.location_id is null
+			and inv.ou_id=#{ouId}
+			and inv.outboundbox_code=#{outboundBoxCode}
+	</select>
+	
+	  <select id="countInventoryCountsByOuterContainerId" resultType="Integer">
+		select count(*) from t_wh_sku_inventory inv
+			where inv.ou_id=#{ouId}
+			and inv.outer_container_id=#{outerContainerId} 
+	</select>
+	
+	
+	  <select id="countInventoryCountsByInsideContainerId" resultType="Integer">
+		select count(*)  from t_wh_sku_inventory inv
+			where inv.ou_id=#{ouId}
+			and inv.inside_container_id=#{insideContainerId} 
+	</select>
 </mapper>

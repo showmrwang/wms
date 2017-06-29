@@ -992,4 +992,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        </if>
 			and qty != complete_qty
 	</select>
+	
+	
+		<select id="countOperationExecLineByOutboundbox" resultType="java.lang.Integer">
+		select
+	           count(*)
+		from
+		t_wh_operation_exec_line
+		where
+			ou_id = #{ouId}
+			and operation_id = #{operationId}
+			and use_outboundbox_code=#{outboundBoxCode}
+	</select>
+	
+	
+	<select id="getOperationExecLineCountByOuterId" resultType="long">
+		select
+	           count(1)
+		from
+		t_wh_operation_exec_line
+		where
+			ou_id = #{ouId}
+			and operation_id = #{operationId}
+			and use_outer_container_id=#{useOuterContainerId}
+	</select>
 </mapper>

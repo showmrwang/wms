@@ -857,13 +857,11 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if (pickingWay == Constants.PICKING_WAY_ONE) {
             String tipOuterContainer = command.getTipOuterContainer();  //系统推荐小车
             // 修改小车状态
-            this.updateContainerStauts(containerCode, ouId,tipOuterContainer,operationId,userId);
+            this.updateContainerStauts(containerCode, ouId,tipOuterContainer,operationId,userId,pickingWay);
             
         }
         if (pickingWay == Constants.PICKING_WAY_TWO) { // 使用外部(小车)，有出库箱拣货流程
             String tipOuterContainer = command.getTipOuterContainer();  //系统推荐小车
-            // 修改小车状态
-            this.updateContainerStauts(containerCode, ouId,tipOuterContainer,operationId,userId);
             Map<Integer, String> carStockToOutgoingBox = operatorLine.getCarStockToOutgoingBox(); // 出库箱和货格对应关系
             List<WhOperationLineCommand> operatorLineList = whOperationLineManager.findOperationLineByOperationId(operationId, ouId);
             CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipOutBounxBoxCode(operatorLineList, operationId, carStockToOutgoingBox);
@@ -879,18 +877,22 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             } else {
                 command.setIsNeedScanLatticeNo(false);
             }
+            if(!command.getIsNeedScanLatticeNo()){
+                // 修改小车状态
+                this.updateContainerStauts(containerCode, ouId,tipOuterContainer,operationId,userId,pickingWay);
+            }
         }
         if(pickingWay == Constants.PICKING_WAY_THREE){ //出库箱
             String outBoundBoxCode = command.getOutBounxBoxCode();  //扫描出库箱
             String tipOutBoundBoxCode = command.getTipOutBounxBoxCode();  //推荐出库箱
             if(!outBoundBoxCode.equals(tipOutBoundBoxCode)){  //判断扫描的出库箱是否是相同客户下的
-                this.judeOutboundBoxIsUse(outBoundBoxCode,tipOutBoundBoxCode, ouId,command.getIsMgmtConsumableSku());
+                this.judeOutboundBoxIsUse(outBoundBoxCode,tipOutBoundBoxCode, ouId,command.getIsMgmtConsumableSku(),operationId);
             }
         }
         if (pickingWay == Constants.PICKING_WAY_FOUR) { // 周转箱
             String turnoverBoxCode = command.getTurnoverBoxCode();
             String tipTrunoverBoxCode = command.getTipTurnoverBoxCode();
-            this.updateContainerStauts(turnoverBoxCode, ouId,tipTrunoverBoxCode,operationId,userId);
+            this.updateContainerStauts(turnoverBoxCode, ouId,tipTrunoverBoxCode,operationId,userId,pickingWay);
         }
         command.setOuterContainer(containerCode); // 外部容器号(小车，单个出库箱)
         WhFunctionPicking picking = whFunctionPickingDao.findByFunctionIdExt(ouId, functionId);
@@ -945,55 +947,81 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
        
     }
     
-    private void updateContainerStauts(String containerCode, Long ouId,String tipOuterContainer,Long operationId,Long userId) {
+    private void updateContainerStauts(String containerCode, Long ouId,String tipOuterContainer,Long operationId,Long userId,Integer pickingWay) {
         log.info("PdaPickingWorkManagerImpl updateContainerStauts is start");
         Container container = new Container();
         ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
         if (null == containerCmd) {
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
-        if(!containerCode.equals(tipOuterContainer)){  //当前扫描的小车不是系统推荐的小车或者周转箱
-          // 验证容器状态是否可用
-          if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
-            log.error("container lifecycle is not normal, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
-          }
-         // 验证容器状态是否是待上架
-          if (!container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
-            log.error("container lifecycle is not normal, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_CONTAINER__NOT_PUTWAY);
-          }
-         //释放推荐小车/周转箱状态
-          ContainerCommand cmd = containerDao.getContainerByCode(tipOuterContainer, ouId);
-          if (null == cmd) {
-              throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-          }
-          Long categoryId2 = cmd.getTwoLevelType();
-          Long categoryId1 = containerCmd.getTwoLevelType();
-          //判断当前小车是否和推荐的类型相同
-          Container2ndCategory    c2nd = container2ndCategoryDao.findByIdExt(categoryId1,ouId);
-          if(null == c2nd){
-            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
-          }
-          int count1 = c2nd.getTotalGridNum();   //扫描的容器货格数
-          Container2ndCategory    c2ndC = container2ndCategoryDao.findByIdExt(categoryId2,ouId);
-          if(null == c2ndC){
-            throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
-          }
-          int count2 = c2ndC.getTotalGridNum();   //提示的容器货格数
-          //获取
-          if(count1 != count2){
-              throw new BusinessException(ErrorCodes.SCAN_CONTAINER_IS_ERROR);  //扫描容器类型不正确
-          }
-          //释放推荐的小车或者出库箱
-          Container c = new Container();
-          BeanUtils.copyProperties(cmd, c);
-          c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE );
-          c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-          containerDao.saveOrUpdateByVersion(c);
-          insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
-        }
         BeanUtils.copyProperties(containerCmd, container);
+        if(!containerCode.equals(tipOuterContainer)){  //当前扫描的小车不是系统推荐的小车或者周转箱
+          //先判断作业执行明细有没有
+          long count = 0L;
+          if(pickingWay == Constants.PICKING_WAY_FOUR){
+              count =  whOperationExecLineDao.getOperationExecLineCount(operationId, ouId, containerCmd.getId());
+          }else{
+              count = whOperationExecLineDao.getOperationExecLineCountByOuterId(operationId, ouId, containerCmd.getId());
+          }
+          if(count == 0) {//判断有没有库存,有库存抛异常
+              int invCount = 0;
+              if(pickingWay == Constants.PICKING_WAY_FOUR){
+                  invCount = whSkuInventoryDao.countInventoryCountsByInsideContainerId(ouId, containerCmd.getId());
+              }else{
+                  invCount = whSkuInventoryDao.countInventoryCountsByOuterContainerId(ouId, containerCmd.getId());
+              }
+              if(invCount > 0){
+                  throw new BusinessException(ErrorCodes.CONTAINER_IS_INVENTORY);
+              }
+              // 验证容器状态是否可用
+              if (!container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
+                log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+              }
+             // 验证容器状态是否是待上架
+              if (!container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE)) {
+                log.error("container lifecycle is not normal, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+              }
+             //释放推荐小车/周转箱状态
+              ContainerCommand cmd = containerDao.getContainerByCode(tipOuterContainer, ouId);
+              if (null == cmd) {
+                  throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+              }
+              Long categoryId2 = cmd.getTwoLevelType();
+              Long categoryId1 = containerCmd.getTwoLevelType();
+              //判断当前小车是否和推荐的类型相同
+              Container2ndCategory    c2nd = container2ndCategoryDao.findByIdExt(categoryId1,ouId);
+              if(null == c2nd){
+                throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+              }
+              int count1 = c2nd.getTotalGridNum();   //扫描的容器货格数
+              Container2ndCategory    c2ndC = container2ndCategoryDao.findByIdExt(categoryId2,ouId);
+              if(null == c2ndC){
+                throw new BusinessException(ErrorCodes.CONTAINER2NDCATEGORY_NULL_ERROR);
+              }
+              int count2 = c2ndC.getTotalGridNum();   //提示的容器货格数
+              //获取
+              if(count1 != count2){
+                  throw new BusinessException(ErrorCodes.SCAN_CONTAINER_IS_ERROR);  //扫描容器类型不正确
+              }
+              //释放推荐的小车或者出库箱
+              Container c = new Container();
+              BeanUtils.copyProperties(cmd, c);
+              c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE );
+              c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+              containerDao.saveOrUpdateByVersion(c);
+              insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
+          }
+        }else{
+          if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
+             if(!(container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX) || container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_PICKING))){
+                 throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+             }
+          }else if(!(container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE) && container.getStatus().equals(ContainerStatus.CONTAINER_STATUS_USABLE))){
+              throw new BusinessException(ErrorCodes.COMMON_CONTAINER_LIFECYCLE_IS_NOT_NORMAL);
+          }
+        }
         container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
         container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING);
         containerDao.saveOrUpdateByVersion(container);
@@ -1007,27 +1035,37 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param tipOutBoundBoxCode
      * @param ouId
      */
-    public void judeOutboundBoxIsUse(String outboundBoxCode,String tipOutboundBoxCode,Long ouId,Boolean isMgmtConsumableSku){
+    public void judeOutboundBoxIsUse(String outboundBoxCode,String tipOutboundBoxCode,Long ouId,Boolean isMgmtConsumableSku,Long operationId){
         log.info("PdaPickingWorkManagerImpl judeOutboundBoxIsUse is start");
         WhOutboundboxCommand outboundBoxCmd = whOutboundboxDao.getwhOutboundboxCommandByCode(outboundBoxCode, ouId);
         if(null != outboundBoxCmd){
             //已存在且交接出库单出库箱或不存在的出库箱号,t_wh_outboundbox中如果出库箱存在且状态为交接完成的则箱号可用
-            if(!OutboundboxStatus.FINISH.equals(outboundBoxCmd.getStatus())){
+            if(!OutboundboxStatus.NEW.equals(outboundBoxCmd.getStatus())){
                 throw new BusinessException(ErrorCodes.OUT_BOUNDBOX_STATUS_IS_ERROR); 
             }
-            //新扫描的出库箱必须和推荐的出库箱是同一个顾客的
             Long outboundboxId = outboundBoxCmd.getOutboundboxId();
-            Long customerId = whOutInventoryboxRelationshipDao.findCustomerId(Constants.OUTBOUNDBOX_RELATIONSHIP_TYPE_CUSTOMER, ouId,outboundboxId);
-            //查询推荐出库箱对应的顾客
-            Long tipCustomerId = whOutInventoryboxRelationshipDao.findCustomerIdById(Constants.OUTBOUNDBOX_RELATIONSHIP_TYPE_CUSTOMER, ouId, tipOutboundBoxCode);
-            if(customerId.longValue() != tipCustomerId.longValue()){
-                throw new BusinessException(ErrorCodes.SCAN_OUT_BOUNDBOX_IS_ERROR); 
-            }
-            //扣减耗材库存
-            if(isMgmtConsumableSku){  //管理耗材
-              this.reduceQty(outboundboxId, ouId, outboundBoxCode);   
+            if(isMgmtConsumableSku && null != outboundboxId){
+              //新扫描的出库箱必须和推荐的出库箱是同一个顾客的
+                Long customerId = whOutInventoryboxRelationshipDao.findCustomerId(Constants.OUTBOUNDBOX_RELATIONSHIP_TYPE_CUSTOMER, ouId,outboundboxId);
+                //查询推荐出库箱对应的顾客
+                Long tipCustomerId = whOutInventoryboxRelationshipDao.findCustomerIdById(Constants.OUTBOUNDBOX_RELATIONSHIP_TYPE_CUSTOMER, ouId, tipOutboundBoxCode);
+                if(customerId.longValue() != tipCustomerId.longValue()){
+                    throw new BusinessException(ErrorCodes.SCAN_OUT_BOUNDBOX_IS_ERROR); 
+                }
+                //扣减耗材库存
+                //管理耗材
+                this.reduceQty(outboundboxId, ouId, outboundBoxCode);   
             }
         }
+        int count1 = whOperationExecLineDao.countOperationExecLineByOutboundbox(outboundBoxCode, ouId, operationId);
+        if(count1 == 0){
+            //查询库存
+            int count = whSkuInventoryDao.countInventoryByOutboundBoxCode(outboundBoxCode, ouId);
+            if(count > 0){
+                throw new BusinessException(ErrorCodes.SCAN_OUT_BOUNDBOX_IS_ERROR); 
+            }
+        }
+        //缓存提示的出库箱
         log.info("PdaPickingWorkManagerImpl judeOutboundBoxIsUse is end");
     }
     

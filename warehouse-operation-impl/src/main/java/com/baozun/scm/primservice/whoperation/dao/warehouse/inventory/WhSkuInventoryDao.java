@@ -1290,4 +1290,25 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     List<WhSkuInventory> findSkuInvBySkuIdWithOnHandQty(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
+    
+    public int countInventoryByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode,@Param("ouId") Long ouId);
+    
+    /**
+     * 
+     * 
+     * @param ouid
+     * @param outerContainerid
+     * @return
+     */
+    int countInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
+    
+    
+    /**
+     * 
+     * 
+     * @param ouid
+     * @param outerContainerid
+     * @return
+     */
+    int countInventoryCountsByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
 }
