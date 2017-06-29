@@ -6056,4 +6056,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and ou_id = #{ouId}
     </select>
 	
+	
+	<select id="isAllChecked" resultMap="WhSkuInventoryCommandResultExt">
+				select  <include refid="whSkuInventoryColumnsExt" />
+					from 
+					t_wh_sku_inventory 
+					where 
+					occupation_code in
+					<foreach item="item" index="index" collection="list" open="("
+						separator="," close=")">
+						#{item}
+					</foreach>
+					AND
+			(
+				temporary_location_id is not null
+				OR outer_container_id is not null
+				OR seeding_wall_code is not null
+				OR inside_container_id is not null
+			)
+	
+    </select>
+	
 </mapper>

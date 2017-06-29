@@ -1067,4 +1067,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and allocate_rule_id is null
             AND ou_id = #{ouId}
 	</select>
+	
+	<select id="findOdocodeByWaveId" resultType="String">
+		select
+            distinct (odo_code)
+        from 
+        	t_wh_wave_line
+        where
+            wave_id = #{waveId}
+            AND ou_id = #{ouId}
+	</select>
+	
 </mapper>

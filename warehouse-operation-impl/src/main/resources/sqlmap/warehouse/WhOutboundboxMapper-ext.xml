@@ -184,4 +184,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and outboundbox_code = #{outboundBoxCode}
     </select>
 
+ <select id="findOutboundBoxCodeListByWaveCode" resultType="String">
+        select
+              distinct(outboundbox_code)
+        from
+            t_wh_outboundbox
+        where
+            wave_code = #{waveCode}
+            and  ou_id = #{ouId}
+    </select>
 </mapper>
