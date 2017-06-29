@@ -37,6 +37,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhTemporaryStorageLocation;
+import com.baozun.scm.primservice.whoperation.util.JsonUtil;
 
 @Service("whFacilityRecPathManager")
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -79,20 +80,22 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void occupyFacilityAndlocation(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh) {
+    public void occupyFacilityAndlocation(WhOutboundFacilityGroup facilityGroup, WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Warehouse wh, String logId) {
         // 这边的逻辑分三部分：
         // 第一部分：如果已经有了推荐路径，则直接插入数据库，没有则推荐暂存库位、中转库位、播种墙。
         // 第二部分：推荐成功，插入推荐成功路径表，返回推荐播种墙成功信息，等待后方后续处理
         // 第三部分：最后一箱逻辑
-
+        log.info("logId:{logId},METHOD[occupyFacilityAndlocation]:START");
 
         Long ouId = wh.getId();
 
         // 如果已经有推荐路径
         if (prePath != null) {
-            this.occupyFacilityAndlocationByPrePath(prePath, recFacilityPath, ouId);
+            log.info("logId:{logId},METHOD[occupyFacilityAndlocation]:has pre path");
+            this.occupyFacilityAndlocationByPrePath(prePath, recFacilityPath, ouId, logId);
         } else {
-            this.occupyFacilityAndlocationByFacilityGroup(facilityGroup, recFacilityPath, wh);
+            log.info("logId:{logId},METHOD[occupyFacilityAndlocation]:no pre path");
+            this.occupyFacilityAndlocationByFacilityGroup(facilityGroup, recFacilityPath, wh, logId);
         }
 
         // 最后一箱逻辑
@@ -174,7 +177,8 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
 
     }
 
-    private WhFacilityRecPath occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, RecFacilityPathCommand recFacilityPath, Warehouse wh) {
+    private WhFacilityRecPath occupyFacilityAndlocationByFacilityGroup(WhOutboundFacilityGroup facilityGroup, RecFacilityPathCommand recFacilityPath, Warehouse wh, String logId) {
+        log.info("logId:{},METHOD[occupyFacilityAndlocationByFacilityGroup]:START", logId);
         Long ouId = wh.getId();
         String seedingMode = wh.getSeedingMode();
         String batch = recFacilityPath.getBatch();
@@ -287,9 +291,11 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
      * @param prePath
      * @param recFacilityPath
      * @param ouId
+     * @param logId
      * @return
      */
-    private WhFacilityRecPath occupyFacilityAndlocationByPrePath(WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Long ouId) {
+    private WhFacilityRecPath occupyFacilityAndlocationByPrePath(WhFacilityRecPath prePath, RecFacilityPathCommand recFacilityPath, Long ouId, String logId) {
+        log.info("logId:{},METHOD[occupyFacilityAndlocationByPrePath]:START", logId);
         WhFacilityRecPath recPath = new WhFacilityRecPath();
         recPath.setBatch(recFacilityPath.getBatch());
         recPath.setBatchContainerQty(Constants.DEFAULT_INTEGER);
@@ -303,8 +309,10 @@ public class WhFacilityRecPathManagerImpl extends BaseManagerImpl implements WhF
         recPath.setTransitLocationCode(prePath.getTransitLocationCode());
         recPath.setOuId(ouId);
         // @Gianni 修改状态为新建 2017-04-10
-        recPath.setStatus(1);
+        recPath.setStatus(Constants.PATH_STATUS_1);
         this.whFacilityRecPathDao.insert(recPath);
+        this.insertGlobalLog(Constants.GLOBAL_LOG_INSERT, recPath, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
+        log.info("logId:{},METHOD[occupyFacilityAndlocationByPrePath]:END,insert Path[{}]", logId, JsonUtil.beanToJson(recPath));
         return recPath;
     }
 
