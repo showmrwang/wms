@@ -982,7 +982,22 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Container container = new Container();
         ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
         if (null == containerCmd) {
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            if(pickingWay == Constants.PICKING_WAY_FOUR){
+                if(!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))){
+                    ContainerCommand tipCmd = containerDao.getContainerByCode(tipOuterContainer, ouId);
+                    Container c = new Container();
+                    BeanUtils.copyProperties(tipCmd, c);
+                    c.setId(null); 
+                    c.setCode(containerCode);
+                    c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                    c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                    containerDao.insert(c);
+                    insertGlobalLog(GLOBAL_LOG_INSERT, c, ouId, userId, null, null);
+                    BeanUtils.copyProperties(c, containerCmd);
+                }
+            }else{
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
         }
         BeanUtils.copyProperties(containerCmd, container);
         if(!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))){  //当前扫描的小车不是系统推荐的小车或者周转箱
