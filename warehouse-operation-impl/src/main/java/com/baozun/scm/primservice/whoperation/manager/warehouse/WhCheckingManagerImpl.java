@@ -366,13 +366,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         whCheckingByOdoCommand.setCheckingLineCommandList(whCheckingLineList);
         whCheckingByOdoCommand.setSnList(snList);
-        checking.setOdoId(whCheckingLineList.get(0).getOdoId());
-        String waybillType = "";
-        try {
-            waybillType = findWaybillInfo(checking.getOdoId(), checking.getOuId());
-            checking.setWaybillType(waybillType);
-        } catch (Exception e) {
-            whCheckingByOdoCommand.setMessage("获取运单号失败");
+        String pickingMode = checking.getPickingMode();
+        if ("1".equals(pickingMode) || "2".equals(pickingMode)) {
+            checking.setOdoId(whCheckingLineList.get(0).getOdoId());
+            String waybillType = "";
+            try {
+                waybillType = findWaybillInfo(checking.getOdoId(), checking.getOuId());
+                checking.setWaybillType(waybillType);
+            } catch (Exception e) {
+                whCheckingByOdoCommand.setMessage("获取运单号失败");
+            }
         }
         whCheckingByOdoCommand.setCheckingCommand(checking);
         return whCheckingByOdoCommand;
@@ -687,7 +690,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // TODO
             // 需要判断是否有绑定出库箱, 意味着是否是主副品或者套装.如果有则把出库箱对应的复核明细也缓存到页面
             if (Constants.PICKING_MODE_BATCH_GROUP.equals(checkingCommand.getPickingMode()) || Constants.PICKING_MODE_BATCH_MAIN.equals(checkingCommand.getPickingMode())) {
-                whCheckingCommand.setTip(Constants.TIP_BATCH);
+                // whCheckingCommand.setTip(Constants.TIP_BATCH);
+                BeanUtils.copyProperties(checkingCommand, whCheckingCommand);
+                whCheckingCommand.setoDCheckWay(Constants.CHECKING_BY_ODO_WAY_CONTAINER);
+                whCheckingCommand.setTip(Constants.TIP_SUCCESS);
+                whCheckingCommand.setIsComplex(true);
                 command.setCheckingCommand(whCheckingCommand);
                 return true;
             }
@@ -1801,5 +1808,32 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // command.setMessage("请输入一个纸质面单");
         }
         return command;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhCheckingByOdoCommand> retrieveCheckDataGeneral(WhCheckingCommand command) {
+        List<WhCheckingByOdoCommand> generallist = new ArrayList<WhCheckingByOdoCommand>();
+        Long ouId = command.getOuId();
+        String batch = command.getBatch();
+        // 复核头信息
+        List<WhCheckingCommand> checkingList = whCheckingDao.findByBatchAndOuId(batch, ouId);
+        // List<WhCheckingCommand> checkingList = whCheckingDao.findListByParamExt(command);
+        if (null != checkingList && !checkingList.isEmpty()) {
+            for (WhCheckingCommand checkingcommand : checkingList) {
+                WhCheckingByOdoCommand whCheckingByOdoCommand = new WhCheckingByOdoCommand();
+                whCheckingByOdoCommand.setCheckingCommand(checkingcommand);
+                whCheckingByOdoCommand = findWhCheckingLineByChecking(whCheckingByOdoCommand);
+                whCheckingByOdoCommand = this.findCheckingInfo(whCheckingByOdoCommand);
+                generallist.add(whCheckingByOdoCommand);
+            }
+            // whCheckingByOdoCommand.setCheckingCommand(whCheckingCommand);
+            // 获取复合明细
+            // 获取页面显示
+            // return whCheckingByOdoCommand;
+            return generallist;
+        } else {
+            throw new BusinessException("check is null");
+        }
     }
 }

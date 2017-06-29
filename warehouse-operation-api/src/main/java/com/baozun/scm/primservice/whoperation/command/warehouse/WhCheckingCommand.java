@@ -163,6 +163,8 @@ public class WhCheckingCommand extends BaseCommand {
     private Long batchOdoCnt;
     /** 待复核总单数*/
     private Long batchOdoCntCheck;
+    /**　是否是主副品/套装*/
+    private Boolean isComplex;
 
     public Long getId() {
         return id;
@@ -691,6 +693,14 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setContainerSkuCnt(Long containerSkuCnt) {
         this.containerSkuCnt = containerSkuCnt;
+    }
+
+    public Boolean getIsComplex() {
+        return isComplex;
+    }
+
+    public void setIsComplex(Boolean isComplex) {
+        this.isComplex = isComplex;
     }
 
 }
