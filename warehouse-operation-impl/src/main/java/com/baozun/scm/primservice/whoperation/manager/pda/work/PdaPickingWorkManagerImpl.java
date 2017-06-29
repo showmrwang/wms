@@ -955,7 +955,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
         BeanUtils.copyProperties(containerCmd, container);
-        if(!containerCode.equals(tipOuterContainer)){  //当前扫描的小车不是系统推荐的小车或者周转箱
+        if(!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))){  //当前扫描的小车不是系统推荐的小车或者周转箱
           //先判断作业执行明细有没有
           long count = 0L;
           if(pickingWay == Constants.PICKING_WAY_FOUR){
@@ -4255,7 +4255,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param tipContainerCode
      * @param containerCode
      */
-    public void cancelUpdateContainer(String tipContainerCode,String containerCode,Long ouId,Long userId,Long operationId){
+    public void cancelUpdateContainer(String tipContainerCode,String containerCode,Long ouId,Long userId,Long operationId,Integer pickingWay){
         if(!tipContainerCode.equals(containerCode)){   //扫描的容器和提示的容器不相等
             if (!StringUtils.isEmpty(tipContainerCode)) {
                 ContainerCommand c = containerDao.getContainerByCode(tipContainerCode, ouId);
@@ -4281,7 +4281,12 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
                 }
                 Long containerId  = cmd.getId();
-               Long count =  whOperationExecLineDao.getOperationExecLineCount(operationId, ouId, containerId);
+               Long count =  0L;
+               if(pickingWay.equals(Constants.PICKING_WAY_FOUR)){
+                   count =  whOperationExecLineDao.getOperationExecLineCount(operationId, ouId, containerId);
+               }else{
+                   count = whOperationExecLineDao.getOperationExecLineCountByOuterId(operationId, ouId,containerId);
+               }
                if(null == count || count.longValue() == 0) {
                    Container container = new Container();
                    BeanUtils.copyProperties(cmd, container);
