@@ -853,12 +853,10 @@
 			</foreach>
 	</update>
 	
-	<update id="updateOdoLineTypeByOdoId">
-	UPDATE t_wh_odo_line
-	SET modified_id = #{modified},
-	odo_line_status = #{status}
-	WHERE
-	odo_id = #{odoId}	
+	<update id="updateOdoLineTypeByOdoId" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine">
+		<![CDATA[
+		UPDATE t_wh_odo_line SET modified_id = #{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}, odo_line_status = #{odoLineStatus,javaType=java.lang.String,jdbcType=VARCHAR} WHERE odo_id = #{odoId} and ou_id=#{ouId} 
+		]]>
 	</update>
 	
 	

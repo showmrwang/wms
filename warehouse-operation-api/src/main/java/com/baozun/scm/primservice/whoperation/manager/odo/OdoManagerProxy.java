@@ -464,13 +464,5 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg cancelOdoWithWork(WhOdo odo, Long ouId, Long userId, String logId);
-    
-    /**
-     * 更新订单明细状态
-     * @param modified
-     * @param status
-     * @param odoId
-     */
-    void updateOdoLineTypeByOdoId(Long modified,String status,Long odoId);
 
 }

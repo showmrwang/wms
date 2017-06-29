@@ -215,6 +215,9 @@ public class PickingScanResultCommand extends BaseCommand {
     private Integer tempReplenishWay;
     
     private String tipSkuMutilBarcode;
+    
+    
+    private Boolean isMgmtConsumableSku;   //是否管理耗材
 
 
     /**
@@ -1189,6 +1192,7 @@ public class PickingScanResultCommand extends BaseCommand {
         this.tipSkuMutilBarcode = tipSkuMutilBarcode;
     }
 
+
     public Boolean getIsPartlyFinish() {
         return isPartlyFinish;
     }
@@ -1196,4 +1200,13 @@ public class PickingScanResultCommand extends BaseCommand {
     public void setIsPartlyFinish(Boolean isPartlyFinish) {
         this.isPartlyFinish = isPartlyFinish;
     }
+    public Boolean getIsMgmtConsumableSku() {
+        return isMgmtConsumableSku;
+    }
+
+    public void setIsMgmtConsumableSku(Boolean isMgmtConsumableSku) {
+        this.isMgmtConsumableSku = isMgmtConsumableSku;
+    }
+
+
 }

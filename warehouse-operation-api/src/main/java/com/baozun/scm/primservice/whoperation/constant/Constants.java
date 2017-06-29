@@ -1007,4 +1007,9 @@ public final class Constants {
     /** 电子面单*/
     public static final String ELECTRONIC_WAY_BILL = "2";
 
+    /** 路径状态 **/
+    public static final Integer PATH_STATUS_1 = 1;// 移动中
+    public static final Integer PATH_STATUS_2 = 2;// 移动完成
+
+
 }

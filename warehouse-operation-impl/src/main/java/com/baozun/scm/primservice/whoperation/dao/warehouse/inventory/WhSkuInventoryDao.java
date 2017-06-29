@@ -1283,6 +1283,7 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     void releaseInventoryByOdo(@Param("occupationCodeSource") String occupationCodeSource, @Param("ouId") Long ouId);
 
+
     /**
      * 出库箱或播种墙或小车货格库存移动功能查询出库存信息
      * 
@@ -1296,5 +1297,38 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     public List<WhSkuInventoryCommand> findWhSkuInvCmdByOccupationCode(@Param("occupationCode") String occupationCode, @Param("ouId") Long ouId);
 
     public List<WhSkuInventory> isAllChecked(@Param("list") List<String> odocodeList);
+
+
+    
+    /**
+     * 通过耗材id，查询耗材库存
+     * 
+     * @param locationId
+     * @param skuId
+     * @param ouId
+     * @return
+     */
+    List<WhSkuInventory> findSkuInvBySkuIdWithOnHandQty(@Param("skuId") Long skuId, @Param("ouId") Long ouId);
+    
+    public int countInventoryByOutboundBoxCode(@Param("outboundBoxCode") String outboundBoxCode,@Param("ouId") Long ouId);
+    
+    /**
+     * 
+     * 
+     * @param ouid
+     * @param outerContainerid
+     * @return
+     */
+    int countInventoryCountsByOuterContainerId(@Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId);
+    
+    
+    /**
+     * 
+     * 
+     * @param ouid
+     * @param outerContainerid
+     * @return
+     */
+    int countInventoryCountsByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
 
 }

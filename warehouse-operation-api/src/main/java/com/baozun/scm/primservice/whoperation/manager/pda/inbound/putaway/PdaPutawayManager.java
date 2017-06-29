@@ -194,5 +194,20 @@ public interface PdaPutawayManager extends BaseManager {
      * @return
      */
     ScanResultCommand sysGuideFinishPutaway(String containerCode, String insideContainerCode, WhSkuCommand skuCmd, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    
+    /**
+     * 上架取消所有推荐库位
+     * 
+     * @author lichuan
+     * @param containerCode
+     * @param insideContainerCode
+     * @param funcId
+     * @param putawayPatternDetailType
+     * @param ouId
+     * @param userId
+     * @param logId
+     * @return
+     */
+    ScanResultCommand sysGuideCancelAllLoc(String containerCode, String insideContainerCode, String locationCode, Long funcId, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
 
 }

@@ -358,5 +358,7 @@ public interface OdoManager extends BaseManager {
      * @author kai.zhu
      */
     WhOdo findByOdoCodeAndOuId(String odoCode, Long ouId);
+    
+    void updateOdoLineTypeByOdoId(WhOdoLine o);
 
 }

@@ -1083,6 +1083,16 @@ public class ErrorCodes {
     public static final int PICKING__NO_END = 70067;
     /** 打印失败 */
     public static final int PRINT_IS_FAIL = 70068;
+    /**扫描容器类型不正确*/
+    public static final int SCAN_CONTAINER_IS_ERROR=70069;
+    /**出库箱状态不可用*/
+    public static final int OUT_BOUNDBOX_STATUS_IS_ERROR=70070;
+    
+    /**扫描出库箱不可用*/
+    public static final int SCAN_OUT_BOUNDBOX_IS_ERROR=70071;
+    
+    /**当前容器存在库存*/
+    public static final int CONTAINER_IS_INVENTORY=70072;
 
     // 70001-80000 tangming
 

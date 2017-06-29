@@ -23,6 +23,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityQueue;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFacilityRecPath;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
+import com.baozun.scm.primservice.whoperation.util.JsonUtil;
 
 @Service("waveFacilityManagerProxy")
 public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements WaveFacilityManagerProxy {
@@ -40,6 +41,8 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
 
     @Override
     public RecFacilityPathCommand matchOutboundFacility(RecFacilityPathCommand recFacilityPath) {
+        String logId = StringUtils.isEmpty(recFacilityPath.getLogId()) ? this.getLogId() : recFacilityPath.getLogId();
+        log.info("logId:{},METHOD[matchOutboundFacility] :START,params:[RecFacilityPathCommand:{}]", logId, JsonUtil.beanToJson(recFacilityPath));
         try {
 
             // 校验传入参数
@@ -47,17 +50,21 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             Long ouId = recFacilityPath.getOuId();
             Warehouse wh = this.warehouseManager.findWarehouseByIdExt(ouId);
             if (!wh.getIsApplyFacility()) {
+                log.error("logId:{},METHOD[matchOutboundFacility] :returns,warehouse is not  Apply Facility ", logId);
                 return responseMsgForFacility(recFacilityPath, 0);
             }
-
+            log.info("logId:{},METHOD[matchOutboundFacility] :picking mode is [{}]", logId, recFacilityPath.getPickingMode());
             if (Constants.PICKING_MODE_SEED.equals(recFacilityPath.getPickingMode())) {
-                return matchSeedingWallWhenSeeding(wh, recFacilityPath);
+                log.info("logId:{},METHOD[matchOutboundFacility] invoke METHOD[matchSeedingWallWhenSeeding]", logId);
+                return matchSeedingWallWhenSeeding(wh, recFacilityPath, logId);
             } else {
                 // #TODO
             }
         } catch (Exception e) {
+            log.info("logId:{},METHOD[matchOutboundFacility] :throw error[{}]", logId, e);
             return responseMsgForFacility(recFacilityPath, 0);
         }
+        log.info("logId:{},METHOD[matchOutboundFacility] :SUCCESS END", logId);
         return responseMsgForFacility(recFacilityPath, 1);
     }
 
@@ -79,10 +86,11 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
      * 
      * @param wh
      * @param recFacilityPath
+     * @param logId
      * @param whSeedingWallRule
      */
-    private RecFacilityPathCommand matchSeedingWallWhenSeeding(Warehouse wh, RecFacilityPathCommand recFacilityPath) {
-
+    private RecFacilityPathCommand matchSeedingWallWhenSeeding(Warehouse wh, RecFacilityPathCommand recFacilityPath, String logId) {
+        log.info("logId:{},METHOD[matchSeedingWallWhenSeeding]:START,PARAMS:[wh:{},RecFacilityPathCommand:{}]", logId, JsonUtil.beanToJson(wh), JsonUtil.beanToJson(recFacilityPath));
         try {
             Long ouId = wh.getId();
             String batch = recFacilityPath.getBatch();
@@ -91,13 +99,14 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
             List<WhFacilityRecPath> pathList = this.whFacilityRecPathManager.findWhFacilityRecPathByBatchAndContainer(batch, null, ouId);
             WhFacilityRecPath prePath = null;
             if (pathList != null && pathList.size() > 0) {// 存在推荐成功的信息
-                log.info("matchSeedingWallWhenSeeding, have prePath! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
+                log.info("logId:{},METHOD[matchSeedingWallWhenSeeding]: have prePath! batch:{}, container:{}", logId, batch, recFacilityPath.getContainerCode());
                 prePath = pathList.get(0);
             }
             if (prePath == null) {
-                log.info("matchSeedingWallWhenSeeding, not have prePath! batch:{}, container:{}", batch, recFacilityPath.getContainerCode());
+                log.info("logId:{},METHOD[matchSeedingWallWhenSeeding]: not have prePath! batch:{}, container:{}", logId, batch, recFacilityPath.getContainerCode());
                 // 模式
                 if (StringUtils.isEmpty(wh.getSeedingMode())) {
+                    log.info("logId:{},METHOD[matchSeedingWallWhenSeeding] RETURN: warehouse[{}] have no seedingMode", logId, JsonUtil.beanToJson(wh));
                     return responseMsgForFacility(recFacilityPath, 0);
                 }
                 // 规则
@@ -108,31 +117,35 @@ public class WaveFacilityManagerProxyImpl extends BaseManagerImpl implements Wav
                 RuleExportCommand export = this.ruleManager.ruleExport(ruleAffer);
                 List<WhSeedingWallRuleCommand> whSeedingWallRuleList = export.getWhSeedingWallRuleCommandList();
                 if (whSeedingWallRuleList == null || whSeedingWallRuleList.size() == 0) {
-                    log.info("matchSeedingWallWhenSeeding, not have whSeedingWallRuleList! batch:{}, container:{}", recFacilityPath.getBatch(), recFacilityPath.getContainerCode());
+                    log.info("logId:{},METHOD[matchSeedingWallWhenSeeding] RETURN: not have whSeedingWallRuleList! ", logId);
                     return responseMsgForFacility(recFacilityPath, 0);
                 }
                 // @mender yimin.lu 2017/4/12 当第一个规则失败时候，进行后续规则校验
                 boolean flag = false;
+                log.info("logId:{},METHOD[matchSeedingWallWhenSeeding]:ITERATOR RULE", logId);
                 for (WhSeedingWallRuleCommand whSeedingWallRule : whSeedingWallRuleList) {
                     if (!flag) {
                         // 播种墙组
                         WhOutboundFacilityGroup facilityGroup = this.whFacilityRecPathManager.findOutboundFacilityGroupById(whSeedingWallRule.getOutboundFacilityGroupId(), ouId);
                         if (facilityGroup == null) {
-                            return responseMsgForFacility(recFacilityPath, 0);
+                            log.error("logId:{},METHOD[matchSeedingWallWhenSeeding]: rule[{}] find no facilityGroup", logId, JsonUtil.beanToJson(whSeedingWallRule));
+                            continue;
                         }
                         try {
-                            this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, null, recFacilityPath, wh);
+                            this.whFacilityRecPathManager.occupyFacilityAndlocation(facilityGroup, null, recFacilityPath, wh, logId);
                             flag = true;
-                            log.info("matchSeedingWallWhenSeeding, matchSuccess! batch:{}, container:{}", recFacilityPath.getBatch(), recFacilityPath.getContainerCode());
+                            log.info("logId:{},METHOD[matchSeedingWallWhenSeeding]: matchSuccess! facilityGroup:{}", logId, JsonUtil.beanToJson(facilityGroup));
+                            break;
                         } catch (Exception e) {
-                            log.error("matchSeedingWallWhenSeeding error", e);
+                            log.error("logId:{},METHOD[matchSeedingWallWhenSeeding]: rule[{}] occupy facility error[{}]", logId, JsonUtil.beanToJson(whSeedingWallRule), e);
                             flag = false;
                         }
                     }
                 }
                 return responseMsgForFacility(recFacilityPath, flag ? 1 : 0);
             } else {
-                this.whFacilityRecPathManager.occupyFacilityAndlocation(null, prePath, recFacilityPath, wh);
+                log.info("logId:{},METHOD[matchSeedingWallWhenSeeding]: have prePath! prePath:{}", logId, JsonUtil.beanToJson(prePath));
+                this.whFacilityRecPathManager.occupyFacilityAndlocation(null, prePath, recFacilityPath, wh, logId);
             }
         } catch (Exception e) {
             log.error("WaveFacilityManagerProxyImpl.matchSeedingWallWhenSeeding error", e);
