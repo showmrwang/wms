@@ -61,6 +61,7 @@ import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInbo
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundSnLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -11622,13 +11623,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             //出库逻辑才有复核数据
             if (WhContainerMoveType.OUT_CONTAINER.equals(scanObject)) {
                 //复核头信息
-                checkingHead = whCheckingDao.findCheckingInfoByParam(sourceContainerCode,null,null,null,ouId);
+                checkingHead = whCheckingDao.findWhCheckingByContainerId(sourceContainerId,CheckingStatus.NEW, ouId);
                 //复核明细信息
                 if (null != checkingHead && null != checkingHead.getId()) {
                     checkLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(checkingHead.getId(), ouId);
                 }
-            }
-            
+            }            
         } else if (WhContainerMoveType.OUT_FACILITY.equals(scanObject)) {
             //源容器为播种墙
             if (null != containerLatticeNo) {
@@ -11662,7 +11662,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory is end, inventory list empty.");
             throw new BusinessException(ErrorCodes.MOVE_INVENTORY_NOT_EXIST);
         }
-        if (null == checkingHead || null == checkLineList || checkLineList.size() == 0) {
+        if (!WhContainerMoveType.IN_CONTAINER.equals(scanObject) && (null == checkingHead || null == checkLineList || checkLineList.size() == 0)) {
             // 传入需要变动的复核数据为空
             log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory is end, checking date empty.");
             throw new BusinessException(ErrorCodes.MOVE_CHECKING_NOT_EXIST);
@@ -11760,149 +11760,152 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     whSkuInventoryDao.saveOrUpdate(oldInv);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, oldInv, ouId, userId, null, null);
                 }
-                /**更新复核数据*/
-                //判断目标容器是否已经存在复核头数据
-                WhCheckingCommand targetChecking = whCheckingDao.findCheckingByOutboundBox(targetContainerCode, ouId);
-                Long targetCheckingId = null;
-                //目标容器不存在复核头数据进行新增
-                if (null == targetChecking) {
-                    WhChecking moveChecking = new WhChecking();
-                    BeanUtils.copyProperties(checkingHead, moveChecking);
-                    moveChecking.setId(null);
-                    moveChecking.setCreateTime(new Date());
-                    moveChecking.setLastModifyTime(new Date());
-                    moveChecking.setOutboundboxCode(targetContainerCode);
-                    moveChecking.setOutboundboxId(findOutboundboxIdByCode(targetContainerCode, ouId));
-                    whCheckingDao.insert(moveChecking);
-                    insertGlobalLog(GLOBAL_LOG_INSERT, moveChecking, ouId, userId, null, null);
-                    
-                    targetCheckingId = moveChecking.getId();
-                } else {
-                    targetCheckingId = targetChecking.getId();
-                }
-                    
-                long chkScanQty = scanQty.longValue();
-                int chkSurplusQty = 0;
-                for (WhCheckingLineCommand checkLine : checkLineList) {
-                    if (null == checkLine) {                            
-                        continue;
+                //出库操作才会更新复核数据
+                if (!WhContainerMoveType.IN_CONTAINER.equals(scanObject)) {
+                    /**更新复核数据*/
+                    //判断目标容器是否已经存在复核头数据
+                    WhCheckingCommand targetChecking = whCheckingDao.findCheckingByOutboundBox(targetContainerCode, ouId);
+                    Long targetCheckingId = null;
+                    //目标容器不存在复核头数据进行新增
+                    if (null == targetChecking) {
+                        WhChecking moveChecking = new WhChecking();
+                        BeanUtils.copyProperties(checkingHead, moveChecking);
+                        moveChecking.setId(null);
+                        moveChecking.setCreateTime(new Date());
+                        moveChecking.setLastModifyTime(new Date());
+                        moveChecking.setOutboundboxCode(targetContainerCode);
+                        moveChecking.setOutboundboxId(findOutboundboxIdByCode(targetContainerCode, ouId));
+                        whCheckingDao.insert(moveChecking);
+                        insertGlobalLog(GLOBAL_LOG_INSERT, moveChecking, ouId, userId, null, null);
+                        
+                        targetCheckingId = moveChecking.getId();
+                    } else {
+                        targetCheckingId = targetChecking.getId();
                     }
-                    //判断是否需要更新这条复合明细
-                    String checkLineSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(checkLine);
-                    if (invSkuAttrId.equals(checkLineSkuAttrId)) {
-                        //目标容器存在复核头数据,先获取复核明细
-                        boolean inserLineFlg = true;
-                        List<WhCheckingLineCommand> newLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(targetCheckingId, ouId);
-                        if (null != newLineList && newLineList.size() > 0) {
-                            for (WhCheckingLineCommand newLine : newLineList) {
-                                if (null == newLine) {
-                                    continue;
-                                }
-                                String newCheckSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(newLine);
-                                if (checkLineSkuAttrId.equals(newCheckSkuAttrId)) {
-                                    inserLineFlg = false;
-                                    break;
-                                }
-                            }
+                        
+                    long chkScanQty = scanQty.longValue();
+                    int chkSurplusQty = 0;
+                    for (WhCheckingLineCommand checkLine : checkLineList) {
+                        if (null == checkLine) {                            
+                            continue;
                         }
-                        //不存在复核明细,新增数据
-                        if (inserLineFlg) {
-                            WhCheckingLine moveCheckLine = new WhCheckingLine();
-                            BeanUtils.copyProperties(checkLine, moveCheckLine);
-                            moveCheckLine.setCreateTime(new Date());
-                            moveCheckLine.setLastModifyTime(new Date());
-                            moveCheckLine.setId(null);
-                            moveCheckLine.setUuid(newUuid);
-                            moveCheckLine.setCheckingId(targetCheckingId);
-                            Long lineQty = checkLine.getQty();
-                            if (null == lineQty || lineQty.intValue() == 0) {
-                                log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory, checking line qty is null or zero, please check data.");
-                                continue;
-                            }
-                            if (lineQty.longValue() <= chkScanQty) {
-                                moveCheckLine.setQty(lineQty);
-                                chkScanQty = chkScanQty-lineQty.longValue();
-                            } else {
-                                moveCheckLine.setQty(chkScanQty);                                
-                                chkSurplusQty = lineQty.intValue()-scanQty.intValue();
-                                chkScanQty = 0;                                
-                            }                                
-                            whCheckingLineDao.insert(moveCheckLine);
-                            insertGlobalLog(GLOBAL_LOG_INSERT, moveCheckLine, ouId, userId, null, null);
-                            // 更新原有复核明细
-                            WhCheckingLine oldChkLine = new WhCheckingLine();
-                            BeanUtils.copyProperties(checkLine, oldChkLine);
-                            if (chkSurplusQty == 0) {
-                                //原有复核数据已经全部移动完成,删除原有复核明细
-                                whCheckingLineDao.deleteByIdExt(oldChkLine.getId(), ouId);
-                                insertGlobalLog(GLOBAL_LOG_DELETE, oldChkLine, ouId, userId, null, null);
-                            } else {
-                                //原有库存数部分移动完成,修改原有商品库存数量
-                                oldChkLine.setQty(new Long(chkSurplusQty));
-                                oldChkLine.setLastModifyTime(new Date());
-                                whCheckingLineDao.saveOrUpdate(oldChkLine);
-                                insertGlobalLog(GLOBAL_LOG_UPDATE, oldChkLine, ouId, userId, null, null);
-                            }
-                        } else {
-                            //存在复核明细,更新已有数据
-                            for (WhCheckingLineCommand newLine : newLineList) {
-                                if (null == newLine) {
-                                    continue;
-                                }
-                                String newCheckSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(newLine);
-                                if (checkLineSkuAttrId.equals(newCheckSkuAttrId)) {
-                                    WhCheckingLine upCheckLine = new WhCheckingLine();
-                                    BeanUtils.copyProperties(newLine, upCheckLine);
-                                    upCheckLine.setLastModifyTime(new Date());
-                                    Long lineQty = checkLine.getQty();
-                                    if (null == lineQty || lineQty.intValue() == 0) {
-                                        log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory, checking line qty is null or zero, please check data.");
+                        //判断是否需要更新这条复合明细
+                        String checkLineSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(checkLine);
+                        if (invSkuAttrId.equals(checkLineSkuAttrId)) {
+                            //目标容器存在复核头数据,先获取复核明细
+                            boolean inserLineFlg = true;
+                            List<WhCheckingLineCommand> newLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(targetCheckingId, ouId);
+                            if (null != newLineList && newLineList.size() > 0) {
+                                for (WhCheckingLineCommand newLine : newLineList) {
+                                    if (null == newLine) {
                                         continue;
                                     }
-                                    Long existQty = upCheckLine.getQty();
-                                    if (lineQty.longValue() <= chkScanQty) {
-                                        upCheckLine.setQty(existQty+lineQty);
-                                        chkScanQty = chkScanQty-lineQty.longValue();
-                                    } else {
-                                        upCheckLine.setQty(existQty+chkScanQty);                                
-                                        chkSurplusQty = lineQty.intValue()-scanQty.intValue();
-                                        chkScanQty = 0;                                
-                                    }
-                                    whCheckingLineDao.saveOrUpdate(upCheckLine);
-                                    insertGlobalLog(GLOBAL_LOG_INSERT, upCheckLine, ouId, userId, null, null);
-                                    // 更新原有复核明细
-                                    WhCheckingLine oldChkLine = new WhCheckingLine();
-                                    BeanUtils.copyProperties(checkLine, oldChkLine);
-                                    if (chkSurplusQty == 0) {
-                                        //原有复核数据已经全部移动完成,删除原有复核明细
-                                        whCheckingLineDao.deleteByIdExt(oldChkLine.getId(), ouId);
-                                        insertGlobalLog(GLOBAL_LOG_DELETE, oldChkLine, ouId, userId, null, null);
-                                    } else {
-                                        //原有库存数部分移动完成,修改原有商品库存数量
-                                        oldChkLine.setQty(new Long(chkSurplusQty));
-                                        oldChkLine.setLastModifyTime(new Date());
-                                        whCheckingLineDao.saveOrUpdate(oldChkLine);
-                                        insertGlobalLog(GLOBAL_LOG_UPDATE, oldChkLine, ouId, userId, null, null);
+                                    String newCheckSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(newLine);
+                                    if (checkLineSkuAttrId.equals(newCheckSkuAttrId)) {
+                                        inserLineFlg = false;
+                                        break;
                                     }
                                 }
-                                if (chkScanQty == 0) {
-                                    break;
+                            }
+                            //不存在复核明细,新增数据
+                            if (inserLineFlg) {
+                                WhCheckingLine moveCheckLine = new WhCheckingLine();
+                                BeanUtils.copyProperties(checkLine, moveCheckLine);
+                                moveCheckLine.setCreateTime(new Date());
+                                moveCheckLine.setLastModifyTime(new Date());
+                                moveCheckLine.setId(null);
+                                moveCheckLine.setUuid(newUuid);
+                                moveCheckLine.setCheckingId(targetCheckingId);
+                                Long lineQty = checkLine.getQty();
+                                if (null == lineQty || lineQty.intValue() == 0) {
+                                    log.info("WhSkuInventoryManagerImpl execuBoxMoveInventory, checking line qty is null or zero, please check data.");
+                                    continue;
+                                }
+                                if (lineQty.longValue() <= chkScanQty) {
+                                    moveCheckLine.setQty(lineQty);
+                                    chkScanQty = chkScanQty-lineQty.longValue();
+                                } else {
+                                    moveCheckLine.setQty(chkScanQty);                                
+                                    chkSurplusQty = lineQty.intValue()-scanQty.intValue();
+                                    chkScanQty = 0;                                
+                                }                                
+                                whCheckingLineDao.insert(moveCheckLine);
+                                insertGlobalLog(GLOBAL_LOG_INSERT, moveCheckLine, ouId, userId, null, null);
+                                // 更新原有复核明细
+                                WhCheckingLine oldChkLine = new WhCheckingLine();
+                                BeanUtils.copyProperties(checkLine, oldChkLine);
+                                if (chkSurplusQty == 0) {
+                                    //原有复核数据已经全部移动完成,删除原有复核明细
+                                    whCheckingLineDao.deleteByIdExt(oldChkLine.getId(), ouId);
+                                    insertGlobalLog(GLOBAL_LOG_DELETE, oldChkLine, ouId, userId, null, null);
+                                } else {
+                                    //原有库存数部分移动完成,修改原有商品库存数量
+                                    oldChkLine.setQty(new Long(chkSurplusQty));
+                                    oldChkLine.setLastModifyTime(new Date());
+                                    whCheckingLineDao.saveOrUpdate(oldChkLine);
+                                    insertGlobalLog(GLOBAL_LOG_UPDATE, oldChkLine, ouId, userId, null, null);
+                                }
+                            } else {
+                                //存在复核明细,更新已有数据
+                                for (WhCheckingLineCommand newLine : newLineList) {
+                                    if (null == newLine) {
+                                        continue;
+                                    }
+                                    String newCheckSkuAttrId = SkuCategoryProvider.getSkuAttrIdByCheckLine(newLine);
+                                    if (checkLineSkuAttrId.equals(newCheckSkuAttrId)) {
+                                        WhCheckingLine upCheckLine = new WhCheckingLine();
+                                        BeanUtils.copyProperties(newLine, upCheckLine);
+                                        upCheckLine.setLastModifyTime(new Date());
+                                        Long lineQty = checkLine.getQty();
+                                        if (null == lineQty || lineQty.intValue() == 0) {
+                                            log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory, checking line qty is null or zero, please check data.");
+                                            continue;
+                                        }
+                                        Long existQty = upCheckLine.getQty();
+                                        if (lineQty.longValue() <= chkScanQty) {
+                                            upCheckLine.setQty(existQty+lineQty);
+                                            chkScanQty = chkScanQty-lineQty.longValue();
+                                        } else {
+                                            upCheckLine.setQty(existQty+chkScanQty);                                
+                                            chkSurplusQty = lineQty.intValue()-scanQty.intValue();
+                                            chkScanQty = 0;                                
+                                        }
+                                        whCheckingLineDao.saveOrUpdate(upCheckLine);
+                                        insertGlobalLog(GLOBAL_LOG_INSERT, upCheckLine, ouId, userId, null, null);
+                                        // 更新原有复核明细
+                                        WhCheckingLine oldChkLine = new WhCheckingLine();
+                                        BeanUtils.copyProperties(checkLine, oldChkLine);
+                                        if (chkSurplusQty == 0) {
+                                            //原有复核数据已经全部移动完成,删除原有复核明细
+                                            whCheckingLineDao.deleteByIdExt(oldChkLine.getId(), ouId);
+                                            insertGlobalLog(GLOBAL_LOG_DELETE, oldChkLine, ouId, userId, null, null);
+                                        } else {
+                                            //原有库存数部分移动完成,修改原有商品库存数量
+                                            oldChkLine.setQty(new Long(chkSurplusQty));
+                                            oldChkLine.setLastModifyTime(new Date());
+                                            whCheckingLineDao.saveOrUpdate(oldChkLine);
+                                            insertGlobalLog(GLOBAL_LOG_UPDATE, oldChkLine, ouId, userId, null, null);
+                                        }
+                                    }
+                                    if (chkScanQty == 0) {
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        if (chkScanQty == 0) {
+                            break;
+                        }
                     }
-                    if (chkScanQty == 0) {
-                        break;
+                    //判断原有的复核明细是否还存在
+                    List<WhCheckingLineCommand> sourceCheckingLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(checkingHead.getId(), ouId);
+                    if (null == sourceCheckingLineList || sourceCheckingLineList.size() == 0) {                        
+                        //删除原有的复核头数据
+                        WhChecking oldChecking = new WhChecking();
+                        BeanUtils.copyProperties(checkingHead, oldChecking);
+                        whCheckingDao.deleteByIdExt(oldChecking.getId(), ouId);
+                        insertGlobalLog(GLOBAL_LOG_INSERT, oldChecking, ouId, userId, null, null);
                     }
-                }
-                //判断原有的复核明细是否还存在
-                List<WhCheckingLineCommand> sourceCheckingLineList = whCheckingLineDao.findCheckingLineCommandByCheckingId(checkingHead.getId(), ouId);
-                if (null == sourceCheckingLineList || sourceCheckingLineList.size() == 0) {                        
-                    //删除原有的复核头数据
-                    WhChecking oldChecking = new WhChecking();
-                    BeanUtils.copyProperties(checkingHead, oldChecking);
-                    whCheckingDao.deleteByIdExt(oldChecking.getId(), ouId);
-                    insertGlobalLog(GLOBAL_LOG_INSERT, oldChecking, ouId, userId, null, null);
                 }
                 
                 //获取当前库存是否有sn信息

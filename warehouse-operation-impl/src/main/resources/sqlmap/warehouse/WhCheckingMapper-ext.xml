@@ -1389,6 +1389,7 @@
 					</if>
 					<if test="containerLatticeNo != null and containerLatticeNo != ''">
 						and checking.container_lattice_no = #{containerLatticeNo}
+						and container_id is null
 						and (checking.outboundbox_code is null or checking.outboundbox_code = '')
 					</if>
     </select>
