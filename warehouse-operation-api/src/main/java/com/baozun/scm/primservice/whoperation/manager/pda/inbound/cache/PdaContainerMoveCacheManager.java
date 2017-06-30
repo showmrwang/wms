@@ -17,18 +17,17 @@ package com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache;
 import java.util.Map;
 import java.util.Set;
 
-import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.CheckScanSkuResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
+import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 
 /**
  * @author feng.hu
  *
  */
-public interface PdaOutBoundBoxMoveCacheManager extends BaseManager {
-    
+public interface PdaContainerMoveCacheManager extends BaseManager {
     /**
-     * pda出库箱整箱移动复核sku并缓存及提示后续操作判断
+     * pda周转箱移动复核sku并缓存及提示后续操作判断
      * @author feng.hu
      * @param sourceContainerCode
      * @param insideContainerSkuIds
@@ -38,7 +37,7 @@ public interface PdaOutBoundBoxMoveCacheManager extends BaseManager {
      * @param logId
      * @return
      */
-    public CheckScanSkuResultCommand sysOutBoundboxContainerSplitMoveCacheSkuAndCheck(String sourceContainerCode, Map<String, Set<String>> insideContainerSkuAttrIds,
-                               Map<String, Long> skuAttrIdsQty,Map<String, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, WhSkuCommand skuCmd, Integer movePattern, String logId);
+    public CheckScanSkuResultCommand sysContainerSplitMoveCacheSkuAndCheck(String sourceContainerCode, Map<String, Set<String>> insideContainerSkuAttrIds,
+                               Map<String, Long> skuAttrIdsQty,Map<String, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect, WhSkuCommand skuCmd, String logId);
 
 }
