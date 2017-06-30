@@ -97,6 +97,7 @@ import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.cache.PdaPutawayCacheManager;
 import com.baozun.scm.primservice.whoperation.manager.pda.inbound.putaway.SkuCategoryProvider;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine;
@@ -184,6 +185,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     private WhCheckingLineDao whCheckingLineDao;
     @Autowired
     private OutBoundBoxTypeDao outBoundBoxTypeDao;
+    @Autowired
+    private ContainerManager containerManager;
 
     /**
      * 库位绑定（分配容器库存及生成待移入库位库存）
@@ -11741,7 +11744,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void execuContainerMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode,Long targetContainerId,String scanObject, Map<String, List<String>> scanSkuAttrIdsSn, Warehouse warehouse,Map<String,Double> scanSkuAttrIdsQty, Long ouId, Long userId, String logId) {   
         log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory is start");
-        if (StringUtils.isEmpty(sourceContainerCode) || StringUtils.isEmpty(targetContainerCode) || StringUtils.isEmpty(scanObject) || null == scanSkuAttrIdsSn || scanSkuAttrIdsSn.size() == 0 || null == scanSkuAttrIdsQty || scanSkuAttrIdsQty.size() == 0) {
+        if (StringUtils.isEmpty(sourceContainerCode) || null == sourceContainerId || StringUtils.isEmpty(targetContainerCode) || null == targetContainerId || StringUtils.isEmpty(scanObject) || null == scanSkuAttrIdsSn || scanSkuAttrIdsSn.size() == 0 || null == scanSkuAttrIdsQty || scanSkuAttrIdsQty.size() == 0) {
             // 传入需要变动的库存为空
             log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory is end, param is empty.");
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -11754,7 +11757,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         List<WhCheckingLineCommand> checkLineList = null;
         
         if (WhContainerMoveType.IN_CONTAINER.equals(scanObject) || WhContainerMoveType.OUT_CONTAINER.equals(scanObject)) {
-            //源容器为出库箱
+            //周转箱库存信息
             orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,null,null,null,sourceContainerId,ouId);
             //出库逻辑才有复核数据
             if (WhContainerMoveType.OUT_CONTAINER.equals(scanObject)) {
@@ -11768,8 +11771,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else if (WhContainerMoveType.OUT_FACILITY.equals(scanObject)) {
             //源容器为播种墙
             if (null != containerLatticeNo) {
-                orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,sourceContainerCode, null,containerLatticeNo,null, ouId);
-                
+                //播种墙+货格库存信息
+                orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,sourceContainerCode, null,containerLatticeNo,null, ouId);                
                 //复核头信息
                 checkingHead = whCheckingDao.findCheckingInfoByParam(null,sourceContainerId,null,containerLatticeNo,ouId);
                 //复核明细信息
@@ -11780,6 +11783,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else if (WhContainerMoveType.OUT_SMAIL_CAR.equals(scanObject)) {
             //源容器为小车
             if (null != sourceContainerId && null != containerLatticeNo) {
+                //小车+货格库存信息
                 orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,null,sourceContainerId,containerLatticeNo,null, ouId);
                 //复核头信息
                 checkingHead = whCheckingDao.findCheckingInfoByParam(null,null,sourceContainerId,containerLatticeNo,ouId);
@@ -11802,8 +11806,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 传入需要变动的复核数据为空
             log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory is end, checking date empty.");
             throw new BusinessException(ErrorCodes.MOVE_CHECKING_NOT_EXIST);
-        }
-        
+        }        
+        //判断是否往目标周转箱中移动过库存
+        boolean moveInvFlg = false;
         Set<String> scanSkuAttrIds = scanSkuAttrIdsSn.keySet();
         //循环扫描数量移动库存
         for (String scanSkuAttrId : scanSkuAttrIds) {
@@ -11850,8 +11855,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     scanSurplusQty = 0;
                     
                 }
-                //商品库存出库箱信息保存
-                moveInv.setOutboundboxCode(targetContainerCode);
+                //商品库存周转箱信息保存
+                moveInv.setInsideContainerId(targetContainerId);
                 //生成新的商品uuid
                 String newUuid = null;
                 try {
@@ -11873,6 +11878,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);                
                 // 记录入库库存日志(这个实现的有问题)
                 insertSkuInventoryLog(moveInv.getId(), moveInv.getOnHandQty(), orginInv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
+                //有库存变更设置开关未true
+                moveInvFlg = true;
 //                } else {
 //                    // 存在新的uuid记录的数据更新库存数
 //                    moveInv.setId(checkInv.getId());
@@ -11900,17 +11907,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 if (!WhContainerMoveType.IN_CONTAINER.equals(scanObject)) {
                     /**更新复核数据*/
                     //判断目标容器是否已经存在复核头数据
-                    WhCheckingCommand targetChecking = whCheckingDao.findCheckingByOutboundBox(targetContainerCode, ouId);
+                    WhCheckingCommand targetChecking = whCheckingDao.findWhCheckingByContainerId(targetContainerId,CheckingStatus.NEW, ouId);
                     Long targetCheckingId = null;
                     //目标容器不存在复核头数据进行新增
-                    if (null == targetChecking) {
+                    if (null == targetChecking || null == targetChecking.getId()) {
                         WhChecking moveChecking = new WhChecking();
                         BeanUtils.copyProperties(checkingHead, moveChecking);
                         moveChecking.setId(null);
                         moveChecking.setCreateTime(new Date());
                         moveChecking.setLastModifyTime(new Date());
-                        moveChecking.setOutboundboxCode(targetContainerCode);
-                        moveChecking.setOutboundboxId(findOutboundboxIdByCode(targetContainerCode, ouId));
+                        moveChecking.setContainerId(targetContainerId);                        
                         whCheckingDao.insert(moveChecking);
                         insertGlobalLog(GLOBAL_LOG_INSERT, moveChecking, ouId, userId, null, null);
                         
@@ -12094,6 +12100,25 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 throw new BusinessException(ErrorCodes.SCAN_SKU_QTY_GREATER_THAN_INV_QTY, new Object[] {sourceContainerCode,SkuCategoryProvider.getSkuId(scanSkuAttrId),scanQty});
             }
         }
+        //有库存增加到目标周转箱内判断当前周转箱状态,是否需要变更状态
+        if (moveInvFlg) {
+            //获取目标周转箱状态
+            Container targetContainer = containerManager.getContainerById(targetContainerId, ouId);
+            if (null != targetContainer && null != targetContainer.getStatus() && targetContainer.getStatus() == ContainerStatus.CONTAINER_STATUS_USABLE) {
+                targetContainer.setOperatorId(userId);
+                //周转箱标识为已占用
+                targetContainer.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);                
+                if (WhContainerMoveType.IN_CONTAINER.equals(scanObject)) {
+                    //入库场景,状态为待上架
+                    targetContainer.setStatus(ContainerStatus.CONTAINER_STATUS_CAN_PUTAWAY);
+                } else {
+                    //出库场景,状态为拣货完成
+                    targetContainer.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING_END);
+                }
+                containerManager.saveOrUpdateByVersion(targetContainer);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, targetContainer, ouId, userId, null, null);
+            }
+        }
         log.info("WhSkuInventoryManagerImpl execuContainerMoveInventory is end. ");
     }
     
@@ -12132,7 +12157,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         List<WhCheckingLineCommand> checkLineList = null;
         
         if (WhOutBoundBoxMoveType.OUT_BOUND_CONTAINER.equals(scanObject)) {
-            //源容器为出库箱
+            //周转箱库存信息
             orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(sourceContainerCode,null,null,null,null,ouId);
             //复核头信息
             checkingHead = whCheckingDao.findCheckingInfoByParam(sourceContainerCode,null,null,null,ouId);
@@ -12144,8 +12169,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else if (WhOutBoundBoxMoveType.OUT_BOUND_FACILITY.equals(scanObject)) {
             //源容器为播种墙
             if (null != containerLatticeNo) {
-                orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,sourceContainerCode, null,containerLatticeNo,null, ouId);
-                
+                //播种墙+货格库存信息
+                orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,sourceContainerCode, null,containerLatticeNo,null, ouId);                
                 //复核头信息
                 checkingHead = whCheckingDao.findCheckingInfoByParam(null,sourceContainerId,null,containerLatticeNo,ouId);
                 //复核明细信息
@@ -12156,6 +12181,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         } else if (WhOutBoundBoxMoveType.OUT_BOUND_SMAIL_CAR.equals(scanObject)) {
             //源容器为小车
             if (null != sourceContainerId && null != containerLatticeNo) {
+                //小车+货格库存信息
                 orginInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null,null,sourceContainerId,containerLatticeNo,null, ouId);
                 //复核头信息
                 checkingHead = whCheckingDao.findCheckingInfoByParam(null,null,sourceContainerId,containerLatticeNo,ouId);
@@ -12277,7 +12303,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 WhCheckingCommand targetChecking = whCheckingDao.findCheckingByOutboundBox(targetContainerCode, ouId);
                 Long targetCheckingId = null;
                 //目标容器不存在复核头数据进行新增
-                if (null == targetChecking) {
+                if (null == targetChecking || null == targetChecking.getId()) {
                     WhChecking moveChecking = new WhChecking();
                     BeanUtils.copyProperties(checkingHead, moveChecking);
                     moveChecking.setId(null);
