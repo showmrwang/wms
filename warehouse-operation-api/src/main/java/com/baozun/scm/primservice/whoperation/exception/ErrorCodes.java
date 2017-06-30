@@ -1093,6 +1093,9 @@ public class ErrorCodes {
     
     /**当前容器存在库存*/
     public static final int CONTAINER_IS_INVENTORY=70072;
+    
+    /**库存不足,请先执行补货工作*/
+    public static final int INVENTORY_IS_ERROR=70073;
 
     // 70001-80000 tangming
 
