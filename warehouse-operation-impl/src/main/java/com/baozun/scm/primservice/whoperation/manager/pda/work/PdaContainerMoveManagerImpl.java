@@ -127,7 +127,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
             //判断出库箱是否满足拆箱条件
             //1、必须拣货完成或者播种完成的出库箱才能拆分（判断条件已经产生了待复核数据）
             WhCheckingCommand checkingCommand = whCheckingDao.findWhCheckingByContainerId(containerId,CheckingStatus.NEW, ouId);
-            if(null == checkingCommand || !checkingCommand.getStatus().equals(CheckingStatus.NEW)){
+            if(null == checkingCommand || null == checkingCommand.getStatus() || !checkingCommand.getStatus().equals(CheckingStatus.NEW)){
                 throw new BusinessException(ErrorCodes.CONTAINER_NOT_MOVE_CONDITION);
             }
         }
@@ -276,7 +276,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
                 }
                 //且目标出库箱也是拣货或播种完成状态
                 WhCheckingCommand checkingCommand = whCheckingDao.findWhCheckingByContainerId(targetContainerId,CheckingStatus.NEW, ouId);
-                if(null == checkingCommand || !checkingCommand.getStatus().equals(CheckingStatus.NEW)){
+                if(null == checkingCommand || null == checkingCommand.getStatus() || !checkingCommand.getStatus().equals(CheckingStatus.NEW)){
                     throw new BusinessException(ErrorCodes.CONTAINER_NOT_MOVE_CONDITION);
                 }
             }
