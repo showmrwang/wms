@@ -227,8 +227,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        is_full = 0 ,
 		        lifecycle = 1 ,
 		        status=1 
-	        WHERE 
-		         ou_id=#{ouId} and id in
+	        WHERE
+					ou_id=#{ouId} and id in
 		        <foreach collection="list" item="id" open="(" separator="," close=")">
 				#{id}
 			</foreach>

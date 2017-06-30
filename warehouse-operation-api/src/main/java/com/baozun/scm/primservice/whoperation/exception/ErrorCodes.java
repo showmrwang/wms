@@ -1093,6 +1093,9 @@ public class ErrorCodes {
     
     /**当前容器存在库存*/
     public static final int CONTAINER_IS_INVENTORY=70072;
+    
+    /**库存不足,请先执行补货工作*/
+    public static final int INVENTORY_IS_ERROR=70073;
 
     // 70001-80000 tangming
 
@@ -1135,6 +1138,8 @@ public class ErrorCodes {
     public static final int ODO_NOT_FIND = 80018;
     /** 错误,库存中包含多条出库单信息 */
     public static final int SKU_INV_HAVE_MORE_ODO = 80019;
+    /** 集货容器状态不正确 */
+    public static final int COLLECTION_CONTAINER_STATUS_ERROR = 80020;
     // 80001-90000 zhukai
 
     // 100001-110000 liuqiming
@@ -1321,6 +1326,10 @@ public class ErrorCodes {
     public static final int TARGET_CONTAINER_STATUS_NOT_IN_MOVE = 120050;
     /**输入的目标周转箱[{0}]状态不对,不能进行出库周转箱移动库存操作 */
     public static final int TARGET_CONTAINER_STATUS_NOT_OUT_MOVE = 120051;
+    /**输入的目标周转箱和源周转箱是同一个周转箱,请输入正确的目标周转箱 */
+    public static final int TARGET_CONTAINER_SAME_SOURCE_CONTAINER = 120052;
+    /**输入的目标出库箱和源出库箱是同一个出库箱,请输入正确的目标出库箱 */
+    public static final int TARGET_OUTBOUNDBOX_SAME_SOURCE_OUTBOUNDBOX = 120053;
     
     // 120000-130000 zhaozili
 

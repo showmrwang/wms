@@ -89,7 +89,7 @@ public interface ContainerDao extends BaseDao<Container, Long> {
      * @param list
      * @return
      */
-    int updateCarTypeByIds(@Param("List") List<Long> list, @Param("ouId") Long ouId);
+    int updateCarTypeByIds(@Param("list") List<Long> list, @Param("ouId") Long ouId);
 
     /**
      * 通过id进行查询单个对象

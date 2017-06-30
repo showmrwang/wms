@@ -4621,7 +4621,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
      * @param logId
      */
     @Override
-    public void execUnbinding(String outerContainerCode, String insideContainerCode, String locationCode, Integer putawayPatternDetailType, Long ouId, Long userId, String logId){
+    public void execUnbinding(Boolean isCacelAll,String outerContainerCode, String insideContainerCode, String locationCode, Integer putawayPatternDetailType, Long ouId, Long userId, String logId){
         ContainerCommand outerCmd = null;
         if(!StringUtils.isEmpty(outerContainerCode)) {
             outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
@@ -4636,7 +4636,12 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR); 
             }
         }
-        whSkuInventoryManager.execUnbinding(outerCmd, insideCmd, locationCode, putawayPatternDetailType, ouId, userId, logId);
+        if(isCacelAll == true){
+            whSkuInventoryManager.execFinishPutaway(outerCmd, insideCmd, locationCode, null,null, null, null, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
+        }else{
+            whSkuInventoryManager.execUnbinding(outerCmd, insideCmd, locationCode, putawayPatternDetailType, ouId, userId, logId); 
+        }
+       
     }
     
     /***
@@ -4670,26 +4675,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             }
         }
         Long locationId = loc.getId();
-        Double scanQty = skuCmd.getScanSkuQty();
-        List<String> skuAttrIdsList = new ArrayList<String>();
-        // 1.获取功能配置
-        WhFunctionPutAway putawyaFunc = whFunctionPutAwayManager.findWhFunctionPutAwayByFunctionId(funcId, ouId, logId);
-        if (null == putawyaFunc) {
-            log.error("whFunctionPutaway is null error, logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.COMMON_FUNCTION_CONF_IS_NULL_ERROR);
-        }
-        InventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, insideCmd.getId().toString());
-        if (null == isCmd) {
-            isCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInventoryStatistic(insideCmd, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, logId);
-        }
-        ContainerStatisticResultCommand csrCmd = new ContainerStatisticResultCommand();
-        if (null != outerCmd) {
-            csrCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_STATISTIC, outerCmd.getId().toString());
-            if (null == csrCmd) {
-                csrCmd = pdaPutawayCacheManager.sysGuideContainerPutawayCacheInsideContainerStatistic(outerCmd, ouId, logId);
-            }
-        }
-        whSkuInventoryManager.execFinishPutaway(outerCmd, insideCmd, locationCode, skuCmd, skuAttrIdsList, scanQty, warehouse, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
+        whSkuInventoryManager.execFinishPutaway(outerCmd, insideCmd, locationCode, skuCmd,null, null, warehouse, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
         this.splitContainerPutawayRemoveAllCache(outerCmd, insideCmd, locationId, locationCode, false, null);
     }
 }

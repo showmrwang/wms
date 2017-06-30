@@ -460,6 +460,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 WHERE
                     colLine.ou_id = #{ouId}
                 AND col.batch = #{batchNo}
+                AND col.collection_status=4
             )
     </select>
 
@@ -494,4 +495,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND sc.ou_id = #{ouId}
 		AND facility.facility_code = #{seedingWallCode}
     </select>
+    
+    <select id="countNotHaveFacilityIdByBatch" resultType="int">
+		select 
+			count(1)
+		from 
+			t_wh_seeding_collection
+		where
+			batch = #{batch}
+			and facility_id is null
+            and ou_id = #{ouId}
+    </select>
+    
+    <update id="updateFacilityByBatch">
+    	update
+    		t_wh_seeding_collection
+    	set
+    		facility_id = #{facilityId}
+    	where
+    		batch = #{batch}
+            and ou_id = #{ouId}
+    </update>
 </mapper>

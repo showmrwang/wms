@@ -154,5 +154,9 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
      */
     int countOccupationByFacilityCode(@Param("seedingWallCode") String seedingWallCode, @Param("ouId") Long ouId);
 
+    int countNotHaveFacilityIdByBatch(@Param("batch") String batch, @Param("ouId") Long ouId);
+
+    int updateFacilityByBatch(@Param("batch") String batch, @Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
+
 
 }
