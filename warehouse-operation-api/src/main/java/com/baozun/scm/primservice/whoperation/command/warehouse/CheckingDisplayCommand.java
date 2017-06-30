@@ -51,6 +51,8 @@ public class CheckingDisplayCommand extends BaseCommand {
     private Long boxSkuCnt;
     /** 容器中商品数量*/
     private Long containerSkuCnt;
+    /** 货格中商品数量*/
+    private Long latticeSkuCnt;
 
     /** 客户(已有) */
     /** 店铺(已有) */
@@ -204,6 +206,14 @@ public class CheckingDisplayCommand extends BaseCommand {
 
     public void setContainerSkuCnt(Long containerSkuCnt) {
         this.containerSkuCnt = containerSkuCnt;
+    }
+
+    public Long getLatticeSkuCnt() {
+        return latticeSkuCnt;
+    }
+
+    public void setLatticeSkuCnt(Long latticeSkuCnt) {
+        this.latticeSkuCnt = latticeSkuCnt;
     }
 
 }
