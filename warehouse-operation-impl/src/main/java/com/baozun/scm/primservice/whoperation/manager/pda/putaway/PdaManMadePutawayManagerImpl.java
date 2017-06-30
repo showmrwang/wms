@@ -641,7 +641,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             throw new BusinessException(ErrorCodes.PDA_CONTAINER_SKUATT_NOTSAME_LOCATION_SKUATT);
         }
         // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
-        this.IsLocationBearWeight(containerId, LocationSkuList, whskuList, command);
+        this.IsLocationBearWeight(null,containerId, LocationSkuList, whskuList, command);
     }
 
 
@@ -717,7 +717,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_ATT_OVER_MAX);
         }
         // 累加容器、容器内SKU商品、库位上已有容器、商品的重量，判断是否<=库位承重*
-        this.IsLocationBearWeight(containerId, locationSkuList, whskuList, command);
+        this.IsLocationBearWeight(null,containerId, locationSkuList, whskuList, command);
     }
 
 
@@ -895,7 +895,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
      * @param mapObjectList
      * @return
      */
-    private void IsLocationBearWeight(Long containerId, List<WhSkuInventory> locationSkuList, List<WhSkuInventory> whSkuInventoryList, PdaManMadePutawayCommand command) {
+    private void IsLocationBearWeight(Double scanSkuQty,Long containerId, List<WhSkuInventory> locationSkuList, List<WhSkuInventory> whSkuInventoryList, PdaManMadePutawayCommand command) {
         log.info("PdaManMadePutwayManagerImpl IsLocationBearWeight start");
         Long locationId = command.getLocationId();
         Long ouId = command.getOuId();
@@ -915,8 +915,12 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         Map<String, Map<String, Double>> uomMap = new HashMap<String, Map<String, Double>>();
         uomMap.put(WhUomType.LENGTH_UOM, madeContainer.getLenUomConversionRate());
         uomMap.put(WhUomType.WEIGHT_UOM, madeContainer.getWeightUomConversionRate());
+        log.info("location id ===="+locId);
         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+        if(null == livwWeight){
+            livwWeight = 0.0;
+        }
         // 整托上架
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
             Double putwayWeight = madeContainer.getContainerWeight();
@@ -928,7 +932,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             }
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight < sum) {
+            if (locWeight.doubleValue() < sum.doubleValue()) {
+                log.error("PdaManMadePutwayManagerImpl locWeight is"+locWeight+" sum is :"+sum+"  livwWeight is "+livwWeight);
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
@@ -943,7 +948,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             putwayWeight = putwayWeight + insideContainersWeight.get(insideContainerId);
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight < sum) {
+            if (locWeight.doubleValue() < sum.doubleValue()) {
+                log.error("PdaManMadePutwayManagerImpl locWeight is"+locWeight+" sum is :"+sum+"  livwWeight is "+livwWeight);
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
@@ -952,15 +958,18 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             Double putwayWeight = 0.0;
             for (WhSkuInventory skuInv : whSkuInventoryList) {
                 Long skuId = skuInv.getSkuId();
+                log.info("sku id ===="+skuId);
+                log.info("scanSkuQty is ===="+scanSkuQty);
                 WhSkuCommand whSkuCommand = whSkuDao.findWhSkuByIdExt(skuId, ouId);
                 if (null == whSkuCommand) {
                     throw new BusinessException(ErrorCodes.SKU_NOT_FOUND); // 商品不存在
                 }
-                putwayWeight = putwayWeight + whSkuCommand.getWeight();
+                putwayWeight = putwayWeight + whSkuCommand.getWeight()*scanSkuQty;
             }
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight < sum) {
+            if (locWeight.doubleValue() < sum.doubleValue()) {
+                log.error("PdaManMadePutwayManagerImpl locWeight is"+locWeight+" sum is :"+sum+"  livwWeight is "+livwWeight);
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
@@ -2161,7 +2170,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             }
         }
         // 累加容器，容器内sku商品、库位上已有容器，商品重量， 判断是否<=库位承重 *
-        this.IsLocationBearWeight(contianerId, locSkuList, whskuList, command);
+        this.IsLocationBearWeight(scanSkuQty,contianerId, locSkuList, whskuList, command);
         // 直接上架
         CheckScanSkuResultCommand csRcmd = pdaManmadePutawayCacheManager.manMadeSplitContainerPutawayTipSkuOrContainer(outerCommand, insideCommand, insideContainerIds, insideContainerSkuIds, insideContainerSkuIdsQty, skuCmd, scanPattern, logId);
         if (csRcmd.isNeedScanSku()) { // 容器内还有商品没有扫描完毕继续扫描
@@ -2280,7 +2289,7 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_SKU_ATT_OVER_MAX);
         }
         // 累加容器、容器内SKU商品、库位上已有容器、商品的重量，判断是否<=库位承重*
-        this.IsLocationBearWeight(containerId, locationSkuList, whskuList, command);
+        this.IsLocationBearWeight(scanSkuQty,containerId, locationSkuList, whskuList, command);
         String uuid = whskuList.get(0).getUuid();
         List<WhSkuInventorySnCommand> whskuInvSnList = whSkuInventorySnDao.findWhSkuInventoryByUuid(ouId, uuid);
         if (null == whskuInvSnList || whskuInvSnList.size() == 0) { // 上架的sku商品不存在sn/残次信息,直接上架

@@ -236,5 +236,14 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param containerCode
      */
     public void cancelUpdateContainer(String tipContainerCode,String containerCode,Long ouId,Long userId,Long operationId,Integer pickingWay);
+    
+    /**
+     * 返回容器名称
+     * @param contianerCode
+     * @param ouId
+     * @param outboundboxCode
+     * @return
+     */
+    public String getContainerName(String contianerCode,Long ouId,String outboundboxCode);
 
 }

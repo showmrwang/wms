@@ -621,7 +621,7 @@ public class RuleManagerImpl extends BaseManagerImpl implements RuleManager {
                 if (StringUtils.isEmpty(ruleCommand.getRuleExtend())) {
                     continue;
                 }
-                List<Long> list = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleExtend(), ouId, waveId);
+                List<Long> list = whDistributionPatternRuleDao.testRuleSql(ruleCommand.getRuleSqlExtend(), ouId, waveId);
                 if (list == null || list.isEmpty()) {
                     continue;
                 }

@@ -6036,6 +6036,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					<if test="outboundboxCode != null and outboundboxCode != ''">
 						and inv.outboundbox_code = #{outboundboxCode}
 					</if>
+					<if test="insideContainerId != null and insideContainerId != ''">
+						and inv.inside_container_id = #{insideContainerId}
+					</if>
 					<if test="seedingWallCode != null and seedingWallCode != ''">
 						and inv.seeding_wall_code = #{seedingWallCode}
 					</if>
@@ -6044,6 +6047,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					</if>
 					<if test="containerLatticeNo != null and containerLatticeNo != ''">
 						and inv.container_lattice_no = #{containerLatticeNo}
+						and inv.inside_container_id is null
+						and (inv.outboundbox_code is null or inv.outboundbox_code = '')
 					</if>
     </select>
     

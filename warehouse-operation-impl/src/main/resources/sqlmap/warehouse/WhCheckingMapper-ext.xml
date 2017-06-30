@@ -666,7 +666,15 @@
         where outboundbox_code = #{outboundboxCode}
          and ou_id = #{ouId}
     </select>
-
+	
+	<select id="findWhCheckingByContainerId" resultMap="WhCheckingCommand">
+        select
+        <include refid="whCheckingColumnsExt"/>
+        from t_wh_checking 
+        where container_id = #{containerId}
+         and ou_id = #{ouId}
+         and status = #{status}
+    </select>
 
 
     <select id="findCheckingBySourceCode" resultMap="WhCheckingCommand">
@@ -1381,7 +1389,8 @@
 					</if>
 					<if test="containerLatticeNo != null and containerLatticeNo != ''">
 						and checking.container_lattice_no = #{containerLatticeNo}
-						and checking.outboundbox_code is null
+						and container_id is null
+						and (checking.outboundbox_code is null or checking.outboundbox_code = '')
 					</if>
     </select>
     

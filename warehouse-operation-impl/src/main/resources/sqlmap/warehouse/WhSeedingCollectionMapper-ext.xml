@@ -452,6 +452,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
                 WHERE
                     colLine.ou_id = #{ouId}
                 AND col.batch = #{batchNo}
+                AND col.collection_status=4
             )
     </select>
 
