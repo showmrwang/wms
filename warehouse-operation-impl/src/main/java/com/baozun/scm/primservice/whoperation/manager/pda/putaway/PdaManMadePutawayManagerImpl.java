@@ -917,6 +917,9 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
         uomMap.put(WhUomType.WEIGHT_UOM, madeContainer.getWeightUomConversionRate());
         LocationInvVolumeWeightCommand livw = whLocationInvVolumeWieghtManager.calculateLocationInvVolumeAndWeight(locId, ouId, uomMap, logId);
         Double livwWeight = livw.getWeight();// 库位上已有货物总重量
+        if(null == livwWeight){
+            livwWeight = 0.0;
+        }
         // 整托上架
         if (WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType) {
             Double putwayWeight = madeContainer.getContainerWeight();
@@ -928,7 +931,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             }
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight < sum) {
+            if (locWeight.doubleValue() < sum.doubleValue()) {
+                log.error("PdaManMadePutwayManagerImpl locWeight is"+locWeight+" sum is :"+sum+"  livwWeight is "+livwWeight);
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
@@ -943,7 +947,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             putwayWeight = putwayWeight + insideContainersWeight.get(insideContainerId);
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight < sum) {
+            if (locWeight.doubleValue() < sum.doubleValue()) {
+                log.error("PdaManMadePutwayManagerImpl locWeight is"+locWeight+" sum is :"+sum+"  livwWeight is "+livwWeight);
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
@@ -960,7 +965,8 @@ public class PdaManMadePutawayManagerImpl extends BaseManagerImpl implements Pda
             }
             // 库位已有商品重量加要上架货物的重量
             Double sum = livwWeight + putwayWeight;
-            if (locWeight < sum) {
+            if (locWeight.doubleValue() < sum.doubleValue()) {
+                log.error("PdaManMadePutwayManagerImpl locWeight is"+locWeight+" sum is :"+sum+"  livwWeight is "+livwWeight);
                 throw new BusinessException(ErrorCodes.PDA_MAN_MADE_PUTAWAY_LOCATION_UNBEAR_WEIGHT); // 容器总重量已经超过库位的承重,请更换库位进行上架
             }
         }
