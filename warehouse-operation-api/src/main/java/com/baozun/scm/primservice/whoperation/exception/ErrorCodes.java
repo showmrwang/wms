@@ -1321,6 +1321,10 @@ public class ErrorCodes {
     public static final int TARGET_CONTAINER_STATUS_NOT_IN_MOVE = 120050;
     /**输入的目标周转箱[{0}]状态不对,不能进行出库周转箱移动库存操作 */
     public static final int TARGET_CONTAINER_STATUS_NOT_OUT_MOVE = 120051;
+    /**输入的目标周转箱和源周转箱是同一个周转箱,请输入正确的目标周转箱 */
+    public static final int TARGET_CONTAINER_SAME_SOURCE_CONTAINER = 120052;
+    /**输入的目标出库箱和源出库箱是同一个出库箱,请输入正确的目标出库箱 */
+    public static final int TARGET_OUTBOUNDBOX_SAME_SOURCE_OUTBOUNDBOX = 120053;
     
     // 120000-130000 zhaozili
 
