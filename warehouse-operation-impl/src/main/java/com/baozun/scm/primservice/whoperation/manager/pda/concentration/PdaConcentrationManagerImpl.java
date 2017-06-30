@@ -53,6 +53,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionD
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhTemporaryStorageLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -143,6 +144,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Autowired
     private WhOdoLineDao whOdoLineDao;
+
+    @Autowired
+    private WhWorkLineDao whWorkLineDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -677,16 +681,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     if (0 == cnt) {
                         // 全部集货完成, 更改出库单头的状态为完成
                         log.info("all odo line finish collection");
-                        if (!OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.SEEDING.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.CHECKING.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.CHECKING_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.WEIGHING.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.WEIGHING_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.HANDOVER.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.HANDOVER_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
+                        if (!OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.SEEDING.equals(whOdo.getOdoStatus()) && !OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.CHECKING.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CHECKING_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.WEIGHING.equals(whOdo.getOdoStatus()) && !OdoStatus.WEIGHING_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.HANDOVER.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.HANDOVER_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
                             whOdo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
                             whOdo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
                             whOdoDao.saveOrUpdateByVersion(whOdo);
@@ -696,17 +693,9 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                         }
                     } else {
                         // 出库单明细还有未集货完成的状态, 更改出库单头的状态为集货中
-                        if (!OdoStatus.COLLECTION.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.SEEDING.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.CHECKING.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.CHECKING_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.WEIGHING.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.WEIGHING_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.HANDOVER.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.HANDOVER_FINISH.equals(whOdo.getOdoStatus())
-                                && !OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
+                        if (!OdoStatus.COLLECTION.equals(whOdo.getOdoStatus()) && !OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.SEEDING.equals(whOdo.getOdoStatus()) && !OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.CHECKING.equals(whOdo.getOdoStatus()) && !OdoStatus.CHECKING_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.WEIGHING.equals(whOdo.getOdoStatus()) && !OdoStatus.WEIGHING_FINISH.equals(whOdo.getOdoStatus())
+                                && !OdoStatus.HANDOVER.equals(whOdo.getOdoStatus()) && !OdoStatus.HANDOVER_FINISH.equals(whOdo.getOdoStatus()) && !OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
                             whOdo.setOdoStatus(OdoStatus.COLLECTION);
                             whOdoDao.saveOrUpdateByVersion(whOdo);
                         }
@@ -1393,10 +1382,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 3.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-        
+
         // 4.更新出库单状态
         this.updateOdoStatus(recCommand.getContainerId(), ouId);
-        
+
         // 5.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
             int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
@@ -1546,10 +1535,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 2.记录容器集货信息（到目的地）
         this.updateContainerToDestination(recCommand, destinationType, ouId);
-        
+
         // 3. 更新出库单状态
         this.updateOdoStatus(recCommand.getContainerId(), ouId);
-        
+
         // 4.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
             int count = whSeedingCollectionDao.checkCountInDestination(recCommand.getBatch(), Constants.TEMPORARY_STORAGE_LOCATION, ouId);
@@ -1645,6 +1634,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void insertIntoSeedingCollectionLine(WhSeedingCollection whSeedingCollection) {
+        log.info("pdaConcentrationManager.insertIntoSeedingCollectionLine start...");
         Long containerId = whSeedingCollection.getContainerId();
         if (null != containerId) {
             List<WhSeedingCollectionLineCommand> invList = this.whSkuInventoryDao.findListByContainerIdExt(containerId, whSeedingCollection.getOuId());
@@ -1671,9 +1661,8 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     this.whSeedingCollectionLineDao.insert(line);
                 }
             }
-
         }
-
+        log.info("pdaConcentrationManager.insertIntoSeedingCollectionLine start...");
     }
 
     @Override
@@ -1762,5 +1751,90 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
         }
         return isExists;
+    }
+
+    private void initSeedingCollectionInfo(String batch, Long ouId, Long userId) {
+        log.info("pdaConcentrationManager.initSeedingCollectionInfo start...");
+        log.info("params: batch:[{}], ouId:[{}]", batch, ouId);
+        List<WhSeedingCollection> list = whSeedingCollectionDao.findWhSeedingCollectionByBatchNo(batch, ouId);
+        if (null == list || list.isEmpty()) {
+            log.info("no seedingcollection info found");
+            List<WhWorkCommand> workList = whWorkDao.findWorkByBatchExt(batch, ouId);
+            if (null != workList && !workList.isEmpty()) {
+                for (WhWorkCommand work : workList) {
+                    log.info("work of batch, containerCode:[{}]", work.getContainerCode());
+                    // 非当前工作的集货信息从工作明细查询
+                    WhSeedingCollection seedingCollection = new WhSeedingCollection();
+                    seedingCollection.setBatch(batch);
+                    seedingCollection.setContainerId(work.getContainerId());
+                    seedingCollection.setOuId(ouId);
+                    seedingCollection.setCollectionStatus(CollectionStatus.NEW);
+                    seedingCollection.setPickingMode(work.getPickingMode());
+                    seedingCollection.setCheckingMode(work.getCheckingMode());
+                    seedingCollection.setDistributionMode(work.getDistributionMode());
+                    seedingCollection.setCreateTime(new Date());
+                    seedingCollection.setLastModifyTime(new Date());
+                    seedingCollection.setModifiedId(userId);
+                    this.whSeedingCollectionDao.insert(seedingCollection);
+                    log.info("work of batch, seedingCollectionId:[{}]", seedingCollection.getId());
+                    insertIntoSeedingCollectionLine(seedingCollection);
+                }
+            }
+        }
+        log.info("pdaConcentrationManager.initSeedingCollectionInfo finish...");
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void insertIntoSeedingCollectionNew(String batch, Long workId, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, Long userId) {
+        log.info("pdaConcentrationManager.insertIntoSeedingCollectionNew start...");
+        log.info("insertIntoSeedingCollectionNew params: batch:[{}], workId:[{}], ouId:[{}]", batch, workId, ouId);
+        // 1. 初始化集货表
+        initSeedingCollectionInfo(batch, ouId, userId);
+        WhWorkCommand workCommand = this.whWorkDao.findWorkByIdExt(workId, ouId);
+        Long containerId = workCommand.getContainerId();
+        String containerCode = workCommand.getContainerCode();
+        log.info("insertIntoSeedingCollectionNew containerId:[{}], containerCode:[{}]", containerId, containerCode);
+        // WhSeedingCollection sc =
+        // whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, batch, ouId);
+        // List<WhOperationExecLineCommand> execLineCommandList =
+        // this.whOperationExecLineDao.findCommandByContainerId(containerId, workId, ouId);
+        // 2.根据作业执行明细查找出容器列表
+        Set<Long> containerIds = new HashSet<Long>();
+        if (null != execLineCommandList && !execLineCommandList.isEmpty()) {
+            for (WhOperationExecLineCommand execLineCommand : execLineCommandList) {
+                containerIds.add(execLineCommand.getUseContainerId());
+            }
+        }
+        // 3. 根据每个容器查找集货信息 先删除再插入
+        if (null != containerIds && !containerIds.isEmpty()) {
+            for (Long cid : containerIds) {
+                log.info("current containerId:[{}]", cid);
+                WhSeedingCollection sc = whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, batch, ouId);
+                if (null != sc) {
+                    log.info("seedingCollection info found, scId:[{}], containerId:[{}], batch:[{}], ouId:[{}]", sc.getId(), containerId, batch, ouId);
+                    Long scId = sc.getId();
+                    // 删除集货明细数据
+                    whSeedingCollectionLineDao.deleteByScId(scId, ouId);
+                    // 删除集货表数据
+                    whSeedingCollectionDao.deleteByIdExt(scId, ouId);
+                }
+                WhSeedingCollection seedingCollection = new WhSeedingCollection();
+                seedingCollection.setBatch(batch);
+                seedingCollection.setContainerId(cid);
+                seedingCollection.setOuId(ouId);
+                seedingCollection.setCollectionStatus(CollectionStatus.NEW);
+                seedingCollection.setPickingMode(workCommand.getPickingMode());
+                seedingCollection.setCheckingMode(workCommand.getCheckingMode());
+                seedingCollection.setDistributionMode(workCommand.getDistributionMode());
+                seedingCollection.setCreateTime(new Date());
+                seedingCollection.setLastModifyTime(new Date());
+                seedingCollection.setModifiedId(userId);
+                this.whSeedingCollectionDao.insert(seedingCollection);
+                log.info("work of batch, seedingCollectionId:[{}]", seedingCollection.getId());
+                insertIntoSeedingCollectionLine(seedingCollection);
+            }
+        }
+        log.info("pdaConcentrationManager.insertIntoSeedingCollectionNew finish...");
     }
 }

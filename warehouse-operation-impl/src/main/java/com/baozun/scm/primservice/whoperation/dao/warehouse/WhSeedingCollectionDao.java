@@ -91,6 +91,11 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
 
     int deleteContainerInSeedingWall(@Param("containerId") Long containerId, @Param("batch") String batch, @Param("ouId") Long ouId);
 
+    /**
+     * [通用方法] 通过id删除集货表
+     */
+    int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
+
     int checkCountInDestination(@Param("batch") String batch, @Param("destinationType") Integer destinationType, @Param("ouId") Long ouId);
 
     /**

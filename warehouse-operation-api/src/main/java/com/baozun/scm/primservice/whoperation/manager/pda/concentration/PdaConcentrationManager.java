@@ -41,6 +41,15 @@ public interface PdaConcentrationManager extends BaseManager {
     void insertIntoSeedingCollection(String batch, Long workId, List<WhOperationExecLineCommand> execLineCommandList, Long ouId);
 
     /**
+     * [业务方法] 插入集货表new
+     * @param batch
+     * @param workId
+     * @param execLineCommandList
+     * @param ouId
+     */
+    void insertIntoSeedingCollectionNew(String batch, Long workId, List<WhOperationExecLineCommand> execLineCommandList, Long ouId, Long userId);
+
+    /**
      * [业务方法] 插入集货明细表
      * 
      * @param whSeedingCollection

@@ -42,7 +42,7 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
 
     @CommonQuery
     int saveOrUpdateByVersion(WhWork o);
-    
+
     int deleteByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 
     /**
@@ -75,6 +75,15 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
      */
     List<WhWorkCommand> findWorkByBatch(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
 
+    /**
+     * 获取批次下的所有工作ext
+     *
+     * @param batchNo
+     * @param ouId
+     * @return
+     */
+    List<WhWorkCommand> findWorkByBatchExt(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
+
 
 
     /**
@@ -84,4 +93,12 @@ public interface WhWorkDao extends BaseDao<WhWork, Long> {
      * @return
      */
     WhWork findWorkById(@Param("workId") Long workId, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 通过工作id查找工作ext
+     * @param workId
+     * @param ouId
+     * @return
+     */
+    WhWorkCommand findWorkByIdExt(@Param("id") Long id, @Param("ouId") Long ouId);
 }

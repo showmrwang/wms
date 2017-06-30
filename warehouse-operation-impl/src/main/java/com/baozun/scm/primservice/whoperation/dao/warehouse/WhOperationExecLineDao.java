@@ -53,6 +53,14 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
     List<WhOperationExecLineCommand> findCommandByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
 
     /**
+     * [通用方法] 通过工作和组织找到执行明细列表
+     * @param batch
+     * @param ouId
+     * @return
+     */
+    List<WhOperationExecLineCommand> findCommandByContainerId(@Param("containerId") Long containerId, @Param("workId") Long workId, @Param("ouId") Long ouId);
+
+    /**
      * [通用方法] 通过批次号和传入容器查找当前工作工作下的所有作业执行明细
      * @param batch
      * @param containerId
@@ -68,15 +76,15 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @return
      */
     public List<WhOperationExecLine> checkOperationExecLine(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
-    
-    
+
+
     /****
      * 获得作业明细
      * @param operationId
      * @param ouId
      * @return
      */
-    public List<WhOperationExecLine> checkOperationLine(@Param("ouId") Long ouId,@Param("operationId") Long operationId);
+    public List<WhOperationExecLine> checkOperationLine(@Param("ouId") Long ouId, @Param("operationId") Long operationId);
 
 
     public WhOperationExecLine findOperationExecLine(@Param("ouId") Long ouId, @Param("id") Long id);
@@ -87,7 +95,7 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @param ouId
      * @return
      */
-    public List<WhOperationExecLine> getOperationExecLine(@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("outerContainerId") Long outerContainerId,@Param("insideContainerId") Long insideContainerId);
+    public List<WhOperationExecLine> getOperationExecLine(@Param("operationId") Long operationId, @Param("ouId") Long ouId, @Param("outerContainerId") Long outerContainerId, @Param("insideContainerId") Long insideContainerId);
 
 
     /***
@@ -99,8 +107,8 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @return
      */
     public List<WhOperationExecLine> checkContainerInventory(@Param("invSkuIds") Set<Long> invSkuIds, @Param("ouId") Long ouId);
-    
-    
+
+
     /***
      *得到执行明细信息
      * @param operationId
@@ -120,7 +128,7 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @return
      */
     public List<Long> findUseContainerListByWorkId(@Param("workId") Long workId, @Param("ouId") Long ouId);
-    
+
     /***
      * 补货上架统计分析--获取作业执行明细数据
      * @param operationId
@@ -128,7 +136,7 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @return
      */
     public List<WhOperationExecLine> getOperationExecLineLst(@Param("operationId") Long operationId, @Param("ouId") Long ouId, @Param("isShortPicking") Boolean isShortPicking);
-    
+
     /**
      * 
      * @param operationId
@@ -136,8 +144,8 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @param useContainerId
      * @return
      */
-    public Long getOperationExecLineCount(@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("useContainerId") Long useContainerId);
-    
+    public Long getOperationExecLineCount(@Param("operationId") Long operationId, @Param("ouId") Long ouId, @Param("useContainerId") Long useContainerId);
+
     /**
      * 
      * @param operationId
@@ -145,18 +153,19 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
      * @param useContainerId
      * @return
      */
-    public Long getOperationExecLineCountByOuterId(@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("useOuterContainerId") Long useOuterContainerId);
-    
-    
+    public Long getOperationExecLineCountByOuterId(@Param("operationId") Long operationId, @Param("ouId") Long ouId, @Param("useOuterContainerId") Long useOuterContainerId);
+
+
     /***
      * 获取当前作业下的所有执行明细
      * @param operationId
      * @param ouId
      * @return
      */
-    public List<WhOperationExecLine> findOperationExecLineByUseContainerId(@Param("useOuterContainerId") Long useOuterContainerId,@Param("locationId") Long locationId,@Param("operationId") Long operationId, @Param("ouId") Long ouId,@Param("useContainerId") Long useContainerId);
+    public List<WhOperationExecLine> findOperationExecLineByUseContainerId(@Param("useOuterContainerId") Long useOuterContainerId, @Param("locationId") Long locationId, @Param("operationId") Long operationId, @Param("ouId") Long ouId,
+            @Param("useContainerId") Long useContainerId);
 
-    
-    public int countOperationExecLineByOutboundbox(@Param("outboundBoxCode") String outboundBoxCode,@Param("ouId") Long ouId,@Param("operationId") Long operationId);
-    
+
+    public int countOperationExecLineByOutboundbox(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId, @Param("operationId") Long operationId);
+
 }

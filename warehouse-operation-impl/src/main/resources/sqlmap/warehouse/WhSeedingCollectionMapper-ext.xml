@@ -307,6 +307,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and batch = #{batch} 
 			and ou_id = #{ouId}
 	</delete>
+
+	<delete id="deleteByIdExt">
+		delete from 
+			t_wh_seeding_collection
+		where 
+			id = #{id}
+			and ou_id = #{ouId}
+	</delete>
 	
 	<select id="checkCountInDestination" resultType="int">
 		select

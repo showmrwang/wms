@@ -942,6 +942,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and work.id =#{workId}
     </select>
 
+	<select id="findCommandByContainerId" resultMap="WhOperationExecLineResultCommandExt">
+		select <include refid="whOperationExecLineColumnCommand" /> 
+		from t_wh_work work,
+		t_wh_operation_exec_line line left join t_wh_container container on line.use_container_id = container.id
+		left join t_wh_location location on line.from_location_id = location.id
+		where line.use_container_id = #{containerId}
+			and line.ou_id = #{ouId}
+			and work.id =#{workId}
+			and line.work_line_id in(
+				select line.id 
+				from t_wh_work_line line 
+				where line.work_id = #{workId} and line.ou_id = #{ouId}
+			)
+    </select>
+
 	<select id="findUseContainerListByWorkId" resultType="long">
 		select distinct execLine.use_container_id 
 		from t_wh_operation_exec_line execLine 
