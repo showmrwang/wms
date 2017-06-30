@@ -986,7 +986,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Container container = new Container();
         ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
         if (null == containerCmd) {
-            if(pickingWay == Constants.PICKING_WAY_FOUR){
+//            if(pickingWay == Constants.PICKING_WAY_FOUR){
                 if(!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))){
                     ContainerCommand tipCmd = containerDao.getContainerByCode(tipOuterContainer, ouId);
                     Container c = new Container();
@@ -1000,9 +1000,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     containerCmd = new ContainerCommand();
                     BeanUtils.copyProperties(c, containerCmd);
                 }
-            }else{
-                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            }
+//            }else{
+//                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+//            }
         }
         BeanUtils.copyProperties(containerCmd, container);
         if(!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))){  //当前扫描的小车不是系统推荐的小车或者周转箱
@@ -2220,17 +2220,17 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 判断当前作业是否拣货完成
                 this.judgeOperationIsEnd(operationId, ouId);
                 // // 判断是拣完在播，是否是最后一箱
-                // List<WhWorkCommand> list = workManager.findWorkByBatch(work.getBatch(), ouId);
-                // int count = 0;
-                // for (WhWorkCommand cmd : list) {
-                // if (!(WorkStatus.FINISH.equals(cmd.getStatus()) ||
-                // WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))) {
-                // count++;
-                // }
-                // }
-                // if (count == 1) {// 当前工作是最后一个
-                command.setIsLastWork(true); // 当前工作是一个小批次下的最后一个工作
-                // }
+                 List<WhWorkCommand> list = workManager.findWorkByBatch(work.getBatch(), ouId);
+                 int count = 0;
+                 for (WhWorkCommand cmd : list) {
+                 if (!(WorkStatus.FINISH.equals(cmd.getStatus()) ||
+                 WorkStatus.PARTLY_FINISH.equals(cmd.getStatus()))) {
+                 count++;
+                 }
+                 }
+                 if (count == 1) {// 当前工作是最后一个
+                   command.setIsLastWork(true); // 当前工作是一个小批次下的最后一个工作
+                 }
                 long startTime = System.currentTimeMillis(); // 获取开始时间
                 log.info("collection run start time:" + startTime);
                 // 插入集货表
