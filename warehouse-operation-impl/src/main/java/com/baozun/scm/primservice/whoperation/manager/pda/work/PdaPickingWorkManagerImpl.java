@@ -2633,6 +2633,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     }
 
                 }
+                if(Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)){
+                    whOperationExecLine.setUseContainerId(turnoverBoxId);
+                }
                 // 先修改作业执行明细的执行量
                 if (null != operationLineId) {
                     WhOperationLine line = new WhOperationLine();

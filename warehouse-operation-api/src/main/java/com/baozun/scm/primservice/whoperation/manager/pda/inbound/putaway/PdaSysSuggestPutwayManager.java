@@ -195,7 +195,7 @@ public interface PdaSysSuggestPutwayManager extends BaseManager{
      * @param userId
      * @param logId
      */
-    public void execUnbinding(String outerContainerCode, String insideContainerCode, String locationCode, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
+    public void execUnbinding(Boolean isCacelAll,String outerContainerCode, String insideContainerCode, String locationCode, Integer putawayPatternDetailType, Long ouId, Long userId, String logId);
     
     /***
      * 点上架完成时，清楚缓存
