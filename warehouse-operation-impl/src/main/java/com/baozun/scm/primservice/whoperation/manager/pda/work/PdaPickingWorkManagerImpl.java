@@ -1000,6 +1000,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
                     containerDao.insert(c);
                     insertGlobalLog(GLOBAL_LOG_INSERT, c, ouId, userId, null, null);
+                    containerCmd = new ContainerCommand();
                     BeanUtils.copyProperties(c, containerCmd);
                 }
             }else{
