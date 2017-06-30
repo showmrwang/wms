@@ -237,25 +237,27 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         whWorkOper.setOperationId(userId);
 
         whWorkOperDao.insert(whWorkOper);
-
-        // 根据作业id获取作业明细信息
-        List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), whOperationCommand.getOuId());
-        for (WhOperationLineCommand operationLine : operationLineList) {
-            // 根据出库单code获取出库单信息
-            WhOdo odo = odoDao.findByIdOuId(operationLine.getOdoId(), operationLine.getOuId());
-            int odoStatus = Integer.parseInt(odo.getOdoStatus());
-            int lagOdoStatus = Integer.parseInt(odo.getLagOdoStatus());
-            if (null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())) {
-                if(25 > odoStatus){
-                    odo.setOdoStatus(OdoStatus.PICKING);    
+        
+        if("PICKING".equals(whOperationCommand.getWorkCategory())){
+            // 根据作业id获取作业明细信息
+            List<WhOperationLineCommand> operationLineList = whOperationLineManager.findOperationLineByOperationId(whOperationCommand.getId(), whOperationCommand.getOuId());
+            for (WhOperationLineCommand operationLine : operationLineList) {
+                // 根据出库单code获取出库单信息
+                WhOdo odo = odoDao.findByIdOuId(operationLine.getOdoId(), operationLine.getOuId());
+                int odoStatus = Integer.parseInt(odo.getOdoStatus());
+                int lagOdoStatus = Integer.parseInt(odo.getLagOdoStatus());
+                if (null != odo && !OdoStatus.CANCEL.equals(odo.getOdoStatus())) {
+                    if(25 > odoStatus){
+                        odo.setOdoStatus(OdoStatus.PICKING);    
+                    }
+                    odoDao.update(odo);
                 }
-                odoDao.update(odo);
-            }
-            WhOdoLine odoLine = whOdoLineDao.findOdoLineById(operationLine.getOdoLineId(), operationLine.getOuId());
-            int odoLineStatus = Integer.parseInt(odoLine.getOdoLineStatus());
-            if (null != odoLine && 25 > odoLineStatus && !OdoLineStatus.CANCEL.equals(odoLine.getOdoLineStatus())) {
-                odoLine.setOdoLineStatus(OdoLineStatus.PICKING);
-                whOdoLineDao.update(odoLine);
+                WhOdoLine odoLine = whOdoLineDao.findOdoLineById(operationLine.getOdoLineId(), operationLine.getOuId());
+                int odoLineStatus = Integer.parseInt(odoLine.getOdoLineStatus());
+                if (null != odoLine && 25 > odoLineStatus && !OdoLineStatus.CANCEL.equals(odoLine.getOdoLineStatus())) {
+                    odoLine.setOdoLineStatus(OdoLineStatus.PICKING);
+                    whOdoLineDao.update(odoLine);
+                }
             }
         }
     }
