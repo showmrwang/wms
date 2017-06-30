@@ -370,7 +370,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    where
 		    line.ou_id = #{ouId}
 		    and line.replenishment_code =#{replenishmentCode}
-		    and  op.status =1
+		    and  (op.status =1 or op.status =9)
 		    and op.work_category="PICKING"
 		    and line.from_outer_container_id is null
 	        and line.from_inside_container_id is null

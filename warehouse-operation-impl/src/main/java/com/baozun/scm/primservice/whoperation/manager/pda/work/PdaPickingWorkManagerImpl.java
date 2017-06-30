@@ -2698,6 +2698,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 WhOperationExecLine whOperationExecLine = this.getWhOperationExecLine(userId, outBoundBoxCode, turnoverBoxId, outBoundBoxId, operationId, ouId, operationLineId, outerContainerId, insideContainerId);
                 whOperationExecLine.setQty(qty);
                 whOperationExecLine.setIsShortPicking(true);
+                whOperationExecLine.setCompleteQty(0.0);
                 whOperationExecLineDao.insert(whOperationExecLine);
                 insertGlobalLog(GLOBAL_LOG_INSERT, whOperationExecLine, ouId, userId, null, null);
             }
@@ -4395,5 +4396,26 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                }
             }
         }
+    }
+    
+    /**
+     * 返回容器名称
+     * @param contianerCode
+     * @param ouId
+     * @param outboundboxCode
+     * @return
+     */
+    public String getContainerName(String contianerCode,Long ouId,String outboundboxCode){
+        String name = "";
+        ContainerCommand container = containerDao.getContainerByCode(contianerCode, ouId);
+        Container2ndCategory c2c = container2ndCategoryDao.findByIdExt(container.getTwoLevelType(), ouId);
+        if (null == c2c) {
+            log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        }
+        name = c2c.getCategoryName();
+        return name;
+        
+        
     }
 }
