@@ -1264,6 +1264,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
             // 生成出库想明细信息
             List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
+            if(null != listSkuInvCmd && listSkuInvCmd.size() == 0){
+                throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+            }
             // 添加出库箱明细
             for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
                 Long skuId = skuInvCmd.getSkuId();

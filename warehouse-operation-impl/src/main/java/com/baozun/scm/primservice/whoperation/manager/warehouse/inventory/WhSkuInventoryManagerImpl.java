@@ -11041,6 +11041,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             if (Constants.WAY_6.equals(checkingPattern)) {
                 skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, null);
             }
+            if(null != skuInvSnList && skuInvSnList.size() == 0){
+                throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+            }
             Boolean isContainue = false;
             for (WhSkuInventoryCommand invSnCmd : skuInvSnList) {
                 if (invSnCmd.getUuid().equals(checkingLine.getUuid())) {
@@ -11070,6 +11073,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, null, checkingLine.getUuid());
                     }
                     Double sum = 0.0;
+                    if(null != skuInvList && skuInvList.size() == 0){
+                        throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+                    }
                     for (WhSkuInventoryCommand invCmd : skuInvList) {// 一单多箱的情况库存记录大于复合明细记录,
 //                        if (invCmd.getOnHandQty().doubleValue() == Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
 //                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, Double.valueOf(checkingLine.getCheckingQty()), outboundboxCode, isTabbInvTotal, ouId, userId);
@@ -11118,6 +11124,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 }
             }
 
+        }
+        //校验出库箱库存
+        List<WhSkuInventoryCommand> listSkuInvCmd =  whSkuInventoryDao.findOutboundboxInventory(outboundboxCode, ouId);
+        if(null != listSkuInvCmd && listSkuInvCmd.size() == 0){
+            throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
         }
     }
 

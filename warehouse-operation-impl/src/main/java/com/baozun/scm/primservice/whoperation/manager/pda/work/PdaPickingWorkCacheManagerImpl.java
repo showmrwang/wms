@@ -3197,7 +3197,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 break;
             }
         }
-        whOperation.setStatus(WorkStatus.FINISH);
+        if (exist) { 
+            whOperation.setStatus(WorkStatus.PARTLY_FINISH);
+        }else{
+            whOperation.setStatus(WorkStatus.FINISH);
+        }
         whOperation.setLastModifyTime(new Date());
         whOperation.setModifiedId(userId);
         whOperationDao.saveOrUpdateByVersion(whOperation);
@@ -3266,6 +3270,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
             Map<Long, Set<Long>> outerToInside = operatorLine.getOuterToInside();// 外部容器对应的内部容器
             Map<Long, Set<Long>> locInsideContainerIds = operatorLine.getInsideContainerIds(); // 库位上的内部容器
             Map<Long, Set<Long>> insideSkuIds = operatorLine.getInsideSkuIds();// 货箱内的sku
+            Map<Long, Set<Long>> locSkuIds = operatorLine.getSkuIds();
             for (Long locId : locationIds) {
                 Set<Long> outerContainerIds = locOuterContainerIds.get(locId);
                 // 删除库位上的托盘缓存
@@ -3300,7 +3305,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 }
 
                 // 删除库位上的散件缓存
-                Set<Long> skuIds = insideSkuIds.get(locId);
+                Set<Long> skuIds = locSkuIds.get(locId);
                 if (null != skuIds && skuIds.size() != 0) {
                     for (Long skuId : skuIds) {
                         cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + locId.toString() + skuId.toString());
@@ -3377,6 +3382,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
             Map<Long, Set<Long>> outerToInside = operatorLine.getOuterToInside();// 外部容器对应的内部容器
             Map<Long, Set<Long>> locInsideContainerIds = operatorLine.getInsideContainerIds(); // 库位上的内部容器
             Map<Long, Set<Long>> insideSkuIds = operatorLine.getInsideSkuIds();// 货箱内的sku
+            Map<Long, Set<Long>> locSkuIds = operatorLine.getSkuIds();
             for (Long locId : locationIds) {
                 Set<Long> outerContainerIds = locOuterContainerIds.get(locId);
                 // 删除库位上的托盘缓存
@@ -3411,7 +3417,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 }
 
                 // 删除库位上的散件缓存
-                Set<Long> skuIds = insideSkuIds.get(locId);
+                Set<Long> skuIds = locSkuIds.get(locId);
                 if (null != skuIds && skuIds.size() != 0) {
                     for (Long skuId : skuIds) {
                         cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + locId.toString() + skuId.toString());
