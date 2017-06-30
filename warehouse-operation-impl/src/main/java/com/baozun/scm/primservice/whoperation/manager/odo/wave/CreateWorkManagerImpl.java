@@ -1813,23 +1813,8 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             } else {
                 operationLineDao.insert(whOperationLine);
             }
-            // 根据出库单code获取出库单信息
-            WhOdo odo = odoDao.findByIdOuId(whWorkLineCommand.getOdoId(), whWorkLineCommand.getOuId());
-            if (null != odo) {
-                int odoStatus = Integer.parseInt(odo.getOdoStatus());
-                if(10 > odoStatus){
-                    odo.setOdoStatus(OdoStatus.WAVE_FINISH);
-                    odoDao.update(odo);    
-                }
-            }
-            WhOdoLine odoLine = odoLineDao.findOdoLineById(whWorkLineCommand.getOdoLineId(), whWorkLineCommand.getOuId());
-            if (null != odoLine) {
-                int odoLineStatus = Integer.parseInt(odoLine.getOdoLineStatus());
-                if(10 > odoLineStatus){
-                    odoLine.setOdoLineStatus(OdoLineStatus.WAVE_FINISH);
-                    odoLineDao.update(odoLine);    
-                }
-            }
+            // 更改出库单状态            
+            this.changeOdoStatus(whWorkLineCommand);
         }
     }
 
@@ -2843,5 +2828,34 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             
         }
         return count;
+    }
+    
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public void changeOdoStatus(WhWorkLineCommand whWorkLineCommand) {
+        // 根据出库单id查询未创工作的推荐出库箱        
+        List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdo = odoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(whWorkLineCommand.getOdoId(), null, false, whWorkLineCommand.getOuId());
+        // 根据出库单明细id查询未创工作的推荐出库箱
+        List<WhOdoOutBoundBoxCommand> odoOutBoundBoxByOdoLine = odoOutBoundBoxDao.gethOdoOutBoundBoxLstByOdo(null, whWorkLineCommand.getOdoLineId(), false, whWorkLineCommand.getOuId());
+        // 根据出库单code获取出库单信息
+        WhOdo odo = odoDao.findByIdOuId(whWorkLineCommand.getOdoId(), whWorkLineCommand.getOuId());
+        if (null != odo) {
+            int odoStatus = Integer.parseInt(odo.getOdoStatus());
+            if(10 > odoStatus){
+                odo.setOdoStatus(OdoStatus.WAVE_FINISH);
+            }
+            if(0 == odoOutBoundBoxByOdo.size()){
+                odo.setLagOdoStatus(OdoStatus.WAVE_FINISH);    
+            }
+            odoDao.update(odo);
+        }
+        // 根据出库单明细id获取出库单信息
+        WhOdoLine odoLine = odoLineDao.findOdoLineById(whWorkLineCommand.getOdoLineId(), whWorkLineCommand.getOuId());
+        if (null != odoLine) {
+            int odoLineStatus = Integer.parseInt(odoLine.getOdoLineStatus());
+            if(10 > odoLineStatus && 0 == odoOutBoundBoxByOdoLine.size()){
+                odoLine.setOdoLineStatus(OdoLineStatus.WAVE_FINISH);
+                odoLineDao.update(odoLine);    
+            }
+        }
     }
 }
