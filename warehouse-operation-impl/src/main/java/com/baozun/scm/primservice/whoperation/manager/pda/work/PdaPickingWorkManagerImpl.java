@@ -3579,6 +3579,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long operationId = command.getOperationId();
         CheckScanResultCommand cSRCmd = new CheckScanResultCommand();
         
+        //根据提示外部容器CODE获取外部容器ID           
+        String outerContainerCode = command.getTipOuterContainerCode();
+        Long outerContainerId = null;
+        ContainerCommand outerContainerCmd = new ContainerCommand();
+        if (!StringUtil.isEmpty(outerContainerCode)) {
+            outerContainerCmd = containerDao.getContainerByCode(outerContainerCode, command.getOuId());
+            if (null == outerContainerCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = outerContainerCmd.getId();
+        }
+        
         String insideContainerCode = command.getTipInsideContainerCode();
         Long insideContainerId = null;
         ContainerCommand insideContainerCmd = null;
@@ -3590,7 +3602,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             insideContainerId = insideContainerCmd.getId();
         }
         
-        cSRCmd = pdaPickingWorkCacheManager.wholeCaseCacheAndCheck(command.getLocationId(), null, insideContainerId, operationId);
+        cSRCmd = pdaPickingWorkCacheManager.wholeCaseCacheAndCheck(command.getLocationId(), outerContainerId, insideContainerId, operationId);
         
         if (cSRCmd.getIsNeedTipInsideContainer()) {
             Container ic = containerDao.findByIdExt(cSRCmd.getTipiInsideContainerId(), command.getOuId());
