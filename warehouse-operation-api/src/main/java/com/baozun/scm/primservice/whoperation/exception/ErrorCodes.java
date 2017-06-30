@@ -1135,6 +1135,8 @@ public class ErrorCodes {
     public static final int ODO_NOT_FIND = 80018;
     /** 错误,库存中包含多条出库单信息 */
     public static final int SKU_INV_HAVE_MORE_ODO = 80019;
+    /** 集货容器状态不正确 */
+    public static final int COLLECTION_CONTAINER_STATUS_ERROR = 80020;
     // 80001-90000 zhukai
 
     // 100001-110000 liuqiming
