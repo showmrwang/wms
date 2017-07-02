@@ -363,5 +363,23 @@
             </if>
         </where>
     </select>
+    
+    <select id="findBoundFacilityByCode" resultMap="WhOutboundFacilityResultExt">
+		select 
+			<include refid="whOutboundFacilityColumnsExt"/>    
+		from 
+			t_wh_outbound_facility
+		<where>
+            <if test="ouId!=null and ouId!=''">
+                and ou_id = #{ouId}
+            </if>
+            <if test="checkCode != null and checkCode != ''">
+                and check_code = #{checkCode}
+            </if>
+            <if test="facilityCode!=null and facilityCode!=''">
+                and facility_code = #{facilityCode}
+            </if>
+		</where>	
+	</select>
 
 </mapper>

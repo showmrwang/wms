@@ -48,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhContainerMoveType;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -61,6 +62,7 @@ import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
@@ -124,10 +126,13 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
         }
         ScanResultCommand srCommand = new ScanResultCommand();
         if (WhContainerMoveType.OUT_CONTAINER.equals(scanType)) {
+            //判断当前周转箱是否为播种拣货模式还是非播种拣货模式
+            
             //判断出库箱是否满足拆箱条件
             //1、必须拣货完成或者播种完成的出库箱才能拆分（判断条件已经产生了待复核数据）
             WhCheckingCommand checkingCommand = whCheckingDao.findWhCheckingByContainerId(containerId,CheckingStatus.NEW, ouId);
             if(null == checkingCommand || null == checkingCommand.getStatus() || !checkingCommand.getStatus().equals(CheckingStatus.NEW)){
+                log.error("PdaContainerMoveManagerImpl scanContainer is end. containerCode isn't checking data, don't move inv. logId is:[{}]", logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_NOT_MOVE_CONDITION);
             }
         }
@@ -135,12 +140,21 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
         List<WhSkuInventoryCommand> containerInvList = whSkuInventoryDao.findSkuInventoryAndSnInfo(null, null, null, null,containerId, ouId);
         //根据周转箱查询不到库存信息
         if(CollectionUtils.isEmpty(containerInvList)){
+            log.error("PdaContainerMoveManagerImpl scanContainer is end. containerCode not found inventory. logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INV, new Object[] {containerCode});
+        }
+        //判断当前周转箱是否属于播种墙下面
+        WhSkuInventoryCommand checkInv = containerInvList.get(0);
+        //一期不支持播种墙下的周转箱移动到周转箱操作
+        if (null != checkInv && !StringUtils.isEmpty(checkInv.getSeedingWallCode())) {
+            log.error("PdaContainerMoveManagerImpl scanContainer is end. SeedingWallCode is exist. logId is:[{}]", logId);
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_MOVE_CONDITION, new Object[] {containerCode});
         }
         //统计分析库存数据
         BoxInventoryStatisticResultCommand isCmd = cacheContainerInventoryStatistics(containerInvList, userId, ouId, logId,containerCode);
         //2、如果是出库箱功能功能参数是部分移动,箱内的库存属性必须唯一才能移动
         if(movePattern.equals(Constants.MOVE_PATTERN_PART) && isCmd.getOutBoundBoxSkuIdSkuAttrIdQtys().get(containerCode).size() > 1){
+            log.error("PdaContainerMoveManagerImpl scanContainer is end. sku attr isn't only. logId is:[{}]", logId);
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INV, new Object[] {containerCode});
         }
         //保存容器库存的统计分析数据
@@ -258,7 +272,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
      * @return
      */
     @Override
-    public ScanResultCommand scanTargetContainer(String targetContainerCode,Long targetContainerId, String scanType,Long ouId,String logId,Long userId,String sourceBoxCode,Integer containerStatus) {
+    public ScanResultCommand scanTargetContainer(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode,Long targetContainerId, String scanType,Long ouId,String logId,Long userId,String sourceBoxCode,Integer containerStatus,Integer movePattern,Boolean isPrintCartonLabel,Warehouse warehouse) {
         log.info("PdaContainerMoveManagerImpl scanTargetContainer is start");
         ScanResultCommand srCommand = new ScanResultCommand();
         if (ContainerStatus.CONTAINER_STATUS_USABLE != containerStatus && !WhContainerMoveType.IN_CONTAINER.equals(scanType)) {
@@ -286,6 +300,27 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
         if(null == isCmd){
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INVENTORY,new Object[] {sourceBoxCode});
         }
+        //如果是整箱移动模式,直接移动库存
+        if (WhContainerMoveType.FULL_BOX_MOVE == movePattern) {
+            //整箱移动库存,后台操作
+            whSkuInventoryManager.execuContainerFullMoveInventory(sourceContainerCode, sourceContainerId, containerLatticeNo, targetContainerCode,targetContainerId,scanType, warehouse, ouId, userId, logId);            
+            //通过配置查看是否需要打印箱标签
+            if (null != isPrintCartonLabel && isPrintCartonLabel) {
+                PrintDataCommand printDataCommand = new PrintDataCommand();
+                printDataCommand.setOutBoundBoxCode(targetContainerCode);
+                printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
+            }
+            
+            cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceContainerCode);
+            cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, sourceContainerCode);
+            cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + "*");
+            cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + sourceContainerCode + "*");
+            cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + sourceContainerCode + "*");
+            // 执行移库
+            srCommand.setPutaway(true);
+            return srCommand;
+        }
+        
         //随机获取一个sku提示扫描
         String tipSkuAttrId = getTipSkuFromBox(sourceBoxCode, isCmd.getOutBoundBoxSkuIdSkuAttrIds(), isCmd.getOutBoundBoxSkuAttrIdsSnDefect(), logId);
         Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
@@ -1180,5 +1215,5 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
                     new Object[] {sourceContainerCode, ouId, userId, logId});
         }
     }
-
+    
 }
