@@ -390,4 +390,15 @@
 	</foreach>
 	</delete>
     
+    <select id="getWhOutboundBoxTypeName" resultType="java.lang.String">
+        SELECT
+		     type.name
+		FROM
+			t_wh_odo_outboundbox odo 
+			left join t_wh_outboundbox_type  type on odo.outbounxbox_type_id = type.id
+		WHERE
+			odo.outbounxbox_type_code = #{outbounxboxTypeCode}
+		AND
+			odo.ou_id=#{ouId}
+    </select>
 </mapper>
