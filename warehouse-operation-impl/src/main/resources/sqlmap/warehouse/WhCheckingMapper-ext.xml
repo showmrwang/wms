@@ -1344,6 +1344,18 @@
 		AND checking.ou_id = #{ouId}
 		AND checking.`status` != 10
     </select>
+
+    <select id="findCheckingIdAndOuId" resultType="java.lang.Long" flushCache="false">
+		SELECT
+			sum(line.qty) - sum(line.checking_qty)
+		FROM
+			t_wh_checking checking
+		LEFT JOIN t_wh_checking_line line ON checking.id = line.checking_id
+		WHERE
+			checking.id = #{checkingId}
+		AND checking.ou_id = #{ouId}
+		AND checking.`status` != 10
+    </select>
     
     <select id="findCheckingInfoByParam" resultMap="WhCheckingCommand">
 			select 

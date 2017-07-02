@@ -104,6 +104,8 @@ public class WhWorkCommand extends BaseCommand {
     private String pickingMode;
     /** 复核模式 */
     private String checkingMode;
+    /** 容器id*/
+    private Long containerId;
 
     // columns END
 
@@ -393,6 +395,14 @@ public class WhWorkCommand extends BaseCommand {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+    }
+
+    public Long getContainerId() {
+        return containerId;
+    }
+
+    public void setContainerId(Long containerId) {
+        this.containerId = containerId;
     }
 
 }

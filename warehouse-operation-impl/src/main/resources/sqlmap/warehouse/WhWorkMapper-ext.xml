@@ -289,5 +289,91 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             and ou_id = #{ouId}
         </where>
     </select>
+
+     <select id="findWorkByIdExt" resultMap="WhWorkCommandResultExt">
+        select
+       		work.id as id,
+	       	work.code as code,
+	       	work.status as status,
+	       	work.ou_id as ouId,
+	       	work.work_type as workType,
+	       	work.work_category as workCategory,
+	       	work.is_locked as isLocked,
+	       	work.is_assign_out as isAssignOut,
+	       	work.is_short_picking as isShortPicking,
+	       	work.is_wave_replenish as isWaveReplenish,
+	       	work.is_picking_tobefilled as isPickingTobefilled,
+	       	work.is_multi_operation as isMultiOperation,
+	       	work.work_area as workArea,
+	       	work.work_priority as workPriority,
+	       	work.batch as batch,
+	       	work.assign_out_batch as assignOutBatch,
+	       	work.distribution_mode as distributionMode,
+	       	work.picking_mode as pickingMode,
+	       	work.checking_mode as checkingMode,
+	       	work.start_time as startTime,
+	       	work.finish_time as finishTime,
+	       	work.wave_id as waveId,
+	       	work.wave_code as waveCode,
+	       	work.order_code as orderCode,
+	       	work.location_code as locationCode,
+	       	work.outer_container_code as outerContainerCode,
+	       	work.container_code as containerCode,
+	       	work.create_time as createTime,
+	       	work.last_modify_time as lastModifyTime,
+	       	work.created_id as createdId,
+	       	work.modified_id as modifiedId,
+	       	work.operator_id as operatorId,
+	       	work.lifecycle as lifecycle,
+	       	container.id as containerId
+        from t_wh_work work left join t_wh_container container on work.container_code = container.code
+        <where>
+            work.id = #{id}
+            and work.ou_id = #{ouId}
+        </where>
+    </select>
+    
+    <select id="findWorkByBatchExt" resultMap="WhWorkCommandResultExt">
+        select
+        	work.id as id,
+	       	work.code as code,
+	       	work.status as status,
+	       	work.ou_id as ouId,
+	       	work.work_type as workType,
+	       	work.work_category as workCategory,
+	       	work.is_locked as isLocked,
+	       	work.is_assign_out as isAssignOut,
+	       	work.is_short_picking as isShortPicking,
+	       	work.is_wave_replenish as isWaveReplenish,
+	       	work.is_picking_tobefilled as isPickingTobefilled,
+	       	work.is_multi_operation as isMultiOperation,
+	       	work.work_area as workArea,
+	       	work.work_priority as workPriority,
+	       	work.batch as batch,
+	       	work.assign_out_batch as assignOutBatch,
+	       	work.distribution_mode as distributionMode,
+	       	work.picking_mode as pickingMode,
+	       	work.checking_mode as checkingMode,
+	       	work.start_time as startTime,
+	       	work.finish_time as finishTime,
+	       	work.wave_id as waveId,
+	       	work.wave_code as waveCode,
+	       	work.order_code as orderCode,
+	       	work.location_code as locationCode,
+	       	work.outer_container_code as outerContainerCode,
+	       	work.container_code as containerCode,
+	       	work.create_time as createTime,
+	       	work.last_modify_time as lastModifyTime,
+	       	work.created_id as createdId,
+	       	work.modified_id as modifiedId,
+	       	work.operator_id as operatorId,
+	       	work.lifecycle as lifecycle,
+	       	container.id as containerId
+        from t_wh_work work left join t_wh_container container on work.container_code = container.code
+        <where>
+            work.batch = #{batchNo}
+            and work.ou_id = #{ouId}
+        </where>
+    </select>
     
 </mapper>

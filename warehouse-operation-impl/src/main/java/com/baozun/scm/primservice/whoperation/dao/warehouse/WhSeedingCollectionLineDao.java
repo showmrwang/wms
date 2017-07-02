@@ -55,4 +55,12 @@ public interface WhSeedingCollectionLineDao extends BaseDao<WhSeedingCollectionL
      */
     public List<WhSeedingCollectionLine> findByScIdAndOuId(@Param("seedingCollectionId") Long seedingCollectionId, @Param("ouId") Long ouId);
 
+    /**
+     * [业务方法] 通过scId删除集货明细数据
+     * @param scId
+     * @param ouId
+     * @return
+     */
+    public int deleteByScId(@Param("scId") Long scId, @Param("ouId") Long ouId);
+
 }

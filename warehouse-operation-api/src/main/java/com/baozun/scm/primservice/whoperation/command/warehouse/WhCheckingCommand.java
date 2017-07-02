@@ -130,6 +130,8 @@ public class WhCheckingCommand extends BaseCommand {
     private Long boxSkuCnt;
     /** 容器中商品数量*/
     private Long containerSkuCnt;
+    /** 货格中商品数量*/
+    private Long latticeSkuCnt;
 
 
 
@@ -701,6 +703,14 @@ public class WhCheckingCommand extends BaseCommand {
 
     public void setIsComplex(Boolean isComplex) {
         this.isComplex = isComplex;
+    }
+
+    public Long getLatticeSkuCnt() {
+        return latticeSkuCnt;
+    }
+
+    public void setLatticeSkuCnt(Long latticeSkuCnt) {
+        this.latticeSkuCnt = latticeSkuCnt;
     }
 
 }

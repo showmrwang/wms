@@ -282,5 +282,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             seeding_collection_id = #{seedingCollectionId}
             and ou_id = #{ouId}
     </select>
+    
+    <delete id="deleteByScId">
+		delete from 
+			t_wh_seeding_collection_line 
+		where 
+			seeding_collection_id = #{scId}
+			and ou_id = #{ouId}
+	</delete>
 
 </mapper>
