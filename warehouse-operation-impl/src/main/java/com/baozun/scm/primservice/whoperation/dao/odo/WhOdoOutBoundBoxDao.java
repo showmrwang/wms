@@ -148,5 +148,13 @@ public interface WhOdoOutBoundBoxDao extends BaseDao<WhOdoOutBoundBox, Long> {
      * @return
      */
     List<WhOdoOutBoundBox> findOdoOutBoundByWaveId(@Param("waveId") Long waveId);
+    
+    /**
+     * 获取推荐出库箱类型名称
+     * @param outbounxboxTypeCode
+     * @param ouId
+     * @return
+     */
+    String getWhOutboundBoxTypeName(@Param("outbounxboxTypeCode") String outbounxboxTypeCode, @Param("ouId") Long ouId);
 
 }

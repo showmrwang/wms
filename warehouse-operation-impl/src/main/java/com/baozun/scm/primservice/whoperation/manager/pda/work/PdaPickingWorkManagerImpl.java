@@ -193,6 +193,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private WhOutboundboxDao whOutboundboxDao;
     @Autowired
     private WhOutInventoryboxRelationshipDao whOutInventoryboxRelationshipDao;
+    
 
 
 
@@ -809,16 +810,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         if (pickingWay == Constants.PICKING_WAY_THREE) { // 使用出库箱拣货流程
             String tipOutBounxBoxCode = pdaPickingWorkCacheManager.pdaPickingWorkTipoutboundBox(operationId, ouId);
             pSRcmd.setOutBounxBoxCode(tipOutBounxBoxCode);
-            // OutBoundBoxType outBoundBox = outBoundBoxTypeDao.findByCode(tipOutBounxBoxCode,
-            // ouId);
-            // if (null == outBoundBox) {
-            // throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_NO_NULL);
-            // }
-            // // 验证容器Lifecycle是否有效
-            // if (!outBoundBox.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_USABLE)) {
-            // throw new BusinessException(ErrorCodes.OUT_BOUNX_BOX_IS_STATUS_NO);
-            // }
-            // pSRcmd.setName(outBoundBox.getName());
+             String name =  whOdoOutBoundBoxDao.getWhOutboundBoxTypeName(tipOutBounxBoxCode, ouId);
+             pSRcmd.setName(name);
         }
         if (pickingWay == Constants.PICKING_WAY_FOUR) { // 使用周转箱拣货流程
             String turnoverBox = pdaPickingWorkCacheManager.pdaPickingWorkTipTurnoverBox(operationId, ouId);
@@ -4407,13 +4400,18 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      */
     public String getContainerName(String contianerCode,Long ouId,String outboundboxCode){
         String name = "";
-        ContainerCommand container = containerDao.getContainerByCode(contianerCode, ouId);
-        Container2ndCategory c2c = container2ndCategoryDao.findByIdExt(container.getTwoLevelType(), ouId);
-        if (null == c2c) {
-            log.error("pdaPickingRemmendContainer container is null logid: " + logId);
-            throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+        if(!StringUtils.isEmpty(contianerCode)){
+            ContainerCommand container = containerDao.getContainerByCode(contianerCode, ouId);
+            Container2ndCategory c2c = container2ndCategoryDao.findByIdExt(container.getTwoLevelType(), ouId);
+            if (null == c2c) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            name = c2c.getCategoryName();
         }
-        name = c2c.getCategoryName();
+        if(!StringUtils.isEmpty(outboundboxCode)){
+            name =  whOdoOutBoundBoxDao.getWhOutboundBoxTypeName(outboundboxCode, ouId); 
+        }
         return name;
         
         
