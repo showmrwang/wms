@@ -14,14 +14,12 @@
  */
 package com.baozun.scm.primservice.whoperation.manager.pda.work;
 
-import java.util.List;
-import java.util.Map;
-
 import com.baozun.scm.primservice.whoperation.command.pda.inbound.putaway.ScanResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionContainerMove;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutboundboxMove;
 
 /**
  * pda ，周转箱的拆分和移动
@@ -66,7 +64,7 @@ public interface PdaContainerMoveManager extends BaseManager {
      * @param targetBoxCode
      * @return
      */
-    public ScanResultCommand scanTargetContainer(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode,Long targetContainerId,String scanType,Long ouId,String logId,Long userId,String targetBoxCode, Integer containerStatus, Integer movePattern,Boolean isPrintCartonLabel, Warehouse warehouse);
+    public ScanResultCommand scanTargetContainer(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode,Long targetContainerId,String scanType,Long ouId,String logId,Long userId,String targetBoxCode, Integer containerStatus, WhFunctionOutboundboxMove containerMoveFunc, Warehouse warehouse);
     
     /**
      * 周转箱拆分:扫描sku商品

@@ -303,7 +303,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     		throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
     	}
     	//如果是整箱移动模式,直接移动库存
-        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
             //处理整箱移动库存操作
             fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
             // 执行移库
@@ -367,8 +367,8 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         if(null == isCmd){
             throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
         }
-        //如果是整箱移动模式,直接移动库存
-        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+        //如果是整箱移动模式,并且不需要扫描提示扫描商品,直接移动库存
+        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
             //处理整箱移动库存操作
             fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
             // 执行移库
