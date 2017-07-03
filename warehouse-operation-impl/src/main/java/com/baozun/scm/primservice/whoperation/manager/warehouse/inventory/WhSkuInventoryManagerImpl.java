@@ -11026,16 +11026,9 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         Integer containerLatticeNo = cmd.getContainerLatticeNo(); // 货格号
         String outboundboxCode = cmd.getOutboundBoxCode();
         String seedingWallCode = cmd.getSeedingWallCode(); // 播种墙编码
-        String turnoverBoxCode = cmd.getTurnoverBoxCode(); // 周转箱
-        List<String> cacehSnList = cmd.getSn();
-        Long turnoverBoxId = null;
-        if (Constants.WAY_5.equals(checkingPattern)) {
-            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-            if (null == c) {
-                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
-            }
-            turnoverBoxId = c.getId();
-        }
+//        String turnoverBoxCode = cmd.getTurnoverBoxCode(); // 周转箱
+        List<String> cacehSnList = cmd.getSn(); 
+      
         String containerCode = cmd.getContaierCode();
 
         Long containerId = null;
@@ -11049,6 +11042,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         /** 复合明细集合 */
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         for (WhCheckingLineCommand checkingLine : checkingLineList) {
+            String turnoverBoxCode = checkingLine.getContainerCode();
+            Long turnoverBoxId = null;
+            if (Constants.WAY_5.equals(checkingPattern)) {
+                ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+                if (null == c) {
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+                }
+                turnoverBoxId = c.getId();
+            }
             Long odoLineId = checkingLine.getOdoLineId();
             Long odoId = checkingLine.getOdoId();
             List<WhSkuInventoryCommand> skuInvSnList = null;

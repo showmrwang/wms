@@ -30,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -48,6 +49,8 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     private WhOdoLineDao whOdoLineDao;
     @Autowired
     private WhOdoDao whOdoDao;
+    @Autowired
+    private OdoManager odoManager;
     @Autowired
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
 
@@ -151,9 +154,11 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
             // 2.修改出库单waveCode为空
             whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
 
-            Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
-            odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
-            distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+            if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+                Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
+                odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
+                distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+            }
         }
         // 3.从波次明细中剔除出库单
         whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
@@ -182,7 +187,10 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     		List<OdoCommand> odo = whOdoDao.getWhOdoListById(list, ouId);
     		Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
     		for (OdoCommand odoCommand : odo) {
-    			odoIdCounterCodeMap.put(odoCommand.getId(), odoCommand.getCounterCode());
+                if (this.odoManager.isSuitForDefaultDistributionMode(odoCommand.getId(), ouId)) {
+
+                    odoIdCounterCodeMap.put(odoCommand.getId(), odoCommand.getCounterCode());
+                }
 			}
     		distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
 		}

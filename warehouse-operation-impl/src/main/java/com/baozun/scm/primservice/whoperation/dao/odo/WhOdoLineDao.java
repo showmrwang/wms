@@ -240,4 +240,6 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      * @return
      */
     Long findCntByOdoIdAndOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    Long countNotSuitDistribeModeLines(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 }

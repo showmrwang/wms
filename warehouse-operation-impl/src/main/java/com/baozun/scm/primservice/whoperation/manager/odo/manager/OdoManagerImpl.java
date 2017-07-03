@@ -43,6 +43,8 @@ import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupResultCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.OdoWaveGroupSearchCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.wave.WaveCommand;
+import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdWorkFlow;
+import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WarehouseCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhDistributionPatternRuleCommand;
@@ -78,6 +80,8 @@ import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.confirm.outbound.WhOutboundConfirmManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
+import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
+import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress;
@@ -96,6 +100,7 @@ import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Customer;
 import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
+import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoice;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceAddress;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhInvoiceLine;
@@ -157,6 +162,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private WhSkuWhmgmtDao whSkuWhmgmtDao;
     @Autowired
     private WhOdoOutBoundBoxDao whOdoOutBoundBoxDao;
+    @Autowired
+    private SkuRedisManager skuRedisManager;
+    @Autowired
+    private WarehouseManager warehouseManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -521,8 +530,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
                 // 加入仓库配货模式
                 try {
-
-                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(updateOdo.getCounterCode(), updateOdo.getId());
+                    if (this.isSuitForDefaultDistributionMode(updateOdo)) {
+                        this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(updateOdo.getCounterCode(), updateOdo.getId());
+                    }
                 } catch (BusinessException ex) {
                     log.error("", ex);
                 } catch (Exception exp) {
@@ -1069,7 +1079,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         while (odoIt2.hasNext()) {
             Entry<Long, WhOdo> entry = odoIt2.next();
             WhOdo odo = entry.getValue();
-            this.distributionModeArithmeticManagerProxy.AddToWave(odo.getCounterCode(), odo.getId());
+            // @mender yimin.lu 2017/6/30 有条件删除
+            if (this.isSuitForDefaultDistributionMode(odo)) {
+                this.distributionModeArithmeticManagerProxy.AddToWave(odo.getCounterCode(), odo.getId());
+            }
         }
     }
 
@@ -1310,7 +1323,11 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         if (odoIdCounterCodeList != null && odoIdCounterCodeList.size() > 0) {
             for (String str : odoIdCounterCodeList) {
                 String[] arr = str.split("_");
-                odoIdCounterCodeMap.put(Long.parseLong(arr[0]), arr[1]);
+                Long unitOdoId = Long.parseLong(arr[0]);
+                // @mender yimin.lu 2017/6/30
+                if (this.isSuitForDefaultDistributionMode(unitOdoId, ouId)) {
+                    odoIdCounterCodeMap.put(unitOdoId, arr[1]);
+                }
                 waveOdoIdList.add(Long.parseLong(arr[0]));
             }
             // 出库单头计算
@@ -1327,6 +1344,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         // 插入波次
         this.whWaveDao.insert(wave);
         // 仓库中配货模式计算
+
         this.distributionModeArithmeticManagerProxy.AddToWave(odoIdCounterCodeMap);
 
     }
@@ -1672,5 +1690,65 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         log.info("updateOdoLineTypeByOdoId method start");
         this.whOdoLineDao.updateOdoLineTypeByOdoId(o);
         log.info("updateOdoLineTypeByOdoId method end");
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public boolean isSuitForDefaultDistributionMode(WhOdo odo) {
+        
+        // @mender yimin.lu 2017/6/30
+        Long ouId = odo.getOuId();
+        Warehouse wh = this.warehouseManager.findWarehouseByIdExt(ouId);
+        // 如果仓库不开启配货模式计算
+        if ((wh.getIsCalcSeckill() != null && wh.getIsCalcSeckill()) || (wh.getIsCalcTwoSkuSuit() != null && wh.getIsCalcTwoSkuSuit()) || (wh.getIsCalcSuits() && wh.getIsCalcSuits())) {
+
+        } else {
+            return false;
+        }
+        // 出库单头：不支持越库、不含易碎品、危险品、非锁定、没有指定出库箱类型
+        if (!Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
+            return false;
+        }
+        if ((odo.getIncludeFragileCargo() != null && odo.getIncludeFragileCargo())) {
+            return false;
+        }
+        if (odo.getIncludeHazardousCargo() != null && odo.getIncludeHazardousCargo()) {
+            return false;
+        }
+        if (odo.getIsLocked() != null && odo.getIsLocked()) {
+            return false;
+        }
+        if (odo.getOutboundCartonType() != null) {
+            return false;
+        }
+        // 出库单：没有仓库增值服务
+        List<WhOdoVasCommand> vasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), null, ouId);
+        if (vasList != null && vasList.size() > 0) {
+            return false;
+        }
+        // 出库单明细：商品不管控 ：库存类型、SN号、残次类型、残次原因、残次条码、生产日期、失效日期、原产地、批次号
+        String[] unitCodeArray = odo.getCounterCode().split("\\|");
+
+        String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("\\$");
+        for (String unitSkuId : unitSkuIdArray) {
+            SkuRedisCommand s = this.skuRedisManager.findSkuMasterBySkuId(Long.parseLong(unitSkuId), ouId, null);
+            if (RcvdWorkFlow.isInvAttrControl(s)) {
+                return false;
+            }
+        }
+        // 出库单明细：良品，没有指定库存属性，没有指定混放属性，没有指定出库箱类型
+        Long count = this.whOdoLineDao.countNotSuitDistribeModeLines(odo.getId(), ouId);
+        if (count > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId) {
+        WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
+        return this.isSuitForDefaultDistributionMode(odo);
     }
 }

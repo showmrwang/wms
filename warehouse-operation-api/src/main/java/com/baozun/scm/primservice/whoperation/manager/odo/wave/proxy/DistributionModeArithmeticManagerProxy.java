@@ -80,6 +80,7 @@ public interface DistributionModeArithmeticManagerProxy extends BaseManager {
     /**
      * 出库单合并
      */
+    @Deprecated
     public void mergeOdo(String newCode, Long odoId, Map<Long, String> mergedOdoMp);
 
     /**

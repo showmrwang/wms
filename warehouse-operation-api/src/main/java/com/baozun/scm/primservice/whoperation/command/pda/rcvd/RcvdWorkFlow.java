@@ -214,4 +214,47 @@ public class RcvdWorkFlow extends BaseCommand {
         return locationOpt.endsWith("%$") ? (locationOpt + skuId + "|" + uuid) : (locationOpt + "$" + skuId + "|" + uuid);// $占位符
     }
 
+
+    public static boolean isInvAttrControl(SkuRedisCommand sku) {
+        SkuMgmt mgt = sku.getSkuMgmt();
+        if (mgt != null) {
+            if (mgt.getIsValid() && mgt.getIsValid()) {
+                return true;
+            }
+            if (mgt.getIsBatchNo() && mgt.getIsBatchNo()) {
+                return true;
+            }
+            if (mgt.getIsCountryOfOrigin() && mgt.getIsCountryOfOrigin()) {
+                return true;
+            }
+            if (mgt.getIsInvType() && mgt.getIsInvType()) {
+                return true;
+            }
+
+            // @mender yimin.lu 2017/2/10 商品的序列号管理类型
+            if (StringUtils.isNotEmpty(mgt.getSerialNumberType()) && !Constants.SERIAL_NUMBER_TYPE_ALL_NOT.equals(mgt.getSerialNumberType())) {
+                return true;
+            }
+
+        }
+        SkuExtattr attr = sku.getSkuExtattr();
+        if (attr != null) {
+            if (null != attr.getInvAttr1() && attr.getInvAttr1()) {
+                return true;
+            }
+            if (null != attr.getInvAttr2() && attr.getInvAttr2()) {
+                return true;
+            }
+            if (null != attr.getInvAttr3() && attr.getInvAttr3()) {
+                return true;
+            }
+            if (null != attr.getInvAttr4() && attr.getInvAttr4()) {
+                return true;
+            }
+            if (null != attr.getInvAttr5() && attr.getInvAttr5()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

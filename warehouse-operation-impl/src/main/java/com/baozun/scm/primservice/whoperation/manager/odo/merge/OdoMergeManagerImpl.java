@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import lark.common.annotation.MoreDB;
@@ -42,6 +43,7 @@ import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.wave.WhWaveLineDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.proxy.DistributionModeArithmeticManagerProxy;
 import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -83,6 +85,8 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
     @Autowired
     private CodeManager codeManager;
+    @Autowired
+    private OdoManager odoManager;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -508,7 +512,21 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
         }
         if (!StringUtils.hasText(whOdo.getWaveCode())) {
             /* 波次中的合并订单不需要考虑订单池 */
-            this.distributionModeArithmeticManagerProxy.mergeOdo(counterCode, whOdo.getId(), mergedOdoMp);
+            // @mender yimin.lu 2017/6/30
+            if (mergedOdoMp != null && mergedOdoMp.size() > 0) {
+                Iterator<Entry<Long, String>> it = mergedOdoMp.entrySet().iterator();
+                while (it.hasNext()) {
+                    Entry<Long, String> entry = it.next();
+                    if (this.odoManager.isSuitForDefaultDistributionMode(entry.getKey(), ouId)) {
+
+                        this.distributionModeArithmeticManagerProxy.divFromOrderPool(entry.getValue(), entry.getKey());
+                    }
+                }
+            }
+            if (this.odoManager.isSuitForDefaultDistributionMode(whOdo.getId(), ouId)) {
+
+                this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(whOdo.getCounterCode(), whOdo.getId());
+            }
         }
         return whOdo;
     }

@@ -461,6 +461,7 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
     }
 
     @Override
+    @Deprecated
     public void mergeOdo(String newCode, Long odoId, Map<Long, String> mergedOdoMap) {
         if (mergedOdoMap != null && mergedOdoMap.size() > 0) {
             Iterator<Entry<Long, String>> it = mergedOdoMap.entrySet().iterator();
@@ -502,6 +503,9 @@ public class DistributionModeArithmeticManagerProxyImpl extends BaseManagerImpl 
 
     @Override
     public void addToPool(Map<Long, String> odoIdCounterCodeMap) {
+        if (odoIdCounterCodeMap == null || odoIdCounterCodeMap.size() == 0) {
+            return;
+        }
         Iterator<Entry<Long, String>> it = odoIdCounterCodeMap.entrySet().iterator();
         while (it.hasNext()) {
             Entry<Long, String> entry = it.next();
