@@ -271,5 +271,11 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
         }
         log.info("deleteLines method delete");
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Long countNotSuitDistribeModeLines(Long odoId, Long ouId) {
+        return this.whOdoLineDao.countNotSuitDistribeModeLines(odoId, ouId);
+    }
     
 }

@@ -31,6 +31,7 @@ import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoVasManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveLineManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.wave.WhWaveManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
@@ -66,6 +67,8 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
     private DistributionModeArithmeticManagerProxy distributionModeArithmeticManagerProxy;
     @Autowired
     private SkuRedisManager skuRedisManager;
+    @Autowired
+    private OdoVasManager odoVasManager;
 
     @Override
     public void setWaveDistributionMode(Long waveId, Warehouse wh, Long userId) {
@@ -91,17 +94,6 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         }
         List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
 
-        // 出库单集合
-        log.info("logId:{},task ->method setWaveDistributionMode:count odo Map ", logId);
-        Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
-        for (WhOdo odo : odoList) {
-            log.debug("logId:{},task ->method setWaveDistributionMode: add to odoIdCounterCodeMap[odoId:{},counterCode:{}]", logId, odo.getId(), odo.getCounterCode());
-            // @mender yimin.lu 指定库存属性的出库单/有包装要求/有仓库增值服务/管理库存属性 不参与计算默认配货模式 2017/6/29
-            // boolean flag = this.isDefaultCounter(odo);
-            odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
-        }
-
-        Iterator<Entry<Long, String>> it = odoIdCounterCodeMap.entrySet().iterator();
 
         Set<Long> noModeOdoList = new HashSet<Long>();// 没有配货模式的出库单
 
@@ -111,6 +103,25 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         Map<String, Set<Long>> twoSuitsOdoMap = new HashMap<String, Set<Long>>();// 主副品出库单集合
 
         Map<Long, String> diyOdoMap = new HashMap<Long, String>();// 用户自定义配货模式集合
+
+        // 出库单集合
+        log.info("logId:{},task ->method setWaveDistributionMode:count odo Map ", logId);
+        Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
+        for (WhOdo odo : odoList) {
+            log.debug("logId:{},task ->method setWaveDistributionMode: add to odoIdCounterCodeMap[odoId:{},counterCode:{}]", logId, odo.getId(), odo.getCounterCode());
+            // @mender yimin.lu 指定库存属性的出库单/有包装要求/有仓库增值服务/管理库存属性 不参与计算默认配货模式 2017/6/29
+            boolean flag = this.odoManager.isSuitForDefaultDistributionMode(odo);
+            if (flag) {
+
+                odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
+            } else {
+                noModeOdoList.add(odo.getId());
+            }
+        }
+
+        Iterator<Entry<Long, String>> it = odoIdCounterCodeMap.entrySet().iterator();
+
+
 
         // 主副品
         Set<String> twoSuitsOdoSet = new HashSet<String>();
@@ -347,14 +358,6 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         return sortedMap.keySet();
     }
 
-
-    private boolean isDefaultCounter(WhOdo odo) {
-        boolean flag = true;
-
-
-
-        return false;
-    }
 
 
     /**

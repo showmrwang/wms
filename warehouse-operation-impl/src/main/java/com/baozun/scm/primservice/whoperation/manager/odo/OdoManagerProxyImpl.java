@@ -465,11 +465,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             }
             Long odoId = odo.getId();
             // 配货模式计算
-            boolean distributionModeCalcFlag = false;
-            if ((null == odo.getIsLocked() || !odo.getIsLocked()) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
-                distributionModeCalcFlag = true;
+            if (!OdoStatus.CREATING.equals(odo.getOdoStatus())) {
+                // @mender yimin.lu 2017/6/30
+                if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+                    this.distributionModeArithmeticManagerProxy.divFromOrderPool(odo.getCounterCode(), odoId);
+                }
             }
-
             odo.setEpistaticSystemsOrderType(sourceOdo.getEpistaticSystemsOrderType());
             odo.setOrderType(sourceOdo.getOrderType());
             odo.setEcOrderCode(sourceOdo.getEcOrderCode());
@@ -496,22 +497,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             trans.setModeOfTransport(sourceOdoTrans.getModeOfTransport());
             trans.setIsCod(sourceOdoTrans.getIsCod());
             trans.setCodAmt(sourceOdoTrans.getCodAmt());
-            if (distributionModeCalcFlag) {
-                if ((null == odo.getIsLocked() || !odo.getIsLocked()) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
-                    distributionModeCalcFlag = false;
-                }
-            } else {
-                if ((null == odo.getIsLocked() || !odo.getIsLocked()) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
-                    distributionModeCalcFlag = true;
-                }
-            }
             // 保存数据
             this.odoManager.editOdo(odo, trans);
             // 计算配货模式
-            if (distributionModeCalcFlag) {
-                if (!OdoStatus.CREATING.equals(odo.getOdoStatus())) {
-
-                    this.distributionModeArithmeticManagerProxy.AddToWave(odo.getCounterCode(), odoId);
+            if (!OdoStatus.CREATING.equals(odo.getOdoStatus())) {
+                // @mender yimin.lu 2017/6/30
+                if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+                    this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(odo.getCounterCode(), odoId);
                 }
             }
         } catch (BusinessException ex) {
@@ -812,6 +804,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     @Override
+    @Deprecated
     public void saveDistributionUnit(OdoAddressCommand odoAddressCommand) {
         Long ouId = odoAddressCommand.getOuId();
         Long userId = odoAddressCommand.getUserId();
@@ -892,6 +885,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     }
 
     @Override
+    @Deprecated
     public void saveConsigneeUnit(OdoAddressCommand odoAddressCommand) {
         Long ouId = odoAddressCommand.getOuId();
         Long userId = odoAddressCommand.getUserId();
@@ -1637,10 +1631,13 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 throw e;
             }
             if (flag) {
-                // @mender yimin.lu 锁定的出库单不参与计数器计算 2017/2/10
-                // @mender yimin.lu 支持越库的出库单不参与计数器计算
+                // @mender yimin.lu 锁定的出库单不参与计数器计算 2017/2/10 @deprecated
+                // @mender yimin.lu 支持越库的出库单不参与计数器计算 @deprecated
+                // @mender yimin.lu 2017/6/30 common method
                 if ((odo.getIsLocked() == null || odo.getIsLocked() == false) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
 
+                }
+                if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
                     this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
                 }
             }
@@ -3141,5 +3138,12 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             msg.setMsg(ErrorCodes.SYSTEM_ERROR + "");
             return msg;
         }
+    }
+
+
+    @Override
+    public boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId) {
+        WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
+        return this.odoManager.isSuitForDefaultDistributionMode(odo);
     }
 }

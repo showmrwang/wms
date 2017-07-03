@@ -109,6 +109,7 @@ public interface OdoManagerProxy extends BaseManager {
      * 
      * @param odoAddressCommand
      */
+    @Deprecated
     void saveDistributionUnit(OdoAddressCommand odoAddressCommand);
 
     /**
@@ -125,6 +126,7 @@ public interface OdoManagerProxy extends BaseManager {
      * 
      * @param odoAddressCommand
      */
+    @Deprecated
     void saveConsigneeUnit(OdoAddressCommand odoAddressCommand);
 
     /**
@@ -464,5 +466,13 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     ResponseMsg cancelOdoWithWork(WhOdo odo, Long ouId, Long userId, String logId);
+
+    /**
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId);
 
 }

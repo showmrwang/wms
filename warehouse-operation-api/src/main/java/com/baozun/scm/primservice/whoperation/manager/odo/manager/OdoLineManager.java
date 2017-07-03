@@ -154,4 +154,13 @@ public interface OdoLineManager extends BaseManager {
 
     void deleteLines(List<WhOdoLine> lineList);
 
+    /**
+     * 不满足默认配货模式的明细行数
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    Long countNotSuitDistribeModeLines(Long odoId, Long ouId);
+
 }
