@@ -1624,7 +1624,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateOdoIndexByBatch(Map<String, List<Long>> batchMap, Long ouId) {
-        DecimalFormat df = new DecimalFormat("000");
+        DecimalFormat df = new DecimalFormat("0000");
         int batchIndex = 1;
         for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
             int index = 1;
@@ -1644,7 +1644,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateOdoIndexByBatchExt(Map<String, Map<String, List<Long>>> batchPrintConditionMap, Long ouId) {
-        DecimalFormat df = new DecimalFormat("000");
+        DecimalFormat df = new DecimalFormat("0000");
         int batchIndex = 1;
         for (Entry<String, Map<String, List<Long>>> entry : batchPrintConditionMap.entrySet()) {
             Map<String, List<Long>> printConditionMap = entry.getValue();
