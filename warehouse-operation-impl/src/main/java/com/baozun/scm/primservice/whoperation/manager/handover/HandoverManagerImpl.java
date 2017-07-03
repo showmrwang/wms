@@ -542,4 +542,14 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
     public int cancelBoxToHandoverstation(String outboundBoxCode, Long ouId) {
         return handoverCollectionDao.deleteByOutboundboxCodeAndOuId(outboundBoxCode, ouId);
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<HandoverCollection> findhandoverCollectionByHandoverStationId(Long id, Long ouId) {
+        HandoverCollection handoverCollection = new HandoverCollection();
+        handoverCollection.setHandoverStationId(id);
+        handoverCollection.setHandoverStatus("5");
+        handoverCollection.setOuId(ouId);
+        return handoverCollectionDao.findListByParam(handoverCollection);
+    }
 }

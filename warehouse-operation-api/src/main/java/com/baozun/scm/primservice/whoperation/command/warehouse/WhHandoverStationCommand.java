@@ -63,10 +63,40 @@ public class WhHandoverStationCommand extends BaseModel {
     /** 当前出库箱数量 */
     private java.lang.Integer Capacity;
     /** 状态 */
-    private java.lang.String Status;
+    private java.lang.String status;
     /** 是否提示交接 */
     private boolean isTipHandover;
     private String url;
+    /** 复核台 */
+    private String facilityName;
+    /** 复核台组 */
+    private String groupName;
+    /** 复合台id */
+    private java.lang.Long facilityId;
+
+    public java.lang.Long getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(java.lang.Long facilityId) {
+        this.facilityId = facilityId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getFacilityName() {
+        return facilityName;
+    }
+
+    public void setFacilityName(String facilityName) {
+        this.facilityName = facilityName;
+    }
 
     public String getUrl() {
         return url;
@@ -76,12 +106,14 @@ public class WhHandoverStationCommand extends BaseModel {
         this.url = url;
     }
 
+
+
     public java.lang.String getStatus() {
-        return Status;
+        return status;
     }
 
     public void setStatus(java.lang.String status) {
-        Status = status;
+        this.status = status;
     }
 
     public java.lang.String getHandover_batch() {
