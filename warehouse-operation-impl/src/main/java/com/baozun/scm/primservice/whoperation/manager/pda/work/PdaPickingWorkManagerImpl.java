@@ -4051,8 +4051,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 WhOperationLine line = new WhOperationLine();
                 BeanUtils.copyProperties(cmd, line);
                 line.setCompleteQty(qty);
-                line.setLastModifyTime(new Date());
                 whOperationLineDao.saveOrUpdateByVersion(line);
+                insertGlobalLog(GLOBAL_LOG_INSERT, line, ouId, userId, null, null);
                 Double execLineQty = qty - completeQty;
                 Long operationLineId = cmd.getId();
                 // 添加作业执行明细
@@ -4060,6 +4060,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 whOperationExecLine.setQty(execLineQty);
                 whOperationExecLine.setIsShortPicking(true);
                 whOperationExecLineDao.insert(whOperationExecLine);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, whOperationExecLine, ouId, userId, null, null);
+                
             }
         }
         OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
