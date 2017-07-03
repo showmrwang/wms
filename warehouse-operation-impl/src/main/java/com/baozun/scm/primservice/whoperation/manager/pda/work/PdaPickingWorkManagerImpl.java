@@ -1438,7 +1438,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             list = whSkuInventoryDao.getWhSkuInventoryCommandByInvMove(ouId, operationId, locationId, outerContainerId, insideContainerId);
         }
         if (null == list || list.size() == 0) {
-            throw new BusinessException(ErrorCodes.LOCATION_INVENTORY_IS_NO);
+            throw new BusinessException(ErrorCodes.INVENTORY_IS_ERROR);
         }
         // 货箱内待拣货sku库位库存库存属性是否唯一
         Set<String> skuAttrIdsSet = new HashSet<String>();
