@@ -37,7 +37,6 @@ import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.CheckingDisplayCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.ContainerCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
-import com.baozun.scm.primservice.whoperation.command.warehouse.WeightingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
@@ -951,7 +950,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合
      * @param checkingLineList
      */
-    public WeightingCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
+    public WhCheckingByOdoResultCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
         log.info("whcheckingManagerImpl checkingByOdo is start");
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         List<String> snList = cmd.getSn();
@@ -1024,7 +1023,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         if (result) {
             // 更新出库单状态
-            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(),  checkingLineList, cmd.getSeedingWallCode(), odoLineIds);
+            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), checkingLineList, cmd.getSeedingWallCode(), odoLineIds);
         } else {
             // 修改出库单状态为复核中状态。
             this.updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING);
@@ -1041,8 +1040,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // } else {
         // return null;
         // }
+        WhCheckingByOdoResultCommand waybillCommand = bindkWaybillCode(functionId, ouId, odoId, outboundbox, outboundboxId, false);
         log.info("whcheckingManagerImpl checkingByOdo is end");
-        return null;
+        return waybillCommand;
     }
 
     /**
@@ -1266,7 +1266,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
             // 生成出库想明细信息
             List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
-            if(null != listSkuInvCmd && listSkuInvCmd.size() == 0){
+            if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
                 throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
             }
             // 添加出库箱明细
@@ -1437,7 +1437,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @author
      * @param whCheckingResultCommand
      */
-    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode,  List<WhCheckingLineCommand> checkingLineList, String seedingWallCode, List<Long> odoLineIds) {
+    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, List<WhCheckingLineCommand> checkingLineList, String seedingWallCode, List<Long> odoLineIds) {
         // 修改出库单状态为复核完成状态。
         updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING_FINISH);
 
@@ -1457,9 +1457,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 containerDao.saveOrUpdateByVersion(c);
                 insertGlobalLog(GLOBAL_LOG_INSERT, c, ouId, userId, null, null);
             }
-        } 
+        }
         for (WhCheckingLineCommand checkingLine : checkingLineList) {
-            String turnoverBoxCode =   checkingLine.getContainerCode();
+            String turnoverBoxCode = checkingLine.getContainerCode();
             if (!StringUtils.isEmpty(turnoverBoxCode)) {
                 // 周转箱状态
                 ContainerCommand turnCmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
@@ -1691,6 +1691,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         }
                         if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
                             // 面单
+                            log.info("waybill print: outboundBoxCode:[{}], waybillCode:[{}], userId:[{}], odoId:[{}]", outboundBoxCode, waybillCode, userId, checkingLineList.get(0).getOdoId());
                             checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
                         }
                         if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
@@ -1850,303 +1851,304 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             throw new BusinessException("check is null");
         }
     }
-    
+
     /**
      * 生成出库箱库存(按单复合,删除原来的库存生成新的出库箱库存)
      */
-   private void addOutBoundInventory(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId) {
-       String checkingPattern = cmd.getCheckingPattern(); //
-       Long ouId = cmd.getOuId();
-       Integer containerLatticeNo = cmd.getContainerLatticeNo(); // 货格号
-       String outboundboxCode = cmd.getOutboundBoxCode();
-       String seedingWallCode = cmd.getSeedingWallCode(); // 播种墙编码
-       List<String> cacehSnList = cmd.getSn(); 
-     
-       String containerCode = cmd.getContaierCode();
+    private void addOutBoundInventory(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId) {
+        String checkingPattern = cmd.getCheckingPattern(); //
+        Long ouId = cmd.getOuId();
+        Integer containerLatticeNo = cmd.getContainerLatticeNo(); // 货格号
+        String outboundboxCode = cmd.getOutboundBoxCode();
+        String seedingWallCode = cmd.getSeedingWallCode(); // 播种墙编码
+        List<String> cacehSnList = cmd.getSn();
 
-       Long containerId = null;
-       if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_1.equals(checkingPattern)) {
-           ContainerCommand container = containerDao.getContainerByCode(containerCode, ouId);
-           if (null == container) {
-               throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
-           }
-           containerId = container.getId();
-       }
-       /** 复合明细集合 */
-       List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
-       for (WhCheckingLineCommand checkingLine : checkingLineList) {
-           String turnoverBoxCode = checkingLine.getContainerCode();
-           Long turnoverBoxId = null;
-           if (Constants.WAY_5.equals(checkingPattern)) {
-               ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-               if (null == c) {
-                   throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
-               }
-               turnoverBoxId = c.getId();
-           }
-           Long odoLineId = checkingLine.getOdoLineId();
-           Long odoId = checkingLine.getOdoId();
-           List<WhSkuInventoryCommand> skuInvSnList = null;
-           // 小车货格
-           if (Constants.WAY_2.equals(checkingPattern)) {
-               log.info("outercontainer+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], containerLatticeNo:[{}]", odoLineId, odoId, ouId, containerId, containerLatticeNo);
-               skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, containerId, containerLatticeNo, null, null, null);
-           }
-           // 小车出库箱
-           if (Constants.WAY_1.equals(checkingPattern)) {
-               log.info("outercontiner+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], outboundboxCode:[{}]", odoLineId, odoId, ouId, containerId, outboundboxCode);
-               skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, containerId, null, outboundboxCode, null, null);
-           }
-           // 播种墙货格
-           if (Constants.WAY_4.equals(checkingPattern)) {
-               log.info("seedingwall+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerLatticeNo:[{}], seedingWallCode:[{}]", odoLineId, odoId, ouId, containerLatticeNo, seedingWallCode);
-               skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, containerLatticeNo, null, null, seedingWallCode);
-           }
-           // 播种墙出库箱
-           if (Constants.WAY_3.equals(checkingPattern)) {
-               log.info("seedingwall+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}], seedingWallCode:[{}]", odoLineId, odoId, ouId, outboundboxCode, seedingWallCode);
-               skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, seedingWallCode);
-           }
-           // 周转箱
-           if (Constants.WAY_5.equals(checkingPattern)) {
-               log.info("container branch: odoLineId:[{}], odoId:[{}], ouId:[{}], turnoverBoxId:[{}]", odoLineId, odoId, ouId, turnoverBoxId);
-               skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, null, turnoverBoxId, null);
-           }
-           // 只有出库箱
-           if (Constants.WAY_6.equals(checkingPattern)) {
-               log.info("outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}]", odoLineId, odoId, ouId, outboundboxCode);
-               skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, null);
-           }
-           if (null != skuInvSnList && skuInvSnList.size() == 0) {
-               log.info("null != skuInvSnList && skuInvSnList.size() == 0");
-               throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
-           }
-           Boolean isContainue = false;
-           for (WhSkuInventoryCommand invSnCmd : skuInvSnList) {
-               if (invSnCmd.getUuid().equals(checkingLine.getUuid())) {
-                   List<WhSkuInventoryCommand> skuInvList = null;
-                   // 小车货格
-                   if (Constants.WAY_2.equals(checkingPattern)) {
-                       log.info("outercontainer+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], containerLatticeNo:[{}], uuid:[{}]", odoLineId, odoId, ouId, containerId, containerLatticeNo, checkingLine.getUuid());
-                       skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, containerId, containerLatticeNo, null, null, null, checkingLine.getUuid());
-                   }
-                   // 小车出库箱
-                   if (Constants.WAY_1.equals(checkingPattern)) {
-                       log.info("outercontiner+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], outboundboxCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, containerId, containerLatticeNo, checkingLine.getUuid());
-                       skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, containerId, null, outboundboxCode, null, null, checkingLine.getUuid());
-                   }
-                   // 播种墙货格
-                   if (Constants.WAY_4.equals(checkingPattern)) {
-                       log.info("seedingwall+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerLatticeNo:[{}], seedingWallCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, containerLatticeNo, seedingWallCode, checkingLine.getUuid());
-                       skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, containerLatticeNo, null, null, seedingWallCode, checkingLine.getUuid());
-                   }
-                   // 播种墙出库箱
-                   if (Constants.WAY_3.equals(checkingPattern)) {
-                       log.info("seedingwall+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}], seedingWallCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, outboundboxCode, seedingWallCode, checkingLine.getUuid());
-                       skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, seedingWallCode, checkingLine.getUuid());
-                   }
-                   // 周转箱
-                   if (Constants.WAY_5.equals(checkingPattern)) {
-                       log.info("container branch: odoLineId:[{}], odoId:[{}], ouId:[{}], turnoverBoxId:[{}], uuid:[{}]", odoLineId, odoId, ouId, turnoverBoxId, outboundboxCode);
-                       skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, null, null, turnoverBoxId, null, checkingLine.getUuid());
-                   }
-                   // 只有出库箱
-                   if (Constants.WAY_6.equals(checkingPattern)) {
-                       log.info("outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, outboundboxCode, checkingLine.getUuid());
-                       skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, null, checkingLine.getUuid());
-                   }
-                   Double sum = 0.0;
-                   if (null != skuInvList && skuInvList.size() == 0) {
-                       throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
-                   }
-                   for (WhSkuInventoryCommand invCmd : skuInvList) {// 一单多箱的情况库存记录大于复合明细记录,
-                       sum += invCmd.getOnHandQty();
-                       if (sum.doubleValue() == Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
-                           this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
-                           // 删除容器库存
-                           this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
-                           isContainue = true;
-                           break;
-                       }
-                       if (sum.doubleValue() < Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
-                           this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
-                           // 删除容器库存
-                           this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
-                           continue;
-                       }
-                       if (sum.doubleValue() > Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
-                           Double qty = Double.valueOf(checkingLine.getCheckingQty()) - (sum - invCmd.getOnHandQty()); // 要生成出库箱库存的sku数量
-                           this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, qty, outboundboxCode, isTabbInvTotal, ouId, userId);
-                           // 修改容器库存
-                           this.updateContainerInventory(invCmd.getOnHandQty() - qty, invCmd, ouId, userId, isTabbInvTotal, qty);
-                           isContainue = true;
-                           break;
-                       }
-                   }
-                   if (isContainue) {
-                       break;
-                   }
-               }
-           }
+        String containerCode = cmd.getContaierCode();
 
-       }
-       // 校验出库箱库存
-       List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryDao.findOutboundboxInventory(outboundboxCode, ouId);
-       if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
-           throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
-       }
+        Long containerId = null;
+        if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_1.equals(checkingPattern)) {
+            ContainerCommand container = containerDao.getContainerByCode(containerCode, ouId);
+            if (null == container) {
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+            }
+            containerId = container.getId();
+        }
+        /** 复合明细集合 */
+        List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
+        for (WhCheckingLineCommand checkingLine : checkingLineList) {
+            String turnoverBoxCode = checkingLine.getContainerCode();
+            Long turnoverBoxId = null;
+            if (Constants.WAY_5.equals(checkingPattern)) {
+                ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+                if (null == c) {
+                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+                }
+                turnoverBoxId = c.getId();
+            }
+            Long odoLineId = checkingLine.getOdoLineId();
+            Long odoId = checkingLine.getOdoId();
+            List<WhSkuInventoryCommand> skuInvSnList = null;
+            // 小车货格
+            if (Constants.WAY_2.equals(checkingPattern)) {
+                log.info("outercontainer+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], containerLatticeNo:[{}]", odoLineId, odoId, ouId, containerId, containerLatticeNo);
+                skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, containerId, containerLatticeNo, null, null, null);
+            }
+            // 小车出库箱
+            if (Constants.WAY_1.equals(checkingPattern)) {
+                log.info("outercontiner+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], outboundboxCode:[{}]", odoLineId, odoId, ouId, containerId, outboundboxCode);
+                skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, containerId, null, outboundboxCode, null, null);
+            }
+            // 播种墙货格
+            if (Constants.WAY_4.equals(checkingPattern)) {
+                log.info("seedingwall+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerLatticeNo:[{}], seedingWallCode:[{}]", odoLineId, odoId, ouId, containerLatticeNo, seedingWallCode);
+                skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, containerLatticeNo, null, null, seedingWallCode);
+            }
+            // 播种墙出库箱
+            if (Constants.WAY_3.equals(checkingPattern)) {
+                log.info("seedingwall+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}], seedingWallCode:[{}]", odoLineId, odoId, ouId, outboundboxCode, seedingWallCode);
+                skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, seedingWallCode);
+            }
+            // 周转箱
+            if (Constants.WAY_5.equals(checkingPattern)) {
+                log.info("container branch: odoLineId:[{}], odoId:[{}], ouId:[{}], turnoverBoxId:[{}]", odoLineId, odoId, ouId, turnoverBoxId);
+                skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, null, turnoverBoxId, null);
+            }
+            // 只有出库箱
+            if (Constants.WAY_6.equals(checkingPattern)) {
+                log.info("outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}]", odoLineId, odoId, ouId, outboundboxCode);
+                skuInvSnList = whSkuInventoryDao.getWhSkuInventorySnCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, null);
+            }
+            if (null != skuInvSnList && skuInvSnList.size() == 0) {
+                log.info("null != skuInvSnList && skuInvSnList.size() == 0");
+                throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+            }
+            Boolean isContainue = false;
+            for (WhSkuInventoryCommand invSnCmd : skuInvSnList) {
+                if (invSnCmd.getUuid().equals(checkingLine.getUuid())) {
+                    List<WhSkuInventoryCommand> skuInvList = null;
+                    // 小车货格
+                    if (Constants.WAY_2.equals(checkingPattern)) {
+                        log.info("outercontainer+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], containerLatticeNo:[{}], uuid:[{}]", odoLineId, odoId, ouId, containerId, containerLatticeNo, checkingLine.getUuid());
+                        skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, containerId, containerLatticeNo, null, null, null, checkingLine.getUuid());
+                    }
+                    // 小车出库箱
+                    if (Constants.WAY_1.equals(checkingPattern)) {
+                        log.info("outercontiner+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerId:[{}], outboundboxCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, containerId, containerLatticeNo, checkingLine.getUuid());
+                        skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, containerId, null, outboundboxCode, null, null, checkingLine.getUuid());
+                    }
+                    // 播种墙货格
+                    if (Constants.WAY_4.equals(checkingPattern)) {
+                        log.info("seedingwall+lattice branch: odoLineId:[{}], odoId:[{}], ouId:[{}], containerLatticeNo:[{}], seedingWallCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, containerLatticeNo, seedingWallCode, checkingLine.getUuid());
+                        skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, containerLatticeNo, null, null, seedingWallCode, checkingLine.getUuid());
+                    }
+                    // 播种墙出库箱
+                    if (Constants.WAY_3.equals(checkingPattern)) {
+                        log.info("seedingwall+outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}], seedingWallCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, outboundboxCode, seedingWallCode, checkingLine.getUuid());
+                        skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, seedingWallCode, checkingLine.getUuid());
+                    }
+                    // 周转箱
+                    if (Constants.WAY_5.equals(checkingPattern)) {
+                        log.info("container branch: odoLineId:[{}], odoId:[{}], ouId:[{}], turnoverBoxId:[{}], uuid:[{}]", odoLineId, odoId, ouId, turnoverBoxId, outboundboxCode);
+                        skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, null, null, turnoverBoxId, null, checkingLine.getUuid());
+                    }
+                    // 只有出库箱
+                    if (Constants.WAY_6.equals(checkingPattern)) {
+                        log.info("outboundbox branch: odoLineId:[{}], odoId:[{}], ouId:[{}], outboundboxCode:[{}], uuid:[{}]", odoLineId, odoId, ouId, outboundboxCode, checkingLine.getUuid());
+                        skuInvList = whSkuInventoryDao.getWhSkuInventoryCommandByOdo(odoLineId, odoId, ouId, null, null, outboundboxCode, null, null, checkingLine.getUuid());
+                    }
+                    Double sum = 0.0;
+                    if (null != skuInvList && skuInvList.size() == 0) {
+                        throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+                    }
+                    for (WhSkuInventoryCommand invCmd : skuInvList) {// 一单多箱的情况库存记录大于复合明细记录,
+                        sum += invCmd.getOnHandQty();
+                        if (sum.doubleValue() == Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
+                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
+                            // 删除容器库存
+                            this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
+                            isContainue = true;
+                            break;
+                        }
+                        if (sum.doubleValue() < Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
+                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, invCmd.getOnHandQty(), outboundboxCode, isTabbInvTotal, ouId, userId);
+                            // 删除容器库存
+                            this.deleteContainerInventory(invCmd, isTabbInvTotal, ouId, userId);
+                            continue;
+                        }
+                        if (sum.doubleValue() > Double.valueOf(checkingLine.getCheckingQty()).doubleValue()) {
+                            Double qty = Double.valueOf(checkingLine.getCheckingQty()) - (sum - invCmd.getOnHandQty()); // 要生成出库箱库存的sku数量
+                            this.addOutBoundBoxInventory(cacehSnList, invCmd, invSnCmd, qty, outboundboxCode, isTabbInvTotal, ouId, userId);
+                            // 修改容器库存
+                            this.updateContainerInventory(invCmd.getOnHandQty() - qty, invCmd, ouId, userId, isTabbInvTotal, qty);
+                            isContainue = true;
+                            break;
+                        }
+                    }
+                    if (isContainue) {
+                        break;
+                    }
+                }
+            }
+
+        }
+        // 校验出库箱库存
+        List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryDao.findOutboundboxInventory(outboundboxCode, ouId);
+        if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
+            throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+        }
     }
-   
-   private void addOutBoundBoxInventory(List<String> cacehSnList, WhSkuInventoryCommand invCmd, WhSkuInventoryCommand invSnCmd, Double qty, String outboundboxCode, Boolean isTabbInvTotal, Long ouId, Long userId) {
-       List<WhSkuInventorySnCommand> snList = invSnCmd.getWhSkuInventorySnCommandList();
-       String uuid = invCmd.getUuid();
-       if (null == snList || 0 == snList.size()) {// 没有sn
-           String odoUuid = null;
-           WhSkuInventory skuInv = new WhSkuInventory();
-           BeanUtils.copyProperties(invCmd, skuInv);
-           skuInv.setId(null);
-           skuInv.setLocationId(null);
-           skuInv.setOuterContainerId(null);
-           skuInv.setInsideContainerId(null);
-           skuInv.setContainerLatticeNo(null);
-           skuInv.setSeedingWallCode(null);
-           skuInv.setOutboundboxCode(outboundboxCode); // 出库箱编码
-           try {
-               odoUuid = SkuInventoryUuid.invUuid(skuInv);
-               skuInv.setUuid(uuid);// UUID
-           } catch (Exception e) {
-               log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
-               throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
-           }
-           Double oldQty = 0.0;
-           if (true == isTabbInvTotal) {
-               try {
-                   oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
-               } catch (Exception e) {
-                   log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                   throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-               }
-           } else {
-               oldQty = 0.0;
-           }
-           skuInv.setUuid(odoUuid);
-           skuInv.setOnHandQty(qty);
-           skuInv.setFrozenQty(0.0);
-           whSkuInventoryDao.insert(skuInv);
-           insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
-           // 记录入库库存日志(这个实现的有问题)
-           insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-       } else {// 有sn
-           String odoUuid = null;
-           WhSkuInventory skuInv = new WhSkuInventory();
-           BeanUtils.copyProperties(invCmd, skuInv);
-           skuInv.setId(null);
-           skuInv.setLocationId(null);
-           skuInv.setOuterContainerId(null);
-           skuInv.setInsideContainerId(null);
-           skuInv.setContainerLatticeNo(null);
-           skuInv.setSeedingWallCode(null);
-           skuInv.setOutboundboxCode(outboundboxCode); // 出库箱编码
-           try {
-               odoUuid = SkuInventoryUuid.invUuid(skuInv);
-               skuInv.setUuid(uuid);// UUID
-           } catch (Exception e) {
-               log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
-               throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
-           }
-           Double oldQty = 0.0;
-           if (true == isTabbInvTotal) {
-               try {
-                   oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
-               } catch (Exception e) {
-                   log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-                   throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-               }
-           } else {
-               oldQty = 0.0;
-           }
-           skuInv.setUuid(odoUuid);
-           skuInv.setOnHandQty(qty);
-           skuInv.setFrozenQty(0.0);
-           whSkuInventoryDao.insert(skuInv);
-           insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
-           // 记录入库库存日志(这个实现的有问题)
-           insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-//           String uuid1 = invCmd.getUuid();
-//           Double oldQty1 = 0.0;
-//           if (true == isTabbInvTotal) {
-//               try {
-//                   oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
-//               } catch (Exception e) {
-//                   log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-//                   throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-//               }
-//           } else {
-//               oldQty1 = 0.0;
-//           }
-//           insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-//           // 删除原来的库存
-//           whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
-           // 操作sn/残次信息
-           int count = 0;
-           for (WhSkuInventorySnCommand cSnCmd : snList) {
-               for (String sn : cacehSnList) {
-                   if (sn.equals(cSnCmd.getSn()) || sn.equals(cSnCmd.getDefectWareBarcode())) {
-                       WhSkuInventorySn skuSn = new WhSkuInventorySn();
-                       BeanUtils.copyProperties(cSnCmd, skuSn);
-                       skuSn.setUuid(odoUuid);
-                       whSkuInventorySnDao.saveOrUpdate(skuSn); // 更新sn
-                       insertGlobalLog(GLOBAL_LOG_UPDATE, skuSn, ouId, userId, null, null);
-                       insertSkuInventorySnLog(skuSn.getId(), ouId); // 记录sn日志
-                       count++;
-                   }
-               }
-               if (count == cacehSnList.size()) {
-                   break;
-               }
-           }
-       }
 
-   }
-   
-   private void deleteContainerInventory(WhSkuInventoryCommand invCmd, Boolean isTabbInvTotal, Long ouId, Long userId) {
-       String uuid1 = invCmd.getUuid();
-       Double oldQty1 = 0.0;
-       if (true == isTabbInvTotal) {
-           try {
-               oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
-           } catch (Exception e) {
-               log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-               throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-           }
-       } else {
-           oldQty1 = 0.0;
-       }
-       insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-       // 删除原来的容器库存
-       WhSkuInventory skuInv = new WhSkuInventory();
-       BeanUtils.copyProperties(invCmd, skuInv);
-       whSkuInventoryDao.deleteWhSkuInventoryById(skuInv.getId(), ouId);
-       insertGlobalLog(GLOBAL_LOG_DELETE, skuInv, ouId, userId, null, null);
-   }
-   
-   public void updateContainerInventory(Double qty, WhSkuInventoryCommand invCmd, Long ouId, Long userId, Boolean isTabbInvTotal, Double oldQty) {
-       WhSkuInventory skuInv = new WhSkuInventory();
-       BeanUtils.copyProperties(invCmd, skuInv);
-       skuInv.setOnHandQty(qty);
-       Double oldQty1 = 0.0;
-       if (true == isTabbInvTotal) {
-           try {
-               oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
-           } catch (Exception e) {
-               log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
-               throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
-           }
-       } else {
-           oldQty1 = 0.0;
-       }
-       whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
-       insertGlobalLog(GLOBAL_LOG_UPDATE, skuInv, ouId, userId, null, null);
-       insertSkuInventoryLog(invCmd.getId(), -oldQty, oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
-   }
+    private void addOutBoundBoxInventory(List<String> cacehSnList, WhSkuInventoryCommand invCmd, WhSkuInventoryCommand invSnCmd, Double qty, String outboundboxCode, Boolean isTabbInvTotal, Long ouId, Long userId) {
+        List<WhSkuInventorySnCommand> snList = invSnCmd.getWhSkuInventorySnCommandList();
+        String uuid = invCmd.getUuid();
+        if (null == snList || 0 == snList.size()) {// 没有sn
+            String odoUuid = null;
+            WhSkuInventory skuInv = new WhSkuInventory();
+            BeanUtils.copyProperties(invCmd, skuInv);
+            skuInv.setId(null);
+            skuInv.setLocationId(null);
+            skuInv.setOuterContainerId(null);
+            skuInv.setInsideContainerId(null);
+            skuInv.setContainerLatticeNo(null);
+            skuInv.setSeedingWallCode(null);
+            skuInv.setOutboundboxCode(outboundboxCode); // 出库箱编码
+            try {
+                odoUuid = SkuInventoryUuid.invUuid(skuInv);
+                skuInv.setUuid(uuid);// UUID
+            } catch (Exception e) {
+                log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+            }
+            Double oldQty = 0.0;
+            if (true == isTabbInvTotal) {
+                try {
+                    oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
+                } catch (Exception e) {
+                    log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                }
+            } else {
+                oldQty = 0.0;
+            }
+            skuInv.setUuid(odoUuid);
+            skuInv.setOnHandQty(qty);
+            skuInv.setFrozenQty(0.0);
+            whSkuInventoryDao.insert(skuInv);
+            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
+            // 记录入库库存日志(这个实现的有问题)
+            insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+        } else {// 有sn
+            String odoUuid = null;
+            WhSkuInventory skuInv = new WhSkuInventory();
+            BeanUtils.copyProperties(invCmd, skuInv);
+            skuInv.setId(null);
+            skuInv.setLocationId(null);
+            skuInv.setOuterContainerId(null);
+            skuInv.setInsideContainerId(null);
+            skuInv.setContainerLatticeNo(null);
+            skuInv.setSeedingWallCode(null);
+            skuInv.setOutboundboxCode(outboundboxCode); // 出库箱编码
+            try {
+                odoUuid = SkuInventoryUuid.invUuid(skuInv);
+                skuInv.setUuid(uuid);// UUID
+            } catch (Exception e) {
+                log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
+                throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
+            }
+            Double oldQty = 0.0;
+            if (true == isTabbInvTotal) {
+                try {
+                    oldQty = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid, ouId);
+                } catch (Exception e) {
+                    log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                    throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+                }
+            } else {
+                oldQty = 0.0;
+            }
+            skuInv.setUuid(odoUuid);
+            skuInv.setOnHandQty(qty);
+            skuInv.setFrozenQty(0.0);
+            whSkuInventoryDao.insert(skuInv);
+            insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
+            // 记录入库库存日志(这个实现的有问题)
+            insertSkuInventoryLog(skuInv.getId(), skuInv.getOnHandQty(), oldQty, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+            // String uuid1 = invCmd.getUuid();
+            // Double oldQty1 = 0.0;
+            // if (true == isTabbInvTotal) {
+            // try {
+            // oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
+            // } catch (Exception e) {
+            // log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+            // throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            // }
+            // } else {
+            // oldQty1 = 0.0;
+            // }
+            // insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1,
+            // isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+            // // 删除原来的库存
+            // whSkuInventoryDao.deleteWhSkuInventoryById(invCmd.getId(), ouId);
+            // 操作sn/残次信息
+            int count = 0;
+            for (WhSkuInventorySnCommand cSnCmd : snList) {
+                for (String sn : cacehSnList) {
+                    if (sn.equals(cSnCmd.getSn()) || sn.equals(cSnCmd.getDefectWareBarcode())) {
+                        WhSkuInventorySn skuSn = new WhSkuInventorySn();
+                        BeanUtils.copyProperties(cSnCmd, skuSn);
+                        skuSn.setUuid(odoUuid);
+                        whSkuInventorySnDao.saveOrUpdate(skuSn); // 更新sn
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, skuSn, ouId, userId, null, null);
+                        insertSkuInventorySnLog(skuSn.getId(), ouId); // 记录sn日志
+                        count++;
+                    }
+                }
+                if (count == cacehSnList.size()) {
+                    break;
+                }
+            }
+        }
+
+    }
+
+    private void deleteContainerInventory(WhSkuInventoryCommand invCmd, Boolean isTabbInvTotal, Long ouId, Long userId) {
+        String uuid1 = invCmd.getUuid();
+        Double oldQty1 = 0.0;
+        if (true == isTabbInvTotal) {
+            try {
+                oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(uuid1, ouId);
+            } catch (Exception e) {
+                log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            }
+        } else {
+            oldQty1 = 0.0;
+        }
+        insertSkuInventoryLog(invCmd.getId(), -invCmd.getOnHandQty(), oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+        // 删除原来的容器库存
+        WhSkuInventory skuInv = new WhSkuInventory();
+        BeanUtils.copyProperties(invCmd, skuInv);
+        whSkuInventoryDao.deleteWhSkuInventoryById(skuInv.getId(), ouId);
+        insertGlobalLog(GLOBAL_LOG_DELETE, skuInv, ouId, userId, null, null);
+    }
+
+    public void updateContainerInventory(Double qty, WhSkuInventoryCommand invCmd, Long ouId, Long userId, Boolean isTabbInvTotal, Double oldQty) {
+        WhSkuInventory skuInv = new WhSkuInventory();
+        BeanUtils.copyProperties(invCmd, skuInv);
+        skuInv.setOnHandQty(qty);
+        Double oldQty1 = 0.0;
+        if (true == isTabbInvTotal) {
+            try {
+                oldQty1 = whSkuInventoryLogManager.sumSkuInvOnHandQty(skuInv.getUuid(), ouId);
+            } catch (Exception e) {
+                log.error("sum sku inv onHand qty error, logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.DAO_EXCEPTION);
+            }
+        } else {
+            oldQty1 = 0.0;
+        }
+        whSkuInventoryDao.saveOrUpdateByVersion(skuInv);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, skuInv, ouId, userId, null, null);
+        insertSkuInventoryLog(invCmd.getId(), -oldQty, oldQty1, isTabbInvTotal, ouId, userId, InvTransactionType.CHECK);
+    }
 }
