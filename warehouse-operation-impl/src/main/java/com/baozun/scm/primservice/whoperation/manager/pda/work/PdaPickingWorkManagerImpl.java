@@ -3703,7 +3703,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 whOperationExecLine.setIsUseNew(false);
                 whOperationExecLine.setId(null);
                 whOperationExecLine.setUseContainerId(operationLineCommand.getFromInsideContainerId());
-                whOperationExecLine.setUseOuterContainerId(operationLineCommand.getFromOuterContainerId());
+                if(null != outerContainerId){
+                    whOperationExecLine.setUseOuterContainerId(operationLineCommand.getFromOuterContainerId());    
+                }
                 whOperationExecLine.setIsShortPicking(false);
                 whOperationExecLine.setLastModifyTime(new Date());
                 whOperationExecLine.setCreateTime(new Date());
@@ -3721,6 +3723,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             // 复制数据
                             BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
                             newSkuInventory.setLocationId(null);
+                            if(null == outerContainerId){
+                                newSkuInventory.setOuterContainerId(null);
+                            }
                             if (null != command.getInWarehouseMoveWay()) {
                                 newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());
                             }
@@ -3775,6 +3780,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                             // 复制数据
                             BeanUtils.copyProperties(oldSkuInventory, newSkuInventory);
                             newSkuInventory.setLocationId(null);
+                            if(null == outerContainerId){
+                                newSkuInventory.setOuterContainerId(null);
+                            }
                             if (null != command.getInWarehouseMoveWay()) {
                                 newSkuInventory.setOccupationCode(operationLineCommand.getInvMoveCode());
                             }
