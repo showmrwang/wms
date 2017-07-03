@@ -578,7 +578,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     // 没有找到复核信息, 提示换个出库箱或者货格号扫描
                     whCheckingCommand.setTip(Constants.TIP_OUTBOUND_BOX_OR_NO);
                     command.setCheckingCommand(whCheckingCommand);
-                    return true;
+                    return false;
                 }
             } else {
                 // 查找到的复核信息没有播种墙或者小车
