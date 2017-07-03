@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -1605,12 +1606,13 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateOdoIndexByBatch(Map<String, List<Long>> batchMap, Long ouId) {
+        DecimalFormat df = new DecimalFormat("000");
         int batchIndex = 1;
         for (Entry<String, List<Long>> entry : batchMap.entrySet()) {
             int index = 1;
             List<Long> odoIdList = entry.getValue();
             for (Long odoId : odoIdList) {
-                String odoIndex = batchIndex + "-" + index;
+                String odoIndex = df.format(batchIndex) + "-" + df.format(index);
                 int updateCount = whOdoDao.updateOdoIndexByOdoId(odoId, odoIndex, ouId);
                 if (updateCount != 1) {
                     throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
@@ -1624,6 +1626,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public void updateOdoIndexByBatchExt(Map<String, Map<String, List<Long>>> batchPrintConditionMap, Long ouId) {
+        DecimalFormat df = new DecimalFormat("000");
         int batchIndex = 1;
         for (Entry<String, Map<String, List<Long>>> entry : batchPrintConditionMap.entrySet()) {
             Map<String, List<Long>> printConditionMap = entry.getValue();
@@ -1632,7 +1635,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 int index = 1;
                 List<Long> odoIdList = printEntry.getValue();
                 for (Long odoId : odoIdList) {
-                    String odoIndex = batchIndex + "-" + printIndex + "-" + index;
+                    String odoIndex = df.format(batchIndex) + "-" + df.format(printIndex) + "-" + df.format(index);
                     int updateCount = whOdoDao.updateOdoIndexByOdoId(odoId, odoIndex, ouId);
                     if (updateCount != 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
