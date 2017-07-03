@@ -139,7 +139,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     	}
     	//判断当前周转箱是否属于播种墙下面
         WhSkuInventoryCommand checkInv = orgBoxList.get(0);
-    	//一期不支持播种墙下的周转箱移动到周转箱操作
+    	//一期不支持播种墙未播种的出库箱移动到出库箱操作
         if (null != checkInv && !StringUtils.isEmpty(checkInv.getSeedingWallCode())) {
             WhOutboundFacility seedingWall =  whOutboundFacilityDao.findBoundFacilityByCode(null, checkInv.getSeedingWallCode(), ouId);
             //第一期只支持播种完的货箱拆分
@@ -1277,13 +1277,13 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             long scanAllQty = cacheManager.incrBy(CacheConstants.SCAN_SKU_QTY_COUNT + sourceContainerCode, 0);
             if (scanAllQty > 0) {
                 //通过配置查看是否需要打印箱标签
-                if (boxMove.getIsPrintCartonLabel()) {
+                if (null != boxMove.getIsPrintCartonLabel() && boxMove.getIsPrintCartonLabel()) {
                     PrintDataCommand printDataCommand = new PrintDataCommand();
                     printDataCommand.setOutBoundBoxCode(targetContainerCode);
                     printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
                 }
                 //通过配置查看是否需要打印装箱清单
-                if (boxMove.getIsPrintPackingList()) {
+                if (null != boxMove.getIsPrintPackingList() && boxMove.getIsPrintPackingList()) {
                     PrintDataCommand printDataCommand = new PrintDataCommand();
                     printDataCommand.setOutBoundBoxCode(targetContainerCode);
                     printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_16, userId, ouId);
