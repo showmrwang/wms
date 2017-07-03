@@ -1746,6 +1746,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             if (RcvdWorkFlow.isInvAttrControl(s)) {
                 return false;
             }
+            // @mender yimin.lu 2017/7/3 存在明细商品有指定出库箱类型的出库单
+            if (s.getWhSkuWhMgmt() != null && s.getWhSkuWhMgmt().getOutboundCtnType() != null) {
+                return false;
+            }
         }
         // 出库单明细：良品，没有指定库存属性，没有指定混放属性，没有指定出库箱类型
         Long count = this.whOdoLineDao.countNotSuitDistribeModeLines(odo.getId(), ouId);
