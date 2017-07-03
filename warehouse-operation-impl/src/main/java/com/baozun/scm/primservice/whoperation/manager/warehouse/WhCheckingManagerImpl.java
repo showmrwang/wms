@@ -2033,6 +2033,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             skuInv.setUuid(odoUuid);
             skuInv.setOnHandQty(qty);
             skuInv.setFrozenQty(0.0);
+            skuInv.setLastModifyTime(new Date());
             whSkuInventoryDao.insert(skuInv);
             insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
             // 记录入库库存日志(这个实现的有问题)
@@ -2069,6 +2070,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             skuInv.setUuid(odoUuid);
             skuInv.setOnHandQty(qty);
             skuInv.setFrozenQty(0.0);
+            skuInv.setLastModifyTime(new Date());
             whSkuInventoryDao.insert(skuInv);
             insertGlobalLog(GLOBAL_LOG_INSERT, skuInv, ouId, userId, null, null);
             // 记录入库库存日志(这个实现的有问题)
