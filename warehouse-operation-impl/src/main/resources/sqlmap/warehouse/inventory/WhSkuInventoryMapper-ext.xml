@@ -879,6 +879,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="inboundTime" column="inboundTime"/>
 		<result property="lastModifyTime" column="lastModifyTime"/>
 		<result property="temporaryLocationId" column="temporaryLocationId"/>
+		<result property="seedingWallCode" column="seedingWallCode"/>
+		<result property="containerLatticeNo" column="containerLatticeNo"/>
+		<result property="outboundboxCode" column="outboundboxCode"/>
 		<collection property="whSkuInventorySnCommandList"
 			ofType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand">
 			<id property="id" column="snId"/>
@@ -4917,36 +4920,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	  
     <select id="getWhSkuInventoryCommandByOdo" resultMap="WhSkuInventoryCommandSnResultExt">
 	    select
-	          inv.id as invId,
-	          inv.sku_id as skuId,
-	          inv.location_id as locationId,
-	          inv.outer_container_id as outerContainerId,
-	          inv.inside_container_id as insideContainerId,
-	          inv.customer_id as customerId,
-	          inv.store_id as storeId,
-	          inv.occupation_code as invOccupationCode,
-	          inv.occupation_line_id as invOccupationLineId,
-	          inv.on_hand_qty as onHandQty,
-	          inv.allocated_qty as  allocatedQty,
-	          inv.to_be_filled_qty as toBeFilledQty,
-	          inv.frozen_qty as frozenQty,
-	          inv.inv_status as invStatus,
-	          inv.inv_type as invType,
-	          inv.batch_number as batchNumber,
-	          inv.mfg_date as mfgDate,
-	          inv.exp_date as expDate,
-	          inv.country_of_origin as countryOfOrigin,
-	          inv.inv_attr1 as invAttr1,
-	          inv.inv_attr2 as invAttr2,
-	          inv.inv_attr3 as invAttr3,
-	          inv.inv_attr4 as invAttr4,
-	          inv.inv_attr5 as invAttr5,
-	          inv.uuid as invUuid,
-	          inv.is_locked as  isLocked,
-	          inv.ou_id as invOuId,
-	          inv.occupation_code_source as occupationCodeSource,
-	          inv.last_modify_time as lastModifyTime,
-	          inv.inbound_time as inboundTime
+	         <include refid="whSkuInventoryColumnsInvExt" />
 		      from 
 					t_wh_sku_inventory inv
 					left join t_wh_odo odo on inv.occupation_code = odo.odo_code
@@ -5004,6 +4978,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	          inventory.occupationCodeSource,
 	          inventory.lastModifyTime,
 	          inventory.inboundTime,
+	          inventory.seedingWallCode,
+	          inventory.containerLatticeNo,
+			  inventory.temporaryLocationId,
+			  inventory.outboundboxCode,
 	          sn.id AS snId,
 	          sn.sn AS snSn,
 	          sn.occupation_code AS snOccupationCode,
@@ -5048,7 +5026,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				          inv.ou_id as invOuId,
 				          inv.occupation_code_source as occupationCodeSource,
 				          inv.last_modify_time as lastModifyTime,
-				          inv.inbound_time as inboundTime
+				          inv.inbound_time as inboundTime,
+				          inv.seeding_wall_code as seedingWallCode,
+	                      inv.container_lattice_no as containerLatticeNo,
+				       	  inv.temporary_location_id as temporaryLocationId,
+				          inv.outboundbox_code as outboundboxCode
 					      from 
 								t_wh_sku_inventory inv
 								left join t_wh_odo odo on inv.occupation_code = odo.odo_code

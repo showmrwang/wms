@@ -85,6 +85,8 @@ public interface HandoverManager extends BaseManager {
 
     int cancelBoxToHandoverstation(String outboundBoxCode, Long ouId);
 
+    List<HandoverCollection> findhandoverCollectionByHandoverStationId(Long id, Long ouId);
+
     /**
      * 打印销售清单
      * 

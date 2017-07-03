@@ -211,4 +211,83 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	           and hs.ou_id = #{ouId}
 	</select>
 	
+	
+	
+	<select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from
+				t_wh_handover_station hand
+			left join t_wh_outbound_facility faci on hand.facility_id = faci.id
+			left join t_wh_outbound_facility_group grou on hand.facility_group_id =grou.id
+		<include refid="whHandoverStationWhereExt"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPageExt" resultMap="WhHandoverStationCommandExt">
+	    	select
+	    	hand.id as id,
+				hand.code as code,
+				hand.upper_capacity as uppercapacity,
+				faci.facility_name as facilityname,
+				grou.facility_group_name as groupName
+			from
+				t_wh_handover_station hand
+			left join t_wh_outbound_facility faci on hand.facility_id = faci.id
+			left join t_wh_outbound_facility_group grou on hand.facility_group_id =grou.id
+		<include refid="whHandoverStationWhereExt"/>
+		
+    </select>
+    
+       <select id="findCommandById" resultType="com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand">
+	    	select
+	    		hand.id as id,
+				hand.code as code,
+				hand.upper_capacity as uppercapacity,
+				faci.facility_name as facilityname,
+				grou.facility_group_name as groupName
+			from
+				t_wh_handover_station hand
+			left join t_wh_outbound_facility faci on hand.facility_id = faci.id
+			left join t_wh_outbound_facility_group grou on hand.facility_group_id =grou.id
+			where hand.id=#{id}
+		
+    </select>
+    
+    <sql id="whHandoverStationWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+		       <if test="type!=null and type!=''">
+					and hand.type = #{type}
+				</if>
+	       
+	       
+		       <if test="code!=null and code!=''">
+					and hand.code = #{code}
+				</if>
+	       
+				<if test="facilityGroupId!=null">
+					and hand.facility_group_id = #{facilityGroupId}
+				</if>
+	       
+				<if test="ouId!=null">
+					and hand.ou_id = #{ouId}
+				</if>
+	       
+				<if test="upperCapacity!=null">
+					and hand.upper_capacity = #{upperCapacity}
+				</if>
+	       
+	       
+				<if test="lifecycle!=null">
+					and hand.lifecycle = #{lifecycle}
+				</if>
+	       
+				<if test="facilityId!=null">
+					and hand.facility_id = #{facilityId}
+				</if>
+		</where>
+	</sql>
 </mapper>

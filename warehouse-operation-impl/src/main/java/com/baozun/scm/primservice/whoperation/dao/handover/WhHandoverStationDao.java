@@ -70,8 +70,13 @@ public interface WhHandoverStationDao extends BaseDao<WhHandoverStation, Long> {
      * @return
      */
     WhHandoverStationCommand findByCode(@Param("code") String recommandHandoverStationCode);
-    
+
     public List<WhHandoverStationCommand> findOneByFacilityGroupId(@Param("facilityGroupId") Long facilityGroupId, @Param("ouId") Long ouId);
-    
+
     public List<WhHandoverStationCommand> findOneByOuId(@Param("ouId") Long ouId);
+
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<WhHandoverStationCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    WhHandoverStationCommand findCommandById(@Param("id") Long id);
 }
