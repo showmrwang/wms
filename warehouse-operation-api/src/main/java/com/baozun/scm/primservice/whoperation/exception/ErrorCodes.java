@@ -1155,7 +1155,7 @@ public class ErrorCodes {
     public static final int WORK_LINE_QTY_IS_ERROR = 100005;
     /** 作业明细数量不正确 */
     public static final int OPERATION_LINE_QTY_IS_ERROR = 100006;
-    /** 分配库存列表为空 -- 库内移动 */
+    /** 分配库存列表为空*/
     public static final int ALLOCATED_LIST_IS_NULL = 100007;
     /** 目标库位客户不唯一 */
     public static final int IN_WAREHOUSE_MOVE_CUSTOMER_ERROR = 100008;
@@ -1169,9 +1169,10 @@ public class ErrorCodes {
     public static final int IN_WAREHOUSE_MOVE_ISSTATIC_ERROR = 100012;
     /** 创建库内移动工作失败 */
     public static final int CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR = 1000013;
-    /** 创建库内移动工作失败 */
+    /** 打印失败 */
     public static final int PRINT_ERROR = 1000014;
     // 100001-110000 liuqiming
+    
     // 110000-120000 xuhui
     /** 交货交接规则为空 */
     public static final int HAND_OVER_COLLECTION_RULE_IS_NULL = 110001;

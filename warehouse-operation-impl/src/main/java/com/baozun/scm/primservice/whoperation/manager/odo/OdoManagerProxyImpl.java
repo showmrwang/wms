@@ -1573,8 +1573,8 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             double qty = Constants.DEFAULT_DOUBLE;
             int skuNumberOfPackages = Constants.DEFAULT_INTEGER;
             double amt = Constants.DEFAULT_DOUBLE;
-            boolean isHazardous = odo.getIncludeHazardousCargo();
-            boolean isFragile = odo.getIncludeFragileCargo();
+            boolean isHazardous = odo.getIncludeHazardousCargo() != null ? odo.getIncludeHazardousCargo() : false;
+            boolean isFragile = odo.getIncludeFragileCargo() != null ? odo.getIncludeFragileCargo() : false;
             Set<Long> skuIdSet = new HashSet<Long>();
             for (WhOdoLine line : lineList) {
                 if (OdoLineStatus.CANCEL.equals(line.getOdoLineStatus())) {
@@ -1583,10 +1583,10 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 if (OdoLineStatus.CREATING.equals(line.getOdoLineStatus())) {
                     SkuRedisCommand skuMaster = skuRedisManager.findSkuMasterBySkuId(line.getSkuId(), ouId, logId);
                     SkuMgmt skuMgmt = skuMaster.getSkuMgmt();
-                    if (!isHazardous && skuMgmt.getIsHazardousCargo()) {
+                    if (!isHazardous && skuMgmt.getIsHazardousCargo() != null && skuMgmt.getIsHazardousCargo()) {
                         isHazardous = true;
                     }
-                    if (!isFragile && skuMgmt.getIsFragileCargo()) {
+                    if (!isFragile && skuMgmt.getIsFragileCargo() != null && skuMgmt.getIsFragileCargo()) {
                         isFragile = true;
                     }
 

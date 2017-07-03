@@ -566,8 +566,8 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         double qty = Constants.DEFAULT_DOUBLE;
         int skuNumberOfPackages = Constants.DEFAULT_INTEGER;
         double amt = Constants.DEFAULT_DOUBLE;
-        boolean isHazardous = odo.getIncludeHazardousCargo();
-        boolean isFragile = odo.getIncludeFragileCargo();
+        boolean isHazardous = odo.getIncludeHazardousCargo() != null ? odo.getIncludeHazardousCargo() : false;
+        boolean isFragile = odo.getIncludeFragileCargo() != null ? odo.getIncludeFragileCargo() : false;
         Set<Long> skuIdSet = new HashSet<Long>();
         // # 是否合并逻辑:锁定的出库单不允许合并，COD,保价已经增值服务的出库单不允许合并 @mender yimin.lu 2017/6/1
         boolean isAllowMerge = true;
@@ -590,6 +590,17 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 // @mender yimin.lu 不需要查询明细的增值服务 2017/6/1
             }
 
+        }
+        // @mender yimin.lu 2017/7/3 是否危险品-易碎品
+        for (Long sid : skuIdSet) {
+            SkuRedisCommand skuMaster = skuRedisManager.findSkuMasterBySkuId(sid, odo.getOuId(), null);
+            SkuMgmt skuMgmt = skuMaster.getSkuMgmt();
+            if (!isHazardous && skuMgmt.getIsHazardousCargo() != null && skuMgmt.getIsHazardousCargo()) {
+                isHazardous = true;
+            }
+            if (!isFragile && skuMgmt.getIsFragileCargo() != null && skuMgmt.getIsFragileCargo()) {
+                isFragile = true;
+            }
         }
         odo.setQty(qty);
         odo.setAmt(amt);

@@ -139,7 +139,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     	}
     	//判断当前周转箱是否属于播种墙下面
         WhSkuInventoryCommand checkInv = orgBoxList.get(0);
-    	//一期不支持播种墙下的周转箱移动到周转箱操作
+    	//一期不支持播种墙未播种的出库箱移动到出库箱操作
         if (null != checkInv && !StringUtils.isEmpty(checkInv.getSeedingWallCode())) {
             WhOutboundFacility seedingWall =  whOutboundFacilityDao.findBoundFacilityByCode(null, checkInv.getSeedingWallCode(), ouId);
             //第一期只支持播种完的货箱拆分
@@ -303,7 +303,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     		throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
     	}
     	//如果是整箱移动模式,直接移动库存
-        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
             //处理整箱移动库存操作
             fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
             // 执行移库
@@ -367,8 +367,8 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         if(null == isCmd){
             throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
         }
-        //如果是整箱移动模式,直接移动库存
-        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+        //如果是整箱移动模式,并且不需要扫描提示扫描商品,直接移动库存
+        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
             //处理整箱移动库存操作
             fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
             // 执行移库
@@ -1277,13 +1277,13 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             long scanAllQty = cacheManager.incrBy(CacheConstants.SCAN_SKU_QTY_COUNT + sourceContainerCode, 0);
             if (scanAllQty > 0) {
                 //通过配置查看是否需要打印箱标签
-                if (boxMove.getIsPrintCartonLabel()) {
+                if (null != boxMove.getIsPrintCartonLabel() && boxMove.getIsPrintCartonLabel()) {
                     PrintDataCommand printDataCommand = new PrintDataCommand();
                     printDataCommand.setOutBoundBoxCode(targetContainerCode);
                     printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
                 }
                 //通过配置查看是否需要打印装箱清单
-                if (boxMove.getIsPrintPackingList()) {
+                if (null != boxMove.getIsPrintPackingList() && boxMove.getIsPrintPackingList()) {
                     PrintDataCommand printDataCommand = new PrintDataCommand();
                     printDataCommand.setOutBoundBoxCode(targetContainerCode);
                     printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_16, userId, ouId);

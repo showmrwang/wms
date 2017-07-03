@@ -48,7 +48,6 @@ import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhContainerMoveType;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingCollectionDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -62,7 +61,6 @@ import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.system.SysDictionaryManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.InventoryStatusManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.sku.Sku;
@@ -71,6 +69,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionContainerMove;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutboundboxMove;
 
 /**
  * @author feng.hu
@@ -272,7 +271,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
      * @return
      */
     @Override
-    public ScanResultCommand scanTargetContainer(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode,Long targetContainerId, String scanType,Long ouId,String logId,Long userId,String sourceBoxCode,Integer containerStatus,Integer movePattern,Boolean isPrintCartonLabel,Warehouse warehouse) {
+    public ScanResultCommand scanTargetContainer(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode,Long targetContainerId, String scanType,Long ouId,String logId,Long userId,String sourceBoxCode,Integer containerStatus,WhFunctionOutboundboxMove containerMoveFunc,Warehouse warehouse) {
         log.info("PdaContainerMoveManagerImpl scanTargetContainer is start");
         ScanResultCommand srCommand = new ScanResultCommand();
         if (ContainerStatus.CONTAINER_STATUS_USABLE != containerStatus && !WhContainerMoveType.IN_CONTAINER.equals(scanType)) {
@@ -301,11 +300,11 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
             throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INVENTORY,new Object[] {sourceBoxCode});
         }
         //如果是整箱移动模式,直接移动库存
-        if (WhContainerMoveType.FULL_BOX_MOVE == movePattern) {
+        if (WhContainerMoveType.FULL_BOX_MOVE == containerMoveFunc.getMovePattern() && (null == containerMoveFunc.getIsScanSku() || !containerMoveFunc.getIsScanSku())) {
             //整箱移动库存,后台操作
             whSkuInventoryManager.execuContainerFullMoveInventory(sourceContainerCode, sourceContainerId, containerLatticeNo, targetContainerCode,targetContainerId,scanType, warehouse, ouId, userId, logId);            
             //通过配置查看是否需要打印箱标签
-            if (null != isPrintCartonLabel && isPrintCartonLabel) {
+            if (null != containerMoveFunc.getIsPrintCartonLabel() && containerMoveFunc.getIsPrintCartonLabel()) {
                 PrintDataCommand printDataCommand = new PrintDataCommand();
                 printDataCommand.setOutBoundBoxCode(targetContainerCode);
                 printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
