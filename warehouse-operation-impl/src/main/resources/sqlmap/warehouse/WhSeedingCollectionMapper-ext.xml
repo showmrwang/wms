@@ -430,39 +430,39 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and IFNULL(collection_status, 1) != 10
 	</select>
 
-    <select id="getSeedingBatchOdoInfo" resultType="com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice">
-        SELECT
-            #{batchNo} AS batch,
-            odo.id AS odoId,
-            odo.odo_code AS odoCode,
-            odo.ext_code AS extCode,
-            odo.ec_order_code AS ecOrderCode,
-            odo.odo_status AS odoStatus,
-            odo.customer_id AS customerId,
-            odo.store_id AS storeId,
-            customer.customer_code AS customerCode,
-            customer.customer_name AS customerName,
-            store.store_code AS storeCode,
-            store.store_name AS storeName
-        FROM
-            t_wh_odo AS odo
-        LEFT JOIN sys_dictionary AS odoStatusSys ON odo.odo_status = odoStatusSys.dic_value
-        AND odoStatusSys.group_value = "ODO_STATUS"
-        LEFT JOIN t_bi_customer AS customer ON odo.customer_id = customer.id
-        LEFT JOIN t_bi_store AS store ON odo.store_id = store.id
-        WHERE
-            odo.id IN (
-                SELECT DISTINCT
-                    colLine.odo_id
-                FROM
-                    t_wh_seeding_collection as col
-                    left join t_wh_seeding_collection_line as colLine on colLine.seeding_collection_id = col.id
-                WHERE
-                    colLine.ou_id = #{ouId}
-                AND col.batch = #{batchNo}
-                AND col.collection_status=4
-            )
-    </select>
+	<select id="getSeedingBatchOdoInfo"
+		resultType="com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice">
+		SELECT
+		#{batchNo} AS batch,
+		odo.id AS odoId,
+		odo.odo_code AS odoCode,
+		odo.ext_code AS extCode,
+		odo.ec_order_code AS ecOrderCode,
+		odo.odo_status AS odoStatus,
+		odo.customer_id AS customerId,
+		odo.store_id AS storeId,
+		customer.customer_code AS customerCode,
+		customer.customer_name AS customerName,
+		store.store_code AS storeCode,
+		store.store_name AS storeName
+		FROM
+		t_wh_odo AS odo
+		LEFT JOIN sys_dictionary AS odoStatusSys ON odo.odo_status =
+		odoStatusSys.dic_value
+		AND odoStatusSys.group_value = "ODO_STATUS"
+		LEFT JOIN t_bi_customer AS customer ON odo.customer_id = customer.id
+		LEFT JOIN t_bi_store AS store ON odo.store_id = store.id
+		WHERE
+		odo.id IN (
+		SELECT DISTINCT
+		li.odo_id
+		FROM
+		t_wh_work AS wo
+		LEFT JOIN t_wh_work_line li ON wo.id = li.work_id
+		WHERE
+		wo.batch = #{batchNo}
+		)
+	</select>
 
     <select id="findByIdExt" resultMap="WhSeedingCollectionResultExt">
         SELECT
