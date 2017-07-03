@@ -111,7 +111,7 @@ public class WhCheckingLineCommand extends BaseCommand {
     /** 失效日期str */
     private String expDateStr = new String();
     /** 周转箱编码 */
-    private String containerCode;
+//    private String containerCode;
     /** 出库单编码 */
     private String odoCode;
     /** 创建人 */
