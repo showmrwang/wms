@@ -24,14 +24,19 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
 import com.baozun.scm.primservice.whoperation.dao.handover.HandoverCollectionDao;
+import com.baozun.scm.primservice.whoperation.dao.handover.WhHandoverStationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WarehouseMgmtDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityGroupDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
 
 
 @Service("warehouseManager")
@@ -51,6 +56,12 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     private WarehouseMgmtDao warehouseMgmtDao;
     @Autowired
     private HandoverCollectionDao handoverCollectionDao;
+    @Autowired
+    private WhHandoverStationDao whHandoverStationDao;
+    @Autowired
+    private WhOutboundFacilityDao whOutboundFacilityDao;
+    @Autowired
+    private WhOutboundFacilityGroupDao whOutboundFacilityGroupDao;
 
     /**
      * 验证仓库名称/编码是否存在
@@ -334,16 +345,10 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     public WarehouseMgmt findWhMgmtByOuId(Long ouId) {
         WarehouseMgmt warehouseMgmt = warehouseMgmtDao.findByOuId(ouId);
         /*
-        {
-            //TODO 测试 仓库配置
-            //是否管理耗材
-            warehouseMgmt.setIsMgmtConsumableSku(false);
-            //是否推荐耗材
-            warehouseMgmt.setIsRecommandConsumableSku(false);
-            //是否强制校验耗材
-            warehouseMgmt.setIsCheckConsumableSkuBarcode(false);
-        }
-        */
+         * { //TODO 测试 仓库配置 //是否管理耗材 warehouseMgmt.setIsMgmtConsumableSku(false); //是否推荐耗材
+         * warehouseMgmt.setIsRecommandConsumableSku(false); //是否强制校验耗材
+         * warehouseMgmt.setIsCheckConsumableSkuBarcode(false); }
+         */
         return warehouseMgmt;
     }
 
@@ -384,6 +389,71 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
     @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
     public String findOuCodeByOuId(Long ouId) {
         return warehouseDao.findById(ouId).getCode();
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Pagination<WhHandoverStationCommand> findAllHandoverStationList(Page page, Sort[] sorts, Map<String, Object> params, Long ouId) {
+        Pagination<WhHandoverStationCommand> wList = whHandoverStationDao.findListByQueryMapWithPageExt(page, sorts, params);
+        List<WhHandoverStationCommand> items = wList.getItems();
+        for (WhHandoverStationCommand whHandoverStationCommand : items) {
+            // 当前出库箱数
+            Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
+            whHandoverStationCommand.setCapacity(capacity);
+            // 当前交接批次
+            String batch = handoverCollectionDao.findBatchByHandoverStationIdAndStatus(whHandoverStationCommand.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
+            whHandoverStationCommand.setHandover_batch(batch);
+            // 状态
+            if (null != whHandoverStationCommand.getUpperCapacity()) {
+                if (capacity >= whHandoverStationCommand.getUpperCapacity()) {
+                    whHandoverStationCommand.setStatus("该交接工位已满");
+                } else {
+                    whHandoverStationCommand.setStatus("未满");
+                }
+            }
+        }
+        return wList;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOutboundFacility> findAllFacility(Long ouId) {
+        WhOutboundFacility whOutboundFacility = new WhOutboundFacility();
+        whOutboundFacility.setOuId(ouId);
+        whOutboundFacility.setFacilityType("checkTable");
+        return whOutboundFacilityDao.findListByParam(whOutboundFacility);
+
+
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhOutboundFacilityGroup> findAllFacilityGroup(Long ouId) {
+        WhOutboundFacilityGroup whOutboundFacilityGroup = new WhOutboundFacilityGroup();
+        whOutboundFacilityGroup.setOuId(ouId);
+        whOutboundFacilityGroup.setFacilityGroupType("checkTableGroup");
+        return whOutboundFacilityGroupDao.findListByParam(whOutboundFacilityGroup);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public WhHandoverStationCommand getHandoverStationById(Long id, Long ouId) {
+        WhHandoverStationCommand whHandoverStationCommand = whHandoverStationDao.findCommandById(id);
+        // 当前出库箱数
+        Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(id, Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
+        whHandoverStationCommand.setCapacity(capacity);
+        // 当前交接批次
+        String batch = handoverCollectionDao.findBatchByHandoverStationIdAndStatus(id, Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
+        whHandoverStationCommand.setHandover_batch(batch);
+        // 状态
+        if (null != whHandoverStationCommand.getUpperCapacity()) {
+            if (capacity >= whHandoverStationCommand.getUpperCapacity()) {
+                whHandoverStationCommand.setStatus("该交接工位已满");
+            } else {
+                whHandoverStationCommand.setStatus("未满");
+            }
+        }
+        return whHandoverStationCommand;
     }
 
 }
