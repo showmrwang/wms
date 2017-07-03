@@ -153,6 +153,8 @@ public class WhCheckingLineCommand extends BaseCommand {
     private Double odoLineqty;
     /** 出库单ext code*/
     private String extCode;
+    /** 货格号*/
+    private Integer containerLatticeNo;
 
     public Double getOdoLineqty() {
         return odoLineqty;
@@ -656,6 +658,14 @@ public class WhCheckingLineCommand extends BaseCommand {
 
     public void setExtCode(String extCode) {
         this.extCode = extCode;
+    }
+
+    public Integer getContainerLatticeNo() {
+        return containerLatticeNo;
+    }
+
+    public void setContainerLatticeNo(Integer containerLatticeNo) {
+        this.containerLatticeNo = containerLatticeNo;
     }
 
 }

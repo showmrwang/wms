@@ -82,6 +82,8 @@ public interface WhOutboundFacilityDao extends BaseDao<WhOutboundFacility, Long>
      * @return
      */
     WhOutboundFacility findByCodeAndOuId(@Param("facilityCode") String facilityCode, @Param("ouId") Long ouId);
+    
+    WhOutboundFacility findBoundFacilityByCode(@Param("checkCode") String checkCode, @Param("facilityCode") String facilityCode, @Param("ouId") Long ouId);
 
     /**
      * 获取出库设施

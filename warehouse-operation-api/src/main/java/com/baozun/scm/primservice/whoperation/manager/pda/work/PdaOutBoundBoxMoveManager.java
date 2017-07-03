@@ -60,7 +60,7 @@ public interface PdaOutBoundBoxMoveManager extends BaseManager{
      * @param targetBoxCode
      * @return
      */
-    public ScanResultCommand scanTargetContainer(String targetContainerCode,Long ouId,String logId,Long userId,String targetBoxCode,boolean isMgmtConsumablesSku);
+    public ScanResultCommand scanTargetContainer(String sourceContainerCode,Long sourceContainerId, Integer containerLatticNo,String targetContainerCode,String scanType, Long ouId,String logId,Long userId,Warehouse wareCommand,WhFunctionOutboundboxMove boxMoveFunc);
     
     /***
      * 扫描目标容器耗材编号
@@ -72,7 +72,7 @@ public interface PdaOutBoundBoxMoveManager extends BaseManager{
      * @param containerCode
      * @return
      */
-    public ScanResultCommand scanTargetConsumables(String consumablesNo, String targetContainerCode,Long ouId,String logId,Long userId,String sourceBoxCode);
+    public ScanResultCommand scanTargetConsumables(String sourceContainerCode,Long sourceContainerId, Integer containerLatticNo,String targetContainerCode,String consumablesNo, String scanType,Long ouId,String logId,Long userId,Warehouse wareCommand,WhFunctionOutboundboxMove boxMoveFunc);
     
     /**
      * 出库箱拆分:扫描sku商品

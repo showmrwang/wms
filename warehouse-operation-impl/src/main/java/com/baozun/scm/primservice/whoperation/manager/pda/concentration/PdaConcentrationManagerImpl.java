@@ -1073,7 +1073,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         WhSeedingCollection collection = whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, batch, ouId);
         Integer status = collection.getCollectionStatus();
-        if (!CollectionStatus.NEW.equals(status) || !CollectionStatus.TRANSFER.equals(status) || !CollectionStatus.TEMPORARY_STORAGE.equals(status)) {
+        if (!CollectionStatus.NEW.equals(status) && !CollectionStatus.TRANSFER.equals(status) && !CollectionStatus.TEMPORARY_STORAGE.equals(status)) {
             throw new BusinessException(ErrorCodes.COLLECTION_CONTAINER_STATUS_ERROR);
         }
         boolean flag = false;

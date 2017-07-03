@@ -46,8 +46,10 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
+import com.baozun.scm.primservice.whoperation.constant.WhContainerMoveType;
 import com.baozun.scm.primservice.whoperation.constant.WhOutBoundBoxMoveType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -66,6 +68,7 @@ import com.baozun.scm.primservice.whoperation.model.system.SysDictionary;
 import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionOutboundboxMove;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 
 
 /**
@@ -100,6 +103,8 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     private WhCheckingDao whCheckingDao;
     @Autowired
     private PrintObjectManagerProxy printObjectManagerProxy;
+    @Autowired
+    private WhOutboundFacilityDao whOutboundFacilityDao;
     
     /***
      * 扫描源容器
@@ -121,6 +126,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     	//1、必须拣货完成或者播种完成的出库箱才能拆分（判断条件已经产生了待复核数据）
     	WhCheckingCommand checkingCommand = whCheckingDao.findWhCheckingByOutboundboxCode(containerCode, ouId);
     	if(null == checkingCommand || null == checkingCommand.getStatus() || !checkingCommand.getStatus().equals(CheckingStatus.NEW)){
+    	    log.error("PdaOutBoundBoxMoveManagerImpl scanContainer is end. containerCode isn't checking data, don't move inv. logId is:[{}]", logId);
     		throw new BusinessException(ErrorCodes.OUT_BOUND_BOX_NOT_MOVE_CONDITION);
     	}
     	
@@ -128,12 +134,25 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         List<WhSkuInventoryCommand> orgBoxList = whSkuInventoryDao.findSkuInventoryAndSnInfo(containerCode, null, null, null,null, ouId);
     	//根据出库箱查询不到库存信息
     	if(CollectionUtils.isEmpty(orgBoxList)){
+    	    log.error("PdaOutBoundBoxMoveManagerImpl scanContainer is end. containerCode not found inventory. logId is:[{}]", logId);
     		throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INV_ERROR, new Object[] {containerCode});
     	}
+    	//判断当前周转箱是否属于播种墙下面
+        WhSkuInventoryCommand checkInv = orgBoxList.get(0);
+    	//一期不支持播种墙下的周转箱移动到周转箱操作
+        if (null != checkInv && !StringUtils.isEmpty(checkInv.getSeedingWallCode())) {
+            WhOutboundFacility seedingWall =  whOutboundFacilityDao.findBoundFacilityByCode(null, checkInv.getSeedingWallCode(), ouId);
+            //第一期只支持播种完的货箱拆分
+            if (null != seedingWall && !String.valueOf(Constants.WH_FACILITY_STATUS_4).equals(seedingWall.getStatus())) {
+                log.error("PdaOutBoundBoxMoveManagerImpl scanContainer is end. SeedingWallCode status is error. logId is:[{}]", logId);
+                throw new BusinessException(ErrorCodes.OUT_BOUND_BOX_NOT_MOVE_CONDITION, new Object[] {containerCode});
+            }
+        }
     	//统计分析库存数据
     	BoxInventoryStatisticResultCommand isCmd = cacheBoxInventoryStatistics(orgBoxList, userId, ouId, logId,containerCode);
     	//2、如果是出库箱功能功能参数是部分移动,箱内的库存属性必须唯一才能移动
     	if(movePattern.equals(Constants.MOVE_PATTERN_PART) && isCmd.getOutBoundBoxSkuIdSkuAttrIdQtys().get(containerCode).size() > 1){
+    	    log.error("PdaOutBoundBoxMoveManagerImpl scanContainer is end. sku attr isn't only. logId is:[{}]", logId);
     		throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INV_ERROR, new Object[] {containerCode});
     	}
     	//保存容器库存的统计分析数据
@@ -251,16 +270,16 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
      * @return
      */
     @Override
-    public ScanResultCommand scanTargetContainer(String targetContainerCode,Long ouId,String logId,Long userId,String sourceBoxCode,boolean isMgmtConsumablesSku) {
+    public ScanResultCommand scanTargetContainer(String sourceContainerCode,Long sourceContainerId, Integer containerLatticNo,String targetContainerCode,String scanType, Long ouId,String logId,Long userId,Warehouse warehouse,WhFunctionOutboundboxMove boxMoveFunc) {
     	log.info("PdaOutBoundBoxMoveManagerImpl scanTargetContainer is start");
     	ScanResultCommand srCommand = new ScanResultCommand();
     	/** 获取目标出库箱的库存信息 */
     	List<WhSkuInventoryCommand> targetBoxList = whSkuInventoryDao.findOutboundboxInventory(targetContainerCode, ouId);
     	if(CollectionUtils.isNotEmpty(targetBoxList)){
     	    //通过缓存获取原出库箱库存信息
-    		List<WhSkuInventoryCommand> sourceBoxList = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, sourceBoxCode);
+    		List<WhSkuInventoryCommand> sourceBoxList = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, sourceContainerCode);
     		if(CollectionUtils.isEmpty(sourceBoxList)){
-        		throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {sourceBoxCode});
+        		throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {sourceContainerCode});
         	}
     		//如果目标出库箱已有库存则出库单号与原始出库箱/货格库存保持一致，
     		if(!sourceBoxList.get(0).getOccupationCode().equalsIgnoreCase(targetBoxList.get(0).getOccupationCode())){
@@ -273,18 +292,26 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             }
     	}else{
     		//扫描的出库箱找不到库存默认为新出库箱，如果是新的出库箱需要看仓库配置是否配置了管理耗材
-    		if(isMgmtConsumablesSku){
+    		if(null != warehouse.getIsMgmtConsumableSku() && warehouse.getIsMgmtConsumableSku()){
     		    //返回Null,跳转到扫描耗材编码画面
     			return null;
     		}
     	}
     	//获取源容器中的库存统计信息
-    	BoxInventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceBoxCode);
+    	BoxInventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceContainerCode);
     	if(null == isCmd){
-    		throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceBoxCode});
+    		throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
     	}
+    	//如果是整箱移动模式,直接移动库存
+        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+            //处理整箱移动库存操作
+            fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
+            // 执行移库
+            srCommand.setPutaway(true);
+            return srCommand;
+        }
     	//随机获取一个sku提示扫描
-    	String tipSkuAttrId = getTipSkuFromBox(sourceBoxCode, isCmd.getOutBoundBoxSkuIdSkuAttrIds(), isCmd.getOutBoundBoxSkuAttrIdsSnDefect(), logId);
+    	String tipSkuAttrId = getTipSkuFromBox(sourceContainerCode, isCmd.getOutBoundBoxSkuIdSkuAttrIds(), isCmd.getOutBoundBoxSkuAttrIdsSnDefect(), logId);
         Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
         WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
         if (null == skuCmd) {
@@ -292,7 +319,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
         }
         //获取商品属性明细信息
-        tipSkuDetailAspect(srCommand, tipSkuAttrId,  isCmd.getOutBoundBoxSkuIdSkuAttrIdQtys().get(sourceBoxCode),logId); 
+        tipSkuDetailAspect(srCommand, tipSkuAttrId,  isCmd.getOutBoundBoxSkuIdSkuAttrIdQtys().get(sourceContainerCode),logId); 
         srCommand.setNeedTipSku(true);
         srCommand.setNeedTipSkuDetail(true);
         srCommand.setTipSkuBarcode(skuCmd.getBarCode());//提示sku
@@ -314,7 +341,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
      * @return
      */
     @Override
-    public ScanResultCommand scanTargetConsumables(String skuBarCode, String targetContainerCode,Long ouId,String logId,Long userId,String sourceBoxCode) {
+    public ScanResultCommand scanTargetConsumables(String sourceContainerCode,Long sourceContainerId, Integer containerLatticNo,String targetContainerCode,String skuBarCode, String scanType,Long ouId,String logId,Long userId,Warehouse warehouse,WhFunctionOutboundboxMove boxMoveFunc) {
         log.info("PdaOutBoundBoxMoveManagerImpl scanTargetConsumables is start");
         ScanResultCommand srCommand = new ScanResultCommand();
         
@@ -331,17 +358,25 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         }
         
         //通过缓存获取原出库箱库存信息
-        List<WhSkuInventoryCommand> sourceBoxList = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, sourceBoxCode);
+        List<WhSkuInventoryCommand> sourceBoxList = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY, sourceContainerCode);
         if(CollectionUtils.isEmpty(sourceBoxList)){
-            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {sourceBoxCode});
+            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_RCVD_INV_ERROR, new Object[] {sourceContainerCode});
         }
         //获取源容器中的库存统计信息
-        BoxInventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceBoxCode);
+        BoxInventoryStatisticResultCommand isCmd = cacheManager.getMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceContainerCode);
         if(null == isCmd){
-            throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceBoxCode});
+            throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
+        }
+        //如果是整箱移动模式,直接移动库存
+        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+            //处理整箱移动库存操作
+            fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
+            // 执行移库
+            srCommand.setPutaway(true);
+            return srCommand;
         }
         //随机获取一个sku提示扫描
-        String tipSkuAttrId = getTipSkuFromBox(sourceBoxCode, isCmd.getOutBoundBoxSkuIdSkuAttrIds(),isCmd.getOutBoundBoxSkuAttrIdsSnDefect(),  logId);
+        String tipSkuAttrId = getTipSkuFromBox(sourceContainerCode, isCmd.getOutBoundBoxSkuIdSkuAttrIds(),isCmd.getOutBoundBoxSkuAttrIdsSnDefect(),  logId);
         Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
         WhSkuCommand skuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
         if (null == skuCmd) {
@@ -349,7 +384,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
         }
         //获取商品属性明细信息
-        tipSkuDetailAspect(srCommand, tipSkuAttrId,  isCmd.getOutBoundBoxSkuIdSkuAttrIdQtys().get(sourceBoxCode),logId); 
+        tipSkuDetailAspect(srCommand, tipSkuAttrId,  isCmd.getOutBoundBoxSkuIdSkuAttrIdQtys().get(sourceContainerCode),logId); 
         srCommand.setNeedTipSku(true);
         srCommand.setNeedTipSkuDetail(true);
         srCommand.setTipSkuBarcode(skuCmd.getBarCode());//提示sku
@@ -1155,6 +1190,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     }
     
     public void sysGuideBoxContainerMoveInv(String sourceContainerCode, Long sourceContainerId, Integer containerLatticNo,String targetContainerCode,String scanType, Warehouse warehouse, WhSkuCommand skuCmd, boolean isSavePatten,Integer movePatten, Long ouId, Long userId, String logId) {
+        log.info("sysGuideBoxContainerMoveInv function is start");
         String saId = SkuCategoryProvider.getSkuAttrIdBySkuCmd(skuCmd);
         //当前商品扫描数量
         Double scanSkuQty = skuCmd.getScanSkuQty();
@@ -1216,6 +1252,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         // 清除计数器
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_QUEUE + sourceContainerCode + saId);
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_COUNT + sourceContainerCode + saId);
+        log.info("sysGuideBoxContainerMoveInv function is end");
     }
     
     /***
@@ -1230,8 +1267,9 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
      */
     @Override
     public void moveFinishScanContainer(String sourceContainerCode,String targetContainerCode,WhFunctionOutboundboxMove boxMove,Long ouId,String logId,Long userId) {
+        log.info("moveFinishScanContainer function is start");
         if (log.isInfoEnabled()) {
-            log.info("quitScanContainer start, sourceContainerCode is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
+            log.info("moveFinishScanContainer start, sourceContainerCode is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
                     new Object[] {sourceContainerCode, ouId, userId, logId});
         }
         if (WhOutBoundBoxMoveType.PART_BOX_MOVE == boxMove.getMovePattern()) {
@@ -1263,9 +1301,46 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         cacheManager.remove(CacheConstants.SCAN_SKU_QTY_COUNT + sourceContainerCode);
         
         if (log.isInfoEnabled()) {
-            log.info("quitScanContainer end, sourceContainerCode is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
+            log.info("moveFinishScanContainer end, sourceContainerCode is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
                     new Object[] {sourceContainerCode, ouId, userId, logId});
         }
+        log.info("moveFinishScanContainer function is end");
+    }
+    
+    /**
+     * 整箱移动库存,不需要扫描商品
+     * @param sourceContainerCode
+     * @param sourceContainerId
+     * @param containerLatticeNo
+     * @param targetContainerCode
+     * @param targetContainerId
+     * @param warehouse
+     * @param ouId
+     * @param userId
+     * @param logId
+     */
+    public void fullMoveAllInventoryToNewOutboundBox(String sourceContainerCode,Long sourceContainerId,Integer containerLatticeNo,String targetContainerCode,String scanType,Warehouse warehouse,WhFunctionOutboundboxMove boxMoveFunc, Long ouId, Long userId, String logId) {
+        log.info("fullMoveAllInventoryToNewOutboundBox function is start");
+      //整箱移动库存,后台操作
+        whSkuInventoryManager.execuBoxFullMoveInventory(sourceContainerCode, sourceContainerId, containerLatticeNo, targetContainerCode,scanType, warehouse, ouId, userId, logId);
+        //通过配置查看是否需要打印箱标签
+        if (null != boxMoveFunc.getIsPrintCartonLabel() && boxMoveFunc.getIsPrintCartonLabel()) {
+            PrintDataCommand printDataCommand = new PrintDataCommand();
+            printDataCommand.setOutBoundBoxCode(targetContainerCode);
+            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_1, userId, ouId);
+        }
+        //通过配置查看是否需要打印装箱清单
+        if (null != boxMoveFunc.getIsPrintPackingList() && boxMoveFunc.getIsPrintPackingList()) {
+            PrintDataCommand printDataCommand = new PrintDataCommand();
+            printDataCommand.setOutBoundBoxCode(targetContainerCode);
+            printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_16, userId, ouId);
+        }
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, sourceContainerCode);
+        cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, sourceContainerCode);
+        cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + "*");
+        cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + sourceContainerCode + "*");
+        cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + sourceContainerCode + "*");
+        log.info("fullMoveAllInventoryToNewOutboundBox function is end");
     }
              
 }
