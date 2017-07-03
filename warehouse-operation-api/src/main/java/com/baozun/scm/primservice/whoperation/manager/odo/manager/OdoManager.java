@@ -361,4 +361,13 @@ public interface OdoManager extends BaseManager {
     
     void updateOdoLineTypeByOdoId(WhOdoLine o);
 
+    /**
+     * 
+     * @param odo
+     * @return
+     */
+    boolean isSuitForDefaultDistributionMode(WhOdo odo);
+
+    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId);
+
 }

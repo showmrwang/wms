@@ -1005,7 +1005,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
         for (Long odoId : odoIdSet) {
             WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
-            odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
+            // @mender yimin.lu 2017/6/30
+            if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+                odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
+            }
             odo.setWaveCode("");
             odo.setModifiedId(userId);
             odo.setOdoStatus(OdoStatus.NEW);
@@ -1068,7 +1071,11 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();// 配货模式计算
         for (WhOdo odo : odoList) {
             log.info("logId:{},method cancelWaveForNew: odo[id:{}] remove from wave", logId, odo.getId());
-            odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
+            // @mender yimin.lu 2017/6/30
+            if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+
+                odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
+            }
 
             List<WhOdoLine> odoLineList = this.whOdoLineDao.findOdoLineListByOdoIdOuId(odo.getId(), ouId);
             for (WhOdoLine odoLine : odoLineList) {
@@ -1102,7 +1109,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
         // 重新计算配货模式
         log.info("logId:{},method cancelWaveForNew: add odo to redis distribute count pool");
-        this.distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+        if (odoIdCounterCodeMap != null && odoIdCounterCodeMap.size() > 0) {
+
+            this.distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
+        }
 
     }
 

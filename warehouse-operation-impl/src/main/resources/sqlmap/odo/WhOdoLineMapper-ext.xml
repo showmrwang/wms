@@ -1087,6 +1087,32 @@
             and odo_line_status in ('0', '1', '5', '8', '10', '20', '25', '30', '35');
 
     </select>
+    
+	<select id="countNotSuitDistribeModeLines" resultType="long" flushCache="false">
+        select 
+			count(1)
+		from t_wh_odo_line odoline
+		where odoline.odo_id=#{odoId} and odoLine.ou_id=#{ouId}
+		and (
+		odoline.outbound_carton_type is not null
+		or odoline.inv_status!=3
+		or IFNULL(odoline.mixing_attr,'')!=''
+		or  IFNULL(concat_ws(odoline.inv_type,
+							odoline.inv_attr1,
+							odoline.inv_attr2,
+							odoline.inv_attr3,
+							odoline.inv_attr5,
+							odoline.inv_attr5,
+							odoline.batch_number,
+							odoline.mfg_date,
+							odoline.exp_date,
+							odoline.country_of_origin
+							),'')!=''
+		)
+
+
+
+    </select>
 	
 	
 </mapper>
