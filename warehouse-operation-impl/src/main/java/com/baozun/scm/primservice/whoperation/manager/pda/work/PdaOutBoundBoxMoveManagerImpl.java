@@ -46,7 +46,6 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuI
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
 import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
-import com.baozun.scm.primservice.whoperation.constant.WhContainerMoveType;
 import com.baozun.scm.primservice.whoperation.constant.WhOutBoundBoxMoveType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundFacilityDao;
@@ -303,7 +302,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
     		throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
     	}
     	//如果是整箱移动模式,直接移动库存
-        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
+        if (WhOutBoundBoxMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
             //处理整箱移动库存操作
             fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
             // 执行移库
@@ -324,6 +323,31 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         srCommand.setNeedTipSkuDetail(true);
         srCommand.setTipSkuBarcode(skuCmd.getBarCode());//提示sku
         srCommand.setSkuId(skuId);
+        /**计算商品属性显示的标识,1.显示并扫描商品属性,2.不显示商品属性,3显示不扫描商品属性*/
+        //箱内商品属性是否唯一
+        boolean skuAttrIsOnly = false;
+        Set<String> skuAttrSet = isCmd.getOutBoundBoxSkuIdSkuAttrIds().get(sourceContainerCode);
+        if (null != skuAttrSet && skuAttrSet.size() == 1) {
+            skuAttrIsOnly = true;
+        }
+        //商品属性唯一,不需要扫描属性
+        if (skuAttrIsOnly) {
+            srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_HIDDEN);
+        } else {
+            if (WhOutBoundBoxMoveType.PART_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+                //部分移动场景
+                srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_SCAN);
+            } else {
+                //整箱移动场景
+                if (null != boxMoveFunc.getIsScanInvAttr() && boxMoveFunc.getIsScanInvAttr()) {
+                    srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_SCAN);
+                } else if (null != boxMoveFunc.getIsTipInvAttr() && boxMoveFunc.getIsTipInvAttr()) {
+                    srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_CONFIRM);
+                } else {
+                    srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_HIDDEN);
+                }
+            }
+        }
     	log.info("PdaOutBoundBoxMoveManagerImpl scanTargetContainer is end");
     	
     	return srCommand;
@@ -368,7 +392,7 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
             throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_STATISTIC_ERROR,new Object[] {sourceContainerCode});
         }
         //如果是整箱移动模式,并且不需要扫描提示扫描商品,直接移动库存
-        if (WhContainerMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
+        if (WhOutBoundBoxMoveType.FULL_BOX_MOVE == boxMoveFunc.getMovePattern() && (null == boxMoveFunc.getIsScanSku() || !boxMoveFunc.getIsScanSku())) {
             //处理整箱移动库存操作
             fullMoveAllInventoryToNewOutboundBox(sourceContainerCode,sourceContainerId, containerLatticNo,targetContainerCode,scanType,warehouse,boxMoveFunc,ouId,userId,logId);
             // 执行移库
@@ -389,6 +413,31 @@ public class PdaOutBoundBoxMoveManagerImpl extends BaseManagerImpl implements Pd
         srCommand.setNeedTipSkuDetail(true);
         srCommand.setTipSkuBarcode(skuCmd.getBarCode());//提示sku
         srCommand.setSkuId(skuId);
+        /**计算商品属性显示的标识,1.显示并扫描商品属性,2.不显示商品属性,3显示不扫描商品属性*/
+        //箱内商品属性是否唯一
+        boolean skuAttrIsOnly = false;
+        Set<String> skuAttrSet = isCmd.getOutBoundBoxSkuIdSkuAttrIds().get(sourceContainerCode);
+        if (null != skuAttrSet && skuAttrSet.size() == 1) {
+            skuAttrIsOnly = true;
+        }
+        //商品属性唯一,不需要扫描属性
+        if (skuAttrIsOnly) {
+            srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_HIDDEN);
+        } else {
+            if (WhOutBoundBoxMoveType.PART_BOX_MOVE == boxMoveFunc.getMovePattern()) {
+                //部分移动场景
+                srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_SCAN);
+            } else {
+                //整箱移动场景
+                if (null != boxMoveFunc.getIsScanInvAttr() && boxMoveFunc.getIsScanInvAttr()) {
+                    srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_SCAN);
+                } else if (null != boxMoveFunc.getIsTipInvAttr() && boxMoveFunc.getIsTipInvAttr()) {
+                    srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_CONFIRM);
+                } else {
+                    srCommand.setSkuAttrsDspFlg(WhOutBoundBoxMoveType.SKU_ATTR_HIDDEN);
+                }
+            }
+        }
         log.info("PdaOutBoundBoxMoveManagerImpl scanTargetConsumables is end");
         
         return srCommand;

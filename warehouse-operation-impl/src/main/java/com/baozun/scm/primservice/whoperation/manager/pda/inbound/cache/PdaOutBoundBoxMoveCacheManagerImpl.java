@@ -225,7 +225,7 @@ public class PdaOutBoundBoxMoveCacheManagerImpl extends BaseManagerImpl implemen
             for (String sId : skuAttrIdsSn) {
                 Set<String> tempSkuAttrIds = new HashSet<String>();
                 tempSkuAttrIds.add(sId);
-                boolean isExists = isCacheAllExists2(skuAttrIdsSn, tipSkuAttrIds);
+                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
                 if (true == isExists) {
                     continue;
                 } else {

@@ -42,5 +42,13 @@ public class WhOutBoundBoxMoveType implements Serializable {
      */
     public static final int FULL_BOX_MOVE = 1; // 整箱移动
     public static final int PART_BOX_MOVE = 2; // 部分移动
+    
+    /**
+     * 画面商品属性是否显示标识
+     * 1.显示并扫描商品属性,2.不显示商品属性,3显示不扫描商品属性
+     */
+    public static final String SKU_ATTR_SCAN = "1";
+    public static final String SKU_ATTR_HIDDEN = "2";
+    public static final String SKU_ATTR_CONFIRM = "3";
 
 }

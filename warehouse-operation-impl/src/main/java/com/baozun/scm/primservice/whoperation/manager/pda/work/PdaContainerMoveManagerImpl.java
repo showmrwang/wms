@@ -334,6 +334,31 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
         srCommand.setNeedTipSkuDetail(true);
         srCommand.setTipSkuBarcode(skuCmd.getBarCode());//提示sku
         srCommand.setSkuId(skuId);
+        /**计算商品属性显示的标识,1.显示并扫描商品属性,2.不显示商品属性,3显示不扫描商品属性*/
+        //箱内商品属性是否唯一
+        boolean skuAttrIsOnly = false;
+        Set<String> skuAttrSet = isCmd.getOutBoundBoxSkuIdSkuAttrIds().get(sourceContainerCode);
+        if (null != skuAttrSet && skuAttrSet.size() == 1) {
+            skuAttrIsOnly = true;
+        }
+        //商品属性唯一,不需要扫描属性
+        if (skuAttrIsOnly) {
+            srCommand.setSkuAttrsDspFlg(WhContainerMoveType.SKU_ATTR_HIDDEN);
+        } else {
+            if (WhContainerMoveType.PART_BOX_MOVE == containerMoveFunc.getMovePattern()) {
+                //部分移动场景
+                srCommand.setSkuAttrsDspFlg(WhContainerMoveType.SKU_ATTR_SCAN);
+            } else {
+                //整箱移动场景
+                if (null != containerMoveFunc.getIsScanInvAttr() && containerMoveFunc.getIsScanInvAttr()) {
+                    srCommand.setSkuAttrsDspFlg(WhContainerMoveType.SKU_ATTR_SCAN);
+                } else if (null != containerMoveFunc.getIsTipInvAttr() && containerMoveFunc.getIsTipInvAttr()) {
+                    srCommand.setSkuAttrsDspFlg(WhContainerMoveType.SKU_ATTR_CONFIRM);
+                } else {
+                    srCommand.setSkuAttrsDspFlg(WhContainerMoveType.SKU_ATTR_HIDDEN);
+                }
+            }
+        }
         log.info("PdaContainerMoveManagerImpl scanTargetContainer is end");
         
         return srCommand;

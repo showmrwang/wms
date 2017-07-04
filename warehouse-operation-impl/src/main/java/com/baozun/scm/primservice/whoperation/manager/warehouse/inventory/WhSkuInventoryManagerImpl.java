@@ -10999,13 +10999,17 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     private boolean checkInvAttrEqual(WhPoLine poLine, WhSkuInventoryCommand inv) {
-        if (poLine.getInvType() == null ? inv.getInvType() == null : poLine.getInvType().equals(inv.getInvType()) && poLine.getInvStatus() == null ? inv.getInvStatus() == null : poLine.getInvStatus().equals(inv.getInvStatus())
-                && poLine.getInvAttr1() == null ? inv.getInvAttr1() == null : poLine.getInvAttr1().equals(inv.getInvAttr1()) && poLine.getInvAttr2() == null ? inv.getInvAttr2() == null : poLine.getInvAttr2().equals(inv.getInvAttr2())
-                && poLine.getInvAttr3() == null ? inv.getInvAttr3() == null : poLine.getInvAttr3().equals(inv.getInvAttr3()) && poLine.getInvAttr4() == null ? inv.getInvAttr4() == null : poLine.getInvAttr4().equals(inv.getInvAttr4())
-                && poLine.getInvAttr5() == null ? inv.getInvAttr5() == null : poLine.getInvAttr5().equals(inv.getInvAttr5()) && poLine.getBatchNo() == null ? inv.getBatchNumber() == null : poLine.getBatchNo().equals(inv.getBatchNumber())
-                && poLine.getCountryOfOrigin() == null ? inv.getCountryOfOrigin() == null : poLine.getCountryOfOrigin().equals(inv.getCountryOfOrigin()) && poLine.getMfgDate() == null ? inv.getMfgDate() == null : poLine.getMfgDate().equals(
-                inv.getMfgDate())
-                && poLine.getExpDate() == null ? inv.getExpDate() == null : poLine.getExpDate().equals(inv.getExpDate())) {
+        if ((poLine.getInvType() == null ? inv.getInvType() == null : poLine.getInvType().equals(inv.getInvType())) 
+                && (poLine.getInvStatus() == null ? inv.getInvStatus() == null : poLine.getInvStatus().equals(inv.getInvStatus()))
+                && (poLine.getInvAttr1() == null ? inv.getInvAttr1() == null : poLine.getInvAttr1().equals(inv.getInvAttr1())) 
+                && (poLine.getInvAttr2() == null ? inv.getInvAttr2() == null : poLine.getInvAttr2().equals(inv.getInvAttr2()))
+                && (poLine.getInvAttr3() == null ? inv.getInvAttr3() == null : poLine.getInvAttr3().equals(inv.getInvAttr3())) 
+                && (poLine.getInvAttr4() == null ? inv.getInvAttr4() == null : poLine.getInvAttr4().equals(inv.getInvAttr4()))
+                && (poLine.getInvAttr5() == null ? inv.getInvAttr5() == null : poLine.getInvAttr5().equals(inv.getInvAttr5())) 
+                && (poLine.getBatchNo() == null ? inv.getBatchNumber() == null : poLine.getBatchNo().equals(inv.getBatchNumber()))
+                && (poLine.getCountryOfOrigin() == null ? inv.getCountryOfOrigin() == null : poLine.getCountryOfOrigin().equals(inv.getCountryOfOrigin())) 
+                && (poLine.getMfgDate() == null ? inv.getMfgDate() == null : poLine.getMfgDate().equals(inv.getMfgDate()))
+                && (poLine.getExpDate() == null ? inv.getExpDate() == null : poLine.getExpDate().equals(inv.getExpDate()))) {
             return true;
         }
         return false;
