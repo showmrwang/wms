@@ -11904,7 +11904,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 log.error(getLogMsg("inv uuid error, logId is:[{}]", new Object[] {logId}), e);
                 throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
             }
-            moveInv.setInboundTime(new Date());
             moveInv.setLastModifyTime(new Date());
             whSkuInventoryDao.insert(moveInv);
             insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);                
@@ -12275,7 +12274,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 //                WhSkuInventory checkInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, newUuid);
 //                if (null == checkInv || null == checkInv.getId()) {
                     // 不存在新的uuid记录新增记录 
-                moveInv.setInboundTime(new Date());
                 moveInv.setLastModifyTime(new Date());
                 whSkuInventoryDao.insert(moveInv);
                 insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);                
@@ -12636,7 +12634,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 throw new BusinessException(ErrorCodes.COMMON_INV_PROCESS_UUID_ERROR);
             }
             //本次循环修改数量
-            moveInv.setInboundTime(new Date());
             moveInv.setLastModifyTime(new Date());            
             whSkuInventoryDao.insert(moveInv);
             insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);                
@@ -12968,7 +12965,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 //                WhSkuInventory checkInv = whSkuInventoryDao.findWhSkuInventoryByUuid(ouId, newUuid);
 //                if (null == checkInv || null == checkInv.getId()) {
                     // 不存在新的uuid记录新增记录 
-                moveInv.setInboundTime(new Date());
                 moveInv.setLastModifyTime(new Date());
                 whSkuInventoryDao.insert(moveInv);
                 insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);                
