@@ -40,16 +40,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	<sql id="WhOdodeliveryInfoCommandResultExtColumns">
 	    <![CDATA[
-	        	id as id,
-	        	odo_id as odoId,
-	        	transport_code as transportCode,
-	        	waybill_code as waybillCode,
-	        	outboundbox_id as outboundboxId,
-	        	outboundbox_code as outboundboxCode,
-	        	transport_service_type as serviceCode,
-	        	time_effect_type as ttCode,
-	        	create_id as createId,
-	        	create_time as createTime
+	       		del.id as id,
+	       		odo.id as odoId,
+	        	odo.odo_code as odoCode,
+	        	del.transport_code as transportCode,
+	        	del.waybill_code as waybillCode,
+	        	del.outboundbox_id as outboundboxId,
+	        	del.outboundbox_code as outboundboxCode,
+	        	del.transport_service_type as serviceCode,
+	        	del.time_effect_type as ttCode,
+	        	del.create_id as createId,
+	        	del.create_time as createTime
 	    ]]>
 	</sql>
 	
@@ -113,47 +114,45 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<where>
 	       
 				<if test="id!=null">
-					and id = #{id}
+					and del.id = #{id}
 				</if>
 	       
-				<if test="odoId!=null">
-					and odo_id = #{odoId}
+				<if test="odoCode!=null and odoCode!=''">
+					and odo.odo_code = #{odoCode}
 				</if>
 	       
 	            <if test="outboundboxCode!=null and outboundboxCode!=''">
-					and outboundbox_code = #{outboundboxCode}
+					and del.outboundbox_code = #{outboundboxCode}
 				</if>
 	       
 		       <if test="waybillCode!=null and waybillCode!=''">
-					and waybill_code = #{waybillCode}
+					and del.waybill_code = #{waybillCode}
 				</if>
 				
 		       <if test="transportCode!=null and transportCode!=''">
-					and transport_code = #{transportCode}
+					and del.transport_code = #{transportCode}
 				</if>
 	       
 		       <if test="serviceCode!=null and serviceCode!=''">
-					and transport_service_type = #{serviceCode}
+					and del.transport_service_type = #{serviceCode}
 				</if>
 	       
 		       <if test="ttCode!=null and ttCode!=''">
-					and time_effect_type = #{ttCode}
+					and del.time_effect_type = #{ttCode}
 				</if>
 	       
 				<if test="transportvasCode!=null and transportvasCode!=''">
-					and odo_id in(SELECT DISTINCT(odo_id) from t_wh_odo_vas where express_vas_code =#{transportvasCode})
+					and del.odo_id in(SELECT DISTINCT(odo_id) from t_wh_odo_vas where express_vas_code =#{transportvasCode})
 				</if>
 				<if test="vasCode!=null and vasCode!=''">
-					and odo_id in(SELECT DISTINCT(odo_id) from t_wh_odo_vas where wh_vas_type =#{vasCode})
+					and del.odo_id in(SELECT DISTINCT(odo_id) from t_wh_odo_vas where wh_vas_type =#{vasCode})
 				</if>
 	       
 				<if test="outboundboxId!=null">
-					and outboundbox_id = #{outboundboxId}
+					and del.outboundbox_id = #{outboundboxId}
 				</if>
-	       
-	       
 				<if test="ouId!=null">
-					and ou_id = #{ouId}
+					and del.ou_id = #{ouId}
 				</if>
 	        
 		</where>
@@ -266,7 +265,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
        	
        	
      <select id="findListCountByQueryMapExt" resultType="long">
-        select count(*) from t_wh_odo_delivery_info
+        select count(*) from t_wh_odo_delivery_info del
+	    left join t_wh_odo  odo on del.odo_id =odo.id
 		<include refid="WhOdodeliveryInfoCommandResultExtWhere"/>    
     </select>
      
@@ -276,8 +276,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     -->
     <select id="findListByQueryMapWithPageExt" resultMap="WhOdodeliveryInfoCommandResultExt">
     	select <include refid="WhOdodeliveryInfoCommandResultExtColumns" />
-	    from t_wh_odo_delivery_info 
+	    from t_wh_odo_delivery_info del
+	    left join t_wh_odo  odo on del.odo_id =odo.id
 		<include refid="WhOdodeliveryInfoCommandResultExtWhere"/>
 		
     </select>
+    
+    
+     
+    
 </mapper>
