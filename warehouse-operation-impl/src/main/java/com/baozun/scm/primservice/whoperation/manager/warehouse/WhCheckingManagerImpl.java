@@ -1638,6 +1638,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             String[] checkingPrintArray = checkingPrint.split(",");
             for (int i = 0; i < checkingPrintArray.length; i++) {
                 List<Long> idsList = new ArrayList<Long>();
+                Boolean isInsert  = false;
                 List<WhPrintInfo> whPrintInfoLst = whPrintInfoDao.findByOutboundboxCodeAndPrintType(outboundBoxCode, checkingPrintArray[i], ouId);
                 if (null == whPrintInfoLst || 0 == whPrintInfoLst.size()) {
                     log.info("whprintInfo insert is start");
@@ -1679,84 +1680,108 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         whPrintInfo.setFacilityId(checkingCmd.getFacilityId());
                         whPrintInfo.setContainerLatticeNo(checkingCmd.getContainerLatticeNo());
                     }
-                    if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
-                        // 装箱清单
-                        checkingManager.printPackingList(idsList, userId, ouId);
-                    }
-                    if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
-                        List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
-                        if(null == printInfoLst || 0 == printInfoLst.size()) {
-                            idsList.add(checkingLineList.get(0).getOdoId());
-                            // 销售清单
-                            checkingManager.printSalesList(idsList, userId, ouId);
-                        }else{
-                            if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                    try{
+                        if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
+                            isInsert  = true;
+                            // 装箱清单
+                            checkingManager.printPackingList(idsList, userId, ouId);
+                        }  
+                        if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                            List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
+                            if(null == printInfoLst || 0 == printInfoLst.size()) {
                                 idsList.add(checkingLineList.get(0).getOdoId());
+                                isInsert  = true;
                                 // 销售清单
                                 checkingManager.printSalesList(idsList, userId, ouId);
+                            }else{
+                                if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                                    idsList.add(checkingLineList.get(0).getOdoId());
+                                    isInsert  = true;
+                                    // 销售清单
+                                    checkingManager.printSalesList(idsList, userId, ouId);
+                                }
                             }
                         }
+                        if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
+                            isInsert  = true;
+                            // 面单
+                            log.info("waybill print: outboundBoxCode:[{}], waybillCode:[{}], userId:[{}], odoId:[{}]", outboundBoxCode, waybillCode, userId, checkingLineList.get(0).getOdoId());
+                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                        }
+                        if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
+                            isInsert  = true;
+                            // 箱标签
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                        }
+                    }catch(Exception e){
+                        log.error("print is error",e);
+                        isInsert = false;
                     }
-                    if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
-                        // 面单
-                        log.info("waybill print: outboundBoxCode:[{}], waybillCode:[{}], userId:[{}], odoId:[{}]", outboundBoxCode, waybillCode, userId, checkingLineList.get(0).getOdoId());
-                        checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                    if(isInsert){
+                        whPrintInfo.setBatch(checkingLineList.get(0).getBatchNumber());
+                        whPrintInfo.setWaveCode(checkingCmd.getWaveCode());
+                        whPrintInfo.setOuId(ouId);
+                        whPrintInfo.setOutboundboxId(outboundboxId);
+                        whPrintInfo.setOutboundboxCode(outboundBoxCode);
+                        whPrintInfo.setPrintType(checkingPrintArray[i]);
+                        whPrintInfo.setPrintCount(1);// 打印次数
+                        whPrintInfo.setLastModifyTime(new Date());
+                        whPrintInfo.setCreateTime(new Date());
+                        whPrintInfo.setCreateId(userId);
+                        whPrintInfo.setOdoId(odoId);
+                        whPrintInfo.setWaybillCode(waybillCode);
+                        whPrintInfoDao.insert(whPrintInfo);
                     }
-                    if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
-                        // 箱标签
-                        checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
-                    }
-                    whPrintInfo.setBatch(checkingLineList.get(0).getBatchNumber());
-                    whPrintInfo.setWaveCode(checkingCmd.getWaveCode());
-                    whPrintInfo.setOuId(ouId);
-                    whPrintInfo.setOutboundboxId(outboundboxId);
-                    whPrintInfo.setOutboundboxCode(outboundBoxCode);
-                    whPrintInfo.setPrintType(checkingPrintArray[i]);
-                    whPrintInfo.setPrintCount(1);// 打印次数
-                    whPrintInfo.setLastModifyTime(new Date());
-                    whPrintInfo.setCreateTime(new Date());
-                    whPrintInfo.setCreateId(userId);
-                    whPrintInfo.setOdoId(odoId);
-                    whPrintInfo.setWaybillCode(waybillCode);
-                    whPrintInfoDao.insert(whPrintInfo);
                 } else {
                     log.info("whprintInfo update is start");
                     Integer printCount = whPrintInfoLst.get(0).getPrintCount();
                     if (printCount == 0) {
-                        if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
-                            // 装箱清单
-                            checkingManager.printPackingList(idsList, userId, ouId);
-                        }
-                        List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
-                        if(null == printInfoLst || 0 == printInfoLst.size()) {
-                            idsList.add(checkingLineList.get(0).getOdoId());
-                            // 销售清单
-                            checkingManager.printSalesList(idsList, userId, ouId);
-                        }else{
-                            if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                        try{
+                            if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
+                                // 装箱清单
+                                checkingManager.printPackingList(idsList, userId, ouId);
+                                isInsert  = true;
+                            }
+                            List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
+                            if(null == printInfoLst || 0 == printInfoLst.size()) {
                                 idsList.add(checkingLineList.get(0).getOdoId());
+                                isInsert  = true;
                                 // 销售清单
                                 checkingManager.printSalesList(idsList, userId, ouId);
+                            }else{
+                                if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                                    idsList.add(checkingLineList.get(0).getOdoId());
+                                    isInsert  = true;
+                                    // 销售清单
+                                    checkingManager.printSalesList(idsList, userId, ouId);
+                                }
                             }
+                            if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
+                                isInsert  = true;
+                                // 面单
+                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                            }
+                            if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
+                                isInsert  = true;
+                                // 箱标签
+                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                            }
+                        }catch(Exception e) {
+                            log.error("print is error",e);
+                            isInsert = false;
                         }
-                        if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
-                            // 面单
-                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                        if(isInsert){
+                            WhPrintInfo printfo = whPrintInfoLst.get(0);
+                            printfo.setPrintCount(printfo.getPrintCount() + 1);
+                            printfo.setModifiedId(userId);
+                            printfo.setOutboundboxId(outboundboxId);
+                            printfo.setOutboundboxCode(outboundBoxCode);
+                            printfo.setOdoId(odoId);
+                            printfo.setBatch(checkingLineList.get(0).getBatchNumber());
+                            printfo.setWaveCode(checkingCmd.getWaveCode());
+                            printfo.setWaybillCode(waybillCode);
+                            whPrintInfoDao.saveOrUpdateByVersion(printfo);
                         }
-                        if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
-                            // 箱标签
-                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
-                        }
-                        WhPrintInfo printfo = whPrintInfoLst.get(0);
-                        printfo.setPrintCount(printfo.getPrintCount() + 1);
-                        printfo.setModifiedId(userId);
-                        printfo.setOutboundboxId(outboundboxId);
-                        printfo.setOutboundboxCode(outboundBoxCode);
-                        printfo.setOdoId(odoId);
-                        printfo.setBatch(checkingLineList.get(0).getBatchNumber());
-                        printfo.setWaveCode(checkingCmd.getWaveCode());
-                        printfo.setWaybillCode(waybillCode);
-                        whPrintInfoDao.saveOrUpdateByVersion(printfo);
                     }
                 }
             }
