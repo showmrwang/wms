@@ -7302,6 +7302,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             } else {
                 oldQty = 0.0;
             }
+            inv.setLastModifyTime(new Date());
             whSkuInventoryDao.insert(inv);
             invSkuId = inv.getId();
             insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
@@ -7340,6 +7341,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             } else {
                 oldQty = 0.0;
             }
+            inv.setLastModifyTime(new Date());
             whSkuInventoryDao.insert(inv);
             invSkuId = inv.getId();
             insertGlobalLog(GLOBAL_LOG_INSERT, inv, ouId, userId, null, null);
@@ -8908,7 +8910,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             // 记录SN日志(这个实现的有问题)
             insertSkuInventorySnLog(inv.getUuid(), ouId);
         }
-
         // 删除待移入
         Double sumQty = 0.0;
         for (WhSkuInventoryTobefilled invTobefilled : invTobefilledList) {
@@ -8969,7 +8970,6 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                 }
              } 
-             if (null == invTobefilled.getInsideContainerId() && skuAttrIds.equals(toBeSkuAttrId) && odoLineId.longValue() == invTobefilled.getOccupationLineId()) {
                     sumQty += invTobefilled.getQty();
                     Double tobefilledQty = sumQty - skuInvCmd.getOnHandQty(); // 待移入库存还剩下的sku数量
                     if (tobefilledQty.doubleValue() < 0) {
