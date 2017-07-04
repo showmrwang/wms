@@ -108,7 +108,7 @@ public class WmsConfirmServiceManagerProxyImpl implements WmsConfirmServiceManag
             log.debug("WmsConfirmServiceManagerProxy.wmsSkuInventoryFlow beginTime: " + begin + " endTime: " + end + " start: " + start + "pageSize: " + pageSize + " whCode: " + whCode + " customerCode: " + customerCode);
         }
         // 获取对应时间段+仓库的库存流水信息
-        List<WmsSkuInventoryFlow> wmsSkuInventoryFlows = whSkuInventoryFlowManager.findWmsSkuInventoryFlowByCreateTime(begin, end, start, pageSize, w.getId());
+        List<WmsSkuInventoryFlow> wmsSkuInventoryFlows = whSkuInventoryFlowManager.findWmsSkuInventoryFlowByCreateTime(begin, end, start, pageSize, w.getId(), customerCode);
         for (WmsSkuInventoryFlow wmsSkuInventoryFlow : wmsSkuInventoryFlows) {
             wmsSkuInventoryFlow.setWhCode(whCode);
         }

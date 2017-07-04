@@ -175,6 +175,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		create_time &gt; #{beginTime} 
 		and create_time &lt; #{endTime} 
 		and ou_id = #{ouid} 
+		and customer_code = #{customerCode}
 		order by id asc
 		limit #{start},#{pageSize}
 	</select>
