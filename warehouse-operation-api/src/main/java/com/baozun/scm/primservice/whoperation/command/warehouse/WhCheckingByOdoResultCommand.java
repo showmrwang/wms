@@ -24,7 +24,7 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
 
     private String seedingWallCode; // 播种墙编码
 
-//    private String turnoverBoxCode; // 周转箱
+    private String turnoverBoxCode; // 周转箱
 
     private String outboundBoxCode; // 出库箱编码
 
@@ -76,13 +76,13 @@ public class WhCheckingByOdoResultCommand extends BaseModel {
         this.seedingWallCode = seedingWallCode;
     }
 
-//    public String getTurnoverBoxCode() {
-//        return turnoverBoxCode;
-//    }
-//
-//    public void setTurnoverBoxCode(String turnoverBoxCode) {
-//        this.turnoverBoxCode = turnoverBoxCode;
-//    }
+    public String getTurnoverBoxCode() {
+        return turnoverBoxCode;
+    }
+
+    public void setTurnoverBoxCode(String turnoverBoxCode) {
+        this.turnoverBoxCode = turnoverBoxCode;
+    }
 
     public List<WhCheckingLineCommand> getCheckingLineList() {
         return checkingLineList;

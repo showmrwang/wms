@@ -1023,7 +1023,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         if (result) {
             // 更新出库单状态
-            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), checkingLineList, cmd.getSeedingWallCode(), odoLineIds);
+            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode(), odoLineIds);
         } else {
             // 修改出库单状态为复核中状态。
             this.updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING);
@@ -1437,7 +1437,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @author
      * @param whCheckingResultCommand
      */
-    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, List<WhCheckingLineCommand> checkingLineList, String seedingWallCode, List<Long> odoLineIds) {
+    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode, List<Long> odoLineIds) {
         // 修改出库单状态为复核完成状态。
         updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING_FINISH);
 
@@ -1458,25 +1458,25 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 insertGlobalLog(GLOBAL_LOG_INSERT, c, ouId, userId, null, null);
             }
         }
-        for (WhCheckingLineCommand checkingLine : checkingLineList) {
-            String turnoverBoxCode = checkingLine.getContainerCode();
-            if (!StringUtils.isEmpty(turnoverBoxCode)) {
-                // 周转箱状态
-                ContainerCommand turnCmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-                if (null == turnCmd) {
-                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-                }
-                Long insideContainerId = turnCmd.getId();
-                int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, insideContainerId, null);
-                if (count == 0) {
-                    Container turn = new Container();
-                    BeanUtils.copyProperties(turnCmd, turn);
-                    turn.setStatus(Constants.LIFECYCLE_START);
-                    turn.setLifecycle(Constants.LIFECYCLE_START);
-                    containerDao.saveOrUpdateByVersion(turn);
-                }
+        // for (WhCheckingLineCommand checkingLine : checkingLineList) {
+        // String turnoverBoxCode = checkingLine.getContainerCode();
+        if (!StringUtils.isEmpty(turnoverBoxCode)) {
+            // 周转箱状态
+            ContainerCommand turnCmd = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+            if (null == turnCmd) {
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            Long insideContainerId = turnCmd.getId();
+            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, insideContainerId, null);
+            if (count == 0) {
+                Container turn = new Container();
+                BeanUtils.copyProperties(turnCmd, turn);
+                turn.setStatus(Constants.LIFECYCLE_START);
+                turn.setLifecycle(Constants.LIFECYCLE_START);
+                containerDao.saveOrUpdateByVersion(turn);
             }
         }
+        // }
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
             int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
@@ -1679,28 +1679,32 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         whPrintInfo.setFacilityId(checkingCmd.getFacilityId());
                         whPrintInfo.setContainerLatticeNo(checkingCmd.getContainerLatticeNo());
                     }
-                    try {
-                        if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
-                            // 装箱清单
-                            checkingManager.printPackingList(idsList, userId, ouId);
-                        }
-                        if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                    if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
+                        // 装箱清单
+                        checkingManager.printPackingList(idsList, userId, ouId);
+                    }
+                    if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                        List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
+                        if(null == printInfoLst || 0 == printInfoLst.size()) {
                             idsList.add(checkingLineList.get(0).getOdoId());
                             // 销售清单
                             checkingManager.printSalesList(idsList, userId, ouId);
+                        }else{
+                            if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                                idsList.add(checkingLineList.get(0).getOdoId());
+                                // 销售清单
+                                checkingManager.printSalesList(idsList, userId, ouId);
+                            }
                         }
-                        if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
-                            // 面单
-                            log.info("waybill print: outboundBoxCode:[{}], waybillCode:[{}], userId:[{}], odoId:[{}]", outboundBoxCode, waybillCode, userId, checkingLineList.get(0).getOdoId());
-                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
-                        }
-                        if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
-                            // 箱标签
-                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
-                        }
-                    } catch (Exception e) {
-                        log.error("WhCheckingManagerImpl printDefect is execption" + e);
-                        throw new BusinessException(ErrorCodes.PRINT_IS_FAIL);
+                    }
+                    if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
+                        // 面单
+                        log.info("waybill print: outboundBoxCode:[{}], waybillCode:[{}], userId:[{}], odoId:[{}]", outboundBoxCode, waybillCode, userId, checkingLineList.get(0).getOdoId());
+                        checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                    }
+                    if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
+                        // 箱标签
+                        checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
                     }
                     whPrintInfo.setBatch(checkingLineList.get(0).getBatchNumber());
                     whPrintInfo.setWaveCode(checkingCmd.getWaveCode());
@@ -1719,26 +1723,29 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     log.info("whprintInfo update is start");
                     Integer printCount = whPrintInfoLst.get(0).getPrintCount();
                     if (printCount == 0) {
-                        try {
-                            if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
-                                // 装箱清单
-                                checkingManager.printPackingList(idsList, userId, ouId);
-                            }
-                            if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                        if (CheckingPrint.PACKING_LIST.equals(checkingPrintArray[i])) {
+                            // 装箱清单
+                            checkingManager.printPackingList(idsList, userId, ouId);
+                        }
+                        List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
+                        if(null == printInfoLst || 0 == printInfoLst.size()) {
+                            idsList.add(checkingLineList.get(0).getOdoId());
+                            // 销售清单
+                            checkingManager.printSalesList(idsList, userId, ouId);
+                        }else{
+                            if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                                idsList.add(checkingLineList.get(0).getOdoId());
                                 // 销售清单
                                 checkingManager.printSalesList(idsList, userId, ouId);
                             }
-                            if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
-                                // 面单
-                                checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
-                            }
-                            if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
-                                // 箱标签
-                                checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
-                            }
-                        } catch (Exception e) {
-                            log.error("WhCheckingManagerImpl printDefect is execption" + e);
-                            throw new BusinessException(ErrorCodes.PRINT_IS_FAIL);
+                        }
+                        if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
+                            // 面单
+                            checkingManager.printSinglePlane(outboundBoxCode, waybillCode, userId, ouId, checkingLineList.get(0).getOdoId());
+                        }
+                        if (CheckingPrint.BOX_LABEL.equals(checkingPrintArray[i])) {
+                            // 箱标签
+                            checkingManager.printBoxLabel(outboundBoxCode, userId, ouId, checkingLineList.get(0).getOdoId());
                         }
                         WhPrintInfo printfo = whPrintInfoLst.get(0);
                         printfo.setPrintCount(printfo.getPrintCount() + 1);
@@ -1862,7 +1869,15 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         String outboundboxCode = cmd.getOutboundBoxCode();
         String seedingWallCode = cmd.getSeedingWallCode(); // 播种墙编码
         List<String> cacehSnList = cmd.getSn();
-
+        String turnoverBoxCode = cmd.getTurnoverBoxCode();
+        Long turnoverBoxId = null;
+        if (Constants.WAY_5.equals(checkingPattern)) {
+            ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
+            if (null == c) {
+                throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
+            }
+            turnoverBoxId = c.getId();
+        }
         String containerCode = cmd.getContaierCode();
 
         Long containerId = null;
@@ -1876,15 +1891,6 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         /** 复合明细集合 */
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         for (WhCheckingLineCommand checkingLine : checkingLineList) {
-            String turnoverBoxCode = checkingLine.getContainerCode();
-            Long turnoverBoxId = null;
-            if (Constants.WAY_5.equals(checkingPattern)) {
-                ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
-                if (null == c) {
-                    throw new BusinessException(ErrorCodes.COMMON_CONTAINER_CODE_IS_NULL_ERROR);
-                }
-                turnoverBoxId = c.getId();
-            }
             Long odoLineId = checkingLine.getOdoLineId();
             Long odoId = checkingLine.getOdoId();
             List<WhSkuInventoryCommand> skuInvSnList = null;

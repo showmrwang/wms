@@ -30,8 +30,8 @@ public class WhSkuInventory extends BaseModel {
      * 
      */
     private static final long serialVersionUID = -263625851030926135L;
-    
-    
+
+
     /** 商品ID */
     private Long skuId;
     /** 库位ID 库位号 */
@@ -54,7 +54,7 @@ public class WhSkuInventory extends BaseModel {
     private String seedingWallCode;
     /**货格号*/
     private Integer containerLatticeNo;
-    
+
     /**出库箱号*/
     private String outboundboxCode;
     /** 在库可用库存 */
@@ -90,7 +90,7 @@ public class WhSkuInventory extends BaseModel {
     /** 内部对接码 */
     private String uuid;
     /** 是否可用 */
-    private Boolean isLocked = false;
+    private Boolean isLocked;
     /** 对应仓库ID */
     private Long ouId;
     /** 占用单据号来源 */
@@ -99,8 +99,8 @@ public class WhSkuInventory extends BaseModel {
     private Date inboundTime;
     /** 最后操作时间 */
     private Date lastModifyTime;
-    
-    
+
+
     public Long getSkuId() {
         return skuId;
     }
