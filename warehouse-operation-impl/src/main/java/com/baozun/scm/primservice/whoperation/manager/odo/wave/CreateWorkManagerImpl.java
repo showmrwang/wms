@@ -1029,7 +1029,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         }
         int count = 0;
         for (WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList) {
-            if(null != skuInventoryAllocatedCommandLst && null == allocatedMap.get(whWorkLineCommand.getUuid())){
+            if(null != skuInventoryAllocatedCommandLst && (null == allocatedMap.get(whWorkLineCommand.getUuid()) || 0 != allocatedMap.get(whWorkLineCommand.getUuid()).compareTo(whWorkLineCommand.getQty()))){
                 continue;
             }
             WhOperationLineCommand WhOperationLineCommand = new WhOperationLineCommand();
@@ -1123,6 +1123,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 operationLineDao.insert(whOperationLine);
             }
             count = count + 1;
+            allocatedMap.remove(whWorkLineCommand.getUuid());
         }
         
         if(null != skuInventoryAllocatedCommandLst && skuInventoryAllocatedCommandLst.size() != whWorkLineCommandList.size()){
