@@ -122,5 +122,5 @@ public interface WhOperationLineDao extends BaseDao<WhOperationLine,Long>{
     
     public List<WhSkuInventoryCommand> getWhSkuInventoryCmdByOccupationLineId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("outerContainerId") Long outerContainerId,
         @Param("insideContainerId") Long insideContainerId);
-	
+    
 }

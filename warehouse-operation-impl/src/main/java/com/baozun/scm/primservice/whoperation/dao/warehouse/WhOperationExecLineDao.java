@@ -29,6 +29,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOperationExecLineCommand;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 
 
 
@@ -167,5 +168,13 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
 
 
     public int countOperationExecLineByOutboundbox(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId, @Param("operationId") Long operationId);
+    
+    
+    public List<WhOperationExecLine> findWhOperationLine(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("useOuterContainerId") Long useOuterContainerId,
+        @Param("useContainerId") Long useContainerId);
+    
+    public List<WhOperationExecLine> findWhOperationLineByInsideContainerId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, 
+        @Param("useContainerId") Long useContainerId);
+    
 
 }
