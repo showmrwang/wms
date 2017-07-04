@@ -347,9 +347,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					and uuid = #{uuid}
 				</if>
 	       
-				<if test="isLocked!=null">
-					and is_locked = #{isLocked}
-				</if>
 	       
 				<if test="ouId!=null">
 					and ou_id = #{ouId}
