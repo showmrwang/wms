@@ -8742,7 +8742,12 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }
         //查询作业明细
-        List<WhOperationExecLine> whOperationLineList = whOperationExecLineDao.findWhOperationLine(locationId, ouId, operationId, outerContainerId, turnoverBoxId);
+        List<WhOperationExecLine> whOperationLineList = null;
+        if(null != outerContainerId){
+            whOperationLineList = whOperationExecLineDao.findWhOperationLine(locationId, ouId, operationId, outerContainerId);
+        }else{
+            whOperationLineList = whOperationExecLineDao.findWhOperationLineByInsideContainerId(locationId, ouId, operationId, turnoverBoxId);
+        }
         for(WhOperationExecLine line :whOperationLineList){
             Long odoLineId = line.getOdoLineId();
             String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(line);

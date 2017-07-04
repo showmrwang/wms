@@ -170,8 +170,7 @@ public interface WhOperationExecLineDao extends BaseDao<WhOperationExecLine, Lon
     public int countOperationExecLineByOutboundbox(@Param("outboundBoxCode") String outboundBoxCode, @Param("ouId") Long ouId, @Param("operationId") Long operationId);
     
     
-    public List<WhOperationExecLine> findWhOperationLine(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("useOuterContainerId") Long useOuterContainerId,
-        @Param("useContainerId") Long useContainerId);
+    public List<WhOperationExecLine> findWhOperationLine(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, @Param("useOuterContainerId") Long useOuterContainerId);
     
     public List<WhOperationExecLine> findWhOperationLineByInsideContainerId(@Param("locationId") Long locationId, @Param("ouId") Long ouId, @Param("operationId") Long operationId, 
         @Param("useContainerId") Long useContainerId);

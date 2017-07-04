@@ -1044,14 +1044,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			   <if test="useOuterContainerId!=null and useOuterContainerId!=''">
 				    and use_outer_container_id = #{useOuterContainerId}
 			   </if>
-			   <if test="useContainerId!=null and useContainerId!=''">
-					and use_container_id=#{useContainerId}
-			   </if>
 			   <if test="useOuterContainerId==null">
 				    and use_outer_container_id is null
-			   </if>
-			   <if test="useContainerId==null">
-				   and use_container_id is null
 			   </if>
     </select>
     
