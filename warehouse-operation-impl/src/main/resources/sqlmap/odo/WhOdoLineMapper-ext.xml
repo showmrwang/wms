@@ -1092,10 +1092,11 @@
         select 
 			count(1)
 		from t_wh_odo_line odoline
+		left join t_wh_inventory_status invStatus on odoline.inv_status=invStatus.id
 		where odoline.odo_id=#{odoId} and odoLine.ou_id=#{ouId}
 		and (
 		odoline.outbound_carton_type is not null
-		or odoline.inv_status!=3
+		or invStatus.name!='良品'
 		or IFNULL(odoline.mixing_attr,'')!=''
 		or  IFNULL(concat_ws(odoline.inv_type,
 							odoline.inv_attr1,

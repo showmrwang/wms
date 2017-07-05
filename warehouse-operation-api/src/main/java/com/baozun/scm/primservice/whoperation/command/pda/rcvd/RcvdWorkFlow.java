@@ -122,7 +122,8 @@ public class RcvdWorkFlow extends BaseCommand {
     public static Integer getNextSkuAttrOperatorForScanning(WhSkuInventoryCommand command) {
         char[] optCharArray = command.getSkuUrl().toCharArray();
         Integer nextOpt = RcvdWorkFlow.getNextOperator(command.getSkuUrlOperator(), optCharArray);
-        if (RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS == command.getSkuUrlOperator() && !(Constants.INVENTORY_STATUS_DEFEATSALE == command.getInvStatus() || Constants.INVENTORY_STATUS_DEFEATNOTSALE == command.getInvStatus())) {
+        if (RcvdWorkFlow.GENERAL_RECEIVING_ISINVSTATUS == command.getSkuUrlOperator()
+                && !(Constants.INVENTORY_STATUS_DEFEATSALE.equals(command.getInvStatusMap().get(command.getInvStatus())) || Constants.INVENTORY_STATUS_DEFEATNOTSALE.equals(command.getInvStatusMap().get(command.getInvStatus())))) {
             nextOpt = RcvdWorkFlow.getNextOperator(nextOpt, optCharArray);
         }
         if (RcvdWorkFlow.GENERAL_RECEIVING_END == nextOpt) {

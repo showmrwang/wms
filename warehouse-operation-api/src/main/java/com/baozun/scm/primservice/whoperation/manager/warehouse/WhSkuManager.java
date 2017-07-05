@@ -29,5 +29,7 @@ public interface WhSkuManager extends BaseManager {
      */
     WhSkuCommand findBySkuIdAndOuId(Long skuId, Long ouId);
 
+    WhSku getSkuByExtCodeOuId(String skuCode, Long ouId);
+
 
 }

@@ -102,4 +102,6 @@ public interface WhSkuDao extends BaseDao<WhSku, Long> {
 
     WhSku findSkuBySkuCode(@Param("skuCode") String skuCode, @Param("ouId") Long ouId);
 
+    WhSku findSkuBySkuExtCode(@Param("extCode") String skuCode, @Param("ouId") Long ouId);
+
 }

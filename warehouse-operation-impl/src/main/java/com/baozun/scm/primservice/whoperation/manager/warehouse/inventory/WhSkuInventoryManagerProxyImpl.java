@@ -364,7 +364,9 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                 if (skuMap.containsKey(lineCommand.getSkuCode())) {
                     lineCommand.setSkuId(skuMap.get(lineCommand.getSkuCode()));
                 } else {
-                    WhSku sku = this.whSkuManager.getSkuBySkuCodeOuId(lineCommand.getSkuCode(), ouId);
+                    // WhSku sku = this.whSkuManager.getSkuBySkuCodeOuId(lineCommand.getSkuCode(),
+                    // ouId);
+                    WhSku sku = this.whSkuManager.getSkuByExtCodeOuId(lineCommand.getSkuCode(), ouId);
                     if (sku == null) {
                         rootExcelException.getExcelExceptions().add(new ExcelException("商品编码找不到对应的商品", null, rowNum, null));
                     } else {
