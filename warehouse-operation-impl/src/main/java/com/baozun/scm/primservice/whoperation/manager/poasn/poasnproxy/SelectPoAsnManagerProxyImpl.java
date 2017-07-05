@@ -45,6 +45,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Store;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 
@@ -543,5 +544,10 @@ public class SelectPoAsnManagerProxyImpl implements SelectPoAsnManagerProxy {
         String code = this.codeManager.generateCode(Constants.WMS, Constants.INVENTORY_DEFECT_WARE_BARCODE, null, null, null);
 
         return code;
+    }
+
+    @Override
+    public List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouId) {
+        return this.poLineManager.findWhPoLineListByPoIdToShard(poid, ouId);
     }
 }

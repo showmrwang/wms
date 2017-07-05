@@ -21,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnLine;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
+import com.baozun.scm.primservice.whoperation.model.poasn.WhPoLine;
 
 public interface SelectPoAsnManagerProxy extends BaseManager {
     /**
@@ -372,5 +373,7 @@ public interface SelectPoAsnManagerProxy extends BaseManager {
      * @return
      */
     String getDefectBarCode();
+
+    List<WhPoLine> findWhPoLineListByPoIdToShard(Long poid, Long ouId);
 
 }
