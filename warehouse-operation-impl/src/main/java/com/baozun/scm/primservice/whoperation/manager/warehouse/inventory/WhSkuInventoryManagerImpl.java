@@ -10873,6 +10873,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             List<WhInboundInvLineConfirmCommand> invLines = new ArrayList<WhInboundInvLineConfirmCommand>();
             // 第一次实际收货数据计算
             Double actualQty = Constants.DEFAULT_DOUBLE;
+            Double qtyPlanned = confirmLine.getQty();
+            Double qty = qtyPlanned;
             // 第一次把有库存属性的商品对应库存数据匹配
             for (int i = 0; i < skuInvs.size(); i++) {
                 WhSkuInventoryCommand inv = skuInvs.get(i);
@@ -10885,20 +10887,24 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         BeanUtils.copyProperties(inv, invLineConfirm, "id");
                         invLineConfirm.setIsIqc(poLine.getIsIqc());
                         invLineConfirm.setInvStatus(whSkuInventoryDao.getInvStatusNameById(inv.getInvStatus()));
-                        if (poLine.getQtyPlanned().compareTo(inv.getOnHandQty()) != -1) {
+                        if (qty.compareTo(inv.getOnHandQty()) != -1) {
                             // poLine.getQtyPlanned() >= inv.getOnHandQty()
                             invLineConfirm.setQtyRcvd(inv.getOnHandQty());
-                            actualQty = inv.getOnHandQty();
+                            actualQty += inv.getOnHandQty();
+                            qty -= inv.getOnHandQty();
                             skuInvs.remove(i--);
                         } else {
-                            invLineConfirm.setQtyRcvd(poLine.getQtyPlanned());
-                            actualQty = poLine.getQtyPlanned();
-                            inv.setOnHandQty(inv.getOnHandQty() - poLine.getQtyPlanned());
+                            invLineConfirm.setQtyRcvd(qty);
+                            actualQty += qty;
+                            inv.setOnHandQty(inv.getOnHandQty() - qty);
+                            qty = Constants.DEFAULT_DOUBLE;
                         }
                         invLines.add(invLineConfirm);
                         // 查询sn信息, 有则封装
                         this.getSnInfo(uuidMap, inv, invLineConfirm, invLines, ouId);
-                        break;
+                        if (Constants.DEFAULT_DOUBLE.compareTo(qty) == 0) {
+                            break;
+                        }
                     }
                 }
             }
