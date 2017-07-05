@@ -1405,13 +1405,26 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void editOdo(WhOdo odo, WhOdoTransportMgmt trans) {
+    public void editOdo(WhOdo odo, WhOdoTransportMgmt trans, List<WhOdoVas> vasList) {
         try {
             int updateCount = this.whOdoDao.saveOrUpdateByVersion(odo);
             if (updateCount <= 0) {
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             this.whOdoTransportMgmtDao.saveOrUpdate(trans);
+            // @mender yimin.lu 2017/7/3增值服务
+            if (vasList != null && vasList.size() > 0) {
+                for (WhOdoVas vas : vasList) {
+                    if (vas.getId() == null) {
+                        this.whOdoVasDao.insert(vas);
+                    } else {
+                        int upCount = this.whOdoVasDao.saveOrUpdate(vas);
+                        if (upCount <= 0) {
+                            throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
+                        }
+                    }
+                }
+            }
         } catch (BusinessException e) {
             throw e;
         } catch (Exception ex) {

@@ -458,6 +458,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				and inv.ou_id = #{ouId}
 				and operLine.operation_id = #{operationId}
 				and  inv.location_id = #{locationId}
+				 <if test="outerContainerId!=null and outerContainerId!=''">
+				    and inv.outer_container_id = #{outerContainerId}
+			     </if>
+				 <if test="insideContainerId!=null and insideContainerId!=''">
+						and inv.inside_container_id=#{insideContainerId}
+				 </if>
+				 <if test="outerContainerId==null">
+					    and inv.outer_container_id is null
+				 </if>
+				 <if test="insideContainerId==null">
+					   and inv.inside_container_id is null
+				 </if>
 	</select>
 	
 	<select id="findWhSkuInventoryTobefilledByInvMove" resultMap="WhSkuInventoryTobefilledCommandResultExt">

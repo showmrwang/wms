@@ -221,7 +221,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveCach
             for (String sId : skuAttrIdsSn) {
                 Set<String> tempSkuAttrIds = new HashSet<String>();
                 tempSkuAttrIds.add(sId);
-                boolean isExists = isCacheAllExists2(skuAttrIdsSn, tipSkuAttrIds);
+                boolean isExists = isCacheAllExists2(tempSkuAttrIds, tipSkuAttrIds);
                 if (true == isExists) {
                     continue;
                 } else {

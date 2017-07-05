@@ -285,8 +285,9 @@ public interface OdoManager extends BaseManager {
      * 
      * @param odo
      * @param trans
+     * @param vasList
      */
-    void editOdo(WhOdo odo, WhOdoTransportMgmt trans);
+    void editOdo(WhOdo odo, WhOdoTransportMgmt trans, List<WhOdoVas> vasList);
 
     void wmsOutBoundPermit(List<WhOdo> whOdos);
     

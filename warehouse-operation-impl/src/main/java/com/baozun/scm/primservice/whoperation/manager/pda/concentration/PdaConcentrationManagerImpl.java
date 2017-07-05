@@ -38,6 +38,7 @@ import com.baozun.scm.primservice.whoperation.constant.InvTransactionType;
 import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OperationStatus;
+import com.baozun.scm.primservice.whoperation.constant.WorkStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
@@ -625,6 +626,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 if (!isMoveSuccess) {
                     throw new BusinessException("移动容器失败");
                 }
+                this.clearTemporaryStorageLocation(workCollectionCommand.getBatch(), workCollectionCommand.getOuId());
                 // 更改出库单状态
                 this.updateOdoStatus(workCollectionCommand.getContainerId(), workCollectionCommand.getOuId());
             }
@@ -664,10 +666,37 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             isSuccess = false;
             throw new BusinessException("移动容器失败");
         }
+        
+        // 5.判断暂存库位,没有就释放
+        if (workCollectionCommand.getTargetType() == Constants.SEEDING_WALL) {
+            String batch = workCollectionCommand.getBatch();
+            Long ouId = workCollectionCommand.getOuId();
+            this.clearTemporaryStorageLocation(batch, ouId);
+        }
         try {
             updateOdoStatus(workCollectionCommand.getContainerId(), workCollectionCommand.getOuId());
         } catch (Exception e) {}
         return isSuccess;
+    }
+
+    private boolean clearTemporaryStorageLocation(String batch, Long ouId) {
+        List<WhWorkCommand> workList = whWorkDao.findWorkByBatch(batch, ouId);
+        for (WhWorkCommand work : workList) {
+            if (work.getStatus() != WorkStatus.FINISH) {
+                return false;
+            }
+        }
+        int count = whSeedingCollectionDao.checkBatchIsAllIntoSeedingWall(batch, ouId);
+        if (count == 0) {
+            List<WhTemporaryStorageLocation> storageLocationList = whTemporaryStorageLocationDao.findTsLocationByBatch(batch, ouId);
+            for (WhTemporaryStorageLocation ts : storageLocationList) {
+                ts.setBatch(null);
+                ts.setStatus(1);
+                whTemporaryStorageLocationDao.saveOrUpdateByVersion(ts);
+            }
+            return true;
+        }
+        return false;
     }
 
     private void updateOdoStatus(Long containerId, Long ouId) {
@@ -1037,19 +1066,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      */
     @Override
     public boolean checkBatchIsAllIntoSeedingWall(String batch, Long userId, Long ouId) {
-        int count = whSeedingCollectionDao.checkBatchIsAllIntoSeedingWall(batch, ouId);
-        if (count == 0) {
-            String temporaryStorageLocationCode = whFacilityRecPathDao.findTemporaryStorageLocationCodeByBatch(batch, ouId);
-            if (!StringUtils.isEmpty(temporaryStorageLocationCode)) {
-                // 全部移动到播种墙则释放暂存库位
-                WhTemporaryStorageLocation location = whTemporaryStorageLocationDao.findByCodeAndOuId(temporaryStorageLocationCode, ouId);
-                location.setStatus(1);
-                location.setBatch(null);
-                whTemporaryStorageLocationDao.saveOrUpdateByVersion(location);
-            }
-            return true;
-        }
-        return false;
+        return this.clearTemporaryStorageLocation(batch, ouId);
     }
 
     /**
@@ -1400,15 +1417,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 5.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
-            int count = whSeedingCollectionDao.checkCountInDestination(batch, Constants.TEMPORARY_STORAGE_LOCATION, ouId);
-            if (count == 0) {
-                List<WhTemporaryStorageLocation> storageLocationList = whTemporaryStorageLocationDao.findTsLocationByBatch(batch, ouId);
-                for (WhTemporaryStorageLocation ts : storageLocationList) {
-                    ts.setBatch(null);
-                    ts.setStatus(1);
-                    whTemporaryStorageLocationDao.saveOrUpdateByVersion(ts);
-                }
-            }
+            this.clearTemporaryStorageLocation(batch, ouId);
         }
 
         ArrayDeque<String> containerCodeDeque = cacheManager.getObject(CacheConstants.PDA_CACHE_MANUAL_COLLECTION_CONTAINER + userId);
@@ -1604,15 +1613,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
         // 4.判断暂存库位,没有就释放
         if (destinationType == Constants.SEEDING_WALL) {
-            int count = whSeedingCollectionDao.checkCountInDestination(recCommand.getBatch(), Constants.TEMPORARY_STORAGE_LOCATION, ouId);
-            if (count == 0) {
-                List<WhTemporaryStorageLocation> storageLocationList = whTemporaryStorageLocationDao.findTsLocationByBatch(recCommand.getBatch(), ouId);
-                for (WhTemporaryStorageLocation ts : storageLocationList) {
-                    ts.setBatch(null);
-                    ts.setStatus(1);
-                    whTemporaryStorageLocationDao.saveOrUpdateByVersion(ts);
-                }
-            }
+            this.clearTemporaryStorageLocation(recCommand.getBatch(), ouId);
         }
 
         // 5.清理缓存

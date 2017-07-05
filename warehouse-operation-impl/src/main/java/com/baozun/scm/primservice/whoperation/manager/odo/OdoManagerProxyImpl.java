@@ -497,8 +497,21 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             trans.setModeOfTransport(sourceOdoTrans.getModeOfTransport());
             trans.setIsCod(sourceOdoTrans.getIsCod());
             trans.setCodAmt(sourceOdoTrans.getCodAmt());
+
+            // 增值服务 @mender yimin.lu 2017/7/3
+            List<WhOdoVas> vasList = new ArrayList<WhOdoVas>();
+            if (sourceOdo.getVasList() != null && sourceOdo.getVasList().size() > 0) {
+                for (WhOdoVasCommand vasCommand : sourceOdo.getVasList()) {
+                    WhOdoVas vas = new WhOdoVas();
+                    BeanUtils.copyProperties(vasCommand, vas);
+                    vas.setOdoId(odoId);
+                    vas.setOuId(ouId);
+                    vas.setVasType(Constants.ODO_VAS_TYPE_WH);
+                    vasList.add(vas);
+                }
+            }
             // 保存数据
-            this.odoManager.editOdo(odo, trans);
+            this.odoManager.editOdo(odo, trans, vasList);
             // 计算配货模式
             if (!OdoStatus.CREATING.equals(odo.getOdoStatus())) {
                 // @mender yimin.lu 2017/6/30

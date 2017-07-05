@@ -153,6 +153,8 @@ public class ScanResultCommand extends BaseCommand {
     private Long scanSkuQty;
     /** 提示SKU ID */
     private Long skuId;
+    /**商品属性显示的标识,1正常扫描,2不需要显示商品属性,3只确认商品属性,不需要扫描,默认是1*/
+    private String skuAttrsDspFlg;
     
     
     private Boolean isNeedScanNewLocation = false;   //拆箱扫描商品重量达到库位承重的时候,跳转
@@ -687,9 +689,13 @@ public class ScanResultCommand extends BaseCommand {
 	public void setSkuId(Long skuId) {
 		this.skuId = skuId;
 	}
-    
-    
-    
-    
+
+    public String getSkuAttrsDspFlg() {
+        return skuAttrsDspFlg;
+    }
+
+    public void setSkuAttrsDspFlg(String skuAttrsDspFlg) {
+        this.skuAttrsDspFlg = skuAttrsDspFlg;
+    }
     
 }

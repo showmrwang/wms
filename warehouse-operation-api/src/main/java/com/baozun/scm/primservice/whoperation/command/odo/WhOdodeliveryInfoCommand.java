@@ -13,6 +13,8 @@ public class WhOdodeliveryInfoCommand extends BaseCommand {
     private Long id;
     /** 出库单ID */
     private Long odoId;
+    /** 出库单ID */
+    private String odoCode;
     /** 运输服务商编码 */
     private String transportCode;
     /** 运输服务商名称 */
@@ -43,6 +45,14 @@ public class WhOdodeliveryInfoCommand extends BaseCommand {
     private Long createId;
     /** 创建时间 */
     private Date createTime;
+
+    public String getOdoCode() {
+        return odoCode;
+    }
+
+    public void setOdoCode(String odoCode) {
+        this.odoCode = odoCode;
+    }
 
     public Long getId() {
         return id;

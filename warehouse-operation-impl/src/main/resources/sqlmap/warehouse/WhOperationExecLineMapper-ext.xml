@@ -1031,4 +1031,39 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and operation_id = #{operationId}
 			and use_outer_container_id=#{useOuterContainerId}
 	</select>
+	
+	<select id="findWhOperationLine" resultMap="WhOperationExecLineResultExt">
+    	select 
+    		<include refid="whOperationExecLineColumnsExt" />
+	    from 
+	    	t_wh_operation_exec_line
+		where  
+				ou_id = #{ouId}
+				and operation_id = #{operationId}
+				and to_location_id = #{locationId}
+			   <if test="useOuterContainerId!=null and useOuterContainerId!=''">
+				    and use_outer_container_id = #{useOuterContainerId}
+			   </if>
+			   <if test="useOuterContainerId==null">
+				    and use_outer_container_id is null
+			   </if>
+    </select>
+    
+    
+      <select id="findWhOperationLineByInsideContainerId" resultMap="WhOperationExecLineResultExt">
+    	select 
+    		<include refid="whOperationExecLineColumnsExt" />
+	    from 
+	    	t_wh_operation_exec_line
+		where  
+				ou_id = #{ouId}
+				and operation_id = #{operationId}
+				and to_location_id = #{locationId}
+			   <if test="useContainerId!=null and useContainerId!=''">
+					and use_container_id=#{useContainerId}
+			   </if>
+			   <if test="useContainerId==null">
+				   and use_container_id is null
+			   </if>
+    </select>
 </mapper>

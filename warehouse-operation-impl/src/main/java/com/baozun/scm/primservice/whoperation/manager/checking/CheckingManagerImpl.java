@@ -144,27 +144,27 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     @Override
     public void printSalesList(List<Long> facilityIdsList, Long userId, Long ouId) {
         // 打印销售清单
-        try {
+//        try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
             printDataCommand.setOdoId(facilityIdsList.get(0));
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_13, userId, ouId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
     public void printSinglePlane(String outBoundBoxCode, String waybillCode, Long userId, Long ouId, Long odoId) {
         // 打印面单
-        try {
+//        try {
             PrintDataCommand printDataCommand = new PrintDataCommand();
             printDataCommand.setCode(waybillCode);
             printDataCommand.setOutBoundBoxCode(outBoundBoxCode);
             printDataCommand.setOdoId(odoId);
             printObjectManagerProxy.printCommonInterface(printDataCommand, Constants.PRINT_ORDER_TYPE_15, userId, ouId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

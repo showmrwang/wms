@@ -122,6 +122,8 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
     private java.lang.Long toLocationId;
     /** 目标库位数量 */
     private Double toQty;
+    private Boolean inWholeCase;
+    private Boolean outWholeCase;
     /** ids */
     private Set<Long> ids = new HashSet<Long>();
     
@@ -342,6 +344,22 @@ public class WhSkuInventoryAllocatedCommand extends BaseModel {
         this.toQty = toQty;
     }
     
+    public Boolean getInWholeCase() {
+        return inWholeCase;
+    }
+
+    public void setInWholeCase(Boolean inWholeCase) {
+        this.inWholeCase = inWholeCase;
+    }
+
+    public Boolean getOutWholeCase() {
+        return outWholeCase;
+    }
+
+    public void setOutWholeCase(Boolean outWholeCase) {
+        this.outWholeCase = outWholeCase;
+    }
+
     public List<WhSkuInventorySnCommand> getWhSkuInventorySnCommandList() {
         return whSkuInventorySnCommandList;
     }
