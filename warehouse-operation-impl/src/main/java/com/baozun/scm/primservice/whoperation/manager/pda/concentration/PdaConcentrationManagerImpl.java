@@ -553,6 +553,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             return null;
         } else {
             WhFacilityRecPathCommand command = rfpList.get(0);
+            if (CacheConstants.PDA_CACHE_COLLECTION_REC.equals(cacheKey)) {
+                rfpList = new ArrayList<WhFacilityRecPathCommand>();
+                cacheManager.setMapObject(cacheKey + userId.toString(), batch, rfpList, CacheConstants.CACHE_ONE_DAY);
+            }
             return command;
         }
         // if (null != rfpList && !rfpList.isEmpty()) {
