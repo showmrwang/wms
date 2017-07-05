@@ -553,6 +553,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             return null;
         } else {
             WhFacilityRecPathCommand command = rfpList.get(0);
+            // if (CacheConstants.PDA_CACHE_COLLECTION_REC.equals(cacheKey)) {
+            // rfpList = new ArrayList<WhFacilityRecPathCommand>();
+            // cacheManager.setMapObject(cacheKey + userId.toString(), batch, rfpList,
+            // CacheConstants.CACHE_ONE_DAY);
+            // }
             return command;
         }
         // if (null != rfpList && !rfpList.isEmpty()) {
@@ -668,14 +673,19 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
 
         // 5.判断暂存库位,没有就释放
+        String batch = workCollectionCommand.getBatch();
         if (workCollectionCommand.getTargetType() == Constants.SEEDING_WALL) {
-            String batch = workCollectionCommand.getBatch();
             Long ouId = workCollectionCommand.getOuId();
             this.clearTemporaryStorageLocation(batch, ouId);
         }
         try {
             updateOdoStatus(workCollectionCommand.getContainerId(), workCollectionCommand.getOuId());
         } catch (Exception e) {}
+        if (CacheConstants.PDA_CACHE_COLLECTION_REC.equals(cacheKey)) {
+            List<WhFacilityRecPathCommand> rfpList = new ArrayList<WhFacilityRecPathCommand>();
+            log.info("release rec cache: batch:[{}]", batch);
+            cacheManager.setMapObject(cacheKey + workCollectionCommand.getUserId().toString(), batch, rfpList, CacheConstants.CACHE_ONE_DAY);
+        }
         return isSuccess;
     }
 
