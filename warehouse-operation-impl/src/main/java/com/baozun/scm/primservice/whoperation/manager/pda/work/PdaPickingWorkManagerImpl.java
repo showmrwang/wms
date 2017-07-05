@@ -2253,8 +2253,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     // 已分配的库位库存转变为容器库存
                     whSkuInventoryManager.replenishmentContainerInventory(execLineList, isShortPikcing, snList, skuAttrIds, locationId, operationId, ouId, outerContainerId, insideContainerId, turnoverBoxId, isTabbInvTotal, userId, workCode,
                             skuCmd.getScanSkuQty(), pickingWay);
-                } else {
+                } else if(Constants.REPLENISH_WAY_TWO == pickingWay){
                     this.wholeCaseOperationExecLine(command, outerContainerId, insideContainerId, isTabbInvTotal);
+                } else if(Constants.REPLENISH_WAY_THREE == pickingWay){
+                    this.wholeCaseOperationExecLine(command, null, insideContainerId, isTabbInvTotal);
                 }
                 // 更新工作及作业状态
                 pdaPickingWorkCacheManager.pdaReplenishmentUpdateOperation(operationId, ouId, userId, workCode);
