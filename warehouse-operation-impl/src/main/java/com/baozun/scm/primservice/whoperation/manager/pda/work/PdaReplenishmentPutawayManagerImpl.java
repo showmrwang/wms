@@ -284,6 +284,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         List<Long> locationIds = opExecLineCmd.getLocationIds();
         Map<Long, Set<Long>> mapTurnoverBoxIds = opExecLineCmd.getTurnoverBoxIds();
         Map<Long,Map<Long,Set<Long>>> containerToLocation =  opExecLineCmd.getContainerToLocation();
+        Map<Long, Set<Long>> palleToLocation = opExecLineCmd.getPalleToLocation();
         Set<Long> turnoverBoxIds = null;
         if(null != outerContainerId){
             turnoverBoxIds = containerToLocation.get(locationId).get(outerContainerId);
@@ -307,7 +308,25 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 this.updateOperationExecLine(null,turnoverBoxId, operationId, ouId, userId,locationId);
                 //判断当前库位是否有拣货工作
                 this.judeLocationIsPicking(isTV,turnoverBoxId, locationId, ouId, userId,null,operationId);
-            }else{//判断有没有下一个库位如果有继续扫描下一个库位
+            }else{
+                 //判断该库位有没有托盘
+                Set<Long> outerContainerIds = palleToLocation.get(locationId);
+                if(null != outerContainerIds && outerContainerIds.size() != 0){
+                    ReplenishmentScanResultComamnd  rScanCmd = pdaReplenishmentPutawayCacheManager.tipOutContainer(outerContainerIds, operationId, locationId);
+                    if(rScanCmd.getIsNeedScanPallet()){ //还有托盘
+                        Long tipOuterContainerId = sRCmd.getPalletId();
+                        String tipOuterContainerCode = this.judeContainer(tipOuterContainerId, ouId);
+                        command.setTipOuterContainerCode(tipOuterContainerCode);
+                        command.setIsNeedScanPallet(true);
+                        whSkuInventoryManager.replenishmentContianerPutaway(outerContainerId, locationId, operationId, ouId, isTabbInvTotal, userId, null);
+                        //修改作业执行明细的执行量
+                        this.updateOperationExecLine(tipOuterContainerId,null, operationId, ouId, userId,locationId); 
+                        //判断当前库位是否有拣货工作
+                        this.judeLocationIsPicking(isTV,null, locationId, ouId, userId,outerContainerId,operationId);
+                        return command;
+                    }
+                }
+                //判断有没有下一个库位如果有继续扫描下一个库位
                 //修改作业执行明细的执行量
                  this.updateOperationExecLine(null,turnoverBoxId, operationId, ouId, userId,locationId);
                  whSkuInventoryManager.replenishmentContianerPutaway(null,locationId, operationId, ouId, isTabbInvTotal, userId,  turnoverBoxId);
