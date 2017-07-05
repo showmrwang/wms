@@ -666,7 +666,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             isSuccess = false;
             throw new BusinessException("移动容器失败");
         }
-        
+
         // 5.判断暂存库位,没有就释放
         if (workCollectionCommand.getTargetType() == Constants.SEEDING_WALL) {
             String batch = workCollectionCommand.getBatch();
