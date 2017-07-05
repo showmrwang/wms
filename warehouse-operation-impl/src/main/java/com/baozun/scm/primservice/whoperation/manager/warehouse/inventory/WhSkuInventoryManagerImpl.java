@@ -10873,31 +10873,39 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             List<WhInboundInvLineConfirmCommand> invLines = new ArrayList<WhInboundInvLineConfirmCommand>();
             // 第一次实际收货数据计算
             Double actualQty = Constants.DEFAULT_DOUBLE;
+            Double qtyPlanned = confirmLine.getQty();
+            Double qty = qtyPlanned;
             // 第一次把有库存属性的商品对应库存数据匹配
             for (int i = 0; i < skuInvs.size(); i++) {
                 WhSkuInventoryCommand inv = skuInvs.get(i);
-                if (!hasInvAttr(poLine)) {
-                    continue;
-                }
-                if (checkInvAttrEqual(poLine, inv)) {
-                    WhInboundInvLineConfirmCommand invLineConfirm = new WhInboundInvLineConfirmCommand();
-                    BeanUtils.copyProperties(inv, invLineConfirm, "id");
-                    invLineConfirm.setIsIqc(poLine.getIsIqc());
-                    invLineConfirm.setInvStatus(whSkuInventoryDao.getInvStatusNameById(inv.getInvStatus()));
-                    if (poLine.getQtyPlanned().compareTo(inv.getOnHandQty()) != -1) {
-                        // poLine.getQtyPlanned() >= inv.getOnHandQty()
-                        invLineConfirm.setQtyRcvd(inv.getOnHandQty());
-                        actualQty = inv.getOnHandQty();
-                        skuInvs.remove(i--);
-                    } else {
-                        invLineConfirm.setQtyRcvd(poLine.getQtyPlanned());
-                        actualQty = poLine.getQtyPlanned();
-                        inv.setOnHandQty(inv.getOnHandQty() - poLine.getQtyPlanned());
+                if (skuId.equals(inv.getSkuId())) {
+                    if (!hasInvAttr(poLine)) {
+                        continue;
                     }
-                    invLines.add(invLineConfirm);
-                    // 查询sn信息, 有则封装
-                    this.getSnInfo(uuidMap, inv, invLineConfirm, invLines, ouId);
-                    break;
+                    if (checkInvAttrEqual(poLine, inv)) {
+                        WhInboundInvLineConfirmCommand invLineConfirm = new WhInboundInvLineConfirmCommand();
+                        BeanUtils.copyProperties(inv, invLineConfirm, "id");
+                        invLineConfirm.setIsIqc(poLine.getIsIqc());
+                        invLineConfirm.setInvStatus(whSkuInventoryDao.getInvStatusNameById(inv.getInvStatus()));
+                        if (qty.compareTo(inv.getOnHandQty()) != -1) {
+                            // poLine.getQtyPlanned() >= inv.getOnHandQty()
+                            invLineConfirm.setQtyRcvd(inv.getOnHandQty());
+                            actualQty += inv.getOnHandQty();
+                            qty -= inv.getOnHandQty();
+                            skuInvs.remove(i--);
+                        } else {
+                            invLineConfirm.setQtyRcvd(qty);
+                            actualQty += qty;
+                            inv.setOnHandQty(inv.getOnHandQty() - qty);
+                            qty = Constants.DEFAULT_DOUBLE;
+                        }
+                        invLines.add(invLineConfirm);
+                        // 查询sn信息, 有则封装
+                        this.getSnInfo(uuidMap, inv, invLineConfirm, invLines, ouId);
+                        if (Constants.DEFAULT_DOUBLE.compareTo(qty) == 0) {
+                            break;
+                        }
+                    }
                 }
             }
             confirmLine.setActualQty(actualQty);
@@ -10995,9 +11003,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
     }
 
     private boolean hasInvAttr(WhPoLine poLine) {
-        if (StringUtils.isEmpty(poLine.getInvType()) && null == poLine.getInvStatus() && StringUtils.isEmpty(poLine.getInvAttr1()) && StringUtils.isEmpty(poLine.getInvAttr2()) && StringUtils.isEmpty(poLine.getInvAttr3())
-                && StringUtils.isEmpty(poLine.getInvAttr4()) && StringUtils.isEmpty(poLine.getInvAttr5()) && StringUtils.isEmpty(poLine.getBatchNo()) && StringUtils.isEmpty(poLine.getCountryOfOrigin()) && null == poLine.getMfgDate()
-                && null == poLine.getExpDate()) {
+        if (StringUtils.isEmpty(poLine.getInvType()) && StringUtils.isEmpty(poLine.getInvAttr1()) 
+                && StringUtils.isEmpty(poLine.getInvAttr2()) && StringUtils.isEmpty(poLine.getInvAttr3()) 
+                && StringUtils.isEmpty(poLine.getInvAttr4()) && StringUtils.isEmpty(poLine.getInvAttr5()) 
+                && StringUtils.isEmpty(poLine.getBatchNo()) && StringUtils.isEmpty(poLine.getCountryOfOrigin()) 
+                && null == poLine.getMfgDate() && null == poLine.getExpDate()) {
             return false;
         }
         return true;

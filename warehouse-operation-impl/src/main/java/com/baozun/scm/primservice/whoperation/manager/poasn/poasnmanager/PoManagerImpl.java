@@ -1027,13 +1027,6 @@ public class PoManagerImpl extends BaseManagerImpl implements PoManager {
     }
 
     @Override
-    @MoreDB(DbDataSource.MOREDB_INFOSOURCE)
-    public void testzk() {
-        BiPo bipo = biPoDao.findById(211100153L);
-        this.createInBoundConfirmData(bipo);
-    }
-
-    @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhPo findWhpoByPoCodeToShard(String poCode, Long ouId) {
         return this.whPoDao.findWhPoByCode(poCode, ouId);

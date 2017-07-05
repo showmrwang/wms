@@ -210,8 +210,6 @@ public interface PoManager extends BaseManager {
 
     public void closeBiPo(Long bipoId);
 
-    void testzk();
-
     WhPo findWhpoByPoCodeToShard(String poCode, Long ouId);
 
     WhPo findWhpoByPoCodeToInfo(String poCode, Long ouId);
