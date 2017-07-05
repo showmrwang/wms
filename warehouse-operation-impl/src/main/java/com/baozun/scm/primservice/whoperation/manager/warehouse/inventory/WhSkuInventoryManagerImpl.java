@@ -9367,6 +9367,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
         }
         //查询作业明细
+        Boolean isContinue = false;
         List<WhOperationExecLine> whOperationLineList = whOperationExecLineDao.findWhOperationLineByInsideContainerId(locationId, ouId, operationId, turnoverBoxId);
         for(WhOperationExecLine line :whOperationLineList){
             Long odoLineId = line.getOdoLineId();
@@ -9393,6 +9394,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         BeanUtils.copyProperties(invTobefilled, cInv);
                         whSkuInventoryTobefilledDao.deleteByExt(cInv.getId(), ouId);
                         insertGlobalLog(GLOBAL_LOG_DELETE, cInv, ouId, userId, null, null);
+                        isContinue = true;
                         break;
                     }
                     if (tobefilledQty.doubleValue() > 0) {
@@ -9401,9 +9403,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                         cInv.setQty(tobefilledQty);
                         whSkuInventoryTobefilledDao.saveOrUpdateByVersion(cInv);
                         insertGlobalLog(GLOBAL_LOG_UPDATE, cInv, ouId, userId, null, null);
+                        isContinue = true;
                         break;
                     }
                 }
+            }
+            if(isContinue){
+               break; 
             }
         }
         // 4.如果不跟踪容器号，则上架后需判断是否释放容器
