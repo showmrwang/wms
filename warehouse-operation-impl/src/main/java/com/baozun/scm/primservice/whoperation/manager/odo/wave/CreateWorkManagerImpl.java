@@ -582,74 +582,82 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
 
         // 判断是否整托整箱
         Boolean isWholeCase = false;
-
-        if (null != skuInventoryAllocatedCommand.getInsideContainerId()) {
-            WhSkuInventory skuInventory = new WhSkuInventory();
-            WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
-            Double onHandQty = 0.00;
-            Double frozenQty = 0.00;
-            skuInventory.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            allocatedCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            totalCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            skuInventoryTobefilled.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
-            skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
-            Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
-            Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
-            Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
-            List<WhSkuInventory> skuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
-            if (null != skuInventoryList && 0 != skuInventoryList.size()) {
-                for (WhSkuInventory whSkuInventory : skuInventoryList) {
-                    onHandQty = onHandQty + whSkuInventory.getOnHandQty();
-                    frozenQty = frozenQty + whSkuInventory.getFrozenQty();
+        
+        if(null != skuInventoryAllocatedCommand.getInWholeCase() || null != skuInventoryAllocatedCommand.getOutWholeCase()){
+            if(null != skuInventoryAllocatedCommand.getInWholeCase() && true == skuInventoryAllocatedCommand.getInWholeCase()){
+                isWholeCase = true;    
+            }
+            if(null != skuInventoryAllocatedCommand.getOutWholeCase() && true == skuInventoryAllocatedCommand.getOutWholeCase()){
+                isWholeCase = true;    
+            }
+        }else{
+            if (null != skuInventoryAllocatedCommand.getInsideContainerId()) {
+                WhSkuInventory skuInventory = new WhSkuInventory();
+                WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
+                WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
+                WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
+                Double onHandQty = 0.00;
+                Double frozenQty = 0.00;
+                skuInventory.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+                allocatedCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+                totalCommand.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+                skuInventoryTobefilled.setInsideContainerId(skuInventoryAllocatedCommand.getInsideContainerId());
+                skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getToLocationId());
+                allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+                allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
+                Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
+                Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
+                Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
+                List<WhSkuInventory> skuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
+                if (null != skuInventoryList && 0 != skuInventoryList.size()) {
+                    for (WhSkuInventory whSkuInventory : skuInventoryList) {
+                        onHandQty = onHandQty + whSkuInventory.getOnHandQty();
+                        frozenQty = frozenQty + whSkuInventory.getFrozenQty();
+                    }
+                }
+                double zero = 0.0;
+                int resultFrozen = frozenQty.compareTo(zero);
+                int resultTo = 0;
+                if (null != toBeFilledQty) {
+                    resultTo = toBeFilledQty.compareTo(allocatedQty);
+                }
+                if (totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo) {
+                    isWholeCase = true;
                 }
             }
-            double zero = 0.0;
-            int resultFrozen = frozenQty.compareTo(zero);
-            int resultTo = 0;
-            if (null != toBeFilledQty) {
-                resultTo = toBeFilledQty.compareTo(zero);
-            }
-            if (totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo) {
-                isWholeCase = true;
-            }
-        }
-
-        if (null != skuInventoryAllocatedCommand.getOuterContainerId()) {
-            WhSkuInventory skuInventory = new WhSkuInventory();
-            WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
-            WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
-            Double onHandQty = 0.00;
-            Double frozenQty = 0.00;
-            skuInventory.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            allocatedCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            totalCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            skuInventoryTobefilled.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
-            skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getLocationId());
-            allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
-            allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
-            Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
-            Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
-            Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
-            List<WhSkuInventory> skuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
-            if (null != skuInventoryList && 0 != skuInventoryList.size()) {
-                for (WhSkuInventory whSkuInventory : skuInventoryList) {
-                    onHandQty = onHandQty + whSkuInventory.getOnHandQty();
-                    frozenQty = frozenQty + whSkuInventory.getFrozenQty();
+            if (null != skuInventoryAllocatedCommand.getOuterContainerId()) {
+                WhSkuInventory skuInventory = new WhSkuInventory();
+                WhSkuInventoryAllocatedCommand allocatedCommand = new WhSkuInventoryAllocatedCommand();
+                WhSkuInventoryAllocatedCommand totalCommand = new WhSkuInventoryAllocatedCommand();
+                WhSkuInventoryTobefilled skuInventoryTobefilled = new WhSkuInventoryTobefilled();
+                Double onHandQty = 0.00;
+                Double frozenQty = 0.00;
+                skuInventory.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+                allocatedCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+                totalCommand.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+                skuInventoryTobefilled.setOuterContainerId(skuInventoryAllocatedCommand.getOuterContainerId());
+                skuInventoryTobefilled.setLocationId(skuInventoryAllocatedCommand.getToLocationId());
+                allocatedCommand.setReplenishmentCode(skuInventoryAllocatedCommand.getReplenishmentCode());
+                allocatedCommand.setReplenishmentRuleId(skuInventoryAllocatedCommand.getReplenishmentRuleId());
+                Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
+                Double totalQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(totalCommand);
+                Double toBeFilledQty = skuInventoryTobefilledDao.skuInventoryTobefilledQty(skuInventoryTobefilled);
+                List<WhSkuInventory> skuInventoryList = skuInventoryDao.getSkuInvListGroupUuid(skuInventory);
+                if (null != skuInventoryList && 0 != skuInventoryList.size()) {
+                    for (WhSkuInventory whSkuInventory : skuInventoryList) {
+                        onHandQty = onHandQty + whSkuInventory.getOnHandQty();
+                        frozenQty = frozenQty + whSkuInventory.getFrozenQty();
+                    }
                 }
-            }
-            double zero = 0.0;
-            int resultFrozen = frozenQty.compareTo(zero);
-            int resultTo = 0;
-            if (null != toBeFilledQty) {
-                resultTo = toBeFilledQty.compareTo(zero);
-            }
-            if (totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo) {
-                isWholeCase = true;
+                double zero = 0.0;
+                int resultFrozen = frozenQty.compareTo(zero);
+                int resultTo = 0;
+                if (null != toBeFilledQty) {
+                    resultTo = toBeFilledQty.compareTo(allocatedQty);
+                }
+                if (totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo) {
+                    isWholeCase = true;
+                }
             }
         }
 
@@ -2048,7 +2056,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 allocatedCommand.setInsideContainerId(whSkuInventoryAllocatedCommand.getInsideContainerId());
                 totalCommand.setInsideContainerId(whSkuInventoryAllocatedCommand.getInsideContainerId());
                 skuInventoryTobefilled.setInsideContainerId(whSkuInventoryAllocatedCommand.getInsideContainerId());
-                skuInventoryTobefilled.setLocationId(whSkuInventoryAllocatedCommand.getLocationId());
+                skuInventoryTobefilled.setLocationId(whSkuInventoryAllocatedCommand.getToLocationId());
                 allocatedCommand.setReplenishmentCode(whSkuInventoryAllocatedCommand.getReplenishmentCode());
                 allocatedCommand.setReplenishmentRuleId(whSkuInventoryAllocatedCommand.getReplenishmentRuleId());
                 Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
@@ -2065,12 +2073,24 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 int resultFrozen = frozenQty.compareTo(zero);
                 int resultTo = 0;
                 if (null != toBeFilledQty) {
-                    resultTo = toBeFilledQty.compareTo(zero);
+                    resultTo = toBeFilledQty.compareTo(allocatedQty);
                 }
 
                 if (totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo) {
                     inWholeCase = true;
                 }
+                if (null == toBeFilledQty) {
+                    for (WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : skuInventoryAllocatedCommandLst) {
+                        Long toLocationId = whSkuInventoryAllocatedCommand.getToLocationId(); 
+                        if(whSkuInventoryAllocatedCommand.getInsideContainerId().equals(skuInventoryAllocatedCommand.getInsideContainerId())){
+                            if(!toLocationId.equals(skuInventoryAllocatedCommand.getToLocationId())){
+                                inWholeCase = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                whSkuInventoryAllocatedCommand.setInWholeCase(inWholeCase);
             }
 
             if (null != whSkuInventoryAllocatedCommand.getOuterContainerId()) {
@@ -2084,7 +2104,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 allocatedCommand.setOuterContainerId(whSkuInventoryAllocatedCommand.getOuterContainerId());
                 totalCommand.setOuterContainerId(whSkuInventoryAllocatedCommand.getOuterContainerId());
                 skuInventoryTobefilled.setOuterContainerId(whSkuInventoryAllocatedCommand.getOuterContainerId());
-                skuInventoryTobefilled.setLocationId(whSkuInventoryAllocatedCommand.getLocationId());
+                skuInventoryTobefilled.setLocationId(whSkuInventoryAllocatedCommand.getToLocationId());
                 allocatedCommand.setReplenishmentCode(whSkuInventoryAllocatedCommand.getReplenishmentCode());
                 allocatedCommand.setReplenishmentRuleId(whSkuInventoryAllocatedCommand.getReplenishmentRuleId());
                 Double allocatedQty = skuInventoryAllocatedDao.skuInventoryAllocatedQty(allocatedCommand);
@@ -2102,11 +2122,23 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 int resultFrozen = frozenQty.compareTo(zero);
                 int resultTo = 0;
                 if (null != toBeFilledQty) {
-                    resultTo = toBeFilledQty.compareTo(zero);
+                    resultTo = toBeFilledQty.compareTo(allocatedQty);
                 }
                 if (totalQty.equals(allocatedQty) && onHandQty.equals(allocatedQty) && 0 == resultFrozen && 0 == resultTo) {
                     outWholeCase = true;
                 }
+                if (null == toBeFilledQty) {
+                    for (WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : skuInventoryAllocatedCommandLst) {
+                        Long toLocationId = whSkuInventoryAllocatedCommand.getToLocationId(); 
+                        if(whSkuInventoryAllocatedCommand.getOuterContainerId().equals(skuInventoryAllocatedCommand.getOuterContainerId())){
+                            if(!toLocationId.equals(skuInventoryAllocatedCommand.getToLocationId())){
+                                outWholeCase = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                whSkuInventoryAllocatedCommand.setOutWholeCase(outWholeCase);
             }
 
             // 初始化WhSkuInventoryAllocatedCommand列表
