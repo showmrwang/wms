@@ -1344,10 +1344,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
 
         }
         // @Gianni 计重包括耗材重量
-        WhSkuCommand consumableSku = whSkuManager.findBySkuIdAndOuId(outboundboxId, ouId);
-        if (null != consumableSku) {
-            log.info("whcheckingManagerImpl consumableSku:" + consumableSku.getWeight());
-            sum += consumableSku.getWeight();
+        if (null != outboundboxId) {
+            WhSkuCommand consumableSku = whSkuManager.findBySkuIdAndOuId(outboundboxId, ouId);
+            if (null != consumableSku) {
+                log.info("whcheckingManagerImpl consumableSku:" + consumableSku.getWeight());
+                sum += consumableSku.getWeight();
+            }
         }
         log.info("whcheckingManagerImpl sum:" + sum);
         WhOdoPackageInfo odoPackageInfo = whOdoPackageInfoDao.findByOutboundBoxCode(outboundboxCode, ouId);
@@ -1438,6 +1440,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param whCheckingResultCommand
      */
     private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode, List<Long> odoLineIds) {
+        log.info("checkingManager.updateOdoStatusByOdo start...");
+        log.info("params: odoId:[{}], ouId:[{}], userId:[{}], outerContainerCode:[{}], turnoverBoxCode:[{}], seedingWallCode:[{}]", odoId, ouId, userId, outerContainerCode, turnoverBoxCode, seedingWallCode);
         // 修改出库单状态为复核完成状态。
         updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING_FINISH);
 
@@ -1449,7 +1453,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             }
             Long outerContainerId = outerCmd.getId();
             int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, outerContainerId, null, null);
+            log.info("inventory:outerContainerId occupation count:[{}]", count);
             if (count == 0) {
+                log.info("release outerContainerCode");
                 Container c = new Container();
                 BeanUtils.copyProperties(outerCmd, c);
                 c.setStatus(Constants.LIFECYCLE_START);
@@ -1468,7 +1474,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             }
             Long insideContainerId = turnCmd.getId();
             int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, insideContainerId, null);
+            log.info("inventory:container occupation count:[{}]", count);
             if (count == 0) {
+                log.info("release container");
                 Container turn = new Container();
                 BeanUtils.copyProperties(turnCmd, turn);
                 turn.setStatus(Constants.LIFECYCLE_START);
@@ -1480,10 +1488,13 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
             int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
+            log.info("inventory:seeding wall occupation count:[{}]", count);
             if (count == 0) {
                 // 没有播种墙库存信息 查看此播种墙是否还有待播种数据
                 int occupationCnt = whSeedingCollectionDao.countOccupationByFacilityCode(seedingWallCode, ouId);
+                log.info("seeding collection:seeding wall occupation count:[{}]", occupationCnt);
                 if (0 == occupationCnt) {
+                    log.info("release seedingwall");
                     // 没有待播种数据 释放播种墙
                     WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
                     if (null == facility) {

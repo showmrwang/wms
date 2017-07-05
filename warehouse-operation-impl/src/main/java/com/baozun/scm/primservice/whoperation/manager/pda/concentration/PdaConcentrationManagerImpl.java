@@ -514,7 +514,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             }
         }
         // TODO 提示容器号 而不是编码
-        return targetPosUrl + "$" + rfp.getContainerCode() + "$" + targetPos + "$" + targetPosCheck;
+        if (CacheConstants.PDA_CACHE_COLLECTION_REC.equals(cacheKey)) {
+            return targetPosUrl + "$" + rfp.getContainerCode() + "$" + targetPos + "$" + targetPosCheck;
+        } else {
+            return targetPosUrl + "$" + rfp.getContainerCode() + "$" + targetPos + "$" + targetPosCheck + "$" + rfp.getBatch();
+        }
     }
 
     /**
@@ -525,18 +529,40 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      */
     private WhFacilityRecPathCommand findRecFacilityPathCommandByIndex(WorkCollectionCommand workCollectionCommand, String cacheKey) {
         Long userId = workCollectionCommand.getUserId();
-        String batch = workCollectionCommand.getBatch();
-        int index = workCollectionCommand.getIndex();
-        List<WhFacilityRecPathCommand> rfpList = cacheManager.getMapObject(cacheKey + userId, batch); // 当前用户当前批次下的所有播种墙推荐逻辑
-        if (null != rfpList && !rfpList.isEmpty()) {
-            if (index > (rfpList.size() - 1)) {
-                return null;
+        String batch = "";
+        if (CacheConstants.PDA_CACHE_COLLECTION_REC.equals(cacheKey)) {
+            // 推荐路径
+            batch = workCollectionCommand.getBatch();
+        } else {
+            // 集货操作
+            // int index = workCollectionCommand.getIndex();
+            List<Long> containerList = cacheManager.getMapObject(cacheKey, userId.toString());
+            if (null == containerList || containerList.isEmpty()) {
+                throw new BusinessException("no container found");
             }
-            WhFacilityRecPathCommand command = rfpList.get(workCollectionCommand.getIndex());
-            // cacheManager.remonKeys(CacheConstants.PDA_CACHE_COLLECTION_REC + userId);
+            Long containerId = containerList.get(0);
+            WhSeedingCollection sc = whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, null, workCollectionCommand.getOuId());
+            if (null == sc) {
+                throw new BusinessException("no seeding collection data found");
+            }
+            batch = sc.getBatch();
+        }
+        List<WhFacilityRecPathCommand> rfpList = cacheManager.getMapObject(cacheKey + userId, batch);
+        if (null == rfpList || rfpList.isEmpty()) {
+            return null;
+        } else {
+            WhFacilityRecPathCommand command = rfpList.get(0);
             return command;
         }
-        return null;
+        // if (null != rfpList && !rfpList.isEmpty()) {
+        // if (index > (rfpList.size() - 1)) {
+        // return null;
+        // }
+        // WhFacilityRecPathCommand command = rfpList.get(workCollectionCommand.getIndex());
+        // // cacheManager.remonKeys(CacheConstants.PDA_CACHE_COLLECTION_REC + userId);
+        // return command;
+        // }
+        // return null;
     }
 
     /**
@@ -663,8 +689,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     log.info("odoId:[{}], odoLineId:[{}]", odoId, odoLineId);
                     WhOdoLine whOdoLine = whOdoLineDao.findOdoLineById(odoLineId, ouId);
                     if (null != whOdoLine) {
-                        if (OdoLineStatus.PICKING_FINISH.equals(whOdoLine.getOdoLineStatus()) 
-                                || OdoLineStatus.COLLECTION.equals(whOdoLine.getOdoLineStatus())) {
+                        if (OdoLineStatus.PICKING_FINISH.equals(whOdoLine.getOdoLineStatus()) || OdoLineStatus.COLLECTION.equals(whOdoLine.getOdoLineStatus())) {
                             if (flag) {
                                 whOdoLine.setOdoLineStatus(OdoLineStatus.COLLECTION_FINISH);
                             } else {
@@ -690,8 +715,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                             whOdo.setOdoStatus(OdoStatus.COLLECTION_FINISH);
                             whOdo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
                             whOdoDao.saveOrUpdateByVersion(whOdo);
-                        } else if (!OdoStatus.COLLECTION_FINISH.equals(whOdo.getLagOdoStatus()) 
-                                && !OdoStatus.CANCEL.equals(whOdo.getLagOdoStatus())) {
+                        } else if (!OdoStatus.COLLECTION_FINISH.equals(whOdo.getLagOdoStatus()) && !OdoStatus.CANCEL.equals(whOdo.getLagOdoStatus())) {
                             whOdo.setLagOdoStatus(OdoStatus.COLLECTION_FINISH);
                             whOdoDao.saveOrUpdateByVersion(whOdo);
                         }
@@ -721,56 +745,43 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (null != command) {
             // 调用一个方法 kai.zhu
             this.updateContainerToDestination(command, workCollectionCommand.getTargetType(), workCollectionCommand.getOuId());
-            
-            /*Long containerId = workCollectionCommand.getContainerId();
-            Long ouId = workCollectionCommand.getOuId();
-            WhSeedingCollection whSeedingCollection = new WhSeedingCollection();
-            whSeedingCollection.setBatch(workCollectionCommand.getBatch());
-            whSeedingCollection.setOuId(ouId);
-            // whSeedingCollection.setCollectionStatus(CollectionStatus.SEEDING);
-            // whSeedingCollection.setCollectionStatus(CollectionStatus.NEW.toString());
-            whSeedingCollection.setContainerId(containerId);
-            List<WhSeedingCollection> scList = whSeedingCollectionDao.findListByParam(whSeedingCollection);
-            if (null == scList || scList.isEmpty()) {
-                throw new BusinessException("no seeding collection");
-            }
-            whSeedingCollection = scList.get(0);
-            Integer status = whSeedingCollection.getCollectionStatus();
-            if (CollectionStatus.NEW.equals(status) || CollectionStatus.TRANSFER.equals(status) || CollectionStatus.TEMPORARY_STORAGE.equals(status)) {
-                // whSeedingCollection.setId(1L);
-                Integer targetType = workCollectionCommand.getTargetType();
-                switch (targetType) {
-                    case Constants.SEEDING_WALL:
-                        whSeedingCollection.setFacilityId(command.getFacilityId());
-                        whSeedingCollection.setLocationId(null);
-                        whSeedingCollection.setTemporaryLocationId(null);
-                        whSeedingCollection.setCollectionStatus(CollectionStatus.TO_SEED);
-                        // @Gianni 2017-06-23 取消更新推荐路径状态
-                        // updateRecPath(workCollectionCommand.getBatch(),
-                        // workCollectionCommand.getContainerCode(), ouId);
-                        break;
-                    case Constants.TEMPORARY_STORAGE_LOCATION:
-                        whSeedingCollection.setLocationId(null);
-                        whSeedingCollection.setTemporaryLocationId(command.getTemporaryStorageLocationId());
-                        whSeedingCollection.setCollectionStatus(CollectionStatus.TEMPORARY_STORAGE);
-                        break;
-                    case Constants.TRANSIT_LOCATION:
-                        // TODO 接口需要添加
-                        whSeedingCollection.setTemporaryLocationId(null);
-                        whSeedingCollection.setLocationId(command.getTransitLocationId());
-                        whSeedingCollection.setCollectionStatus(CollectionStatus.TRANSFER);
-                        break;
-                    default:
-                        throw new BusinessException("error");
-                }
-                int cnt = this.whSeedingCollectionDao.update(whSeedingCollection);
-                if (0 >= cnt) {
-                    return false;
-                }
-                
-            } else {
-                throw new BusinessException("状态不符合");
-            }*/
+
+            /*
+             * Long containerId = workCollectionCommand.getContainerId(); Long ouId =
+             * workCollectionCommand.getOuId(); WhSeedingCollection whSeedingCollection = new
+             * WhSeedingCollection();
+             * whSeedingCollection.setBatch(workCollectionCommand.getBatch());
+             * whSeedingCollection.setOuId(ouId); //
+             * whSeedingCollection.setCollectionStatus(CollectionStatus.SEEDING); //
+             * whSeedingCollection.setCollectionStatus(CollectionStatus.NEW.toString());
+             * whSeedingCollection.setContainerId(containerId); List<WhSeedingCollection> scList =
+             * whSeedingCollectionDao.findListByParam(whSeedingCollection); if (null == scList ||
+             * scList.isEmpty()) { throw new BusinessException("no seeding collection"); }
+             * whSeedingCollection = scList.get(0); Integer status =
+             * whSeedingCollection.getCollectionStatus(); if (CollectionStatus.NEW.equals(status) ||
+             * CollectionStatus.TRANSFER.equals(status) ||
+             * CollectionStatus.TEMPORARY_STORAGE.equals(status)) { //
+             * whSeedingCollection.setId(1L); Integer targetType =
+             * workCollectionCommand.getTargetType(); switch (targetType) { case
+             * Constants.SEEDING_WALL: whSeedingCollection.setFacilityId(command.getFacilityId());
+             * whSeedingCollection.setLocationId(null);
+             * whSeedingCollection.setTemporaryLocationId(null);
+             * whSeedingCollection.setCollectionStatus(CollectionStatus.TO_SEED); // @Gianni
+             * 2017-06-23 取消更新推荐路径状态 // updateRecPath(workCollectionCommand.getBatch(), //
+             * workCollectionCommand.getContainerCode(), ouId); break; case
+             * Constants.TEMPORARY_STORAGE_LOCATION: whSeedingCollection.setLocationId(null);
+             * whSeedingCollection.setTemporaryLocationId(command.getTemporaryStorageLocationId());
+             * whSeedingCollection.setCollectionStatus(CollectionStatus.TEMPORARY_STORAGE); break;
+             * case Constants.TRANSIT_LOCATION: // TODO 接口需要添加
+             * whSeedingCollection.setTemporaryLocationId(null);
+             * whSeedingCollection.setLocationId(command.getTransitLocationId());
+             * whSeedingCollection.setCollectionStatus(CollectionStatus.TRANSFER); break; default:
+             * throw new BusinessException("error"); } int cnt =
+             * this.whSeedingCollectionDao.update(whSeedingCollection); if (0 >= cnt) { return
+             * false; }
+             * 
+             * } else { throw new BusinessException("状态不符合"); }
+             */
         }
         return true;
     }
@@ -804,51 +815,24 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         WhFacilityRecPathCommand command = this.findRecFacilityPathCommandByIndex(workCollectionCommand, cacheKey);
         // 引用一套方法 kai.zhu
         this.updateContainerSkuInventory(command, workCollectionCommand.getTargetType(), workCollectionCommand.getUserId(), workCollectionCommand.getOuId());
-        
-        /*Integer targetType = workCollectionCommand.getTargetType();
-        WhSkuInventory skuInventory = new WhSkuInventory();
-        skuInventory.setInsideContainerId(command.getContainerId());
-        skuInventory.setOuId(workCollectionCommand.getOuId());
-        List<WhSkuInventory> invList = this.whSkuInventoryDao.findListByParam(skuInventory);
-        if (null != command) {
-            if (null != invList && !invList.isEmpty()) {
-                Boolean isMove = false;
-                for (WhSkuInventory inv : invList) {
-                    switch (targetType) {
-                        case Constants.SEEDING_WALL:
-                            isMove = true;
-                            inv.setLocationId(null);
-                            inv.setTemporaryLocationId(null);
-                            break;
-                        case Constants.TEMPORARY_STORAGE_LOCATION:
-                            isMove = true;
-                            inv.setLocationId(null);
-                            inv.setTemporaryLocationId(command.getTemporaryStorageLocationId());
-                            break;
-                        case Constants.TRANSIT_LOCATION:
-                            isMove = true;
-                            // TODO 接口需要添加
-                            inv.setTemporaryLocationId(null);
-                            inv.setLocationId(command.getTransitLocationId());
-                            break;
-                        default:
-                            break;
-                    }
-                    if (isMove) {
-                        try {
-                            inv.setUuid(SkuInventoryUuid.invUuid(inv));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                        int cnt = this.whSkuInventoryDao.saveOrUpdateByVersion(inv);
-                        if (0 >= cnt) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }*/
+
+        /*
+         * Integer targetType = workCollectionCommand.getTargetType(); WhSkuInventory skuInventory =
+         * new WhSkuInventory(); skuInventory.setInsideContainerId(command.getContainerId());
+         * skuInventory.setOuId(workCollectionCommand.getOuId()); List<WhSkuInventory> invList =
+         * this.whSkuInventoryDao.findListByParam(skuInventory); if (null != command) { if (null !=
+         * invList && !invList.isEmpty()) { Boolean isMove = false; for (WhSkuInventory inv :
+         * invList) { switch (targetType) { case Constants.SEEDING_WALL: isMove = true;
+         * inv.setLocationId(null); inv.setTemporaryLocationId(null); break; case
+         * Constants.TEMPORARY_STORAGE_LOCATION: isMove = true; inv.setLocationId(null);
+         * inv.setTemporaryLocationId(command.getTemporaryStorageLocationId()); break; case
+         * Constants.TRANSIT_LOCATION: isMove = true; // TODO 接口需要添加
+         * inv.setTemporaryLocationId(null); inv.setLocationId(command.getTransitLocationId());
+         * break; default: break; } if (isMove) { try { inv.setUuid(SkuInventoryUuid.invUuid(inv));
+         * } catch (Exception e) { e.printStackTrace(); return false; } int cnt =
+         * this.whSkuInventoryDao.saveOrUpdateByVersion(inv); if (0 >= cnt) { return false; } } } }
+         * }
+         */
         return true;
     }
 
@@ -1007,6 +991,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         }
         recPathList.add(0, rec);
         cacheManager.setMapObject(cacheKey + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
+        List<Long> containerList = cacheManager.getMapObject(cacheKey, userId.toString());
+        if (null == containerList || containerList.isEmpty()) {
+            containerList = new ArrayList<Long>();
+        }
+        containerList.add(rec.getContainerId());
+        cacheManager.setMapObject(cacheKey, userId.toString(), containerList, CacheConstants.CACHE_ONE_DAY);
         return rec;
     }
 
@@ -1117,13 +1107,11 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (updateCount != 1) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-        /*if (flag) {
-            // 更新批次下的容器绑定播种墙
-            int count = whSeedingCollectionDao.countNotHaveFacilityIdByBatch(batch, ouId);
-            if (count > 0) {
-                whSeedingCollectionDao.updateFacilityByBatch(batch, rec.getFacilityId(), ouId);
-            }
-        }*/
+        /*
+         * if (flag) { // 更新批次下的容器绑定播种墙 int count =
+         * whSeedingCollectionDao.countNotHaveFacilityIdByBatch(batch, ouId); if (count > 0) {
+         * whSeedingCollectionDao.updateFacilityByBatch(batch, rec.getFacilityId(), ouId); } }
+         */
         /*
          * if (destinationType == Constants.SEEDING_WALL) { String seedingWallCode =
          * rec.getSeedingwallCode(); // 移到播种墙时保存redis数据 //
@@ -1515,9 +1503,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             String recommendSeedingWall = whFacilityRecPathDao.getRecommendSeedingWallCodeByBatch(batch, ouId);
             String recommendTemporaryStorageLocation = whFacilityRecPathDao.getRecommendTemporaryStorageLocationCodeByBatch(batch, ouId);
             String recommendTransitLocation = whFacilityRecPathDao.getRecommendTransitLocationCodeByBatch(batch, ouId);
-            if (StringUtils.isEmpty(recommendSeedingWall) 
-                    && StringUtils.isEmpty(recommendTemporaryStorageLocation) 
-                    && StringUtils.isEmpty(recommendTransitLocation)) {
+            if (StringUtils.isEmpty(recommendSeedingWall) && StringUtils.isEmpty(recommendTemporaryStorageLocation) && StringUtils.isEmpty(recommendTransitLocation)) {
                 log.error("containerCode:{},ouId:{}", containerCode, ouId);
                 throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_ERROR);
             }
@@ -1606,7 +1592,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 }
             }
         }
-        
+
         // 1.将容器移动到目的地
         this.updateContainerSkuInventory(recCommand, destinationType, userId, ouId);
 
@@ -1799,22 +1785,39 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     }
 
     @Override
-    public boolean popCacheByIndex(Integer index, Long userId, String batch) {
-        List<WhFacilityRecPathCommand> rfpList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId, batch);
+    public boolean popCacheByIndex(Integer index, Long userId, String batch, Long ouId) {
+        List<Long> containerList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC, userId.toString());
+        if (null == containerList || containerList.isEmpty()) {
+            throw new BusinessException("no container found");
+        }
+        Long containerId = containerList.get(0);
+        WhSeedingCollection sc = whSeedingCollectionDao.findSeedingCollectionByContainerId(containerId, null, ouId);
+        if (null == sc) {
+            throw new BusinessException("no seeding collection data found");
+        }
+        List<WhFacilityRecPathCommand> rfpList = cacheManager.getMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId, sc.getBatch());
         if (null != rfpList && !rfpList.isEmpty()) {
-            if (index > (rfpList.size() - 1)) {
-                throw new BusinessException("redis error");
+            // if (index > (rfpList.size() - 1)) {
+            // throw new BusinessException("redis error");
+            // }
+            if (rfpList.remove(rfpList.get(0))) {
+                cacheManager.setMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId, sc.getBatch(), rfpList, CacheConstants.CACHE_ONE_YEAR);
             }
-            if (rfpList.remove(rfpList.get(index))) {
-                cacheManager.setMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId, batch, rfpList, CacheConstants.CACHE_ONE_YEAR);
-            }
-            if (0 == rfpList.size()) {
-                return true;
+            if (null == rfpList || rfpList.isEmpty()) {
+                containerList.remove(containerList.get(0));
+                if (null == containerList || containerList.isEmpty()) {
+                    return true;
+                } else {
+                    cacheManager.setMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC, userId.toString(), containerList, CacheConstants.CACHE_ONE_DAY);
+                    return false;
+                }
             } else {
                 return false;
             }
+        } else {
+            throw new BusinessException("redis error");
         }
-        return true;
+        // return true;
     }
 
     private boolean isExistsOperationExecLineGroup(List<WhOperationExecLineCommand> operationExecLineGroup, String execLine) {

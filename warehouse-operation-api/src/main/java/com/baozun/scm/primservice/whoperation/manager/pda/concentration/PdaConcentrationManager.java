@@ -296,6 +296,6 @@ public interface PdaConcentrationManager extends BaseManager {
      * @param userId
      * @param batch
      */
-    boolean popCacheByIndex(Integer index, Long userId, String batch);
+    boolean popCacheByIndex(Integer index, Long userId, String batch, Long ouId);
 
 }
