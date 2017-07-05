@@ -1032,12 +1032,14 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         Map<String, Double> allocatedMap = new HashMap<String, Double>();
         if(null != skuInventoryAllocatedCommandLst){
             for(WhSkuInventoryAllocatedCommand skuInventoryAllocatedCommand : skuInventoryAllocatedCommandLst){
-                allocatedMap.put(skuInventoryAllocatedCommand.getUuid(), skuInventoryAllocatedCommand.getQty());
+                String key = skuInventoryAllocatedCommand.getUuid() + skuInventoryAllocatedCommand.getOccupationLineId() + "";
+                allocatedMap.put(key, skuInventoryAllocatedCommand.getQty());
             }
         }
         int count = 0;
         for (WhWorkLineCommand whWorkLineCommand : whWorkLineCommandList) {
-            if(null != skuInventoryAllocatedCommandLst && (null == allocatedMap.get(whWorkLineCommand.getUuid()) || 0 != allocatedMap.get(whWorkLineCommand.getUuid()).compareTo(whWorkLineCommand.getQty()))){
+            String key = whWorkLineCommand.getUuid() + whWorkLineCommand.getOdoLineId() + "";
+            if(null != skuInventoryAllocatedCommandLst && null == allocatedMap.get(key)){
                 continue;
             }
             WhOperationLineCommand WhOperationLineCommand = new WhOperationLineCommand();
@@ -1057,7 +1059,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             if (null == skuInventoryAllocatedCommandLst) {
                 WhOperationLineCommand.setQty(whWorkLineCommand.getQty());
             } else {
-                WhOperationLineCommand.setQty(allocatedMap.get(whWorkLineCommand.getUuid()));
+                WhOperationLineCommand.setQty(allocatedMap.get(key));
             }
             // 库存状态
             WhOperationLineCommand.setInvStatus(whWorkLineCommand.getInvStatus());
@@ -1131,7 +1133,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 operationLineDao.insert(whOperationLine);
             }
             count = count + 1;
-            allocatedMap.remove(whWorkLineCommand.getUuid());
+            allocatedMap.remove(key);
         }
         
         if(null != skuInventoryAllocatedCommandLst && skuInventoryAllocatedCommandLst.size() != whWorkLineCommandList.size()){
