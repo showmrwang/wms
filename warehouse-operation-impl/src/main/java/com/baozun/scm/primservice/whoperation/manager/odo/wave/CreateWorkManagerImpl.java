@@ -2745,7 +2745,9 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             }
             if(0 < replenishmentQty){
                 if(whWorkLineCommand.getQty() > replenishmentQty){
-                    continue;
+                    whWorkLineCommand.setQty((double)replenishmentQty);
+                    workLineCommandList.add(whWorkLineCommand);
+                    break;
                 }else{
                     workLineCommandList.add(whWorkLineCommand);
                     surplusVolume = (long) (surplusVolume - sku.getVolume()*whWorkLineCommand.getQty());
