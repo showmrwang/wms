@@ -61,7 +61,7 @@ else
 fi
 
 echo -e "Starting the $SERVER_NAME ...\c"
-nohup java $JAVA_OPTS $JAVA_MEM_OPTS $JAVA_DEBUG_OPTS $JAVA_JMX_OPTS -classpath $CONF_DIR:$LIB_JARS com.baozun.scm.primservice.whoperation.ProductProvider > $STDOUT_FILE 2>&1 &
+nohup java $JAVA_OPTS $JAVA_MEM_OPTS $JAVA_DEBUG_OPTS $JAVA_JMX_OPTS -javaagent:/service/software/perfino/perfino.jar=server=10.11.55.23,port=8887,name=`hostname`,group=wms4_op -classpath $CONF_DIR:$LIB_JARS com.baozun.scm.primservice.whoperation.ProductProvider > $STDOUT_FILE 2>&1 &
 
 COUNT=0
 while [ $COUNT -lt 1 ]; do    
