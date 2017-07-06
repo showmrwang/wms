@@ -4,6 +4,7 @@ import lark.common.annotation.MoreDB;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.auth.OperUserManager;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
@@ -12,6 +13,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.localauth.OperUser;
 
 @Service("operUserManager")
+@Transactional
 public class OperUserManagerImpl extends BaseManagerImpl implements OperUserManager {
     @Autowired
     private OperUserDao operUserDao;

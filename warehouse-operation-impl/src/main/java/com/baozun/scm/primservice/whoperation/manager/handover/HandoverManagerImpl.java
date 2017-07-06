@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import lark.common.annotation.MoreDB;
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.logistics.manager.OrderConfirmContentManager;
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
 import com.baozun.scm.primservice.logistics.wms4.model.MaTransport;
+import com.baozun.scm.primservice.whoperation.command.handover.HandoverCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.UomCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
@@ -554,5 +558,31 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
         handoverCollection.setHandoverStatus("5");
         handoverCollection.setOuId(ouId);
         return handoverCollectionDao.findListByParam(handoverCollection);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<Long> findAlluser(Long ouId) {
+        return handoverDao.findAllUser(ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public Pagination<HandoverCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
+        return handoverDao.findListByQueryMapWithPageExt(page, sorts, params);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public String findHandoverBatchByOutboundboxCode(String outboundboxCode, Long ouId) {
+        HandoverCollection handoverCollection = new HandoverCollection();
+        handoverCollection.setOutboundboxCode(outboundboxCode);
+        handoverCollection.setOuId(ouId);
+        List<HandoverCollection> handoverCollections = handoverCollectionDao.findListByParam(handoverCollection);
+        if (handoverCollections.size() > 0) {
+            return handoverCollections.get(0).getHandoverBatch();
+        } else {
+            return null;
+        }
     }
 }

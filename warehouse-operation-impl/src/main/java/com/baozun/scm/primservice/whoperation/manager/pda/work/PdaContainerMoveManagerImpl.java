@@ -48,6 +48,7 @@ import com.baozun.scm.primservice.whoperation.constant.CheckingStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhContainerMoveType;
+import com.baozun.scm.primservice.whoperation.constant.WhOutBoundBoxMoveType;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -154,7 +155,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
         //2、如果是出库箱功能功能参数是部分移动,箱内的库存属性必须唯一才能移动
         if(movePattern.equals(Constants.MOVE_PATTERN_PART) && isCmd.getOutBoundBoxSkuIdSkuAttrIdQtys().get(containerCode).size() > 1){
             log.error("PdaContainerMoveManagerImpl scanContainer is end. sku attr isn't only. logId is:[{}]", logId);
-            throw new BusinessException(ErrorCodes.CONTAINER_NOT_FOUND_INV, new Object[] {containerCode});
+            throw new BusinessException(ErrorCodes.CONTAINER_SKU_INV_NOT_UNIQUE, new Object[] {containerCode});
         }
         //保存容器库存的统计分析数据
         cacheManager.setMapObject(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerCode, isCmd, CacheConstants.CACHE_ONE_DAY);
@@ -359,6 +360,15 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
                 }
             }
         }
+        //判断是否扫描过的        
+        String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + tipSkuAttrId);
+        long reScanQty = 0L;
+        if (!StringUtils.isEmpty(cacheQty)) {
+            reScanQty = new Long(cacheQty).longValue();
+        }
+        long oldQty = srCommand.getTipSkuQty();
+        srCommand.setTipSkuQty(new Long(oldQty-reScanQty).intValue());
+        
         log.info("PdaContainerMoveManagerImpl scanTargetContainer is end");
         
         return srCommand;
@@ -904,19 +914,19 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
      * @return
      */
     @Override
-    public void cancelScanSku(String sourceContainerCode,Integer containerLatticNo, String scanType, Long ouId,String logId,Long userId) {
+    public void cancelScanSku(String sourceContainerCode,Integer containerLatticNo, String scanType,Integer movePattern, Long ouId,String logId,Long userId) {
         log.info("PdaContainerMoveManagerImpl cancelScanSku is start"); 
         if (log.isInfoEnabled()) {
             log.info("PdaContainerMoveManagerImpl cancelScanSku param , ouId is:[{}],  containerCode is:[{}]", ouId,  sourceContainerCode);
         }
-        //清除redis缓存        
-        cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + "*");
+        //清除redis缓存
         cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + sourceContainerCode + "*");
         cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + sourceContainerCode + "*");
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_FOR_CONTAINER + sourceContainerCode);
         cacheManager.remove(CacheConstants.SCAN_SKU_QTY_FOR_CONTAINER + sourceContainerCode);
-        cacheManager.remove(CacheConstants.SCAN_SKU_QTY_COUNT + sourceContainerCode);
-        
+        if (WhOutBoundBoxMoveType.FULL_BOX_MOVE == movePattern) {
+            cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + "*");
+        }
         log.info("PdaContainerMoveManagerImpl cancelScanSku is  end"); 
     }
     
@@ -1055,6 +1065,16 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
             srCmd.setTipSkuBarcode(tipSku.getBarCode());
             if (false == cssrCmd.isTipSameSkuAttrId()) {
                 setTipSkuFromBox(sourceContainerCode,insideContainerAllSkuAttrIdsSn, tipSkuAttrId, logId);
+            } else {
+                //相同的产品扫描完成后画面提示需要减去上次以扫描过的数量
+                String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + skuAttrId);
+                long reScanQty = 0L;
+                if (!StringUtils.isEmpty(cacheQty)) {
+                    reScanQty = new Long(cacheQty).longValue();
+                }
+                //删除原有的扫描数据
+                long oldQty = srCmd.getTipSkuQty();
+                srCmd.setTipSkuQty(new Long(oldQty-reScanQty).intValue());
             }
             if (log.isInfoEnabled()) {
                 log.info("splitContainerMoveCheckScanSkuConfirm putawayTipSkuSn, sourceContainerCode is:[{}], sourceContainerId is:[{}], containerLatticNo is:[{}], targetContainerCode is:[{}],scanPattern is:[{}], barCode is:[{}],funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
@@ -1082,10 +1102,15 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
             if (false == cssrCmd.isTipSameSkuAttrId()) {
                 setTipSkuFromBox(sourceContainerCode,insideContainerAllSkuAttrIdsSn, tipSkuAttrId, logId);
             } else {
-                //相同的产品扫描完成后画面提示需要减去上次以扫描过的数量
-                int oldQty = srCmd.getTipSkuQty();
-                int tmpScanQty = skuCmd.getScanSkuQty() == null ? 0 : skuCmd.getScanSkuQty().intValue();
-                srCmd.setTipSkuQty(oldQty-tmpScanQty);
+                // 取到扫描的数量
+                String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + skuAttrId);
+                long reScanQty = 0L;
+                if (!StringUtils.isEmpty(cacheQty)) {
+                    reScanQty = new Long(cacheQty).longValue();
+                }
+                //删除原有的扫描数据
+                long oldQty = srCmd.getTipSkuQty();
+                srCmd.setTipSkuQty(new Long(oldQty-reScanQty).intValue());
             }
             if (log.isInfoEnabled()) {
                 log.info("splitContainerMoveCheckScanSkuConfirm isNeedTipSku, sourceContainerCode is:[{}], sourceContainerId is:[{}], containerLatticNo is:[{}], targetContainerCode is:[{}],scanPattern is:[{}], barCode is:[{}],funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
@@ -1124,6 +1149,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
             cacheManager.remonKeys(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + "*");
             cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_QUEUE + sourceContainerCode + "*");
             cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + sourceContainerCode + "*");
+            cacheManager.remonKeys(CacheConstants.SCAN_SKU_QTY_COUNT + sourceContainerCode + "*");
         }
         if (log.isInfoEnabled()) {
             log.info("splitContainerMoveCheckScanSkuConfirm end, sourceContainerCode is:[{}], sourceContainerId is:[{}], containerLatticNo is:[{}], targetContainerCode is:[{}],scanPattern is:[{}], barCode is:[{}],funcId is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",
@@ -1232,7 +1258,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveMana
         cacheManager.remonKeys(CacheConstants.SCAN_SKU_SN_COUNT + sourceContainerCode + "*");
         cacheManager.remove(CacheConstants.SCAN_SKU_SN_FOR_CONTAINER + sourceContainerCode);
         cacheManager.remove(CacheConstants.SCAN_SKU_QTY_FOR_CONTAINER + sourceContainerCode);
-        cacheManager.remove(CacheConstants.SCAN_SKU_QTY_COUNT + sourceContainerCode);
+        cacheManager.remonKeys(CacheConstants.SCAN_SKU_QTY_COUNT + sourceContainerCode + "*");
         
         if (log.isInfoEnabled()) {
             log.info("quitScanContainer end, sourceContainerCode is:[{}], ouId is:[{}], userId is:[{}], logId is:[{}]",

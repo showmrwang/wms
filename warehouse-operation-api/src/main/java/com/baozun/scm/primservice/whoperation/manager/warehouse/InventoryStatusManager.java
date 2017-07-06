@@ -8,5 +8,8 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 public interface InventoryStatusManager extends BaseManager{
     
     List<InventoryStatus> findInventoryStatusList(InventoryStatus status);
+
     List<InventoryStatus> findAllInventoryStatus();
+
+    InventoryStatus findInventoryStatusByName(String invStatusName);
 }

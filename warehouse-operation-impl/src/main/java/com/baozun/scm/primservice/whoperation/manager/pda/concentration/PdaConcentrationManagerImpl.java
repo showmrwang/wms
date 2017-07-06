@@ -1168,6 +1168,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
     public void removeRecommendResultListCache(String batch, Long userId) {
         cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
         cacheManager.removeMapValue(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId.toString(), batch);
+        cacheManager.removeMapValue(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC, userId.toString());
     }
 
     /**
