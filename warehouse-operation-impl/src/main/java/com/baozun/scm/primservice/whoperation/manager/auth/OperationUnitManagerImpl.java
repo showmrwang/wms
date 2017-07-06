@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.auth.OpUnitTreeCommand;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperationUnitDao;
@@ -14,6 +15,7 @@ import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 
 
 @Service("operationUnitManager")
+@Transactional
 public class OperationUnitManagerImpl implements OperationUnitManager {
     public static final Logger log = LoggerFactory.getLogger(OperationUnitManagerImpl.class);
 

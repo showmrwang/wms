@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOdoPackageInfoCommand;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
@@ -26,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
 
 @Service("whOdoPackageInfoManager")
+@Transactional
 public class WhOdoPackageInfoManagerImpl extends BaseManagerImpl implements WhOdoPackageInfoManager {
     
     public static final Logger log = LoggerFactory.getLogger(WhOdoPackageInfoManagerImpl.class);

@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
@@ -28,6 +29,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 
 @Service("whCheckingLineManager")
+@Transactional
 public class WhCheckingLineManagerImpl extends BaseManagerImpl implements WhCheckingLineManager {
     
     public static final Logger log = LoggerFactory.getLogger(WhCheckingLineManagerImpl.class);

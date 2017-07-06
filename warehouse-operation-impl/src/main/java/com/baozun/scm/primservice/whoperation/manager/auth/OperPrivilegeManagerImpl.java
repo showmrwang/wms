@@ -13,6 +13,7 @@ import lark.common.dao.Sort;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhWorkCommand;
 import com.baozun.scm.primservice.whoperation.dao.auth.OperPrivilegeDao;
@@ -20,6 +21,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.AreaDao;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 
 @Service("operPrivilegeManager")
+@Transactional
 public class OperPrivilegeManagerImpl extends BaseManagerImpl implements OperPrivilegeManager {
 
     @Autowired

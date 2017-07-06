@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
@@ -113,6 +114,7 @@ import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("whCheckingManager")
+@Transactional
 public class WhCheckingManagerImpl extends BaseManagerImpl implements WhCheckingManager {
 
     public static final Logger log = LoggerFactory.getLogger(WhCheckingManagerImpl.class);

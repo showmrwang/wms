@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxLineCommand;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
@@ -26,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 
 @Service("whOutboundboxLineManager")
+@Transactional
 public class WhOutboundboxLineManagerImpl extends BaseManagerImpl implements WhOutboundboxLineManager {
     
     public static final Logger log = LoggerFactory.getLogger(WhOutboundboxLineManagerImpl.class);

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
@@ -29,6 +30,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 
 @Service("whPrintInfoManager")
+@Transactional
 public class WhPrintInfoManagerImpl extends BaseManagerImpl implements WhPrintInfoManager {
 
     public static final Logger log = LoggerFactory.getLogger(WhPrintInfoManagerImpl.class);
