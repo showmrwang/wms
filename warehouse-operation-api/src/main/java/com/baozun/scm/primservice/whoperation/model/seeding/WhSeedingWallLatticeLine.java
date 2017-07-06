@@ -34,6 +34,10 @@ public class WhSeedingWallLatticeLine extends BaseModel {
     String skuName;
     /** 计划数量 */
     Double qty;
+    /** 已播种数量 */
+    Long seedingQty=0L;
+    /** 总计划数量 */
+    Long odoQty;
     /** 客户ID */
     Long customerId;
     /** 客户CODE */
@@ -72,6 +76,8 @@ public class WhSeedingWallLatticeLine extends BaseModel {
     Long odoLineId;
     /** 内部标识码 一个出库单明细会占用多个库存记录*/
     List<String> uuidList;
+    /**内部标识码*/
+    String uuid;
 
     public Long getSkuId() {
         return skuId;
@@ -119,6 +125,14 @@ public class WhSeedingWallLatticeLine extends BaseModel {
 
     public void setQty(Double qty) {
         this.qty = qty;
+    }
+
+    public Long getSeedingQty() {
+        return seedingQty;
+    }
+
+    public void setSeedingQty(Long seedingQty) {
+        this.seedingQty = seedingQty;
     }
 
     public Long getCustomerId() {
@@ -271,5 +285,21 @@ public class WhSeedingWallLatticeLine extends BaseModel {
 
     public void setUuidList(List<String> uuidList) {
         this.uuidList = uuidList;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public Long getOdoQty() {
+        return odoQty;
+    }
+
+    public void setOdoQty(Long odoQty) {
+        this.odoQty = odoQty;
     }
 }

@@ -8,6 +8,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollect
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.SeedingLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -58,7 +59,29 @@ public interface SeedingManagerProxy extends BaseManager {
      * @param logId
      */
     public void saveSeedingOdoBindLatticeToCache(WhSeedingWallLattice seedingWallLattice, Long facilityId, String batchNo, Long ouId, Long latticeNo, String logId);
+    
+    /**
+     * 货格对应出库单明细信息
+     *
+     * @param ouId
+     * @param facilityCode
+     * @param batch
+     * @param latticeNo
+     * @param odoCode
+     */
+    public void saveSeedingOdoLineBindLatticeToCache(Long ouId,Long facilityId,String batch,Long latticeNo,Long odoId,Map<String,WhSeedingWallLatticeLine> lineMap);
 
+    /**
+     * 获取货格对应出库单明细信息
+     *
+     * @param ouId
+     * @param facilityCode
+     * @param batch
+     * @param latticeNo
+     * @param odoCode
+     */
+    public Map<String,WhSeedingWallLatticeLine> getSeedingOdoLineBindLatticeToCache(Long ouId,Long facilityId,String batch,Long latticeNo,Long odoId);
+    
     /**
      * 获取货格对应出库单信息
      *

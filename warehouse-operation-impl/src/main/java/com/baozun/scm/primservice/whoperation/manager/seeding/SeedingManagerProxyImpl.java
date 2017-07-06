@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
@@ -34,9 +35,11 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.SeedingLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
@@ -53,6 +56,9 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
 
     @Autowired
     private CacheManager cacheManager;
+    
+    @Autowired
+    private OdoManager odoManager;
 
 
 
@@ -72,6 +78,65 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
 
         String cacheKey = CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
         cacheManager.setObject(cacheKey, seedingWallLattice, CacheConstants.CACHE_ONE_WEEK);
+    }
+    
+    /**
+     * 货格对应出库单明细信息
+     *
+     * @param ouId
+     * @param facilityCode
+     * @param batch
+     * @param latticeNo
+     * @param odoCode
+     */
+    public void saveSeedingOdoLineBindLatticeToCache(Long ouId,Long facilityId,String batch,Long latticeNo,Long odoId,Map<String,WhSeedingWallLatticeLine> lineMap){
+        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE【WMS出库单号】
+        // Value：Map<String,WhSeedingWallLatticeLine>
+        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_LINE_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batch + "-" + latticeNo + "-" + odoId;
+        cacheManager.setObject(cacheKey, lineMap, CacheConstants.CACHE_ONE_WEEK);
+    }
+    
+    /**
+     * 获取货格对应出库单明细信息
+     *
+     * @param ouId
+     * @param facilityCode
+     * @param batch
+     * @param latticeNo
+     * @param odoCode
+     */
+    public Map<String,WhSeedingWallLatticeLine> getSeedingOdoLineBindLatticeToCache(Long ouId,Long facilityId,String batch,Long latticeNo,Long odoId){
+        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE【WMS出库单号】
+        // Value：Map<String,WhSeedingWallLatticeLine>
+        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_LINE_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batch + "-" + latticeNo + "-" + odoId;
+        Map<String,WhSeedingWallLatticeLine> map = cacheManager.getObject(cacheKey);
+        try {
+            //如果没有缓存数据就封装数据到redis并返回
+            if(map==null){
+                //货格对应出库单明细信息
+                List<Long> odoLineId=new ArrayList<Long>();
+                odoLineId.add(odoId);
+                //出库单下的明细列表
+                List<OdoLineCommand> odoLineList=odoManager.findOdoLineByOdoId(odoLineId, ouId);
+                
+                Map<String,WhSeedingWallLatticeLine> lineMap=new HashMap<String,WhSeedingWallLatticeLine>();
+                for(OdoLineCommand odoLineCommand:odoLineList){
+                    //通过uuid分组
+                    List<WhSeedingWallLatticeLine> seedingBatchOdoLineInfoList=whSeedingCollectionManager.getSeedingBatchOdoLineInfo(odoLineCommand.getId(),ouId);
+                    if(seedingBatchOdoLineInfoList!=null){
+                        //封装订单的明细信息
+                        for(WhSeedingWallLatticeLine seedingWallLatticeLine:seedingBatchOdoLineInfoList){
+                            lineMap.put(seedingWallLatticeLine.getSkuId()+"_"+seedingWallLatticeLine.getUuid(), seedingWallLatticeLine);
+                        }
+                    }
+                }
+                this.saveSeedingOdoLineBindLatticeToCache(ouId,facilityId,batch,latticeNo,odoId,lineMap);
+                return lineMap;
+            }
+        } catch (Exception e) {
+            log.error("saveSeedingOdoLineBindLatticeToCache cache error, facilityId is:[{}], ouId is:[{}], batch is:[{}], latticeNo is:[{}], logId is:[{}], ex is:[{}]", facilityId, ouId, batch, latticeNo, logId, e);
+        }
+        return map;
     }
 
     /**
