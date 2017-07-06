@@ -86,7 +86,6 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhCheckingLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhLocationDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationExecLineDao;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
@@ -117,7 +116,6 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhChecking;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhCheckingLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWorkLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventoryAllocated;
@@ -6685,10 +6683,8 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 break;
             }
         }
-
-        if (upperLimitQty > 0) {
-            throw new BusinessException(ErrorCodes.SYSTEM_ERROR);
-        }
+        //@mender yimin.lu 2017/7/6 库位容量补货，补货不足也可以
+        // if (upperLimitQty > 0) {throw new BusinessException(ErrorCodes.SYSTEM_ERROR);}
         // 删除库位补货信息
         int count = this.replenishmentMsgDao.deleteByIdOuId(msg.getId(), ouId);
         if (count <= 0) {
