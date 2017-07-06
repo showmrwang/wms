@@ -6638,6 +6638,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         Long ouId = wh.getId();
         Long skuId = msg.getSkuId();
         double upperLimitQty = msg.getUpperLimitQty().doubleValue();
+        double preUpperLimitQty = upperLimitQty;
         Long locationId = msg.getLocationId();
         if (ruleList == null || ruleList.size() == 0) {
             return;
@@ -6683,8 +6684,11 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 break;
             }
         }
-        //@mender yimin.lu 2017/7/6 库位容量补货，补货不足也可以
+        // @mender yimin.lu 2017/7/6 库位容量补货，补货不足也可以；没有补货则不生成TASK
         // if (upperLimitQty > 0) {throw new BusinessException(ErrorCodes.SYSTEM_ERROR);}
+        if (preUpperLimitQty == upperLimitQty) {
+            return;
+        }
         // 删除库位补货信息
         int count = this.replenishmentMsgDao.deleteByIdOuId(msg.getId(), ouId);
         if (count <= 0) {
