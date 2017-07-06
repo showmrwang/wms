@@ -256,9 +256,14 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
                                 diyOdoMap.put(ruleOdoId, ruleCode);
                                 noModeOdoList.remove(ruleOdoId);
                             }
+                            if (noModeOdoList.size() == 0) {
+                                break;
+                            }
                         }
                     }
-
+                    if (noModeOdoList.size() == 0) {
+                        break;
+                    }
                 }
         }
         }

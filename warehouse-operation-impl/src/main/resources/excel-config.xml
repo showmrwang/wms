@@ -127,19 +127,19 @@
 </excel>
 
  <excel id="whSkuInventoryInit" class="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" sheetname="库存初始化列表" defaultColumnWidth="5000" enableStyle="true">
-		<field name="skuCode" title="商品编码" isNull="false"/>
-		<field name="locationCode" title="库位编码" isNull="false"/>
+		<field name="skuCode" title="商品外部编码" />
+		<field name="locationCode" title="库位编码"/>
 		<field name="outerContainerCode" title="外部容器编码"/>
 		<field name="insideContainerCode" title="内部容器编码"/>
-		<field name="customerCode" title="客户编码" isNull="false"/>
-		<field name="storeCode" title="店铺编码" isNull="false" />
-		<field name="inboundTime" title="入库时间" isNull="false" pattern="yyyy/MM/dd" nullErrorCode="error.excel.isNull"/>
-		<field name="onHandQty" title="在库库存" decimalFormatPattern="###,##0.00" isNull="false" nullErrorCode="error.excel.isNull"  regex="^\d+(\.\d+)?$" regexErrCode="error.excel.isNotNumber"/>
-		<field name="invStatus" title="库存状态"  regex="^[1-9]\d*$" regexErrCode="error.excel.isNotNumber" isNull="false" nullErrorCode="error.excel.isNull"/>
+		<field name="customerCode" title="客户编码" />
+		<field name="storeCode" title="店铺编码"  />
+		<field name="inboundTimeStr" title="入库时间" />
+		<field name="onHandQtyStr" title="在库库存"/>
+		<field name="invstatusName" title="库存状态" />
 		<field name="invType" title="库存类型"/>
 		<field name="batchNumber" title="批次号"/>
-		<field name="mfgDate" title="生产日期" pattern="yyyy/MM/dd"/>
-		<field name="expDate" title="失效日期" pattern="yyyy/MM/dd"/>
+		<field name="mfgDateStr" title="生产日期" />
+		<field name="expDateStr" title="失效日期" />
 		<field name="countryOfOrigin" title="原产地"/>
 		<field name="invAttr1" title="库存属性1"/>
 		<field name="invAttr2" title="库存属性2"/>

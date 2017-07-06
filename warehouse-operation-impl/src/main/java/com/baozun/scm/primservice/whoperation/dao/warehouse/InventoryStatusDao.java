@@ -17,14 +17,14 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
-import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
-
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 
 
 
@@ -41,4 +41,12 @@ public interface InventoryStatusDao extends BaseDao<InventoryStatus, Long> {
     InventoryStatus findInventoryStatusById(Long id);
 
     List<InventoryStatus> findInventoryStatus();
+
+    /**
+     * 通过库存名称查找对应数据
+     * 
+     * @param name
+     * @return
+     */
+    InventoryStatus findInventoryStatusByName(String name);
 }

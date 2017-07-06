@@ -1464,7 +1464,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             throw new BusinessException(ErrorCodes.RCVD_CONTAINER_FINISH_ERROR);
         }
         Long asnId = commandList.get(0).getOccupationId();// ASN头ID
-        Long ArchivlineId= commandList.get(0).getArchivlineId();
+
         // 获取ASN
         WhAsn asn = this.asnManager.findWhAsnByIdToShard(asnId, ouId);
         if (null == asn) {
@@ -1477,12 +1477,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
         if (null == po) {
             throw new BusinessException(ErrorCodes.PO_RCVD_GET_ERROR);
         }
-        Store store = this.getReturnedStore(asn.getStoreId(), isReturns, ArchivlineId, ouId);
-        if (store == null) {
-            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-        }
 
-        Long storeId = store.getId();
         Long customerId=asn.getCustomerId();
 
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
@@ -1514,6 +1509,15 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             Long lineId = cacheInv.getLineId();
             Long insideContainerId = cacheInv.getInsideContainerId();
 
+            // @mender yimin.lu 用于判断退换货共享库存
+            Long ArchivlineId = cacheInv.getArchivlineId();
+            Store store = this.getReturnedStore(asn.getStoreId(), isReturns, ArchivlineId, ouId);
+            if (store == null) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+
+            Long storeId = store.getId();
+
             this.packageContainerMap(insideContainerMap, cacheInv);// 封装容器集合
 
             this.packageLineMap(lineMap, cacheInv);// 封装行集合
@@ -1521,7 +1525,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
             String uuid = this.generateUuid(cacheInv, customerId, storeId);// 生成uuid
             
             // @mender yimin.lu 2017/4/19 key值记录更多的信息【容器ID】
-            String asnRcvdLogMaoKey = lineId + "$" + uuid + "$" + insideContainerId;
+            String asnRcvdLogMaoKey = lineId + "$" + uuid + "$" + insideContainerId + "$" + storeId;
             if (!uuidRcvdMap.containsKey(asnRcvdLogMaoKey)) {
                 uuidRcvdMap.put(asnRcvdLogMaoKey, cacheInv);
             } else {
@@ -1585,7 +1589,7 @@ public class CreatePoAsnManagerProxyImpl implements CreatePoAsnManagerProxy {
 
             // @mender yimin.lu 2017/5/4 兼容退换货收货
             cacheInv.setOccupationCode(occupationCode);
-            this.packageSkuInv(saveInvList, cacheInv, uuid, qtyRcvd, customerId, storeId);// 封装库存信息
+            this.packageSkuInv(saveInvList, cacheInv, uuid, qtyRcvd, customerId, Long.parseLong(keyArray[3]));// 封装库存信息
 
             this.packageCarton(saveWhCartonList, cacheInv, qtyRcvd, insideContainerId, asnId, lineId, ouId, userId);// 装箱信息
 

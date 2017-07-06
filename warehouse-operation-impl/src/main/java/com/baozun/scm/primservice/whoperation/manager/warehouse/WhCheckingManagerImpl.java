@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baozun.scm.primservice.logistics.wms4.manager.MaTransportManager;
@@ -113,6 +114,7 @@ import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
 @Service("whCheckingManager")
+@Transactional
 public class WhCheckingManagerImpl extends BaseManagerImpl implements WhCheckingManager {
 
     public static final Logger log = LoggerFactory.getLogger(WhCheckingManagerImpl.class);
@@ -1753,18 +1755,20 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                                 checkingManager.printPackingList(idsList, userId, ouId);
                                 isInsert  = true;
                             }
-                            List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
-                            if(null == printInfoLst || 0 == printInfoLst.size()) {
-                                idsList.add(checkingLineList.get(0).getOdoId());
-                                isInsert  = true;
-                                // 销售清单
-                                checkingManager.printSalesList(idsList, userId, ouId);
-                            }else{
-                                if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                            if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                                List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
+                                if(null == printInfoLst || 0 == printInfoLst.size()) {
                                     idsList.add(checkingLineList.get(0).getOdoId());
                                     isInsert  = true;
                                     // 销售清单
                                     checkingManager.printSalesList(idsList, userId, ouId);
+                                }else{
+                                    if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                                        idsList.add(checkingLineList.get(0).getOdoId());
+                                        isInsert  = true;
+                                        // 销售清单
+                                        checkingManager.printSalesList(idsList, userId, ouId);
+                                    }
                                 }
                             }
                             if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {

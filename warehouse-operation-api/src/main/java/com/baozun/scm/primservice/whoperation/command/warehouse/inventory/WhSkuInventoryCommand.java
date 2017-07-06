@@ -16,6 +16,7 @@ package com.baozun.scm.primservice.whoperation.command.warehouse.inventory;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.BaseCommand;
 import com.baozun.scm.primservice.whoperation.command.pda.rcvd.RcvdContainerCacheCommand;
@@ -189,6 +190,8 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private RcvdContainerCacheCommand rcvdUserContainerCache;
     /** 通用收货：容器-用户缓存对象 @mender yimin.lu 2016/11/23 */
     private RcvdContainerCacheCommand rcvdSkuContainerCache;
+    /** 库存状态map */
+    private Map<Long, String> invStatusMap;
     /** 效期天数 */
     @Deprecated
     private Integer dayOfValidDate;
@@ -205,9 +208,11 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 残次原因 */
     private Long defectReasonsId;
     // --------------------------------------------------------------------------------------------
+    // 导入
+    private String inboundTimeStr;
     
-    
-    
+    private String onHandQtyStr;
+
     //-------------------------------------------------
     /** 补货单号 */
     private java.lang.String replenishmentCode;
@@ -234,6 +239,30 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Boolean isInvattrDiscrepancyAllowrcvd;
 
 
+
+    public String getOnHandQtyStr() {
+        return onHandQtyStr;
+    }
+
+    public void setOnHandQtyStr(String onHandQtyStr) {
+        this.onHandQtyStr = onHandQtyStr;
+    }
+
+    public String getInboundTimeStr() {
+        return inboundTimeStr;
+    }
+
+    public void setInboundTimeStr(String inboundTimeStr) {
+        this.inboundTimeStr = inboundTimeStr;
+    }
+
+    public Map<Long, String> getInvStatusMap() {
+        return invStatusMap;
+    }
+
+    public void setInvStatusMap(Map<Long, String> invStatusMap) {
+        this.invStatusMap = invStatusMap;
+    }
 
     public Long getDefectTypeId() {
         return defectTypeId;
