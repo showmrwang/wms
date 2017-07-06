@@ -215,12 +215,12 @@ public final class Constants {
     public static final String RULE_TYPE_HANDOVER_COLLECTION = "HANDOVER_COLLECTION";
 
     // 库存状态
-    public static final Long INVENTORY_STATUS_GOOD = 3L;// 良品
-    public static final Long INVENTORY_STATUS_DEFEATSALE = 4L; // 残次可销售
-    public static final Long INVENTORY_STATUS_DEFEATNOTSALE = 5L; // 残次不可销售
-    public static final Long INVENTORY_STATUS_PENDING = 6L; // 待处理
-    public static final Long INVENTORY_STATUS_OBSOLESCENT = 7L; // 待报废
-    public static final Long INVENTORY_STATUS_DEADLINESALE = 8L; // 临近保质期
+    public static final Long INVENTORY_STATUS_GOOD = 1L;// 良品
+    public static final Long INVENTORY_STATUS_DEFEATSALE = 2L; // 残次可销售
+    public static final Long INVENTORY_STATUS_DEFEATNOTSALE = 3L; // 残次不可销售
+    public static final Long INVENTORY_STATUS_PENDING = 4L; // 待处理
+    public static final Long INVENTORY_STATUS_OBSOLESCENT = 5L; // 待报废
+    public static final Long INVENTORY_STATUS_DEADLINESALE = 6L; // 临近保质期
 
     // 商品库存
     public static final int INVENTORY_SN_STATUS_ONHAND = 1;// 在库
