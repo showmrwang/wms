@@ -1753,18 +1753,20 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                                 checkingManager.printPackingList(idsList, userId, ouId);
                                 isInsert  = true;
                             }
-                            List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
-                            if(null == printInfoLst || 0 == printInfoLst.size()) {
-                                idsList.add(checkingLineList.get(0).getOdoId());
-                                isInsert  = true;
-                                // 销售清单
-                                checkingManager.printSalesList(idsList, userId, ouId);
-                            }else{
-                                if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                            if (CheckingPrint.SALES_LIST.equals(checkingPrintArray[i])) {
+                                List<WhPrintInfo> printInfoLst =  whPrintInfoDao.getPrintInfoByOdoId(checkingLineList.get(0).getOdoId(), ouId);
+                                if(null == printInfoLst || 0 == printInfoLst.size()) {
                                     idsList.add(checkingLineList.get(0).getOdoId());
                                     isInsert  = true;
                                     // 销售清单
                                     checkingManager.printSalesList(idsList, userId, ouId);
+                                }else{
+                                    if(printInfoLst.size() ==1 && printInfoLst.get(0).getPrintCount() == 0){
+                                        idsList.add(checkingLineList.get(0).getOdoId());
+                                        isInsert  = true;
+                                        // 销售清单
+                                        checkingManager.printSalesList(idsList, userId, ouId);
+                                    }
                                 }
                             }
                             if (CheckingPrint.SINGLE_PLANE.equals(checkingPrintArray[i])) {
