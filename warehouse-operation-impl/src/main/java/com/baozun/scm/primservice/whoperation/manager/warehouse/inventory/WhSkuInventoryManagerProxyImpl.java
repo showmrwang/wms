@@ -273,11 +273,20 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                 rootExcelException.getExcelExceptions().add(new ExcelException("商品编码不能为空", null, rowNum, null));
             } else {
                 // 数量校验
-                if (lineCommand.getOnHandQty() == null) {
+                // 在库库存
+                if (StringUtils.isEmpty(lineCommand.getOnHandQtyStr())) {
                     rootExcelException.getExcelExceptions().add(new ExcelException("在库库存不能为空", null, rowNum, null));
-                } else {
-                    if (lineCommand.getOnHandQty() <= 0) {
-                        rootExcelException.getExcelExceptions().add(new ExcelException("在库库存必须大于0", null, rowNum, null));
+                }
+                if (StringUtils.hasText(lineCommand.getOnHandQtyStr())) {
+                    try {
+                        Double onHandQty = Double.parseDouble(lineCommand.getOnHandQtyStr());
+                        if (onHandQty == null || onHandQty <= 0) {
+                            rootExcelException.getExcelExceptions().add(new ExcelException("在库库存必须大于0", null, rowNum, null));
+                        } else {
+                            lineCommand.setOnHandQty(onHandQty);
+                        }
+                    } catch (Exception e) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("在库库存数据异常", null, rowNum, null));
                     }
                 }
                 // 库位校验逻辑
@@ -452,22 +461,6 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                         rootExcelException.getExcelExceptions().add(new ExcelException("库存状态【" + lineCommand.getInvstatusName() + "】 名称异常", null, rowNum, null));
                     } else {
                         lineCommand.setInvStatus(invStatus.getId());
-                    }
-                }
-                // 在库库存
-                if (StringUtils.isEmpty(lineCommand.getOnHandQtyStr())) {
-                    rootExcelException.getExcelExceptions().add(new ExcelException("在库库存不能为空", null, rowNum, null));
-                }
-                if(StringUtils.hasText(lineCommand.getOnHandQtyStr())){
-                    try{
-                        Double onHandQty=Double.parseDouble(lineCommand.getOnHandQtyStr());
-                        if(onHandQty==null||onHandQty<0){
-                            rootExcelException.getExcelExceptions().add(new ExcelException("在库库存必须大于0", null, rowNum, null));  
-                        } else {
-                            lineCommand.setOnHandQty(onHandQty);
-                        }
-                    } catch (Exception e) {
-                        rootExcelException.getExcelExceptions().add(new ExcelException("在库库存数据异常", null, rowNum, null));
                     }
                 }
                 // sn与残次
