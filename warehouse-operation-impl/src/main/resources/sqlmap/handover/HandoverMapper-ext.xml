@@ -7,6 +7,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.baozun.scm.primservice.whoperation.dao.handover.HandoverDao">
 	<resultMap id="HandoverResultExt" type="com.baozun.scm.primservice.whoperation.model.handover.Handover">
 	</resultMap>
+	<resultMap id="HandoverCommandExt" type="com.baozun.scm.primservice.whoperation.command.handover.HandoverCommand">
+	</resultMap>
 	
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="handoverColumnsExt">
@@ -132,4 +134,94 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        limit 1
 		    ]]>
 		</select>	
+		
+		<select id="findAllUser" resultType="Long">
+	select
+	 distinct(u.create_id) as id
+	from t_wh_handover u
+	where u.ou_id =#{ouId}
+	</select>
+	
+	
+	
+	
+	    <select id="findListCountByQueryMapExt" resultType="long">
+        select count(*) from  t_wh_handover handover 
+        left join t_wh_handover_station  station on handover.handover_station_id =station.id
+ 		left join oper_user as user on handover.create_id = user.id 
+		<include refid="handoverCommandDynamicWhereExt"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findListByQueryMapWithPageExt" resultMap="HandoverCommandExt">
+    	select <include refid="handoverCommandColumnsExt" />
+	    from t_wh_handover handover 
+	    left join t_wh_handover_station  station on handover.handover_station_id =station.id
+ 		left join oper_user as user on handover.create_id = user.id 
+		<include refid="handoverCommandDynamicWhereExt"/>
+		order by handover.create_time DESC
+    </select>
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="handoverCommandColumnsExt">
+	    <![CDATA[
+	      	handover.id as id,
+	     	handover.handover_batch as handoverBatch ,
+			station.code as handoverStationCode,
+			handover.total_box as totalBox,
+			handover.create_time as createTime,
+			user.user_name as userName
+
+	    ]]>
+	</sql>
+	
+	<sql id="handoverCommandDynamicWhereExt">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>
+	       
+				<if test="id!=null">
+					and handover.id = #{id}
+				</if>
+	       
+				<if test="handoverStationId!=null">
+					and handover.handover_station_id = #{handoverStationId}
+				</if>
+	       
+				 
+	       
+		       <if test="handoverBatch!=null and handoverBatch!=''">
+					and handover.handover_batch = #{handoverBatch}
+				</if>
+	       
+				<if test="ouId!=null">
+					and handover.ou_id = #{ouId}
+				</if>
+	       
+				<if test="createId!=null">
+					and handover.create_id = #{createId}
+				</if>
+	       
+				<if test="createTime!=null">
+					and handover.create_time = #{createTime}
+				</if>
+	       
+				<if test="lastModifyTime!=null">
+					and handover.last_modify_time = #{lastModifyTime}
+				</if>
+	       
+				<if test="modifiedId!=null">
+					and handover.modified_id = #{modifiedId}
+				</if>
+		</where>
+	</sql>
+	
+	
+	
+	
+	
+	
+	
+	
 </mapper>

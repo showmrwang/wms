@@ -35,6 +35,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
 
@@ -454,6 +455,16 @@ public class WarehouseManagerImpl extends BaseManagerImpl implements WarehouseMa
             }
         }
         return whHandoverStationCommand;
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhHandoverStation> findAllHandoverStationByouId(Long ouId) {
+        // 查出该仓库下所有交接工位
+        WhHandoverStation handoverStation = new WhHandoverStation();
+        handoverStation.setOuId(ouId);
+        return whHandoverStationDao.findListByParam(handoverStation);
+
     }
 
 }
