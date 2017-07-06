@@ -142,6 +142,8 @@ public final class Constants {
 
     public static final String DATE_PATTERN_YMDHM = "yyyy-MM-dd HH:mm";
 
+    public static final String DATE_PATTERN_YMDHMS = "yyyy-MM-dd HH:mm:ss";
+
     /** 功能模板 入库分拣功能 */
     public static final String FUNCTION_TEMPLET_INBOUND = "inbound";
 

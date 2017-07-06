@@ -18,7 +18,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -374,13 +377,6 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                         skuMap.put(lineCommand.getSkuCode(), lineCommand.getSkuId());
                     }
                 }
-                if (lineCommand.getInvStatus() == null) {
-                    rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
-                } else {
-                    if (!invMap.containsKey(lineCommand.getInvStatus())) {
-                        rootExcelException.getExcelExceptions().add(new ExcelException("库存状态编码错误", null, rowNum, null));
-                    }
-                }
                 if (StringUtils.hasText(lineCommand.getInvType())) {
                     SysDictionary dic = this.sysDictionaryManager.getGroupbyGroupValueAndDicValue(Constants.INVENTORY_TYPE, lineCommand.getInvType());
                     if (dic == null) {
@@ -417,9 +413,66 @@ public class WhSkuInventoryManagerProxyImpl implements WhSkuInventoryManagerProx
                         rootExcelException.getExcelExceptions().add(new ExcelException("库存属性5编码错误", null, rowNum, null));
                     }
                 }
+
+                // 入库时间；生产日期；失效日期 @mender yimin.lu 2017/7/6
+                if (StringUtils.hasText(lineCommand.getInboundTimeStr())) {
+
+                    try {
+                        Date inboundTime = DateUtils.parseDate(lineCommand.getInboundTimeStr(), new String[] {Constants.DATE_PATTERN_YMD, Constants.DATE_PATTERN_YMDHM, Constants.DATE_PATTERN_YMDHMS});
+                        lineCommand.setInboundTime(inboundTime);
+                    } catch (ParseException e) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("入库时间格式错误，必须为：【yyyy-MM-dd、yyyy-MM-dd HH:mm、yyyy-MM-dd HH:mm:ss】", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getMfgDateStr())) {
+                    try {
+                        Date mfgDate = DateUtils.parseDate(lineCommand.getMfgDateStr(), new String[] {Constants.DATE_PATTERN_YMD});
+                        lineCommand.setMfgDate(mfgDate);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        rootExcelException.getExcelExceptions().add(new ExcelException("生产日期格式错误，必须为：【yyyy-MM-dd】", null, rowNum, null));
+                    }
+                }
+                if (StringUtils.hasText(lineCommand.getExpDateStr())) {
+                    try {
+                        Date expDate = DateUtils.parseDate(lineCommand.getExpDateStr(), new String[] {Constants.DATE_PATTERN_YMD});
+                        lineCommand.setExpDate(expDate);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        rootExcelException.getExcelExceptions().add(new ExcelException("失效日期格式错误，必须为：【yyyy-MM-dd】", null, rowNum, null));
+                    }
+                }
+                // 库存状态 @mender yimin.lu 2017/7/6
+                if (StringUtils.isEmpty(lineCommand.getInvstatusName())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("库存状态不能为空", null, rowNum, null));
+                }
+                if (StringUtils.hasText(lineCommand.getInvstatusName())) {
+                    InventoryStatus invStatus = this.inventoryStatusManager.findInventoryStatusByName(lineCommand.getInvstatusName());
+                    if (invStatus == null) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("库存状态【" + lineCommand.getInvstatusName() + "】 名称异常", null, rowNum, null));
+                    } else {
+                        lineCommand.setInvStatus(invStatus.getId());
+                    }
+                }
+                // 在库库存
+                if (StringUtils.isEmpty(lineCommand.getOnHandQtyStr())) {
+                    rootExcelException.getExcelExceptions().add(new ExcelException("在库库存不能为空", null, rowNum, null));
+                }
+                if(StringUtils.hasText(lineCommand.getOnHandQtyStr())){
+                    try{
+                        Double onHandQty=Double.parseDouble(lineCommand.getOnHandQtyStr());
+                        if(onHandQty==null||onHandQty<0){
+                            rootExcelException.getExcelExceptions().add(new ExcelException("在库库存必须大于0", null, rowNum, null));  
+                        } else {
+                            lineCommand.setOnHandQty(onHandQty);
+                        }
+                    } catch (Exception e) {
+                        rootExcelException.getExcelExceptions().add(new ExcelException("在库库存数据异常", null, rowNum, null));
+                    }
+                }
                 // sn与残次
                 if (StringUtils.hasText(lineCommand.getSkuSn())) {
-                    if (lineCommand.getOnHandQty() != 1) {
+                    if (lineCommand.getOnHandQty() != null && lineCommand.getOnHandQty() != 1) {
                         rootExcelException.getExcelExceptions().add(new ExcelException("序列号商品对应的在库库存必须为1", null, rowNum, null));
                     }
                 }

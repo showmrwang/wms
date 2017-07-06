@@ -208,9 +208,11 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 残次原因 */
     private Long defectReasonsId;
     // --------------------------------------------------------------------------------------------
+    // 导入
+    private String inboundTimeStr;
     
-    
-    
+    private String onHandQtyStr;
+
     //-------------------------------------------------
     /** 补货单号 */
     private java.lang.String replenishmentCode;
@@ -237,6 +239,22 @@ public class WhSkuInventoryCommand extends BaseCommand {
     private Boolean isInvattrDiscrepancyAllowrcvd;
 
 
+
+    public String getOnHandQtyStr() {
+        return onHandQtyStr;
+    }
+
+    public void setOnHandQtyStr(String onHandQtyStr) {
+        this.onHandQtyStr = onHandQtyStr;
+    }
+
+    public String getInboundTimeStr() {
+        return inboundTimeStr;
+    }
+
+    public void setInboundTimeStr(String inboundTimeStr) {
+        this.inboundTimeStr = inboundTimeStr;
+    }
 
     public Map<Long, String> getInvStatusMap() {
         return invStatusMap;
