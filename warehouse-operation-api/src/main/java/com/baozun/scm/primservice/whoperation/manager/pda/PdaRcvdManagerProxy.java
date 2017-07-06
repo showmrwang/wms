@@ -1,6 +1,7 @@
 package com.baozun.scm.primservice.whoperation.manager.pda;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.carton.WhCartonCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
@@ -177,6 +178,8 @@ public interface PdaRcvdManagerProxy extends BaseManager {
      * @param command
      */
     void cacheScanedDefeatSkuNoSnWhenGeneralRcvd(WhSkuInventoryCommand command);
+
+    Map<Long, String> findInvStatusIdMap();
 
 
 }

@@ -57,6 +57,7 @@ import com.baozun.scm.primservice.whoperation.model.poasn.WhAsnSn;
 import com.baozun.scm.primservice.whoperation.model.poasn.WhPo;
 import com.baozun.scm.primservice.whoperation.model.sku.SkuMgmt;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container;
+import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Uom;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionRcvd;
@@ -425,7 +426,11 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         rcvdCacheCommand.setOuId(command.getOuId());
         // 默认为良品
         if (null == command.getInvStatus()) {
-            rcvdCacheCommand.setInvStatus(Constants.INVENTORY_STATUS_GOOD);
+            InventoryStatus invStatus = this.inventoryStatusManager.findInventoryStatusByName(Constants.INVENTORY_STATUS_GOOD);
+            if (invStatus != null) {
+
+                rcvdCacheCommand.setInvStatus(invStatus.getId());
+            }
         }
         rcvdCacheCommand.setInsideContainerCode(command.getInsideContainerCode());
         // 占用单据来源
@@ -1774,6 +1779,20 @@ public class PdaRcvdManagerProxyImpl implements PdaRcvdManagerProxy {
         this.pdaRcvdRedisManagerProxy.cacheRcvdSn(command.getUserId(), cacheSn);
         this.cacheContainerSkuAttr(command);
 
+    }
+
+
+    @Override
+    public Map<Long, String> findInvStatusIdMap() {
+        Map<Long, String> invStatusMap = new HashMap<Long, String>();
+        List<InventoryStatus> invStatusList = this.inventoryStatusManager.findAllInventoryStatus();
+        if (invStatusList != null && invStatusList.size() > 0) {
+
+            for (InventoryStatus s : invStatusList) {
+                invStatusMap.put(s.getId(), s.getName());
+            }
+        }
+        return invStatusMap;
     }
 
 }
