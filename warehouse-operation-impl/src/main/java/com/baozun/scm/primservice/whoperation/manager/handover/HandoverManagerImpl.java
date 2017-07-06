@@ -193,7 +193,7 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             }
         }
         handover.setTotalActualWeight(totalActualWeight);
-        handover.setTotalCalcWeight(totalActualWeight);
+        handover.setTotalCalcWeight(totalCalcWeight);
         handover.setCreateTime(new Date());
         handover.setCreateId(userId);
         handover.setLastModifyTime(new Date());
@@ -274,6 +274,8 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             handoverLineDao.insert(handoverLine);
             // 4更新集货交接状态为已完成
             handoverCollection.setHandoverStatus(HandoverCollectionStatus.FINISH);
+            handoverCollection.setLastModifyTime(new Date());
+            handoverCollection.setModifiedId(userId);
             handoverCollectionDao.saveOrUpdateByVersion(handoverCollection);
             // 5出库箱状态改为已交接
             outboundbox.setStatus(OutboundboxStatus.FINISH);
@@ -375,8 +377,9 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
                     whOutboundDeliveryConfirm.setFloats(whOdoPackageInfo.getFloats());
                     if (whOdoPackageInfo.getActualWeight() != null) {
                         whOutboundDeliveryConfirm.setWeight(whOdoPackageInfo.getActualWeight());
+                    } else {
+                        whOutboundDeliveryConfirm.setWeight(whOdoPackageInfo.getCalcWeight());
                     }
-                    whOutboundDeliveryConfirm.setWeight(whOdoPackageInfo.getCalcWeight());
                 }
                 whOutboundDeliveryConfirm.setEcOrderCode(odo.getEcOrderCode());
                 whOutboundDeliveryConfirm.setExtCode(odo.getExtCode());
