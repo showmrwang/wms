@@ -140,16 +140,17 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveCach
         }
         // 2.判断当前商品是否扫描完毕
         boolean isSkuChecked = true;
+        //缓存中的数量
+        Long sourceSkuQty = skuAttrIdsQty.get(saId);
         if (true == isSnLine) {
-            Long sourckSkuQty = skuAttrIdsQty.get(saId);
             long value = 0L;
             // 取到扫描的数量
             String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + saId);
             if (!StringUtils.isEmpty(cacheQty)) {
                 value = new Long(cacheQty).longValue();
             }
-            if ((value + 1) > sourckSkuQty.longValue()) {
-                log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, (value + scanSkuQty.longValue()), sourckSkuQty, logId);
+            if ((value + 1) > sourceSkuQty.longValue()) {
+                log.error("sku scan qty has already more than loc binding qty, skuId is:[{}], scan qty is:[{}], rcvd qty is:[{}], logId is:[{}]", saId, (value + scanSkuQty.longValue()), sourceSkuQty, logId);
                 throw new BusinessException(ErrorCodes.CONTAINER_SKU_QTY_ERROR, new Object[] {sourceContainerCode, saId});
             }
             long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + saId, 1);
@@ -186,8 +187,7 @@ protected static final Logger log = LoggerFactory.getLogger(PdaContainerMoveCach
                 return cssrCmd;
             }
         } else {
-            // 非sn残次商品
-            Long sourceSkuQty = skuAttrIdsQty.get(saId);
+            // 非sn残次商品            
             long value = 0L;
             // 取到扫描的数量
             String cacheQty = cacheManager.getValue(CacheConstants.SCAN_SKU_QUEUE + sourceContainerCode + saId);

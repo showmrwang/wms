@@ -119,7 +119,7 @@ public interface PdaContainerMoveManager extends BaseManager {
        * @param userId
        * @return
        */
-      public void cancelScanSku(String sourceContainerCode,Integer containerLatticNo, String scanType, Long ouId,String logId,Long userId);
+      public void cancelScanSku(String sourceContainerCode,Integer containerLatticNo, String scanType, Integer movePattern, Long ouId,String logId,Long userId);
       
       /***
        * 取消出库箱移库操作的素有缓存

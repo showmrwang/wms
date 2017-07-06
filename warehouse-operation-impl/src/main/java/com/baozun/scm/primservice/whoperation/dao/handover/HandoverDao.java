@@ -27,6 +27,7 @@ import lark.orm.dao.supports.BaseDao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.baozun.scm.primservice.whoperation.command.handover.HandoverCommand;
 import com.baozun.scm.primservice.whoperation.model.handover.Handover;
 
 
@@ -46,5 +47,10 @@ public interface HandoverDao extends BaseDao<Handover, Long> {
     int saveOrUpdate(Handover o);
 
     Handover findByBatch(@Param("batch") String handoverBatch);
+
+    List<Long> findAllUser(@Param("ouId") Long ouId);
+
+    @QueryPage("findListCountByQueryMapExt")
+    Pagination<HandoverCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
 }

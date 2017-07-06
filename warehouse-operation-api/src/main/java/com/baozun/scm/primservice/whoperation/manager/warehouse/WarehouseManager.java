@@ -27,6 +27,7 @@ import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.auth.OperationUnit;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Warehouse;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WarehouseMgmt;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhHandoverStation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacilityGroup;
 
@@ -77,4 +78,6 @@ public interface WarehouseManager extends BaseManager {
     List<WhOutboundFacilityGroup> findAllFacilityGroup(Long ouId);
 
     WhHandoverStationCommand getHandoverStationById(Long id, Long ouId);
+
+    List<WhHandoverStation> findAllHandoverStationByouId(Long ouId);
 }
