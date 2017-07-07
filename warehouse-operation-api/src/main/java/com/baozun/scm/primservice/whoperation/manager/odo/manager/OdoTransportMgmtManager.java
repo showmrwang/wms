@@ -11,7 +11,7 @@ public interface OdoTransportMgmtManager extends BaseManager {
 
     int updateOdoTransportMgmt(WhOdoTransportMgmt tranMgmt);
     
-    int updateOdoTransportMgmtExt(WhOdoTransportMgmt transMgmt);
+    int updateOdoTransportMgmtExt(WhOdoTransportMgmt transMgmt, String msg);
     
     void saveOrUpdateTransportService(Long odoId, boolean flag, int index, String errorMsg, Boolean isOl, Long ouId);
 

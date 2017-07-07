@@ -2904,7 +2904,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                     transMgmt.setTransportServiceProvider(lpCode);
                     transMgmt.setCourierServiceType(expressType);
                     transMgmt.setTimeEffectType(timeEffectType);
-                    int num = odoTransportMgmtManager.updateOdoTransportMgmtExt(transMgmt);
+                    int num = odoTransportMgmtManager.updateOdoTransportMgmtExt(transMgmt, transResult.getMsg());
                     if (num < 1) {
                         throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
                     }
