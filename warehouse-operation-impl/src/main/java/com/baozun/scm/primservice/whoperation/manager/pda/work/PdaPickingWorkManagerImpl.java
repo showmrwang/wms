@@ -878,6 +878,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Long operationId = command.getOperationId();
         String containerCode = command.getOuterContainer(); // 小车
         Long userId = command.getUserId();
+        //修改工作和作业状态为拣货中
         OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         if (null == operatorLine) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -2577,7 +2578,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
                     }
                     Set<String> outbounxBoxs = operatorLine.getOutbounxBoxs();
-                    if (!outbounxBoxs.contains(outBoundBoxCode)) {
+                    if (!StringUtils.isEmpty(outBoundBoxCode) && !outbounxBoxs.contains(outBoundBoxCode)) {
                         if (StringUtils.isEmpty(tipOutBoundBoxCode)) {
                             whOperationExecLine.setIsUseNew(true);
                         } else {
@@ -2629,7 +2630,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         whOperationExecLine.setOldOuterContainerId(whOperationExecLine.getUseOuterContainerId());
                         whOperationExecLine.setUseOuterContainerId(containerId);
                     }
-                    if (!outbounxBoxs.contains(outBoundBoxCode)) {
+                    if (!StringUtils.isEmpty(outBoundBoxCode) && !outbounxBoxs.contains(outBoundBoxCode)) {
                         whOperationExecLine.setIsNotRecommand(true);
                         whOperationExecLine.setOldOutboundboxCode(whOperationExecLine.getUseOutboundboxCode());
                         whOperationExecLine.setUseOutboundboxCode(outBoundBoxCode);
