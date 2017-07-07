@@ -407,6 +407,7 @@ public class CheckingModeCalcManagerImpl extends BaseManagerImpl implements Chec
             for (WhSeedingCollectionLineCommand groupLine : seedingSkuInventoryListGroup) {
                 Long odoId = groupLine.getOdoId();
                 WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
+                waveCode = whOdo.getWaveCode();
                 Store store2 = storeDao.findById(whOdo.getStoreId());
                 Customer customer2 = customerDao.findById(whOdo.getCustomerId());
                 String facilityCode = groupLine.getFacilityCode();
