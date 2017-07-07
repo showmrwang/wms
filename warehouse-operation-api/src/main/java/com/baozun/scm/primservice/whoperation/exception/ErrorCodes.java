@@ -1096,6 +1096,9 @@ public class ErrorCodes {
     
     /**库存不足,请先执行补货工作*/
     public static final int INVENTORY_IS_ERROR=70073;
+    
+    /**出库箱库存不正确*/
+    public static final int OUT_BOUND_INVENTORY_IS_ERROR=70074;
 
     // 70001-80000 tangming
 
