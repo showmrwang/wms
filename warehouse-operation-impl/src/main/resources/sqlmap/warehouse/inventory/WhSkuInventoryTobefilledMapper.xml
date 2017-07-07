@@ -145,7 +145,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	uuid ,
 		        	ou_id ,
 		        	last_modify_time ,
-		        	occupation_code_source , 
+		        	occupation_code_source 
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
