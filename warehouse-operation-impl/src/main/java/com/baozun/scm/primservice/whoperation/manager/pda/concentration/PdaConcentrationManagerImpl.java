@@ -1104,8 +1104,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
             collection.setFacilityId(facilityId);
-            collection.setTemporaryLocationId(null);
-            collection.setLocationId(null);
             collection.setCollectionStatus(CollectionStatus.TO_SEED);
             // 路径推荐结果状态修改为完成
             whFacilityRecPathDao.updateStatusToFinish(batch, containerCode, ouId);
@@ -1116,9 +1114,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             if (null == temporaryStorageLocationId) {
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
-            collection.setFacilityId(null);
             collection.setTemporaryLocationId(temporaryStorageLocationId);
-            collection.setLocationId(null);
             collection.setCollectionStatus(CollectionStatus.TEMPORARY_STORAGE);
         } else if (destinationType == Constants.TRANSIT_LOCATION) {
             // 目标移到中转库位
@@ -1126,8 +1122,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             if (null == transitLocationId) {
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
-            collection.setFacilityId(null);
-            collection.setTemporaryLocationId(null);
             collection.setLocationId(transitLocationId);
             collection.setCollectionStatus(CollectionStatus.TRANSFER);
         }
