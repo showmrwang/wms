@@ -2119,10 +2119,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         Double invSum = 0.0;
         for(WhSkuInventoryCommand skuInvCmd:listSkuInvCmd){
-            invSum += skuInvCmd.getOnHandQty();
+            invSum += skuInvCmd.getOnHandQty(); 
         }
         if(!checkingSum.equals(invSum)){
-            throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+            log.error("checkingSum is :"+checkingSum+"invSum is:"+invSum);
+            throw new BusinessException(ErrorCodes.OUT_BOUND_INVENTORY_IS_ERROR);
         }
     }
 
