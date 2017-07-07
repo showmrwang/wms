@@ -678,7 +678,7 @@
 			odo.is_assign_success as isAssignSuccess,
 			odo.original_odo_code as originalOdoCode,
 			odo.assign_fail_reason as assignFailReason,
-			if((s.is_vas_success = 0 or s.is_tsp_success = 0 or s.is_waybill_code_success = 0), 0, 1) as logisticsFlag
+			if((s.id is not null), 0, 1) as logisticsFlag
 		from
 			t_wh_odo odo
 			left join t_wh_odo_address address on address.odo_id = odo.id
