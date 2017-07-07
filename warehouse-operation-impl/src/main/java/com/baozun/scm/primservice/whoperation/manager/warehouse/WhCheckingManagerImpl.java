@@ -1067,7 +1067,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 c.setStatus(Constants.LIFECYCLE_START);
                 c.setLifecycle(Constants.LIFECYCLE_START);
                 containerDao.saveOrUpdateByVersion(c);
-                insertGlobalLog(GLOBAL_LOG_INSERT, c, ouId, userId, null, null);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
             }
         }
         // for (WhCheckingLineCommand checkingLine : checkingLineList) {
@@ -1088,6 +1088,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 turn.setStatus(Constants.LIFECYCLE_START);
                 turn.setLifecycle(Constants.LIFECYCLE_START);
                 containerDao.saveOrUpdateByVersion(turn);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, turn, ouId, userId, null, null);
             }
         }
         // }
@@ -1109,6 +1110,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
                     facility.setBatch(null);
                     whOutboundFacilityDao.saveOrUpdateByVersion(facility);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, facility, ouId, userId, null, null);
                 }
             }
         }
@@ -2107,8 +2109,19 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
 
         }
         // 校验出库箱库存
+        Double checkingSum = 0.0;
+        for (WhCheckingLineCommand checkingLine : checkingLineList) {
+            checkingSum += checkingLine.getCheckingQty();
+        }
         List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryDao.findOutboundboxInventory(outboundboxCode, ouId);
         if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
+            throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+        }
+        Double invSum = 0.0;
+        for(WhSkuInventoryCommand skuInvCmd:listSkuInvCmd){
+            invSum += skuInvCmd.getOnHandQty();
+        }
+        if(!checkingSum.equals(invSum)){
             throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
         }
     }
