@@ -626,20 +626,26 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
                 if (OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.CHECKING.equals(whOdo.getOdoStatus())) {
                     whOdo.setOdoStatus(OdoStatus.CHECKING_FINISH);
                 }
-                whOdo.setLagOdoStatus(OdoStatus.CHECKING_FINISH);
+                if (!OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
+                    whOdo.setLagOdoStatus(OdoStatus.CHECKING_FINISH);
+                }
                 whOdo.setModifiedId(userId);
             } else {
                 if (OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())) {
                     whOdo.setOdoStatus(OdoStatus.CHECKING);
                 }
-                whOdo.setLagOdoStatus(OdoStatus.CHECKING);
+                if (!OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
+                    whOdo.setLagOdoStatus(OdoStatus.CHECKING);
+                }
                 whOdo.setModifiedId(userId);
             }
         } else {
             if (OdoStatus.SEEDING_FINISH.equals(whOdo.getOdoStatus()) || OdoStatus.COLLECTION_FINISH.equals(whOdo.getOdoStatus())) {
                 whOdo.setOdoStatus(OdoStatus.CHECKING);
             }
-            whOdo.setLagOdoStatus(OdoStatus.CHECKING);
+            if (!OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
+                whOdo.setLagOdoStatus(OdoStatus.CHECKING);
+            }
             whOdo.setModifiedId(userId);
         }
         return whOdo;
@@ -849,7 +855,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         for (WhCheckingLineCommand orgCheckingLine : orgCheckingLineList) {
             orgCheckingLineMap.put(orgCheckingLine.getId(), orgCheckingLine);
 
-            Set<String> checkingLineUuidSet = checkingLineUuidMap.get(orgCheckingLine.getId());
+            Set<String> checkingLineUuidSet = checkingLineUuidMap.get(orgCheckingLine.getOdoLineId());
             if (null == checkingLineUuidSet) {
                 checkingLineUuidSet = new HashSet<>();
                 checkingLineUuidMap.put(orgCheckingLine.getOdoLineId(), checkingLineUuidSet);
