@@ -1161,13 +1161,6 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         List<ReplenishmentTask> replenishmentTaskLst = replenishmentTaskManager.findTaskByWave(whWave.getId(), whWave.getOuId());
         // 获取工作类型
         WorkType workType = this.workTypeDao.findWorkTypeByworkCategory("PICKING", whOdoOutBoundBox.getOuId());
-        // 根据容器ID获取容器CODE
-        Container container = new Container();
-        if (whOdoOutBoundBox.getOuterContainerId() != null) {
-            container = containerDao.findByIdExt(whOdoOutBoundBox.getOuterContainerId(), whOdoOutBoundBox.getOuId());
-        } else {
-            container = containerDao.findByIdExt(whOdoOutBoundBox.getContainerId(), whOdoOutBoundBox.getOuId());
-        }
         // 调编码生成器工作头实体标识
         String workCode = codeManager.generateCode(Constants.WMS, Constants.WHWORK_MODEL_URL, "", "WORK", null);
 
@@ -1213,14 +1206,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         whWorkCommand.setOrderCode(null);
         // 库位--更新时获取数据
         whWorkCommand.setLocationCode(null);
-        // 托盘
-        if (whOdoOutBoundBox.getOuterContainerId() != null) {
-            whWorkCommand.setOuterContainerCode(null == container ? null : container.getCode());
-        }
-        // 容器
-        if (whOdoOutBoundBox.getOuterContainerId() == null) {
-            whWorkCommand.setContainerCode(null == container ? null : container.getCode());
-        }
+        // 托盘--更新时获取数据
+        whWorkCommand.setOuterContainerCode(null);
+        // 容器--更新时获取数据
+        whWorkCommand.setContainerCode(null);
         // 创建时间
         whWorkCommand.setCreateTime(new Date());
         // 最后操作时间
@@ -1534,16 +1523,16 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 获取上一次循环的实体类
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count - 1);
 
-                if (null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())) {
+                if (null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && !whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())) {
                     isFromLocationId = false;
                 }
-                if (null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())) {
+                if (null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && !whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())) {
                     isFromOuterContainerId = false;
                 }
-                if (null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())) {
+                if (null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && !whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())) {
                     isFromInsideContainerId = false;
                 }
-                if (null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())) {
+                if (null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && !whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())) {
                     isOdoId = false;
                 }
             }

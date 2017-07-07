@@ -254,6 +254,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             // throw new BusinessException("一个出库箱对应多个运单号");
         }
         whOdodeliveryInfo = whOdodeliveryInfoList.get(0);
+        Double actualWeight = 0.0;
         // 2.判断称重集中是否满足浮动百分比
         if (outbound.getIsValidateWeight()) {
             List<UomCommand> weightUomCmds;
@@ -268,7 +269,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                 }
             }
             Integer floats = outbound.getWeightFloatPercentage();
-            Double actualWeight = command.getActualWeight() * uomRate;
+            actualWeight = command.getActualWeight() * uomRate;
             Double calcWeight = packageInfo.getCalcWeight();
             Double difference = Math.abs(actualWeight - calcWeight);
             Double calcDifference = (double) (calcWeight * floats / 100);
@@ -278,7 +279,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             }
         }
         // 3.保存包裹实际重量
-        packageInfo.setActualWeight(command.getActualWeight());
+        packageInfo.setActualWeight(actualWeight);
         packageInfo.setModifiedId(userId);
         int cnt = whOdoPackageInfoDao.saveOrUpdateByVersion(packageInfo);
         if (0 > cnt) {

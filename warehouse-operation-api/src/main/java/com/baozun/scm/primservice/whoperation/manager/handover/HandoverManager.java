@@ -1,7 +1,13 @@
 package com.baozun.scm.primservice.whoperation.manager.handover;
 
 import java.util.List;
+import java.util.Map;
 
+import lark.common.dao.Page;
+import lark.common.dao.Pagination;
+import lark.common.dao.Sort;
+
+import com.baozun.scm.primservice.whoperation.command.handover.HandoverCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhHandoverStationCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
 import com.baozun.scm.primservice.whoperation.model.handover.HandoverCollection;
@@ -86,6 +92,12 @@ public interface HandoverManager extends BaseManager {
     int cancelBoxToHandoverstation(String outboundBoxCode, Long ouId);
 
     List<HandoverCollection> findhandoverCollectionByHandoverStationId(Long id, Long ouId);
+
+    List<Long> findAlluser(Long ouId);
+
+    Pagination<HandoverCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+
+    String findHandoverBatchByOutboundboxCode(String outboundboxCode, Long ouId);
 
     /**
      * 打印销售清单

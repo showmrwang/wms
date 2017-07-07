@@ -50,25 +50,25 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
             transportService.setIsWaybillCodeSuccess(false);
             if (index == 1) {
                 transportService.setIsVasSuccess(flag);
-                transportService.setVasErrorCode(flag ? null : errorMsg);
+                transportService.setVasErrorCode(errorMsg);
             } else if (index == 2) {
                 transportService.setIsTspSuccess(flag);
-                transportService.setTspErrorCode(flag ? null : errorMsg);
+                transportService.setTspErrorCode(errorMsg);
             } else if (index == 3) {
                 transportService.setIsWaybillCodeSuccess(flag);
-                transportService.setWaybillCodeErrorCode(flag ? null : errorMsg);
+                transportService.setWaybillCodeErrorCode(errorMsg);
             }
             whOdoTransportServiceDao.insert(transportService);
         } else {
             if (index == 1) {
                 transportService.setIsVasSuccess(flag);
-                transportService.setVasErrorCode(flag ? null : errorMsg);
+                transportService.setVasErrorCode(errorMsg);
             } else if (index == 2) {
                 transportService.setIsTspSuccess(flag);
-                transportService.setTspErrorCode(flag ? null : errorMsg);
+                transportService.setTspErrorCode(errorMsg);
             } else if (index == 3) {
                 transportService.setIsWaybillCodeSuccess(flag);
-                transportService.setWaybillCodeErrorCode(flag ? null : errorMsg);
+                transportService.setWaybillCodeErrorCode(errorMsg);
             }
             if (null != isOl) {
                 transportService.setIsOl(isOl);
@@ -79,9 +79,9 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public int updateOdoTransportMgmtExt(WhOdoTransportMgmt transMgmt) {
+    public int updateOdoTransportMgmtExt(WhOdoTransportMgmt transMgmt, String msg) {
         int num = whOdoTransportMgmtDao.updateWhOdoTransportMgmt(transMgmt);
-        this.saveOrUpdateTransportService(transMgmt.getOdoId(), true, 2, null, null, transMgmt.getOuId());
+        this.saveOrUpdateTransportService(transMgmt.getOdoId(), true, 2, msg, null, transMgmt.getOuId());
         return num;
     }
 
