@@ -326,11 +326,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			s.batch = #{batch}
 			<if test="destinationType != null and destinationType == 2">
 				and s.temporary_location_id is not null
+				and s.collection_status = 3
 			</if>
 			<if test="destinationType != null and destinationType == 3">
 				and s.location_id is not null
+				and s.collection_status = 2
 			</if>
-			and ifnull(s.collection_status, 1) != 10
 			and s.ou_id = #{ouId}
 	</select>
 
