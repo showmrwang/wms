@@ -14,6 +14,8 @@
 
 package com.baozun.scm.primservice.whoperation.manager.seeding;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -126,7 +128,11 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
                     if(seedingBatchOdoLineInfoList!=null){
                         //封装订单的明细信息
                         for(WhSeedingWallLatticeLine seedingWallLatticeLine:seedingBatchOdoLineInfoList){
-                            lineMap.put(seedingWallLatticeLine.getSkuId()+"_"+seedingWallLatticeLine.getUuid(), seedingWallLatticeLine);
+                            String uuid=this.createNewUuid(seedingWallLatticeLine,null);
+                            WhSeedingWallLatticeLine latticeLine=lineMap.get(seedingWallLatticeLine.getSkuId()+"_"+uuid);
+                            if(latticeLine==null){
+                                lineMap.put(seedingWallLatticeLine.getSkuId()+"_"+uuid, seedingWallLatticeLine);
+                            }
                         }
                     }
                 }
@@ -474,6 +480,47 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_TURNOVERBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LAST_TIME_OUTBOUND_BOX_SEEDING_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "*");
 
+    }
+    
+    public String createNewUuid(WhSeedingWallLatticeLine lattice,WhSeedingCollectionLineCommand lineCommand){
+        String uuid=null;
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        WhSkuInventory inv = new WhSkuInventory();
+        try {
+            if(lattice!=null){
+                inv.setSkuId(lattice.getSkuId());
+                inv.setInvStatus(lattice.getInvStatus() == null ? null : Long.parseLong(lattice.getInvStatus()));
+                inv.setInvType(lattice.getInvType());
+                //inv.setBatchNumber(lattice.getBatchNumber());
+                inv.setMfgDate(lattice.getMfgDate()==null?null:formater.parse(lattice.getMfgDate()));
+                inv.setExpDate(lattice.getExpDate()==null?null:formater.parse(lattice.getExpDate()));
+                inv.setCountryOfOrigin(lattice.getCountryOfOrigin());
+                inv.setInvAttr1(lattice.getInvAttr1());
+                inv.setInvAttr2(lattice.getInvAttr2());
+                inv.setInvAttr3(lattice.getInvAttr3());
+                inv.setInvAttr4(lattice.getInvAttr4());
+                inv.setInvAttr5(lattice.getInvAttr5());
+            }
+            if(lineCommand!=null){
+                inv.setSkuId(lineCommand.getSkuId());
+                inv.setInvStatus(lineCommand.getInvStatus() == null ? null : Long.parseLong(lineCommand.getInvStatus()));
+                inv.setInvType(lineCommand.getInvType());
+                //inv.setBatchNumber(lineCommand.getBatchNumber());
+                inv.setMfgDate(lineCommand.getMfgDate());
+                inv.setExpDate(lineCommand.getExpDate());
+                inv.setCountryOfOrigin(lineCommand.getCountryOfOrigin());
+                inv.setInvAttr1(lineCommand.getInvAttr1());
+                inv.setInvAttr2(lineCommand.getInvAttr2());
+                inv.setInvAttr3(lineCommand.getInvAttr3());
+                inv.setInvAttr4(lineCommand.getInvAttr4());
+                inv.setInvAttr5(lineCommand.getInvAttr5());
+            }
+            uuid=SkuInventoryUuid.invUuid(inv);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return uuid;
     }
 
 }

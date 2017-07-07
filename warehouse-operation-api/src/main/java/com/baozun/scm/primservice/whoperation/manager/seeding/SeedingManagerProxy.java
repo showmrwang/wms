@@ -286,4 +286,7 @@ public interface SeedingManagerProxy extends BaseManager {
     public void releaseFacilityBatchRedis(Long facilityId, String batchNo, Long ouId, String logId);
 
     public WhSkuInventory createWhSkuInventory(WhSeedingCollectionLineCommand collectionSeedingLine, Long ouId, String logId);
+    
+    public String createNewUuid(WhSeedingWallLatticeLine lattice,WhSeedingCollectionLineCommand lineCommand);
+    
 }
