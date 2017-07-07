@@ -14,5 +14,6 @@ public class CheckingPrint implements Serializable {
     public static final String SINGLE_PLANE = "3";// 面单
     public static final String BOX_LABEL = "4";// 箱标签
     public static final String INVOICE_REVIEW = "5";// 发票（复核）
+    public static final String HAND_OVER = "6";// 交接清单
     
 }
