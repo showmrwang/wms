@@ -195,6 +195,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                     seedingCollection.setPickingMode(work.getPickingMode());
                     seedingCollection.setCheckingMode(work.getCheckingMode());
                     seedingCollection.setDistributionMode(work.getDistributionMode());
+                    seedingCollection.setWaveCode(work.getWaveCode());
                     seedingCollection.setCreateTime(new Date());
                     seedingCollection.setLastModifyTime(new Date());
                     this.whSeedingCollectionDao.insert(seedingCollection);
