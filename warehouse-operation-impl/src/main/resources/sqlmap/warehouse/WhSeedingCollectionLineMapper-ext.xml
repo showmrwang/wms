@@ -231,7 +231,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             collectionLine.customer_name as customerName,
             collectionLine.store_code as storeCode,
             collectionLine.store_name as storeName,
-            collectionLine.inv_status as invStatus,
+            invStatus.name as invStatus,
             collectionLine.inv_type as invType,
             collectionLine.batch_number as batchNumber,
             collectionLine.mfg_date as mfgDate,
@@ -258,6 +258,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
               on customer.customer_code = collectionLine.customer_code and customer.customer_name = collectionLine.customer_name
             left join t_bi_store as store
               on store.store_code = collectionLine.store_code and store.store_name = collectionLine.store_name
+              LEFT JOIN t_wh_inventory_status AS invStatus ON collectionLine.inv_status = invStatus.id
         where
             collectionLine.seeding_collection_id = #{seedingCollectionId}
             and collectionLine.ou_id = #{ouId}
