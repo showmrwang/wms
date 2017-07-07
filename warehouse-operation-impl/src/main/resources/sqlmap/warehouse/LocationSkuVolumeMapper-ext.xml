@@ -123,4 +123,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			)
 		and lsv.sku_id = #{skuId}
 	</select>
+
+	<select id="findFromGroupBySkuIdAndFacilityId" resultMap="LocationSkuVolumeResultExt">
+		SELECT
+			fgsv.sku_id AS skuId,
+			lsv.location_id AS locationId
+		FROM
+			t_wh_facility_group_sku_volume fgsv
+		LEFT JOIN t_wh_outbound_facility facility ON fgsv.facility_group_id = facility.facility_group
+		LEFT JOIN t_wh_facility_location_sku_volume flsv ON facility.id = flsv.facility_id
+		LEFT JOIN t_wh_location_sku_volume lsv ON flsv.lsv_id = lsv.id
+		WHERE
+			fgsv.sku_id = #{skuId}
+		AND fgsv.serial_number = lsv.serial_number
+		AND facility.id = #{facilityId}
+		AND facility.ou_id = #{ouId}
+	</select>
+	
 </mapper>

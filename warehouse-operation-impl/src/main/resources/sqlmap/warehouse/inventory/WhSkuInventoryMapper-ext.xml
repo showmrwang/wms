@@ -4919,7 +4919,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	
 	  
-    <select id="getWhSkuInventoryCommandByOdo" resultMap="WhSkuInventoryCommandSnResultExt">
+    <select id="getWhSkuInventoryCommandByOdo" resultMap="WhSkuInventoryCommandResultExt">
 	    select
 	         <include refid="whSkuInventoryColumnsInvExt" />
 		      from 

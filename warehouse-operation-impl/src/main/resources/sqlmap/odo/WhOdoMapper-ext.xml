@@ -400,11 +400,11 @@
 			</if>
 			<if test="orderTimeStart!=null and orderTimeStart!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&gt;=#{orderTimeStart}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&gt;=#{orderTimeStart}
 			</if>
 			<if test="orderTimeEnd!=null and orderTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&lt;=#{orderTimeEnd}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&lt;=#{orderTimeEnd}
 			</if>
 			<if test="deliverGoodsTimeMode!=null">
 				and transmgmt.deliver_goods_time_mode IN
@@ -627,7 +627,7 @@
 			odo.ec_order_code as ecOrderCode,
 			odo.customer_id as customerId,
 			odo.store_id AS storeId,
-			DATE_FORMAT(odo.order_time, '%Y-%m-%d') as orderTime,
+			DATE_FORMAT(odo.order_time, '%Y-%m-%d %H:%i:%s') as orderTime,
 			odo.sku_number_of_packages AS skuNumberOfPackages,
 			odo.amt as amt,
 			transmgmt.transport_service_provider as transportServiceProvider,
@@ -1228,7 +1228,7 @@
 		odo.ec_order_code as ecOrderCode,
 		odo.customer_id as customerId,
 		odo.store_id AS storeId,
-		DATE_FORMAT(odo.order_time,'%Y-%m-%d') as
+		DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s') as
 		orderTime,
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
@@ -1500,11 +1500,11 @@
 			</if>
 			<if test="orderTimeStart!=null and orderTimeStart!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&gt;=#{orderTimeStart}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&gt;=#{orderTimeStart}
 			</if>
 			<if test="orderTimeEnd!=null and orderTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&lt;=#{orderTimeEnd}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&lt;=#{orderTimeEnd}
 			</if>
 			<if test="deliverGoodsTimeMode!=null">
 				and transmgmt.deliver_goods_time_mode IN
@@ -1895,11 +1895,11 @@
 			</if>
 			<if test="orderTimeStart!=null and orderTimeStart!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&gt;=#{orderTimeStart}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&gt;=#{orderTimeStart}
 			</if>
 			<if test="orderTimeEnd!=null and orderTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&lt;=#{orderTimeEnd}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&lt;=#{orderTimeEnd}
 			</if>
 			<if test="deliverGoodsTimeMode!=null">
 				and transmgmt.deliver_goods_time_mode IN
@@ -2267,11 +2267,11 @@
 			</if>
 			<if test="orderTimeStart!=null and orderTimeStart!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&gt;=#{orderTimeStart}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&gt;=#{orderTimeStart}
 			</if>
 			<if test="orderTimeEnd!=null and orderTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&lt;=#{orderTimeEnd}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&lt;=#{orderTimeEnd}
 			</if>
 			<if test="deliverGoodsTimeMode!=null">
 				and transmgmt.deliver_goods_time_mode IN
@@ -2490,7 +2490,7 @@
 		odo.ec_order_code as ecOrderCode,
 		odo.customer_id as customerId,
 		odo.store_id AS storeId,
-		DATE_FORMAT(odo.order_time,'%Y-%m-%d') as
+		DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s') as
 		orderTime,
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
@@ -2717,7 +2717,7 @@
 		odo.ec_order_code as ecOrderCode,
 		odo.customer_id as customerId,
 		odo.store_id AS storeId,
-		DATE_FORMAT(odo.order_time,'%Y-%m-%d') as
+		DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s') as
 		orderTime,
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
@@ -2941,11 +2941,11 @@
 			</if>
 			<if test="orderTimeStart!=null and orderTimeStart!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&gt;=#{orderTimeStart}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&gt;=#{orderTimeStart}
 			</if>
 			<if test="orderTimeEnd!=null and orderTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d')&lt;=#{orderTimeEnd}
+				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&lt;=#{orderTimeEnd}
 			</if>
 			<if test="deliverGoodsTimeMode!=null and deliverGoodsTimeMode.size()>0">
 				and transmgmt.deliver_goods_time_mode IN

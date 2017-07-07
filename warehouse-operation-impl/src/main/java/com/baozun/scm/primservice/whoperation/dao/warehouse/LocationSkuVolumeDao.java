@@ -59,4 +59,13 @@ public interface LocationSkuVolumeDao extends BaseDao<LocationSkuVolume, Long> {
      * @return
      */
     List<LocationSkuVolume> findBySkuIdAndFacilityId(@Param("skuId") Long skuId, @Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
+
+    /**
+     * [业务方法] 通过复核台组查找商品库位信息
+     * @param skuId
+     * @param facilityId
+     * @param ouId
+     * @return
+     */
+    List<LocationSkuVolume> findFromGroupBySkuIdAndFacilityId(@Param("skuId") Long skuId, @Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
 }

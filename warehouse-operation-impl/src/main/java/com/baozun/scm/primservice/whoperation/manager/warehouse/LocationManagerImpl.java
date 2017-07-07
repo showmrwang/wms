@@ -132,6 +132,10 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
         // 新插入耗材库存id
         // Long newInvId = 0L;
         List<LocationSkuVolume> lsvList = this.locationSkuVolumeDao.findBySkuIdAndFacilityId(skuId, facilityId, ouId);
+        if (null == lsvList || lsvList.isEmpty()) {
+            // 复核台库位上没有绑定商品 则去复核台组上查找对应序号绑定的商品信息
+            lsvList = this.locationSkuVolumeDao.findFromGroupBySkuIdAndFacilityId(skuId, facilityId, ouId);
+        }
         if (null != lsvList && !lsvList.isEmpty()) {
             for (LocationSkuVolume lsv : lsvList) {
                 if (null != lsv) {
@@ -141,7 +145,8 @@ public class LocationManagerImpl extends BaseManagerImpl implements LocationMana
                     }
                     List<WhSkuInventory> invList = whSkuInventoryDao.findSkuInvByLocationIdWithOnHandQty(lsv.getLocationId(), skuId, ouId);
                     if (null == invList || invList.isEmpty()) {
-                        // 找不到耗材 返回为空
+                        // 库存表找不到耗材 返回为空
+                        // continue;
                         return null;
                     }
                     WhSkuInventory inv = invList.get(0);
