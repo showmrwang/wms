@@ -326,7 +326,7 @@ public class LocationReplenishmentManagerProxyImpl extends BaseManagerImpl imple
             Long invSkuId = whskuInventoryManager.findSkuInInventoryByLocation(locationId, ouId);
             if (null == invSkuId) {
                 // 如果库位为新绑定库位, 在库存表中找不到库存信息
-                skuId = invSkuId;
+                invSkuId = skuId;
             }
             if (!invSkuId.equals(skuId)) {
                 log.info("checkLocationReplenishmentMsg: sku not match");
