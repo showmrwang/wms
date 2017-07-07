@@ -38,7 +38,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	inv_attr5 as invAttr5,
 	        	uuid as uuid,
 	        	ou_id as ouId,
-	        	last_modify_time as lastModifyTime
+	        	last_modify_time as lastModifyTime,
+	        	occupation_code_source as occupationCodeSource
 	    ]]>
 	</sql>
 	<sql id="whSkuInventoryTobefilledConditionWhereExt">
@@ -143,7 +144,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	inv_attr5 ,
 		        	uuid ,
 		        	ou_id ,
-		        	last_modify_time 
+		        	last_modify_time ,
+		        	occupation_code_source , 
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{skuId,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -169,7 +171,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
-		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR}
 		        )
 		    ]]>
 	
@@ -200,7 +203,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        inv_attr4 = #{invAttr4,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        inv_attr5 = #{invAttr5,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        uuid = #{uuid,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} 
+		        last_modify_time = #{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        occupation_code_source = #{occupationCodeSource,javaType=java.lang.String,jdbcType=VARCHAR} 
 	        WHERE 
 		        id = #{id} 
 				and ou_id = #{ouId}		        

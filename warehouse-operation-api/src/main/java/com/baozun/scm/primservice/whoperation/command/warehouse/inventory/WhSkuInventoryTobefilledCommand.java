@@ -107,6 +107,8 @@ public class WhSkuInventoryTobefilledCommand extends BaseModel {
 	private java.lang.Long ouId;
 	/** 最后操作时间 */
 	private java.util.Date lastModifyTime;
+	/** 占用单据号来源 */
+    private String occupationCodeSource;
 	//columns END
 	
     /** 残次库存信息 */
@@ -293,6 +295,14 @@ public class WhSkuInventoryTobefilledCommand extends BaseModel {
 		return this.lastModifyTime;
 	}
 	
+    public String getOccupationCodeSource() {
+        return occupationCodeSource;
+    }
+
+    public void setOccupationCodeSource(String occupationCodeSource) {
+        this.occupationCodeSource = occupationCodeSource;
+    }
+
     @Override
 	public String toString() {
 		return new ToStringBuilder(this)
