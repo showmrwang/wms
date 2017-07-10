@@ -22,6 +22,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSeedingCollectionD
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundFacility;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 
@@ -126,6 +127,19 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<WhSeedingWallLattice> getSeedingBatchOdoInfo(String batchNo, Long ouId){
         return whSeedingCollectionDao.getSeedingBatchOdoInfo(batchNo, ouId);
+    }
+    
+    /**
+     * 获取播种批次下的出库单明细信息
+     *
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<WhSeedingWallLatticeLine> getSeedingBatchOdoLineInfo(Long odoLineId, Long ouId){
+        return whSeedingCollectionDao.getSeedingBatchOdoLineInfo(odoLineId, ouId);
     }
 
 }
