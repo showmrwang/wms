@@ -50,8 +50,10 @@ public class WhSeedingWallLatticeLine extends BaseModel {
     String storeCode;
     /** 店铺名称 */
     String storeName;
-    /** 库存状态 名称 */
+    /** 库存状态  */
     String invStatus;
+    /**库存状态名称*/
+    String invStatusName;
     /** 库存类型 dic_label */
     String invType;
     /** 批次号 */
@@ -301,5 +303,13 @@ public class WhSeedingWallLatticeLine extends BaseModel {
 
     public void setOdoQty(Long odoQty) {
         this.odoQty = odoQty;
+    }
+
+    public String getInvStatusName() {
+        return invStatusName;
+    }
+
+    public void setInvStatusName(String invStatusName) {
+        this.invStatusName = invStatusName;
     }
 }

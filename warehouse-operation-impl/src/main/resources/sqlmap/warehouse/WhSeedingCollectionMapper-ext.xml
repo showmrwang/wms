@@ -482,6 +482,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		store.store_name AS
 		storeName,
 		skuInv.inv_status AS invStatus,
+		invStatus.name AS invStatusName,
 		skuInv.inv_type AS invType,
 		WORK.batch AS batchNumber,
 		skuInv.mfg_date AS mfgDate,
@@ -512,8 +513,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		LEFT JOIN t_wh_wave_line waveLine ON
 		waveLine.odo_line_id = odoLine.id
 		AND waveLine.odo_id = odo.id
-		LEFT JOIN
-		t_wh_work WORK ON WORK .wave_id = waveLine.wave_id
+		LEFT JOIN t_wh_work WORK ON WORK .wave_id = waveLine.wave_id
+		LEFT JOIN t_wh_inventory_status AS invStatus ON skuInv.inv_status = invStatus.id
 		WHERE
 		odoLine.id =#{odoLineId}
 		AND sku.ou_id = #{ouId}
