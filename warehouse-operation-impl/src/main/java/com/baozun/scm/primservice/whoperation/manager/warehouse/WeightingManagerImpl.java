@@ -254,22 +254,21 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             // throw new BusinessException("一个出库箱对应多个运单号");
         }
         whOdodeliveryInfo = whOdodeliveryInfoList.get(0);
-        Double actualWeight = 0.0;
         // 2.判断称重集中是否满足浮动百分比
-        if (outbound.getIsValidateWeight()) {
-            List<UomCommand> weightUomCmds;
-            weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
-            Double uomRate = 0.0;
-            for (UomCommand lenUom : weightUomCmds) {
-                String uomCode = "";
-                if (null != lenUom) {
-                    uomCode = lenUom.getUomCode();
-                    if ("kg".equalsIgnoreCase(uomCode)) uomRate = lenUom.getConversionRate();
-                    break;
-                }
+        List<UomCommand> weightUomCmds;
+        weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
+        Double uomRate = 0.0;
+        for (UomCommand lenUom : weightUomCmds) {
+            String uomCode = "";
+            if (null != lenUom) {
+                uomCode = lenUom.getUomCode();
+                if ("kg".equalsIgnoreCase(uomCode)) uomRate = lenUom.getConversionRate();
+                break;
             }
+        }
+        if (outbound.getIsValidateWeight()) {
             Integer floats = outbound.getWeightFloatPercentage();
-            actualWeight = command.getActualWeight() * uomRate;
+            Double actualWeight = command.getActualWeight() * uomRate;
             Double calcWeight = packageInfo.getCalcWeight();
             Double difference = Math.abs(actualWeight - calcWeight);
             Double calcDifference = (double) (calcWeight * floats / 100);
@@ -279,7 +278,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             }
         }
         // 3.保存包裹实际重量
-        packageInfo.setActualWeight(actualWeight);
+        packageInfo.setActualWeight(command.getActualWeight() * uomRate);
         packageInfo.setModifiedId(userId);
         int cnt = whOdoPackageInfoDao.saveOrUpdateByVersion(packageInfo);
         if (0 > cnt) {
