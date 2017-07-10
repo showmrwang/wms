@@ -14,6 +14,8 @@
 
 package com.baozun.scm.primservice.whoperation.manager.seeding;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baozun.redis.manager.CacheManager;
+import com.baozun.scm.primservice.whoperation.command.odo.OdoLineCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacilityCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
@@ -34,9 +37,11 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
+import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSeedingCollectionManager;
 import com.baozun.scm.primservice.whoperation.model.seeding.SeedingLattice;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionSeedingWall;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
@@ -53,6 +58,9 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
 
     @Autowired
     private CacheManager cacheManager;
+    
+    @Autowired
+    private OdoManager odoManager;
 
 
 
@@ -72,6 +80,69 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
 
         String cacheKey = CacheConstants.CACHE_SEEDING_ODO_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-" + latticeNo;
         cacheManager.setObject(cacheKey, seedingWallLattice, CacheConstants.CACHE_ONE_WEEK);
+    }
+    
+    /**
+     * 货格对应出库单明细信息
+     *
+     * @param ouId
+     * @param facilityCode
+     * @param batch
+     * @param latticeNo
+     * @param odoCode
+     */
+    public void saveSeedingOdoLineBindLatticeToCache(Long ouId,Long facilityId,String batch,Long latticeNo,Long odoId,Map<String,WhSeedingWallLatticeLine> lineMap){
+        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE【WMS出库单号】
+        // Value：Map<String,WhSeedingWallLatticeLine>
+        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_LINE_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batch + "-" + latticeNo + "-" + odoId;
+        cacheManager.setObject(cacheKey, lineMap, CacheConstants.CACHE_ONE_WEEK);
+    }
+    
+    /**
+     * 获取货格对应出库单明细信息
+     *
+     * @param ouId
+     * @param facilityCode
+     * @param batch
+     * @param latticeNo
+     * @param odoCode
+     */
+    public Map<String,WhSeedingWallLatticeLine> getSeedingOdoLineBindLatticeToCache(Long ouId,Long facilityId,String batch,Long latticeNo,Long odoId){
+        // Key：SEEDING-仓库ID-播种墙CODE-批次号-货格号-ODOCODE【WMS出库单号】
+        // Value：Map<String,WhSeedingWallLatticeLine>
+        String cacheKey = CacheConstants.CACHE_SEEDING_ODO_LINE_BIND_LATTICE + "-" + ouId + "-" + facilityId + "-" + batch + "-" + latticeNo + "-" + odoId;
+        Map<String,WhSeedingWallLatticeLine> map = cacheManager.getObject(cacheKey);
+        try {
+            //如果没有缓存数据就封装数据到redis并返回
+            if(map==null){
+                //货格对应出库单明细信息
+                List<Long> odoLineId=new ArrayList<Long>();
+                odoLineId.add(odoId);
+                //出库单下的明细列表
+                List<OdoLineCommand> odoLineList=odoManager.findOdoLineByOdoId(odoLineId, ouId);
+                
+                Map<String,WhSeedingWallLatticeLine> lineMap=new HashMap<String,WhSeedingWallLatticeLine>();
+                for(OdoLineCommand odoLineCommand:odoLineList){
+                    //通过uuid分组
+                    List<WhSeedingWallLatticeLine> seedingBatchOdoLineInfoList=whSeedingCollectionManager.getSeedingBatchOdoLineInfo(odoLineCommand.getId(),ouId);
+                    if(seedingBatchOdoLineInfoList!=null){
+                        //封装订单的明细信息
+                        for(WhSeedingWallLatticeLine seedingWallLatticeLine:seedingBatchOdoLineInfoList){
+                            String uuid=this.createNewUuid(seedingWallLatticeLine,null);
+                            WhSeedingWallLatticeLine latticeLine=lineMap.get(seedingWallLatticeLine.getSkuId()+"_"+uuid);
+                            if(latticeLine==null){
+                                lineMap.put(seedingWallLatticeLine.getSkuId()+"_"+uuid, seedingWallLatticeLine);
+                            }
+                        }
+                    }
+                }
+                this.saveSeedingOdoLineBindLatticeToCache(ouId,facilityId,batch,latticeNo,odoId,lineMap);
+                return lineMap;
+            }
+        } catch (Exception e) {
+            log.error("saveSeedingOdoLineBindLatticeToCache cache error, facilityId is:[{}], ouId is:[{}], batch is:[{}], latticeNo is:[{}], logId is:[{}], ex is:[{}]", facilityId, ouId, batch, latticeNo, logId, e);
+        }
+        return map;
     }
 
     /**
@@ -409,6 +480,47 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_TURNOVERBOX_COLLECTION_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "-*");
         cacheManager.remonKeys(CacheConstants.CACHE_SEEDING_LAST_TIME_OUTBOUND_BOX_SEEDING_LINE + "-" + ouId + "-" + facilityId + "-" + batchNo + "*");
 
+    }
+    
+    public String createNewUuid(WhSeedingWallLatticeLine lattice,WhSeedingCollectionLineCommand lineCommand){
+        String uuid=null;
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        WhSkuInventory inv = new WhSkuInventory();
+        try {
+            if(lattice!=null){
+                inv.setSkuId(lattice.getSkuId());
+                inv.setInvStatus(lattice.getInvStatus() == null ? null : Long.parseLong(lattice.getInvStatus()));
+                inv.setInvType(lattice.getInvType());
+                //inv.setBatchNumber(lattice.getBatchNumber());
+                inv.setMfgDate(lattice.getMfgDate()==null?null:formater.parse(lattice.getMfgDate()));
+                inv.setExpDate(lattice.getExpDate()==null?null:formater.parse(lattice.getExpDate()));
+                inv.setCountryOfOrigin(lattice.getCountryOfOrigin());
+                inv.setInvAttr1(lattice.getInvAttr1());
+                inv.setInvAttr2(lattice.getInvAttr2());
+                inv.setInvAttr3(lattice.getInvAttr3());
+                inv.setInvAttr4(lattice.getInvAttr4());
+                inv.setInvAttr5(lattice.getInvAttr5());
+            }
+            if(lineCommand!=null){
+                inv.setSkuId(lineCommand.getSkuId());
+                inv.setInvStatus(lineCommand.getInvStatus() == null ? null : Long.parseLong(lineCommand.getInvStatus()));
+                inv.setInvType(lineCommand.getInvType());
+                //inv.setBatchNumber(lineCommand.getBatchNumber());
+                inv.setMfgDate(lineCommand.getMfgDate());
+                inv.setExpDate(lineCommand.getExpDate());
+                inv.setCountryOfOrigin(lineCommand.getCountryOfOrigin());
+                inv.setInvAttr1(lineCommand.getInvAttr1());
+                inv.setInvAttr2(lineCommand.getInvAttr2());
+                inv.setInvAttr3(lineCommand.getInvAttr3());
+                inv.setInvAttr4(lineCommand.getInvAttr4());
+                inv.setInvAttr5(lineCommand.getInvAttr5());
+            }
+            uuid=SkuInventoryUuid.invUuid(inv);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return uuid;
     }
 
 }

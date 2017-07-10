@@ -1779,4 +1779,18 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
         WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
         return this.isSuitForDefaultDistributionMode(odo);
     }
+
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<OdoLineCommand> findOdoLineByOdoId(List<Long> idList, Long ouId){
+        return whOdoLineDao.findOdoLineByOdoId(idList, ouId);
+    }
 }

@@ -28,6 +28,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLattice;
+import com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhSeedingCollection;
 
 public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Long> {
@@ -136,6 +137,15 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
      * @return
      */
     List<WhSeedingWallLattice> getSeedingBatchOdoInfo(@Param("batchNo") String batchNo, @Param("ouId") Long ouId);
+    
+    /**
+     * 获取播种批次下的出库单明细信息
+     *
+     * @param odoLineId
+     * @param ouId
+     * @return
+     */
+    List<WhSeedingWallLatticeLine> getSeedingBatchOdoLineInfo(@Param("odoLineId") Long odoLineId, @Param("ouId") Long ouId);
 
     /**
      * 通过小批次号获取对应集货信息

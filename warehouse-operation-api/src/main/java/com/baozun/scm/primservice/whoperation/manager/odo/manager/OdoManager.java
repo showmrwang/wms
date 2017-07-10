@@ -370,5 +370,15 @@ public interface OdoManager extends BaseManager {
     boolean isSuitForDefaultDistributionMode(WhOdo odo);
 
     boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId);
+    
+    /**
+     * 根据ODOLINEID和OUID查找ODOLINE
+     *
+     * @author mingwei.xie
+     * @param idList
+     * @param ouId
+     * @return
+     */
+    List<OdoLineCommand> findOdoLineByOdoId(List<Long> idList, Long ouId);
 
 }
