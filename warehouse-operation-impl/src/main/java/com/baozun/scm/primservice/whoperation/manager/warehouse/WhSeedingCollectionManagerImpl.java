@@ -68,8 +68,8 @@ public class WhSeedingCollectionManagerImpl extends BaseManagerImpl implements W
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(Long facilityId, Long ouId) {
-        List<WhSeedingCollectionCommand> seedingCollList = whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId);
+    public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(Long facilityId, Long ouId, Integer collectionStatus) {
+        List<WhSeedingCollectionCommand> seedingCollList = whSeedingCollectionDao.getSeedingCollectionByFacilityId(facilityId, ouId, collectionStatus);
 
         return seedingCollList;
     }

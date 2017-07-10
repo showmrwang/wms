@@ -27,7 +27,7 @@ public interface WhSeedingCollectionManager extends BaseManager {
      * @param ouId
      * @return
      */
-    public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(Long facilityId, Long ouId);
+    public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(Long facilityId, Long ouId, Integer collectionStatus);
 
 
 
