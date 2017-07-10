@@ -354,6 +354,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         where
             seedingCollection.facility_id = #{facilityId}
             and seedingCollection.ou_id = #{ouId}
+            <if test="collectionStatus != null and collectionStatus != ''">
+            	AND seedingCollection.collection_status >= #{collectionStatus}
+			</if>
             and outboundFacility.facility_code is not null
     </select>
     
