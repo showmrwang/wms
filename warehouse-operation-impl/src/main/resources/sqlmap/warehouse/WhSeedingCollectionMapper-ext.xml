@@ -165,9 +165,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		where
 			IFNULL(s.collection_status, 0) != 10
 			and s.facility_id = #{fid} 
-			<if test="batch!=null and batch!=''">
-				and s.batch = #{batch}
-			</if>
+			and s.batch = #{batch}
 			and s.ou_id = #{ouId}
 	</select>
 
@@ -284,6 +282,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			t_wh_seeding_collection s
 		where
 			s.batch = #{batch}
+			and (s.temporary_location_id is not null or s.location_id is not null)
 			and s.collection_status in (1, 2, 3)
 			and s.ou_id = #{ouId}
 	</select>
@@ -326,11 +325,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			s.batch = #{batch}
 			<if test="destinationType != null and destinationType == 2">
 				and s.temporary_location_id is not null
+				and s.collection_status = 3
 			</if>
 			<if test="destinationType != null and destinationType == 3">
 				and s.location_id is not null
+				and s.collection_status = 2
 			</if>
-			and ifnull(s.collection_status, 1) != 10
 			and s.ou_id = #{ouId}
 	</select>
 
@@ -463,6 +463,64 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		WHERE
 		wo.batch = #{batchNo}
 		)
+	</select>
+
+	<select id="getSeedingBatchOdoLineInfo"
+		resultType="com.baozun.scm.primservice.whoperation.model.seeding.WhSeedingWallLatticeLine">
+		SELECT
+		sku.id AS skuId,
+		sku.CODE AS skuCode,
+		sku.ext_code AS skuExtCode,
+		sku.bar_code AS
+		skuBarCode,
+		sku. NAME AS skuName,
+		odoLine.plan_qty AS qty,
+		odo.qty AS odoQty,
+		customer.customer_code AS customerCode,
+		customer.customer_name AS
+		customerName,
+		store.store_code AS storeCode,
+		store.store_name AS
+		storeName,
+		skuInv.inv_status AS invStatus,
+		invStatus.name AS invStatusName,
+		skuInv.inv_type AS invType,
+		WORK.batch AS batchNumber,
+		skuInv.mfg_date AS mfgDate,
+		skuInv.exp_date AS
+		expDate,
+		skuInv.country_of_origin AS countryOfOrigin,
+		skuInv.inv_attr1 AS
+		invAttr1,
+		skuInv.inv_attr1 AS invAttr2,
+		skuInv.inv_attr1 AS invAttr3,
+		skuInv.inv_attr1 AS invAttr4,
+		skuInv.inv_attr1 AS invAttr5,
+		skuInv.uuid
+		FROM
+		t_wh_odo_line odoLine
+		LEFT JOIN t_wh_sku sku ON odoLine.sku_id =
+		sku.id
+		LEFT JOIN t_wh_odo odo ON odoLine.odo_id = odo.id
+		LEFT JOIN
+		t_bi_customer customer ON odo.customer_id = customer.id
+		LEFT JOIN
+		t_bi_store store ON odo.store_id = store.id
+		LEFT JOIN t_wh_sku_inventory
+		skuInv ON odo.odo_code =
+		skuInv.occupation_code
+		AND odoLine.id =
+		skuInv.occupation_line_id
+		LEFT JOIN t_wh_wave_line waveLine ON
+		waveLine.odo_line_id = odoLine.id
+		AND waveLine.odo_id = odo.id
+		LEFT JOIN t_wh_work WORK ON WORK .wave_id = waveLine.wave_id
+		LEFT JOIN t_wh_inventory_status AS invStatus ON skuInv.inv_status = invStatus.id
+		WHERE
+		odoLine.id =#{odoLineId}
+		AND sku.ou_id = #{ouId}
+		GROUP BY
+		skuInv.uuid
 	</select>
 
     <select id="findByIdExt" resultMap="WhSeedingCollectionResultExt">

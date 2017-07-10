@@ -150,6 +150,8 @@ public final class CacheConstants {
     public static final String CACHE_SEEDING = "SEEDING";
     /** odo出库单绑定货格 */
     public static final String CACHE_SEEDING_ODO_BIND_LATTICE = "SEEDING-ODO-BIND-LATTICE";
+    /** 货格对应出库单明细信息 */
+    public static final String CACHE_SEEDING_ODO_LINE_BIND_LATTICE = "SEEDING-ODO-LINE-BIND-LATTICE";
     /** 播种功能缓存 */
     public static final String CACHE_SEEDING_FUNCTION = "SEEDING-FUNCTION";
     /** 播种货格信息 */

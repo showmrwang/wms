@@ -1096,7 +1096,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (!CollectionStatus.NEW.equals(status) && !CollectionStatus.TRANSFER.equals(status) && !CollectionStatus.TEMPORARY_STORAGE.equals(status)) {
             throw new BusinessException(ErrorCodes.COLLECTION_CONTAINER_STATUS_ERROR);
         }
-        // boolean flag = false;
+        boolean flag = false;
         if (destinationType == Constants.SEEDING_WALL) {
             // 目标移到播种墙
             Long facilityId = rec.getFacilityId();
@@ -1104,21 +1104,17 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
             collection.setFacilityId(facilityId);
-            collection.setTemporaryLocationId(null);
-            collection.setLocationId(null);
             collection.setCollectionStatus(CollectionStatus.TO_SEED);
             // 路径推荐结果状态修改为完成
             whFacilityRecPathDao.updateStatusToFinish(batch, containerCode, ouId);
-            // flag = true;
+            flag = true;
         } else if (destinationType == Constants.TEMPORARY_STORAGE_LOCATION) {
             // 目标移到暂存库位
             Long temporaryStorageLocationId = rec.getTemporaryStorageLocationId();
             if (null == temporaryStorageLocationId) {
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
-            collection.setFacilityId(null);
             collection.setTemporaryLocationId(temporaryStorageLocationId);
-            collection.setLocationId(null);
             collection.setCollectionStatus(CollectionStatus.TEMPORARY_STORAGE);
         } else if (destinationType == Constants.TRANSIT_LOCATION) {
             // 目标移到中转库位
@@ -1126,8 +1122,6 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             if (null == transitLocationId) {
                 throw new BusinessException(ErrorCodes.SYSTEM_EXCEPTION);
             }
-            collection.setFacilityId(null);
-            collection.setTemporaryLocationId(null);
             collection.setLocationId(transitLocationId);
             collection.setCollectionStatus(CollectionStatus.TRANSFER);
         }
@@ -1135,11 +1129,14 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (updateCount != 1) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-        /*
-         * if (flag) { // 更新批次下的容器绑定播种墙 int count =
-         * whSeedingCollectionDao.countNotHaveFacilityIdByBatch(batch, ouId); if (count > 0) {
-         * whSeedingCollectionDao.updateFacilityByBatch(batch, rec.getFacilityId(), ouId); } }
-         */
+       
+        if (flag) { // 更新批次下的容器绑定播种墙
+            int count = whSeedingCollectionDao.countNotHaveFacilityIdByBatch(batch, ouId);
+            if (count > 0) {
+                whSeedingCollectionDao.updateFacilityByBatch(batch, rec.getFacilityId(), ouId);
+            }
+        }
+         
         /*
          * if (destinationType == Constants.SEEDING_WALL) { String seedingWallCode =
          * rec.getSeedingwallCode(); // 移到播种墙时保存redis数据 //

@@ -56,6 +56,8 @@ public class WhSeedingCollectionLineCommand extends BaseCommand {
     private String storeName;
     /** 库存状态 */
     private String invStatus;
+    /**库存状态名称*/
+    private String invStatusName;
     /** 库存类型 */
     private String invType;
     /** 批次号 */
@@ -371,5 +373,13 @@ public class WhSeedingCollectionLineCommand extends BaseCommand {
 
     public void setOutboundBoxCode(String outboundBoxCode) {
         this.outboundBoxCode = outboundBoxCode;
+    }
+
+    public String getInvStatusName() {
+        return invStatusName;
+    }
+
+    public void setInvStatusName(String invStatusName) {
+        this.invStatusName = invStatusName;
     }
 }
