@@ -1549,7 +1549,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 c.setStatus(Constants.LIFECYCLE_START);
                 c.setLifecycle(Constants.LIFECYCLE_START);
                 containerDao.saveOrUpdateByVersion(c);
-                insertGlobalLog(GLOBAL_LOG_INSERT, c, ouId, userId, null, null);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
             }
         }
         // for (WhCheckingLineCommand checkingLine : checkingLineList) {
@@ -1570,6 +1570,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 turn.setStatus(Constants.LIFECYCLE_START);
                 turn.setLifecycle(Constants.LIFECYCLE_START);
                 containerDao.saveOrUpdateByVersion(turn);
+                insertGlobalLog(GLOBAL_LOG_UPDATE, turn, ouId, userId, null, null);
             }
         }
         // }
@@ -1591,6 +1592,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
                     facility.setBatch(null);
                     whOutboundFacilityDao.saveOrUpdateByVersion(facility);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, facility, ouId, userId, null, null);
                 }
             }
         }
