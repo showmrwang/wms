@@ -30,4 +30,6 @@ public interface WhPrintInfoManager extends BaseManager {
      */
     List<WhPrintInfo> findFromcheckingCollectionByOutboundboxCode(String outboundboxCode, Long ouId);
 
+    List<WhPrintInfo> findwhOdodeliveryByOutboundboxCode(String outboundboxCode, Long ouId);
+
 }

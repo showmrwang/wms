@@ -99,6 +99,10 @@ public interface HandoverManager extends BaseManager {
 
     String findHandoverBatchByOutboundboxCode(String outboundboxCode, Long ouId);
 
+    HandoverCommand getBatchById(Long id, Long ouId);
+
+    List<HandoverCollection> findhandoverCollectionByHandoverBatch(String handoverBatch, Long ouId);
+
     /**
      * 打印销售清单
      * 

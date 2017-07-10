@@ -217,7 +217,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</sql>
 	
+	 <select id="getBatchById" resultType="com.baozun.scm.primservice.whoperation.command.handover.HandoverCommand">
+    	select <include refid="handoverCommandColumnsExt" />
+	    from t_wh_handover handover 
+	    left join t_wh_handover_station  station on handover.handover_station_id =station.id
+ 		left join oper_user as user on handover.create_id = user.id 
+		where 	handover.id = #{id} 
+				and handover.ou_id = #{ouId}
 	
+    </select>
 	
 	
 	

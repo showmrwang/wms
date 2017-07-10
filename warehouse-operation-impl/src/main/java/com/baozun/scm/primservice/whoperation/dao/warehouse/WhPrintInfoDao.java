@@ -60,11 +60,12 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
 
     /**
      * [通用方法] 查找打印次数
+     * 
      * @param whPrintInfo
      * @return
      */
     Long findListCountByParamExt(WhPrintInfo whPrintInfo);
-    
+
     /**
      * 根据出库单号查询打印信息
      * 
@@ -73,8 +74,8 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
      * @return
      */
     List<WhPrintInfo> findPrintInfoByOdoId(@Param("odoId") Long odoId, @Param("printType") String printType, @Param("ouId") Long ouId);
-    
-    
+
+
     /**
      * 根据出库单号查询打印信息
      * 
@@ -82,6 +83,8 @@ public interface WhPrintInfoDao extends BaseDao<WhPrintInfo, Long> {
      * @param ouId
      * @return
      */
-    List<WhPrintInfo> getPrintInfoByOdoId(@Param("odoId") Long odoId,  @Param("ouId") Long ouId);
+    List<WhPrintInfo> getPrintInfoByOdoId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
+    List<WhPrintInfo> findwhOdodeliveryByOutboundboxCode(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
 }

@@ -265,4 +265,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			and ou_id = #{ouId}
 	</select>
 	
+	
+	<select id="findwhOdodeliveryByOutboundboxCode" resultMap="WhPrintInfoResultExt">
+		select 
+    		<include refid="whPrintInfoColumnsExt" />
+	   	from  
+	   		t_wh_print_info 
+	   	where
+			outboundbox_code = #{outboundboxCode}
+			and ou_id = #{ouId}
+			and print_type =3
+    </select>
+	
 </mapper>
