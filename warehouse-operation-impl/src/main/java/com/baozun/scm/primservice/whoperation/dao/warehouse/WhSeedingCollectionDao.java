@@ -106,7 +106,7 @@ public interface WhSeedingCollectionDao extends BaseDao<WhSeedingCollection, Lon
      * @param ouId
      * @return
      */
-    public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId);
+    public List<WhSeedingCollectionCommand> getSeedingCollectionByFacilityId(@Param("facilityId") Long facilityId, @Param("ouId") Long ouId, @Param("collectionStatus") Integer collectionStatus);
 
 
     public List<WhSeedingCollection> findSeedingCollection(@Param("facilityId") Long facilityId, @Param("collectionStatus") List<Integer> collectionStatus, @Param("ouId") Long ouId);

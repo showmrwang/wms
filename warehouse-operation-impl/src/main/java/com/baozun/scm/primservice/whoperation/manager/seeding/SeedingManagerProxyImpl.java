@@ -33,6 +33,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundFacili
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSeedingCollectionLineCommand;
 import com.baozun.scm.primservice.whoperation.constant.CacheConstants;
+import com.baozun.scm.primservice.whoperation.constant.CollectionStatus;
 import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
@@ -395,7 +396,7 @@ public class SeedingManagerProxyImpl extends BaseManagerImpl implements SeedingM
     public List<WhSeedingCollectionLineCommand> getSeedingCollectionLineByOdoFromCache(Long facilityId, String batchNo, Long ouId, Long odoId, String logId) {
         List<WhSeedingCollectionLineCommand> odoLineList = new ArrayList<>();
 
-        List<WhSeedingCollectionCommand> facilitySeedingCollectionList = whSeedingCollectionManager.getSeedingCollectionByFacilityId(facilityId, ouId);
+        List<WhSeedingCollectionCommand> facilitySeedingCollectionList = whSeedingCollectionManager.getSeedingCollectionByFacilityId(facilityId, ouId, CollectionStatus.TO_SEED);
 
         for (WhSeedingCollectionCommand seedingCollection : facilitySeedingCollectionList) {
             List<WhSeedingCollectionLineCommand> collectionLineList = this.getSeedingCollectionLineByCollectionFromCache(facilityId, batchNo, ouId, seedingCollection.getId(), logId);
