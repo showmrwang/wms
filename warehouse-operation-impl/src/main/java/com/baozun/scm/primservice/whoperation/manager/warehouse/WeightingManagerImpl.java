@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.WhOutboundboxCom
 import com.baozun.scm.primservice.whoperation.constant.CheckingPrint;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
 import com.baozun.scm.primservice.whoperation.constant.WhUomType;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
@@ -304,7 +305,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         WhOutboundboxCommand whOutboundboxCommand = whOutboundboxDao.findByOutboundBoxCode(outboundBoxCode, ouId);
         WhOutboundbox whOutboundbox = new WhOutboundbox();
         BeanUtils.copyProperties(whOutboundboxCommand, whOutboundbox);
-        whOutboundbox.setStatus("9");
+        whOutboundbox.setStatus(OutboundboxStatus.WEIGHING);
         whOutboundboxDao.update(whOutboundbox);
         // 6.绑定出库箱与面单
         waybillCommand = whCheckingManager.bindkWaybillCode(funcId, ouId, odoId, outboundBoxCode, null, true);
