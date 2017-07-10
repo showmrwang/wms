@@ -1313,6 +1313,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (null == checkingCmd) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
+        //
+        List<WhOdodeliveryInfo> odoDeliverInfoList = whOdoDeliveryInfoDao.findListByOdoId(odoId, ouId);
+        if(null == odoDeliverInfoList || odoDeliverInfoList.size() == 0){
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        WhOdodeliveryInfo ododeliveryInfo = odoDeliverInfoList.get(0);
         WhOutboundboxCommand outboundboxCmd = whOutboundboxDao.getwhOutboundboxCommandByCode(outboundbox, ouId);
         if (null != outboundboxCmd) {
             WhOutboundbox whOutboundbox = new WhOutboundbox();
@@ -1322,6 +1328,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOutboundbox.setPickingMode(checkingCmd.getPickingMode());
             whOutboundbox.setCheckingMode(checkingCmd.getCheckingMode());
             whOutboundbox.setOutboundboxId(outboundboxId);
+            whOutboundbox.setProductCode(ododeliveryInfo.getTransportServiceType());
+            whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
+            whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
+            whOutboundbox.setModifiedId(userId);
             whOutboundboxDao.saveOrUpdate(whOutboundbox);
             insertGlobalLog(GLOBAL_LOG_UPDATE, whOutboundbox, ouId, userId, null, null);
         } else {
@@ -1333,6 +1343,12 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOutboundbox.setOdoId(odoId);
             whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
             whOutboundbox.setOutboundboxId(outboundboxId);
+            whOutboundbox.setProductCode(ododeliveryInfo.getTransportServiceType());
+            whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
+            whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
+            whOutboundbox.setCreateId(userId);
+            whOutboundbox.setCreateTime(new Date());
+            whOutboundbox.setLastModifyTime(new Date());
             whOutboundboxDao.insert(whOutboundbox);
             insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
             // 生成出库想明细信息

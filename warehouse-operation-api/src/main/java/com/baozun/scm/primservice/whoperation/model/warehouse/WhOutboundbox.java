@@ -14,6 +14,8 @@
  */
 package com.baozun.scm.primservice.whoperation.model.warehouse;
 
+import java.util.Date;
+
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 
 /**
@@ -72,6 +74,17 @@ public class WhOutboundbox extends BaseModel {
 
     /** 当前月份 用于归档 */
     private String sysDate;
+    
+    private Long createId;
+    
+    
+    private Date createTime;
+    
+    
+    private Date lastModifyTime;
+    
+    
+    private Long modifiedId;
 
     // columns END
 
@@ -242,6 +255,38 @@ public class WhOutboundbox extends BaseModel {
 
     public void setSysDate(String sysDate) {
         this.sysDate = sysDate;
+    }
+
+    public Long getCreateId() {
+        return createId;
+    }
+
+    public void setCreateId(Long createId) {
+        this.createId = createId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
     }
 
 }

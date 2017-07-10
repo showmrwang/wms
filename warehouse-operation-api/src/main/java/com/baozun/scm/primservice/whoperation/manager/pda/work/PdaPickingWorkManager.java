@@ -245,5 +245,16 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @return
      */
     public String getContainerName(String contianerCode,Long ouId,String outboundboxCode);
+    
+    
+    public void cancelUpateWorkStatus(Long operationId,String workCode,Long ouId,Long userId);
+    
+    /**
+     * 缓存出库箱(小车出库箱情况)
+     * @param outboundBoxCode
+     * @param tipOutBoundBoxCode
+     * @param operationId
+     */
+    public void cacheOutboundBoxCode(String outboundBoxCode,String tipOutBoundBoxCode,Long operationId,Integer latticeNo);
 
 }

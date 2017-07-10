@@ -16,6 +16,7 @@
  */
 package com.baozun.scm.primservice.whoperation.command.warehouse;
 
+import java.util.Date;
 import java.util.List;
 
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
@@ -88,6 +89,18 @@ public class WhOutboundboxCommand extends BaseModel {
     private String consumableLocationCode;
     /** 复核完成的装箱明细 */
     private List<WhCheckingLineCommand> checkingLineList;
+    
+    
+   private Long createId;
+    
+    
+    private Date createTime;
+    
+    
+    private Date lastModifyTime;
+    
+    
+    private Long modifiedId;
 	
 	//columns END
 	
@@ -257,5 +270,31 @@ public class WhOutboundboxCommand extends BaseModel {
     public void setCheckingLineList(List<WhCheckingLineCommand> checkingLineList) {
         this.checkingLineList = checkingLineList;
     }
+    public Long getCreateId() {
+        return createId;
+    }
+    public void setCreateId(Long createId) {
+        this.createId = createId;
+    }
+    public Date getCreateTime() {
+        return createTime;
+    }
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+    public Date getLastModifyTime() {
+        return lastModifyTime;
+    }
+    public void setLastModifyTime(Date lastModifyTime) {
+        this.lastModifyTime = lastModifyTime;
+    }
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+    
+    
 }
 

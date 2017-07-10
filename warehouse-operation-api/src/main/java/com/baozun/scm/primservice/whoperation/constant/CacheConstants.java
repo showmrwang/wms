@@ -140,6 +140,9 @@ public final class CacheConstants {
 
     /**整托/整箱缓存短拣sku*/
     public static final String PDA_PICKING_SHORTPICKING_SKU = "PDA_PICKING_SHORTPICKING_SKU";
+    
+    /**缓存sku*/
+    public static final String PDA_PICKING_NEW_OUTBOUNDBOX = "PDA_PICKING_NEW_OUTBOUNDBOX";
 
     /************************************* 播种缓存 ***********************************/
 

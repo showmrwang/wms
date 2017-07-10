@@ -1066,4 +1066,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				   and use_container_id is null
 			   </if>
     </select>
+    
+    
+		<select id="countWhOperationExecLine" resultType="java.lang.Integer">
+		select
+	           count(*)
+		from
+		t_wh_operation_exec_line
+		where
+			ou_id = #{ouId}
+			and operation_id = #{operationId}
+	</select>
 </mapper>

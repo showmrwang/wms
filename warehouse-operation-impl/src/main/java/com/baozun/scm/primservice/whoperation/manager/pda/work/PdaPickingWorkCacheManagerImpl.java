@@ -3083,6 +3083,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
         cacheManager.remove(CacheConstants.CACHE_LOCATION + locationId.toString());
         if (isAfterScanLocation) {
             // 清楚作业明细
+            cacheManager.removeMapValue(CacheConstants.PDA_PICKING_NEW_OUTBOUNDBOX, operationId.toString() + "*");
             cacheManager.remove(CacheConstants.OPERATION_LINE + operationId.toString());
             cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());
             cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());

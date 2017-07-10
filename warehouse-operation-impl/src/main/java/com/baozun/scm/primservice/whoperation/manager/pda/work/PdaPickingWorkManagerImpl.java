@@ -63,6 +63,7 @@ import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOperationLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutInventoryboxRelationshipDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhSkuDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhWorkOperDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryAllocatedDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
@@ -98,6 +99,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.InventoryStatus;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Location;
 import com.baozun.scm.primservice.whoperation.model.warehouse.OutBoundBoxType;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhFunctionPicking;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperation;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationExecLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOperationLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhWork;
@@ -193,6 +195,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     private WhOutboundboxDao whOutboundboxDao;
     @Autowired
     private WhOutInventoryboxRelationshipDao whOutInventoryboxRelationshipDao;
+    @Autowired
+    private  WhWorkDao whWorkDao;
 
 
 
@@ -879,6 +883,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         String containerCode = command.getOuterContainer(); // 小车
         Long userId = command.getUserId();
         //修改工作和作业状态为拣货中
+        this.updateWorkStatus(operationId, command.getWorkBarCode(), ouId, userId);
         OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
         if (null == operatorLine) {
             throw new BusinessException(ErrorCodes.COMMON_CACHE_IS_ERROR);
@@ -948,6 +953,30 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         return command;
     }
 
+    
+    private void updateWorkStatus(Long operationId,String workCode,Long ouId,Long userId){
+        WhOperation whOperation = whOperationDao.findOperationByIdExt(operationId, ouId);
+        if (null == whOperation) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        whOperation.setStatus(WorkStatus.EXECUTING);
+        whOperation.setLastModifyTime(new Date());
+        whOperation.setModifiedId(userId);
+        whOperationDao.saveOrUpdateByVersion(whOperation);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, whOperation, ouId, userId, null, null);
+        //
+        WhWorkCommand whWorkCommand = whWorkDao.findWorkByWorkCode(workCode, ouId);
+        if (null == whWorkCommand) {
+            throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
+        }
+        WhWork work = new WhWork();
+        BeanUtils.copyProperties(whWorkCommand, work);
+        work.setStatus(WorkStatus.EXECUTING);
+        work.setLastModifyTime(new Date());
+        work.setModifiedId(userId);
+        whWorkDao.saveOrUpdateByVersion(work);
+        insertGlobalLog(GLOBAL_LOG_UPDATE, work, ouId, userId, null, null);
+    }
     private void reduceQty(Long skuId, Long ouId, String outboundboxCode) {
         List<WhSkuInventory> invList = whSkuInventoryDao.findSkuInvBySkuIdWithOnHandQty(skuId, ouId);
         if (null != invList && invList.size() != 0) {
@@ -2630,12 +2659,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                         whOperationExecLine.setOldOuterContainerId(whOperationExecLine.getUseOuterContainerId());
                         whOperationExecLine.setUseOuterContainerId(containerId);
                     }
-                    if (!StringUtils.isEmpty(outBoundBoxCode) && !outbounxBoxs.contains(outBoundBoxCode)) {
-                        whOperationExecLine.setIsNotRecommand(true);
-                        whOperationExecLine.setOldOutboundboxCode(whOperationExecLine.getUseOutboundboxCode());
-                        whOperationExecLine.setUseOutboundboxCode(outBoundBoxCode);
+                    //根据货格号获取对应的出库箱
+                    Map<Integer, String> map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_NEW_OUTBOUNDBOX, operationId.toString() + latticeNo.toString());
+                    if(map != null && map.size() !=0 ){
+                        outBoundBoxCode = map.get(latticeNo);
+                        if (!StringUtils.isEmpty(outBoundBoxCode) && !outbounxBoxs.contains(outBoundBoxCode)) {
+                            whOperationExecLine.setIsNotRecommand(true);
+                            whOperationExecLine.setOldOutboundboxCode(whOperationExecLine.getUseOutboundboxCode());
+                            whOperationExecLine.setUseOutboundboxCode(outBoundBoxCode);
+                        }
                     }
-
                 }
                 if (Constants.REPLENISHMENT_PICKING_INVENTORY.equals(operationWay)) {
                     whOperationExecLine.setUseContainerId(turnoverBoxId);
@@ -4450,6 +4483,50 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         return name;
 
-
+    }
+    
+    public void cancelUpateWorkStatus(Long operationId,String workCode,Long ouId,Long userId){
+        int count = whOperationExecLineDao.countWhOperationExecLine(operationId, ouId);
+        if(count == 0){
+            WhOperation whOperation = whOperationDao.findOperationByIdExt(operationId, ouId);
+            if (null == whOperation) {
+                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            }
+            whOperation.setStatus(WorkStatus.NEW);
+            whOperation.setLastModifyTime(new Date());
+            whOperation.setModifiedId(userId);
+            whOperationDao.saveOrUpdateByVersion(whOperation);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, whOperation, ouId, userId, null, null);
+            //
+            WhWorkCommand whWorkCommand = whWorkDao.findWorkByWorkCode(workCode, ouId);
+            if (null == whWorkCommand) {
+                throw new BusinessException(ErrorCodes.WORK_NO_EXIST);
+            }
+            WhWork work = new WhWork();
+            BeanUtils.copyProperties(whWorkCommand, work);
+            work.setStatus(WorkStatus.NEW);
+            work.setLastModifyTime(new Date());
+            work.setModifiedId(userId);
+            whWorkDao.saveOrUpdateByVersion(work);
+            insertGlobalLog(GLOBAL_LOG_UPDATE, work, ouId, userId, null, null);
+        }
+    }
+    
+    /**
+     * 缓存出库箱(小车出库箱情况)
+     * @param outboundBoxCode
+     * @param tipOutBoundBoxCode
+     * @param operationId
+     */
+    public void cacheOutboundBoxCode(String outboundBoxCode,String tipOutBoundBoxCode,Long operationId,Integer latticeNo){
+        if(!tipOutBoundBoxCode.equals(outboundBoxCode)){  //扫描的出库箱不等于提示的出库箱
+            //
+            Map<Integer, String> map = cacheManager.getMapObject(CacheConstants.PDA_PICKING_NEW_OUTBOUNDBOX, operationId.toString() + latticeNo.toString());
+            if(null == map){
+                map = new HashMap<Integer,String>();
+            }
+            map.put(latticeNo, outboundBoxCode);
+            cacheManager.setMapObject(CacheConstants.PDA_PICKING_NEW_OUTBOUNDBOX, operationId.toString() + latticeNo.toString(), map, CacheConstants.CACHE_ONE_DAY);
+        }
     }
 }
