@@ -20,8 +20,6 @@ public class ReplenishmentPutawayCacheCommand extends BaseCommand {
     private Map<Long,ArrayDeque<Long>> tipTurnoverBoxIds = new HashMap<Long,ArrayDeque<Long>>();
     /** 已经扫描的托盘 */
     private Map<Long,ArrayDeque<Long>> tipPalletIds = new HashMap<Long,ArrayDeque<Long>>();
-    /** 已经扫描的货箱 */
-    private Map<Long,ArrayDeque<Long>> tipContainerIds = new HashMap<Long,ArrayDeque<Long>>();
 
     public ArrayDeque<Long> getTipLocationIds() {
         return tipLocationIds;
@@ -47,12 +45,5 @@ public class ReplenishmentPutawayCacheCommand extends BaseCommand {
         this.tipPalletIds = tipPalletIds;
     }
 
-    public Map<Long, ArrayDeque<Long>> getTipContainerIds() {
-        return tipContainerIds;
-    }
-
-    public void setTipContainerIds(Map<Long, ArrayDeque<Long>> tipContainerIds) {
-        this.tipContainerIds = tipContainerIds;
-    }
 
 }
