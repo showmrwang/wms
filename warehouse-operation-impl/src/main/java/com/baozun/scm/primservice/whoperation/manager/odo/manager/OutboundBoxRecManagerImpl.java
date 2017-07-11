@@ -367,7 +367,7 @@ public class OutboundBoxRecManagerImpl extends BaseManagerImpl implements Outbou
         Long ouId = wh.getId();
         for (Long odoId : odoIds) {
             try {
-                whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, WavePhase.CREATE_OUTBOUND_CARTON_NUM);
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, WavePhase.CREATE_OUTBOUND_CARTON_NUM, logId);
 
                 log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}],logId:[{}]", odoId, waveId, ouId, logId);
             } catch (Exception e) {

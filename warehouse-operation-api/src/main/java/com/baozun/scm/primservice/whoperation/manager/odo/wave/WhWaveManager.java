@@ -168,7 +168,7 @@ public interface WhWaveManager extends BaseManager {
     /**
      * [业务方法] 整出库单剔除并释放库存
      */
-    void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh);
+    void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh, String logId);
     
     /**
      * [业务方法] 整出库单剔除并释放库存
@@ -179,7 +179,7 @@ public interface WhWaveManager extends BaseManager {
      * @param wh
      * @param wavePhase
      */
-    void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh);
+    void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, String logId);
     
 	/**
      * [业务方法] 在一个波次中查找包含skuIds的OdoId
@@ -291,7 +291,7 @@ public interface WhWaveManager extends BaseManager {
      * @param ouId
      * @param userId
      */
-    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String reason);
+    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String reason, String logId);
 
     /**
      * [业务方法]查找延迟创建的波次
@@ -337,7 +337,7 @@ public interface WhWaveManager extends BaseManager {
     /**
      * [通用方法] 出库单从波次中剔除
      */
-	void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase);
+    void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase, String logId);
 
     public void calculateWaveHeadInfo(Long waveId, Long ouId);
 

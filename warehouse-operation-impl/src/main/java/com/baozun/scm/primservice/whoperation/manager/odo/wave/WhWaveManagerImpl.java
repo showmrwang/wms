@@ -654,7 +654,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
                     }
                 } else {
                     log.info("logId:{},method matchWaveDisTributionMode : remove odo[id:{}] from wave[id:{}]", logId, odo.getId(), wave.getId());
-                    this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM);
+                    this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), Constants.DISTRIBUTE_MODE_FAIL, wh, WavePhase.DISTRIBUTION_NUM, logId);
                     if (!flag) {
 
                         flag = true;
@@ -719,28 +719,30 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
     }
 
     @Override
-    public void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh) {
-        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(waveId, odoIds, reason, wh, WavePhase.ALLOCATED_NUM);
+    public void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, String logId) {
+        this.deleteWaveLinesAndReleaseInventoryByOdoIdList(waveId, odoIds, reason, wh, WavePhase.ALLOCATED_NUM, logId);
     }
 
-    private void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, Integer wavePhase) {
+    private void deleteWaveLinesAndReleaseInventoryByOdoIdList(Long waveId, Collection<Long> odoIds, String reason, Warehouse wh, Integer wavePhase, String logId) {
         for (Long odoId : odoIds) {
             log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, wh.getId());
-            this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, wavePhase);
+            this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, wavePhase, logId);
         }
     }
 
     @Override
-    public void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh) {
+    public void deleteWaveLinesAndReleaseInventoryByOdoId(Long waveId, Long odoId, String reason, Warehouse wh, String logId) {
         log.info("releaseOdoFromWave, odoId:[{}],waveId:[{}],ouId:[{}]", odoId, waveId, wh.getId());
-        this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, WavePhase.ALLOCATED_NUM);
+        this.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, reason, wh, WavePhase.ALLOCATED_NUM, logId);
     }
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase) {
+    public void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long odoId, String reason, Warehouse wh, Integer wavePhase, String logId) {
+        log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] PARAMS:[waveId:{},odoId:{},wavePhase:{}]", logId, waveId, odoId);
         if (null == waveId || null == odoId || null == wh) {
             // @mender yimin.lu 取消||tringUtils.isEmpty(reason)
+            log.error("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase],throw error:params error", logId);
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         Long ouId = wh.getId();
@@ -749,8 +751,10 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // 2.修改出库单waveCode为空
         // 3.从波次明细中剔除出库单
         // 4.出库单重新计算配货模式
-        WhOdo odo = whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, reason);
+        log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] INVOKE METHOD[deleteWaveLinesByOdoId],release odo's data from wave", logId);
+        WhOdo odo = whWaveLineManager.deleteWaveLinesByOdoId(odoId, waveId, ouId, reason, logId);
         if (null == wavePhase) {
+            log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] RETURN:wavePhase is null", logId);
             return;
         }
         // @mender yimin.lu 2017/5/9
@@ -763,27 +767,33 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         if (wavePhase.intValue() >= WavePhase.MERGE_ODO_NUM) {}
         /** 硬分配剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.ALLOCATED_NUM) {
+            log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] RELSEASE INVENTORY（占用库存）", logId);
             // 出库单释放库存
+            log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] INVOKE METHOD[whSkuInventoryDao.releaseInventoryOccupyCode]:PARAMS:[odoCode:{},ouId:{}]", logId, odo.getOdoCode(), ouId);
             whSkuInventoryDao.releaseInventoryOccupyCode(odo.getOdoCode(), ouId);
             // 修改出库单明细已分配数量
+            log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] INVOKE METHOD[whOdoLineDao.updateOdoLineAssignQtyIsZero]:PARAMS:[odoId:{},ouId:{}]", logId, odoId, ouId);
             whOdoLineDao.updateOdoLineAssignQtyIsZero(odoId, wh.getId());
         }
         /** 补货剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.REPLENISHED_NUM) {
             // 按单据删除待移入和已分配
-
+            log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] RELEASE REPLENISHMENT(补货)");
             long count = whWaveLineDao.countWaveLineByWaveId(waveId, ouId); // 用于判断波次是否取消
             if (count > 0) {
                 // 清除编码
+                log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] RELEASE REPLENISHMENT(补货):set occupationCode null", logId);
                 this.eliminateOccupationCode(odo.getOdoCode(), ouId);
             } else {
                 ReplenishmentTask task = replenishmentTaskDao.findReplenishmentTaskByWaveId(waveId, ouId);
                 if (null != task) {
                     if (null != task.getIsCreateWork() && task.getIsCreateWork()) {
                         // 清除编码
+                        log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] RELEASE REPLENISHMENT(补货):set occupationCode[{}] null", logId, odo.getOdoCode());
                         this.eliminateOccupationCode(odo.getOdoCode(), ouId);
                     } else {
                         String repCode = task.getReplenishmentCode();
+                        log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] RELEASE REPLENISHMENT(补货):delete replenishment data by ReplenishmentCode[{}]", logId, repCode);
                         whSkuInventoryAllocatedDao.deleteByReplenishmentCode(repCode, ouId);
                         whSkuInventoryTobefilledDao.deleteByReplenishmentCode(repCode, ouId);
                     }
@@ -797,8 +807,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         }
         /** 创建出库箱/容器剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.CREATE_OUTBOUND_CARTON_NUM) {
+            log.info("logId:{},METHOD[deleteWaveLinesFromWaveByWavePhase] RELEASE OUTBOUNDBOX(出库箱)", logId);
             // 按单据删除待移入和已分配
-            this.releaseOutBoundBox(waveId, odoId, wh);
+            this.releaseOutBoundBox(waveId, odoId, wh, logId);
         }
         /** 创建工作剔除逻辑 */
         if (wavePhase.intValue() >= WavePhase.CREATE_WORK_NUM) {
@@ -817,8 +828,9 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
      * @param odoId
      * @param wh
      */
-    private void releaseOutBoundBox(Long waveId, Long odoId, Warehouse wh) {
+    private void releaseOutBoundBox(Long waveId, Long odoId, Warehouse wh, String logId) {
         Long ouId = wh.getId();
+        log.info("logId:{},METHOD[releaseOutBoundBox] START:PARAMS:[waveId:{},odoId:{},ouId:{}]", logId, waveId, odoId, ouId);
         List<WhOdoOutBoundBox> boxList = this.whOdoOutBoundBoxDao.findOutboundboxListByWaveIdAndOdoIdAndOdoLineIdAndOuId(waveId, odoId, null, ouId);
         if (boxList != null && boxList.size() > 0) {
             Set<Long> containerSet = new HashSet<Long>();
@@ -832,17 +844,22 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
 
                     containerSet.add(box.getOuterContainerId());
                 }
+                log.info("logId:{},METHOD[releaseOutBoundBox] INVOKE METHOD[whOdoOutBoundBoxDao.deleteExt]:PARAMS:[boxId:{}]", logId, box.getId());
+                this.insertGlobalLog(Constants.GLOBAL_LOG_DELETE, box, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
                 this.whOdoOutBoundBoxDao.deleteExt(box.getId(), box.getOuId());
             }
             // 回滚容器状态
             for (Long containerId : containerSet) {
+                log.info("logId:{},METHOD[releaseOutBoundBox] RELSEASE BOX[{}]", logId, containerId);
                 Container c = this.containerDao.findByIdExt(containerId, ouId);
                 c.setLifecycle(Constants.LIFECYCLE_START);
                 c.setStatus(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
                 int updateCount = this.containerDao.updateExt(c);
                 if (updateCount == 0) {
+                    log.error("logId:{},METHOD[releaseOutBoundBox] UPDATE container[id:{}] ERROR:BY VERSION ERROR", logId, containerId);
                     throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
                 }
+                this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, c, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
             }
 
         }
@@ -1006,7 +1023,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         for (Long odoId : odoIdSet) {
             WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
             // @mender yimin.lu 2017/6/30
-            if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+            if (this.odoManager.isSuitForDefaultDistributionMode(odo, logId)) {
                 odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
             }
             odo.setWaveCode("");
@@ -1072,7 +1089,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         for (WhOdo odo : odoList) {
             log.info("logId:{},method cancelWaveForNew: odo[id:{}] remove from wave", logId, odo.getId());
             // @mender yimin.lu 2017/6/30
-            if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+            if (this.odoManager.isSuitForDefaultDistributionMode(odo, logId)) {
 
                 odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());
             }
@@ -1140,7 +1157,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // 当出库单为需要释放的时候，则将带移入和库存都回滚，并将和波次的绑定关系释放，置出库单状态为新建；
         // 否则则将出库单延迟释放：@mender yimin.lu 2017/5/9 不存在延迟取消的出库单
         for (WhOdo odo : odoList) {
-            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), null, wh, WavePhase.EXECUTED);
+            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), null, wh, WavePhase.EXECUTED, logId);
 
         }
         // 3.拣货工作：释放补货工作
@@ -1272,7 +1289,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
      */
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String reason) {
+    public void eliminateWaveByWork(WhWave wave, List<WhOdo> odoList, Long ouId, Long userId, String reason, String logId) {
         Warehouse wh = this.warehouseManager.findWarehouseById(ouId);
         Long waveId = wave.getId();
         // 删除补货工作
@@ -1290,7 +1307,7 @@ public class WhWaveManagerImpl extends BaseManagerImpl implements WhWaveManager 
         // 当出库单为需要释放的时候，则将带移入和库存都回滚，并将和波次的绑定关系释放，置出库单状态为新建；
         // 否则则将出库单延迟释放：@mender yimin.lu 2017/5/9 不存在延迟取消的出库单
         for (WhOdo odo : odoList) {
-            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), reason, wh, WavePhase.CREATE_WORK_NUM);
+            this.deleteWaveLinesFromWaveByWavePhase(wave.getId(), odo.getId(), reason, wh, WavePhase.CREATE_WORK_NUM, logId);
         }
         // 删除补货任务
         ReplenishmentTask taskSearch = new ReplenishmentTask();

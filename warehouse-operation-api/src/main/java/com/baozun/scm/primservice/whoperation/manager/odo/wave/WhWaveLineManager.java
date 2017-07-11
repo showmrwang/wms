@@ -58,7 +58,7 @@ public interface WhWaveLineManager extends BaseManager {
 	/**
 	 * [业务方法] 硬分配-在一个波次明细中剔除整单并记录原因
 	 */
-	WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason);
+    WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason, String logId);
 	
 	/**
 	 * [业务方法] 硬分配-在一个波次明细中剔除整单并记录原因

@@ -136,31 +136,41 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason) {
+    public WhOdo deleteWaveLinesByOdoId(Long odoId, Long waveId, Long ouId, String reason, String logId) {
+        log.info("logId:{},METHOD[deleteWaveLinesByOdoId] start!,PARAMS[waveId:{},odoId:{},ouId:{},reason:{}]", logId, waveId, odoId, ouId, reason);
         // 4.提出的出库单加入配货模式
         WhOdo odo = whOdoDao.findByIdOuId(odoId, ouId);
         // @mender yimin.lu 2017/06/27
         if (OdoStatus.CANCEL.equals(odo.getOdoStatus())) {
+            log.info("logId:{},METHOD[deleteWaveLinesByOdoId] cancel odo[id:{}]", logId, odoId);
             int updateCount = this.whOdoDao.updateOdoByCancel(odoId, Constants.ODO_IS_CANCEL, ouId);
             if (updateCount <= 0) {
+                log.error("logId:{},METHOD[deleteWaveLinesByOdoId] ,cancel odo[id:{}]: ERROR--update by version error", logId, odoId);
                 throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
             }
             this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
         } else {
+            log.info("logId:{},METHOD[deleteWaveLinesByOdoId] ,release odo[id:{}] from wave[id:{}]", logId, odoId, waveId);
+            log.info("logId:{},METHOD[deleteWaveLinesByOdoId] invoke METHOD[whOdoLineDao.updateOdoLineByAllocateFail]:set line waveCode null", logId);
             // 1.修改出库单明细waveCode为空
             whOdoLineDao.updateOdoLineByAllocateFail(odoId, reason, ouId);
             // 插入日志
             this.insertGlobalLog(Constants.GLOBAL_LOG_UPDATE, odo, ouId, null, null, DbDataSource.MOREDB_SHARDSOURCE);
             // 2.修改出库单waveCode为空
+            log.info("logId:{},METHOD[deleteWaveLinesByOdoId] invoke METHOD[whOdoDao.updateOdoByAllocateFail]:set odo waveCode null", logId);
             whOdoDao.updateOdoByAllocateFail(odoId, reason, ouId);
 
-            if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+            log.info("logId:{},METHOD[deleteWaveLinesByOdoId] invoke METHOD[odoManager.isSuitForDefaultDistributionMode]:add to wh distributionMode Pool", logId);
+
+            if (this.odoManager.isSuitForDefaultDistributionMode(odo, logId)) {
                 Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
                 odoIdCounterCodeMap.put(odoId, odo.getCounterCode());
+                log.info("logId:{},METHOD[deleteWaveLinesByOdoId] invoke METHOD[distributionModeArithmeticManagerProxy.addToPool]:add to wh distributionMode Pool", logId);
                 distributionModeArithmeticManagerProxy.addToPool(odoIdCounterCodeMap);
             }
         }
         // 3.从波次明细中剔除出库单
+        log.info("logId:{},METHOD[deleteWaveLinesByOdoId] invoke METHOD[whWaveLineDao.removeWaveLineWhole]:delete waveLine of wave", logId);
         whWaveLineDao.removeWaveLineWhole(waveId, odoId, ouId);
         return odo;
     }
@@ -187,7 +197,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
     		List<OdoCommand> odo = whOdoDao.getWhOdoListById(list, ouId);
     		Map<Long, String> odoIdCounterCodeMap = new HashMap<Long, String>();
     		for (OdoCommand odoCommand : odo) {
-                if (this.odoManager.isSuitForDefaultDistributionMode(odoCommand.getId(), ouId)) {
+                if (this.odoManager.isSuitForDefaultDistributionMode(odoCommand.getId(), ouId, logId)) {
 
                     odoIdCounterCodeMap.put(odoCommand.getId(), odoCommand.getCounterCode());
                 }
@@ -376,7 +386,7 @@ public class WhWaveLineManagerImpl extends BaseManagerImpl implements WhWaveLine
         List<Long> cancelOdoIdList = whOdoDao.getCancelOdoIdListByWaveId(waveId, ouId);
         if (null != cancelOdoIdList && !cancelOdoIdList.isEmpty()) {
             for (Long odoId : cancelOdoIdList) {
-                this.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.ODO_IS_CANCEL);
+                this.deleteWaveLinesByOdoId(odoId, waveId, ouId, Constants.ODO_IS_CANCEL, logId);
             }
             return true;
         }
