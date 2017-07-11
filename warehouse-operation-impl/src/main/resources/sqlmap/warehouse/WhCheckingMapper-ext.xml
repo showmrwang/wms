@@ -367,7 +367,9 @@
                 checking.create_id as createId,
                 checking.create_time as createTime,
                 checking.modified_id as modifiedId,
-                sku.bar_code as consumableSkuBarcode
+                sku.bar_code as consumableSkuBarcode,
+                container.code as outerContainerCode,
+                facility.facility_code as seedingWallCode
         ]]>
     </sql>
     
@@ -493,6 +495,8 @@
         select
         <include refid="whCheckingCommandColumnsExt"/>
         from t_wh_checking checking left join t_wh_sku sku on checking.outboundbox_id = sku.id
+        left join t_wh_container container on checking.outer_container_id = container.id
+        left join t_wh_outbound_facility facility on checking.facility_id = facility.id
         <include refid="whCheckingCommandDynamicWhereExt"/>
     </select>
 
@@ -500,6 +504,8 @@
         select
         <include refid="whCheckingCommandColumnsExt"/>
         from t_wh_checking checking left join t_wh_sku sku on checking.outboundbox_id = sku.id
+        left join t_wh_container container on checking.outer_container_id = container.id
+        left join t_wh_outbound_facility facility on checking.facility_id = facility.id
         <include refid="whCheckingCommandDynamicWhereExt"/>
     </select>
     
