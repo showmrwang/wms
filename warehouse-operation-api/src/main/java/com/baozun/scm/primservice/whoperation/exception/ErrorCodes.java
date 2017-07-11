@@ -1174,6 +1174,8 @@ public class ErrorCodes {
     public static final int CREATE_IN_WAREHOUSE_MOVE_WORK_ERROR = 1000013;
     /** 打印失败 */
     public static final int PRINT_ERROR = 1000014;
+    /** 推荐出库箱为空 */
+    public static final int ODO_OUTBOUNDBOX_IS_NULL = 1000015;
     // 100001-110000 liuqiming
     
     // 110000-120000 xuhui

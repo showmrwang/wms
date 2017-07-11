@@ -53,4 +53,6 @@ public interface HandoverDao extends BaseDao<Handover, Long> {
     @QueryPage("findListCountByQueryMapExt")
     Pagination<HandoverCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
+    HandoverCommand getBatchById(@Param("id") Long id, @Param("ouId") Long ouId);
+
 }

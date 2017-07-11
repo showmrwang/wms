@@ -585,4 +585,20 @@ public class HandoverManagerImpl extends BaseManagerImpl implements HandoverMana
             return null;
         }
     }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public HandoverCommand getBatchById(Long id, Long ouId) {
+        return handoverDao.getBatchById(id, ouId);
+    }
+
+    @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
+    public List<HandoverCollection> findhandoverCollectionByHandoverBatch(String handoverBatch, Long ouId) {
+        HandoverCollection handoverCollection = new HandoverCollection();
+        handoverCollection.setHandoverBatch(handoverBatch);
+        handoverCollection.setOuId(ouId);
+        List<HandoverCollection> handoverCollections = handoverCollectionDao.findListByParam(handoverCollection);
+        return handoverCollections;
+    }
 }

@@ -113,6 +113,9 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                     case ErrorCodes.OPERATION_LINE_QTY_IS_ERROR:
                         reason = Constants.CREATE_WORK_OPERATION_LINE_QTY_IS_ERROR;
                         break;
+                    case ErrorCodes.ODO_OUTBOUNDBOX_IS_NULL:
+                        reason = Constants.CREATE_WORK_ODO_OUTBOUNDBOX_IS_NULL;
+                        break;
                     default:
                         reason = null;
                 }
@@ -186,8 +189,7 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
         List<WhOdoOutBoundBox> whOdoOutBoundBoxList = odoOutBoundBoxMapper.getBoxBatchsForPicking(whWave.getId(), ouId);
         if (null == whOdoOutBoundBoxList || whOdoOutBoundBoxList.isEmpty()) {
             log.error("whOdoOutBoundBoxList is null", whOdoOutBoundBoxList);
-            resultCommand.setIsPickingWorkInWave(false);
-            return resultCommand;
+            throw new BusinessException(ErrorCodes.ODO_OUTBOUNDBOX_IS_NULL);
         }
     	if(whOdoOutBoundBoxList != null){
     		// 循环小批次        
