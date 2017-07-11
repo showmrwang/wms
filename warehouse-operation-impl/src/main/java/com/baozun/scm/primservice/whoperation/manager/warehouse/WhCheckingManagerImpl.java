@@ -110,6 +110,7 @@ import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventorySn;
+import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.SkuInventoryUuid;
 import com.baozun.scm.primservice.whoperation.util.formula.SimpleWeightCalculator;
 
@@ -952,8 +953,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合
      * @param checkingLineList
      */
-    public WhCheckingByOdoResultCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId) {
-        log.info("whcheckingManagerImpl checkingByOdo is start");
+    public WhCheckingByOdoResultCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId, String logId) {
+        log.info("whcheckingManagerImpl checkingByOdo is start, time:[{}], logId[{}]", DateUtil.getSysDateDefault(), logId);
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
         List<String> snList = cmd.getSn();
         if (null != snList && !snList.isEmpty()) {
@@ -965,17 +966,17 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         Long facilityId = cmd.getFacilityId();
         Long locationId = cmd.getLocationId();
         // 更新复合明细表
-        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId, outboundboxId, outboundbox, userId, cmd.getCheckingPattern());
+        Long checkingId = this.updateCheckingByOdo(checkingLineList, ouId, outboundboxId, outboundbox, userId, cmd.getCheckingPattern(), logId);
         cmd.setOuId(ouId);
         // 生成出库箱库存(sn有问题)
-        this.addOutBoundInventory(cmd, isTabbInvTotal, userId);
+        this.addOutBoundInventory(cmd, isTabbInvTotal, userId, logId);
         // 获取出库单id
         WhCheckingLineCommand lineCmd = checkingLineList.get(0);
         Long odoId = lineCmd.getOdoId();
         // 出库箱头信息（t_wh_outboundbox）和出库箱明细
-        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId); // 不用改
+        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId, logId); // 不用改
         // 算包裹计重????
-        this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox);
+        this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox, logId);
         // this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId,
         // outboundboxId);
         // 扣减耗材库存
@@ -1025,16 +1026,16 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         if (result) {
             // 更新出库单状态
-            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode(), odoLineIds);
+            this.updateOdoStatusByOdo(odoId, ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode(), odoLineIds, logId);
         } else {
             // 修改出库单状态为复核中状态。
-            this.updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING);
+            this.updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING, logId);
             // WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
             // whOdo.setOdoStatus(OdoStatus.CHECKING);
             // whOdoDao.saveOrUpdateByVersion(whOdo);
             // insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
             // 释放容器状态
-            this.releaseContainer(ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode());
+            this.releaseContainer(ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode(), logId);
         }
         // List<WeightingCommand> commandList =
         // whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId,
@@ -1045,12 +1046,14 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // return null;
         // }
         WhCheckingByOdoResultCommand waybillCommand = bindkWaybillCode(functionId, ouId, odoId, outboundbox, outboundboxId, false);
-        log.info("whcheckingManagerImpl checkingByOdo is end");
+        log.info("whcheckingManagerImpl checkingByOdo is end, time:[{}]", DateUtil.getSysDateDefault());
         return waybillCommand;
     }
 
 
-    private void releaseContainer(Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode) {
+    private void releaseContainer(Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode, String logId) {
+        log.info("whCheckingManager.releaseContainer start... time:[{}]", DateUtil.getSysDateDefault());
+        log.info("params: ouId:[{}], userId:[{}], outerContainerCode:[{}], turnoverBoxCode:[{}], seedingWallCode:[{}], logId:[{}]", ouId, userId, outerContainerCode, turnoverBoxCode, seedingWallCode, logId);
         if (!StringUtils.isEmpty(outerContainerCode)) {
             // 修改小车
             ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
@@ -1094,26 +1097,33 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // }
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
-            log.info("inventory:seeding wall occupation count:[{}]", count);
-            if (count == 0) {
-                // 没有播种墙库存信息 查看此播种墙是否还有待播种数据
-                int occupationCnt = whSeedingCollectionDao.countOccupationByFacilityCode(seedingWallCode, ouId);
-                log.info("seeding collection:seeding wall occupation count:[{}]", occupationCnt);
-                if (0 == occupationCnt) {
-                    log.info("release seedingwall");
-                    // 没有待播种数据 释放播种墙
-                    WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-                    if (null == facility) {
-                        throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+            WhOutboundFacility seedingWall = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+            if (Constants.WH_FACILITY_STATUS_4.equals(seedingWall.getStatus())) {
+                // 播种墙状态为播种完成
+                log.info("seeding wall status: FINISH");
+                // 查询播种墙是否有库存
+                int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
+                log.info("inventory:seeding wall occupation count:[{}]", count);
+                if (count == 0) {
+                    // 没有播种墙库存信息 查看此播种墙是否还有待播种数据
+                    int occupationCnt = whSeedingCollectionDao.countOccupationByFacilityCode(seedingWallCode, ouId);
+                    log.info("seeding collection:seeding wall occupation count:[{}]", occupationCnt);
+                    if (0 == occupationCnt) {
+                        log.info("release seedingwall");
+                        // 没有待播种数据 释放播种墙
+                        WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+                        if (null == facility) {
+                            throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+                        }
+                        facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
+                        facility.setBatch(null);
+                        whOutboundFacilityDao.saveOrUpdateByVersion(facility);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, facility, ouId, userId, null, null);
                     }
-                    facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
-                    facility.setBatch(null);
-                    whOutboundFacilityDao.saveOrUpdateByVersion(facility);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, facility, ouId, userId, null, null);
                 }
             }
         }
+        log.info("whCheckingManager.releaseContainer finish... time:[{}]", DateUtil.getSysDateDefault());
     }
 
     /**
@@ -1195,12 +1205,14 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 按单复合更新复合表
      * @param checkingLineList
      */
-    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId, String checkingPattern) {
+    private Long updateCheckingByOdo(List<WhCheckingLineCommand> checkingLineList, Long ouId, Long outboundboxId, String outboundbox, Long userId, String checkingPattern, String logId) {
+        log.info("updateCheckingByOdo start... time:[{}], logId:[{}]", DateUtil.getSysDateDefault(), logId);
         if (StringUtils.isEmpty(checkingPattern) || StringUtils.isEmpty(outboundbox)) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         Long checkingId = null;
         checkingId = checkingLineList.get(0).getCheckingId(); // 复合头id
+        log.info("checkingId:[{}], checkingPatter:[{}], logId[{}]", checkingId, checkingPattern, logId);
         // 查询当前复合头对应的要复合的数量,复合明细中出库箱悟为空
         if (Constants.WAY_2.equals(checkingPattern) || Constants.WAY_4.equals(checkingPattern) || Constants.WAY_5.equals(checkingPattern)) {
             for (WhCheckingLineCommand cmd : checkingLineList) {
@@ -1288,6 +1300,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whCheckingDao.saveOrUpdateByVersion(checking);
             insertGlobalLog(GLOBAL_LOG_UPDATE, checking, ouId, userId, null, null);
         }
+        log.info("updateCheckingByOdo finish... time:[{}]", DateUtil.getSysDateDefault());
         return checkingId;
     }
 
@@ -1298,9 +1311,10 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 
      * @param whCheckingResultCommand
      */
-    private void addOutboundbox(Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId) {
+    private void addOutboundbox(Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId, String logId) {
 
-
+        log.info("whCheckingManager.addOutboundbox start...time:[{}]", DateUtil.getSysDateDefault());
+        log.info("params: checkingId:[{}], ouId:[{}], odoId:[{}], outboundbox:[{}], lineCmd:[{}], outboundboxId:[{}], userId:[{}], logId:[{}]", checkingId, ouId, odoId, outboundbox, lineCmd.toString(), outboundboxId, userId, logId);
         /*
          * Thread thread = new Thread();
          * 
@@ -1353,6 +1367,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
             // 生成出库想明细信息
             List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
+            log.info("addOutboundbox ========> listSkuInvCmd:[{}]", listSkuInvCmd.toString());
             if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
                 throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
             }
@@ -1395,6 +1410,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 insertGlobalLog(GLOBAL_LOG_INSERT, outboundboxLine, ouId, userId, null, null);
             }
         }
+        log.info("whCheckingManager.addOutboundbox finish...time:[{}]", DateUtil.getSysDateDefault());
     }
 
 
@@ -1403,7 +1419,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 
      * @param whCheckingResultCommand
      */
-    private void packageWeightCalculationByOdo(List<WhCheckingLineCommand> checkingLineList, Long functionId, Long ouId, Long odoId, Long outboundboxId, Long userId, String outboundboxCode) {
+    private void packageWeightCalculationByOdo(List<WhCheckingLineCommand> checkingLineList, Long functionId, Long ouId, Long odoId, Long outboundboxId, Long userId, String outboundboxCode, String logId) {
+        log.info("whCheckingManager.packageWeightCalculationByOdo start...time:[{}]", DateUtil.getSysDateDefault());
+        log.info("params:checkingLineList:[{}], functionId:[{}], ouId:[{}], odoId:[{}], outboundboxId:[{}], userId:[{}], outboundboxCode:[{}]", checkingLineList.toString(), functionId, ouId, odoId, outboundboxId, userId, outboundboxCode, logId);
         List<UomCommand> weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL); // 重量度量单位
         Map<String, Double> weightUomConversionRate = new HashMap<String, Double>();
         for (UomCommand lenUom : weightUomCmds) {
@@ -1432,6 +1450,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         // @Gianni 计重包括耗材重量
         if (null != outboundboxId) {
+            log.info("outboundboxId is not null");
             WhSkuCommand consumableSku = whSkuManager.findBySkuIdAndOuId(outboundboxId, ouId);
             if (null != consumableSku) {
                 log.info("whcheckingManagerImpl consumableSku:" + consumableSku.getWeight());
@@ -1462,6 +1481,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOdoPackageInfoDao.insert(whOdoPackageInfo);
             insertGlobalLog(GLOBAL_LOG_INSERT, whOdoPackageInfo, ouId, userId, null, null);
         }
+        log.info("whCheckingManager.packageWeightCalculationByOdo finish...time:[{}]", DateUtil.getSysDateDefault());
     }
 
     /**
@@ -1470,9 +1490,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @param ouId
      * @param userId
      */
-    private void updateOdoStatus(Long odoId, Long ouId, Long userId, List<Long> odoLineIds, String status) {
-        log.info("updateOdoStatus start...");
-        log.info("updateOdoStatus: odoId:[{}], ouId:[{}], userId:[{}], odoLineIds:[{}], status:[{}]", odoId, ouId, userId, odoLineIds, status);
+    private void updateOdoStatus(Long odoId, Long ouId, Long userId, List<Long> odoLineIds, String status, String logId) {
+        log.info("updateOdoStatus start...time:[{}]", DateUtil.getSysDateDefault());
+        log.info("updateOdoStatus: odoId:[{}], ouId:[{}], userId:[{}], odoLineIds:[{}], status:[{}], logId:[{}]", odoId, ouId, userId, odoLineIds, status, logId);
         WhOdo whOdo = whOdoDao.findByIdOuId(odoId, ouId);
         // 修改出库单状态为复核完成状态。
         if (!OdoStatus.CANCEL.equals(whOdo.getOdoStatus())) {
@@ -1517,7 +1537,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             }
         }
         // 释放容器状态
-        log.info("updateOdoStatus end...");
+        log.info("updateOdoStatus finish...time:[{}]", DateUtil.getSysDateDefault());
     }
 
     /**
@@ -1527,11 +1547,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @author
      * @param whCheckingResultCommand
      */
-    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode, List<Long> odoLineIds) {
-        log.info("checkingManager.updateOdoStatusByOdo start...");
-        log.info("params: odoId:[{}], ouId:[{}], userId:[{}], outerContainerCode:[{}], turnoverBoxCode:[{}], seedingWallCode:[{}]", odoId, ouId, userId, outerContainerCode, turnoverBoxCode, seedingWallCode);
+    private void updateOdoStatusByOdo(Long odoId, Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode, List<Long> odoLineIds, String logId) {
+        log.info("checkingManager.updateOdoStatusByOdo start...time:[{}]", DateUtil.getSysDateDefault());
+        log.info("params: odoId:[{}], ouId:[{}], userId:[{}], outerContainerCode:[{}], turnoverBoxCode:[{}], seedingWallCode:[{}], logId:[{}]", odoId, ouId, userId, outerContainerCode, turnoverBoxCode, seedingWallCode, logId);
         // 修改出库单状态为复核完成状态。
-        updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING_FINISH);
+        updateOdoStatus(odoId, ouId, userId, odoLineIds, OdoStatus.CHECKING_FINISH, logId);
 
         if (!StringUtils.isEmpty(outerContainerCode)) {
             // 修改小车
@@ -1601,6 +1621,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 }
             }
         }
+        log.info("checkingManager.updateOdoStatusByOdo finish...time:[{}]", DateUtil.getSysDateDefault());
     }
 
     @Override
@@ -1954,7 +1975,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * @return
      */
     public WhCheckingByOdoResultCommand bindkWaybillCode(Long functionId, Long ouId, Long odoId, String outboundboxCode, Long consumableSkuId, Boolean binding) {
-        log.info("whcheckingManagerImpl bindkWaybillCode is start");
+        log.info("whcheckingManagerImpl bindkWaybillCode is start, time:[{}]", DateUtil.getSysDateDefault());
+        log.info("params: functionId:[{}], ouId:[{}], odoId:[{}], outboundboxCode:[{}], consumableSkuId:[{}], binding:[{}]", functionId, ouId, odoId, outboundboxCode, consumableSkuId, binding);
         WhCheckingByOdoResultCommand command = new WhCheckingByOdoResultCommand();
         String waybillType = "";
         try {
@@ -2012,6 +2034,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 纸质面单
             // command.setMessage("请输入一个纸质面单");
         }
+        log.info("return command:[{}]", command.toString());
+        log.info("whcheckingManagerImpl bindkWaybillCode is finish, time:[{}]", DateUtil.getSysDateDefault());
         return command;
     }
 
@@ -2045,7 +2069,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     /**
      * 生成出库箱库存(按单复合,删除原来的库存生成新的出库箱库存)
      */
-    private void addOutBoundInventory(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId) {
+    private void addOutBoundInventory(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, String logId) {
+        log.info("whCheckingManager.addOutBoundInventory is start...");
+        log.info("params: cmd:[{}], isTabbInvTotal:[{}], logId:[{}], time:[{}]", cmd.toString(), isTabbInvTotal, logId, DateUtil.getSysDateDefault());
         String checkingPattern = cmd.getCheckingPattern(); //
         Long ouId = cmd.getOuId();
         Integer containerLatticeNo = cmd.getContainerLatticeNo(); // 货格号
@@ -2054,6 +2080,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         List<String> cacehSnList = cmd.getSn();
         String turnoverBoxCode = cmd.getTurnoverBoxCode();
         Long turnoverBoxId = null;
+        log.info("checkingPatter:[{}]", checkingPattern);
         if (Constants.WAY_5.equals(checkingPattern)) {
             ContainerCommand c = containerDao.getContainerByCode(turnoverBoxCode, ouId);
             if (null == c) {
@@ -2197,6 +2224,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             log.error("checkingSum is :" + checkingSum + "invSum is:" + invSum);
             throw new BusinessException(ErrorCodes.OUT_BOUND_INVENTORY_IS_ERROR);
         }
+        log.info("whCheckingManager.addOutBoundInventory is finish...time:[{}]", DateUtil.getSysDateDefault());
     }
 
     private void addOutBoundBoxInventory(List<String> cacehSnList, WhSkuInventoryCommand invCmd, WhSkuInventoryCommand invSnCmd, Double qty, String outboundboxCode, Boolean isTabbInvTotal, Long ouId, Long userId) {

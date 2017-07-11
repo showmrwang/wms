@@ -88,6 +88,15 @@ public class DateUtil {
     }
 
     /**
+     * 获取当前时间 精确到秒
+     * 
+     * @return
+     */
+    public static String getSysDateDefault() {
+        return getSysDateFormat(DEFAULT_DATE_TIME_FORMAT);
+    }
+
+    /**
      * String转date
      * 
      * @param date
