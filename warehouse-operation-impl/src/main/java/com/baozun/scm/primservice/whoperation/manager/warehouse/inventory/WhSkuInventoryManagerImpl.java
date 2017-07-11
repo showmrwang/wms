@@ -6840,7 +6840,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         }
         Double skuAllocatedQty = whSkuInventoryAllocatedDao.getSkuAllocatedQtyByUuid(uuids, ouId);
         Double skuUseQty = skuQty - skuAllocatedQty;
-        if (qty.compareTo(skuUseQty) == -1) {
+        if (qty.compareTo(skuUseQty) == 1) {
             return false;
         }
         return true;
