@@ -3318,7 +3318,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 cacheManager.remove(CacheConstants.PDA_PICKING_SCAN_SKU_QUEUE + operationId.toString() + locId.toString());
 
             }
-
+            cacheManager.removeMapValue(CacheConstants.PDA_PICKING_NEW_OUTBOUNDBOX, operationId.toString() + "*");
             cacheManager.remove(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString()); // 删除统计缓存
             cacheManager.remove(CacheConstants.OPERATION_LINE + operationId.toString()); // 删除作业明细
             cacheManager.remove(CacheConstants.CACHE_OPERATION_LINE + operationId.toString());

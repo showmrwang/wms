@@ -4529,4 +4529,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             cacheManager.setMapObject(CacheConstants.PDA_PICKING_NEW_OUTBOUNDBOX, operationId.toString() + latticeNo.toString(), map, CacheConstants.CACHE_ONE_DAY);
         }
     }
+    
+    public void removeCacheOutBoundbox(Long operationId){
+        this.removeOutBoundBox(operationId);
+    }
 }
