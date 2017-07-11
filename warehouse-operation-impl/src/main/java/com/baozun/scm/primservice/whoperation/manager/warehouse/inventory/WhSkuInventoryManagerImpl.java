@@ -6733,6 +6733,13 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (null == skuInvs || skuInvs.isEmpty()) {
             return new HashMap<String, Double>();
         }
+        // 严格按照需求量补货
+        if (Constants.REPLENISHMENT_ONDEMAND.equals(replenishmentCode)) {
+            boolean flag = this.checkSkuQtyEnough(skuInvs, qty, ouId);
+            if (!flag) {
+                return new HashMap<String, Double>();
+            }
+        }
         for (int i = 0; i < skuInvs.size(); i++) {
             WhSkuInventoryCommand inv = skuInvs.get(i);
             // 策略中包含托盘
@@ -6822,6 +6829,21 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         map.put("qty", occupyQty);
         map.put("moreQty", moreQty);
         return map;
+    }
+
+    private boolean checkSkuQtyEnough(List<WhSkuInventoryCommand> skuInvs, Double qty, Long ouId) {
+        Set<String> uuids = new HashSet<String>();
+        Double skuQty = Constants.DEFAULT_DOUBLE;
+        for (WhSkuInventoryCommand inv : skuInvs) {
+            skuQty += inv.getOnHandQty();
+            uuids.add(inv.getUuid());
+        }
+        Double skuAllocatedQty = whSkuInventoryAllocatedDao.getSkuAllocatedQtyByUuid(uuids, ouId);
+        Double skuUseQty = skuQty - skuAllocatedQty;
+        if (qty.compareTo(skuUseQty) == -1) {
+            return false;
+        }
+        return true;
     }
 
     private Double replenishmentPiece(WhSkuInventoryCommand inv, Double occupyQty, Double useableQty, String bhCode, String occupyCode, Long occupyLineId, Long targetLocationId, Long ruleId, Warehouse wh) {

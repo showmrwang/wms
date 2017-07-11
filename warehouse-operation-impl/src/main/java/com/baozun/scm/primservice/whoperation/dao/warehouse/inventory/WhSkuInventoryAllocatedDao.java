@@ -16,6 +16,7 @@
  */
  package com.baozun.scm.primservice.whoperation.dao.warehouse.inventory;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -158,5 +159,7 @@ public interface WhSkuInventoryAllocatedDao extends BaseDao<WhSkuInventoryAlloca
     public List<WhSkuInventoryAllocated> findskuInventoryAllocateds(WhSkuInventoryAllocated whSkuInventoryAllocated);
 
     int deleteByReplenishmentCode(@Param("replenishmentCode") String repCode, @Param("ouId") Long ouId);
+
+    Double getSkuAllocatedQtyByUuid(@Param("uuids") Collection<String> uuids, @Param("ouId") Long ouId);
 
 }
