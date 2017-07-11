@@ -3076,7 +3076,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   }
                   whSkuInventoryManager.execPutaway(ocCmd, icCmd, locationCode, skuCmd, scanSkuAttrIds, scanQty, warehouse, putawayPatternDetailType, ouId, userId, logId);
                   //拆箱清除缓存
-                  this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
+                  this.splitContainerPutawayRemoveAllCache(false,ocCmd, icCmd, locationId, logId,true,sId);
                   this.splitCacheScanSku(insideContainerId, tipLocationId, tipSkuAttrId);   //  缓存
                   srCmd.setRecommendFail(true);  //推荐失败
               }else if(isNotUser){
@@ -3088,7 +3088,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   }
                   whSkuInventoryManager.execPutaway(ocCmd, icCmd, locationCode, skuCmd, scanSkuAttrIds, scanQty, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 //拆箱清除缓存
-                  this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
+                  this.splitContainerPutawayRemoveAllCache(false,ocCmd, icCmd, locationId, logId,true,sId);
                   //拆箱清除缓存
                   Long locId = null;
                   for(Long id:locationIds) {
@@ -3112,7 +3112,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
                   }
                   whSkuInventoryManager.execPutaway(ocCmd, icCmd, locationCode, skuCmd, scanSkuAttrIds, scanQty, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 //拆箱清除缓存
-                  this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
+                  this.splitContainerPutawayRemoveAllCache(false,ocCmd, icCmd, locationId, logId,true,sId);
                   //拆箱清除缓存
                   Long skuId = SkuCategoryProvider.getSkuId(tipSkuAttrId);
                   WhSkuCommand tipSkuCmd = whSkuDao.findWhSkuByIdExt(skuId, ouId);
@@ -3144,7 +3144,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               }
               whSkuInventoryManager.execPutaway(ocCmd, icCmd, locationCode, skuCmd, scanSkuAttrIds, scanQty, warehouse, putawayPatternDetailType, ouId, userId, logId);
             //拆箱清除缓存
-              this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
+              this.splitContainerPutawayRemoveAllCache(true,ocCmd, icCmd, locationId, logId,false,sId);
               //拆箱清除缓存
           } else if (cssrCmd.isNeedTipContainer()) {
 //                  whSkuInventoryManager.execPutaway(skuCmd.getScanSkuQty(), warehouse, userId, ocCmd, icCmd, locationCode, putawayPatternDetailType, ouId, skuAttrId);
@@ -3155,7 +3155,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               }
               whSkuInventoryManager.execPutaway(ocCmd, icCmd, locationCode, skuCmd, scanSkuAttrIds, scanQty, warehouse, putawayPatternDetailType, ouId, userId, logId);
                   //拆箱清除缓存
-                  this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,true,sId);
+                  this.splitContainerPutawayRemoveAllCache(false,ocCmd, icCmd, locationId, logId,true,sId);
               // 当前容器已扫描完毕，可上架，并提示下一个容器
               srCmd.setAfterPutawayTipContianer(true);
               Long tipContainerId = cssrCmd.getTipContainerId();
@@ -3176,18 +3176,22 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
               }
               whSkuInventoryManager.execPutaway(ocCmd, icCmd, locationCode, skuCmd, scanSkuAttrIds, scanQty, warehouse, putawayPatternDetailType, ouId, userId, logId);
                 //拆箱清除缓存
-                  this.splitContainerPutawayRemoveAllCache(ocCmd, icCmd, locationId, logId,false,sId);
+                  this.splitContainerPutawayRemoveAllCache(false,ocCmd, icCmd, locationId, logId,false,sId);
           }
           return srCmd;
       }
 
       
-      private void splitContainerPutawayRemoveAllCache(ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long locationId, String logId,Boolean isPutawayEnd,Long sId){
+      private void splitContainerPutawayRemoveAllCache(Boolean isTipLocation,ContainerCommand containerCmd, ContainerCommand insideContainerCmd, Long locationId, String logId,Boolean isPutawayEnd,Long sId){
           Long icId = insideContainerCmd.getId();
+           if(isTipLocation){
+                  cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + sId.toString());
+                  cacheManager.remove(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + icId.toString() + locationId.toString()+sId.toString());
+                  cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + sId.toString());
+            }
             if(isPutawayEnd == true) {  //人工上架,整箱或整托还没结束
                 cacheManager.remove(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + icId.toString() + locationId.toString()+sId.toString());
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + sId.toString());
-//                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + sId.toString());
             }else{
                 if(null != containerCmd) {
                     Long ocId = containerCmd.getId();
@@ -4676,6 +4680,6 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
         }
         Long locationId = loc.getId();
         whSkuInventoryManager.execFinishPutaway(outerCmd, insideCmd, locationCode, skuCmd,null, null, warehouse, WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY, ouId, userId, logId);
-        this.splitContainerPutawayRemoveAllCache(outerCmd, insideCmd, locationId, locationCode, false, null);
+        this.splitContainerPutawayRemoveAllCache(false,outerCmd, insideCmd, locationId, locationCode, false, null);
     }
 }
