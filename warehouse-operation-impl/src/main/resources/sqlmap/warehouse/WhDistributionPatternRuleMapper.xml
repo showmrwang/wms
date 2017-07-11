@@ -21,6 +21,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	ou_id as ouId,
 	        	picking_mode as pickingMode,
 	        	orders_upper_limit as ordersUpperLimit,
+	        	orders_lower_limit as ordersLowerLimit,
                 checking_mode as checkingMode,
 	        	priority as priority,
 	        	is_need_outbound_carton as isNeedOutboundCarton,
@@ -53,6 +54,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	ou_id ,
 		        	picking_mode ,
 		        	orders_upper_limit,
+		        	orders_lower_limit,
                     checking_mode,
 		        	priority ,
 		        	is_need_outbound_carton ,
@@ -74,6 +76,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{ordersUpperLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{ordersLowerLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{priority,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        	#{isNeedOutboundCarton,javaType=java.lang.Boolean,jdbcType=BIT} ,
@@ -102,6 +105,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        ou_id = #{ouId,javaType=java.lang.Long,jdbcType=BIGINT} , 
 		        picking_mode = #{pickingMode,javaType=java.lang.Integer,jdbcType=INTEGER} ,
 		        orders_upper_limit = #{ordersUpperLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        orders_lower_limit = #{ordersLowerLimit,javaType=java.lang.Integer,jdbcType=INTEGER} ,
                 checking_mode = #{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        priority = #{priority,javaType=java.lang.Integer,jdbcType=INTEGER} , 
 		        is_need_outbound_carton = #{isNeedOutboundCarton,javaType=java.lang.Boolean,jdbcType=BIT} , 
@@ -189,6 +193,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
                 <if test="ordersUpperLimit!=null">
                     and orders_upper_limit = #{ordersUpperLimit}
+                </if>
+                <if test="ordersLowerLimit!=null">
+                    and orders_lower_limit = #{ordersLowerLimit}
                 </if>
 
 	       

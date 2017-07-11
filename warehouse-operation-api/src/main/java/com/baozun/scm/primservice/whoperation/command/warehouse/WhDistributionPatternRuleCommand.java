@@ -71,7 +71,8 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
     private String checkingMode;
     /** 订单数上限 */
     private Integer ordersUpperLimit;
-
+    /** 订单数下限 */
+    private Integer ordersLowerLimit;
     // 自定义变量
 
     /** 规则测试结果 */
@@ -81,6 +82,14 @@ public class WhDistributionPatternRuleCommand extends BaseCommand {
     /** 匹配规则的出库单头Id */
     private List<Long> odoIdList;
 
+
+    public Integer getOrdersLowerLimit() {
+        return ordersLowerLimit;
+    }
+
+    public void setOrdersLowerLimit(Integer ordersLowerLimit) {
+        this.ordersLowerLimit = ordersLowerLimit;
+    }
 
     public Long getId() {
         return id;
