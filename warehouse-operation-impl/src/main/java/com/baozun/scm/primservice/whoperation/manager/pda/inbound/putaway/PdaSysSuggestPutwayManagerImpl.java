@@ -3187,7 +3187,7 @@ public class PdaSysSuggestPutwayManagerImpl extends BaseManagerImpl implements P
             if(isPutawayEnd == true) {  //人工上架,整箱或整托还没结束
                 cacheManager.remove(CacheConstants.SUGGEST_SCAN_SKU_QUEUE_SN + icId.toString() + locationId.toString()+sId.toString());
                 cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN + icId.toString() + sId.toString());
-                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + sId.toString());
+//                cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE + icId.toString() + sId.toString());
             }else{
                 if(null != containerCmd) {
                     Long ocId = containerCmd.getId();
