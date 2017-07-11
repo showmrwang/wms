@@ -973,7 +973,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingLineCommand lineCmd = checkingLineList.get(0);
         Long odoId = lineCmd.getOdoId();
         // 出库箱头信息（t_wh_outboundbox）和出库箱明细
-        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId);  //不用改
+        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId); // 不用改
         // 算包裹计重????
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox);
         // this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId,
@@ -1033,8 +1033,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // whOdo.setOdoStatus(OdoStatus.CHECKING);
             // whOdoDao.saveOrUpdateByVersion(whOdo);
             // insertGlobalLog(GLOBAL_LOG_UPDATE, whOdo, ouId, userId, null, null);
-            //释放容器状态
-            this.releaseContainer(ouId, userId,cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode());
+            // 释放容器状态
+            this.releaseContainer(ouId, userId, cmd.getContaierCode(), cmd.getTurnoverBoxCode(), cmd.getSeedingWallCode());
         }
         // List<WeightingCommand> commandList =
         // whCheckingDao.findByOutboundBoxCodeAndCheckingId(checkingId, outboundbox, outboundboxId,
@@ -1048,9 +1048,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         log.info("whcheckingManagerImpl checkingByOdo is end");
         return waybillCommand;
     }
-    
-    
-    private void releaseContainer(Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode){
+
+
+    private void releaseContainer(Long ouId, Long userId, String outerContainerCode, String turnoverBoxCode, String seedingWallCode) {
         if (!StringUtils.isEmpty(outerContainerCode)) {
             // 修改小车
             ContainerCommand outerCmd = containerDao.getContainerByCode(outerContainerCode, ouId);
@@ -1315,7 +1315,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         }
         //
         List<WhOdodeliveryInfo> odoDeliverInfoList = whOdoDeliveryInfoDao.findListByOdoId(odoId, ouId);
-        if(null == odoDeliverInfoList || odoDeliverInfoList.size() == 0){
+        if (null == odoDeliverInfoList || odoDeliverInfoList.size() == 0) {
             throw new BusinessException(ErrorCodes.PARAMS_ERROR);
         }
         WhOdodeliveryInfo ododeliveryInfo = odoDeliverInfoList.get(0);
@@ -1516,7 +1516,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 }
             }
         }
-        //释放容器状态
+        // 释放容器状态
         log.info("updateOdoStatus end...");
     }
 
@@ -1576,23 +1576,28 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // }
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
-            int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
-            log.info("inventory:seeding wall occupation count:[{}]", count);
-            if (count == 0) {
-                // 没有播种墙库存信息 查看此播种墙是否还有待播种数据
-                int occupationCnt = whSeedingCollectionDao.countOccupationByFacilityCode(seedingWallCode, ouId);
-                log.info("seeding collection:seeding wall occupation count:[{}]", occupationCnt);
-                if (0 == occupationCnt) {
-                    log.info("release seedingwall");
-                    // 没有待播种数据 释放播种墙
-                    WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-                    if (null == facility) {
-                        throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+            WhOutboundFacility seedingWall = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+            if (Constants.WH_FACILITY_STATUS_4.equals(seedingWall.getStatus())) {
+                // 播种墙状态为播种完成
+                log.info("seeding wall status: FINISH");
+                // 查询播种墙是否有库存
+                int count = whSkuInventoryDao.countWhSkuInventoryCommandByOdo(ouId, null, null, seedingWallCode);
+                log.info("inventory:seeding wall occupation count:[{}]", count);
+                if (count == 0) {
+                    // 没有播种墙库存信息 查看此播种墙是否还有待播种数据
+                    int occupationCnt = whSeedingCollectionDao.countOccupationByFacilityCode(seedingWallCode, ouId);
+                    log.info("seeding collection:seeding wall occupation count:[{}]", occupationCnt);
+                    if (0 == occupationCnt) {
+                        log.info("release seedingwall");
+                        // 没有待播种数据 释放播种墙
+                        WhOutboundFacility facility = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
+                        if (null == facility) {
+                            throw new BusinessException(ErrorCodes.SEEDING_SEEDING_FACILITY_NULL_ERROR);
+                        }
+                        facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
+                        facility.setBatch(null);
+                        whOutboundFacilityDao.saveOrUpdateByVersion(facility);
                     }
-                    facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
-                    facility.setBatch(null);
-                    whOutboundFacilityDao.saveOrUpdateByVersion(facility);
-                    insertGlobalLog(GLOBAL_LOG_UPDATE, facility, ouId, userId, null, null);
                 }
             }
         }
@@ -1606,6 +1611,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         List<WhCheckingCommand> checkingList = whCheckingDao.findListByParamExt(whCheckingCommand);
         if (null != checkingList && !checkingList.isEmpty()) {
             whCheckingCommand = checkingList.get(0);
+            Integer checkMode = getCheckMode(whCheckingCommand);
+            if (null == checkMode) {
+                throw new BusinessException("check mode is null");
+            }
+            whCheckingCommand.setoDCheckWay(checkMode);
             whCheckingByOdoCommand.setCheckingCommand(whCheckingCommand);
             // 获取复合明细
             whCheckingByOdoCommand = findWhCheckingLineByChecking(whCheckingByOdoCommand);
@@ -1615,6 +1625,50 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         } else {
             throw new BusinessException("check is null");
         }
+    }
+
+    /**
+     * [业务方法] 判断复核分支
+     * @param whCheckingCommand
+     * @return
+     */
+    private Integer getCheckMode(WhCheckingCommand whCheckingCommand) {
+        String outboundBoxCode = whCheckingCommand.getOutboundboxCode();
+        Integer latticeNo = whCheckingCommand.getContainerLatticeNo();
+        Long containerId = whCheckingCommand.getContainerId();
+        Long outerContainerId = whCheckingCommand.getOuterContainerId();
+        Long facilityId = whCheckingCommand.getFacilityId();
+        String pattern = "";
+        pattern = pattern + (StringUtils.hasLength(outboundBoxCode) ? 1 : 0);
+        pattern = pattern + ((null != latticeNo) ? 1 : 0);
+        pattern = pattern + ((null != containerId) ? 1 : 0);
+        pattern = pattern + ((null != outerContainerId) ? 1 : 0);
+        pattern = pattern + ((null != facilityId) ? 1 : 0);
+        if ("11010".equals(pattern) || "10010".equals(pattern)) {
+            // 小车+货格+出库箱子 || 小车+出库箱
+            return Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX;
+        }
+        if ("11000".equals(pattern)) {
+            // 小车+货格
+            return Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO;
+        }
+        if ("11001".equals(pattern) || "10001".equals(pattern)) {
+            // 播种墙+货格+出库箱 || 播种墙+出库箱
+            return Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_OUTBOUND_BOX;
+        }
+        if ("01001".equals(pattern)) {
+            // 播种墙+货格
+            return Constants.CHECKING_BY_ODO_WAY_SEEDING_WALL_LATTICE_NO;
+        }
+        if ("00100".equals(pattern)) {
+            // 只有周转箱
+            return Constants.CHECKING_BY_ODO_WAY_CONTAINER;
+        }
+        if ("10000".equals(pattern)) {
+            // 只有出库箱
+            return Constants.CHECKING_BY_ODO_WAY_OUTBOUND_BOX;
+        }
+        return null;
     }
 
     @Override
@@ -2136,11 +2190,11 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
         }
         Double invSum = 0.0;
-        for(WhSkuInventoryCommand skuInvCmd:listSkuInvCmd){
-            invSum += skuInvCmd.getOnHandQty(); 
+        for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
+            invSum += skuInvCmd.getOnHandQty();
         }
-        if(!checkingSum.equals(invSum)){
-            log.error("checkingSum is :"+checkingSum+"invSum is:"+invSum);
+        if (!checkingSum.equals(invSum)) {
+            log.error("checkingSum is :" + checkingSum + "invSum is:" + invSum);
             throw new BusinessException(ErrorCodes.OUT_BOUND_INVENTORY_IS_ERROR);
         }
     }

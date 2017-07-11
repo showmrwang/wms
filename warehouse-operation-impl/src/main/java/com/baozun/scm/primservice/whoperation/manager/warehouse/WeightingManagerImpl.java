@@ -92,6 +92,8 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WeightingCommand findInfoByInput(WeightingCommand command) {
+        log.info("weightingManager findInfoByInput start...");
+        log.info("params: command:[{}]", command.toString());
         // Boolean flag = this.checkParam(command);
         String outboundBoxCode = command.getOutboundBoxCode();
         Long ouId = command.getOuId();
@@ -107,7 +109,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         }
         Double calcWeight = command.getCalcWeighting();
         if (null != calcWeight) {
-
+            log.info("null != calcWeight");
             List<UomCommand> weightUomCmds;
             weightUomCmds = uomDao.findUomByGroupCode(WhUomType.WEIGHT_UOM, BaseModel.LIFECYCLE_NORMAL);
             Double uomRate = 0.0;
@@ -130,6 +132,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                 command.setWaybillCode(waybillCode);
             }
         }
+        log.info("weightingManager findInfoByInput finish...");
         return command;
     }
 
@@ -143,6 +146,7 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
         if (null != odo) {
             String status = odo.getOdoStatus();
             if (OdoStatus.CANCEL.equals(status)) {
+                log.info("odo is been canceled...");
                 throw new BusinessException(ErrorCodes.CHECKING_ODO_CANCEL_ERROR);
             }
         }
@@ -179,16 +183,21 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
      * @return
      */
     private WeightingCommand findInputResponse(WeightingCommand command) {
+        log.info("findInputResponse start...");
+        log.info("params: command:[{}]", command.toString());
         WeightingCommand weightingCommand = new WeightingCommand();
         Long ouId = command.getOuId();
         String input = command.getInput();
         if (StringUtils.hasLength(input)) {
+            log.info("input:[{}]", input);
             // 未知输入为面单还是出库箱编码
             // 先测试面单
             weightingCommand = whCheckingDao.findByWaybillCode(input, ouId);
             if (null != weightingCommand) {
                 // 如果找到, 就返回
                 weightingCommand.setWaybillCode(input);
+                log.info("return weightingCommand: weightingCommand:[{}]", weightingCommand.toString());
+                log.info("findInputResponse finish...");
                 return weightingCommand;
             } else {
                 // 如果找不到信息 则测试出库箱编码
@@ -196,6 +205,8 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                 if (null != weightingCommand) {
                     weightingCommand.setOutboundBoxCode(input);
                 }
+                log.info("return weightingCommand: weightingCommand:[{}]", weightingCommand.toString());
+                log.info("findInputResponse finish...");
                 return weightingCommand;
             }
         } else {
@@ -205,6 +216,8 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
             if (null != weightingCommand) {
                 weightingCommand.setOutboundBoxCode(outboundBoxCode);
             }
+            log.info("return weightingCommand: weightingCommand:[{}]", weightingCommand.toString());
+            log.info("findInputResponse finish...");
             return weightingCommand;
         }
     }
