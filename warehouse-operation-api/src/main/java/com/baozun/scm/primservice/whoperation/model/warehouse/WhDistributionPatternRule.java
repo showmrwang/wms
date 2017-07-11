@@ -70,11 +70,21 @@ public class WhDistributionPatternRule extends BaseModel {
     private String checkingMode;
     /** 订单数上限 */
     private Integer ordersUpperLimit;
+    /** 订单数下限 */
+    private Integer ordersLowerLimit;
 
     // columns END
 
     public String getDistributionPatternName() {
         return distributionPatternName;
+    }
+
+    public Integer getOrdersLowerLimit() {
+        return ordersLowerLimit;
+    }
+
+    public void setOrdersLowerLimit(Integer ordersLowerLimit) {
+        this.ordersLowerLimit = ordersLowerLimit;
     }
 
     public void setDistributionPatternName(String distributionPatternName) {

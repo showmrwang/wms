@@ -239,25 +239,40 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
             List<WhDistributionPatternRuleCommand> ruleList = export.getWhDistributionPatternRuleCommandList();// 获取规则的集合
             if (ruleList != null && ruleList.size() > 0) {
                 for (int i = 0; i < ruleList.size(); i++) {
-                    String ruleCode = ruleList.get(i).getDistributionPatternCode();
+                    WhDistributionPatternRuleCommand rule = ruleList.get(i);
+                    String ruleCode = rule.getDistributionPatternCode();
                     // List<Long> odoIdList =
                     // this.whWaveManager.findOdoListInWaveWhenDistributionPattern(waveId, ouId,
                     // ruleList.get(i).getRuleSql());// 某条规则对应的出库单集合
                     log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] for odoes ", logId, ruleCode);
-                    List<Long> odoIdList = ruleList.get(i).getOdoIdList();
+                    List<Long> odoIdList = rule.getOdoIdList();
                     if (odoIdList != null && odoIdList.size() > 0) {
+                        // @mender yimin.lu 2017/7/10 规则订单数下限
+                        if (rule.getOrdersLowerLimit() != null && (rule.getOrdersLowerLimit() > odoIdList.size() || rule.getOrdersLowerLimit() > noModeOdoList.size())) {
+                            continue;
+                        }
+                        odoIdList.retainAll(noModeOdoList);// 取得相同的元素
+                        if (odoIdList == null || odoIdList.size() == 0) {
+                            continue;
+                        }
+                        if (rule.getOrdersLowerLimit() != null && rule.getOrdersLowerLimit() > odoIdList.size()) {
+                            continue;
+                        }
+                        List<Long> ruleOdoIdList = new ArrayList<Long>();
                         for (Long ruleOdoId : odoIdList) {
                             // @mender yimin.lu 2017/6/29 出库单是否包含序列号商品
                             if (this.isSn(ruleOdoId, ouId) && Constants.PICKING_MODE_SEED.equals(ruleList.get(i).getPickingMode().toString())) {
                                 continue;
                             }
-                            if (noModeOdoList.contains(ruleOdoId)) {
+                            ruleOdoIdList.add(ruleOdoId);
+                        }
+                        if (rule.getOrdersLowerLimit() != null && rule.getOrdersLowerLimit() > ruleOdoIdList.size()) {
+
+                        } else {
+                            for (Long ruleOdoId : ruleOdoIdList) {
                                 log.info("logId:{},method setWaveDistributionMode :DIY rule[{}] add odo[{}] ", logId, ruleCode, ruleOdoId);
                                 diyOdoMap.put(ruleOdoId, ruleCode);
                                 noModeOdoList.remove(ruleOdoId);
-                            }
-                            if (noModeOdoList.size() == 0) {
-                                break;
                             }
                         }
                     }

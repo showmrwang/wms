@@ -11531,7 +11531,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 inv.setInboundTime(new Date());
             }
             this.whSkuInventoryDao.insert(inv);
-            this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.RECEIVING);
+            this.insertSkuInventoryLog(inv.getId(), inv.getOnHandQty(), Constants.DEFAULT_DOUBLE, wh.getIsTabbInvTotal(), inv.getOuId(), userId, InvTransactionType.SHELF);
             if (uuidSnMap.containsKey(uuid)) {
                 List<WhSkuInventorySn> snList = uuidSnMap.get(uuid);
                 for (WhSkuInventorySn sn : snList) {

@@ -1939,16 +1939,16 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                 // 获取上一次循环的实体类
                 WhWorkLineCommand whWorkLineCommandBefor = whWorkLineCommandList.get(count - 1);
 
-                if (null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())) {
+                if (null != whWorkLineCommandBefor.getFromLocationId() && null != whWorkLineCommand.getFromLocationId() && !whWorkLineCommandBefor.getFromLocationId().equals(whWorkLineCommand.getFromLocationId())) {
                     isFromLocationId = false;
                 }
-                if (null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())) {
+                if (null != whWorkLineCommandBefor.getFromOuterContainerId() && null != whWorkLineCommand.getFromOuterContainerId() && !whWorkLineCommandBefor.getFromOuterContainerId().equals(whWorkLineCommand.getFromOuterContainerId())) {
                     isFromOuterContainerId = false;
                 }
-                if (null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())) {
+                if (null != whWorkLineCommandBefor.getFromInsideContainerId() && null != whWorkLineCommand.getFromInsideContainerId() && !whWorkLineCommandBefor.getFromInsideContainerId().equals(whWorkLineCommand.getFromInsideContainerId())) {
                     isFromInsideContainerId = false;
                 }
-                if (null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())) {
+                if (null != whWorkLineCommandBefor.getOdoId() && null != whWorkLineCommand.getOdoId() && !whWorkLineCommandBefor.getOdoId().equals(whWorkLineCommand.getOdoId())) {
                     isOdoId = false;
                 }
             }
