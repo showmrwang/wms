@@ -61,9 +61,10 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      * @param userId
      * @return
      */
-    public void createWorkInWave(Long waveId, Long ouId, Long userId) {
+    public void createWorkInWave(Long waveId, Long ouId, Long userId, String logId) {
+
         try {
-            this.deleteWaveLinesFromWaveByWavePhase(waveId, ouId, userId);
+            this.deleteWaveLinesFromWaveByWavePhase(waveId, ouId, userId, logId);
             CreateWorkResultCommand createWorkResultCommand = new CreateWorkResultCommand();
             // 查询波次中的所有小批次
             WhWave whWave = whWaveManager.getWaveByWaveIdAndOuId(waveId, ouId);
@@ -121,9 +122,9 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
                 }
                 WhWave wave = whWaveManager.findWaveByIdOuId(waveId, ouId);
                 List<WhOdo> odoList = this.odoManager.findOdoListByWaveCode(wave.getCode(), ouId);
-                whWaveManager.eliminateWaveByWork(wave, odoList, ouId, userId, reason);
+                whWaveManager.eliminateWaveByWork(wave, odoList, ouId, userId, reason, logId);
             }
-            log.error("CreateWorkManagerProxyImpl createWorkInWave error" + e);
+            log.error("CreateWorkManagerProxyImpl createWorkInWave error", e);
         }
     }
     
@@ -257,14 +258,15 @@ public class CreateWorkManagerProxyImpl implements CreateWorkManagerProxy {
      * @param waveId
      * @param ouId
      * @param userId
+     * @param logId
      * @return
      */
-    public void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long ouId, Long userId) {
+    public void deleteWaveLinesFromWaveByWavePhase(Long waveId, Long ouId, Long userId, String logId) {
         Warehouse wh = warehouseManager.findWarehouseById(ouId);
         List<Long> odoIdLst= odoOutBoundBoxMapper.getWaveOdoIdListByOdoStatus(waveId, OdoStatus.CANCEL, ouId);
         try {
             for(Long odoId : odoIdLst){
-                whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, null, wh, WavePhase.CREATE_WORK_NUM);    
+                whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, null, wh, WavePhase.CREATE_WORK_NUM, logId);
             }
         } catch (Exception e) {
             log.error("CreateWorkManagerProxyImpl deleteWaveLinesFromWaveByWavePhase error" + e);

@@ -530,7 +530,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
                 // 加入仓库配货模式
                 try {
-                    if (this.isSuitForDefaultDistributionMode(updateOdo)) {
+                    if (this.isSuitForDefaultDistributionMode(updateOdo, logId)) {
                         this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(updateOdo.getCounterCode(), updateOdo.getId());
                     }
                 } catch (BusinessException ex) {
@@ -1091,7 +1091,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
             Entry<Long, WhOdo> entry = odoIt2.next();
             WhOdo odo = entry.getValue();
             // @mender yimin.lu 2017/6/30 有条件删除
-            if (this.isSuitForDefaultDistributionMode(odo)) {
+            if (this.isSuitForDefaultDistributionMode(odo, logId)) {
                 this.distributionModeArithmeticManagerProxy.AddToWave(odo.getCounterCode(), odo.getId());
             }
         }
@@ -1336,7 +1336,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 String[] arr = str.split("_");
                 Long unitOdoId = Long.parseLong(arr[0]);
                 // @mender yimin.lu 2017/6/30
-                if (this.isSuitForDefaultDistributionMode(unitOdoId, ouId)) {
+                if (this.isSuitForDefaultDistributionMode(unitOdoId, ouId, logId)) {
                     odoIdCounterCodeMap.put(unitOdoId, arr[1]);
                 }
                 waveOdoIdList.add(Long.parseLong(arr[0]));
@@ -1718,55 +1718,69 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public boolean isSuitForDefaultDistributionMode(WhOdo odo) {
-        
+    public boolean isSuitForDefaultDistributionMode(WhOdo odo, String logId) {
+        log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] START,check odo[id:{}] is suit for wh_distributionModePool", logId, odo.getId());
         // @mender yimin.lu 2017/6/30
         Long ouId = odo.getOuId();
         Warehouse wh = this.warehouseManager.findWarehouseByIdExt(ouId);
         // 如果仓库不开启配货模式计算
+        log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check warehouse[id:{}] allow wh_distributionModePool", logId, ouId);
         if ((wh.getIsCalcSeckill() != null && wh.getIsCalcSeckill()) || (wh.getIsCalcTwoSkuSuit() != null && wh.getIsCalcTwoSkuSuit()) || (wh.getIsCalcSuits() && wh.getIsCalcSuits())) {
 
         } else {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check warehouse[id:{}] allow wh_distributionModePool :return false", logId, ouId);
             return false;
         }
+
         // 出库单头：不支持越库、不含易碎品、危险品、非锁定、没有指定出库箱类型
         if (!Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODO[id:{}] --> cross Wh:return false", logId, odo.getId());
             return false;
         }
         if ((odo.getIncludeFragileCargo() != null && odo.getIncludeFragileCargo())) {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODO[id:{}] --> include fragileCargo:return fasle", logId, odo.getId());
             return false;
         }
         if (odo.getIncludeHazardousCargo() != null && odo.getIncludeHazardousCargo()) {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODO[id:{}] --> include hazardousCargo:return false", logId, odo.getId());
             return false;
         }
         if (odo.getIsLocked() != null && odo.getIsLocked()) {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODO[id:{}] --> is locked:return false", logId, odo.getId());
             return false;
         }
         if (odo.getOutboundCartonType() != null) {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODO[id:{}] --> outboundbox Type:return false", logId, odo.getId());
             return false;
         }
+
         // 出库单：没有仓库增值服务
         List<WhOdoVasCommand> vasList = this.whOdoVasDao.findOdoOuVasCommandByOdoIdOdoLineIdType(odo.getId(), null, ouId);
         if (vasList != null && vasList.size() > 0) {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODO[id:{}] --> has wh vas:return false", logId, odo.getId());
             return false;
         }
         // 出库单明细：商品不管控 ：库存类型、SN号、残次类型、残次原因、残次条码、生产日期、失效日期、原产地、批次号
+        log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODO SKU --> has wh vas", logId);
         String[] unitCodeArray = odo.getCounterCode().split("\\|");
 
         String[] unitSkuIdArray = unitCodeArray[3].substring(1, unitCodeArray[3].length() - 1).split("\\$");
         for (String unitSkuId : unitSkuIdArray) {
             SkuRedisCommand s = this.skuRedisManager.findSkuMasterBySkuId(Long.parseLong(unitSkuId), ouId, null);
             if (RcvdWorkFlow.isInvAttrControl(s)) {
+                log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check SKU[id:{}] -->sku charge attrs such as mfgDate,batchNumber....:return false", logId, unitSkuId);
                 return false;
             }
             // @mender yimin.lu 2017/7/3 存在明细商品有指定出库箱类型的出库单
             if (s.getWhSkuWhMgmt() != null && s.getWhSkuWhMgmt().getOutboundCtnType() != null) {
+                log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check SKU[id:{}] -->sku has default outboundCtnType :return false", logId, unitSkuId);
                 return false;
             }
         }
         // 出库单明细：良品，没有指定库存属性，没有指定混放属性，没有指定出库箱类型
         Long count = this.whOdoLineDao.countNotSuitDistribeModeLines(odo.getId(), ouId);
         if (count > 0) {
+            log.info("logId:{},METHOD[isSuitForDefaultDistributionMode] ,check ODOLine -->odoline has default attr or default outboundCtnType :return false", logId);
             return false;
         }
 
@@ -1775,9 +1789,9 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
-    public boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId) {
+    public boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId, String logId) {
         WhOdo odo = this.whOdoDao.findByIdOuId(odoId, ouId);
-        return this.isSuitForDefaultDistributionMode(odo);
+        return this.isSuitForDefaultDistributionMode(odo, logId);
     }
 
     /**

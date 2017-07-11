@@ -367,9 +367,9 @@ public interface OdoManager extends BaseManager {
      * @param odo
      * @return
      */
-    boolean isSuitForDefaultDistributionMode(WhOdo odo);
+    boolean isSuitForDefaultDistributionMode(WhOdo odo, String logId);
 
-    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId);
+    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId, String logId);
     
     /**
      * 根据ODOLINEID和OUID查找ODOLINE

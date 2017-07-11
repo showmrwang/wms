@@ -473,6 +473,6 @@ public interface OdoManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId);
+    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId, String logId);
 
 }
