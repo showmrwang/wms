@@ -1669,7 +1669,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             // 小车+货格+出库箱子 || 小车+出库箱
             return Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_OUTBOUND_BOX;
         }
-        if ("11000".equals(pattern)) {
+        if ("01010".equals(pattern)) {
             // 小车+货格
             return Constants.CHECKING_BY_ODO_WAY_OUTER_CONTAINER_LATTICE_NO;
         }
