@@ -144,6 +144,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
         for(Long locationId:locationIds) {
             if(null != locationId) {
                 tipLocationId = locationId;
+                break;
             }
         }
         Location location = whLocationDao.findByIdExt(tipLocationId, ouId);
@@ -324,6 +325,25 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                         //判断当前库位是否有拣货工作
                         this.judeLocationIsPicking(isTV,null, locationId, ouId, userId,outerContainerId,operationId);
                         return command;
+                    }else{
+                        //判断当前库位有没有直接放在库位上的货箱
+                        Set<Long> loctTurnoverBoxIds = mapTurnoverBoxIds.get(locationId);
+                        if(null != loctTurnoverBoxIds && loctTurnoverBoxIds.size() != 0){
+                            ReplenishmentScanResultComamnd  sRCmdloc = pdaReplenishmentPutawayCacheManager.tipTurnoverBox(loctTurnoverBoxIds, operationId,locationId);
+                            if(sRCmdloc.getIsNeedScanTurnoverBox()) {  //当前库位对应的周转箱扫描完毕
+                                Long tipTurnoverBoxId = sRCmd.getTurnoverBoxId();
+                                String containerCode = this.judeContainer(tipTurnoverBoxId, ouId);
+                                command.setTipTurnoverBoxCode(containerCode);
+                                command.setIsNeedScanTurnoverBox(true);
+                                //当前周转箱上架
+                                whSkuInventoryManager.replenishmentContianerPutaway(null,locationId, operationId, ouId, isTabbInvTotal, userId,  turnoverBoxId);
+                                //修改作业执行明细的执行量
+                                this.updateOperationExecLine(null,turnoverBoxId, operationId, ouId, userId,locationId);
+                                //判断当前库位是否有拣货工作
+                                this.judeLocationIsPicking(isTV,turnoverBoxId, locationId, ouId, userId,null,operationId);
+                                return command;
+                            }
+                        }
                     }
                 }
                 //判断有没有下一个库位如果有继续扫描下一个库位
