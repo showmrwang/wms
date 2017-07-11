@@ -256,5 +256,8 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param operationId
      */
     public void cacheOutboundBoxCode(String outboundBoxCode,String tipOutBoundBoxCode,Long operationId,Integer latticeNo);
+    
+    
+    public void removeCacheOutBoundbox(Long operationId);
 
 }
