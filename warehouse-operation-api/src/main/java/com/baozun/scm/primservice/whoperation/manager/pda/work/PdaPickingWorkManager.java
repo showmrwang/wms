@@ -141,7 +141,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param locationId
      * @param ouId
      */
-    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
+    public void cancelPattern(String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
     
     /***
      * 缓存库位
@@ -259,5 +259,14 @@ public interface PdaPickingWorkManager extends BaseManager {
     
     
     public void removeCacheOutBoundbox(Long operationId);
+    
+    /***
+     * 判断是否是整箱或者整托
+     * @param outerContainerCode
+     * @param insideCotainerCode
+     * @param ouId
+     * @return
+     */
+    public int isPalletOrContainer(String outerContainerCode,String insideCotainerCode,Long ouId,Long operationId);
 
 }

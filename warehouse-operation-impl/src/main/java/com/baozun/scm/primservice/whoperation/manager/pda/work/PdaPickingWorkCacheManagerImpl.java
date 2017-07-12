@@ -2785,8 +2785,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 }
                 cssrCmd.setIsNeedTipInsideContainer(true);
                 cssrCmd.setTipiInsideContainerId(tipiInsideContainerId);
+                cssrCmd.setTipOuterContainerId(outerContainerId);
                 // 缓存上一个托盘内最后扫描的一个内部容器
                 this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId, operationId);
+                // 缓存上一个托盘
+                this.cacheOuterContainerCode(locationId, outerContainerId, operationId);
             }
         }
         return cssrCmd;
@@ -3260,7 +3263,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @param locationId
      * @param ouId
      */
-    public void cancelPattern(Long carId, Long outerContainerId, Long insideContainerId, int cancelPattern, int pickingWay, Long locationId, Long ouId, Long operationId, Long tipSkuId) {
+    public void cancelPattern(Long outerContainerId, Long insideContainerId, int cancelPattern, int pickingWay, Long locationId, Long ouId, Long operationId, Long tipSkuId) {
         if (cancelPattern == CancelPattern.PICKING_TIP_CAR_CANCEL) {
             OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
             if (null == operatorLine) {

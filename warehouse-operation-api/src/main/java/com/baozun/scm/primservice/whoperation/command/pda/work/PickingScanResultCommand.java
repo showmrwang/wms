@@ -218,6 +218,9 @@ public class PickingScanResultCommand extends BaseCommand {
     
     
     private Boolean isMgmtConsumableSku;   //是否管理耗材
+    
+    
+    private Boolean isUpdateContainerStatus = false;   //是否修改容器状态
 
 
     /**
@@ -1206,6 +1209,14 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsMgmtConsumableSku(Boolean isMgmtConsumableSku) {
         this.isMgmtConsumableSku = isMgmtConsumableSku;
+    }
+
+    public Boolean getIsUpdateContainerStatus() {
+        return isUpdateContainerStatus;
+    }
+
+    public void setIsUpdateContainerStatus(Boolean isUpdateContainerStatus) {
+        this.isUpdateContainerStatus = isUpdateContainerStatus;
     }
 
 

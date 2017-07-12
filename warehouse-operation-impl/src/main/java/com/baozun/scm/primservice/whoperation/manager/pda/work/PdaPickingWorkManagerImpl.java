@@ -896,6 +896,10 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
         if (pickingWay == Constants.PICKING_WAY_TWO) { // 使用外部(小车)，有出库箱拣货流程
             String tipOuterContainer = command.getTipOuterContainer(); // 系统推荐小车
+            if (!command.getIsUpdateContainerStatus()) {
+                // 修改小车状态
+                this.updateContainerStauts(containerCode, ouId, tipOuterContainer, operationId, userId, pickingWay);
+            }
             Map<Integer, String> carStockToOutgoingBox = operatorLine.getCarStockToOutgoingBox(); // 出库箱和货格对应关系
             List<WhOperationLineCommand> operatorLineList = whOperationLineManager.findOperationLineByOperationId(operationId, ouId);
             CheckScanResultCommand cSRCmd = pdaPickingWorkCacheManager.pdaPickingTipOutBounxBoxCode(operatorLineList, operationId, carStockToOutgoingBox);
@@ -910,10 +914,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 return command;
             } else {
                 command.setIsNeedScanLatticeNo(false);
-            }
-            if (!command.getIsNeedScanLatticeNo()) {
-                // 修改小车状态
-                this.updateContainerStauts(containerCode, ouId, tipOuterContainer, operationId, userId, pickingWay);
             }
         }
         if (pickingWay == Constants.PICKING_WAY_THREE) { // 出库箱
@@ -3965,13 +3965,8 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
      * @param locationId
      * @param ouId
      */
-    public void cancelPattern(String carCode, String outerContainerCode, String insideContainerCode, int cancelPattern, int pickingWay, Long locationId, Long ouId, Long operationId, Long tipSkuId) {
+    public void cancelPattern(String outerContainerCode, String insideContainerCode, int cancelPattern, int pickingWay, Long locationId, Long ouId, Long operationId, Long tipSkuId) {
 
-        Long carId = null;
-        if (!StringUtils.isEmpty(carCode)) {
-            ContainerCommand cmd = containerDao.getContainerByCode(carCode, ouId);
-            carId = cmd.getId();
-        }
         Long outerContainerId = null;
         if (!StringUtils.isEmpty(outerContainerCode)) {
             ContainerCommand cmd = containerDao.getContainerByCode(outerContainerCode, ouId);
@@ -3990,7 +3985,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             }
             insideContainerId = cmd.getId();
         }
-        pdaPickingWorkCacheManager.cancelPattern(carId, outerContainerId, insideContainerId, cancelPattern, pickingWay, locationId, ouId, operationId, tipSkuId);
+        pdaPickingWorkCacheManager.cancelPattern(outerContainerId, insideContainerId, cancelPattern, pickingWay, locationId, ouId, operationId, tipSkuId);
     }
 
     /***
@@ -4428,7 +4423,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Container container = new Container();
                     BeanUtils.copyProperties(c, container);
                     container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-                    container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
                     containerDao.saveOrUpdateByVersion(container);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                 }
@@ -4532,5 +4527,52 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     
     public void removeCacheOutBoundbox(Long operationId){
         this.removeOutBoundBox(operationId);
+    }
+
+    
+    /**
+     * 判断是整托还是整箱
+     * @param outerContainerCode
+     * @param insideCotainerCode
+     * @param ouId
+     * @param operationId
+     */
+    @Override
+    public int isPalletOrContainer(String outerContainerCode, String insideCotainerCode, Long ouId, Long operationId) {
+        int pickingWay = 0;
+        if(StringUtils.isEmpty(outerContainerCode) && StringUtils.isEmpty(insideCotainerCode)) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)) {
+            ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = cmd.getId();
+            int outerCount = whSkuInventoryDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId);
+            int outerAndOperCount = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId,operationId);
+            if(outerCount == outerAndOperCount){
+                pickingWay = 1;
+            }
+        }
+        if(1 != pickingWay){
+            Long insideContainerId = null;
+            if(!StringUtils.isEmpty(insideCotainerCode)) {
+                ContainerCommand cmd =  containerDao.getContainerByCode(insideCotainerCode, ouId);
+                if(null == cmd) {
+                    log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
+                insideContainerId  = cmd.getId();
+                int inCount = whSkuInventoryDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
+                int inAndOperCount = whOperationLineDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId,operationId);
+                if(inCount == inAndOperCount){
+                    pickingWay = 2;
+                }
+            }
+        }
+        return pickingWay;
     }
 }
