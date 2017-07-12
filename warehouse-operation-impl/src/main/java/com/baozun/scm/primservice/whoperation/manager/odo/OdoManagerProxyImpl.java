@@ -672,6 +672,11 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
     public WhOdo findOdOById(Long id, Long ouId) {
         return this.odoManager.findOdoByIdOuId(id, ouId);
     }
+    
+    @Override
+    public WhOdo findArchivOdoById(Long id, String archivTime, Long ouId) {
+        return this.odoManager.findOdoByIdOuId(id, archivTime, ouId);
+    }
 
     @Override
     public WhOdoTransportMgmt findTransportMgmtByOdoIdOuId(Long odoId, Long ouId) {
@@ -3159,4 +3164,30 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
         WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
         return this.odoManager.isSuitForDefaultDistributionMode(odo);
     }
+
+    @Override
+    public WhOdoTransportMgmt findArchivTransportMgmtByOdoIdOuId(Long odoId, String archivTime, Long ouId) {
+        return odoTransportMgmtManager.findArchivTransportMgmtByOdoIdOuId(odoId, archivTime, ouId);
+    }
+
+    @Override
+    public WhOdoAddress findArchivOdoAddressByOdoId(Long odoId, String archivTime, Long ouId) {
+        return odoAddressManager.findArchivOdoAddressByOdoId(odoId, archivTime, ouId);
+    }
+
+    @Override
+    public List<WhOdoVasCommand> findArchivOdoOuVasCommandByOdoIdOdoLineIdType(Long odoId, Long odoLineId, String archivTime, Long ouId) {
+        return odoVasManager.findArchivOdoOuVasCommandByOdoIdOdoLineIdType(odoId, odoLineId, archivTime, ouId);
+    }
+
+    @Override
+    public List<WhOdoVasCommand> findArchivOdoExpressVasCommandByOdoIdOdoLineId(Long odoId, Long odoLineId, String archivTime, Long ouId) {
+        return odoVasManager.findArchivOdoExpressVasCommandByOdoIdOdoLineId(odoId, odoLineId, archivTime, ouId);
+    }
+
+    @Override
+    public WhOdoLine findArchivOdoLineById(Long id, String archivTime, Long ouId) {
+        return odoLineManager.findArchivOdoLineById(id, archivTime, ouId);
+    }
+
 }

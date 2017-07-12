@@ -598,6 +598,7 @@
 			</if>
 		</where>
 	</sql>
+	
 	<select id="findListCountByQueryMapExt" resultType="long">
 		SELECT
 		count(1)
@@ -610,79 +611,106 @@
 		t_wh_outboundbox_type boxType on
 		boxType.id=odo.outbound_carton_type 
 		<include refid="whOdoDynamicWherePageExt" />
-
-
 	</select>
-
+	
+	<select id="findArchivListCountByQueryMapExt" resultType="long">
+		SELECT
+			count(1)
+		from 
+			t_wh_odo_archiv${archivTime} odo
+			left join t_wh_odo_address_archiv${archivTime} address on address.odo_id=odo.id
+			left join t_wh_odo_transport_mgmt_archiv${archivTime} transmgmt on transmgmt.odo_id=odo.id
+			left join t_wh_outboundbox_type boxType on boxType.id=odo.outbound_carton_type 
+		<include refid="whOdoDynamicWherePageExt" />
+	</select>
+	
+	<sql id="odoPageColumn">
+		odo.id as id,
+		odo.odo_code as odoCode,
+		odo.ext_code as extCode,
+		odo.priority_level as priorityLevel,
+		odo.is_whole_order_outbound as isWholeOrderOutbound,
+		odo.cross_docking_symbol as crossDockingSysmbol,
+		odo.ec_order_code as ecOrderCode,
+		odo.customer_id as customerId,
+		odo.store_id AS storeId,
+		DATE_FORMAT(odo.order_time, '%Y-%m-%d %H:%i:%s') as orderTime,
+		odo.sku_number_of_packages AS skuNumberOfPackages,
+		odo.amt as amt,
+		transmgmt.transport_service_provider as transportServiceProvider,
+		transmgmt.transport_service_provider as transportServiceProviderName,
+		transmgmt.mode_of_transport as modeOfTransport,
+		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
+		odo.order_type as orderType,
+		odo.odo_type as odoType,
+		odo.distribute_mode as distributeMode,
+		odo.odo_status as odoStatus,
+		transmgmt.outbound_target_type as outboundTargetType,
+		transmgmt.outbound_target as outboundTarget,
+		address.distribution_target_name as distributionTargetName,
+		address.distribution_target_mobile_phone as distributionTargetMobilePhone,
+		address.distribution_target_telephone as distributionTargetTelephone,
+		address.distribution_target_country as distributionTargetCountry,
+		address.distribution_target_province as distributionTargetProvince,
+		address.distribution_target_city as distributionTargetCity,
+		address.distribution_target_district as distributionTargetDistrict,
+		address.distribution_target_villages_towns as distributionTargetVillagesTowns,
+		address.distribution_target_address as distributionTargetAddress,
+		address.distribution_target_email as distributionTargetEmail,
+		address.distribution_target_zip as distributionTargetZip,
+		address.consignee_target_name as consigneeTargetName,
+		address.consignee_target_mobile_phone as consigneeTargetMobilePhone,
+		address.consignee_target_telephone as consigneeTargetTelephone,
+		address.consignee_target_country as consigneeTargetCountry,
+		address.consignee_target_province as consigneeTargetProvince,
+		address.consignee_target_city as consigneeTargetCity,
+		address.consignee_target_district as consigneeTargetDistrict,
+		address.consignee_target_villages_towns as consigneeTargetVillagesTowns,
+		address.consignee_target_address as consigneeTargetAddress,
+		address.consignee_target_email as consigneeTargetEmail,
+		address.consignee_target_zip as consigneeTargetZip,
+		transmgmt.deliver_goods_time_mode as deliverGoodsTimeMode,
+		DATE_FORMAT(transmgmt.deliver_goods_time, '%Y-%m-%d') as deliverGoodsTime,
+		DATE_FORMAT(transmgmt.plan_deliver_goods_time, '%Y-%m-%d') as planDeliverGoodsTime,
+		DATE_FORMAT(transmgmt.actual_deliver_goods_time, '%Y-%m-%d') as actualDeliverGoodsTime,
+		odo.include_fragile_cargo as includeFragileCargo,
+		odo.include_hazardous_cargo as includeHazardousCargo,
+		odo.outbound_carton_type as outboundCartonType,
+		boxType. name as outboundCartonTypeName,
+		DATE_FORMAT(odo.create_time, '%Y-%m-%d') as createTime,
+		odo.created_id as createId,
+		DATE_FORMAT(odo.last_modify_time, '%Y-%m-%d') as lastModifyTime,
+		odo.modified_id as modifiedId,
+		odo.is_locked as isLocked,
+		odo.is_assign_success as isAssignSuccess,
+		odo.original_odo_code as originalOdoCode,
+		odo.assign_fail_reason as assignFailReason,
+		if((s.id is not null), 0, 1) as logisticsFlag
+	</sql>
+	
 	<select id="findListByQueryMapWithPageExt" resultMap="WhOdoResultCommandExt"
 		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
 
 		SELECT
-			odo.id as id,
-			odo.odo_code as odoCode,
-			odo.ext_code as extCode,
-			odo.priority_level as priorityLevel,
-			odo.is_whole_order_outbound as isWholeOrderOutbound,
-			odo.cross_docking_symbol as crossDockingSysmbol,
-			odo.ec_order_code as ecOrderCode,
-			odo.customer_id as customerId,
-			odo.store_id AS storeId,
-			DATE_FORMAT(odo.order_time, '%Y-%m-%d %H:%i:%s') as orderTime,
-			odo.sku_number_of_packages AS skuNumberOfPackages,
-			odo.amt as amt,
-			transmgmt.transport_service_provider as transportServiceProvider,
-			transmgmt.transport_service_provider as transportServiceProviderName,
-			transmgmt.mode_of_transport as modeOfTransport,
-			odo.epistatic_systems_order_type as epistaticSystemsOrderType,
-			odo.order_type as orderType,
-			odo.odo_type as odoType,
-			odo.distribute_mode as distributeMode,
-			odo.odo_status as odoStatus,
-			transmgmt.outbound_target_type as outboundTargetType,
-			transmgmt.outbound_target as outboundTarget,
-			address.distribution_target_name as distributionTargetName,
-			address.distribution_target_mobile_phone as distributionTargetMobilePhone,
-			address.distribution_target_telephone as distributionTargetTelephone,
-			address.distribution_target_country as distributionTargetCountry,
-			address.distribution_target_province as distributionTargetProvince,
-			address.distribution_target_city as distributionTargetCity,
-			address.distribution_target_district as distributionTargetDistrict,
-			address.distribution_target_villages_towns as distributionTargetVillagesTowns,
-			address.distribution_target_address as distributionTargetAddress,
-			address.distribution_target_email as distributionTargetEmail,
-			address.distribution_target_zip as distributionTargetZip,
-			address.consignee_target_name as consigneeTargetName,
-			address.consignee_target_mobile_phone as consigneeTargetMobilePhone,
-			address.consignee_target_telephone as consigneeTargetTelephone,
-			address.consignee_target_country as consigneeTargetCountry,
-			address.consignee_target_province as consigneeTargetProvince,
-			address.consignee_target_city as consigneeTargetCity,
-			address.consignee_target_district as consigneeTargetDistrict,
-			address.consignee_target_villages_towns as consigneeTargetVillagesTowns,
-			address.consignee_target_address as consigneeTargetAddress,
-			address.consignee_target_email as consigneeTargetEmail,
-			address.consignee_target_zip as consigneeTargetZip,
-			transmgmt.deliver_goods_time_mode as deliverGoodsTimeMode,
-			DATE_FORMAT(transmgmt.deliver_goods_time, '%Y-%m-%d') as deliverGoodsTime,
-			DATE_FORMAT(transmgmt.plan_deliver_goods_time, '%Y-%m-%d') as planDeliverGoodsTime,
-			DATE_FORMAT(transmgmt.actual_deliver_goods_time, '%Y-%m-%d') as actualDeliverGoodsTime,
-			odo.include_fragile_cargo as includeFragileCargo,
-			odo.include_hazardous_cargo as includeHazardousCargo,
-			odo.outbound_carton_type as outboundCartonType,
-			boxType. name as outboundCartonTypeName,
-			DATE_FORMAT(odo.create_time, '%Y-%m-%d') as createTime,
-			odo.created_id as createId,
-			DATE_FORMAT(odo.last_modify_time, '%Y-%m-%d') as lastModifyTime,
-			odo.modified_id as modifiedId,
-			odo.is_locked as isLocked,
-			odo.is_assign_success as isAssignSuccess,
-			odo.original_odo_code as originalOdoCode,
-			odo.assign_fail_reason as assignFailReason,
-			if((s.id is not null), 0, 1) as logisticsFlag
+			<include refid="odoPageColumn"/>
 		from
 			t_wh_odo odo
 			left join t_wh_odo_address address on address.odo_id = odo.id
 			left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id = odo.id
+			left join t_wh_outboundbox_type boxType on boxType.id = odo.outbound_carton_type
+			left join t_wh_odo_transport_service s on s.odo_id = odo.id
+		
+		<include refid="whOdoDynamicWherePageExt" />
+	</select>
+	
+	<select id="findArchivListByQueryMapWithPageExt" resultMap="WhOdoResultCommandExt"
+		parameterType="com.baozun.scm.primservice.whoperation.command.odo.OdoSearchCommand">
+		SELECT
+			<include refid="odoPageColumn"/>
+		from
+			t_wh_odo_archiv${archivTime} odo
+			left join t_wh_odo_address_archiv${archivTime} address on address.odo_id = odo.id
+			left join t_wh_odo_transport_mgmt_archiv${archivTime} transmgmt on transmgmt.odo_id = odo.id
 			left join t_wh_outboundbox_type boxType on boxType.id = odo.outbound_carton_type
 			left join t_wh_odo_transport_service s on s.odo_id = odo.id
 		
@@ -2699,129 +2727,103 @@
 
     </select>
     
-    
-    
     <select id="findExportExeclList" resultType="String">
-	select 
-	 ${sqlCondition} from (
-		
-			    	SELECT
+		select 
+		 	${sqlCondition} 
+		from (
+			SELECT
+				<include refid="exportOdoColumn"/>
+			from 
+				t_wh_odo odo
+				left join t_wh_odo_address address on address.odo_id = odo.id
+				left join t_wh_odo_transport_mgmt transmgmt on transmgmt.odo_id = odo.id
+				left join t_wh_outboundbox_type boxType on boxType.id=odo.outbound_carton_type
+			<include refid="exportOdoWhere"/>
+			    	
+		) t limit 0,#{limit}
+    </select>
+    
+    <select id="findExportExeclArchivList" resultType="String">
+		select 
+		 	${sqlCondition} 
+		from (
+			SELECT
+				<include refid="exportOdoColumn"/>
+			from 
+				t_wh_odo_archiv${archivTime} odo
+				left join t_wh_odo_address_archiv${archivTime} address on address.odo_id = odo.id
+				left join t_wh_odo_transport_mgmt_archiv${archivTime} transmgmt on transmgmt.odo_id = odo.id
+				left join t_wh_outboundbox_type boxType on boxType.id=odo.outbound_carton_type
+			<include refid="exportOdoWhere"/>
+			    	
+		) t limit 0,#{limit}
+    </select>
+    
+	<sql id="exportOdoColumn">
 		odo.id as id,
 		odo.odo_code as odoCode,
 		odo.ext_code as extCode,
 		odo.priority_level as priorityLevel,
 		odo.is_whole_order_outbound as isWholeOrderOutbound,
-
 		odo.cross_docking_symbol as crossDockingSysmbol,
-
 		odo.ec_order_code as ecOrderCode,
 		odo.customer_id as customerId,
 		odo.store_id AS storeId,
-		DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s') as
-		orderTime,
+		DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s') as orderTime,
 		odo.sku_number_of_packages AS skuNumberOfPackages,
 		odo.amt as amt,
 		transmgmt.transport_service_provider as transportServiceProvider,
 		transmgmt.transport_service_provider as transportServiceProviderName,
 		transmgmt.mode_of_transport as modeOfTransport,
-
 		odo.epistatic_systems_order_type as epistaticSystemsOrderType,
-
 		odo.odo_type as odoType,
 		odo.qty as qty,
-
 		odo.distribute_mode as distributeMode,
-
 		odo.odo_status as odoStatus,
 		odo.order_type as orderType,
-
-		
 		transmgmt.outbound_target_type as
 		outboundTargetType,
-
 		transmgmt.outbound_target as outboundTarget,
 		address.distribution_target_name as distributionTargetName,
-		address.distribution_target_mobile_phone as
-		distributionTargetMobilePhone,
-		address.distribution_target_telephone as
-		distributionTargetTelephone,
-		address.distribution_target_country as
-		distributionTargetCountry,
-		address.distribution_target_province as
-		distributionTargetProvince,
-		address.distribution_target_city as
-		distributionTargetCity,
-		address.distribution_target_district as
-		distributionTargetDistrict,
-		address.distribution_target_villages_towns
-		as
-		distributionTargetVillagesTowns,
-		address.distribution_target_address
-		as distributionTargetAddress,
-		address.distribution_target_email as
-		distributionTargetEmail,
-		address.distribution_target_zip as
-		distributionTargetZip,
-		address.consignee_target_name as
-		consigneeTargetName,
-		address.consignee_target_mobile_phone as
-		consigneeTargetMobilePhone,
-		address.consignee_target_telephone as
-		consigneeTargetTelephone,
-		address.consignee_target_country as
-		consigneeTargetCountry,
-		address.consignee_target_province as
-		consigneeTargetProvince,
-		address.consignee_target_city as
-		consigneeTargetCity,
-		address.consignee_target_district as
-		consigneeTargetDistrict,
-		address.consignee_target_villages_towns as
-		consigneeTargetVillagesTowns,
-		address.consignee_target_address as
-		consigneeTargetAddress,
-		address.consignee_target_email as
-		consigneeTargetEmail,
-		address.consignee_target_zip as
-		consigneeTargetZip,
-		transmgmt.deliver_goods_time_mode as
-		deliverGoodsTimeMode,
-
-		DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d') as
-		deliverGoodsTime,
-		DATE_FORMAT(transmgmt.plan_deliver_goods_time,'%Y-%m-%d') as
-		planDeliverGoodsTime,
-		DATE_FORMAT(transmgmt.actual_deliver_goods_time,'%Y-%m-%d') as
-		actualDeliverGoodsTime,
-		odo.include_fragile_cargo as
-		includeFragileCargo,
-
-		odo.include_hazardous_cargo as
-		includeHazardousCargo,
-
+		address.distribution_target_mobile_phone as distributionTargetMobilePhone,
+		address.distribution_target_telephone as distributionTargetTelephone,
+		address.distribution_target_country as distributionTargetCountry,
+		address.distribution_target_province as distributionTargetProvince,
+		address.distribution_target_city as distributionTargetCity,
+		address.distribution_target_district as distributionTargetDistrict,
+		address.distribution_target_villages_towns as distributionTargetVillagesTowns,
+		address.distribution_target_address as distributionTargetAddress,
+		address.distribution_target_email as distributionTargetEmail,
+		address.distribution_target_zip as distributionTargetZip,
+		address.consignee_target_name as consigneeTargetName,
+		address.consignee_target_mobile_phone as consigneeTargetMobilePhone,
+		address.consignee_target_telephone as consigneeTargetTelephone,
+		address.consignee_target_country as consigneeTargetCountry,
+		address.consignee_target_province as consigneeTargetProvince,
+		address.consignee_target_city as consigneeTargetCity,
+		address.consignee_target_district as consigneeTargetDistrict,
+		address.consignee_target_villages_towns as consigneeTargetVillagesTowns,
+		address.consignee_target_address as consigneeTargetAddress,
+		address.consignee_target_email as consigneeTargetEmail,
+		address.consignee_target_zip as consigneeTargetZip,
+		transmgmt.deliver_goods_time_mode as deliverGoodsTimeMode,
+		DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d') as deliverGoodsTime,
+		DATE_FORMAT(transmgmt.plan_deliver_goods_time,'%Y-%m-%d') as planDeliverGoodsTime,
+		DATE_FORMAT(transmgmt.actual_deliver_goods_time,'%Y-%m-%d') as actualDeliverGoodsTime,
+		odo.include_fragile_cargo as includeFragileCargo,
+		odo.include_hazardous_cargo as includeHazardousCargo,
 		odo.outbound_carton_type as outboundCartonType,
 		boxType.name as outboundCartonTypeName,
 		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
-		odo.created_id
-		as createId,
+		odo.created_id as createId,
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
 		odo.is_locked as isLocked,
 		odo.assign_fail_reason as assignFailReason
-		
-		from t_wh_odo odo
-		left join t_wh_odo_address
-		address on
-		address.odo_id=odo.id
-		left join t_wh_odo_transport_mgmt
-		transmgmt on
-		transmgmt.odo_id=odo.id
-		
-		left join
-		t_wh_outboundbox_type boxType on
-		boxType.id=odo.outbound_carton_type
-		
-		<where>
+	</sql>    
+    
+    <sql id="exportOdoWhere">
+    	<where>
 			<if test="odoCode!=null and odoCode!=''">
 				and odo.odo_code like #{odoCode}
 			</if>
@@ -2837,36 +2839,31 @@
 			</if>
 			<if test="epistaticSystemsOrderType!=null  and epistaticSystemsOrderType.size()>0">
 				and odo.epistatic_systems_order_type in
-				<foreach collection="epistaticSystemsOrderType" item="s"
-					open="(" separator="," close=")">
+				<foreach collection="epistaticSystemsOrderType" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
-			<if test="customerId!=null   and customerId.size()>0">
+			<if test="customerList!=null   and customerList.size()>0">
 				and odo.customer_id in
-				<foreach collection="customerId" item="s" open="("
-					separator="," close=")">
+				<foreach collection="customerList" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 			<if test="outboundTargetType!=null  and outboundTargetType.size()>0">
 				and transmgmt.outbound_target_type in
-				<foreach collection="outboundTargetType" item="s" open="("
-					separator="," close=")">
+				<foreach collection="outboundTargetType" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 			<if test="odoType!=null and odoType.size()>0">
 				and odo.odo_type in
-				<foreach collection="odoType" item="s" open="(" separator=","
-					close=")">
+				<foreach collection="odoType" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
-			<if test="storeId!=null and storeId.size()>0">
+			<if test="storeList!=null and storeList.size()>0">
 				and odo.store_id in
-				<foreach collection="storeId" item="s" open="(" separator=","
-					close=")">
+				<foreach collection="storeList" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
@@ -2875,45 +2872,39 @@
 			</if>
 			<if test="modeOfTransport!=null and modeOfTransport.size()>0">
 				and transmgmt.mode_of_transport in
-				<foreach collection="modeOfTransport" item="s" open="("
-					separator="," close=")">
+				<foreach collection="modeOfTransport" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 			<if test="transportServiceProvider!=null and transportServiceProvider.size()>0">
 				and transmgmt.transport_service_provider in
-				<foreach collection="transportServiceProvider" item="s"
-					open="(" separator="," close=")">
+				<foreach collection="transportServiceProvider" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 			<if test="transportServiceProviderType!=null and transportServiceProviderType.size()>0">
 				and transmgmt.courier_service_type in
-				<foreach collection="transportServiceProviderType" item="s"
-					open="(" separator="," close=")">
+				<foreach collection="transportServiceProviderType" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 
 			</if>
 			<if test="distributeMode!=null and distributeMode.size()>0">
 				and odo.distribute_mode in
-				<foreach collection="distributeMode" item="s" open="("
-					separator="," close=")">
+				<foreach collection="distributeMode" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 			<if test="outBoundCartonType!=null and outBoundCartonType.size()>0">
 				and odo.outbound_carton_type in
-				<foreach collection="outBoundCartonType" item="s" open="("
-					separator="," close=")">
+				<foreach collection="outBoundCartonType" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 			<if test="whVasType!=null and whVasType.size()>0">
 				and EXISTS(select 1 from t_wh_odo_vas odovas inner join t_wh_vas whvas on whvas.id=odovas.wh_vas_type and odovas.vas_type='WH' where odovas.odo_id=odo.id and
 				whvas.type in
-				<foreach collection="whVasType" item="s" open="(" separator=","
-					close=")">
+				<foreach collection="whVasType" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 
@@ -2922,45 +2913,37 @@
 
 			<if test="orderType!=null and orderType.size()>0">
 				and odo.order_type in
-				<foreach collection="orderType" item="s" open="(" separator=","
-					close=")">
+				<foreach collection="orderType" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 
 			<if test="createTimeStart!=null and createTimeStart!=''">
-				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+				and DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
 			</if>
 			<if test="createTimeEnd!=null and createTimeEnd!=''">
-				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+				and DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
 			</if>
 			<if test="ecOrderCode!=null and ecOrderCode!=''">
 				and odo.ec_order_code LIKE #{ecOrderCode}
 			</if>
 			<if test="orderTimeStart!=null and orderTimeStart!=''">
-				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&gt;=#{orderTimeStart}
+				and DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&gt;=#{orderTimeStart}
 			</if>
 			<if test="orderTimeEnd!=null and orderTimeEnd!=''">
-				and
-				DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&lt;=#{orderTimeEnd}
+				and DATE_FORMAT(odo.order_time,'%Y-%m-%d %H:%i:%s')&lt;=#{orderTimeEnd}
 			</if>
 			<if test="deliverGoodsTimeMode!=null and deliverGoodsTimeMode.size()>0">
 				and transmgmt.deliver_goods_time_mode IN
-				<foreach collection="deliverGoodsTimeMode" item="s" open="("
-					separator="," close=")">
+				<foreach collection="deliverGoodsTimeMode" item="s" open="(" separator="," close=")">
 					#{s}
 				</foreach>
 			</if>
 			<if test="deliverGoodsTimeStart!=null and deliverGoodsTimeStart!=''">
-				and
-				DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d')&gt;=#{deliverGoodsTimeStart}
+				and DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d')&gt;=#{deliverGoodsTimeStart}
 			</if>
 			<if test="deliverGoodsTimeEnd!=null and deliverGoodsTimeEnd!=''">
-				and
-				DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d')&lt;=#{deliverGoodsTimeEnd}
+				and DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d')&lt;=#{deliverGoodsTimeEnd}
 			</if>
 			<if test="includeFragileCargo!=null">
 				and odo.include_fragile_cargo=#{includeFragileCargo}
@@ -2991,15 +2974,13 @@
 				</if>
 				<if test="odoLineStatus!=null  and odoLineStatus.size()>0">
 					and odoline.odo_line_status IN
-					<foreach collection="odoLineStatus" item="s" open="("
-						separator="," close=")">
+					<foreach collection="odoLineStatus" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
 				<if test="lineOutboundCartonType!=null  and lineOutboundCartonType.size()>0">
 					and odoline.outbound_carton_type IN
-					<foreach collection="lineOutboundCartonType" item="s" open="("
-						separator="," close=")">
+					<foreach collection="lineOutboundCartonType" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
@@ -3008,8 +2989,7 @@
 				</if>
 				<if test="invType!=null and invType.size()>0">
 					and odoline.inv_type IN
-					<foreach collection="invType" item="s" open="(" separator=","
-						close=")">
+					<foreach collection="invType" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
@@ -3022,8 +3002,7 @@
 						and linesn.sn LIKE #{sn}
 					</if>
 					<if test="defectWareBarcode!=null and defectWareBarcode!=''">
-						and linesn.defect_ware_barcode LIKE
-						#{defectWareBarcode}
+						and linesn.defect_ware_barcode LIKE #{defectWareBarcode}
 					</if>
 					<if test="defectType!=null and defectType!=''">
 						and linesn.defect_type LIKE #{defectType}
@@ -3035,43 +3014,37 @@
 				</if>
 				<if test="invStatus!=null and invStatus.size()>0">
 					and odoline.inv_status IN
-					<foreach collection="invStatus" item="s" open="("
-						separator="," close=")">
+					<foreach collection="invStatus" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
 				<if test="invAttr1!=null and invAttr1.size()>0">
 					and odoline.inv_attr1 IN
-					<foreach collection="invAttr1" item="s" open="(" separator=","
-						close=")">
+					<foreach collection="invAttr1" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
 				<if test="invAttr2!=null and invAttr2.size()>0">
 					and odoline.inv_attr2 IN
-					<foreach collection="invAttr2" item="s" open="(" separator=","
-						close=")">
+					<foreach collection="invAttr2" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
 				<if test="invAttr3!=null and invAttr3.size()>0">
 					and odoline.inv_attr3 IN
-					<foreach collection="invAttr3" item="s" open="(" separator=","
-						close=")">
+					<foreach collection="invAttr3" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
 				<if test="invAttr4!=null and invAttr4.size()>0">
 					and odoline.inv_attr4 IN
-					<foreach collection="invAttr4" item="s" open="(" separator=","
-						close=")">
+					<foreach collection="invAttr4" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
 				<if test="invAttr5!=null and invAttr5.size()>0">
 					and odoline.inv_attr5 IN
-					<foreach collection="invAttr5" item="s" open="(" separator=","
-						close=")">
+					<foreach collection="invAttr5" item="s" open="(" separator="," close=")">
 						#{s}
 					</foreach>
 				</if>
@@ -3082,36 +3055,28 @@
 					and odoline.batch_number LIKE #{batchNumber}
 				</if>
 				<if test="mfgDateStart!=null and mfgDateStart!=''">
-					and
-					DATE_FORMAT(odoline.mfg_date,'%Y-%m-%d')&gt;=#{mfgDateStart}
+					and DATE_FORMAT(odoline.mfg_date,'%Y-%m-%d')&gt;=#{mfgDateStart}
 				</if>
 				<if test="mfgDateEnd!=null and mfgDateEnd!=''">
-					and
-					DATE_FORMAT(odoline.mfg_date,'%Y-%m-%d')&lt;=#{mfgDateEnd}
+					and DATE_FORMAT(odoline.mfg_date,'%Y-%m-%d')&lt;=#{mfgDateEnd}
 				</if>
 				<if test="expDateStart!=null and expDateStart!=''">
-					and
-					DATE_FORMAT(odoline.exp_date,'%Y-%m-%d')&gt;=#{expDateStart}
+					and DATE_FORMAT(odoline.exp_date,'%Y-%m-%d')&gt;=#{expDateStart}
 				</if>
 				<if test="expDateEnd!=null and expDateEnd!=''">
-					and
-					DATE_FORMAT(odoline.exp_date,'%Y-%m-%d')&lt;=#{expDateEnd}
+					and DATE_FORMAT(odoline.exp_date,'%Y-%m-%d')&lt;=#{expDateEnd}
 				</if>
 				<if test="minExpDateStart!=null and minExpDateStart!=''">
-					and
-					DATE_FORMAT(odoline.min_exp_date,'%Y-%m-%d')&gt;=#{minExpDateStart}
+					and DATE_FORMAT(odoline.min_exp_date,'%Y-%m-%d')&gt;=#{minExpDateStart}
 				</if>
 				<if test="minExpDateEnd!=null and minExpDateEnd!=''">
-					and
-					DATE_FORMAT(odoline.min_exp_date,'%Y-%m-%d')&lt;=#{minExpDateEnd}
+					and DATE_FORMAT(odoline.min_exp_date,'%Y-%m-%d')&lt;=#{minExpDateEnd}
 				</if>
 				<if test="maxExpDateStart!=null and maxExpDateStart!=''">
-					and
-					DATE_FORMAT(odoline.max_exp_date,'%Y-%m-%d')&gt;=#{maxExpDateStart}
+					and DATE_FORMAT(odoline.max_exp_date,'%Y-%m-%d')&gt;=#{maxExpDateStart}
 				</if>
 				<if test="maxExpDateEnd!=null and maxExpDateEnd!=''">
-					and
-					DATE_FORMAT(odoline.max_exp_date,'%Y-%m-%d')&lt;=#{maxExpDateEnd}
+					and DATE_FORMAT(odoline.max_exp_date,'%Y-%m-%d')&lt;=#{maxExpDateEnd}
 				</if>
 				)
 			</if>
@@ -3123,10 +3088,7 @@
 				and odo.id IN ${ids}
 			</if>
 		</where>
-			    	
-			    	 ) t limit 0,#{limit}
-    </select>
-    
+    </sql>
     
     <select id="findDistinctCounterCode" resultType="String">
 		select odo.counter_code

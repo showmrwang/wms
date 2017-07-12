@@ -23,4 +23,6 @@ public interface OdoAddressManager extends BaseManager {
      */
     WhOdoAddress findOdoAddressByIdOuId(Long id, Long ouId);
 
+    WhOdoAddress findArchivOdoAddressByOdoId(Long odoId, String archivTime, Long ouId);
+
 }

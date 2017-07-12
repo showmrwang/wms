@@ -90,6 +90,7 @@ public class OdoResultCommand extends BaseCommand {
     private String originalOdoCode;
     /** 物流服务调用标志 0:失败 */
     private Integer logisticsFlag;
+    private String archivTime;
 
     public String getQty() {
         return qty;
@@ -729,6 +730,14 @@ public class OdoResultCommand extends BaseCommand {
 
     public void setLogisticsFlag(Integer logisticsFlag) {
         this.logisticsFlag = logisticsFlag;
+    }
+
+    public String getArchivTime() {
+        return archivTime;
+    }
+
+    public void setArchivTime(String archivTime) {
+        this.archivTime = archivTime;
     }
 
 }

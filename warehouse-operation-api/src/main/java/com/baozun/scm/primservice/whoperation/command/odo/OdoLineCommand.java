@@ -144,6 +144,7 @@ public class OdoLineCommand extends BaseCommand {
     private Integer priorityLevel;
     private Date planDeliverGoodsTime;
     private Date orderTime;
+    private String archivTime;
 
     /** 出库箱推荐 */
     private Sku sku;
@@ -726,5 +727,13 @@ public class OdoLineCommand extends BaseCommand {
 
     public void setSku(Sku sku) {
         this.sku = sku;
+    }
+
+    public String getArchivTime() {
+        return archivTime;
+    }
+
+    public void setArchivTime(String archivTime) {
+        this.archivTime = archivTime;
     }
 }

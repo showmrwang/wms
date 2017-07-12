@@ -65,6 +65,7 @@ public class OdoSearchCommand extends BaseCommand {
     private String minExpDateEnd;
     private String maxExpDateStart;
     private String maxExpDateEnd;
+    private String archivTime;
     private String ids;
     private boolean needOutboundCartonType;
     private boolean needEpistaticSystemsOrderType;
@@ -757,6 +758,14 @@ public class OdoSearchCommand extends BaseCommand {
 
     public void setIsLocked(Integer isLocked) {
         this.isLocked = isLocked;
+    }
+
+    public String getArchivTime() {
+        return archivTime;
+    }
+
+    public void setArchivTime(String archivTime) {
+        this.archivTime = archivTime;
     }
 
 }

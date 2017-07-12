@@ -58,4 +58,8 @@ public interface OdoVasManager extends BaseManager {
      */
     void insertVasList(Long odoId, List<VasLine> vasList, WhOdoTransportMgmt transMgmt, Long ouId);
 
+    List<WhOdoVasCommand> findArchivOdoOuVasCommandByOdoIdOdoLineIdType(Long odoId, Long odoLineId, String archivTime, Long ouId);
+
+    List<WhOdoVasCommand> findArchivOdoExpressVasCommandByOdoIdOdoLineId(Long odoId, Long odoLineId, String archivTime, Long ouId);
+
 }

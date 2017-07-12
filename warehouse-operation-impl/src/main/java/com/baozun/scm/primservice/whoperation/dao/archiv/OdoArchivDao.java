@@ -21,6 +21,7 @@ import org.apache.ibatis.annotations.Param;
 import lark.orm.dao.supports.BaseDao;
 
 import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
+import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivLineIndex;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
@@ -347,5 +348,17 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     WhOdo findOdoByCodeAndSysDate(@Param("odoCode") String odoCode, @Param("sysDate") String sysDate, @Param("ouId") Long ouId);
+
+    WhOdo findOdoByIdAndSysDate(@Param("id") Long id, @Param("archivTime") String archivTime, @Param("ouId") Long ouId);
+
+    WhOdoTransportMgmt findOdoTransportMgmtByOdoIdAndSysDate(@Param("odoId") Long odoId, @Param("archivTime") String archivTime, @Param("ouId") Long ouId);
+
+    WhOdoAddress findArchivOdoAddressByOdoId(@Param("odoId") Long odoId, @Param("archivTime") String archivTime, @Param("ouId") Long ouId);
+
+    List<WhOdoVasCommand> findArchivOdoOuVasCommandByOdoIdOdoLineIdType(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("archivTime") String archivTime, @Param("ouId") Long ouId);
+
+    List<WhOdoVasCommand> findArchivOdoExpressVasCommandByOdoIdOdoLineId(@Param("odoId") Long odoId, @Param("odoLineId") Long odoLineId, @Param("archivTime") String archivTime, @Param("ouId") Long ouId);
+
+    WhOdoLine findArchivOdoLineById(@Param("id") Long id, @Param("archivTime") String archivTime, @Param("ouId") Long ouId);
 
 }

@@ -19,4 +19,6 @@ public interface OdoTransportMgmtManager extends BaseManager {
 
     void insertDeliveryInfoExt(WhOdodeliveryInfo delivery);
 
+    WhOdoTransportMgmt findArchivTransportMgmtByOdoIdOuId(Long odoId, String archivTime, Long ouId);
+
 }

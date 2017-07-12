@@ -12,6 +12,7 @@ import lark.common.dao.Page;
 import lark.common.dao.Pagination;
 import lark.common.dao.Sort;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +26,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
@@ -50,6 +52,8 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     private WhOdoDao whOdoDao;
     @Autowired
     private InventoryStatusDao inventoryStatusDao;
+    @Autowired
+    private OdoArchivDao odoArchivDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -92,7 +96,14 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoLineCommand> findOdoLineListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        Pagination<OdoLineCommand> pages = this.whOdoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<OdoLineCommand> pages = null;
+        String archivTime = (String) params.get("archivTime");
+        if (StringUtils.isEmpty(archivTime)) {
+            pages = this.whOdoLineDao.findListByQueryMapWithPageExt(page, sorts, params);
+        } else {
+            pages = this.whOdoLineDao.findArchivListByQueryMapWithPageExt(page, sorts, params);
+        }
+        
         List<OdoLineCommand> odoLineList = pages.getItems();
         if (odoLineList != null && odoLineList.size() > 0) {
             // 库存状态
@@ -276,6 +287,11 @@ public class OdoLineManagerImpl extends BaseManagerImpl implements OdoLineManage
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Long countNotSuitDistribeModeLines(Long odoId, Long ouId) {
         return this.whOdoLineDao.countNotSuitDistribeModeLines(odoId, ouId);
+    }
+
+    @Override
+    public WhOdoLine findArchivOdoLineById(Long id, String archivTime, Long ouId) {
+        return odoArchivDao.findArchivOdoLineById(id, archivTime, ouId);
     }
     
 }
