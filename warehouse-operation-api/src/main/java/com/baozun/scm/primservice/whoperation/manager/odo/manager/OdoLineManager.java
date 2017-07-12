@@ -163,4 +163,6 @@ public interface OdoLineManager extends BaseManager {
      */
     Long countNotSuitDistribeModeLines(Long odoId, Long ouId);
 
+    WhOdoLine findArchivOdoLineById(Long id, String archivTime, Long ouId);
+
 }

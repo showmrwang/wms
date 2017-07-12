@@ -45,6 +45,9 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
 
     @QueryPage("findListCountByQueryMapExt")
     Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+    
+    @QueryPage("findArchivListCountByQueryMapExt")
+    Pagination<OdoResultCommand> findArchivListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
 
     @QueryPage("queryCount")
     Pagination<WhOdo> query(Page page, Sort[] sorts, QueryCondition cond);
@@ -238,6 +241,8 @@ public interface WhOdoDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     List<String> findExportExeclList(OdoSearchCommand odoSearchCommand);
+    
+    List<String> findExportExeclArchivList(OdoSearchCommand odoSearchCommand);
 
     List<String> findDistinctCounterCode(@Param("ouId") Long ouId);
 

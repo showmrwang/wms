@@ -1617,6 +1617,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
                         facility.setBatch(null);
                         whOutboundFacilityDao.saveOrUpdateByVersion(facility);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, facility, ouId, userId, null, null);
                     }
                 }
             }
