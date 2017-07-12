@@ -141,7 +141,7 @@ public interface PdaPickingWorkManager extends BaseManager {
      * @param locationId
      * @param ouId
      */
-    public void cancelPattern(String carCode,String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
+    public void cancelPattern(String outerContainerCode,String insideContainerCode, int cancelPattern,int pickingWay,Long locationId,Long ouId,Long operationId,Long tipSkuId);
     
     /***
      * 缓存库位

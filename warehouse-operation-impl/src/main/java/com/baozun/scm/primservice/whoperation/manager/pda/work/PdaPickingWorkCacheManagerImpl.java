@@ -3260,7 +3260,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
      * @param locationId
      * @param ouId
      */
-    public void cancelPattern(Long carId, Long outerContainerId, Long insideContainerId, int cancelPattern, int pickingWay, Long locationId, Long ouId, Long operationId, Long tipSkuId) {
+    public void cancelPattern(Long outerContainerId, Long insideContainerId, int cancelPattern, int pickingWay, Long locationId, Long ouId, Long operationId, Long tipSkuId) {
         if (cancelPattern == CancelPattern.PICKING_TIP_CAR_CANCEL) {
             OperatioLineStatisticsCommand operatorLine = cacheManager.getObject(CacheConstants.OPERATIONLINE_STATISTICS + operationId.toString());
             if (null == operatorLine) {
