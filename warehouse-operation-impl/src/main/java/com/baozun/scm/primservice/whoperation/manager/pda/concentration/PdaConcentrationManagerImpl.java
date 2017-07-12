@@ -1022,6 +1022,20 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (!recPathList.isEmpty()) {
             for (WhFacilityRecPathCommand recPath : recPathList) {
                 if (recPath.getContainerCode().equals(containerCode)) {
+                    List<Long> containerListTemp = cacheManager.getMapObject(cacheKey, userId.toString());
+                    if (null != containerListTemp && !containerListTemp.isEmpty()) {
+                        Set<Long> containerSet = new HashSet<Long>();
+                        containerSet.addAll(containerListTemp);
+                        if (containerSet.add(rec.getContainerId())) {
+                            List<Long> containerLists = new ArrayList<Long>();
+                            containerLists.addAll(containerSet);
+                            cacheManager.setMapObject(cacheKey, userId.toString(), containerLists, CacheConstants.CACHE_ONE_DAY);
+                        }
+                    } else {
+                        containerListTemp = new ArrayList<Long>();
+                        containerListTemp.add(rec.getContainerId());
+                        cacheManager.setMapObject(cacheKey, userId.toString(), containerListTemp, CacheConstants.CACHE_ONE_DAY);
+                    }
                     throw new BusinessException(ErrorCodes.COLLECTION_RECOMMEND_RESULT_REPEAT, new Object[] {containerCode});
                 }
                 if (!recPath.getBatch().equals(batch)) {
@@ -1129,14 +1143,14 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
         if (updateCount != 1) {
             throw new BusinessException(ErrorCodes.UPDATE_DATA_ERROR);
         }
-       
+
         if (flag) { // 更新批次下的容器绑定播种墙
             int count = whSeedingCollectionDao.countNotHaveFacilityIdByBatch(batch, ouId);
             if (count > 0) {
                 whSeedingCollectionDao.updateFacilityByBatch(batch, rec.getFacilityId(), ouId);
             }
         }
-         
+
         /*
          * if (destinationType == Constants.SEEDING_WALL) { String seedingWallCode =
          * rec.getSeedingwallCode(); // 移到播种墙时保存redis数据 //
@@ -1164,8 +1178,10 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
 
     @Override
     public void removeRecommendResultListCache(String batch, Long userId) {
-        cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
-        cacheManager.removeMapValue(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId.toString(), batch);
+        if (null != batch) {
+            cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(), batch);
+            cacheManager.removeMapValue(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId.toString(), batch);
+        }
         cacheManager.removeMapValue(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC, userId.toString());
     }
 
