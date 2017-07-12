@@ -4528,4 +4528,51 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
     public void removeCacheOutBoundbox(Long operationId){
         this.removeOutBoundBox(operationId);
     }
+
+    
+    /**
+     * 判断是整托还是整箱
+     * @param outerContainerCode
+     * @param insideCotainerCode
+     * @param ouId
+     * @param operationId
+     */
+    @Override
+    public int isPalletOrContainer(String outerContainerCode, String insideCotainerCode, Long ouId, Long operationId) {
+        int pickingWay = 0;
+        if(StringUtils.isEmpty(outerContainerCode) && StringUtils.isEmpty(insideCotainerCode)) {
+            throw new BusinessException(ErrorCodes.PARAM_IS_NULL);
+        }
+        Long outerContainerId = null;
+        if(!StringUtils.isEmpty(outerContainerCode)) {
+            ContainerCommand cmd =  containerDao.getContainerByCode(outerContainerCode, ouId);
+            if(null == cmd) {
+                log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+            }
+            outerContainerId = cmd.getId();
+            int outerCount = whSkuInventoryDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId);
+            int outerAndOperCount = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId,operationId);
+            if(outerCount == outerAndOperCount){
+                pickingWay = 1;
+            }
+        }
+        if(1 != pickingWay){
+            Long insideContainerId = null;
+            if(!StringUtils.isEmpty(insideCotainerCode)) {
+                ContainerCommand cmd =  containerDao.getContainerByCode(insideCotainerCode, ouId);
+                if(null == cmd) {
+                    log.error("pdaPickingRemmendContainer container is null logid: " + logId);
+                    throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
+                }
+                insideContainerId  = cmd.getId();
+                int inCount = whSkuInventoryDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId);
+                int inAndOperCount = whOperationLineDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId,operationId);
+                if(inCount == inAndOperCount){
+                    pickingWay = 2;
+                }
+            }
+        }
+        return pickingWay;
+    }
 }

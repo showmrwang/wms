@@ -2785,8 +2785,11 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                 }
                 cssrCmd.setIsNeedTipInsideContainer(true);
                 cssrCmd.setTipiInsideContainerId(tipiInsideContainerId);
+                cssrCmd.setTipOuterContainerId(outerContainerId);
                 // 缓存上一个托盘内最后扫描的一个内部容器
                 this.cacheInsideContainerCode(locationId, insideContainerId, outerContainerId, operationId);
+                // 缓存上一个托盘
+                this.cacheOuterContainerCode(locationId, outerContainerId, operationId);
             }
         }
         return cssrCmd;
