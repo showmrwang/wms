@@ -204,8 +204,8 @@ public class WeightingManagerImpl extends BaseManagerImpl implements WeightingMa
                 weightingCommand = whCheckingDao.findByOutboundBoxCodeForChecking1(input, ouId);
                 if (null != weightingCommand) {
                     weightingCommand.setOutboundBoxCode(input);
+                    log.info("return weightingCommand: weightingCommand:[{}]", weightingCommand.toString());
                 }
-                log.info("return weightingCommand: weightingCommand:[{}]", weightingCommand.toString());
                 log.info("findInputResponse finish...");
                 return weightingCommand;
             }

@@ -211,7 +211,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             sourceAddress = this.createOdoAddress(sourceAddress, sourceOdoTrans.getOutboundTargetType(), sourceOdoTrans.getOutboundTarget());
 
             if (sourceOdo.getId() != null) {
-                this.editOdo(sourceOdo, sourceOdoTrans);
+                this.editOdo(sourceOdo, sourceOdoTrans, logId);
                 returnOdoId = sourceOdo.getId();
             } else {
                 returnOdoId = this.createOdo(sourceOdo, sourceOdoLineList, sourceOdoTrans, sourceAddress, sourceInvoice, sourceInvoiceLineList, ouId, userId);
@@ -452,7 +452,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
      * @param sourceOdo
      * @param sourceOdoTrans
      */
-    private void editOdo(OdoCommand sourceOdo, OdoTransportMgmtCommand sourceOdoTrans) {
+    private void editOdo(OdoCommand sourceOdo, OdoTransportMgmtCommand sourceOdoTrans, String logId) {
         try {
 
             Long ouId = sourceOdo.getOuId();
@@ -467,7 +467,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             // 配货模式计算
             if (!OdoStatus.CREATING.equals(odo.getOdoStatus())) {
                 // @mender yimin.lu 2017/6/30
-                if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+                if (this.odoManager.isSuitForDefaultDistributionMode(odo, logId)) {
                     this.distributionModeArithmeticManagerProxy.divFromOrderPool(odo.getCounterCode(), odoId);
                 }
             }
@@ -515,7 +515,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
             // 计算配货模式
             if (!OdoStatus.CREATING.equals(odo.getOdoStatus())) {
                 // @mender yimin.lu 2017/6/30
-                if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+                if (this.odoManager.isSuitForDefaultDistributionMode(odo, logId)) {
                     this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(odo.getCounterCode(), odoId);
                 }
             }
@@ -1655,7 +1655,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 if ((odo.getIsLocked() == null || odo.getIsLocked() == false) && Constants.ODO_CROSS_DOCKING_SYSMBOL_2.equals(odo.getCrossDockingSymbol())) {
 
                 }
-                if (this.odoManager.isSuitForDefaultDistributionMode(odo)) {
+                if (this.odoManager.isSuitForDefaultDistributionMode(odo, logId)) {
                     this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(counterCode, odoId);
                 }
             }
@@ -3160,9 +3160,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
 
 
     @Override
-    public boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId) {
+    public boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId,String logId) {
         WhOdo odo = this.odoManager.findOdoByIdOuId(odoId, ouId);
-        return this.odoManager.isSuitForDefaultDistributionMode(odo);
+        return this.odoManager.isSuitForDefaultDistributionMode(odo, logId);
     }
 
     @Override

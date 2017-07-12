@@ -239,12 +239,12 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
     }
 
     @Override
-    public void removeWaveLineGeneral(Long waveId, Long odoId, Long ouId) {
+    public void removeWaveLineGeneral(Long waveId, Long odoId, Long ouId, String logId) {
         Warehouse wh = warehouseManager.findWarehouseById(ouId);
         if (null == wh) {
             return;
         }
-        whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, Constants.SOFT_ALLOCATION_FAIL, wh, WavePhase.WEAK_ALLOCATED_NUM);
+        whWaveManager.deleteWaveLinesFromWaveByWavePhase(waveId, odoId, Constants.SOFT_ALLOCATION_FAIL, wh, WavePhase.WEAK_ALLOCATED_NUM, logId);
     }
 
     @Override

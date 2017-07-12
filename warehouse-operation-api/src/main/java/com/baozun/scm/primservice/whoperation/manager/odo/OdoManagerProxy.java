@@ -482,7 +482,7 @@ public interface OdoManagerProxy extends BaseManager {
      * @param ouId
      * @return
      */
-    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId);
+    boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId, String logId);
 
     WhOdoTransportMgmt findArchivTransportMgmtByOdoIdOuId(Long odoId, String archivTime, Long ouId);
 

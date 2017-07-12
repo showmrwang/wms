@@ -517,13 +517,13 @@ public class OdoMergeManagerImpl extends BaseManagerImpl implements OdoMergeMana
                 Iterator<Entry<Long, String>> it = mergedOdoMp.entrySet().iterator();
                 while (it.hasNext()) {
                     Entry<Long, String> entry = it.next();
-                    if (this.odoManager.isSuitForDefaultDistributionMode(entry.getKey(), ouId)) {
+                    if (this.odoManager.isSuitForDefaultDistributionMode(entry.getKey(), ouId, logId)) {
 
                         this.distributionModeArithmeticManagerProxy.divFromOrderPool(entry.getValue(), entry.getKey());
                     }
                 }
             }
-            if (this.odoManager.isSuitForDefaultDistributionMode(whOdo.getId(), ouId)) {
+            if (this.odoManager.isSuitForDefaultDistributionMode(whOdo.getId(), ouId, logId)) {
 
                 this.distributionModeArithmeticManagerProxy.addToWhDistributionModeArithmeticPool(whOdo.getCounterCode(), whOdo.getId());
             }

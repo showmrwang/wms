@@ -110,7 +110,7 @@ public class WaveDistributionModeManagerProxyImpl extends BaseManagerImpl implem
         for (WhOdo odo : odoList) {
             log.debug("logId:{},task ->method setWaveDistributionMode: add to odoIdCounterCodeMap[odoId:{},counterCode:{}]", logId, odo.getId(), odo.getCounterCode());
             // @mender yimin.lu 指定库存属性的出库单/有包装要求/有仓库增值服务/管理库存属性 不参与计算默认配货模式 2017/6/29
-            boolean flag = this.odoManager.isSuitForDefaultDistributionMode(odo);
+            boolean flag = this.odoManager.isSuitForDefaultDistributionMode(odo, logId);
             if (flag) {
 
                 odoIdCounterCodeMap.put(odo.getId(), odo.getCounterCode());

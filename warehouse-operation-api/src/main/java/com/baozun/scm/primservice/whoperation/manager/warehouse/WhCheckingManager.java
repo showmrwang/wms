@@ -42,7 +42,7 @@ public interface WhCheckingManager extends BaseManager {
      * 按单复合
      * @param checkingLineList
      */
-    public WhCheckingByOdoResultCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId);
+    public WhCheckingByOdoResultCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId, String logId);
 
     /**
      * [业务方法] 通过输入查找复核信息
