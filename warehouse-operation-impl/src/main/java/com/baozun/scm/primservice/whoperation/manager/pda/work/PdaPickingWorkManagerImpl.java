@@ -4423,7 +4423,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     Container container = new Container();
                     BeanUtils.copyProperties(c, container);
                     container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
-                    container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING);
+                    container.setStatus(ContainerStatus.CONTAINER_STATUS_REC_OUTBOUNDBOX);
                     containerDao.saveOrUpdateByVersion(container);
                     insertGlobalLog(GLOBAL_LOG_UPDATE, container, ouId, userId, null, null);
                 }
