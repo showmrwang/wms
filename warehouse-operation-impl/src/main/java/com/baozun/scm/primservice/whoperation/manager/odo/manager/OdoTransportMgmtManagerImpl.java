@@ -2,14 +2,18 @@ package com.baozun.scm.primservice.whoperation.manager.odo.manager;
 
 import lark.common.annotation.MoreDB;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baozun.scm.baseservice.sac.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportServiceDao;
+import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportService;
@@ -24,6 +28,8 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
     private WhOdoTransportServiceDao whOdoTransportServiceDao;
     @Autowired
     private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
+    @Autowired
+    private OdoArchivDao odoArchivDao;
     
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -96,6 +102,14 @@ public class OdoTransportMgmtManagerImpl extends BaseManagerImpl implements OdoT
     public void insertDeliveryInfoExt(WhOdodeliveryInfo delivery) {
         whOdoDeliveryInfoDao.insert(delivery);
         this.saveOrUpdateTransportService(delivery.getOdoId(), true, 3, null, true, delivery.getOuId());
+    }
+
+    @Override
+    public WhOdoTransportMgmt findArchivTransportMgmtByOdoIdOuId(Long odoId, String archivTime, Long ouId) {
+        if (StringUtils.isEmpty(archivTime)) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        return odoArchivDao.findOdoTransportMgmtByOdoIdAndSysDate(odoId, archivTime, ouId);
     }
 
 }

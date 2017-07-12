@@ -164,10 +164,22 @@
 			ou_id = #{ouId}
 			and box_batch = #{boxBatch}
 			and is_create_work != 1
-			and whole_case is not null
+			and whole_case = 1
 		group by
 			whole_case,
-			outer_container_id,
+			outer_container_id
+		union all
+		select
+			<include refid="whOdoOutBoundBoxColumnsExt"/>
+		from
+			t_wh_odo_outboundbox
+		where
+			ou_id = #{ouId}
+			and box_batch = #{boxBatch}
+			and is_create_work != 1
+			and whole_case = 2
+		group by
+			whole_case,
 			container_id
 		union all
 		select

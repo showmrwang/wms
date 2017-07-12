@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import lark.common.annotation.MoreDB;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -31,9 +29,12 @@ import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoLineSnDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOdoPackageInfoDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundConsumableDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.WhOutboundboxLineSnDao;
+import com.baozun.scm.primservice.whoperation.dao.warehouse.WhPrintInfoDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
@@ -49,11 +50,16 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
 import com.baozun.scm.primservice.whoperation.util.DateUtil;
 import com.baozun.scm.primservice.whoperation.util.HashUtil;
+
+import lark.common.annotation.MoreDB;
 
 /***
  * 出库单归档
@@ -97,6 +103,12 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
     private WhOutboundboxLineSnDao whOutboundboxLineSnDao;
     @Autowired
     private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
+    @Autowired
+    private WhOdoPackageInfoDao whOdoPackageInfoDao;
+    @Autowired
+    private WhOutboundConsumableDao whOutboundConsumableDao;
+    @Autowired
+    private WhPrintInfoDao whPrintInfoDao;
 
     /***
      * 归档仓库Odo信息
@@ -140,6 +152,13 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count = archivWhOdoOutBoundBoxLine(odoid, ouid, sysDate, count);
             // 归档odoDeliveryInfo by odoid
             count = archivWhDeliveryInfo(odoid, ouid, sysDate, count);
+            // 归档odoPackageInfo by odoid
+            count = archivWhOdoPackageInfo(odoid, ouid, sysDate, count);
+            // 归档outboundConsumable by odoid
+            count = archivWhOutboundConsumable(odoid, ouid, sysDate, count);
+            // 归档printInfo by odoid
+            count = archivWhPrintInfo(odoid, ouid, sysDate, count);
+            
             // 保存出库单索引数据(仓库) 只限于出库单状态为完成&&数据来源!=WMS
             if (OdoStatus.FINISH.equals(whOdo.getOdoStatus()) && !Constants.WMS_DATA_SOURCE.equals(whOdo.getDataSource()) && !StringUtils.isEmpty(whOdo.getEcOrderCode())) {
                 // 保存到shard库的t_wh_odo_archiv_line_index
@@ -177,6 +196,66 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
         for (WhOdodeliveryInfo whOdodeliveryInfo : whOdodeliveryInfos) {
             whOdodeliveryInfo.setSysDate(sysDate);
             int diCount = odoArchivDao.archivWhOdodeliveryInfo(whOdodeliveryInfo);
+            count += diCount;
+        }
+        return count;
+    }
+    
+    /***
+     * 归档odoPackageInfo by odoid
+     * 
+     * @param odoid
+     * @param ouid
+     * @param sysDate
+     * @param count
+     * @return
+     */
+    private int archivWhOdoPackageInfo(Long odoid, Long ouid, String sysDate, int count) {
+        // 查询对应odoPackageInfo信息
+        List<WhOdoPackageInfo> whOdoPackageInfos = whOdoPackageInfoDao.findByOdoIdAndOuId(odoid, ouid);
+        for (WhOdoPackageInfo whOdoPackageInfo : whOdoPackageInfos) {
+            whOdoPackageInfo.setSysDate(sysDate);
+            int diCount = odoArchivDao.archivWhOdoPackageInfo(whOdoPackageInfo);
+            count += diCount;
+        }
+        return count;
+    }
+    
+    /***
+     * 归档OutboundConsumable by odoid
+     * 
+     * @param odoid
+     * @param ouid
+     * @param sysDate
+     * @param count
+     * @return
+     */
+    private int archivWhOutboundConsumable(Long odoid, Long ouid, String sysDate, int count) {
+        // 查询对应OutboundConsumable信息
+        List<WhOutboundConsumable> whOutboundConsumables = whOutboundConsumableDao.findInfoByOdoIdAndOuId(odoid, ouid);
+        for (WhOutboundConsumable whOutboundConsumable : whOutboundConsumables) {
+            whOutboundConsumable.setSysDate(sysDate);
+            int diCount = odoArchivDao.archivWhOutboundConsumable(whOutboundConsumable);
+            count += diCount;
+        }
+        return count;
+    }
+    
+    /***
+     * 归档printInfo by odoid
+     * 
+     * @param odoid
+     * @param ouid
+     * @param sysDate
+     * @param count
+     * @return
+     */
+    private int archivWhPrintInfo(Long odoid, Long ouid, String sysDate, int count) {
+        // 查询对应PrintInfo信息
+        List<WhPrintInfo> whOdoPrintInfos = whPrintInfoDao.getPrintInfoByOdoId(odoid, ouid);
+        for (WhPrintInfo whPrintInfo : whOdoPrintInfos) {
+            whPrintInfo.setSysDate(sysDate);
+            int diCount = odoArchivDao.archivWhPrintInfo(whPrintInfo);
             count += diCount;
         }
         return count;
@@ -418,6 +497,12 @@ public class OdoArchivManagerImpl implements OdoArchivManager {
             count += odoAddress;
             int odoDeliveryInfo = odoArchivDao.deleteOdoDeliveryInfo(odoid, ouid);
             count += odoDeliveryInfo;
+            int odoPackageInfo = odoArchivDao.deleteOdoPackageInfo(odoid, ouid);
+            count += odoPackageInfo;
+            int outboundConsumable = odoArchivDao.deleteOutboundConsumable(odoid, ouid);
+            count += outboundConsumable;
+            int printInfo = odoArchivDao.deletePrintInfo(odoid, ouid);
+            count += printInfo;
             odoArchivDao.deleteOdoTransportService(odoid, ouid);
             int odo = odoArchivDao.deleteOdo(odoid, ouid);
             count += odo;

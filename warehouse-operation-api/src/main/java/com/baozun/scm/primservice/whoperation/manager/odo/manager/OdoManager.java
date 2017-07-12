@@ -381,4 +381,6 @@ public interface OdoManager extends BaseManager {
      */
     List<OdoLineCommand> findOdoLineByOdoId(List<Long> idList, Long ouId);
 
+    WhOdo findOdoByIdOuId(Long id, String archivTime, Long ouId);
+
 }

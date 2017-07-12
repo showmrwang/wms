@@ -142,5 +142,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        and ou_id = #{ouId}
 		    ]]>
 	</select>
+	
+	<select id="findByOdoIdAndOuId"
+		resultType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo">
+		select
+		<include refid="whOdoPackageInfoColumnsExt" />
+		    <![CDATA[
+			    from t_wh_odo_package_info 
+		        where 
+		        odo_id = #{odoId}
+		        and ou_id = #{ouId}
+		    ]]>
+	</select>
 
 </mapper>

@@ -9,6 +9,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="whOdoLineResultMap" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine" />
 	<resultMap id="WhOutboundboxLineSnResult" type="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn" />
 	<resultMap id="WhOdoArchivLineIndexCommand" type="com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand" />
+	<resultMap id="WhOdoResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdo" />
+    <resultMap id="WhOdoTransportMgmtResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt" />
+    <resultMap id="WhOdoAddressResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoAddress" />
+    <resultMap id="WhOdoVasResultExt" type="com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand" />
+    <resultMap id="WhOdoLineResult" type="com.baozun.scm.primservice.whoperation.model.odo.WhOdoLine" />
 	
     <insert id="archivWhOdo" parameterType="com.baozun.scm.primservice.whoperation.model.odo.WhOdo" flushCache="true">
         <![CDATA[
@@ -652,6 +657,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <delete id="deleteOdoDeliveryInfo" parameterType="map">
 			delete from t_wh_odo_delivery_info where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
+	 <delete id="deleteOdoPackageInfo" parameterType="map">
+			delete from t_wh_odo_package_info where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deleteOutboundConsumable" parameterType="map">
+			delete from t_wh_outbound_consumable where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deletePrintInfo" parameterType="map">
+			delete from t_wh_print_info where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
 	 <delete id="deleteWhOdoOutBoundBox" parameterType="map">
 			delete from t_wh_odo_outboundbox where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
@@ -948,52 +962,446 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    ]]>
 		</insert>
 		
-		<select id="findOdoByCodeAndSysDate" resultMap="com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao.WhOdoResult">
+		<insert id="archivWhOdoPackageInfo" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo" 			
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_odo_package_info_archiv${sysDate} (
+		        	id,
+		        	odo_id ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	status ,
+		        	calc_weight ,
+		        	floats ,
+		        	actual_weight ,
+		        	lifecycle ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id ,
+		        	ou_id
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{calcWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{floats,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{actualWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+		</insert>
+		
+		<insert id="archivWhOutboundConsumable" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable" 			
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_consumable_archiv${sysDate} (
+		        	id,
+		        	batch ,
+		        	wave_code ,
+		        	customer_code ,
+		        	customer_name ,
+		        	store_code ,
+		        	store_name ,
+		        	odo_id ,
+		        	odo_code ,
+		        	transport_code ,
+		        	waybill_code ,
+		        	facility_id ,
+		        	facility_code ,
+		        	location_id ,
+		        	location_code ,
+		        	area_id ,
+		        	area_code ,
+		        	qty ,
+		        	consum_order ,
+		        	consum_account ,
+		        	consum_person ,
+		        	ou_id ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	sku_code ,
+		        	sku_barcode ,
+		        	sku_name ,
+		        	sku_length ,
+		        	sku_width ,
+		        	sku_height ,
+		        	sku_volume ,
+		        	sku_weight ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{facilityCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{areaCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{consumOrder,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consumAccount,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consumPerson,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,		        	
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,		        	
+		        	#{skuLength,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuWidth,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuHeight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuVolume,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuWeight,javaType=Double,jdbcType=DECIMAL} ,		        	
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}		        	
+		        )
+		    ]]>
+		</insert>
+		
+		<insert id="archivWhPrintInfo" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo" 			
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_print_info_archiv${sysDate} (
+		        	id,
+		        	odo_id ,
+		        	odo_code ,
+		        	waybill_code ,
+		        	facility_id ,
+		        	container_id ,
+		        	container_code ,
+		        	batch ,
+		        	wave_code ,
+		        	ou_id ,
+		        	outer_container_id ,
+		        	outer_container_code ,
+		        	container_lattice_no ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	print_type ,
+		        	print_count ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
+		        )
+		    ]]>
+		</insert>
+		
+		<sql id="odoColumn">
+			id as id,
+        	odo_code as odoCode,
+        	ext_code as extCode,
+        	ec_order_code as ecOrderCode,
+        	customer_id as customerId,
+        	store_id as storeId,
+        	odo_type as odoType,
+        	group_odo_code as groupOdoCode,
+        	original_odo_code as originalOdoCode,
+        	counter_code as counterCode,
+        	priority_level as priorityLevel,
+        	is_whole_order_outbound as isWholeOrderOutbound,
+        	part_outbound_strategy as partOutboundStrategy,
+        	cross_docking_symbol as crossDockingSymbol,
+        	order_type as orderType,
+        	order_time as orderTime,
+        	odo_status as odoStatus,
+        	lag_odo_status as lagOdoStatus,
+        	qty as qty,
+        	current_qty as currentQty,
+        	actual_qty as actualQty,
+        	cancel_qty as cancelQty,
+        	sku_number_of_packages as skuNumberOfPackages,
+        	amt as amt,
+        	distribution_code as distributionCode,
+        	distribute_mode as distributeMode,
+        	epistatic_systems_order_type as epistaticSystemsOrderType,
+        	outbound_carton_type as outboundCartonType,
+        	include_hazardous_cargo as includeHazardousCargo,
+        	include_fragile_cargo as includeFragileCargo,
+        	is_assign_success as isAssignSuccess,
+        	assign_fail_reason as assignFailReason,
+        	is_allow_merge as isAllowMerge,
+        	is_locked as isLocked,
+        	data_source as dataSource,
+	        ext_odo_type as extOdoType,
+	        is_freight_invoice_sunder as isFreightInvoiceSunder,
+	        is_permit_outbound as isPermitOutbound,
+	        odo_index as odoIndex,
+        	ou_id as ouId,
+        	create_time as createTime,
+        	created_id as createdId,
+        	last_modify_time as lastModifyTime,
+        	modified_id as modifiedId,
+        	wave_code as waveCode
+		</sql>
+		
+		<select id="findOdoByCodeAndSysDate" resultMap="WhOdoResult">
 			select 
-				id as id,
-	        	odo_code as odoCode,
-	        	ext_code as extCode,
-	        	ec_order_code as ecOrderCode,
-	        	customer_id as customerId,
-	        	store_id as storeId,
-	        	odo_type as odoType,
-	        	group_odo_code as groupOdoCode,
-	        	original_odo_code as originalOdoCode,
-	        	priority_level as priorityLevel,
-	        	is_whole_order_outbound as isWholeOrderOutbound,
-	        	cross_docking_symbol as crossDockingSymbol,
-	        	order_type as orderType,
-	        	order_time as orderTime,
-	        	odo_status as odoStatus,
-	        	qty as qty,
-	        	current_qty as currentQty,
-	        	actual_qty as actualQty,
-	        	cancel_qty as cancelQty,
-	        	sku_number_of_packages as skuNumberOfPackages,
-	        	amt as amt,
-	        	distribute_mode as distributeMode,
-	        	epistatic_systems_order_type as epistaticSystemsOrderType,
-	        	outbound_carton_type as outboundCartonType,
-	        	include_hazardous_cargo as includeHazardousCargo,
-	        	include_fragile_cargo as includeFragileCargo,
-	        	is_assign_success as isAssignSuccess,
-	        	assign_fail_reason as assignFailReason,
-	        	is_allow_merge as isAllowMerge,
-	        	is_locked as isLocked,
-	        	ou_id as ouId,
-	        	create_time as createTime,
-	        	created_id as createdId,
-	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId,
-	        	wave_code as waveCode,
-	        	counter_code as counterCode,
-	        	distribution_code as distributionCode,
-		        ext_odo_type as extOdoType
+				<include refid="odoColumn"/>
 			from 
 				t_wh_odo_archiv${sysDate}
 			where 
 				odo_code = #{odoCode}
 				and ou_id = #{ouId}
 		</select>
-
+		
+		<select id="findOdoByIdAndSysDate" resultMap="WhOdoResult">
+			select 
+				<include refid="odoColumn"/>
+			from 
+				t_wh_odo_archiv${archivTime}
+			where 
+				id = #{id}
+				and ou_id = #{ouId}
+		</select>
+		
+		<select id="findArchivOdoLineById" resultMap="WhOdoLineResult">
+			select 
+				id as id,
+	        	odo_id as odoId,
+	        	linenum as linenum,
+	        	original_linenum as originalLinenum,
+	        	store_id as storeId,
+	        	ext_linenum as extLinenum,
+	        	sku_id as skuId,
+	        	sku_bar_code as skuBarCode,
+	        	sku_name as skuName,
+	        	ext_sku_name as extSkuName,
+	        	qty as qty,
+	        	plan_qty as planQty,
+	        	current_qty as currentQty,
+	        	actual_qty as actualQty,
+	        	cancel_qty as cancelQty,
+	        	assign_qty as assignQty,
+	        	dieking_qty as diekingQty,
+	        	line_price as linePrice,
+	        	line_amt as lineAmt,
+	        	odo_line_status as odoLineStatus,
+	        	is_check as isCheck,
+	        	full_line_outbound as fullLineOutbound,
+	        	part_outbound_strategy as partOutboundStrategy,
+	        	mfg_date as mfgDate,
+	        	exp_date as expDate,
+	        	min_exp_date as minExpDate,
+	        	max_exp_date as maxExpDate,
+	        	batch_number as batchNumber,
+	        	country_of_origin as countryOfOrigin,
+	        	inv_status as invStatus,
+	        	inv_type as invType,
+	        	inv_attr1 as invAttr1,
+	        	inv_attr2 as invAttr2,
+	        	inv_attr3 as invAttr3,
+	        	inv_attr4 as invAttr4,
+	        	inv_attr5 as invAttr5,
+	        	outbound_carton_type as outboundCartonType,
+	        	color as color,
+	        	style as style,
+	        	size as size,
+	        	mixing_attr as mixingAttr,
+	        	original_odo_code as originalOdoCode,
+	        	assign_fail_reason as assignFailReason,
+	        	is_assign_success as isAssignSuccess,
+	        	ou_id as ouId,
+	        	create_time as createTime,
+	        	created_id as createdId,
+	        	last_modify_time as lastModifyTime,
+	        	modified_id as modifiedId,
+	        	wave_code as waveCode
+			from 
+				t_wh_odo_line_archiv${archivTime}
+			where
+				id = #{id}
+				and ou_id = #{ouId}
+		</select>
+		
+		<select id="findOdoTransportMgmtByOdoIdAndSysDate" resultMap="WhOdoTransportMgmtResult">
+			select
+				id as id,
+                odo_id as odoId,
+                transport_service_provider as transportServiceProvider,
+                mode_of_transport as modeOfTransport,
+                time_effect_type as timeEffectType,
+                courier_service_type as courierServiceType,
+                outbound_target_type as outboundTargetType,
+                outbound_target as outboundTarget,
+                deliver_goods_time_mode as deliverGoodsTimeMode,
+                deliver_goods_time as deliverGoodsTime,
+                plan_deliver_goods_time as planDeliverGoodsTime,
+                actual_deliver_goods_time as actualDeliverGoodsTime,
+                is_cod as isCod,
+                cod_amt as codAmt,
+                insurance_coverage as insuranceCoverage,
+                ou_id as ouId,
+                trans_account as transAccount
+			from
+				t_wh_odo_transport_mgmt_archiv${archivTime}
+			where
+				odo_id = #{odoId}
+				and ou_id= #{ouId}
+		</select>
+		
+		<select id="findArchivOdoAddressByOdoId" resultMap="WhOdoAddressResult">
+			select 
+				id as id,
+                odo_id as odoId,
+                account as account,
+                distribution_target_name as distributionTargetName,
+                distribution_target_mobile_phone as distributionTargetMobilePhone,
+                distribution_target_telephone as distributionTargetTelephone,
+                distribution_target_country as distributionTargetCountry,
+                distribution_target_province as distributionTargetProvince,
+                distribution_target_city as distributionTargetCity,
+                distribution_target_district as distributionTargetDistrict,
+                distribution_target_villages_towns as distributionTargetVillagesTowns,
+                distribution_target_address as distributionTargetAddress,
+                distribution_target_email as distributionTargetEmail,
+                distribution_target_zip as distributionTargetZip,
+                consignee_target_name as consigneeTargetName,
+                consignee_target_mobile_phone as consigneeTargetMobilePhone,
+                consignee_target_telephone as consigneeTargetTelephone,
+                consignee_target_country as consigneeTargetCountry,
+                consignee_target_province as consigneeTargetProvince,
+                consignee_target_city as consigneeTargetCity,
+                consignee_target_district as consigneeTargetDistrict,
+                consignee_target_villages_towns as consigneeTargetVillagesTowns,
+                consignee_target_address as consigneeTargetAddress,
+                consignee_target_email as consigneeTargetEmail,
+                consignee_target_zip as consigneeTargetZip,
+                ou_id as ouId
+			from
+				t_wh_odo_address_archiv${archivTime}
+			where
+				odo_id = #{odoId}
+				and ou_id = #{ouId}
+		</select>
+		
+		<select id="findArchivOdoOuVasCommandByOdoIdOdoLineIdType" resultMap="WhOdoVasResultExt">
+	        select
+	        	odovas.id as id,
+	            odovas.odo_id as odoId,
+	            odovas.odo_line_id as odoLineId,
+	            odovas.vas_type as vasType,
+	            odovas.wh_vas_type as whVasType,
+	            odovas.express_vas_code as expressVasCode,
+	            odovas.print_templet as printTemplet,
+	            odovas.sku_bar_code as skuBarCode,
+	            odovas.content as content,
+	            odovas.carton_no as cartonNo,
+	            odovas.qty as qty,
+	            odovas.amt as amt,
+	            odovas.mode_of_payment as modeOfPayment,
+	            odovas.vas_attr1 as vasAttr1,
+	            odovas.vas_attr2 as vasAttr2,
+	            odovas.vas_attr3 as vasAttr3,
+	            odovas.vas_attr4 as vasAttr4,
+	            odovas.vas_attr5 as vasAttr5,
+	            odovas.ou_id as ouId,
+	            whvas.code as whVasTypeCode,
+	            sys.dic_label as whVasTypeText,
+	            whvas.type as whVasTypeValue
+	        from 
+	        	t_wh_odo_vas_archiv${archivTime} odovas
+	        	inner join t_wh_vas whvas on odovas.wh_vas_type = whvas.id
+	        	left join sys_dictionary sys on sys.dic_value=whvas.type and sys.group_value = 'WH_VAS_TYPE'
+	        <where>
+				<if test="odoId!=null">
+	                and odovas.odo_id = #{odoId}
+	            </if>
+				<if test="odoLineId!=null">
+	                and odovas.odo_line_id = #{odoLineId}
+	            </if>
+				<if test="odoLineId==null">
+	                and odovas.odo_line_id is null
+	            </if>
+	            <if test="ouId!=null">
+	                and odovas.ou_id = #{ouId}
+	            </if>
+	         </where>
+	    </select>
+	    
+	    <select id="findArchivOdoExpressVasCommandByOdoIdOdoLineId" resultMap="WhOdoVasResultExt">
+			select
+				odovas.id as id,
+				odovas.odo_id as odoId,
+				odovas.odo_line_id as odoLineId,
+				odovas.vas_type as vasType,
+				odovas.wh_vas_type as whVasType,
+				odovas.express_vas_code as expressVasCode,
+				odovas.print_templet as printTemplet,
+				odovas.sku_bar_code as skuBarCode,
+				odovas.content as content,
+				odovas.carton_no as cartonNo,
+				odovas.qty as qty,
+				odovas.amt as amt,
+				odovas.mode_of_payment as modeOfPayment,
+				odovas.vas_attr1 as vasAttr1,
+				odovas.vas_attr2 as vasAttr2,
+				odovas.vas_attr3 as vasAttr3,
+				odovas.vas_attr4 as vasAttr4,
+				odovas.vas_attr5 as vasAttr5,
+				odovas.ou_id as ouId
+			from 
+				t_wh_odo_vas_archiv${archivTime} odovas
+			where
+				odovas.vas_type = 'EXPRESS'
+				<if test="odoId!=null">
+					and odovas.odo_id = #{odoId}
+				</if>
+				<if test="odoLineId!=null">
+					and odovas.odo_line_id = #{odoLineId}
+				</if>
+				<if test="odoLineId==null">
+					and odovas.odo_line_id is null
+				</if>
+				<if test="ouId!=null">
+					and odovas.ou_id = #{ouId}
+				</if>
+		</select>
 </mapper>

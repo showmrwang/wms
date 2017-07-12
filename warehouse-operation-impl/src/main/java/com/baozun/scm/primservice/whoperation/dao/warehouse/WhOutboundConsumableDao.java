@@ -17,6 +17,10 @@ package com.baozun.scm.primservice.whoperation.dao.warehouse;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable;
+
 import lark.common.annotation.CommonQuery;
 import lark.common.annotation.QueryPage;
 import lark.common.dao.Page;
@@ -24,8 +28,6 @@ import lark.common.dao.Pagination;
 import lark.common.dao.QueryCondition;
 import lark.common.dao.Sort;
 import lark.orm.dao.supports.BaseDao;
-
-import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable;
 
 public interface WhOutboundConsumableDao extends BaseDao<WhOutboundConsumable, Long> {
 
@@ -42,5 +44,14 @@ public interface WhOutboundConsumableDao extends BaseDao<WhOutboundConsumable, L
 
     @CommonQuery
     int saveOrUpdate(WhOutboundConsumable o);
+    
+    /**
+     * 通过出库单ID查找对应数据
+     * 
+     * @param odoId
+     * @param ouId
+     * @return
+     */
+    List<WhOutboundConsumable> findInfoByOdoIdAndOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
 }

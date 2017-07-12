@@ -56,6 +56,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
 	        	operator_id as operatorId,
+	        	replenishment_code as replenishmentCode,
 	        	is_not_recommand as isNotRecommand
 	    ]]>
 	</sql>
@@ -115,6 +116,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	last_modify_time ,
 		        	operator_id,
 		        	uuid,
+		        	replenishment_code,
 		        	is_not_recommand 
 		        ) VALUES (
 		        #{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
@@ -163,6 +165,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
 		        	#{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
 		        	#{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+		        	#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR},
 		        	#{isNotRecommand,javaType=java.lang.Boolean,jdbcType=BIT}
 		        )
 		    ]]>
@@ -217,6 +220,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        last_modify_time = now() ,	
 		        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
 		        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
+		        replenishment_code=#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR},
 		        is_not_recommand=#{isNotRecommand,javaType=java.lang.Boolean,jdbcType=BIT}
 	        WHERE 
 		        id = #{id} and ou_id = #{ouId}  and last_modify_time	=  #{lastModifyTime}   
@@ -447,6 +451,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if>
 				<if test="isNotRecommand!=null">
 					and is_not_recommand = #{isNotRecommand}
+				</if>
+				<if test="replenishmentCode!=null">
+					and replenishment_code = #{replenishmentCode}
 				</if>
 		</where>
 	</sql>
