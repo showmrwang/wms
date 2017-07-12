@@ -865,7 +865,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
         } catch (Exception ex) {
-            log.error(ex + "");
+            log.error("", ex);
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
         return pages;

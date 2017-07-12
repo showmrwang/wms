@@ -93,6 +93,12 @@ public class OdoSearchCommand extends BaseCommand {
 
     private Boolean isEpistaticSystemsOrderType;
 
+    // 种类数；计划数量
+    private Integer minSkuNumberOfPackages;
+    private Double minQty;
+    private Integer maxSkuNumberOfPackages;
+    private Double maxQty;
+
 
     // 限制行
     private Integer lineNum;
@@ -109,6 +115,38 @@ public class OdoSearchCommand extends BaseCommand {
     private Integer limit;
     private String sqlCondition;
 
+
+    public Integer getMinSkuNumberOfPackages() {
+        return minSkuNumberOfPackages;
+    }
+
+    public void setMinSkuNumberOfPackages(Integer minSkuNumberOfPackages) {
+        this.minSkuNumberOfPackages = minSkuNumberOfPackages;
+    }
+
+    public Double getMinQty() {
+        return minQty;
+    }
+
+    public void setMinQty(Double minQty) {
+        this.minQty = minQty;
+    }
+
+    public Integer getMaxSkuNumberOfPackages() {
+        return maxSkuNumberOfPackages;
+    }
+
+    public void setMaxSkuNumberOfPackages(Integer maxSkuNumberOfPackages) {
+        this.maxSkuNumberOfPackages = maxSkuNumberOfPackages;
+    }
+
+    public Double getMaxQty() {
+        return maxQty;
+    }
+
+    public void setMaxQty(Double maxQty) {
+        this.maxQty = maxQty;
+    }
 
     public String getWaveCode() {
         return waveCode;

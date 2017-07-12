@@ -449,6 +449,28 @@
 			<if test="isMerged!=null and isMerged == 0">
 				and (odo.original_odo_code is null or odo.original_odo_code ='')
 			</if>
+			
+			<if test="minQty!=null">
+				and
+				odo.qty&gt;=#{minQty}
+			</if>
+			<if test="maxQty!=null">
+				and
+				odo.qty&lt;=#{maxQty}
+			</if>
+			<if test="minSkuNumberOfPackages!=null">
+				and
+				odo.sku_number_of_packages&gt;=#{minSkuNumberOfPackages}
+			</if>
+			<if test="maxSkuNumberOfPackages!=null">
+				and
+				odo.sku_number_of_packages&lt;=#{maxSkuNumberOfPackages}
+			</if>
+			<if test="deliverGoodsTimeEnd!=null and deliverGoodsTimeEnd!=''">
+				and
+				DATE_FORMAT(transmgmt.deliver_goods_time,'%Y-%m-%d')&lt;=#{deliverGoodsTimeEnd}
+			</if>
+			
 			<if test="lineFlag">
 				and EXISTS(select 1 from t_wh_odo_line odoline
 				inner join t_wh_sku
@@ -1536,6 +1558,22 @@
 			</if>
 			<if test="isLocked!=null">
 				and odo.is_locked=#{isLocked}
+			</if>
+			<if test="minQty!=null">
+				and
+				odo.qty&gt;=#{minQty}
+			</if>
+			<if test="maxQty!=null">
+				and
+				odo.qty&lt;=#{maxQty}
+			</if>
+			<if test="minSkuNumberOfPackages!=null">
+				and
+				odo.sku_number_of_packages&gt;=#{minSkuNumberOfPackages}
+			</if>
+			<if test="maxSkuNumberOfPackages!=null">
+				and
+				odo.sku_number_of_packages&lt;=#{maxSkuNumberOfPackages}
 			</if>
 			<if test="lineFlag">
 				and EXISTS(select 1 from t_wh_odo_line odoline
