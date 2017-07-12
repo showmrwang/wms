@@ -55,6 +55,9 @@ public class WhOdoPackageInfo extends BaseModel {
     private java.lang.Long modifiedId;
 
     private Long ouId;
+    
+    /** 当前月份 用于归档 */
+    private String sysDate;
 
     // columns END
 
@@ -162,4 +165,12 @@ public class WhOdoPackageInfo extends BaseModel {
         this.ouId = ouId;
     }
 
+    public String getSysDate() {
+        return sysDate;
+    }
+
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+    
 }

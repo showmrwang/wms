@@ -71,6 +71,8 @@ public class WhPrintInfo extends BaseModel {
     /** 修改人ID */
     private Long modifiedId;
     //columns END
+    /** 当前月份 用于归档 */
+    private String sysDate;
 	
     public Long getFacilityId() {
         return facilityId;
@@ -192,6 +194,12 @@ public class WhPrintInfo extends BaseModel {
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
     }
-
+    public String getSysDate() {
+        return sysDate;
+    }
+    public void setSysDate(String sysDate) {
+        this.sysDate = sysDate;
+    }
+    
 }
 

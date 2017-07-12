@@ -18,8 +18,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import lark.orm.dao.supports.BaseDao;
-
 import com.baozun.scm.primservice.whoperation.command.collect.WhOdoArchivLineIndexCommand;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.model.collect.WhOdoArchivIndex;
@@ -35,9 +33,14 @@ import com.baozun.scm.primservice.whoperation.model.odo.WhOdoLineSn;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoVas;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundbox;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLine;
 import com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundboxLineSn;
+import com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo;
+
+import lark.orm.dao.supports.BaseDao;
 
 
 
@@ -114,6 +117,30 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     int archivWhOdodeliveryInfo(WhOdodeliveryInfo whOdodeliveryInfo);
+    
+    /***
+     * 归档whOdoPackageInfo
+     * 
+     * @param whOdoPackageInfo
+     * @return
+     */
+    int archivWhOdoPackageInfo(WhOdoPackageInfo whOdoPackageInfo);
+    
+    /***
+     * 归档whOutboundConsumable
+     * 
+     * @param whOutboundConsumable
+     * @return
+     */
+    int archivWhOutboundConsumable(WhOutboundConsumable whOutboundConsumable);
+    
+    /***
+     * 归档whPrintInfo
+     * 
+     * @param whPrintInfo
+     * @return
+     */
+    int archivWhPrintInfo(WhPrintInfo whPrintInfo);
 
     /**
      * 归档whOdoTransportMgmt
@@ -280,6 +307,33 @@ public interface OdoArchivDao extends BaseDao<WhOdo, Long> {
      * @return
      */
     int deleteOdoDeliveryInfo(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+    
+    /**
+     * 删除WhOdoPackageInfo
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOdoPackageInfo(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+    
+    /**
+     * 删除WhOutboundConsumable
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deleteOutboundConsumable(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
+    
+    /**
+     * 删除WhPrintInfo
+     * 
+     * @param odoid
+     * @param ouid
+     * @return
+     */
+    int deletePrintInfo(@Param("odoid") Long odoid, @Param("ouid") Long ouid);
 
     /**
      * 删除WhOdoTransportService

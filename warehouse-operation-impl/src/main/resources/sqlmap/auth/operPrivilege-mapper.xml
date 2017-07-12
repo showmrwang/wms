@@ -62,6 +62,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</select>	
 
+	<select id="findworkAreaAndPrivilegeByUserAndOuId" resultMap="WhWorkCommand" >
+		select 
+			group_concat(DISTINCT operPrivilege.work_privilege_id) as workPrivilegeIds,
+			group_concat(DISTINCT workArea.area_id) as workAreaIds
+		from
+			oper_user_role operUserRole,
+			oper_role_privilege operPrivilege,
+			t_wh_work_area workArea,
+			t_wh_work_type workType,
+			t_wh_work_area_type workAreaType
+		where 
+	    <![CDATA[
+	    	-- 查找角色id
+			operUserRole.user_id=#{userId}
+			and operUserRole.ou_id = #{ouId}
+			-- 查找操作权限
+			and operPrivilege.role_id = operUserRole.role_id
+			and operPrivilege.ou_id=operUserRole.ou_id
+			-- 查找工作类型
+			and workArea.work_privilege_id = operPrivilege.work_privilege_id
+			and operPrivilege.work_privilege_id = workAreaType.work_privilege_id
+			and workAreaType.work_type_id = workType.id
+			-- 工作类型为"拣货/补货"
+			and workType.work_category = #{category}
+	    ]]>
+	</select>	
+
 	<select id="findwork" parameterType="java.lang.Long" resultMap="WhWorkCommand">
 		select
 		<include refid="whWorkColumnsExt" /> 
@@ -172,6 +199,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				</if> -->
 		    </where>
 		</select>	
+		
+		
 	
 	<!-- 对工作菜单进行分页查询 -->
 	    <select id="findWorkListCountByQueryMap" resultType="long">
@@ -238,6 +267,145 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    </where>
 	    </select>
 	    
+		<select id="findWorkListCountByQueryMapExt" resultType="long">
+	        select count(distinct work.id) 
+	        from 
+				t_wh_work_area workArea,
+				t_wh_work_type workType,
+				t_wh_work_area_type workAreaType,
+				t_wh_work work,
+				t_wh_operation operation,
+				t_wh_operation_line operationLine,
+				t_wh_location loc,
+				t_wh_area area 
+				
+			<where>
+			
+				workAreaType.work_type_id = workType.id
+				and workType.code = work.work_type
+				and workType.work_category = work.work_category
+				and work.status in (1, 5, 9)
+				and work.id = operation.work_id
+				and loc.work_area_id  = area.id
+				and operation.id = operationLine.operation_id
+				and operationLine.from_location_id = loc.id
+				
+				<if test="workPrivilegeIds!=null and workPrivilegeIds!=''">
+					and workAreaType.work_privilege_id in ${workPrivilegeIds}
+				</if>
+				
+				<if test="workAreaIds!=null and workAreaIds!=''">
+					and loc.work_area_id in  ${workAreaIds}
+				</if>
+				
+				<if test="category!=null and category!=''">
+					and workType.work_category = #{category}
+				</if>
+				
+				<if test="ouId!=null">
+					and work.ou_id = #{ouId}
+				</if>
+				
+				<if test="workCode!=null and workCode!=''">
+					and work.code = #{workCode}
+				</if>
+				
+				<if test="locCode!=null and locCode!=''">
+					and work.location_code = #{locCode}
+				</if>
+				
+				<if test="containerCode!=null and containerCode!=''">
+					and work.container_code = #{containerCode}
+				</if>
+				
+				<if test="waveCode!=null and waveCode!=''">
+					and work.wave_code = #{waveCode}
+				</if>
+				
+				<if test="batch!=null and batch!=''">
+					and work.batch = #{batch}
+				</if>
+				
+				<if test="outBoundBox!=null and outBoundBox!=''">
+					and operationLine.use_outboundbox_code = #{outBoundBox}
+				</if>
+				
+				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
+				<!-- <if test="maxObtainWorkQty!=null">
+					limit 1,6
+				</if> -->
+		    </where>
+	    </select>
+
+		<select id="findWorkListByQueryMapWithPageExt" resultMap="WhWorkCommand">
+			select
+			<include refid="whWorkColumnsExt" /> 
+			from 
+				t_wh_work_area workArea,
+				t_wh_work_type workType,
+				t_wh_work_area_type workAreaType,
+				t_wh_work work,
+				t_wh_operation operation,
+				t_wh_operation_line operationLine,
+				t_wh_location loc,
+				t_wh_area area 
+			<where>
+				workAreaType.work_type_id = workType.id
+				and workType.code = work.work_type
+				and workType.work_category = work.work_category
+				and work.status in (1, 5, 9)
+				and work.id = operation.work_id
+				and loc.work_area_id  = area.id
+				and operation.id = operationLine.operation_id
+				and operationLine.from_location_id = loc.id
+				
+				<if test="workPrivilegeIds!=null and workPrivilegeIds!=''">
+					and workAreaType.work_privilege_id in ${workPrivilegeIds}
+				</if>
+				
+				<if test="workAreaIds!=null and workAreaIds!=''">
+					and loc.work_area_id in ${workAreaIds}
+				</if>
+				
+				<if test="category!=null and category!=''">
+					and workType.work_category = #{category}
+				</if>
+				
+				<if test="ouId!=null">
+					and work.ou_id = #{ouId}
+				</if>
+				
+				<if test="workCode!=null and workCode!=''">
+					and work.code = #{workCode}
+				</if>
+				
+				<if test="locCode!=null and locCode!=''">
+					and work.location_code = #{locCode}
+				</if>
+				
+				<if test="containerCode!=null and containerCode!=''">
+					and work.container_code = #{containerCode}
+				</if>
+				
+				<if test="waveCode!=null and waveCode!=''">
+					and work.wave_code = #{waveCode}
+				</if>
+				
+				<if test="batch!=null and batch!=''">
+					and work.batch = #{batch}
+				</if>
+				
+				<if test="outBoundBox!=null and outBoundBox!=''">
+					and operationLine.use_outboundbox_code = #{outBoundBox}
+				</if>
+				
+				order by work.work_priority,loc.pick_sort,area.area_code,loc.code asc
+				<!-- <if test="maxObtainWorkQty!=null">
+					limit 1,6
+				</if> -->
+		    </where>
+		</select>	
+		
 	    <select id="1fap1" resultType="long">
 	        select count(*) 
 	        from 

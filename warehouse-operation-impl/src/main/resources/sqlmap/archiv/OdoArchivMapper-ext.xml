@@ -657,6 +657,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	 <delete id="deleteOdoDeliveryInfo" parameterType="map">
 			delete from t_wh_odo_delivery_info where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
+	 <delete id="deleteOdoPackageInfo" parameterType="map">
+			delete from t_wh_odo_package_info where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deleteOutboundConsumable" parameterType="map">
+			delete from t_wh_outbound_consumable where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
+	 <delete id="deletePrintInfo" parameterType="map">
+			delete from t_wh_print_info where odo_id = #{odoid} and ou_id = #{ouid}
+	 </delete>
 	 <delete id="deleteWhOdoOutBoundBox" parameterType="map">
 			delete from t_wh_odo_outboundbox where odo_id = #{odoid} and ou_id = #{ouid}
 	 </delete>
@@ -949,6 +958,178 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{packageCenterCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{packageCenterName,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{extId,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        )
+		    ]]>
+		</insert>
+		
+		<insert id="archivWhOdoPackageInfo" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOdoPackageInfo" 			
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_odo_package_info_archiv${sysDate} (
+		        	id,
+		        	odo_id ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	status ,
+		        	calc_weight ,
+		        	floats ,
+		        	actual_weight ,
+		        	lifecycle ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id ,
+		        	ou_id
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{status,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{calcWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{floats,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{actualWeight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{lifecycle,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} 
+		        )
+		    ]]>
+		</insert>
+		
+		<insert id="archivWhOutboundConsumable" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhOutboundConsumable" 			
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_outbound_consumable_archiv${sysDate} (
+		        	id,
+		        	batch ,
+		        	wave_code ,
+		        	customer_code ,
+		        	customer_name ,
+		        	store_code ,
+		        	store_name ,
+		        	odo_id ,
+		        	odo_code ,
+		        	transport_code ,
+		        	waybill_code ,
+		        	facility_id ,
+		        	facility_code ,
+		        	location_id ,
+		        	location_code ,
+		        	area_id ,
+		        	area_code ,
+		        	qty ,
+		        	consum_order ,
+		        	consum_account ,
+		        	consum_person ,
+		        	ou_id ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	sku_code ,
+		        	sku_barcode ,
+		        	sku_name ,
+		        	sku_length ,
+		        	sku_width ,
+		        	sku_height ,
+		        	sku_volume ,
+		        	sku_weight ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{customerName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{storeName,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{transportCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{facilityCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{locationId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{locationCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{areaId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{areaCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{qty,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{consumOrder,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consumAccount,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{consumPerson,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,		        	
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuBarcode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{skuName,javaType=java.lang.String,jdbcType=VARCHAR} ,		        	
+		        	#{skuLength,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuWidth,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuHeight,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuVolume,javaType=Double,jdbcType=DECIMAL} ,
+		        	#{skuWeight,javaType=Double,jdbcType=DECIMAL} ,		        	
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}		        	
+		        )
+		    ]]>
+		</insert>
+		
+		<insert id="archivWhPrintInfo" parameterType="com.baozun.scm.primservice.whoperation.model.warehouse.WhPrintInfo" 			
+			 flushCache="true">
+		    <![CDATA[
+		        INSERT INTO
+		        t_wh_print_info_archiv${sysDate} (
+		        	id,
+		        	odo_id ,
+		        	odo_code ,
+		        	waybill_code ,
+		        	facility_id ,
+		        	container_id ,
+		        	container_code ,
+		        	batch ,
+		        	wave_code ,
+		        	ou_id ,
+		        	outer_container_id ,
+		        	outer_container_code ,
+		        	container_lattice_no ,
+		        	outboundbox_id ,
+		        	outboundbox_code ,
+		        	print_type ,
+		        	print_count ,
+		        	create_id ,
+		        	create_time ,
+		        	last_modify_time ,
+		        	modified_id
+		        ) VALUES (
+		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{odoCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waybillCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{containerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{waveCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{ouId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outerContainerId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outerContainerCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{containerLatticeNo,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{outboundboxId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{printType,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{printCount,javaType=java.lang.Integer,jdbcType=INTEGER} ,
+		        	#{createId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{createTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{lastModifyTime,javaType=java.util.Date,jdbcType=TIMESTAMP} ,
+		        	#{modifiedId,javaType=java.lang.Long,jdbcType=BIGINT}
 		        )
 		    ]]>
 		</insert>
