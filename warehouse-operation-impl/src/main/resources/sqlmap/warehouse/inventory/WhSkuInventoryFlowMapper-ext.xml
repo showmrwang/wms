@@ -173,7 +173,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		from t_wh_sku_inventory_flow 
 		where 
 		create_time &gt; #{beginTime} 
-		and create_time &lt; #{endTime} 
+		and create_time &lt;= #{endTime} 
 		and ou_id = #{ouid} 
 		and customer_code = #{customerCode}
 		order by id asc

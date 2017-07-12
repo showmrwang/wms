@@ -4916,8 +4916,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
                     }
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
                 } else {
-
+                    
                 }
             }
             if (CancelPattern.PUTAWAY_SKU_CANCEL == cancelPattern) {
@@ -4993,8 +4995,10 @@ public class PdaPutawayCacheManagerImpl extends BaseManagerImpl implements PdaPu
                         }
                         cacheManager.removeMapValue(CacheConstants.CONTAINER_STATISTIC, containerId.toString());
                     }
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+                    cacheManager.removeMapValue(CacheConstants.CONTAINER_INVENTORY, containerId.toString());
                 } else {
-
+                    
                 }
             }
             if (CancelPattern.PUTAWAY_TIP_LOCATION_CANCEL == cancelPattern) {
