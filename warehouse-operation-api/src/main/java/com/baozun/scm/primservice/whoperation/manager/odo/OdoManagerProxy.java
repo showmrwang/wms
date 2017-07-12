@@ -59,7 +59,16 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     WhOdo findOdOById(Long id, Long ouId);
-
+    
+    /**
+     * 根据ID,OUID查找ODO归档数据
+     * 
+     * @param id
+     * @param ouId
+     * @return
+     */
+    WhOdo findArchivOdoById(Long id, String archivTime, Long ouId);
+    
     /**
      * [通用方法]根据ODO_ID,OUID查找ODOTRANSPORTMGMT
      * 
@@ -474,5 +483,15 @@ public interface OdoManagerProxy extends BaseManager {
      * @return
      */
     boolean isSuitForDefaultDistributionMode(Long odoId, Long ouId, String logId);
+
+    WhOdoTransportMgmt findArchivTransportMgmtByOdoIdOuId(Long odoId, String archivTime, Long ouId);
+
+    WhOdoAddress findArchivOdoAddressByOdoId(Long odoId, String archivTime, Long ouId);
+
+    List<WhOdoVasCommand> findArchivOdoOuVasCommandByOdoIdOdoLineIdType(Long odoId, Long odoLineId, String archivTime, Long ouId);
+
+    List<WhOdoVasCommand> findArchivOdoExpressVasCommandByOdoIdOdoLineId(Long odoId, Long odoLineId, String archivTime, Long ouId);
+
+    WhOdoLine findArchivOdoLineById(Long id, String archivTime, Long ouId);
 
 }

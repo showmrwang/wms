@@ -69,7 +69,10 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
      */
     @QueryPage("findListCountByQueryMapExt")
     Pagination<OdoLineCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
-
+    
+    @QueryPage("findArchivListCountByQueryMapExt")
+    Pagination<OdoLineCommand> findArchivListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+    
     /**
      * [通用方法]根据ODOID和OUID查找明细数量
      * 
@@ -242,4 +245,5 @@ public interface WhOdoLineDao extends BaseDao<WhOdoLine, Long> {
     Long findCntByOdoIdAndOuId(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
 
     Long countNotSuitDistribeModeLines(@Param("odoId") Long odoId, @Param("ouId") Long ouId);
+
 }

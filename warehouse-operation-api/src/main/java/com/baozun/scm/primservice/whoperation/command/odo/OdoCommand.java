@@ -112,6 +112,7 @@ public class OdoCommand extends BaseCommand {
     private String storeName;
     private String customerName;
     private Long waveId;
+    private String archivTime;
 
     // 分组字段
     private String groupCode;
@@ -663,6 +664,14 @@ public class OdoCommand extends BaseCommand {
 
     public void setOdoIndex(String odoIndex) {
         this.odoIndex = odoIndex;
+    }
+
+    public String getArchivTime() {
+        return archivTime;
+    }
+
+    public void setArchivTime(String archivTime) {
+        this.archivTime = archivTime;
     }
 
 

@@ -645,6 +645,17 @@
         where odo_id=#{odoId} and ou_id=#{ouId}
     </select>
     
+    <select id="findArchivListByQueryMapWithPageExt" resultMap="WhOdoLineResultExt">
+    	select
+        <include refid="whOdoLineColumns"/>
+        from t_wh_odo_line_archiv${archivTime}
+		where odo_id=#{odoId} and ou_id=#{ouId}
+    </select>
+    <select id="findArchivListCountByQueryMapExt" resultType="long">
+        select count(*) from t_wh_odo_line_archiv${archivTime}
+        where odo_id=#{odoId} and ou_id=#{ouId}
+    </select>
+    
     <select id="findOdoLineListCountByOdoIdOuId" parameterType="map" resultType="long" flushCache="false">
         select
         count(*)

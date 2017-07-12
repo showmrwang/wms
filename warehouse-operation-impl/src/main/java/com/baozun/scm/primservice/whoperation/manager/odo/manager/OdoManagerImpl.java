@@ -52,6 +52,7 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
 import com.baozun.scm.primservice.whoperation.constant.OdoLineStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
+import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.localauth.OperUserDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoAddressDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
@@ -166,11 +167,20 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     private SkuRedisManager skuRedisManager;
     @Autowired
     private WarehouseManager warehouseManager;
+    @Autowired
+    private OdoArchivDao odoArchivDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public Pagination<OdoResultCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params) {
-        Pagination<OdoResultCommand> pages = this.whOdoDao.findListByQueryMapWithPageExt(page, sorts, params);
+        Pagination<OdoResultCommand> pages = null;
+        String archivTime = (String) params.get("archivTime");
+        if (StringUtils.isEmpty(archivTime)) {
+            pages = this.whOdoDao.findListByQueryMapWithPageExt(page, sorts, params);
+        } else {
+            // 查询归档表里面的出库单数据
+            pages = this.whOdoDao.findArchivListByQueryMapWithPageExt(page, sorts, params);
+        }
         try {
 
             if (pages != null) {
@@ -278,6 +288,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                     Map<Long, Customer> customerMap = this.findCustomerByRedis(new ArrayList<Long>(customerIdSet));
                     Map<Long, Store> storeMap = this.findStoreByRedis(new ArrayList<Long>(storeIdSet));
                     for (OdoResultCommand command : list) {
+                        command.setArchivTime(archivTime);
                         if (StringUtils.hasText(command.getIsWholeOrderOutbound())) {
                             SysDictionary sys = dicMap.get(Constants.IS_WHOLE_ORDER_OUTBOUND + "_" + command.getIsWholeOrderOutbound());
                             command.setIsWholeOrderOutboundName(sys == null ? command.getIsWholeOrderOutbound() : sys.getDicLabel());
@@ -865,7 +876,7 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
                 }
             }
         } catch (Exception ex) {
-            log.error(ex + "");
+            log.error("", ex);
             throw new BusinessException(ErrorCodes.PACKAGING_ERROR);
         }
         return pages;
@@ -1236,7 +1247,12 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<String> findExportExeclList(OdoSearchCommand odoSearchCommand) {
-        return this.whOdoDao.findExportExeclList(odoSearchCommand);
+        String archivTime = odoSearchCommand.getArchivTime();
+        if (StringUtils.isEmpty(archivTime)) {
+            return this.whOdoDao.findExportExeclList(odoSearchCommand);
+        } else {
+            return this.whOdoDao.findExportExeclArchivList(odoSearchCommand);
+        }
     }
 
     @Override
@@ -1806,5 +1822,10 @@ public class OdoManagerImpl extends BaseManagerImpl implements OdoManager {
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public List<OdoLineCommand> findOdoLineByOdoId(List<Long> idList, Long ouId){
         return whOdoLineDao.findOdoLineByOdoId(idList, ouId);
+    }
+
+    @Override
+    public WhOdo findOdoByIdOuId(Long id, String archivTime, Long ouId) {
+        return odoArchivDao.findOdoByIdAndSysDate(id, archivTime, ouId);
     }
 }

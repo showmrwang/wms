@@ -1098,7 +1098,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
             WhOutboundFacility seedingWall = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-            if (Constants.WH_FACILITY_STATUS_4.equals(seedingWall.getStatus())) {
+            if (String.valueOf(Constants.WH_FACILITY_STATUS_4).equals(seedingWall.getStatus())) {
                 // 播种墙状态为播种完成
                 log.info("seeding wall status: FINISH");
                 // 查询播种墙是否有库存
@@ -1597,7 +1597,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         if (!StringUtils.isEmpty(seedingWallCode)) {
             // 修改播种墙状态
             WhOutboundFacility seedingWall = whOutboundFacilityDao.findByCodeAndOuId(seedingWallCode, ouId);
-            if (Constants.WH_FACILITY_STATUS_4.equals(seedingWall.getStatus())) {
+            if (String.valueOf(Constants.WH_FACILITY_STATUS_4).equals(seedingWall.getStatus())) {
                 // 播种墙状态为播种完成
                 log.info("seeding wall status: FINISH");
                 // 查询播种墙是否有库存
@@ -1617,6 +1617,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                         facility.setStatus(String.valueOf(Constants.WH_FACILITY_STATUS_1));
                         facility.setBatch(null);
                         whOutboundFacilityDao.saveOrUpdateByVersion(facility);
+                        insertGlobalLog(GLOBAL_LOG_UPDATE, facility, ouId, userId, null, null);
                     }
                 }
             }

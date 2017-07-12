@@ -1111,6 +1111,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                 Map<Long, Map<String, Long>> insideContainerSkuAttrIdsQty = new HashMap<Long, Map<String, Long>>();// 内部容器唯一sku总件数
                 Map<Long, Map<Long, Set<String>>> insideContainerLocSkuAttrIds = new HashMap<Long, Map<Long, Set<String>>>();   /** 内部容器推荐库位对应唯一sku及残次条码 */
                 Map<Long, Map<Long, Map<String, Long>>> insideContainerLocSkuAttrIdsQty = new HashMap<Long, Map<Long, Map<String, Long>>>();// 内部容器推荐库位对应唯一sku总件数
+                Map<Long, Set<Long>> insideContainerStoreIds = new HashMap<Long, Set<Long>>();// 内部容器所有店铺
                 /** 内部容器唯一sku对应所有残次条码 和sn*/
                 Map<Long, Map<String, Set<String>>> insideContainerSkuAttrIdsSnDefect = new HashMap<Long, Map<String, Set<String>>>(); //内部容器内唯一sku对应所有sn及残次条码
                 Double outerContainerWeight = 0.0;
@@ -1454,6 +1455,15 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                             containerAssist.setLifecycle(BaseModel.LIFECYCLE_NORMAL);
                             insideContainerAsists.put(icId, containerAssist);
                         }
+                        if (null != insideContainerStoreIds.get(icId)) {
+                            Set<Long> icStores = insideContainerStoreIds.get(icId);
+                            icStores.add(stroeId);
+                            insideContainerStoreIds.put(icId, icStores);
+                        } else {
+                            Set<Long> icStores = new HashSet<Long>();
+                            icStores.add(stroeId);
+                            insideContainerStoreIds.put(icId, icStores);
+                        }
                         if(WhPutawayPatternDetailType.SPLIT_CONTAINER_PUTAWAY == putawayPatternDetailType) {  //拆箱上架
                           //内部容器内唯一sku对应所有sn及残次条码
                             List<WhSkuInventorySnCommand> snCmdList = invCmd.getWhSkuInventorySnCommandList();
@@ -1593,6 +1603,7 @@ public class InventoryStatisticManagerImpl extends BaseManagerImpl implements In
                     isrCmd.setInsideContainerSkuAttrIds(insideContainerSkuAttrIds);// 内部容器唯一sku(skuId|库存装填|库存类型|生产日期|失效日期|库存属性1|库存属性2|库存属性3|库存属性4|库存属性51|)
                     isrCmd.setInsideContainerSkuAttrIdsSnDefect(insideContainerSkuAttrIdsSnDefect); //内部容器内唯一sku对应所有sn及残次条码
                     isrCmd.setInsideContainerLocSkuAttrIds(insideContainerLocSkuAttrIds);
+                    isrCmd.setInsideContainerStoreIds(insideContainerStoreIds);
                     if(WhPutawayPatternDetailType.PALLET_PUTAWAY == putawayPatternDetailType){   //整托上架
                         isrCmd.setOuterContainerCode(containerCmd.getCode());  //外部容器号
                     }else{//整箱上架,拆箱上架

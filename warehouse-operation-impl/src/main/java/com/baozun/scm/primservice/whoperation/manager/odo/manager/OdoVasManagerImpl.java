@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baozun.scm.primservice.logistics.model.VasTransResult.VasLine;
 import com.baozun.scm.primservice.whoperation.command.odo.WhOdoVasCommand;
 import com.baozun.scm.primservice.whoperation.constant.DbDataSource;
+import com.baozun.scm.primservice.whoperation.dao.archiv.OdoArchivDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoTransportMgmtDao;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoVasDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
@@ -26,6 +27,8 @@ public class OdoVasManagerImpl extends BaseManagerImpl implements OdoVasManager 
     private WhOdoVasDao whOdoVasDao;
     @Autowired
     private WhOdoTransportMgmtDao whOdoTransportMgmtDao;
+    @Autowired
+    private OdoArchivDao odoArchivDao;
 
     @Override
     @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
@@ -81,6 +84,16 @@ public class OdoVasManagerImpl extends BaseManagerImpl implements OdoVasManager 
                 }
             }
         }
+    }
+
+    @Override
+    public List<WhOdoVasCommand> findArchivOdoOuVasCommandByOdoIdOdoLineIdType(Long odoId, Long odoLineId, String archivTime, Long ouId) {
+        return odoArchivDao.findArchivOdoOuVasCommandByOdoIdOdoLineIdType(odoId, odoLineId, archivTime, ouId);
+    }
+
+    @Override
+    public List<WhOdoVasCommand> findArchivOdoExpressVasCommandByOdoIdOdoLineId(Long odoId, Long odoLineId, String archivTime, Long ouId) {
+        return odoArchivDao.findArchivOdoExpressVasCommandByOdoIdOdoLineId(odoId, odoLineId, archivTime, ouId);
     }
 
 }

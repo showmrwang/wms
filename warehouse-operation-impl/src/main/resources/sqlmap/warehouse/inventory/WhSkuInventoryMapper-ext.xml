@@ -3182,6 +3182,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			inv.occupation_line_id = null 
 		where 
 			inv.occupation_code_source = #{occupationCodeSource} 
+			and inv.occupation_line_id != null
 			and inv.ou_id = #{ouId}
 	</update>
 
@@ -3321,6 +3322,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			    from t_wh_sku_inventory 
 		        where 
 		        occupation_code = #{occupationCode} and ou_id=#{ouId}
+		        and occupation_line_id is null
 		    ]]>
 		</select>	
     
