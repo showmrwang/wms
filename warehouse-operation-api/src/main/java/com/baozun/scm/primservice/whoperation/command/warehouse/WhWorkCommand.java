@@ -107,6 +107,11 @@ public class WhWorkCommand extends BaseCommand {
     /** 容器id*/
     private Long containerId;
 
+    private String workAreaIds;
+
+    private String workPrivilegeIds;
+
+
     // columns END
 
     public String getDistributionMode() {
@@ -403,6 +408,22 @@ public class WhWorkCommand extends BaseCommand {
 
     public void setContainerId(Long containerId) {
         this.containerId = containerId;
+    }
+
+    public String getWorkAreaIds() {
+        return workAreaIds;
+    }
+
+    public void setWorkAreaIds(String workAreaIds) {
+        this.workAreaIds = workAreaIds;
+    }
+
+    public String getWorkPrivilegeIds() {
+        return workPrivilegeIds;
+    }
+
+    public void setWorkPrivilegeIds(String workPrivilegeIds) {
+        this.workPrivilegeIds = workPrivilegeIds;
     }
 
 }
