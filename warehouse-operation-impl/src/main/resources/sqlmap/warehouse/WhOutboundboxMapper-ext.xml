@@ -38,7 +38,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        	create_id as createId,
 	        	create_time as createTime,
 	        	last_modify_time as lastModifyTime,
-	        	modified_id as modifiedId
+	        	modified_id as modifiedId,
+	        	facility_id as facilityId
 	    ]]>
 	</sql>
 	
@@ -145,6 +146,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 		       <if test="checkingMode!=null and checkingMode!=''">
 					and checking_mode = #{checkingMode}
+				</if>
+				<if test="facilityId!=null and facilityId!=''">
+					and facility_id = #{facilityId}
 				</if>
 		</where>
 	</sql>
