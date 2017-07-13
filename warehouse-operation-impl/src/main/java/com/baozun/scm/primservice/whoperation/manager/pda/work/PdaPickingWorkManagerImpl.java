@@ -4557,6 +4557,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             int outerAndOperCount = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, outerContainerId,operationId);
             if(outerCount == outerAndOperCount){
                 pickingWay = 1;
+                return pickingWay;
             }
         }
         if(1 != pickingWay){
@@ -4572,6 +4573,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 int inAndOperCount = whOperationLineDao.findInventoryCountsByInsideContainerId(ouId, insideContainerId,operationId);
                 if(inCount == inAndOperCount){
                     pickingWay = 2;
+                    return pickingWay;
                 }
             }
         }
