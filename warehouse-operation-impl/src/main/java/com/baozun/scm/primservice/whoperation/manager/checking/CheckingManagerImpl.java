@@ -626,6 +626,10 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     private void createOutboundBoxInfo(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> outboundboxLineList, Long userId, Long ouId, String logId) {
+        whOutboundbox.setCreateId(userId);
+        whOutboundbox.setCreateTime(new Date());
+        whOutboundbox.setLastModifyTime(new Date());
+        whOutboundbox.setModifiedId(userId);
         whOutboundboxDao.insert(whOutboundbox);
 
         for (WhOutboundboxLine whOutboundboxLine : outboundboxLineList) {
