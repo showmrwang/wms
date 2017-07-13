@@ -2220,7 +2220,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                     this.updateContainer(outerId, ouId,userId);
                 }
             } else if (Constants.PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_FOUR) {
-                List<Long> turnoverBoxIdList = whOperationExecLineDao.getOperationExecLineByUseContainerId(ouId,turnoverBoxId);
+                List<Long> turnoverBoxIdList = whOperationExecLineDao.getOperationExecLineByUseContainerId(operationId,ouId);
                 for(Long turnoverId:turnoverBoxIdList){
                     this.updateContainer(turnoverId, ouId,userId);
                 }
