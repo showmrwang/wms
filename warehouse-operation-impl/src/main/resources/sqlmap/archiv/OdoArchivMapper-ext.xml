@@ -721,7 +721,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	outboundbox_code ,
 		        	distribution_mode ,
 		        	picking_mode ,
-		        	checking_mode 
+		        	checking_mode ,
+		        	facility_id
 		        ) VALUES (
 		        	#{id,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        	#{batch,javaType=java.lang.String,jdbcType=VARCHAR} ,
@@ -743,7 +744,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{outboundboxCode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} 
+		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
 		        )
 		    ]]>
 		</insert>
