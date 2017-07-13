@@ -1010,7 +1010,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         Container container = new Container();
         ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
         if (null == containerCmd) {
-            // if(pickingWay == Constants.PICKING_WAY_FOUR){
             if (!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))) {
                 ContainerCommand tipCmd = containerDao.getContainerByCode(tipOuterContainer, ouId);
                 Container c = new Container();
@@ -1024,9 +1023,6 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 containerCmd = new ContainerCommand();
                 BeanUtils.copyProperties(c, containerCmd);
             }
-            // }else{
-            // throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
-            // }
         }
         BeanUtils.copyProperties(containerCmd, container);
         if (!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))) { // 当前扫描的小车不是系统推荐的小车或者周转箱
@@ -2219,9 +2215,16 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
             command.setIsContinueScanSn(false);
             // 修改小车状态
             if (Constants.PICKING_INVENTORY.equals(operationWay) && (pickingWay == Constants.PICKING_WAY_ONE || pickingWay == Constants.PICKING_WAY_TWO)) {
-                this.updateContainer(outerContainer, ouId);
+                List<Long> outerContainerIdList = whOperationExecLineDao.getOperationExecLineByUseOuterContainerId(operationId, ouId);
+                for(Long outerId:outerContainerIdList){
+                    this.updateContainer(outerId, ouId,userId);
+                }
             } else if (Constants.PICKING_INVENTORY.equals(operationWay) && pickingWay == Constants.PICKING_WAY_FOUR) {
-                this.updateContainer(turnoverBoxCode, ouId);
+                List<Long> turnoverBoxIdList = whOperationExecLineDao.getOperationExecLineByUseContainerId(ouId,turnoverBoxId);
+                for(Long turnoverId:turnoverBoxIdList){
+                    this.updateContainer(turnoverId, ouId,userId);
+                }
+                
             }
             command.setIsPicking(true);
             Location location = whLocationDao.findByIdExt(locationId, ouId);
@@ -2327,16 +2330,15 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         }
     }
 
-    private void updateContainer(String containerCode, Long ouId) {
-        Container container = new Container();
-        ContainerCommand containerCmd = containerDao.getContainerByCode(containerCode, ouId);
-        if (null == containerCmd) {
+    private void updateContainer(Long containerId, Long ouId,Long userId) {
+        Container container = containerDao.findByIdExt(containerId, ouId);
+        if (null == container) {
             throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
         }
-        BeanUtils.copyProperties(containerCmd, container);
         container.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED);
         container.setStatus(ContainerStatus.CONTAINER_STATUS_PICKING_END);
         containerDao.saveOrUpdateByVersion(container);
+        insertGlobalLog(GLOBAL_LOG_UPDATE,container, ouId, userId, null, null);
     }
 
 
