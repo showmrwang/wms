@@ -352,7 +352,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                  whSkuInventoryManager.replenishmentContianerPutaway(null,locationId, operationId, ouId, isTabbInvTotal, userId,  turnoverBoxId);
                  //判断当前库位是否有拣货工作
                  this.judeLocationIsPicking(isTV,turnoverBoxId, locationId, ouId, userId,null,operationId);
-                 if(locationIds.size() > 1 && null != outerContainerId){
+                 if(locationIds.size() > 1){
                      //缓存上一个库位
                      this.cacheLocation(operationId, locationId);
                      ReplenishmentScanResultComamnd sCmd = pdaReplenishmentPutawayCacheManager.tipLocation(locationIds, operationId);
