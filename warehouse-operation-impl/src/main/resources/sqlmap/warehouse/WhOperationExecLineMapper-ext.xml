@@ -1085,4 +1085,24 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			ou_id = #{ouId}
 			and operation_id = #{operationId}
 	</select>
+	
+		<select id="getOperationExecLineByUseContainerId" resultType="java.lang.Long">
+		select
+		    distinct use_container_id
+		from
+		t_wh_operation_exec_line
+		where
+			 ou_id = #{ouId}
+			 and operation_id = #{operationId}
+	</select>
+	
+	<select id="getOperationExecLineByUseOuterContainerId" resultType="java.lang.Long">
+		select
+	      distinct use_outer_container_id
+		from
+		t_wh_operation_exec_line
+		where
+			 ou_id = #{ouId}
+			 and operation_id = #{operationId}
+	</select>
 </mapper>

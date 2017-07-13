@@ -506,11 +506,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 工作类别编码
         whWorkCommand.setWorkCategory("REPLENISHMENT");
         // 是否锁定 默认值：1
-        if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
-            whWorkCommand.setIsLocked(false);
-        }else{
-            whWorkCommand.setIsLocked(true);    
-        }
+        whWorkCommand.setIsLocked(true);
         // 是否已迁出
         whWorkCommand.setIsAssignOut(false);
         // 是否短拣--执行时判断
@@ -906,8 +902,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 是否锁定 默认值：1
         if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
             whWorkCommand.setIsLocked(false);
+            whWorkCommand.setLifecycle(1);
         }else{
-            whWorkCommand.setIsLocked(true);    
+            whWorkCommand.setIsLocked(true);
+            whWorkCommand.setLifecycle(0);
         }
         // 工作优先级
         whWorkCommand.setWorkPriority(null != whWaveMaster.getReplenishmentWorkPriority() ? whWaveMaster.getReplenishmentWorkPriority() : workType.getPriority());
@@ -1177,11 +1175,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 工作类别编码
         whWorkCommand.setWorkCategory("PICKING");
         // 是否锁定 默认值：1
-        if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
-            whWorkCommand.setIsLocked(false);
-        }else{
-            whWorkCommand.setIsLocked(true);    
-        }
+        whWorkCommand.setIsLocked(true);
         // 是否已迁出
         whWorkCommand.setIsAssignOut(false);
         // 当前工作明细设计到的所有库区编码信息列表--更新时获取数据
@@ -1604,8 +1598,10 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
         // 是否锁定 默认值：1
         if(null != whWaveMaster.getIsAutoReleaseWork() && true == whWaveMaster.getIsAutoReleaseWork()){
             whWorkCommand.setIsLocked(false);
+            whWorkCommand.setLifecycle(1);
         }else{
-            whWorkCommand.setIsLocked(true);    
+            whWorkCommand.setIsLocked(true);
+            whWorkCommand.setLifecycle(0);
         }
         
         // 工作优先级

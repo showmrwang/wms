@@ -11,4 +11,6 @@ public interface PdaCancelOutBoundManager extends BaseManager {
 
     List<Container2ndCategory> getTwoLevelTypeList(Long ouId);
 
+    String getOutBoundBoxCodeByWaybillCode(String containerCode, Long ouId);
+
 }

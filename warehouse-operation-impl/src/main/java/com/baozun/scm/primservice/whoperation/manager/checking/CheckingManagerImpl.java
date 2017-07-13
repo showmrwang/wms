@@ -626,6 +626,18 @@ public class CheckingManagerImpl extends BaseManagerImpl implements CheckingMana
     }
 
     private void createOutboundBoxInfo(WhOutboundbox whOutboundbox, List<WhOutboundboxLine> outboundboxLineList, Long userId, Long ouId, String logId) {
+        List<WhOdodeliveryInfo> odoDeliverInfoList = whOdoDeliveryInfoDao.findListByOdoId(whOutboundbox.getOdoId(), ouId);
+        if (null == odoDeliverInfoList || odoDeliverInfoList.size() == 0) {
+            throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+        }
+        WhOdodeliveryInfo ododeliveryInfo = odoDeliverInfoList.get(0);
+        whOutboundbox.setProductCode(ododeliveryInfo.getTransportServiceType());
+        whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
+        whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
+        whOutboundbox.setCreateId(userId);
+        whOutboundbox.setCreateTime(new Date());
+        whOutboundbox.setLastModifyTime(new Date());
+        whOutboundbox.setModifiedId(userId);
         whOutboundboxDao.insert(whOutboundbox);
 
         for (WhOutboundboxLine whOutboundboxLine : outboundboxLineList) {

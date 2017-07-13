@@ -114,5 +114,7 @@ public interface WhOdoDeliveryInfoDao extends BaseDao<WhOdodeliveryInfo, Long> {
 
     @QueryPage("findListCountByQueryMapExt")
     Pagination<WhOdodeliveryInfoCommand> findListByQueryMapWithPageExt(Page page, Sort[] sorts, Map<String, Object> params);
+    
+    String findOutboundBoxCodeByWaybillCode(@Param("waybillCode") String waybillCode, @Param("ouId") Long ouId);
 
 }

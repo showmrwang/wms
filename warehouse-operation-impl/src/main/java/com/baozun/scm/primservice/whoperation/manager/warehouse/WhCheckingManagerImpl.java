@@ -974,7 +974,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingLineCommand lineCmd = checkingLineList.get(0);
         Long odoId = lineCmd.getOdoId();
         // 出库箱头信息（t_wh_outboundbox）和出库箱明细
-        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId, logId); // 不用改
+        this.addOutboundbox(facilityId,checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId, logId); // 不用改
         // 算包裹计重????
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox, logId);
         // this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId,
@@ -1311,7 +1311,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 
      * @param whCheckingResultCommand
      */
-    private void addOutboundbox(Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId, String logId) {
+    private void addOutboundbox(Long facilityId,Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId, String logId) {
 
         log.info("whCheckingManager.addOutboundbox start...time:[{}]", DateUtil.getSysDateDefault());
         log.info("params: checkingId:[{}], ouId:[{}], odoId:[{}], outboundbox:[{}], lineCmd:[{}], outboundboxId:[{}], userId:[{}], logId:[{}]", checkingId, ouId, odoId, outboundbox, lineCmd.toString(), outboundboxId, userId, logId);
@@ -1346,6 +1346,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
             whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
             whOutboundbox.setModifiedId(userId);
+            whOutboundbox.setFacilityId(facilityId);
             whOutboundboxDao.saveOrUpdate(whOutboundbox);
             insertGlobalLog(GLOBAL_LOG_UPDATE, whOutboundbox, ouId, userId, null, null);
         } else {
@@ -1363,6 +1364,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOutboundbox.setCreateId(userId);
             whOutboundbox.setCreateTime(new Date());
             whOutboundbox.setLastModifyTime(new Date());
+            whOutboundbox.setFacilityId(facilityId);
             whOutboundboxDao.insert(whOutboundbox);
             insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
             // 生成出库想明细信息
