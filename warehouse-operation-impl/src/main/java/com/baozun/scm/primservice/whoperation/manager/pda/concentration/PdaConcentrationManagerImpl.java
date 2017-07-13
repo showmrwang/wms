@@ -1001,6 +1001,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      * 判断当前容器是否有推荐结果
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public WhFacilityRecPathCommand checkContainerHaveRecommendResult(String cacheKey, String containerCode, String batch, Long userId, Long ouId) {
         // cacheManager.removeMapValue(CacheConstants.PDA_CACHE_COLLECTION_REC + userId.toString(),
         // batch);
@@ -1043,7 +1044,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
                 }
             }
         }
-        recPathList.add(0, rec);
+        recPathList.add(rec);
         cacheManager.setMapObject(cacheKey + userId.toString(), batch, recPathList, CacheConstants.CACHE_ONE_DAY);
         List<Long> containerList = cacheManager.getMapObject(cacheKey, userId.toString());
         if (null == containerList || containerList.isEmpty()) {
@@ -1058,6 +1059,7 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
      * 判断是否达到可携带容量数量限制且小于播种墙容器上限
      */
     @Override
+    @MoreDB(DbDataSource.MOREDB_SHARDSOURCE)
     public boolean checkContainerQtyLimit(Long facilityId, Integer carryQty, Integer containerQty, Integer upperLimit, String batch, Long ouId) {
         Integer seedingCount = whSeedingCollectionDao.getSeedingNumFromFacility(facilityId, batch, ouId);
         if (carryQty.intValue() == containerQty.intValue() || (carryQty.intValue() + seedingCount.intValue()) == upperLimit.intValue()) {
@@ -1829,12 +1831,12 @@ public class PdaConcentrationManagerImpl extends BaseManagerImpl implements PdaC
             if (rfpList.remove(rfpList.get(0))) {
                 cacheManager.setMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC + userId, sc.getBatch(), rfpList, CacheConstants.CACHE_ONE_YEAR);
             }
+            containerList.remove(containerList.get(0));
+            cacheManager.setMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC, userId.toString(), containerList, CacheConstants.CACHE_ONE_DAY);
             if (null == rfpList || rfpList.isEmpty()) {
-                containerList.remove(containerList.get(0));
                 if (null == containerList || containerList.isEmpty()) {
                     return true;
                 } else {
-                    cacheManager.setMapObject(CacheConstants.PDA_CACHE_PICKING_COLLECTION_REC, userId.toString(), containerList, CacheConstants.CACHE_ONE_DAY);
                     return false;
                 }
             } else {
