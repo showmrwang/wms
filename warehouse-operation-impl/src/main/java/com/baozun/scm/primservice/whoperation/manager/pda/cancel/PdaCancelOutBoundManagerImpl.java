@@ -15,12 +15,14 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDao;
+import com.baozun.scm.primservice.whoperation.dao.odo.WhOdoDeliveryInfoDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.Container2ndCategoryDao;
 import com.baozun.scm.primservice.whoperation.dao.warehouse.inventory.WhSkuInventoryDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
+import com.baozun.scm.primservice.whoperation.model.odo.WhOdodeliveryInfo;
 import com.baozun.scm.primservice.whoperation.model.warehouse.Container2ndCategory;
 import com.baozun.scm.primservice.whoperation.model.warehouse.inventory.WhSkuInventory;
 
@@ -36,6 +38,8 @@ public class PdaCancelOutBoundManagerImpl extends BaseManagerImpl implements Pda
     private WhOdoDao whOdoDao;
     @Autowired
     private Container2ndCategoryDao container2ndCategoryDao;
+    @Autowired
+    private WhOdoDeliveryInfoDao whOdoDeliveryInfoDao;
     
     @Override
     public int checkContainerCodeInSkuInventory(String containerCode, String latticNo, Long ouId) {
@@ -63,7 +67,16 @@ public class PdaCancelOutBoundManagerImpl extends BaseManagerImpl implements Pda
         if (null != list && !list.isEmpty()) {
             this.checkOdoIsCancelStatus(list, ouId);
             return 4;
-        } 
+        }
+        // 使用运单号查出库箱
+        String outboundBoxCode = whOdoDeliveryInfoDao.findOutboundBoxCodeByWaybillCode(containerCode, ouId);
+        if (!StringUtils.isEmpty(outboundBoxCode)) {
+            list = whSkuInventoryDao.findSkuInventoryByOutBoundBoxCode(outboundBoxCode, ouId);
+            if (null != list && !list.isEmpty()) {
+                this.checkOdoIsCancelStatus(list, ouId);
+                return 5;
+            } 
+        }
         throw new BusinessException(ErrorCodes.NOT_FIND_SKU_INV_BY_CONTAINERCODE);
     }
 
@@ -95,6 +108,13 @@ public class PdaCancelOutBoundManagerImpl extends BaseManagerImpl implements Pda
         c2.setOuId(ouId);
         List<Container2ndCategory> findListByParam = container2ndCategoryDao.findListByParam(c2);
         return findListByParam;
+    }
+
+    @Override
+    public String getOutBoundBoxCodeByWaybillCode(String containerCode, Long ouId) {
+        // 使用运单号查出库箱
+        String outboundBoxCode = whOdoDeliveryInfoDao.findOutboundBoxCodeByWaybillCode(containerCode, ouId);
+        return outboundBoxCode;
     }
     
 }
