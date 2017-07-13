@@ -986,7 +986,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	
-	<select id="getOperationExecLineCount" resultType="long">
+	<select id="getOperationExecLineCount" resultType="java.lang.Long">
 		select
 	           count(1)
 		from
@@ -1029,7 +1029,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	
-	<select id="getOperationExecLineCountByOuterId" resultType="long">
+	<select id="getOperationExecLineCountByOuterId" resultType="java.lang.Long">
 		select
 	           count(1)
 		from

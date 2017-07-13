@@ -1027,13 +1027,13 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         BeanUtils.copyProperties(containerCmd, container);
         if (!containerCode.equals(tipOuterContainer) && (!StringUtils.isEmpty(tipOuterContainer))) { // 当前扫描的小车不是系统推荐的小车或者周转箱
             // 先判断作业执行明细有没有
-            long count = 0L;
+            Long count = 0L;
             if (pickingWay == Constants.PICKING_WAY_FOUR) {
                 count = whOperationExecLineDao.getOperationExecLineCount(operationId, ouId, containerCmd.getId());
             } else {
                 count = whOperationExecLineDao.getOperationExecLineCountByOuterId(operationId, ouId, containerCmd.getId());
             }
-            if (count == 0) {// 判断有没有库存,有库存抛异常
+            if (count.longValue() == 0) {// 判断有没有库存,有库存抛异常
                 int invCount = 0;
                 if (pickingWay == Constants.PICKING_WAY_FOUR) {
                     invCount = whSkuInventoryDao.countInventoryCountsByInsideContainerId(ouId, containerCmd.getId());
@@ -1075,13 +1075,21 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 if (count1 != count2) {
                     throw new BusinessException(ErrorCodes.SCAN_CONTAINER_IS_ERROR); // 扫描容器类型不正确
                 }
-                // 释放推荐的小车或者出库箱
-                Container c = new Container();
-                BeanUtils.copyProperties(cmd, c);
-                c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
-                c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
-                containerDao.saveOrUpdateByVersion(c);
-                insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
+                Long tipCount = 0L;
+                if (pickingWay == Constants.PICKING_WAY_FOUR) {
+                    tipCount = whOperationExecLineDao.getOperationExecLineCount(operationId, ouId, cmd.getId());
+                } else {
+                    tipCount = whOperationExecLineDao.getOperationExecLineCountByOuterId(operationId, ouId, cmd.getId());
+                }
+                if(tipCount == 0){
+                    // 释放推荐的小车或者出库箱
+                    Container c = new Container();
+                    BeanUtils.copyProperties(cmd, c);
+                    c.setLifecycle(ContainerStatus.CONTAINER_LIFECYCLE_USABLE);
+                    c.setStatus(ContainerStatus.CONTAINER_STATUS_USABLE);
+                    containerDao.saveOrUpdateByVersion(c);
+                    insertGlobalLog(GLOBAL_LOG_UPDATE, c, ouId, userId, null, null);
+                }
             }
         } else {
             if (container.getLifecycle().equals(ContainerStatus.CONTAINER_LIFECYCLE_OCCUPIED)) {
