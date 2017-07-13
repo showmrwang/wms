@@ -524,7 +524,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			        last_modify_time = now() ,
 			        operator_id = #{operatorId,javaType=java.lang.Long,jdbcType=BIGINT},
 			        uuid= #{uuid,javaType=java.lang.String,jdbcType=VARCHAR},
-			        #{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR},
+			        replenishment_code=#{replenishmentCode,javaType=java.lang.String,jdbcType=VARCHAR},
 			        is_not_recommand=#{isNotRecommand,javaType=java.lang.Boolean,jdbcType=BIT} 
 		        WHERE 
 			        id = #{id} 

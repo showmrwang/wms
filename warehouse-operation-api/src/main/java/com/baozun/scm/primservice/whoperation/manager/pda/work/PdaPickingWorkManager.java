@@ -259,5 +259,14 @@ public interface PdaPickingWorkManager extends BaseManager {
     
     
     public void removeCacheOutBoundbox(Long operationId);
+    
+    /***
+     * 判断是否是整箱或者整托
+     * @param outerContainerCode
+     * @param insideCotainerCode
+     * @param ouId
+     * @return
+     */
+    public int isPalletOrContainer(String outerContainerCode,String insideCotainerCode,Long ouId,Long operationId);
 
 }
