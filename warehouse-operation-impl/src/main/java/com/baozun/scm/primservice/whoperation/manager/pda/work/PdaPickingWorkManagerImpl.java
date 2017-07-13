@@ -3481,7 +3481,19 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         } else if (whOperationCommand.getIsWholeCase() == false && statisticsCommand.getOuterContainers().size() == 0 && statisticsCommand.getTurnoverBoxs().size() > 0) {
             pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FOUR);
         } else if (whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() > 0 && statisticsCommand.getContainers().size() > 0) {
-            pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FIVE);
+            Boolean isPallet = true;
+            for(Long pallet : statisticsCommand.getPallets()){
+                int skuInventoryQty = whSkuInventoryDao.findInventoryCountsByOuterContainerId(ouId, pallet);
+                int operationLineQty = whOperationLineDao.findInventoryCountsByOuterContainerId(ouId, pallet,whOperationCommand.getId());
+                if(skuInventoryQty != operationLineQty){
+                    isPallet = false;
+                }
+            }
+            if(true == isPallet){
+                pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_FIVE);
+            }else{
+                pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_SIX);
+            }
         } else if (whOperationCommand.getIsWholeCase() == true && statisticsCommand.getPallets().size() == 0 && statisticsCommand.getContainers().size() > 0) {
             pickingScanResultCommand.setPickingWay(Constants.PICKING_WAY_SIX);
         }
