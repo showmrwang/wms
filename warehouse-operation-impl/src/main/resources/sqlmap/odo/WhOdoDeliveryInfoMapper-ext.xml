@@ -282,7 +282,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		
     </select>
     
-    
-     
+    <select id="findOutboundBoxCodeByWaybillCode" resultType="string">
+    	select
+    		outboundbox_code
+    	from
+    		t_wh_odo_delivery_info
+    	where
+    		waybill_code = #{waybillCode}
+    		and ou_id = #{ouId}
+    </select>
     
 </mapper>
