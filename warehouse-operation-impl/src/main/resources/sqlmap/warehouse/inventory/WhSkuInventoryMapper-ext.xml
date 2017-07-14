@@ -5682,13 +5682,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 					               from
                                     t_wh_sku_inventory inv
                                      where 
-						                    and inv.ou_id = #{ouId}
+						                    inv.ou_id = #{ouId}
 						                    and inv.uuid=#{uuid}
 						                    <if test="occupationCode != null and occupationCode!=''">
 												 and inv.occupation_code =#{occupationCode}
 											</if>
+											 <if test="occupationCode == null or occupationCode==''">
+												 and inv.occupation_code is null
+											</if>
 											<if test="occupationLineId != null and occupationLineId!=''">
 												  and inv.occupation_line_id=#{occupationLineId}
+											</if>
+											<if test="occupationLineId == null or occupationLineId==''">
+												  and inv.occupation_line_id is null
 											</if>
 										   group by inv.uuid
 					     ) inventory
