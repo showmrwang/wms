@@ -3720,7 +3720,7 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
                 // 插入集货表
                 String pickingMode = this.insertIntoCollection(command, command.getOuId(), command.getUserId());
                 command.setPickingMode(pickingMode);
-                if (2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()) {
+                if (null != command.getTempReplenishWay() && 2 != command.getTempReplenishWay() && 3 != command.getTempReplenishWay()) {
                     // 清除缓存
                     pdaPickingWorkCacheManager.pdaPickingRemoveAllCache(command.getOperationId(), true, command.getLocationId());
                 }
