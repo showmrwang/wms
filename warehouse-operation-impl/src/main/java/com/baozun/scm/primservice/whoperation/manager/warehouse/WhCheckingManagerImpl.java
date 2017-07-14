@@ -1406,7 +1406,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                 outboundboxLine.setUuid(skuInvCmd.getUuid());
                 outboundboxLine.setOuId(skuInvCmd.getOuId());
                 outboundboxLine.setOdoId(lineCmd.getOdoId());
-                outboundboxLine.setOdoLineId(lineCmd.getOdoLineId());
+                outboundboxLine.setOdoLineId(skuInvCmd.getOccupationLineId());
                 outboundboxLine.setSysDate(String.valueOf(new Date()));
                 whOutboundboxLineDao.insert(outboundboxLine);
                 insertGlobalLog(GLOBAL_LOG_INSERT, outboundboxLine, ouId, userId, null, null);
