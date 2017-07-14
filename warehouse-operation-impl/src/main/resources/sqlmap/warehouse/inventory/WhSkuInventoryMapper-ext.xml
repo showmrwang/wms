@@ -6134,4 +6134,68 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where inv.ou_id=#{ouId}
 			and inv.inside_container_id=#{insideContainerId} 
 	</select>
+	
+	<select id="findInventoryByLocationCode" resultMap="WhSkuInventoryCommandResultExt">
+		SELECT
+	sku.bar_code AS skuBarCode,
+	sku. NAME AS skuName,
+	skuInv.location_id AS locationId,
+	sum(skuInv.on_hand_qty) + sum(skuInv.to_be_filled_qty) + sum(skuInv.allocated_qty) + sum(skuInv.frozen_qty) AS qty,
+	sum(skuInv.on_hand_qty) AS onHandQty,
+	sum(skuInv.allocated_qty) AS allocatedQty
+FROM
+	t_wh_sku_inventory skuInv
+LEFT JOIN t_wh_sku sku ON skuInv.sku_id = sku.id
+LEFT JOIN t_wh_location location ON skuInv.location_id = location.id
+WHERE
+	location.CODE = #{locationCode}
+AND skuInv.ou_id = #{ouId}
+GROUP BY
+	sku.bar_code
+	</select>
+	
+	<select id="findInventoryBySkuBarCode" resultMap="WhSkuInventoryCommandResultExt">
+		SELECT
+	sku.bar_code AS skuBarCode,
+	sku. NAME AS skuName,
+	skuInv.location_id as locationId,
+	sum(skuInv.on_hand_qty) + sum(skuInv.to_be_filled_qty) + sum(skuInv.allocated_qty) + sum(skuInv.frozen_qty) AS qty,
+	sum(skuInv.on_hand_qty) AS onHandQty,
+	sum(skuInv.allocated_qty) AS allocatedQty
+FROM
+	t_wh_sku_inventory skuInv
+LEFT JOIN t_wh_sku sku ON skuInv.sku_id = sku.id
+LEFT JOIN t_wh_location location ON skuInv.location_id = location.id
+WHERE
+	sku.bar_code = #{barCode}
+AND skuInv.ou_id = #{ouId}
+GROUP BY
+	skuInv.location_id,
+	sku.bar_code
+	</select>
+	
+	<select id="findInventoryByContainerCode" resultMap="WhSkuInventoryCommandResultExt">
+		SELECT
+	sku.bar_code AS skuBarCode,
+	sku. NAME AS skuName,
+	skuInv.outer_container_id as outerContainerId,
+	skuInv.inside_container_id as insideContainerId,
+	sum(skuInv.on_hand_qty) + sum(skuInv.to_be_filled_qty) + sum(skuInv.allocated_qty) + sum(skuInv.frozen_qty) AS qty,
+	sum(skuInv.on_hand_qty) AS onHandQty,
+	sum(skuInv.allocated_qty) AS allocatedQty
+FROM
+	t_wh_sku_inventory skuInv
+LEFT JOIN t_wh_sku sku ON skuInv.sku_id = sku.id
+LEFT JOIN t_wh_container outerCon ON skuInv.outer_container_id = outerCon.id
+LEFT JOIN t_wh_container insideCon ON skuInv.inside_container_id = insideCon.id
+WHERE
+	(
+		outerCon. CODE = #{containerCode}
+		OR insideCon. CODE = #{containerCode}
+	)
+AND skuInv.ou_id = #{ouId}
+GROUP BY
+	sku.bar_code
+	</select>
+	
 </mapper>
