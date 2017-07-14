@@ -9489,7 +9489,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             String execLineSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByOperationExecLine(execLine);
             if (skuAttrId.equals(execLineSkuAttrIds)) {
                 Long odoLineId = execLine.getOdoLineId();
-                if (null != occupationLineId) {
+                if (null != occupationLineId && 0 != occupationLineId.longValue()) {
                     if (occupationLineId.longValue() != odoLineId.longValue()) {
                         continue;
                     }
