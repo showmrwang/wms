@@ -1368,7 +1368,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
             whOutboundboxDao.insert(whOutboundbox);
             insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
             // 生成出库想明细信息
-            List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
+            List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryDao.getOutboundboxInventory(outboundbox, ouId);
             log.info("addOutboundbox ========> listSkuInvCmd:[{}]", listSkuInvCmd.toString());
             if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
                 throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
