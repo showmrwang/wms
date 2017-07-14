@@ -9333,7 +9333,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                     }
                 }
             }
-            if(!isContinue){
+            if(null != occupationLineId && !isContinue){  //波次内校验，波次外不校验
                 continue;
             }
             // 更新作业执行明细
