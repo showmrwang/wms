@@ -12709,7 +12709,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             whSkuInventoryDao.insert(moveInv);
             insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);
             // 记录入库库存日志(这个实现的有问题)
-            insertSkuInventoryLog(moveInv.getId(), moveInv.getOnHandQty(), orginInv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
+            insertSkuInventoryLog(moveInv.getId(), moveInv.getOnHandQty(), orginInv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SPLIT_MOVE_PACKING_CASE);
             // 删除原有库存信息
             WhSkuInventory oldInv = new WhSkuInventory();
             BeanUtils.copyProperties(orginInv, oldInv);
@@ -13041,7 +13041,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
                 whSkuInventoryDao.insert(moveInv);
                 insertGlobalLog(GLOBAL_LOG_INSERT, moveInv, ouId, userId, null, null);
                 // 记录入库库存日志(这个实现的有问题)
-                insertSkuInventoryLog(moveInv.getId(), moveInv.getOnHandQty(), orginInv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SHELF);
+                insertSkuInventoryLog(moveInv.getId(), moveInv.getOnHandQty(), orginInv.getOnHandQty(), warehouse.getIsTabbInvTotal(), ouId, userId, InvTransactionType.SPLIT_MOVE_OUTBOUND_BOX);
                 // } else {
                 // // 存在新的uuid记录的数据更新库存数
                 // moveInv.setId(checkInv.getId());
