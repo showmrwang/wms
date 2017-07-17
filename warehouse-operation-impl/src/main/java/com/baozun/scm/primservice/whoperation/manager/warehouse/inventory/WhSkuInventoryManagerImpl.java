@@ -5747,7 +5747,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes()) || Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
             skuInvs = whSkuInventoryDao.findInventoryUuidByInBoundTime(whSkuInventoryCommand);
         } else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-            skuInvs = whSkuInventoryDao.findInventoryByInBoundTime(whSkuInventoryCommand);
+            List<WhSkuInventoryCommand> skuInvsGroup = whSkuInventoryDao.findSkuInvGroupDataByInBoundTime(whSkuInventoryCommand);
+            if (null != skuInvsGroup && !skuInvsGroup.isEmpty()) {
+                List<String> uuidList = new ArrayList<String>();
+                for (WhSkuInventoryCommand command : skuInvsGroup) {
+                    uuidList.add(command.getUuid());
+                }
+                skuInvs = whSkuInventoryDao.findSkuInventoryByInBoundTime(uuidList, whSkuInventoryCommand.getPriority(), whSkuInventoryCommand.getOuId());
+            }
+            //skuInvs = whSkuInventoryDao.findInventoryByInBoundTime(whSkuInventoryCommand);
         }
         return skuInvs;
     }
@@ -5761,7 +5769,15 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes()) || Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
             skuInvs = whSkuInventoryDao.findInventoryUuidByExpTime(whSkuInventoryCommand);
         } else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-            skuInvs = whSkuInventoryDao.findInventoryByExpTime(whSkuInventoryCommand);
+            List<WhSkuInventoryCommand> skuInvsGroup = whSkuInventoryDao.findSkuInvGroupDataByExpTime(whSkuInventoryCommand);
+            if (null != skuInvsGroup && !skuInvsGroup.isEmpty()) {
+                List<String> uuidList = new ArrayList<String>();
+                for (WhSkuInventoryCommand command : skuInvsGroup) {
+                    uuidList.add(command.getUuid());
+                }
+                skuInvs = whSkuInventoryDao.findSkuInventoryByExpTime(uuidList, whSkuInventoryCommand.getPriority(), whSkuInventoryCommand.getOuId());
+            }
+            //skuInvs = whSkuInventoryDao.findInventoryByExpTime(whSkuInventoryCommand);
         }
         return skuInvs;
     }
@@ -5801,7 +5817,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes()) || Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
             skuInvs = whSkuInventoryDao.findInventoryUuidByLocation(whSkuInventoryCommand);
         } else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-            skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
+            List<WhSkuInventoryCommand> skuInvsGroup = whSkuInventoryDao.findSkuInvGroupDataByLocation(whSkuInventoryCommand);
+            if (null != skuInvsGroup && !skuInvsGroup.isEmpty()) {
+                List<Long> locationList = new ArrayList<Long>();
+                for (WhSkuInventoryCommand command : skuInvsGroup) {
+                    locationList.add(command.getLocationId());
+                }
+                whSkuInventoryCommand.setLocationIdList(locationList);
+                skuInvs = whSkuInventoryDao.findSkuInventoryByLocation(whSkuInventoryCommand);
+            }
+            // skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
         }
         return skuInvs;
     }
@@ -5815,7 +5840,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes()) || Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
             skuInvs = whSkuInventoryDao.findInventoryUuidByLocation(whSkuInventoryCommand);
         } else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-            skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
+            List<WhSkuInventoryCommand> skuInvsGroup = whSkuInventoryDao.findSkuInvGroupDataByLocation(whSkuInventoryCommand);
+            if (null != skuInvsGroup && !skuInvsGroup.isEmpty()) {
+                List<Long> locationList = new ArrayList<Long>();
+                for (WhSkuInventoryCommand command : skuInvsGroup) {
+                    locationList.add(command.getLocationId());
+                }
+                whSkuInventoryCommand.setLocationIdList(locationList);
+                skuInvs = whSkuInventoryDao.findSkuInventoryByLocation(whSkuInventoryCommand);
+            }
+            // skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
         }
         return skuInvs;
     }
@@ -5829,7 +5863,16 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
         if (Constants.ALLOCATE_UNIT_TP.equals(whSkuInventoryCommand.getAllocateUnitCodes()) || Constants.ALLOCATE_UNIT_HX.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
             skuInvs = whSkuInventoryDao.findInventoryUuidByLocation(whSkuInventoryCommand);
         } else if (Constants.ALLOCATE_UNIT_PIECE.equals(whSkuInventoryCommand.getAllocateUnitCodes())) {
-            skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
+            List<WhSkuInventoryCommand> skuInvsGroup = whSkuInventoryDao.findSkuInvGroupDataByLocation(whSkuInventoryCommand);
+            if (null != skuInvsGroup && !skuInvsGroup.isEmpty()) {
+                List<Long> locationList = new ArrayList<Long>();
+                for (WhSkuInventoryCommand command : skuInvsGroup) {
+                    locationList.add(command.getLocationId());
+                }
+                whSkuInventoryCommand.setLocationIdList(locationList);
+                skuInvs = whSkuInventoryDao.findSkuInventoryByLocation(whSkuInventoryCommand);
+            }
+            // skuInvs = whSkuInventoryDao.findInventoryByLocation(whSkuInventoryCommand);
         }
         return skuInvs;
     }

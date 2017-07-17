@@ -1331,4 +1331,16 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      */
     int countInventoryCountsByInsideContainerId(@Param("ouId") Long ouId, @Param("insideContainerId") Long insideContainerId);
 
+    List<WhSkuInventoryCommand> findSkuInvGroupDataByInBoundTime(WhSkuInventoryCommand whSkuInventoryCommand);
+
+    List<WhSkuInventoryCommand> findSkuInventoryByInBoundTime(@Param("uuidList") List<String> uuidList, @Param("priority") Boolean priority, @Param("ouId") Long ouId);
+
+    List<WhSkuInventoryCommand> findSkuInvGroupDataByExpTime(WhSkuInventoryCommand whSkuInventoryCommand);
+
+    List<WhSkuInventoryCommand> findSkuInventoryByExpTime(@Param("uuidList") List<String> uuidList, @Param("priority") Boolean priority, @Param("ouId") Long ouId);
+
+    List<WhSkuInventoryCommand> findSkuInvGroupDataByLocation(WhSkuInventoryCommand whSkuInventoryCommand);
+
+    List<WhSkuInventoryCommand> findSkuInventoryByLocation(WhSkuInventoryCommand whSkuInventoryCommand);
+
 }

@@ -6134,4 +6134,194 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where inv.ou_id=#{ouId}
 			and inv.inside_container_id=#{insideContainerId} 
 	</select>
+	
+	<select id="findSkuInvGroupDataByInBoundTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+		select 
+			sum(inv.on_hand_qty) sumOnHandQty, inv.inbound_time as inboundTime, inv.uuid
+		from 
+			t_wh_sku_inventory inv,
+			t_wh_location loc,
+			t_wh_inventory_status s
+		where 
+			inv.location_id = loc.id 
+			and inv.inv_status = s.id
+			and inv.location_id is not null 
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null 
+			and inv.on_hand_qty - inv.frozen_qty > 0.0 
+			and IFNULL(is_locked,0) != 1
+			and loc.lifecycle = 1
+			and s.is_for_sale = 1
+			and s.lifecycle = 1
+			
+			and inv.ou_id = #{ouId}
+			and loc.allocate_area_id = #{areaId}
+			and inv.sku_id = #{skuId}
+			<include refid="invAttrWhereCondition"/>
+		group by inv.inbound_time,inv.uuid
+		order by 
+		<if test="priority != null and priority == true">
+			inv.inbound_time asc,sumOnHandQty,loc.pick_sort,loc.code
+		</if>
+		<if test="priority != null and priority == false">
+			inv.inbound_time desc,sumOnHandQty,loc.pick_sort,loc.code
+		</if>
+	</select>
+	
+	<select id="findSkuInventoryByInBoundTime" resultMap="WhSkuInventoryCommandResultExt">
+		select
+			<include refid="whSkuInventoryColumnsInvExt" /> 
+		from 
+			t_wh_sku_inventory inv
+		where
+			inv.uuid in 
+			<foreach item="item" collection="uuidList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null
+			and IFNULL(is_locked,0) != 1
+			and inv.frozen_qty = 0.0
+			and inv.ou_id = #{ouId}
+		order by 
+			<if test="priority != null and priority == true">
+				inv.inbound_time asc,
+			</if>
+			<if test="priority != null and priority == false">
+				inv.inbound_time desc,
+			</if>
+			field(inv.uuid, 
+			<foreach item="item" collection="uuidList" separator="," close=")">
+				#{item}
+			</foreach>, 
+			inv.on_hand_qty
+	</select>
+	
+	<select id="findSkuInvGroupDataByExpTime" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+		select 
+			sum(inv.on_hand_qty) sumOnHandQty, inv.exp_date as expDate, inv.uuid
+		from 
+			t_wh_sku_inventory inv,
+			t_wh_location loc,
+			t_wh_inventory_status s
+		where 
+			inv.location_id = loc.id 
+			and inv.inv_status = s.id
+			and inv.location_id is not null 
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null 
+			and inv.on_hand_qty - inv.frozen_qty > 0.0 
+			and IFNULL(is_locked,0) != 1
+			and loc.lifecycle = 1
+			and s.is_for_sale = 1
+			and s.lifecycle = 1
+			
+			and inv.ou_id = #{ouId}
+			and loc.allocate_area_id = #{areaId}
+			and inv.sku_id = #{skuId}
+			<include refid="invAttrWhereCondition"/>
+		group by inv.exp_date,inv.uuid
+		order by 
+			<if test="priority != null and priority == true">
+				inv.exp_date asc,sumOnHandQty,loc.pick_sort,loc.code
+			</if>
+			<if test="priority != null and priority == false">
+				inv.exp_date desc,sumOnHandQty,loc.pick_sort,loc.code
+			</if>
+	</select>
+	
+	<select id="findSkuInventoryByExpTime" resultMap="WhSkuInventoryCommandResultExt">
+		select
+			<include refid="whSkuInventoryColumnsInvExt" /> 
+		from 
+			t_wh_sku_inventory inv
+		where
+			inv.uuid in 
+			<foreach item="item" collection="uuidList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null
+			and IFNULL(is_locked,0) != 1
+			and inv.frozen_qty = 0.0
+			and inv.ou_id = #{ouId}
+		order by 
+			<if test="priority != null and priority == true">
+				inv.exp_date asc,
+			</if>
+			<if test="priority != null and priority == false">
+				inv.exp_date desc,
+			</if>
+			field(inv.uuid, 
+			<foreach item="item" collection="uuidList" separator="," close=")">
+				#{item}
+			</foreach>, 
+			inv.on_hand_qty
+	</select>
+	
+	<select id="findSkuInvGroupDataByLocation" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+		select 
+			sum(inv.on_hand_qty) sumOnHandQty, inv.location_id as locationId
+		from 
+			t_wh_sku_inventory inv,
+			t_wh_location loc,
+			t_wh_inventory_status s
+		where 
+			inv.location_id = loc.id 
+			and inv.inv_status = s.id
+			and inv.location_id is not null 
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null 
+			and inv.on_hand_qty - inv.frozen_qty > 0.0 
+			and IFNULL(is_locked,0) != 1
+			and loc.lifecycle = 1
+			and s.is_for_sale = 1
+			and s.lifecycle = 1
+			
+			and inv.ou_id = #{ouId}
+			and loc.allocate_area_id = #{areaId}
+			and inv.sku_id = #{skuId}
+			<include refid="invAttrWhereCondition"/>
+			
+			<if test="isStatic != null and isStatic == true">
+				and loc.is_static = 1
+			</if>
+			<if test="isMixStacking != null and isMixStacking == true">
+				and loc.is_mix_stacking = 1
+			</if>
+		group by inv.location_id
+		order by 
+		<if test="priority != null and priority == true">
+			sumOnHandQty,loc.pick_sort,loc.code
+		</if>
+		<if test="priority != null and priority == false">
+			sumOnHandQty desc,loc.pick_sort,loc.code
+		</if>
+	</select>
+	
+	<select id="findSkuInventoryByLocation" parameterType="com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand" resultMap="WhSkuInventoryCommandResultExt">
+		select 
+			ISNULL(inv.outer_container_id) + ISNULL(inv.inside_container_id) as unit,
+			<include refid="whSkuInventoryColumnsInvExt" /> 
+		from 
+			t_wh_sku_inventory inv
+		where
+			inv.location_id in 
+			<foreach item="item" collection="locationIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			and inv.occupation_code is null 
+			and inv.occupation_line_id is null
+			and IFNULL(is_locked,0) != 1
+			and inv.frozen_qty = 0.0
+			and inv.ou_id = #{ouId}
+			and inv.sku_id = #{skuId}
+			<include refid="invAttrWhereCondition"/>
+		order by 
+			field(inv.location_id, 
+			<foreach item="item" collection="locationIdList" separator="," close=")">
+				#{item}
+			</foreach>, 
+			unit desc, inv.on_hand_qty
+	</select>
 </mapper>
