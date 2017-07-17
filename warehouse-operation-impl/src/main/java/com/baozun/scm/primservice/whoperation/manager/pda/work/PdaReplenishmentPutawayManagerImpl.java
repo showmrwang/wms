@@ -921,7 +921,7 @@ public class PdaReplenishmentPutawayManagerImpl extends BaseManagerImpl implemen
                 throw new BusinessException(ErrorCodes.PDA_INBOUND_SORTATION_CONTAINER_NULL);
             }
             command.setIsNeedScanTurnoverBox(true);
-            command.setTurnoverBoxCode(c.getCode());
+            command.setTipTurnoverBoxCode(c.getCode());
         }else if(csrCmd.getIsNeedTipLoc()){
             //缓存上一个库位
             this.cacheLocation(operationId, locationId);
