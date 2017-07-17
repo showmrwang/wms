@@ -107,8 +107,6 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     /** 商品编码 */
     private String skuCode;
-    /** 商品条码*/
-    private String skuBarCode;
     /** 商品名称 */
     private String skuName;
     /** 库位号 */
@@ -1232,13 +1230,5 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setAllocateAreaId(Long allocateAreaId) {
         this.allocateAreaId = allocateAreaId;
-    }
-
-    public String getSkuBarCode() {
-        return skuBarCode;
-    }
-
-    public void setSkuBarCode(String skuBarCode) {
-        this.skuBarCode = skuBarCode;
     }
 }

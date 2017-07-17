@@ -6137,7 +6137,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="findInventoryByLocationCode" resultMap="WhSkuInventoryCommandResultExt">
 		SELECT
-	sku.bar_code AS skuBarCode,
+	sku.bar_code AS skuBarcode,
 	sku. NAME AS skuName,
 	skuInv.location_id AS locationId,
 	sum(skuInv.on_hand_qty) + sum(skuInv.to_be_filled_qty) + sum(skuInv.allocated_qty) + sum(skuInv.frozen_qty) AS qty,
@@ -6156,7 +6156,7 @@ GROUP BY
 	
 	<select id="findInventoryBySkuBarCode" resultMap="WhSkuInventoryCommandResultExt">
 		SELECT
-	sku.bar_code AS skuBarCode,
+	sku.bar_code AS skuBarcode,
 	sku. NAME AS skuName,
 	skuInv.location_id as locationId,
 	sum(skuInv.on_hand_qty) + sum(skuInv.to_be_filled_qty) + sum(skuInv.allocated_qty) + sum(skuInv.frozen_qty) AS qty,
@@ -6176,7 +6176,7 @@ GROUP BY
 	
 	<select id="findInventoryByContainerCode" resultMap="WhSkuInventoryCommandResultExt">
 		SELECT
-	sku.bar_code AS skuBarCode,
+	sku.bar_code AS skuBarcode,
 	sku. NAME AS skuName,
 	skuInv.outer_container_id as outerContainerId,
 	skuInv.inside_container_id as insideContainerId,

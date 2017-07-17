@@ -24,6 +24,7 @@ import com.baozun.scm.primservice.whoperation.command.warehouse.ReplenishmentRul
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingByOdoResultCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhSkuCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventoryCommand;
+import com.baozun.scm.primservice.whoperation.command.warehouse.inventory.WhSkuInventorySnCommand;
 import com.baozun.scm.primservice.whoperation.command.wave.WhWaveLineCommand;
 import com.baozun.scm.primservice.whoperation.command.whinterface.inbound.WhInboundLineConfirmCommand;
 import com.baozun.scm.primservice.whoperation.manager.BaseManager;
@@ -534,4 +535,11 @@ public interface WhSkuInventoryManager extends BaseManager {
      * 
      */
     public void execuBoxMoveInventory(String sourceContainerCode,Long sourceContainerId,Integer containerLatticNo,String targetContainerCode , String scanObject, Map<String, List<String>> scanSkuAttrIdsSn, Warehouse warehouse,Map<String,Double> scanSkuAttrIdsQty,Long ouId, Long userId, String logId);
+
+    public List<WhSkuInventoryCommand> findInventoryBySkuBarCode(String barCode,Long ouId);
+    
+    public List<WhSkuInventoryCommand> findInventoryByLocationCode(String locationCode,Long ouId);
+    
+    public List<WhSkuInventoryCommand> findInventoryByContainerCode(String container,Long ouId);
+    
 }
