@@ -397,6 +397,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where ou_id=#{ouId}
 			and from_inside_container_id=#{fromInsideContainerId} 
 			and operation_id=#{operationId}
+			and qty != complete_qty
 	</select>
 	
 	
@@ -405,6 +406,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			where ou_id=#{ouId}
 			and from_outer_container_id=#{fromOuterContainerId} 
 			and operation_id=#{operationId}
+			and qty != complete_qty
 	</select>
 	<delete id="deleteByIdExt" parameterType="java.lang.Long">
 	        delete from t_wh_operation_line  where

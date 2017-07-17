@@ -30,7 +30,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baozun.scm.baseservice.print.manager.printObject.PrintObjectManagerProxy;
 import com.baozun.scm.primservice.whoperation.command.sku.SkuRedisCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingCommand;
 import com.baozun.scm.primservice.whoperation.command.warehouse.WhCheckingLineCommand;
@@ -46,30 +45,18 @@ import com.baozun.scm.primservice.whoperation.constant.Constants;
 import com.baozun.scm.primservice.whoperation.constant.ContainerStatus;
 import com.baozun.scm.primservice.whoperation.constant.OdoStatus;
 import com.baozun.scm.primservice.whoperation.constant.OutboundboxStatus;
-import com.baozun.scm.primservice.whoperation.dao.warehouse.ContainerDao;
 import com.baozun.scm.primservice.whoperation.exception.BusinessException;
 import com.baozun.scm.primservice.whoperation.exception.ErrorCodes;
 import com.baozun.scm.primservice.whoperation.manager.BaseManagerImpl;
 import com.baozun.scm.primservice.whoperation.manager.odo.OdoManagerProxy;
 import com.baozun.scm.primservice.whoperation.manager.odo.WhOdoDeliveryInfoManager;
-import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportMgmtManager;
 import com.baozun.scm.primservice.whoperation.manager.odo.manager.OdoTransportServiceManager;
 import com.baozun.scm.primservice.whoperation.manager.redis.SkuRedisManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.ContainerManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WarehouseManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingLineManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhCheckingManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhFunctionOutBoundManager;
 import com.baozun.scm.primservice.whoperation.manager.warehouse.WhLocationSkuVolumeManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOdoPackageInfoManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxLineManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxLineSnManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhOutboundboxManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhPrintInfoManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.WhSkuManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventoryManager;
-import com.baozun.scm.primservice.whoperation.manager.warehouse.inventory.WhSkuInventorySnManager;
 import com.baozun.scm.primservice.whoperation.model.BaseModel;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdo;
 import com.baozun.scm.primservice.whoperation.model.odo.WhOdoTransportMgmt;
@@ -94,35 +81,9 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
     public static final Logger log = LoggerFactory.getLogger(CheckingManagerProxyImpl.class);
 
     @Autowired
-    private CheckingManager checkingManager;
+    private CheckingManager checkingManager;    
     @Autowired
-    private WhFunctionOutBoundManager whFunctionOutBoundManager;
-    @Autowired
-    private WhPrintInfoManager whPrintInfoManager;
-    @Autowired
-    private PrintObjectManagerProxy printObjectManagerProxy;
-    @Autowired
-    private WhCheckingManager whCheckingManager;
-    @Autowired
-    private WhCheckingLineManager whCheckingLineManager;
-    @Autowired
-    private WhOdoPackageInfoManager whOdoPackageInfoManager;
-    @Autowired
-    private WhOutboundboxManager whOutboundboxManager;
-    @Autowired
-    private WhOutboundboxLineManager whOutboundboxLineManager;
-    @Autowired
-    private WhOutboundboxLineSnManager whOutboundboxLineSnManager;
-    @Autowired
-    private WhSkuInventoryManager whSkuInventoryManager;
-    @Autowired
-    private WhSkuInventorySnManager whSkuInventorySnManager;
-    @Autowired
-    private OdoManager odoManager;
-    @Autowired
-    private WhSkuManager whSkuManager;
-    @Autowired
-    private ContainerDao containerDao;
+    private WhCheckingLineManager whCheckingLineManager;    
     @Autowired
     private SkuRedisManager skuRedisManager;
     @Autowired
@@ -326,7 +287,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         }
 
         // 创建出库箱信息
-        WhOutboundbox whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBox.getOutboundboxCode(), orgCheckingLineList.get(0).getOdoId(), isStoreWeighting, userId, ouId, logId);
+        WhOutboundbox whOutboundbox = this.createWhOutboundbox(orgChecking, checkedBox.getOutboundboxCode(), orgCheckingLineList.get(0).getOdoId(), isStoreWeighting,outboundFacilityId, userId, ouId, logId);
 
         // 装箱包裹计重信息
         WhOdoPackageInfoCommand odoPackageInfo = this.createOdoPackageInfo(function, whOutboundbox, packageCalcWeight, orgCheckingLineList.get(0).getOdoId(), userId, ouId);
@@ -865,7 +826,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         return orgCheckingLineList;
     }
 
-    private WhOutboundbox createWhOutboundbox(WhCheckingCommand whChecking, String outboundBoxCode, Long odoId, Boolean isStoreWeighting, Long userId, Long ouId, String logId) {
+    private WhOutboundbox createWhOutboundbox(WhCheckingCommand whChecking, String outboundBoxCode, Long odoId, Boolean isStoreWeighting,Long outboundFacilityId, Long userId, Long ouId, String logId) {
         WhOutboundbox whOutboundbox = new WhOutboundbox();
         whOutboundbox.setBatch(whChecking.getBatch());
         whOutboundbox.setWaveCode(whChecking.getWaveCode());
@@ -879,6 +840,7 @@ public class CheckingManagerProxyImpl extends BaseManagerImpl implements Checkin
         whOutboundbox.setDistributionMode(whChecking.getDistributionMode());
         whOutboundbox.setPickingMode(whChecking.getPickingMode());
         whOutboundbox.setCheckingMode(whChecking.getCheckingMode());
+        whOutboundbox.setFacilityId(outboundFacilityId);
 
         if (isStoreWeighting) {
             whOutboundbox.setStatus(OutboundboxStatus.CHECKING);

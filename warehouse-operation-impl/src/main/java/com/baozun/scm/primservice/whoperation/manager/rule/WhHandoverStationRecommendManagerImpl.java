@@ -276,9 +276,37 @@ public class WhHandoverStationRecommendManagerImpl extends BaseManagerImpl imple
                             }
                             Long checkingFacilityId = ruleAffer.getCheckingFacilityId();
                             if (null == checkingFacilityId) {
-                                continue;
+                                // 如果出库箱没绑定复核台找一个可用的仓库下交接工位
+                                List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByOuId(ouId);
+                                if (null == stations || 0 == stations.size()) {
+                                    continue;
+                                } else {
+                                    for (WhHandoverStationCommand station : stations) {
+
+                                        if (null != station) {
+
+                                            // 同波茨放一起 不論上限
+                                            if (null != condition) {
+                                                if (condition.size() == 1 && HandoverGroupCondition.WAVE_CODE.equals(condition.get(0).getRuleCondtionCode())) {
+                                                    handoverStationId = station.getId();
+                                                    break;
+                                                }
+                                            }
+                                            // 判断该工位是否已经装满出库箱
+                                            // 当前出库箱数
+                                            Integer capacity = handoverCollectionDao.findCountByHandoverStationIdAndStatus(station.getId(), Constants.HANDOVER_COLLECTION_TO_HANDOVER, ouId);
+                                            if (capacity >= station.getUpperCapacity()) {
+                                                continue;
+                                            }
+
+                                            handoverStationId = station.getId();
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
                             }
-                            List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByFacilityGroupId(22100078L, ouId);
+                            List<WhHandoverStationCommand> stations = whHandoverStationDao.findOneByFacilityGroupId(checkingFacilityId, ouId);
                             if (null == stations || 0 == stations.size()) {
                                 continue;
                             } else {

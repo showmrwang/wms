@@ -974,7 +974,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhCheckingLineCommand lineCmd = checkingLineList.get(0);
         Long odoId = lineCmd.getOdoId();
         // 出库箱头信息（t_wh_outboundbox）和出库箱明细
-        this.addOutboundbox(checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId, logId); // 不用改
+        this.addOutboundbox(facilityId,checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId, logId); // 不用改
         // 算包裹计重????
         this.packageWeightCalculationByOdo(checkingLineList, functionId, ouId, odoId, outboundboxId, userId, outboundbox, logId);
         // this.odoDeliveryInfoUpdate(cmd.getWaybillCode(), outboundbox, odoId, ouId,
@@ -1311,7 +1311,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
      * 
      * @param whCheckingResultCommand
      */
-    private void addOutboundbox(Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId, String logId) {
+    private void addOutboundbox(Long facilityId,Long checkingId, Long ouId, Long odoId, String outboundbox, WhCheckingLineCommand lineCmd, Long outboundboxId, Long userId, String logId) {
 
         log.info("whCheckingManager.addOutboundbox start...time:[{}]", DateUtil.getSysDateDefault());
         log.info("params: checkingId:[{}], ouId:[{}], odoId:[{}], outboundbox:[{}], lineCmd:[{}], outboundboxId:[{}], userId:[{}], logId:[{}]", checkingId, ouId, odoId, outboundbox, lineCmd.toString(), outboundboxId, userId, logId);
@@ -1335,81 +1335,87 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         WhOdodeliveryInfo ododeliveryInfo = odoDeliverInfoList.get(0);
         WhOutboundboxCommand outboundboxCmd = whOutboundboxDao.getwhOutboundboxCommandByCode(outboundbox, ouId);
         if (null != outboundboxCmd) {
-            WhOutboundbox whOutboundbox = new WhOutboundbox();
-            BeanUtils.copyProperties(outboundboxCmd, whOutboundbox);
-            whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
-            whOutboundbox.setDistributionMode(checkingCmd.getDistributionMode());
-            whOutboundbox.setPickingMode(checkingCmd.getPickingMode());
-            whOutboundbox.setCheckingMode(checkingCmd.getCheckingMode());
-            whOutboundbox.setOutboundboxId(outboundboxId);
-            whOutboundbox.setProductCode(ododeliveryInfo.getTransportServiceType());
-            whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
-            whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
-            whOutboundbox.setModifiedId(userId);
-            whOutboundboxDao.saveOrUpdate(whOutboundbox);
-            insertGlobalLog(GLOBAL_LOG_UPDATE, whOutboundbox, ouId, userId, null, null);
-        } else {
-            WhOutboundbox whOutboundbox = new WhOutboundbox();
-            BeanUtils.copyProperties(checkingCmd, whOutboundbox);
-            whOutboundbox.setOutboundboxCode(outboundbox);
-            whOutboundbox.setId(null);
-            whOutboundbox.setOuId(ouId);
-            whOutboundbox.setOdoId(odoId);
-            whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
-            whOutboundbox.setOutboundboxId(outboundboxId);
-            whOutboundbox.setProductCode(ododeliveryInfo.getTransportServiceType());
-            whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
-            whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
-            whOutboundbox.setCreateId(userId);
-            whOutboundbox.setCreateTime(new Date());
-            whOutboundbox.setLastModifyTime(new Date());
-            whOutboundboxDao.insert(whOutboundbox);
-            insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
-            // 生成出库想明细信息
-            List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryManager.findOutboundboxInventory(outboundbox, ouId);
-            log.info("addOutboundbox ========> listSkuInvCmd:[{}]", listSkuInvCmd.toString());
-            if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
-                throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
+//            WhOutboundbox whOutboundbox = new WhOutboundbox();
+//            BeanUtils.copyProperties(outboundboxCmd, whOutboundbox);
+//            whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
+//            whOutboundbox.setDistributionMode(checkingCmd.getDistributionMode());
+//            whOutboundbox.setPickingMode(checkingCmd.getPickingMode());
+//            whOutboundbox.setCheckingMode(checkingCmd.getCheckingMode());
+//            whOutboundbox.setOutboundboxId(outboundboxId);
+//            whOutboundbox.setProductCode(ododeliveryInfo.getTransportServiceType());
+//            whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
+//            whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
+//            whOutboundbox.setModifiedId(userId);
+//            whOutboundbox.setFacilityId(facilityId);
+//            whOutboundboxDao.saveOrUpdate(whOutboundbox);
+//            insertGlobalLog(GLOBAL_LOG_UPDATE, whOutboundbox, ouId, userId, null, null);
+            if(!OutboundboxStatus.FINISH.equals(outboundboxCmd.getStatus())){
+                throw new BusinessException(ErrorCodes.OUT_BOUNDBOX_STATUS_IS_ERROR);
             }
-            // 添加出库箱明细
-            for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
-                Long skuId = skuInvCmd.getSkuId();
-                // 获取sku信息
-                WhSkuCommand skuCmd = skuDao.findWhSkuByIdExt(skuId, ouId);
-                if (null == skuCmd) {
-                    throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
-                }
-                WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
-                outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
-                outboundboxLine.setSkuCode(skuCmd.getCode());
-                outboundboxLine.setSkuExtCode(skuCmd.getExtCode());
-                outboundboxLine.setSkuBarCode(skuCmd.getBarCode());
-                outboundboxLine.setSkuName(skuCmd.getName());
-                outboundboxLine.setQty(skuInvCmd.getOnHandQty());
-                outboundboxLine.setCustomerCode(lineCmd.getCustomerCode());
-                outboundboxLine.setCustomerName(lineCmd.getCustomerName());
-                outboundboxLine.setStoreCode(lineCmd.getStoreCode());
-                outboundboxLine.setStoreName(lineCmd.getStoreName());
-                outboundboxLine.setInvStatus(skuInvCmd.getInvStatus().toString());
-                outboundboxLine.setInvType(skuInvCmd.getInvType());
-                outboundboxLine.setBatchNumber(skuInvCmd.getBatchNumber());
-                outboundboxLine.setMfgDate(skuInvCmd.getMfgDate());
-                outboundboxLine.setExpDate(skuInvCmd.getExpDate());
-                outboundboxLine.setCountryOfOrigin(skuInvCmd.getCountryOfOrigin());
-                outboundboxLine.setInvAttr1(skuInvCmd.getInvAttr1());
-                outboundboxLine.setInvAttr2(skuInvCmd.getInvAttr2());
-                outboundboxLine.setInvAttr3(skuInvCmd.getInvAttr3());
-                outboundboxLine.setInvAttr4(skuInvCmd.getInvAttr4());
-                outboundboxLine.setInvAttr5(skuInvCmd.getInvAttr5());
-                outboundboxLine.setUuid(skuInvCmd.getUuid());
-                outboundboxLine.setOuId(skuInvCmd.getOuId());
-                outboundboxLine.setOdoId(lineCmd.getOdoId());
-                outboundboxLine.setOdoLineId(lineCmd.getOdoLineId());
-                outboundboxLine.setSysDate(String.valueOf(new Date()));
-                whOutboundboxLineDao.insert(outboundboxLine);
-                insertGlobalLog(GLOBAL_LOG_INSERT, outboundboxLine, ouId, userId, null, null);
-            }
+             
+        } 
+        WhOutboundbox whOutboundbox = new WhOutboundbox();
+        BeanUtils.copyProperties(checkingCmd, whOutboundbox);
+        whOutboundbox.setOutboundboxCode(outboundbox);
+        whOutboundbox.setId(null);
+        whOutboundbox.setOuId(ouId);
+        whOutboundbox.setOdoId(odoId);
+        whOutboundbox.setStatus(OutboundboxStatus.CHECKING);
+        whOutboundbox.setOutboundboxId(outboundboxId);
+        whOutboundbox.setProductCode(ododeliveryInfo.getTransportServiceType());
+        whOutboundbox.setTimeEffectCode(ododeliveryInfo.getTimeEffectType());
+        whOutboundbox.setTransportCode(ododeliveryInfo.getTransportCode());
+        whOutboundbox.setCreateId(userId);
+        whOutboundbox.setCreateTime(new Date());
+        whOutboundbox.setLastModifyTime(new Date());
+        whOutboundbox.setFacilityId(facilityId);
+        whOutboundboxDao.insert(whOutboundbox);
+        insertGlobalLog(GLOBAL_LOG_INSERT, whOutboundbox, ouId, userId, null, null);
+        // 生成出库想明细信息
+        List<WhSkuInventoryCommand> listSkuInvCmd = whSkuInventoryDao.getOutboundboxInventory(outboundbox, ouId);
+        log.info("addOutboundbox ========> listSkuInvCmd:[{}]", listSkuInvCmd.toString());
+        if (null != listSkuInvCmd && listSkuInvCmd.size() == 0) {
+            throw new BusinessException(ErrorCodes.CONTAINER_INVENTORY_NO_EXIST);
         }
+        // 添加出库箱明细
+        for (WhSkuInventoryCommand skuInvCmd : listSkuInvCmd) {
+            Long skuId = skuInvCmd.getSkuId();
+            // 获取sku信息
+            WhSkuCommand skuCmd = skuDao.findWhSkuByIdExt(skuId, ouId);
+            if (null == skuCmd) {
+                throw new BusinessException(ErrorCodes.SKU_NOT_FOUND);
+            }
+            WhOutboundboxLine outboundboxLine = new WhOutboundboxLine();
+            outboundboxLine.setWhOutboundboxId(whOutboundbox.getId());
+            outboundboxLine.setSkuCode(skuCmd.getCode());
+            outboundboxLine.setSkuExtCode(skuCmd.getExtCode());
+            outboundboxLine.setSkuBarCode(skuCmd.getBarCode());
+            outboundboxLine.setSkuName(skuCmd.getName());
+            outboundboxLine.setQty(skuInvCmd.getOnHandQty());
+            outboundboxLine.setCustomerCode(lineCmd.getCustomerCode());
+            outboundboxLine.setCustomerName(lineCmd.getCustomerName());
+            outboundboxLine.setStoreCode(lineCmd.getStoreCode());
+            outboundboxLine.setStoreName(lineCmd.getStoreName());
+            outboundboxLine.setInvStatus(skuInvCmd.getInvStatus().toString());
+            outboundboxLine.setInvType(skuInvCmd.getInvType());
+            outboundboxLine.setBatchNumber(skuInvCmd.getBatchNumber());
+            outboundboxLine.setMfgDate(skuInvCmd.getMfgDate());
+            outboundboxLine.setExpDate(skuInvCmd.getExpDate());
+            outboundboxLine.setCountryOfOrigin(skuInvCmd.getCountryOfOrigin());
+            outboundboxLine.setInvAttr1(skuInvCmd.getInvAttr1());
+            outboundboxLine.setInvAttr2(skuInvCmd.getInvAttr2());
+            outboundboxLine.setInvAttr3(skuInvCmd.getInvAttr3());
+            outboundboxLine.setInvAttr4(skuInvCmd.getInvAttr4());
+            outboundboxLine.setInvAttr5(skuInvCmd.getInvAttr5());
+            outboundboxLine.setUuid(skuInvCmd.getUuid());
+            outboundboxLine.setOuId(skuInvCmd.getOuId());
+            outboundboxLine.setOdoId(lineCmd.getOdoId());
+            outboundboxLine.setOdoLineId(skuInvCmd.getOccupationLineId());
+            outboundboxLine.setSysDate(String.valueOf(new Date()));
+            whOutboundboxLineDao.insert(outboundboxLine);
+            insertGlobalLog(GLOBAL_LOG_INSERT, outboundboxLine, ouId, userId, null, null);
+        }
+//        }
         log.info("whCheckingManager.addOutboundbox finish...time:[{}]", DateUtil.getSysDateDefault());
     }
 

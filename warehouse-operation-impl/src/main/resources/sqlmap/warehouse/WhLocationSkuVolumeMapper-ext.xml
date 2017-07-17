@@ -106,7 +106,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
             facilityLocSkuVolTemp.*,
             sku.code as skuCode,
             sku.name as skuName,
-            sum(IFNULL(skuInv.on_hand_qty,0)) as onHandQty
+            sum(case when skuInv.occupation_code is null then IFNULL(skuInv.on_hand_qty,0) else 0 end) as onHandQty
         from (
             SELECT
                 locationSkuVol.id as id,
@@ -138,10 +138,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         ) as facilityLocSkuVolTemp
         left join t_wh_sku_inventory as skuInv on facilityLocSkuVolTemp.skuId = skuInv.sku_id and facilityLocSkuVolTemp.locationId = skuInv.location_id
         left join t_wh_sku as sku on facilityLocSkuVolTemp.skuId = sku.id
-        where
-            skuInv.occupation_code is null
-        group by
-            skuInv.location_id,skuInv.sku_id
+        group by facilityLocSkuVolTemp.locationId,facilityLocSkuVolTemp.skuId
     </select>
 
     <select id="findFacilityLocSkuVolumeBySkuId" resultMap="WhLocationSkuVolumeCommand">
