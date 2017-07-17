@@ -4736,7 +4736,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             // 记录入库库存日志
             Double skuInvOnHandQty = invCmd.getOnHandQty() - scanSkuQty; // 上架后库存
-            if (skuInvOnHandQty == 0.0) {
+            if (0.0 >= skuInvOnHandQty) {
                 if (!StringUtils.isEmpty(inv.getOccupationCodeSource())) {
                     ocSource = inv.getOccupationCodeSource();
                 }
@@ -4825,7 +4825,7 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             }
             // 记录入库库存日志
             Double skuInvOnHandQty = invCmd.getOnHandQty() - scanSkuQty; // 上架后库存
-            if (skuInvOnHandQty == 0.0) {
+            if (0.0 >= skuInvOnHandQty) {
                 if (!StringUtils.isEmpty(inv.getOccupationCodeSource())) {
                     ocSource = inv.getOccupationCodeSource();
                 }
@@ -4943,12 +4943,26 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
             String skuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(invSkuCmd);
             List<WhSkuInventorySn> skuSnlist = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN, insideContainerId.toString() + skuId.toString());
             // 获取当前货箱内所有的容器库存
+            Double sum = 0.0;
             List<WhSkuInventoryCommand> skuInvCmdList = whSkuInventoryDao.findContainerOnHandInventoryByInsideContainerId(ouId, insideContainerId);
             for (WhSkuInventoryCommand skuInvCmd : skuInvCmdList) {
                 String insideSkuAttrIds = SkuCategoryProvider.getSkuAttrIdByInv(skuInvCmd);
                 if (skuAttrIds.equals(insideSkuAttrIds)) {
-                    this.manPutwayNoLoc(skuSnlist, warehouse, scanSkuQty, skuInvCmd, isBM, isVM, locationId, userId, ouId);
-                    break;
+                    sum += skuInvCmd.getOnHandQty();
+                    if(scanSkuQty.doubleValue() > sum.doubleValue()){
+                        this.manPutwayNoLoc(skuSnlist, warehouse, skuInvCmd.getOnHandQty(), skuInvCmd, isBM, isVM, locationId, userId, ouId);
+                        continue;
+                    }
+                    if(scanSkuQty.doubleValue() == sum.doubleValue()){
+                        this.manPutwayNoLoc(skuSnlist, warehouse, skuInvCmd.getOnHandQty(), skuInvCmd, isBM, isVM, locationId, userId, ouId);
+                        break;
+                    }
+                    if(scanSkuQty.doubleValue() < sum.doubleValue()){
+                        Double qty = scanSkuQty-(sum-skuInvCmd.getOnHandQty());
+                        this.manPutwayNoLoc(skuSnlist, warehouse, qty, skuInvCmd, isBM, isVM, locationId, userId, ouId);
+                        break;
+                    }
+                    
                 }
             }
             // 如果不跟踪容器号，则上架后需判断是否释放容器

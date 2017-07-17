@@ -1871,6 +1871,19 @@ public class PdaManmadePutawayCacheManagerImpl extends BaseManagerImpl implement
                 }
             } else {
                 Long icId = insideContainerCmd.getId();
+                ManMadeContainerStatisticCommand isCmd = cacheManager.getMapObject(CacheConstants.PDA_MAN_MANDE_CONTAINER_INVENTORY_STATISTIC, containerId.toString());
+                if (null != isCmd) {
+                                    Map<Long, Set<Long>> insideContainerSkuIds = isCmd.getInsideContainerIdSkuIds();
+                                    Set<Long> skuIds = insideContainerSkuIds.get(icId);
+                                    for (Long skuId : skuIds) {
+                                        // 清楚扫描商品数量
+                                        cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString() + skuId.toString());
+                                        cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN_DEFECT+icId.toString()+skuId.toString());
+                                        cacheManager.removeMapValue(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_SN,icId.toString()+skuId.toString());
+                                }
+                                    //清楚扫描商品队列
+                                cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
+                }
                 // 0.清除所有商品队列
                 cacheManager.remove(CacheConstants.PDA_MAN_MANDE_SCAN_SKU_QUEUE + icId.toString());
                 // 1.清除所有库存统计信息
