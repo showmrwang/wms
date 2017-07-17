@@ -238,7 +238,7 @@ public class WhSkuInventoryCommand extends BaseCommand {
     /** 是否允许差异收货 */
     private Boolean isInvattrDiscrepancyAllowrcvd;
 
-
+    private List<Long> locationIdList;
 
     public String getOnHandQtyStr() {
         return onHandQtyStr;
@@ -1230,5 +1230,13 @@ public class WhSkuInventoryCommand extends BaseCommand {
 
     public void setAllocateAreaId(Long allocateAreaId) {
         this.allocateAreaId = allocateAreaId;
+    }
+
+    public List<Long> getLocationIdList() {
+        return locationIdList;
+    }
+
+    public void setLocationIdList(List<Long> locationIdList) {
+        this.locationIdList = locationIdList;
     }
 }

@@ -1116,6 +1116,15 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
      * @return
      */
     public List<WhSkuInventoryCommand> findOutboundboxInventory(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
+    
+    /**
+     * 查询出库箱信息
+     * 
+     * @param outboundbox
+     * @param ouId
+     * @return
+     */
+    public List<WhSkuInventoryCommand> getOutboundboxInventory(@Param("outboundboxCode") String outboundboxCode, @Param("ouId") Long ouId);
 
     /**
      * [通用方法] 通过静态库位id查找库存信息
@@ -1336,5 +1345,17 @@ public interface WhSkuInventoryDao extends BaseDao<WhSkuInventory, Long> {
     List<WhSkuInventoryCommand> findInventoryByLocationCode(@Param("locationCode")String locationCode,@Param("ouId")Long ouId);
     
     List<WhSkuInventoryCommand> findInventoryByContainerCode(@Param("containerCode")String container,@Param("ouId")Long ouId);
+
+    List<WhSkuInventoryCommand> findSkuInvGroupDataByInBoundTime(WhSkuInventoryCommand whSkuInventoryCommand);
+
+    List<WhSkuInventoryCommand> findSkuInventoryByInBoundTime(@Param("uuidList") List<String> uuidList, @Param("priority") Boolean priority, @Param("ouId") Long ouId);
+
+    List<WhSkuInventoryCommand> findSkuInvGroupDataByExpTime(WhSkuInventoryCommand whSkuInventoryCommand);
+
+    List<WhSkuInventoryCommand> findSkuInventoryByExpTime(@Param("uuidList") List<String> uuidList, @Param("priority") Boolean priority, @Param("ouId") Long ouId);
+
+    List<WhSkuInventoryCommand> findSkuInvGroupDataByLocation(WhSkuInventoryCommand whSkuInventoryCommand);
+
+    List<WhSkuInventoryCommand> findSkuInventoryByLocation(WhSkuInventoryCommand whSkuInventoryCommand);
 
 }

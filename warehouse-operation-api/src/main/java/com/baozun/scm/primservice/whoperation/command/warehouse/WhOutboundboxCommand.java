@@ -91,6 +91,7 @@ public class WhOutboundboxCommand extends BaseModel {
     private List<WhCheckingLineCommand> checkingLineList;
     
     
+    
    private Long createId;
     
     
@@ -101,6 +102,8 @@ public class WhOutboundboxCommand extends BaseModel {
     
     
     private Long modifiedId;
+    
+    private Long facilityId;
 	
 	//columns END
 	
@@ -293,6 +296,12 @@ public class WhOutboundboxCommand extends BaseModel {
     }
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
+    }
+    public Long getFacilityId() {
+        return facilityId;
+    }
+    public void setFacilityId(Long facilityId) {
+        this.facilityId = facilityId;
     }
     
     
