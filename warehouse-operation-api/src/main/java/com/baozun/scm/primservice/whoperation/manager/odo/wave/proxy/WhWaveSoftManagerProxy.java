@@ -74,7 +74,7 @@ public interface WhWaveSoftManagerProxy extends BaseManager {
      * @param skuInvAvailableQtyMap
      * @return
      */
-    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long waveLineId, Long ouId, Map<Long, Long> skuInvAvailableQtyMap);
+    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, WhWaveLine whWaveLine, Long ouId, Map<Long, Long> skuInvAvailableQtyMap);
 
     /**
      * [业务方法] 软分配-整单剔除逻辑

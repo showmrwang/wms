@@ -119,9 +119,9 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
     }
 
     @Override
-    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, Long waveLineId, Long ouId, Map<Long, Long> skuInvAvailableQtyMap) {
-        log.info("WhWaveSoftManagerProxy.occupiedOperation(waveId={}, skuId={}, ouId={}) start......", waveId, skuId, ouId);
-        if (null == waveId || null == skuId || null == waveLineId || null == ouId) {
+    public SoftAllocationResponseCommand occupiedOperation(Long waveId, Long skuId, WhWaveLine whWaveLine, Long ouId, Map<Long, Long> skuInvAvailableQtyMap) {
+        log.info("WhWaveSoftManagerProxy.occupiedOperation(waveId={}, skuId={}, whWaveLine={}, ouId={}) start......", waveId, skuId, whWaveLine.toString(), ouId);
+        if (null == waveId || null == skuId || null == whWaveLine || null == ouId) {
             if (null == waveId || null == ouId) {
                 log.error("input param error");
                 throw new BusinessException(ErrorCodes.PARAMS_ERROR);
@@ -137,11 +137,12 @@ public class WhWaveSoftManagerProxyImpl implements WhWaveSoftManagerProxy {
         if (res) {
             // 库存不为0
             // 2.计算每个波次明细行是否可以占用库存
-            WhWaveLine whWaveLine = this.whWaveLineManager.getWaveLineByIdAndOuId(waveLineId, ouId);
-            if (null == whWaveLine) {
-                log.info("whWaveLine is null, waveLineId:{}, ouId:{}", waveLineId, ouId);
-                throw new BusinessException(ErrorCodes.PARAMS_ERROR);
-            }
+            // WhWaveLine whWaveLine = this.whWaveLineManager.getWaveLineByIdAndOuId(waveLineId,
+            // ouId);
+            // if (null == whWaveLine) {
+            // log.info("whWaveLine is null, waveLineId:{}, ouId:{}", waveLineId, ouId);
+            // throw new BusinessException(ErrorCodes.PARAMS_ERROR);
+            // }
             Long odoLineId = whWaveLine.getOdoLineId();
             Long odoId = whWaveLine.getOdoId();
             Double skuQty = whWaveLine.getQty();
