@@ -745,7 +745,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		        	#{distributionMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{pickingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
 		        	#{checkingMode,javaType=java.lang.String,jdbcType=VARCHAR} ,
-		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} ,
+		        	#{facilityId,javaType=java.lang.Long,jdbcType=BIGINT} 
 		        )
 		    ]]>
 		</insert>
