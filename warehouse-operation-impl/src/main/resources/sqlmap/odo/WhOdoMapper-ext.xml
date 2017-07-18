@@ -389,11 +389,11 @@
 
 			<if test="createTimeStart!=null and createTimeStart!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&gt;=#{createTimeStart}
 			</if>
 			<if test="createTimeEnd!=null and createTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&lt;=#{createTimeEnd}
 			</if>
 			<if test="ecOrderCode!=null and ecOrderCode!=''">
 				and odo.ec_order_code LIKE #{ecOrderCode}
@@ -699,7 +699,7 @@
 		odo.include_hazardous_cargo as includeHazardousCargo,
 		odo.outbound_carton_type as outboundCartonType,
 		boxType. name as outboundCartonTypeName,
-		DATE_FORMAT(odo.create_time, '%Y-%m-%d') as createTime,
+		DATE_FORMAT(odo.create_time, '%Y-%m-%d %H:%i:%s') as createTime,
 		odo.created_id as createId,
 		DATE_FORMAT(odo.last_modify_time, '%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
@@ -1363,7 +1363,7 @@
 
 		odo.outbound_carton_type as outboundCartonType,
 		boxType.name as outboundCartonTypeName,
-		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
+		DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s') as createTime,
 		odo.created_id
 		as createId,
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
@@ -1539,11 +1539,11 @@
 
 			<if test="createTimeStart!=null and createTimeStart!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&gt;=#{createTimeStart}
 			</if>
 			<if test="createTimeEnd!=null and createTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&lt;=#{createTimeEnd}
 			</if>
 			<if test="ecOrderCode!=null and ecOrderCode!=''">
 				and odo.ec_order_code LIKE #{ecOrderCode}
@@ -1950,11 +1950,11 @@
 
 			<if test="createTimeStart!=null and createTimeStart!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&gt;=#{createTimeStart}
 			</if>
 			<if test="createTimeEnd!=null and createTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&lt;=#{createTimeEnd}
 			</if>
 			<if test="ecOrderCode!=null and ecOrderCode!=''">
 				and odo.ec_order_code LIKE #{ecOrderCode}
@@ -2322,11 +2322,11 @@
 
 			<if test="createTimeStart!=null and createTimeStart!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&gt;=#{createTimeStart}
 			</if>
 			<if test="createTimeEnd!=null and createTimeEnd!=''">
 				and
-				DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+				DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&lt;=#{createTimeEnd}
 			</if>
 			<if test="ecOrderCode!=null and ecOrderCode!=''">
 				and odo.ec_order_code LIKE #{ecOrderCode}
@@ -2638,10 +2638,10 @@
 
 		odo.outbound_carton_type as outboundCartonType,
 		boxType.name as outboundCartonTypeName,
-		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
+		DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s') as createTime,
 		odo.created_id
 		as createId,
-		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
+		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d %H:%i:%s') as lastModifyTime,
 		odo.modified_id as modifiedId,
 		odo.is_locked as isLocked
 		
@@ -2852,7 +2852,7 @@
 		odo.include_hazardous_cargo as includeHazardousCargo,
 		odo.outbound_carton_type as outboundCartonType,
 		boxType.name as outboundCartonTypeName,
-		DATE_FORMAT(odo.create_time,'%Y-%m-%d') as createTime,
+		DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s') as createTime,
 		odo.created_id as createId,
 		DATE_FORMAT(odo.last_modify_time,'%Y-%m-%d') as lastModifyTime,
 		odo.modified_id as modifiedId,
@@ -2957,10 +2957,10 @@
 			</if>
 
 			<if test="createTimeStart!=null and createTimeStart!=''">
-				and DATE_FORMAT(odo.create_time,'%Y-%m-%d')&gt;=#{createTimeStart}
+				and DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&gt;=#{createTimeStart}
 			</if>
 			<if test="createTimeEnd!=null and createTimeEnd!=''">
-				and DATE_FORMAT(odo.create_time,'%Y-%m-%d')&lt;=#{createTimeEnd}
+				and DATE_FORMAT(odo.create_time,'%Y-%m-%d %H:%i:%s')&lt;=#{createTimeEnd}
 			</if>
 			<if test="ecOrderCode!=null and ecOrderCode!=''">
 				and odo.ec_order_code LIKE #{ecOrderCode}
