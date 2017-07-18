@@ -2815,7 +2815,7 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 return null;
             }
         } else {
-            if (null != transportService.getIsTspSuccess() && !transportService.getIsTspSuccess()) {
+            if (null != transportService && null != transportService.getIsTspSuccess() && !transportService.getIsTspSuccess()) {
                 odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 2, null, null, ouId);
             }
         }
