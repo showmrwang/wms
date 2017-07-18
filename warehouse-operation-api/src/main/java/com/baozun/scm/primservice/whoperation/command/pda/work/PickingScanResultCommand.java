@@ -221,6 +221,8 @@ public class PickingScanResultCommand extends BaseCommand {
     
     
     private Boolean isUpdateContainerStatus = false;   //是否修改容器状态
+    
+    private Boolean trunkful = false;
 
 
     /**
@@ -1217,6 +1219,14 @@ public class PickingScanResultCommand extends BaseCommand {
 
     public void setIsUpdateContainerStatus(Boolean isUpdateContainerStatus) {
         this.isUpdateContainerStatus = isUpdateContainerStatus;
+    }
+
+    public Boolean getTrunkful() {
+        return trunkful;
+    }
+
+    public void setTrunkful(Boolean trunkful) {
+        this.trunkful = trunkful;
     }
 
 
