@@ -116,6 +116,8 @@ public class WhWaveLineCommand extends BaseCommand {
     private Boolean isStatic;
     /** 是否混合库位占用 */
     private Boolean isMixStacking;
+    /** 排序 */
+    private Long sortNo;
     
 	public Long getWaveId() {
 		return waveId;
@@ -435,5 +437,12 @@ public class WhWaveLineCommand extends BaseCommand {
 	public void setPackingCaseIds(String packingCaseIds) {
 		this.packingCaseIds = packingCaseIds;
 	}
+    public Long getSortNo() {
+        return sortNo;
+    }
+    public void setSortNo(Long sortNo) {
+        this.sortNo = sortNo;
+    }
+	
 
 }
