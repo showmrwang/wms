@@ -473,6 +473,8 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
                for(String skuAttr:skuAttrIds){
                    if(!scanSkuAttrIds.contains(skuAttr)){  //缓存中没有唯一sku
                        tipSkuAttrId = skuAttr;
+                       cssrCmd.setIsNeedScanSku(true);
+                       cssrCmd.setTipSkuAttrId(tipSkuAttrId);
                        break;
                    }
                }
@@ -482,7 +484,6 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
                    for(String snDefect:snDefects){
                        String skuAttrIdsSn = SkuCategoryProvider.concatSkuAttrId(tipSkuAttrId,snDefect);
                        cssrCmd.setTipSkuAttrId(skuAttrIdsSn);
-                       cssrCmd.setIsNeedScanSku(true);
                         break;
                    }
                }
