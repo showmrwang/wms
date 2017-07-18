@@ -298,7 +298,7 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
                     waybillType = Constants.PAPER_WAY_BILL;
                 }
             } else {
-                log.info("retrieve mail no =======> failure");
+                log.error("retrieve mail no =======> failure");
                 throw new BusinessException("获取运单号失败");
             }
         }
@@ -956,11 +956,9 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
     public WhCheckingByOdoResultCommand checkingByOdo(WhCheckingByOdoResultCommand cmd, Boolean isTabbInvTotal, Long userId, Long ouId, Long functionId, String logId) {
         log.info("whcheckingManagerImpl checkingByOdo is start, time:[{}], logId[{}]", DateUtil.getSysDateDefault(), logId);
         List<WhCheckingLineCommand> checkingLineList = cmd.getCheckingLineList();
-        List<String> snList = cmd.getSn();
-        if (null != snList && !snList.isEmpty()) {
-            // 如果待复核商品是sn商品 需要通过扫描的sn号重新匹配复核明细行
-            checkingLineList = matchCheckLine(checkingLineList, snList, ouId);
-        }
+        WhCheckingLineCommand lineCmd = checkingLineList.get(0);
+        Long odoId = lineCmd.getOdoId();
+        findWaybillInfo(odoId, ouId);
         String outboundbox = cmd.getOutboundBoxCode();
         Long outboundboxId = cmd.getOutboundboxId();
         Long facilityId = cmd.getFacilityId();
@@ -971,8 +969,8 @@ public class WhCheckingManagerImpl extends BaseManagerImpl implements WhChecking
         // 生成出库箱库存(sn有问题)
         this.addOutBoundInventory(cmd, isTabbInvTotal, userId, logId);
         // 获取出库单id
-        WhCheckingLineCommand lineCmd = checkingLineList.get(0);
-        Long odoId = lineCmd.getOdoId();
+//        WhCheckingLineCommand lineCmd = checkingLineList.get(0);
+//        Long odoId = lineCmd.getOdoId();
         // 出库箱头信息（t_wh_outboundbox）和出库箱明细
         this.addOutboundbox(facilityId,checkingId, ouId, odoId, outboundbox, lineCmd, outboundboxId, userId, logId); // 不用改
         // 算包裹计重????
