@@ -496,7 +496,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                     break;
                 }
             } else {
-                if (this.isCacheAllExists(skuIds, tipSkuIds)) {
+//                if (this.isCacheAllExists(skuIds, tipSkuIds)) {
                     for (Long skuId : skuIds) {
                         // 判断改外部容器id是否已经存在缓存中
                         if (tipSkuIds.contains(skuId)) {
@@ -507,7 +507,7 @@ public class PdaPickingWorkCacheManagerImpl extends BaseManagerImpl implements P
                             break;
                         }
                     }
-                }
+//                }
             }
         }
         if (!scanResult.getIsNeedScanSku()) {

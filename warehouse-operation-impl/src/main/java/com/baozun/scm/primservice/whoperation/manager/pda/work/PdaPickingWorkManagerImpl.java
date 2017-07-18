@@ -1698,6 +1698,9 @@ public class PdaPickingWorkManagerImpl extends BaseManagerImpl implements PdaPic
         String outBoundBoxCode = command.getOutBounxBoxCode();
         Long userId = command.getUserId();
         Boolean isTurnkful = command.getIsTrunkful();
+        if(null == isTurnkful){
+            isTurnkful = false;
+        }
         Integer pickingWay = null;
         if (Constants.PICKING_INVENTORY.equals(operationWay)) { // 拣货(库位库存变成容器库存)
             pickingWay = command.getPickingWay();
