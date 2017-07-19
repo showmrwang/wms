@@ -465,6 +465,7 @@ public class PdaReplenishmentPutawayCacheManagerImpl extends BaseManagerImpl imp
        long cacheValue = cacheManager.incrBy(CacheConstants.SCAN_SKU_QUEUE + locationId.toString()+ turnoverBoxId.toString() + skuId.toString(), scanSkuQty.intValue());
        if(cacheValue == skuQty.longValue()){
            cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE_SN_COUNT +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
+           cacheManager.remove(CacheConstants.SCAN_SKU_QUEUE +locationId.toString()+ turnoverBoxId.toString() + skuId.toString());
            //判断当前周转箱内相同sku有没有不同库存属性的sku
            ArrayDeque<String> scanSkuAttrIds = scanTipSkuCmd.getScanSkuAttrIds();
            Set<String> skuAttrIds = skuAttrIdQty.keySet();  //获取所有的唯一sku
