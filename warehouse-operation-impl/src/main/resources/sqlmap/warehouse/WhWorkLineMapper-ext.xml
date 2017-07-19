@@ -533,7 +533,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 						and line.to_location_id=#{toLocationId}
 					</if>
 				GROUP BY
-					operation.work_line_id
+					line.id
 				HAVING
 					operation.id IS NULL
 				OR line.qty > SUM(operation.qty)
