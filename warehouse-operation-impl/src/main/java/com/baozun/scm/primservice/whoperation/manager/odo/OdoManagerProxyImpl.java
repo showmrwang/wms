@@ -2815,7 +2815,9 @@ public class OdoManagerProxyImpl implements OdoManagerProxy {
                 return null;
             }
         } else {
-            odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 2, null, null, ouId);
+            if (null != transportService && null != transportService.getIsTspSuccess() && !transportService.getIsTspSuccess()) {
+                odoTransportMgmtManager.saveOrUpdateTransportService(odoId, true, 2, null, null, ouId);
+            }
         }
         // 获取运单号
         if (StringUtils.isEmpty(transMgmt.getTransportServiceProvider())) {
