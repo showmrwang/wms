@@ -15,6 +15,8 @@ public class WhOdodeliveryInfoCommand extends BaseCommand {
     private Long odoId;
     /** 出库单ID */
     private String odoCode;
+    /** 外部对接编码 */
+    private String extCode;
     /** 运输服务商编码 */
     private String transportCode;
     /** 运输服务商名称 */
@@ -45,6 +47,14 @@ public class WhOdodeliveryInfoCommand extends BaseCommand {
     private Long createId;
     /** 创建时间 */
     private Date createTime;
+
+    public String getExtCode() {
+        return extCode;
+    }
+
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
+    }
 
     public String getOdoCode() {
         return odoCode;

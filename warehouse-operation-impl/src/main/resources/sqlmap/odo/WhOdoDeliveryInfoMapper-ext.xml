@@ -43,6 +43,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       		del.id as id,
 	       		odo.id as odoId,
 	        	odo.odo_code as odoCode,
+	        	odo.ext_code as extCode,
 	        	del.transport_code as transportCode,
 	        	del.waybill_code as waybillCode,
 	        	del.outboundbox_id as outboundboxId,
@@ -119,6 +120,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	       
 				<if test="odoCode!=null and odoCode!=''">
 					and odo.odo_code = #{odoCode}
+				</if>
+				<if test="extCode!=null and extCode!=''">
+					and odo.ext_code = #{extCode}
 				</if>
 	       
 	            <if test="outboundboxCode!=null and outboundboxCode!=''">
