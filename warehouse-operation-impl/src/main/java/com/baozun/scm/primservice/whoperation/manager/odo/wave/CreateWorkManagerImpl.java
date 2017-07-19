@@ -2720,7 +2720,14 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
                             // 在库数量
                             double invQty = 0.00;
                             if(null != skuIdAndQty.get(whWorkLineCommand.getSkuId())){
-                                invQty = skuIdAndQty.get(whWorkLineCommand.getSkuId());    
+                                invQty = skuIdAndQty.get(whWorkLineCommand.getSkuId()); 
+                                Double onHandQty = skuIdAndQty.get(whWorkLineCommand.getSkuId());
+                                BigDecimal oldQty = new BigDecimal(onHandQty.toString());
+                                BigDecimal newQty = new BigDecimal(whWorkLineCommand.getQty().toString());
+                                Double newOnHandQty = oldQty.add(newQty).doubleValue();
+                                skuIdAndQty.put(whWorkLineCommand.getSkuId(), newOnHandQty);
+                            }else{
+                                skuIdAndQty.put(whWorkLineCommand.getSkuId(), whWorkLineCommand.getQty());
                             }
                             // 计算可用容量
                             replenishmentQty = (long) Math.floor(maxQty - invQty);
@@ -2833,7 +2840,7 @@ public class CreateWorkManagerImpl implements CreateWorkManager {
             // 创建时间
             WhOperationLineCommand.setCreateTime(new Date());
             // 最后操作时间
-            WhOperationLineCommand.setLastModifyTime(whWorkLineCommand.getLastModifyTime());
+            WhOperationLineCommand.setLastModifyTime(new Date());
             // 操作人ID
             WhOperationLineCommand.setOperatorId(whWorkLineCommand.getOperatorId());
 
