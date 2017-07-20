@@ -1336,6 +1336,8 @@ public class ErrorCodes {
     public static final int TARGET_CONTAINER_SAME_SOURCE_CONTAINER = 120052;
     /**输入的目标出库箱和源出库箱是同一个出库箱,请输入正确的目标出库箱 */
     public static final int TARGET_OUTBOUNDBOX_SAME_SOURCE_OUTBOUNDBOX = 120053;
+    /** PDA库存查询配置功能未配置,请确认配置信息 */
+    public static final int INVENTORY_QUERY_FUCTION_NOT_EXIST = 120054;
     
     // 120000-130000 zhaozili
 
