@@ -13293,5 +13293,20 @@ public class WhSkuInventoryManagerImpl extends BaseInventoryManagerImpl implemen
 
         return boxId;
     }
+    
+    @Override
+    public List<WhSkuInventoryCommand> findInventoryBySkuBarCode(String barCode, Long ouId) {
+        return whSkuInventoryDao.findInventoryBySkuBarCode(barCode,ouId);
+    }
+
+    @Override
+    public List<WhSkuInventoryCommand> findInventoryByLocationCode(String locationCode, Long ouId) {
+        return whSkuInventoryDao.findInventoryByLocationCode(locationCode,ouId);
+    }
+
+    @Override
+    public List<WhSkuInventoryCommand> findInventoryByContainerCode(String container, Long ouId) {
+        return whSkuInventoryDao.findInventoryByContainerCode(container,ouId);
+    }
 
 }
