@@ -85,6 +85,7 @@ public class SeqAndCodeAspect implements Ordered, InitializingBean {
         return str;
     }
 
+
     @Around("this(lark.orm.dao.supports.BaseDao)")
     public Object doQuery(ProceedingJoinPoint pjp) throws Throwable {
 
